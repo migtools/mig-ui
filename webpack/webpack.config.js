@@ -10,7 +10,8 @@ const _export = {
   mode: buildMode,
   output: {
     path: path.resolve(projectRootDir, 'dist'),
-    filename: outputFileName,
+    filename: `js/${outputFileName}`,
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -22,11 +23,13 @@ const _export = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'MIG UI'
+      template: path.resolve(projectRootDir, 'public', 'index.html'),
+      filename: path.resolve(projectRootDir, 'dist', 'index.html'),
     })
   ],
   devServer: {
-    contentBase: './dist',
+    contentBase: path.resolve(projectRootDir, 'dist'),
+    publicPath: '/',
   },
 };
 
