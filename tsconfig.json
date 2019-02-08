@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "target": "es5",
+    "lib": ["es6"],
+    "allowJs", true,
+    "sourceMap": true,
+    "jsx": "react",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts"
+  ]
+}
