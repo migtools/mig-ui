@@ -14,7 +14,6 @@ webpack - bundles everything
 ts-loader - loader for ts/tsx (consider awesome-typescript-loader?)
 
 HtmlWebpackPlugin - used to dynamically inject the bundle name into the index
-
 template found under public/, and dropped into the dist/ output directory.
 
 webpack-dev-server - Development server configured to serve out of dist/ and
