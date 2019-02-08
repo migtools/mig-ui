@@ -5,8 +5,8 @@
     "moduleResolution": "node",
     "rootDir": "src",
     "target": "es5",
-    "lib": ["es6"],
-    "allowJs", true,
+    "lib": ["es6", "dom"],
+    "allowJs": true,
     "sourceMap": true,
     "jsx": "react",
     "noImplicitAny": true,
@@ -22,6 +22,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "scripts"
+    "scripts",
+    "webpack"
   ]
 }
