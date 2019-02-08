@@ -19,8 +19,12 @@ template found under public/, and dropped into the dist/ output directory.
 webpack-dev-server - Development server configured to serve out of dist/ and
 reload on changes
 
+devtool: inline-source-map, type of source-map especially suited for development,
+generally fast at the expense of bundle size (which we don't particularly
+care about during development). Enabled browsers to map the bundle back to
+the original source.
+
 [Wishlist]
-Some kind of source-map support, need to dig in here.
 
 Hot module reload
 

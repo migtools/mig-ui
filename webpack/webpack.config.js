@@ -5,7 +5,7 @@ const buildMode = !!process.env['PRODUCTION'] ? 'production' : 'development';
 const outputFileName = `mig-ui.${buildMode}.bundle.js`;
 const projectRootDir = path.resolve(__dirname, '..')
 
-module.exports = {
+const _export = {
   entry: './src/index.tsx',
   mode: buildMode,
   output: {
@@ -29,3 +29,9 @@ module.exports = {
     contentBase: './dist',
   },
 };
+
+if(buildMode === 'development') {
+  _export.devtool = 'inline-source-map';
+}
+
+module.exports = _export;
