@@ -1,0 +1,1 @@
+Auth? https://github.com/openshift/oauth-proxy
