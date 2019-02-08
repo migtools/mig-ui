@@ -1,16 +1,16 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 const buildMode = !!process.env['PRODUCTION'] ? 'production' : 'development';
-const outputFileName = `mig-ui.${buildMode}.bundle.js`
+const outputFileName = `mig-ui.${buildMode}.bundle.js`;
+const projectRootDir = path.resolve(__dirname, '..')
 
 module.exports = {
   entry: './src/index.tsx',
   mode: buildMode,
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(projectRootDir, 'dist'),
     filename: outputFileName,
-  },
-  devServer: {
-    contentBase: './dist',
   },
   module: {
     rules: [
@@ -19,5 +19,13 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'MIG UI'
+    })
+  ],
+  devServer: {
+    contentBase: './dist',
+  },
 };
