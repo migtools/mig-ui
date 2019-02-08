@@ -23,6 +23,7 @@
     "@types/react-dom": "^16.8.0",
     "css-loader": "^2.1.0",
     "node-sass": "^4.11.0",
+    "normalize.css": "^8.0.1",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "sass-loader": "^7.1.0",
