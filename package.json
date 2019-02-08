@@ -4,7 +4,7 @@
   "description": "Migration engineering UI",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack --config=./webpack/webpack.config.js"
+    "build": "webpack --config=./webpack/webpack.config.js"
   },
   "repository": {
     "type": "git",
