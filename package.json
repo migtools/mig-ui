@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/fusor/mig-ui#readme",
   "dependencies": {
+    "@patternfly/react-core": "^1.51.6",
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "css-loader": "^2.1.0",
