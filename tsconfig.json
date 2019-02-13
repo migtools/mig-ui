@@ -23,6 +23,7 @@
     "node_modules",
     "dist",
     "scripts",
-    "webpack"
+    "webpack",
+    "jest.config.js"
   ]
 }
