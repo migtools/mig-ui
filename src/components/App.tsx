@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import '@patternfly/react-core/dist/styles/base.css';
+
 export interface HelloProps {
   compiler: string;
   framework: string;
