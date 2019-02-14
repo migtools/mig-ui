@@ -1,11 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import 'normalize.css';
+import 'patternfly/dist/css/patternfly.css'
+import 'patternfly/dist/css/patternfly-additions.css'
 
 import { App } from './components/App';
 
-ReactDOM.render(
-  <App compiler='TypeScript' framework='React' />,
-  document.getElementById('app')
-);
+ReactDOM.render(<App />, document.getElementById('app'));

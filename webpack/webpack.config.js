@@ -18,7 +18,17 @@ const _export = {
       { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
       { test: /\.s?css$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\patternfly\/dist\/img\/.*\.(svg|jpg|gif|png)$/,
+        use: [{
+            loader: 'file-loader',
+            options: {
+                name: '[name].[ext]',
+                outputPath: 'img/'
+            }
+        }]
+      },
+      {
+        test: /\patternfly\/dist\/fonts\/.*\.(woff(2)?|ttf|eot|svg)$/,
         use: [{
             loader: 'file-loader',
             options: {
@@ -26,7 +36,7 @@ const _export = {
                 outputPath: 'fonts/'
             }
         }]
-    }
+      }
     ]
   },
   resolve: {
