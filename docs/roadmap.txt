@@ -1,7 +1,0 @@
-X scss loader & support
-test support, jest + enzyme, basic examples, get wired into travis
-patternfly react a basic page
-bring in redux/react-redux and get connected
-test above data model?
-react-router-redux integration
-look into oauth-proxy and flesh out a client

@@ -1,9 +1,22 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from "react";
+import { render } from "react-dom";
+import { Provider } from "react-redux";
 
-import 'patternfly/dist/css/patternfly.css'
-import 'patternfly/dist/css/patternfly-additions.css'
+import { store } from "./_helpers";
+import { App } from "./App";
+import { Router } from "react-router-dom";
+import { history } from "./_helpers";
+import "@patternfly/react-core/dist/styles/base.css";
+// import App from "./App";
+// setup fake backend
+// import { configureFakeBackend } from './_helpers';
+// configureFakeBackend();
 
-import { App } from './components/App';
-
-ReactDOM.render(<App />, document.getElementById('app'));
+render(
+  <Provider store={store}>
+    <Router history={history}>
+      <App />
+    </Router>
+  </Provider>,
+  document.getElementById("root")
+);
