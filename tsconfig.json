@@ -1,29 +1,20 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "sourceMap": true,
+    "target": "es5",
+    "jsx": "react",
     "module": "esnext",
     "moduleResolution": "node",
-    "rootDir": "src",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "allowJs": true,
-    "sourceMap": true,
-    "jsx": "react",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "removeComments": true,
+    "strictNullChecks": false,
+    "outDir": "build",
+    "lib": ["es6", "es7", "dom"]
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "scripts",
-    "webpack",
-    "jest.config.js"
-  ]
+  "exclude": ["dist", "build", "node_modules"]
 }
