@@ -9,6 +9,14 @@
   margin-top: var(--myApp-global--spacer--md);
 }
 
+.mig-body-copy {
+  font-family: overpass; font-weight: 400;
+}
+
+.mig-secondary-text {
+  font-family: overpass; font-weight: 300;
+}
+
 .notification-container {
   flex: 0 1 auto;
 }
