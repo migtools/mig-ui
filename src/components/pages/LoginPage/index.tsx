@@ -1,7 +1,8 @@
 import React from "react";
-import { LoginForm } from "../_components/LoginForm";
-import "./LoginPage.css";
-export class LoginPage extends React.Component {
+import { LoginForm } from "../../LoginForm";
+import "./index.css";
+
+export default class LoginPage extends React.Component<any, any> {
   render() {
     return (
       <div className="login-container">
