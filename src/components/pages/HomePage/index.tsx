@@ -1,5 +1,5 @@
 import React from "react";
-import { userActions } from "_/actions";
+import { userActions } from "../../../actions";
 
 import { connect } from "react-redux";
 import {

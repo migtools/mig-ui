@@ -1,7 +1,7 @@
-import { userConstants } from "_/constants";
-import { userService } from "_/services";
+import { userConstants } from "../constants";
+import { userService } from "../services";
 import { alertActions } from "./";
-import { history } from "_/helpers";
+import { history } from "../helpers";
 
 export const userActions = {
   login,

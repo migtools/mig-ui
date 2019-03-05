@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { userActions } from "_/actions";
+import { userActions } from "../../actions";
 import {
   Form,
   FormGroup,

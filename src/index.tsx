@@ -2,10 +2,10 @@ import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 
-import { store } from "./_helpers";
-import { App } from "./App";
+import { store } from "./helpers";
+import App from "./App";
 import { Router } from "react-router-dom";
-import { history } from "./_helpers";
+import { history } from "./helpers";
 import "@patternfly/react-core/dist/styles/base.css";
 // import App from "./App";
 // setup fake backend
