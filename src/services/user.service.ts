@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Api } from "../config/settings";
 
-const login = payload => request.post("loginURL", payload, authHeaders);
 
 const axiosInstance = axios.create({
   baseURL: Api.API_URL,
@@ -20,9 +19,8 @@ const authHeaders = {
   "Access-Control-Allow-Credentials": "true"
 };
 
-function logout() {
-  localStorage.removeItem("currentUser");
-}
+const login = payload => request.post("loginURL", payload, authHeaders);
+const logout = () => localStorage.removeItem("currentUser");
 
 export const userService = {
   login,

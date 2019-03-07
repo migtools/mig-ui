@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { userActions } from "../../_actions";
+import { userActions } from "../../actions";
 import {
   Form,
   FormGroup,
@@ -11,7 +11,7 @@ import {
   Radio
 } from "@patternfly/react-core";
 import ReactLoading from "react-loading";
-import "./LoginForm.css";
+import "./index.css";
 interface LoginProps {
   handleSubmit: any;
   loggingIn: boolean;

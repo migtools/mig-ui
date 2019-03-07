@@ -1,5 +1,5 @@
-import * as React from "react";
-import { userActions } from "../_actions";
+import React from "react";
+import { userActions } from "../../../actions";
 
 import { connect } from "react-redux";
 import {
@@ -34,6 +34,7 @@ import {
 } from "@patternfly/react-core";
 import { BellIcon, CogIcon } from "@patternfly/react-icons";
 import { css } from "@patternfly/react-styles";
+
 class ConnectedHomePage extends React.Component<any, any> {
   constructor(props) {
     super(props);
@@ -215,9 +216,5 @@ class ConnectedHomePage extends React.Component<any, any> {
     );
   }
 }
-const mapStateToProps = state => {
-  return {};
-};
 
-const HomePage = connect(mapStateToProps)(ConnectedHomePage);
-export default HomePage;
+export default connect()(ConnectedHomePage);
