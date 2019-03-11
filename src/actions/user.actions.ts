@@ -1,7 +1,7 @@
 import { userConstants } from "../constants";
 import { userService } from "../services";
 import { alertActions } from "./";
-import { history } from "../helpers";
+import { push } from 'connected-react-router'
 
 export const userActions = {
   login,
@@ -33,7 +33,7 @@ function login(username, password) {
     const user = "ibolton";
     dispatch(success(user));
     localStorage.setItem("currentUser", user);
-    history.push("/");
+    dispatch(push("/"));
   };
 
   function request(user) {

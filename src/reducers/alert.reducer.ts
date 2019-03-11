@@ -1,3 +1,4 @@
+import { LOCATION_CHANGE } from 'connected-react-router';
 import { alertConstants } from '../constants';
 
 export function alert(state = {}, action) {
@@ -12,6 +13,7 @@ export function alert(state = {}, action) {
         type: 'alert-danger',
         message: action.message
       };
+    case LOCATION_CHANGE:
     case alertConstants.CLEAR:
       return {};
     default:

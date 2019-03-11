@@ -2,10 +2,12 @@ import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 
-import { store } from "./helpers";
+import { store, history } from "./helpers";
 import App from "./App";
 import { Router } from "react-router-dom";
-import { history } from "./helpers";
+import { ConnectedRouter } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
+
 import "@patternfly/react-core/dist/styles/base.css";
 // import App from "./App";
 // setup fake backend
@@ -14,9 +16,9 @@ import "@patternfly/react-core/dist/styles/base.css";
 
 render(
   <Provider store={store}>
-    <Router history={history}>
+    <ConnectedRouter history={history}>
       <App />
-    </Router>
+    </ConnectedRouter>
   </Provider>,
   document.getElementById("root")
 );

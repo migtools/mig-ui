@@ -1,59 +1,47 @@
-import React from "react";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import React from 'react';
+import { Router, Route, Switch, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { push } from 'connected-react-router';
 
-import { history } from "../helpers";
-import { alertActions } from "../actions";
-import { PrivateRoute } from "../components/PrivateRoute";
-import { HomePage, LoginPage } from "../components/pages";
-import CSSModules from "react-css-modules";
-import { Alert, AlertActionCloseButton } from "@patternfly/react-core";
-import "../index-nomodules.css";
+import { history } from '../helpers';
+import { alertActions } from '../actions';
+import PrivateRoute from '../components/PrivateRoute';
+import { HomePage, LoginPage } from '../components/pages';
+import CSSModules from 'react-css-modules';
+import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
+import '../index-nomodules.css';
 
 class App extends React.Component<any, any> {
-  constructor(props) {
-    super(props);
-
-    const { dispatch } = this.props;
-    history.listen((location, action) => {
-      // clear alert on location change
-      dispatch(alertActions.clear());
-    });
-  }
 
   logout = e => {
     e.preventDefault();
-    localStorage.removeItem("currentUser");
-    history.push("/");
+    this.props.onRedirect("/login");
   };
   navHome = () => {
-    history.push("/");
+    this.props.onRedirect("/");
   };
+
   render() {
-    const { alert } = this.props;
+    const { alert, authentication } = this.props;
     return (
       <div className="app-container-wrapper">
-        {localStorage.getItem("currentUser") ? (
           <div className="menu-wrapper">
             <div className="center-content-container">
+              {alert.message && !authentication.loggedIn && (
+                <div className={`alert ${alert.type}`}>
+                  {alert.message.message}
+                </div>
+              )}
               <Switch>
                 <Route exact path="/login" component={LoginPage} />
-                <PrivateRoute exact path="/" component={HomePage} />
-                <Redirect from="*" to="/" />
+                <PrivateRoute exact path="/" component={HomePage} isLoggedIn={authentication.loggedIn} />
+                {
+                  authentication.loggedIn
+                    ? <Redirect from="*" to="/" />
+                    : <Redirect from="*" to="/login" />
+                }
               </Switch>
             </div>
-          </div>
-        ) : (
-          <div>
-            {alert.message && (
-              <div className={`alert ${alert.type}`}>
-                {alert.message.message}
-              </div>
-            )}
-            <Switch>
-              <Route exact path="/login" component={LoginPage} />
-              <Redirect from="*" to="/login" />
-            </Switch>
           </div>
         )}
       </div>
@@ -63,6 +51,10 @@ class App extends React.Component<any, any> {
 
 export default connect(
   (state) => ({
-    alert: state.alert
+    alert: state.alert,
+    authentication: state.authentication
+  }),
+  (dispatch) => ({
+    onRedirect: (path) => dispatch(push(path))
   })
 )(App);
