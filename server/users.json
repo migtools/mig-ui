@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "ibolton",
+      "email": "ibolton@redhat.com",
+      "password": "test"
+    },
+    {
+      "id": 2,
+      "name": "ernelson",
+      "email": "ernelson@redhat.com",
+      "password": "test"
+    },
+    {
+      "id": 2,
+      "name": "aveselov",
+      "email": "aveselov@redhat.com",
+      "password": "test"
+    }
+  ]
+}

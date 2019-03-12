@@ -8,6 +8,7 @@ export default connect(
   }),
   dispatch => ({
     onLogin: (username, password) =>
-      dispatch(authOperations.loginRequest(username, password))
+      dispatch(authOperations.loginRequest(username, password)),
+    setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user))
   })
 )(LoginComponent);

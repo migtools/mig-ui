@@ -1,48 +1,72 @@
 import fetch from "cross-fetch";
 import { Creators } from "./actions";
-import { history } from "../../common/duck/utils";
+import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from "../../../config";
+import { push } from "connected-react-router";
 
-const requestTokenAction = Creators.requestToken;
-const receiveTokenAction = Creators.receiveToken;
-const failedTokenRequest = Creators.failedToken;
-// token cmd from terminal
-//TOKEN=$(kubectl get secrets \
-//  -o jsonpath='{.items[?(@.type=="kubernetes.io/service-account-token")].data.token}' \
-//  | base64 --decode)
-// APISERVER=$(kubectl config view -o \
-//  jsonpath='{.clusters[*].cluster.server}')
+const login = Creators.login;
+const logout = Creators.logout;
+const loginSuccess = Creators.loginSuccess;
+const loginFailure = Creators.loginFailure;
+
 const loginRequest = (username, password) => {
   return dispatch => {
-    dispatch(requestTokenAction());
-    //simulate token request
+    dispatch(login(username, password));
+    return fetch(JSON_SERVER_URL + "auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: username,
+        password: password
+      })
+    })
+      .then(handleResponse)
+      .then(res => {
+        localStorage.setItem("currentUser", JSON.stringify(res.access_token));
+        dispatch(loginSuccess(username));
+        dispatch(push("/"));
+      })
+      .catch(error => {
+        dispatch(loginFailure(error));
+      });
+  };
+};
 
-    const mockLoginSuccessful: TimerHandler = () => {
-      const hardCodedToken = "";
-      dispatch(receiveTokenAction(hardCodedToken, username));
-      localStorage.setItem("currentUser", hardCodedToken);
-      history.push("/");
-    };
-    setTimeout(mockLoginSuccessful(), 4300);
+function handleResponse(response) {
+  return response.text().then(text => {
+    const data = text && JSON.parse(text);
+    if (!response.ok) {
+      if (response.status === 401) {
+        // auto logout if 401 response returned from api
+        logoutRequest();
+        location.reload(true);
+      }
 
-    //actual request
-    //   return fetch("container1/version", {
-    //     method: "GET",
-    //     // body: JSON.stringify(data),
-    //     headers: {
-    //       Authorization: "Bearer " + hardCodedToken
-    //     },
-    //     mode: "cors"
-    //   })
-    //     .then(response => response.json())
-    //     .then(token => {
-    //       dispatch(receiveTokenAction(token));
-    //     })
-    //     .catch(error => {
-    //       dispatch(failedTokenRequest(error));
-    //     });
+      const error = (data && data.message) || response.statusText;
+      return Promise.reject(error);
+    }
+
+    return data;
+  });
+}
+
+function logoutRequest() {
+  return dispatch => {
+    dispatch(logout());
+    localStorage.removeItem("currentUser");
+    dispatch(push("/login"));
+  };
+}
+
+const setOAuthTokenRequest = res => {
+  return dispatch => {
+    localStorage.setItem("currentUser", JSON.stringify(res));
+    dispatch(loginSuccess(res.name));
+    dispatch(push("/"));
   };
 };
 
 export default {
-  loginRequest
+  loginRequest,
+  logoutRequest,
+  setOAuthTokenRequest
 };

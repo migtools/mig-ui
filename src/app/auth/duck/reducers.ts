@@ -1,32 +1,39 @@
 import Types from "./types";
 import { createReducer } from "reduxsauce";
-export const INITIAL_STATE = {
-  username: "",
-  token: "",
-  loggingIn: false,
-  loggedIn: false
-};
+let user = JSON.parse(localStorage.getItem("currentUser"));
+export const INITIAL_STATE = user
+  ? {
+      user: user.email || user.name,
+      loggingIn: false,
+      loggedIn: true,
+      store: null,
+      status: ""
+    }
+  : {};
 
-export const requestToken = (state = INITIAL_STATE) => {
-  return { ...state, loggingIn: true };
+export const login = (state = INITIAL_STATE, action) => {
+  return { ...state, loggingIn: true, user: action.user };
 };
-export const receiveToken = (state = INITIAL_STATE, action) => {
+export const loginSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     loggingIn: false,
-    token: action.token,
-    username: action.username,
-    loggedIn: true
+    user: action.user
   };
 };
-export const failedToken = (state = INITIAL_STATE, action) => {
-  return { ...state, loggingIn: false, token: action.token };
+export const loginFailure = (state = INITIAL_STATE, action) => {
+  return {};
+};
+
+export const logout = (state = INITIAL_STATE, action) => {
+  return {};
 };
 
 export const HANDLERS = {
-  [Types.REQUEST_TOKEN]: requestToken,
-  [Types.RECEIVE_TOKEN]: receiveToken,
-  [Types.FAILED_TOKEN]: failedToken
+  [Types.LOGIN]: login,
+  [Types.LOGOUT]: logout,
+  [Types.LOGIN_SUCCESS]: loginSuccess,
+  [Types.LOGIN_FAILURE]: loginFailure
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);
