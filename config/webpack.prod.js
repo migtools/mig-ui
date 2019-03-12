@@ -1,7 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
@@ -40,12 +39,6 @@ const config = {
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
-    // new UglifyJSPlugin({
-    //   sourceMap: true
-    // }),
-    // new webpack.DefinePlugin({
-    //   "process.env.NODE_ENV": JSON.stringify("production")
-    // }),
     new HtmlWebpackPlugin({
       template: "src/assets/index.html",
       title: "Account Management",

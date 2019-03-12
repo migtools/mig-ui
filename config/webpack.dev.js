@@ -52,21 +52,7 @@ const config = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: true,
-    proxy: {
-      "/container1": {
-        target: "http://localhost:8080/",
-        pathRewrite: { "^/container1": "" },
-        secure: false
-      },
-      "/container2": {
-        target: "http://localhost:8080/",
-        pathRewrite: { "^/container2": "" },
-        secure: false
-        // logLevel: "debug",
-        // changeOrigin: true
-      }
-    }
+    open: true
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
@@ -76,7 +62,6 @@ const config = {
       template: "src/assets/index.html",
       title: "MIG UI",
       inject: "body"
-      // favicon: 'src/assets/favicon.ico'
     }),
     new ExtractTextPlugin({
       filename: "[name].[contenthash].css"
