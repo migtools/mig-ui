@@ -36,6 +36,13 @@ export default class HomeComponent extends React.Component<any, any> {
     activeItem: "grp-1_itm-1"
   };
 
+  componentDidMount() {
+    console.log("on mount", this.props);
+    this.props.fetchDataList("migrationClusterList");
+    // this.props.fetchDataList("migrationPlanList");
+    // this.props.fetchDataList("migrationStorageList");
+  }
+
   onNavSelect = result => {
     this.setState({
       activeItem: result.itemId
@@ -161,7 +168,7 @@ export default class HomeComponent extends React.Component<any, any> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  {user}
+                  <div>{user}</div>
                 </DropdownToggle>
               }
               dropdownItems={this.userDropdownItems}
@@ -191,6 +198,9 @@ export default class HomeComponent extends React.Component<any, any> {
               <div className="home-container">
                 <div className="flex-item">
                   <div className="title">Namespaces</div>
+                  {this.props.migrationClusterList.map((listItem, index) => (
+                    <div key={index}>{listItem.metadata.name}</div>
+                  ))}
                 </div>
                 <div className="flex-item">
                   <div className="title">Migration Plans</div>

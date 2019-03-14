@@ -6,9 +6,11 @@ import { authOperations } from "../auth/duck";
 export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
-    user: state.auth.user
+    user: state.auth.user,
+    migrationClusterList: state.home.migrationClusterList
   }),
   dispatch => ({
-    onLogout: () => dispatch(authOperations.logoutRequest())
+    onLogout: () => dispatch(authOperations.logoutRequest()),
+    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType))
   })
 )(HomeComponent);

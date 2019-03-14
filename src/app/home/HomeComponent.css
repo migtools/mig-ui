@@ -22,3 +22,6 @@
 .header-override .pf-c-page__header-brand {
   background-color: #4d5057 !important;
 }
+.title {
+  font-weight: 700;
+}

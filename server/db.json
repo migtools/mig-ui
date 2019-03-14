@@ -13,7 +13,7 @@
       "quantity": 2000
     }
   ],
-  "migrationclusters": [
+  "migrationClusterList": [
     {
       "apiVersion": "v1",
       "items": [
