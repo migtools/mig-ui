@@ -8,14 +8,16 @@ import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './reducers';
 import AppComponent from './app/AppComponent';
 import '@patternfly/react-core/dist/styles/base.css';
-import { routerMiddleware } from 'connected-react-router';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 
 const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
 const store = createStore(rootReducer, middleware);
 
 render(
   <Provider store={store}>
-    <AppComponent />
+    <ConnectedRouter history={history}>
+       <AppComponent />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('root'),
 );
