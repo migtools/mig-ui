@@ -2,8 +2,9 @@ import { createActions } from "reduxsauce";
 
 const { Creators, Types } = createActions({
   logout: [],
-  requestToken: [],
-  receiveToken: ["token", "username"]
+  login: ["username", "password"],
+  loginSuccess: ["user"],
+  loginFailure: []
 });
 
 export { Creators, Types };

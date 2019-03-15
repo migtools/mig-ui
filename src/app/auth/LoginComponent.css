@@ -1,0 +1,38 @@
+.login-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+.divider {
+  background: #ddd;
+  height: 2px;
+  display: block;
+  position: relative;
+  width: 80%;
+  margin: 30px auto;
+}
+.divider span {
+  width: 30px;
+  height: 20px;
+  background: #fff;
+  position: absolute;
+  left: 50%;
+  margin-left: -10px;
+  top: -12px;
+  text-align: center;
+  color: #999;
+}
+.social-link {
+  flex: 0 1 100%;
+  width: 5em;
+}
+.social-links {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+.connect-label {
+  text-align: center;
+}

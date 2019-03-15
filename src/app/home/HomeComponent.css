@@ -16,3 +16,12 @@
   box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
   text-align: center;
 }
+.header-override {
+  background-color: #4d5057 !important;
+}
+.header-override .pf-c-page__header-brand {
+  background-color: #4d5057 !important;
+}
+.title {
+  font-weight: 700;
+}

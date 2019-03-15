@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 // const paths = require("./paths");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || "9000";
@@ -10,6 +11,9 @@ const PORT = process.env.PORT || "9000";
 const config = {
   entry: {
     app: "./src/index.tsx"
+  },
+  node: {
+    fs: "empty"
   },
   output: {
     path: __dirname + "../dist",
@@ -41,6 +45,13 @@ const config = {
             limit: 5000
           }
         }
+      },
+      {
+        test: /\.(png)$/,
+        use: {
+          loader: "file-loader",
+          options: {}
+        }
       }
     ]
   },
@@ -63,6 +74,7 @@ const config = {
       title: "MIG UI",
       inject: "body"
     }),
+    new Dotenv(),
     new ExtractTextPlugin({
       filename: "[name].[contenthash].css"
     })
