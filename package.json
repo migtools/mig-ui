@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "prebuild": "yarn clean",
+    "lint": "tslint --config tslint.json 'src/**/*.{ts,tsx}'",
     "build": "webpack --config config/webpack.prod.js",
     "start": "webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
     "clean": "yarn rimraf dist",
@@ -31,6 +32,8 @@
     "socket.io-client": "^2.2.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.3",
+    "tslint": "^5.14.0",
+    "tslint-react": "^3.6.0",
     "typescript": "^3.3.3333",
     "webpack": "^4.25.1",
     "webpack-bundle-analyzer": "^3.0.3",
