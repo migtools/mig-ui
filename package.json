@@ -10,8 +10,7 @@
     "build": "webpack --config config/webpack.prod.js",
     "start": "webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
     "clean": "yarn rimraf dist",
-    "server": "json-server --watch server/db.json",
-    "start-auth": "node server/server.js"
+    "mock-server": "node server/server.js"
   },
   "devDependencies": {
     "@types/node": "^11.11.2",
