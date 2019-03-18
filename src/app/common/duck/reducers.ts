@@ -16,7 +16,7 @@ export const clear = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.CLEAR]: clear,
   [Types.SUCCESS]: success,
-  [Types.ERROR]: failure
+  [Types.ERROR]: failure,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

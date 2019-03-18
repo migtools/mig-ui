@@ -9,7 +9,7 @@ const rootReducer = combineReducers({
   router: connectRouter(history),
   home: homeReducer,
   auth: authReducer,
-  common: commonReducer
+  common: commonReducer,
 });
 
 export default rootReducer;

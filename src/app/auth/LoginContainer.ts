@@ -4,11 +4,11 @@ import { authOperations } from "./duck";
 
 export default connect(
   state => ({
-    loggingIn: state.auth.loggingIn
+    loggingIn: state.auth.loggingIn,
   }),
   dispatch => ({
     onLogin: (username, password) =>
       dispatch(authOperations.loginRequest(username, password)),
-    setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user))
-  })
+    setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user)),
+  }),
 )(LoginComponent);

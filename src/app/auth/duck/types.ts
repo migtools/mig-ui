@@ -7,5 +7,5 @@ export default {
   LOGIN,
   LOGOUT,
   LOGIN_SUCCESS,
-  LOGIN_FAILURE
+  LOGIN_FAILURE,
 };

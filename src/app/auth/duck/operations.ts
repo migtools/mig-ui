@@ -17,7 +17,7 @@ const loginRequest = (username, password) => {
       body: JSON.stringify({
         password,
         email: username,
-      })
+      }),
     })
       .then(handleResponse)
       .then(res => {
@@ -68,5 +68,5 @@ const setOAuthTokenRequest = res => {
 export default {
   loginRequest,
   logoutRequest,
-  setOAuthTokenRequest
+  setOAuthTokenRequest,
 };

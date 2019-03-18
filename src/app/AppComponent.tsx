@@ -31,9 +31,9 @@ export default connect(
   state => ({
     loggedIn: state.auth.loggedIn,
     alertMessage: state.common.alertMessage,
-    alertType: state.common.alertType
+    alertType: state.common.alertType,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(commonOperations.alertClear())
-  })
+    clearAlerts: () => dispatch(commonOperations.alertClear()),
+  }),
 )(AppComponent);

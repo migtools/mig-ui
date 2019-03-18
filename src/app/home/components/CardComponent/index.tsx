@@ -4,25 +4,25 @@ import {
   Dropdown,
   KebabToggle,
   DropdownItem,
-  DropdownSeparator
+  DropdownSeparator,
 } from "@patternfly/react-core";
 
 class CardComponent extends Component<any, any> {
   state = {
-    isOpen: false
+    isOpen: false,
   };
 
   onToggle = isOpen => {
     this.setState({
-      isOpen
+      isOpen,
     });
-  };
+  }
 
   onSelect = event => {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: !this.state.isOpen,
     });
-  };
+  }
 
   render() {
     const { dataList, title } = this.props;

@@ -5,5 +5,5 @@ const CLEAR = "ALERT_CLEAR";
 export default {
   SUCCESS,
   ERROR,
-  CLEAR
+  CLEAR,
 };

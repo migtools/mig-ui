@@ -3,7 +3,7 @@ import {
   Button,
   TextContent,
   TextList,
-  TextListItem
+  TextListItem,
 } from "@patternfly/react-core";
 import React from "react";
 

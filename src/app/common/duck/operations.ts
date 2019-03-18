@@ -6,5 +6,5 @@ const alertClear = Creators.alertClear;
 export default {
   alertSuccess,
   alertError,
-  alertClear
+  alertClear,
 };

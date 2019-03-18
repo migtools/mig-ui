@@ -14,8 +14,8 @@ const fetchDataList = dataType => {
     return fetch(JSON_SERVER_URL + dataType, {
       method: "GET",
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("currentUser")
-      }
+        Authorization: "Bearer " + localStorage.getItem("currentUser"),
+      },
     })
       .then(handleResponse)
       .then(res => {
@@ -54,5 +54,5 @@ function handleResponse(response) {
 }
 
 export default {
-  fetchDataList
+  fetchDataList,
 };
