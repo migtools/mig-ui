@@ -19,7 +19,6 @@ const fetchDataList = dataType => {
     })
       .then(handleResponse)
       .then(res => {
-        console.log("res", res[0].items);
         switch (dataType) {
           case "migrationClusterList":
             return dispatch(migrationClusterFetchSuccess(res[0].items));

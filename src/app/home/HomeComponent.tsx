@@ -51,7 +51,6 @@ export default class HomeComponent extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    console.log("on mount", this.props);
     this.props.fetchDataList("migrationClusterList");
     // this.props.fetchDataList("migrationPlanList");
     // this.props.fetchDataList("migrationStorageList");
