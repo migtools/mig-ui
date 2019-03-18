@@ -27,3 +27,7 @@
   flex: 0 1 auto;
   align-self: center;
 }
+.data-list-container {
+  flex: 1 0 100%;
+  align-self: center;
+}

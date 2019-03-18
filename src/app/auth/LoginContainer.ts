@@ -10,5 +10,5 @@ export default connect(
     onLogin: (username, password) =>
       dispatch(authOperations.loginRequest(username, password)),
     setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user)),
-  }),
+  })
 )(LoginComponent);

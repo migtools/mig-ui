@@ -35,5 +35,5 @@ export default connect(
   }),
   dispatch => ({
     clearAlerts: () => dispatch(commonOperations.alertClear()),
-  }),
+  })
 )(AppComponent);

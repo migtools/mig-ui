@@ -4,7 +4,7 @@ import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
   migrationClusterList: [],
-  migrationPlanList: [],
+  migrationPlansList: [],
   migrationStorageList: [],
 };
 
@@ -14,8 +14,8 @@ export const migrationClusterFetchSuccess = (state = INITIAL_STATE, action) => {
 // export const failure = (state = INITIAL_STATE, action) => {
 //   return { ...state, alertMessage: action.message };
 // };
-// export const migrationPlanFetchsuccess = (state = INITIAL_STATE, action) => {
-//   return { ...state, migrationPlanList: action.migrationPlanList };
+// export const migrationPlansFetchsuccess = (state = INITIAL_STATE, action) => {
+//   return { ...state, migrationPlansList: action.migrationPlansList };
 // };
 // export const failure = (state = INITIAL_STATE, action) => {
 //   return { ...state, alertMessage: action.message };

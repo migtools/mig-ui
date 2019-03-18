@@ -16,13 +16,13 @@ class CardComponent extends Component<any, any> {
     this.setState({
       isOpen,
     });
-  }
+  };
 
   onSelect = event => {
     this.setState({
       isOpen: !this.state.isOpen,
     });
-  }
+  };
 
   render() {
     const { dataList, title } = this.props;

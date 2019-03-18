@@ -30,6 +30,7 @@ import {
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import CardComponent from './components/CardComponent';
 import AddClusterModal from './components/AddClusterModal';
+import DetailViewContainer from './DetailView/DetailViewContainer';
 
 import './HomeComponent.css';
 
@@ -40,7 +41,7 @@ export default class HomeComponent extends React.Component<any, any> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
-    dataExists: false,
+    dataExists: true,
     isModalOpen: false,
   };
 
@@ -48,11 +49,11 @@ export default class HomeComponent extends React.Component<any, any> {
     this.setState(({ isModalOpen }) => ({
       isModalOpen: !isModalOpen,
     }));
-  }
+  };
 
   componentDidMount() {
     this.props.fetchDataList('migrationClusterList');
-    // this.props.fetchDataList("migrationPlanList");
+    // this.props.fetchDataList("migrationPlansList");
     // this.props.fetchDataList("migrationStorageList");
   }
 
@@ -60,31 +61,31 @@ export default class HomeComponent extends React.Component<any, any> {
     this.setState({
       activeItem: result.itemId,
     });
-  }
+  };
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
       isDropdownOpen,
     });
-  }
+  };
 
   onDropdownSelect = event => {
     this.setState({
       isDropdownOpen: !this.state.isDropdownOpen,
     });
-  }
+  };
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
       isKebabDropdownOpen,
     });
-  }
+  };
 
   onKebabDropdownSelect = event => {
     this.setState({
       isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
-  }
+  };
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -184,7 +185,8 @@ export default class HomeComponent extends React.Component<any, any> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user}</div>
-                </DropdownToggle>}
+                </DropdownToggle>
+              }
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
@@ -227,7 +229,9 @@ export default class HomeComponent extends React.Component<any, any> {
           <PageSection>
             <div className="detail-view-container">
               {this.state.dataExists ? (
-                <div>data</div>
+                <div className="data-list-container">
+                  <DetailViewContainer />
+                </div>
               ) : (
                 <div className="empty-state-container">
                   <EmptyState>

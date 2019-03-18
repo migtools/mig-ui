@@ -12,5 +12,5 @@ export default connect(
   dispatch => ({
     onLogout: () => dispatch(authOperations.logoutRequest()),
     fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
-  }),
+  })
 )(HomeComponent);
