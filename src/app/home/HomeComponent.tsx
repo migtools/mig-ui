@@ -33,6 +33,7 @@ import CardComponent from './components/CardComponent';
 import AddClusterModal from './components/AddClusterModal';
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
+import DetailViewContainer from './DetailView/DetailViewContainer';
 
 import './HomeComponent.css';
 
@@ -61,7 +62,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
-    dataExists: false,
+    dataExists: true,
     isModalOpen: false,
   };
 
@@ -73,7 +74,7 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.props.fetchDataList('migrationClusterList');
-    // this.props.fetchDataList("migrationPlanList");
+    // this.props.fetchDataList("migrationPlansList");
     // this.props.fetchDataList("migrationStorageList");
   }
 
@@ -248,7 +249,9 @@ class HomeComponent extends React.Component<IProps, IState> {
           <PageSection>
             <div className="detail-view-container">
               {this.state.dataExists ? (
-                <div>data</div>
+                <div className="data-list-container">
+                  <DetailViewContainer />
+                </div>
               ) : (
                 <div className="empty-state-container">
                   <EmptyState>
@@ -280,7 +283,7 @@ export default connect(
     user: state.auth.user,
     migrationClusterList: state.home.migrationClusterList,
   }),
-  (dispatch) => ({
+  dispatch => ({
     onLogout: () => dispatch(authOperations.logoutRequest()),
     fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
   }),

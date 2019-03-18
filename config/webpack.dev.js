@@ -1,12 +1,13 @@
-const path = require("path");
+const path = require('path');
 const fs = require('fs');
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const Dotenv = require("dotenv-webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
-const HOST = process.env.HOST || "localhost";
-const PORT = process.env.PORT || "9000";
+const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || '9000';
 
 const remoteConfigFileName = 'remote.config.json';
 
@@ -16,75 +17,74 @@ const remoteConfigFileName = 'remote.config.json';
 // UI development without the need for e2e functionality
 // remote - expects the user to provide a remote.config.json
 // that contains an object with coordinates to a remote cluster
-const devMode = process.env.DEVMODE || "local"
-if(devMode !== "local" && devMode !== "remote") {
+const devMode = process.env.DEVMODE || 'local';
+if (devMode !== 'local' && devMode !== 'remote') {
   console.error(`Illegal DEVMODE: ${devMode}, must be 'local' or 'remote'`);
   process.exit(1);
 }
 
 const htmlWebpackPluginOpt = {
   template: `src/assets/index.${devMode}.html`,
-  title: "MIG UI",
-  inject: "body",
-}
+  title: 'MIG UI',
+  inject: 'body'
+};
 
-if(devMode === "remote") {
+if (devMode === 'remote') {
   const configPath = path.join(__dirname, remoteConfigFileName);
-  if(!fs.existsSync(configPath)) {
-    console.error('DEVMODE is remote but no cluster has been configured')
+  if (!fs.existsSync(configPath)) {
+    console.error('DEVMODE is remote but no cluster has been configured');
     console.error(
       'Copy config/remote.config.json.example to config/remote.config.json ' +
-      'and fill in details to configure a remote cluster');
-    process.exit(1)
+        'and fill in details to configure a remote cluster'
+    );
+    process.exit(1);
   }
 
-  const remoteConfig = require(configPath)
-  htmlWebpackPluginOpt.migMeta = require('./mig_meta')(remoteConfig.clusterUrl)
+  const remoteConfig = require(configPath);
+  htmlWebpackPluginOpt.migMeta = require('./mig_meta')(remoteConfig.clusterUrl);
 }
 
 const webpackConfig = {
   entry: {
-    app: "./src/index.tsx"
+    app: './src/index.tsx'
   },
   node: {
-    fs: "empty"
+    fs: 'empty'
   },
   output: {
-    path: __dirname + "../dist",
-    filename: "[name].bundle.js",
-    publicPath: "/"
+    path: __dirname + '../dist',
+    filename: '[name].bundle.js',
+    publicPath: '/'
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: ['.ts', '.tsx', '.js']
   },
-  devtool: "eval-cheap-module-source-map",
+  devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: "ts-loader"
+        use: 'babel-loader'
+      },
+      {
+        test: /\.js$/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /\.css$/,
-        loaders: ["style-loader", "css-loader"]
+        loaders: ['style-loader', 'css-loader']
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2)$/,
         use: {
-          loader: "file-loader",
+          loader: 'file-loader',
           options: {
-            name: "fonts/[name].[ext]",
+            name: 'fonts/[name].[ext]',
             // Limit at 50k. larger files emited into separate files
             limit: 5000
           }
-        }
-      },
-      {
-        test: /\.(png)$/,
-        use: {
-          loader: "file-loader",
-          options: {}
         }
       }
     ]
@@ -105,9 +105,7 @@ const webpackConfig = {
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginOpt),
     new Dotenv(),
-    new ExtractTextPlugin({
-      filename: "[name].[contenthash].css"
-    })
+    new ForkTsCheckerWebpackPlugin()
   ]
 };
 
