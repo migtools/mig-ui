@@ -21,7 +21,17 @@
           "timeEnd",
           "trace"
         ]
-      }
+      },
+      "member-access": false,
+      "jsx-boolean-value": false,
+      "jsx-no-multiline-js": false,
+      "jsx-no-lambda": false,
+      "arrow-parens": false,
+      "object-literal-sort-keys": false,
+      "comment-format": false,
+      "member-ordering": false,
+      "jsx-wrap-multiline": false,
+      "ordered-imports": false
     },
     "jsRules": {
       "max-line-length": {
