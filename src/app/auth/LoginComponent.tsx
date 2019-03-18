@@ -61,12 +61,12 @@ class LoginComponent extends React.Component<any, any> {
     this.setState(this.updateState(name, value));
   };
   checkPopup() {
-    //uncomment for oauth
+    // uncomment for oauth
     // const check = setInterval(() => {
     //   const { popup } = this;
     //   if (!popup || popup.closed || popup.closed === undefined) {
     //     clearInterval(check);
-    //     this.setState({ disabled: "" });
+    //     // this.setState({ disabled: "" });
     //   }
     // }, 1000);
   }
@@ -76,7 +76,7 @@ class LoginComponent extends React.Component<any, any> {
   //   if (!this.state.disabled) {
   //     this.popup = this.openPopup();
   //     this.checkPopup();
-  //     this.setState({ disabled: "disabled" });
+  //     // this.setState({ disabled: "disabled" });
   //   }
   // };
   // openPopup = () => {
@@ -103,11 +103,11 @@ class LoginComponent extends React.Component<any, any> {
         <div className="social">
           <h4 className="connect-label">Connect with</h4>
           <div className="social-links">
-            {/* <div className="social-link"> */}
-            {/* <Button variant="link" onClick={() => this.startAuth()}>
+            {/* <div className="social-link">
+              <Button variant="link" onClick={() => this.startAuth()}>
                 <img className="twitter-logo" src={twitterLogo} alt="Logo" />
-              </Button> */}
-            {/* </div> */}
+              </Button>
+            </div> */}
             <div className="social-link">
               <Button variant="link">
                 <img
