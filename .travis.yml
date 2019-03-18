@@ -4,4 +4,7 @@ node_js:
 cache: yarn
 git:
   depth: 3
-script: yarn run build
+jobs:
+  include:
+    - script: yarn lint
+    - script: yarn build
