@@ -1,6 +1,6 @@
 // reducers.js
-import Types from "./types";
-import { createReducer } from "reduxsauce";
+import Types from './types';
+import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
   migrationClusterList: [],

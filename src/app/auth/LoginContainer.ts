@@ -1,6 +1,6 @@
-import { connect } from "react-redux";
-import LoginComponent from "./LoginComponent";
-import { authOperations } from "./duck";
+import { connect } from 'react-redux';
+import LoginComponent from './LoginComponent';
+import { authOperations } from './duck';
 
 export default connect(
   state => ({

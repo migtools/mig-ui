@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import "./CardComponent.css";
+import React, { Component } from 'react';
+import './CardComponent.css';
 import {
   Dropdown,
   KebabToggle,
   DropdownItem,
   DropdownSeparator,
-} from "@patternfly/react-core";
+} from '@patternfly/react-core';
 
 class CardComponent extends Component<any, any> {
   state = {

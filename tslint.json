@@ -31,6 +31,7 @@
       "comment-format": false,
       "member-ordering": false,
       "jsx-wrap-multiline": false,
+      "quotemark": [true, "single", "jsx-double"],
       "ordered-imports": false
     },
     "jsRules": {

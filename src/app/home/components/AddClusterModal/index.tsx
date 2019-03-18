@@ -4,8 +4,8 @@ import {
   TextContent,
   TextList,
   TextListItem,
-} from "@patternfly/react-core";
-import React from "react";
+} from '@patternfly/react-core';
+import React from 'react';
 
 const AddClusterModal = ({ onHandleModalToggle, isModalOpen, ...props }) => {
   return (

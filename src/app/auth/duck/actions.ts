@@ -1,9 +1,9 @@
-import { createActions } from "reduxsauce";
+import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
   logout: [],
-  login: ["username", "password"],
-  loginSuccess: ["user"],
+  login: ['username', 'password'],
+  loginSuccess: ['user'],
   loginFailure: [],
 });
 

@@ -1,7 +1,7 @@
-const LOGIN = "LOGIN";
-const LOGOUT = "LOGOUT";
-const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-const LOGIN_FAILURE = "LOGIN_FAILURE";
+const LOGIN = 'LOGIN';
+const LOGOUT = 'LOGOUT';
+const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+const LOGIN_FAILURE = 'LOGIN_FAILURE';
 
 export default {
   LOGIN,

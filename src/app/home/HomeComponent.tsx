@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Toolbar,
   ToolbarGroup,
@@ -26,20 +26,20 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   EmptyStateSecondaryActions,
-} from "@patternfly/react-core";
-import { BellIcon, CogIcon, AddCircleOIcon } from "@patternfly/react-icons";
-import CardComponent from "./components/CardComponent";
-import AddClusterModal from "./components/AddClusterModal";
+} from '@patternfly/react-core';
+import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import CardComponent from './components/CardComponent';
+import AddClusterModal from './components/AddClusterModal';
 
-import "./HomeComponent.css";
+import './HomeComponent.css';
 
 export default class HomeComponent extends React.Component<any, any> {
   state = {
     isDropdownOpen: false,
     isKebabDropdownOpen: false,
     isNavOpen: false,
-    activeGroup: "grp-1",
-    activeItem: "grp-1_itm-1",
+    activeGroup: 'grp-1',
+    activeItem: 'grp-1_itm-1',
     dataExists: false,
     isModalOpen: false,
   };
@@ -51,7 +51,7 @@ export default class HomeComponent extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    this.props.fetchDataList("migrationClusterList");
+    this.props.fetchDataList('migrationClusterList');
     // this.props.fetchDataList("migrationPlanList");
     // this.props.fetchDataList("migrationStorageList");
   }
@@ -127,14 +127,14 @@ export default class HomeComponent extends React.Component<any, any> {
           <NavExpandable
             title="System Panel"
             groupId="grp-1"
-            isActive={activeGroup === "grp-1"}
+            isActive={activeGroup === 'grp-1'}
             isExpanded
           >
             <NavItem
               to="#expandable-1"
               groupId="grp-1"
               itemId="grp-1_itm-1"
-              isActive={activeItem === "grp-1_itm-1"}
+              isActive={activeItem === 'grp-1_itm-1'}
             >
               Overview
             </NavItem>

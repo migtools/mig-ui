@@ -1,7 +1,7 @@
-import fetch from "cross-fetch";
-import { Creators } from "./actions";
-import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from "../../../config";
-import { push } from "connected-react-router";
+import fetch from 'cross-fetch';
+import { Creators } from './actions';
+import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from '../../../config';
+import { push } from 'connected-react-router';
 const migrationClusterFetchSuccess = Creators.migrationClusterFetchSuccess;
 // const fetchDataListSuccess = Creators.fetchDataListSuccess;
 
@@ -12,15 +12,15 @@ const fetchDataList = dataType => {
   return dispatch => {
     // dispatch(login(username, password));
     return fetch(JSON_SERVER_URL + dataType, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("currentUser"),
+        Authorization: 'Bearer ' + localStorage.getItem('currentUser'),
       },
     })
       .then(handleResponse)
       .then(res => {
         switch (dataType) {
-          case "migrationClusterList":
+          case 'migrationClusterList':
             return dispatch(migrationClusterFetchSuccess(res[0].items));
         }
         // dispatch(fetchDataListSuccess(dataType, res[0].items));

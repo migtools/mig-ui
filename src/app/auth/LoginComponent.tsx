@@ -1,21 +1,21 @@
-import React from "react";
+import React from 'react';
 import {
   Form,
   FormGroup,
   TextInput,
   ActionGroup,
   Button,
-} from "@patternfly/react-core";
-import "./LoginComponent.css";
-import { Spinner } from "react-spinkit";
+} from '@patternfly/react-core';
+import './LoginComponent.css';
+import { Spinner } from 'react-spinkit';
 
-import openShiftLogo from "../../assets/OpenShiftLogo.svg";
-import twitterLogo from "../../assets/twitter.svg";
+import openShiftLogo from '../../assets/OpenShiftLogo.svg';
+import twitterLogo from '../../assets/twitter.svg';
 //uncomment for oauth
 // import io from "socket.io-client";
 // const socket = io(SOCKET_API_URL);
-const provider = "twitter";
-import { JWT_API_URL, SOCKET_API_URL } from "../../config";
+const provider = 'twitter';
+import { JWT_API_URL, SOCKET_API_URL } from '../../config';
 
 interface ILoginState {
   username: string;
@@ -26,8 +26,8 @@ interface ILoginState {
 
 class LoginComponent extends React.Component<any, any> {
   state = {
-    username: "",
-    password: "",
+    username: '',
+    password: '',
     submitted: false,
     disabled: null,
   };

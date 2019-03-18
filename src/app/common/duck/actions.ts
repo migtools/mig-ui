@@ -1,8 +1,8 @@
-import { createActions } from "reduxsauce";
+import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  alertSuccess: ["success"],
-  alertError: ["error"],
+  alertSuccess: ['success'],
+  alertError: ['error'],
   alertClear: [],
 });
 
