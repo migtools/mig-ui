@@ -24,7 +24,7 @@ To add mock data, modify the contents of ./server/db.json
 yarn mock-server # start the mock json server
 ```
 
-## Development Scripts
+## Contributing
 
 Install development/build dependencies
 `yarn`
@@ -34,3 +34,7 @@ Start the development server
 
 Run a full build
 `yarn build`
+
+Consistent styles are enforced by travis and will gate PR merges. To check your code prior
+to submission, run:
+`yarn lint`
