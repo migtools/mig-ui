@@ -86,14 +86,16 @@ export default class HomeComponent extends React.Component<any, any> {
       isKebabDropdownOpen: !this.state.isKebabDropdownOpen
     });
   };
+
   kebabDropdownItems = [
-    <DropdownItem>
+    <DropdownItem key="0">
       <BellIcon /> Notifications
     </DropdownItem>,
-    <DropdownItem>
+    <DropdownItem key="1">
       <CogIcon /> Settings
     </DropdownItem>
   ];
+
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
@@ -183,8 +185,7 @@ export default class HomeComponent extends React.Component<any, any> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user}</div>
-                </DropdownToggle>
-              }
+                </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>

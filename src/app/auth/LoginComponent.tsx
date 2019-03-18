@@ -7,10 +7,10 @@ import {
   Button
 } from "@patternfly/react-core";
 import "./LoginComponent.css";
-var Spinner = require("react-spinkit");
+import { Spinner } from "react-spinkit";
 
-const openShiftLogo = require("../../assets/OpenShiftLogo.svg");
-const twitterLogo = require("../../assets/twitter.svg");
+import openShiftLogo from "../../assets/OpenShiftLogo.svg";
+import twitterLogo from "../../assets/twitter.svg";
 //uncomment for oauth
 // import io from "socket.io-client";
 // const socket = io(SOCKET_API_URL);

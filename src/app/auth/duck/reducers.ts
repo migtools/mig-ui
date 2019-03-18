@@ -1,6 +1,6 @@
 import Types from "./types";
 import { createReducer } from "reduxsauce";
-let user = JSON.parse(localStorage.getItem("currentUser"));
+const user = JSON.parse(localStorage.getItem("currentUser"));
 export const INITIAL_STATE = user
   ? {
       user: user.email || user.name,
