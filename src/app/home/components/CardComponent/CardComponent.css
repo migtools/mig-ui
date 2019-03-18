@@ -1,0 +1,24 @@
+.flex-item {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 5px;
+  margin: 10px !important;
+  -webkit-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
+  -moz-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
+  box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
+  text-align: center;
+  height: 10em;
+}
+.title {
+  font-weight: 300;
+  font-size: 2em;
+  color: #666666;
+}
+.header-bar {
+  text-align: right;
+}
+
+.card-content {
+  padding: 0.1em;
+  height: 100%;
+}

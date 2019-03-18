@@ -6,15 +6,12 @@
   justify-content: center;
   margin-top: 50px;
 }
-.flex-item {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 5px;
-  margin: 10px !important;
-  -webkit-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  -moz-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  text-align: center;
+.card-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .header-override {
   background-color: #4d5057 !important;
@@ -22,6 +19,11 @@
 .header-override .pf-c-page__header-brand {
   background-color: #4d5057 !important;
 }
-.title {
-  font-weight: 700;
+.detail-view-container {
+  justify-content: center;
+  display: flex;
+}
+.empty-state-container {
+  flex: 0 1 auto;
+  align-self: center;
 }

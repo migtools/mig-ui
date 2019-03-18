@@ -20,10 +20,16 @@ import {
   NavExpandable,
   NavItem,
   PageSection,
-  TextContent
+  TextContent,
+  Title,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateSecondaryActions
 } from "@patternfly/react-core";
-import { BellIcon, CogIcon } from "@patternfly/react-icons";
-import { Dimmer, Loader, Image, Segment } from "semantic-ui-react";
+import { BellIcon, CogIcon, AddCircleOIcon } from "@patternfly/react-icons";
+import CardComponent from "./components/CardComponent";
+import AddClusterModal from "./components/AddClusterModal";
 
 import "./HomeComponent.css";
 
@@ -33,7 +39,15 @@ export default class HomeComponent extends React.Component<any, any> {
     isKebabDropdownOpen: false,
     isNavOpen: false,
     activeGroup: "grp-1",
-    activeItem: "grp-1_itm-1"
+    activeItem: "grp-1_itm-1",
+    dataExists: false,
+    isModalOpen: false
+  };
+
+  handleModalToggle = () => {
+    this.setState(({ isModalOpen }) => ({
+      isModalOpen: !isModalOpen
+    }));
   };
 
   componentDidMount() {
@@ -196,20 +210,42 @@ export default class HomeComponent extends React.Component<any, any> {
           <PageSection>
             <TextContent>
               <div className="home-container">
-                <div className="flex-item">
-                  <div className="title">Namespaces</div>
-                  {this.props.migrationClusterList.map((listItem, index) => (
-                    <div key={index}>{listItem.metadata.name}</div>
-                  ))}
-                </div>
-                <div className="flex-item">
-                  <div className="title">Migration Plans</div>
-                </div>
-                <div className="flex-item">
-                  <div className="title">Replication Repositories</div>
+                <div className="card-container">
+                  <CardComponent
+                    title="Clusters"
+                    dataList={this.props.migrationClusterList}
+                  />
+                  <CardComponent
+                    title="Replication Repositories"
+                    dataList={[]}
+                  />
+                  <CardComponent title="Migration Plans" dataList={[]} />
                 </div>
               </div>
             </TextContent>
+          </PageSection>
+          <PageSection>
+            <div className="detail-view-container">
+              {this.state.dataExists ? (
+                <div>data</div>
+              ) : (
+                <div className="empty-state-container">
+                  <EmptyState>
+                    <EmptyStateIcon icon={AddCircleOIcon} />
+                    <Title size="lg">
+                      Add source and target clusters for the migration
+                    </Title>
+                    <Button variant="primary" onClick={this.handleModalToggle}>
+                      Add Cluster
+                    </Button>
+                  </EmptyState>
+                  <AddClusterModal
+                    isModalOpen={this.state.isModalOpen}
+                    onHandleModalToggle={this.handleModalToggle}
+                  />
+                </div>
+              )}
+            </div>
           </PageSection>
         </Page>
       </React.Fragment>
