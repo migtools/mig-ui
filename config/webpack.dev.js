@@ -97,7 +97,7 @@ const webpackConfig = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: true
+    open: false
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
