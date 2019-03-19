@@ -9,8 +9,8 @@
     "prebuild": "yarn clean",
     "lint": "tslint --config tslint.json 'src/**/*.{ts,tsx}'",
     "build": "webpack --config config/webpack.prod.js",
-    "start": "webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
-    "clean": "yarn rimraf dist",
+    "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js --open none", "clean": "yarn rimraf dist",
+    "start:remote": "DEVMODE=remote webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js", "clean": "yarn rimraf dist",
     "mock-server": "node mock/server.js"
   },
   "devDependencies": {

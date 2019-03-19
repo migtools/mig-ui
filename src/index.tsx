@@ -14,10 +14,10 @@ import { initMigMeta } from './mig_meta';
 const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
 const store = createStore(rootReducer, middleware);
 
-// Some amount of meta data is delievered to the app by the server that
-// we need to pick off of the window and insert into the redux tree
+// Some amount of meta data is delievered to the app by the server
 const migMeta = window['_mig_meta'];
-store.dispatch(initMigMeta(migMeta))
+// Load the meta into the redux tree if it was found on the window
+!!migMeta && store.dispatch(initMigMeta(migMeta))
 
 render(
   <Provider store={store}>
