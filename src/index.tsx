@@ -15,9 +15,14 @@ const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
 const store = createStore(rootReducer, middleware);
 
 // Some amount of meta data is delievered to the app by the server
+/* tslint:disable:no-string-literal */
 const migMeta = window['_mig_meta'];
+/* tslint:enable:no-string-literal */
+
 // Load the meta into the redux tree if it was found on the window
-!!migMeta && store.dispatch(initMigMeta(migMeta))
+if (!!migMeta) {
+  store.dispatch(initMigMeta(migMeta));
+}
 
 render(
   <Provider store={store}>
