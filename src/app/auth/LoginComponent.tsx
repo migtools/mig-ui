@@ -1,34 +1,35 @@
-import React from "react";
+import React from 'react';
 import {
   Form,
   FormGroup,
   TextInput,
   ActionGroup,
-  Button
-} from "@patternfly/react-core";
-import "./LoginComponent.css";
-var Spinner = require("react-spinkit");
+  Button,
+} from '@patternfly/react-core';
+import './LoginComponent.css';
+import { Spinner } from 'react-spinkit';
 
-const openShiftLogo = require("../../assets/OpenShiftLogo.svg");
-const twitterLogo = require("../../assets/twitter.svg");
+import openShiftLogo from '../../assets/OpenShiftLogo.svg';
+import twitterLogo from '../../assets/twitter.svg';
 //uncomment for oauth
 // import io from "socket.io-client";
 // const socket = io(SOCKET_API_URL);
-const provider = "twitter";
-import { JWT_API_URL, SOCKET_API_URL } from "../../config";
+const provider = 'twitter';
+import { JWT_API_URL, SOCKET_API_URL } from '../../config';
 
-interface LoginState {
+interface ILoginState {
   username: string;
   password: string;
   submitted: boolean;
   disabled: boolean;
 }
+
 class LoginComponent extends React.Component<any, any> {
   state = {
-    username: "",
-    password: "",
+    username: '',
+    password: '',
     submitted: false,
-    disabled: null
+    disabled: null,
   };
 
   popup = null;
@@ -47,19 +48,19 @@ class LoginComponent extends React.Component<any, any> {
     if (username && password) {
       this.props.onLogin(username, password, false);
     }
-  };
+  }
 
-  updateState = <T extends string>(key: keyof LoginState, value: T) => (
-    prevState: LoginState
-  ): LoginState => ({
+  updateState = <T extends string>(key: keyof ILoginState, value: T) => (
+    prevState: ILoginState,
+  ): ILoginState => ({
     ...prevState,
-    [key]: value
-  });
+    [key]: value,
+  })
 
   handleChange = (val, e) => {
     const { name, value } = e.target;
     this.setState(this.updateState(name, value));
-  };
+  }
   checkPopup() {
     // uncomment for oauth
     // const check = setInterval(() => {

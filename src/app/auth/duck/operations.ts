@@ -1,7 +1,7 @@
-import fetch from "cross-fetch";
-import { Creators } from "./actions";
-import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from "../../../config";
-import { push } from "connected-react-router";
+import fetch from 'cross-fetch';
+import { Creators } from './actions';
+import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from '../../../config';
+import { push } from 'connected-react-router';
 
 const login = Creators.login;
 const logout = Creators.logout;
@@ -11,19 +11,19 @@ const loginFailure = Creators.loginFailure;
 const loginRequest = (username, password) => {
   return dispatch => {
     dispatch(login(username, password));
-    return fetch(JSON_SERVER_URL + "auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    return fetch(JSON_SERVER_URL + 'auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        password,
         email: username,
-        password: password
-      })
+      }),
     })
       .then(handleResponse)
       .then(res => {
-        localStorage.setItem("currentUser", JSON.stringify(res.access_token));
+        localStorage.setItem('currentUser', JSON.stringify(res.access_token));
         dispatch(loginSuccess(username));
-        dispatch(push("/"));
+        dispatch(push('/'));
       })
       .catch(error => {
         dispatch(loginFailure(error));
@@ -52,21 +52,21 @@ function handleResponse(response) {
 function logoutRequest() {
   return dispatch => {
     dispatch(logout());
-    localStorage.removeItem("currentUser");
-    dispatch(push("/login"));
+    localStorage.removeItem('currentUser');
+    dispatch(push('/login'));
   };
 }
 
 const setOAuthTokenRequest = res => {
   return dispatch => {
-    localStorage.setItem("currentUser", JSON.stringify(res));
+    localStorage.setItem('currentUser', JSON.stringify(res));
     dispatch(loginSuccess(res.name));
-    dispatch(push("/"));
+    dispatch(push('/'));
   };
 };
 
 export default {
   loginRequest,
   logoutRequest,
-  setOAuthTokenRequest
+  setOAuthTokenRequest,
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Toolbar,
   ToolbarGroup,
@@ -25,80 +25,81 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions
-} from "@patternfly/react-core";
-import { BellIcon, CogIcon, AddCircleOIcon } from "@patternfly/react-icons";
-import CardComponent from "./components/CardComponent";
-import AddClusterModal from "./components/AddClusterModal";
+  EmptyStateSecondaryActions,
+} from '@patternfly/react-core';
+import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import CardComponent from './components/CardComponent';
+import AddClusterModal from './components/AddClusterModal';
 
-import "./HomeComponent.css";
+import './HomeComponent.css';
 
 export default class HomeComponent extends React.Component<any, any> {
   state = {
     isDropdownOpen: false,
     isKebabDropdownOpen: false,
     isNavOpen: false,
-    activeGroup: "grp-1",
-    activeItem: "grp-1_itm-1",
+    activeGroup: 'grp-1',
+    activeItem: 'grp-1_itm-1',
     dataExists: false,
-    isModalOpen: false
+    isModalOpen: false,
   };
 
   handleModalToggle = () => {
     this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen
+      isModalOpen: !isModalOpen,
     }));
-  };
+  }
 
   componentDidMount() {
-    console.log("on mount", this.props);
-    this.props.fetchDataList("migrationClusterList");
+    this.props.fetchDataList('migrationClusterList');
     // this.props.fetchDataList("migrationPlanList");
     // this.props.fetchDataList("migrationStorageList");
   }
 
   onNavSelect = result => {
     this.setState({
-      activeItem: result.itemId
+      activeItem: result.itemId,
     });
-  };
+  }
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
-      isDropdownOpen
+      isDropdownOpen,
     });
-  };
+  }
 
   onDropdownSelect = event => {
     this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen
+      isDropdownOpen: !this.state.isDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
-      isKebabDropdownOpen
+      isKebabDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownSelect = event => {
     this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen
+      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
-  };
+  }
+
   kebabDropdownItems = [
-    <DropdownItem>
+    <DropdownItem key="0">
       <BellIcon /> Notifications
     </DropdownItem>,
-    <DropdownItem>
+    <DropdownItem key="1">
       <CogIcon /> Settings
-    </DropdownItem>
+    </DropdownItem>,
   ];
+
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
       {/* <Button onClick={this.props.onLogout}>Logout</Button> */}
-    </DropdownItem>
+    </DropdownItem>,
   ];
 
   // bgImages = {
@@ -118,7 +119,7 @@ export default class HomeComponent extends React.Component<any, any> {
       isDropdownOpen,
       activeItem,
       activeGroup,
-      isNavOpen
+      isNavOpen,
     } = this.state;
     const PageNav = (
       <Nav onSelect={this.onNavSelect} aria-label="Nav">
@@ -126,14 +127,14 @@ export default class HomeComponent extends React.Component<any, any> {
           <NavExpandable
             title="System Panel"
             groupId="grp-1"
-            isActive={activeGroup === "grp-1"}
+            isActive={activeGroup === 'grp-1'}
             isExpanded
           >
             <NavItem
               to="#expandable-1"
               groupId="grp-1"
               itemId="grp-1_itm-1"
-              isActive={activeItem === "grp-1_itm-1"}
+              isActive={activeItem === 'grp-1_itm-1'}
             >
               Overview
             </NavItem>
@@ -183,8 +184,7 @@ export default class HomeComponent extends React.Component<any, any> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user}</div>
-                </DropdownToggle>
-              }
+                </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>

@@ -1,12 +1,12 @@
-import React, { Component } from "react";
-import HomeContainer from "./home/HomeContainer";
-import LoginContainer from "./auth/LoginContainer";
-import { Route, Switch, Redirect, Router } from "react-router-dom";
-import PrivateRoute from "./auth/PrivateRoute";
-import { connect } from "react-redux";
-import { history } from "../helpers";
-import { commonOperations } from "./common/duck";
-import { ConnectedRouter } from "connected-react-router";
+import React, { Component } from 'react';
+import HomeContainer from './home/HomeContainer';
+import LoginContainer from './auth/LoginContainer';
+import { Route, Switch, Redirect, Router } from 'react-router-dom';
+import PrivateRoute from './auth/PrivateRoute';
+import { connect } from 'react-redux';
+import { history } from '../helpers';
+import { commonOperations } from './common/duck';
+import { ConnectedRouter } from 'connected-react-router';
 
 class AppComponent extends React.Component<any, any> {
   render() {
@@ -31,9 +31,9 @@ export default connect(
   state => ({
     loggedIn: state.auth.loggedIn,
     alertMessage: state.common.alertMessage,
-    alertType: state.common.alertType
+    alertType: state.common.alertType,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(commonOperations.alertClear())
-  })
+    clearAlerts: () => dispatch(commonOperations.alertClear()),
+  }),
 )(AppComponent);
