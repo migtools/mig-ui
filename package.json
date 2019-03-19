@@ -8,6 +8,7 @@
   "scripts": {
     "prebuild": "yarn clean",
     "lint": "tslint --config tslint.json 'src/**/*.{ts,tsx}'",
+    "lint:fix": "tslint --config tslint.json --fix 'src/**/*.{ts,tsx}'",
     "build": "webpack --config config/webpack.prod.js",
     "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js --open none", "clean": "yarn rimraf dist",
     "start:remote": "DEVMODE=remote webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js", "clean": "yarn rimraf dist",
