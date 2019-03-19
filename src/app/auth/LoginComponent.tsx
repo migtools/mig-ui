@@ -7,7 +7,6 @@ import {
   Button,
 } from '@patternfly/react-core';
 import './LoginComponent.css';
-import { Spinner } from 'react-spinkit';
 
 import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 import twitterLogo from '../../assets/twitter.svg';
@@ -167,8 +166,6 @@ class LoginComponent extends React.Component<any, any> {
           </div>
         </Form>
         <div className="container" />
-
-        {loggingIn && <Spinner name="double-bounce" />}
       </div>
     );
   }
