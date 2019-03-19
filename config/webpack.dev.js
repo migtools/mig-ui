@@ -72,7 +72,10 @@ const config = {
     new HtmlWebpackPlugin({
       template: "src/assets/index.html",
       title: "MIG UI",
-      inject: "body"
+      inject: "body",
+      migMeta: {
+        hello: "world"
+      }
     }),
     new Dotenv(),
     new ExtractTextPlugin({
