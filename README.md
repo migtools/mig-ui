@@ -26,7 +26,7 @@ yarn mock-server # start the mock json server
 
 ### Remote dev mode
 
-If you would like to run the console locally, but communcate with real clusters
+If you would like to run the console locally, but communicate with real clusters
 on the backend, you must first configure the remote cluster acting as the UI's
 host. To do this, copy `config/remote.config.json.example` to `config/remote.config.json`
 and set the cluster's URL. The UI will use this cluster for oauth login and
