@@ -1,0 +1,4 @@
+{
+  "clusterUrl": "https://api.supercluster.example.com:6443",
+  "devServerPort": 9000
+}

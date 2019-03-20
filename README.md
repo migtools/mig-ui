@@ -4,6 +4,9 @@
 
 ## Quick-start
 
+Copy `config/config.dev.json.example` to `config/config.dev.json` where you can
+configure your local development settings.
+
 ### UI development server
 
 ```bash
@@ -28,11 +31,15 @@ yarn start:mock-server # start the mock json server
 
 If you would like to run the console locally, but communicate with real clusters
 on the backend, you must first configure the remote cluster acting as the UI's
-host. To do this, copy `config/remote.config.json.example` to `config/remote.config.json`
-and set the cluster's URL. The UI will use this cluster for oauth login and
-effectively run as if it were served from that cluster.
+host. To do this, update the `clusterUrl` in `config/config.dev.json`.
+The UI will use this cluster for oauth login and effectively run as if it were
+served from that cluster.
 
-Instead of running `yarn start`, which is the fully mocked experience, run:
+Additionally, the remote scripts expect the OpenShift client tool `oc` to be in
+your PATH (available as "client tools" [here](https://github.com/openshift/origin/releases)).
+You should also have logged into the cluster you expect to use using `oc login`.
+
+To start the remote cluster backed dev server, run:
 
 ```
 yarn start:remote # start the UI development server, backed by remote cluster

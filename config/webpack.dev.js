@@ -7,9 +7,8 @@ const Dotenv = require('dotenv-webpack');
 var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || '9000';
 
-const remoteConfigFileName = 'remote.config.json';
+const localConfigFileName = 'config.dev.json';
 
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
@@ -29,20 +28,23 @@ const htmlWebpackPluginOpt = {
   inject: 'body'
 };
 
-if (devMode === 'remote') {
-  const configPath = path.join(__dirname, remoteConfigFileName);
-  if (!fs.existsSync(configPath)) {
-    console.error('DEVMODE is remote but no cluster has been configured');
-    console.error(
-      'Copy config/remote.config.json.example to config/remote.config.json ' +
-        'and fill in details to configure a remote cluster'
-    );
-    process.exit(1);
-  }
-
-  const remoteConfig = require(configPath);
-  htmlWebpackPluginOpt.migMeta = require('./mig_meta')(remoteConfig.clusterUrl);
+const configPath = path.join(__dirname, localConfigFileName);
+if(!fs.existsSync(configPath)) {
+  console.error('ERROR: config/config.dev.json is missing')
+  console.error(
+    'Copy config/config.dev.json.example to config/config.dev.json' +
+    ' and optionally configure your dev settings. A valid clusterUrl is ' +
+    ' required for start:remote.')
+  process.exit(1)
 }
+
+const localConfig = require(configPath);
+const migMeta = require('./mig_meta')(localConfig.clusterUrl);
+migMeta.oauth.clientId = localConfig.oauthClientId;
+migMeta.oauth.clientSecret = localConfig.oauthClientSecret;
+htmlWebpackPluginOpt.migMeta = migMeta
+
+const PORT = process.env.PORT || localConfig.devServerPort
 
 const webpackConfig = {
   entry: {
@@ -104,8 +106,10 @@ const webpackConfig = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginOpt),
-    new Dotenv(),
     new ForkTsCheckerWebpackPlugin()
+    new ExtractTextPlugin({
+      filename: "[name].[contenthash].css"
+    })
   ]
 };
 
