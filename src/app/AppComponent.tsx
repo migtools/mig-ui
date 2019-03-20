@@ -14,7 +14,7 @@ import { Global, css } from '@emotion/core';
 import { AlertCard } from './common/components/AlertCard';
 
 interface IProps {
-  loggedIn?: boolean;
+  isLoggedIn?: boolean;
   alertMessage: string;
   alertType: string;
   onRedirect: () => void;
@@ -23,7 +23,7 @@ interface IProps {
 const AppComponent: React.SFC<IProps> = ({
   alertMessage,
   alertType,
-  loggedIn,
+  isLoggedIn,
 }) => (
   <Flex flexDirection="column" width="100%">
     {alertMessage && (
@@ -47,7 +47,7 @@ const AppComponent: React.SFC<IProps> = ({
       <ThemeProvider theme={theme}>
         <ConnectedRouter history={history}>
           <Switch>
-            <PrivateRoute exact path="/" component={HomeComponent} />
+            <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
             <Route path="/login" component={LoginComponent} />
           </Switch>
         </ConnectedRouter>
@@ -81,7 +81,7 @@ const AppComponent: React.SFC<IProps> = ({
 
 export default connect(
   state => ({
-    loggedIn: state.auth.loggedIn,
+    isLoggedIn: !!state.auth.user,
     alertMessage: state.common.alertMessage,
     alertType: state.common.alertType,
   }),

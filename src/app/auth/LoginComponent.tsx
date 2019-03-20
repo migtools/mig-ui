@@ -1,124 +1,99 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Form,
-  FormGroup,
-  TextInput,
-  ActionGroup,
-  Button,
-} from '@patternfly/react-core';
 import { authOperations } from './duck';
 import './LoginComponent.css';
+import ClientOAuth2 from 'client-oauth2';
 
 import openShiftLogo from '../../assets/OpenShiftLogo.svg';
-interface IState {
-  username: string;
-  password: string;
-  submitted?: boolean;
-  disabled?: boolean;
-}
 
 interface IProps {
-  loggingIn?: boolean;
-  onLogin: (username: string, password: string) => void;
-  setOAuthToken: (user: object) => void;
+  migMeta: any;
+  auth: any;
+  router: any;
+  fetchOauthMeta: (string) => void;
 }
 
-class LoginComponent extends React.Component<IProps, IState> {
-  state = {
-    username: '',
-    password: '',
-    submitted: false,
-    disabled: null,
-  };
+class LoginComponent extends React.Component<IProps> {
+  componentDidMount = () => {
+    console.log('LoginComponent::componentDidMount');
+    console.log('migMeta: ', this.props.migMeta);
+    console.log('auth: ', this.props.auth);
 
-  handleFormSubmit = e => {
-    e.preventDefault();
-    this.setState({ submitted: true });
-    const { username, password } = this.state;
-    if (username && password) {
-      this.props.onLogin(username, password);
+    const oauthMeta = this.props.auth.oauthMeta;
+    const migMeta = this.props.migMeta;
+
+    if(!oauthMeta) {
+      this.props.fetchOauthMeta(migMeta.clusterApi);
+      return;
     }
   }
 
-  updateState = <T extends string>(key: keyof IState, value: T) => (
-    prevState: IState,
-  ): IState => ({
-    ...prevState,
-    [key]: value,
-  })
+  componentDidUpdate = (prevProps) => {
+    console.log('LoginComponent::componentDidUpdate');
+    console.log('migMeta: ', this.props.migMeta);
+    console.log('auth: ', this.props.auth);
 
-  handleChange = (val, e) => {
-    const { name, value } = e.target;
-    this.setState(this.updateState(name, value));
+    const oauthMeta = this.props.auth.oauthMeta;
+    const migMeta = this.props.migMeta;
+    const routerLoc = this.props.router.location;
+
+    const freshOauthMeta = !prevProps.oauthMeta && !!oauthMeta;
+    if(freshOauthMeta) {
+      ////////////////////////////////////////////////////////////
+      // TODO: Currently using an empty secret value here since we
+      // are strictly a public client
+      // The correct thing to do here is to implement PKCE, which is
+      // what oc uses and what is specfically implemented for public
+      // clients: https://tools.ietf.org/html/rfc7636
+      ////////////////////////////////////////////////////////////
+      const clusterAuth = new ClientOAuth2({
+        clientId: migMeta.oauth.clientId,
+        clientSecret: '', // See note above
+        accessTokenUri: oauthMeta.token_endpoint,
+        authorizationUri: oauthMeta.authorization_endpoint,
+        redirectUri: migMeta.oauth.redirectUri,
+        scopes: [migMeta.oauth.userScope],
+      });
+
+      switch(routerLoc.pathname) {
+        case '/login': {
+          const uri = clusterAuth.code.getUri();
+          window.location.replace(uri);
+          break;
+        }
+        case '/login/callback': {
+          const params = new URLSearchParams(routerLoc.search);
+          const code = params.get('code');
+          clusterAuth.code.getToken(window.location.href)
+            .then(result => {
+              console.log('hit the good branch: ', result)
+            }).catch(err => {
+              console.log('bad things happened trying to do this: ', err);
+            });
+          break;
+        }
+        default: {
+          return;
+        }
+      }
+    }
   }
 
   render() {
-    const { username, password, submitted } = this.state;
-    const { loggingIn } = this.props;
     return (
       <div className="login-container">
         <div className="social">
           <h4 className="connect-label">Connect with</h4>
           <div className="social-links">
             <div className="social-link">
-              <Button variant="link">
-                <img
-                  className="openshift-logo"
-                  src={openShiftLogo}
-                  alt="Logo"
-                />
-              </Button>
+              <img
+                className="openshift-logo"
+                src={openShiftLogo}
+                alt="Logo"
+              />
             </div>
           </div>
         </div>
-
-        <div className="divider">
-          <span>or</span>
-        </div>
-        <Form>
-          <FormGroup label="Username" isRequired fieldId="username">
-            <TextInput
-              isRequired
-              type="text"
-              id="username"
-              name="username"
-              aria-describedby="username"
-              value={username}
-              onChange={this.handleChange}
-            />
-            {submitted && !username && (
-              <div className="help-block">Username is required</div>
-            )}
-          </FormGroup>
-          <FormGroup label="Password" isRequired fieldId="password">
-            <TextInput
-              isRequired
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={this.handleChange}
-            />
-            {submitted && !password && (
-              <div className="help-block">Password is required</div>
-            )}
-          </FormGroup>
-          <div className="form-buttons">
-            <ActionGroup>
-              <Button
-                id="submit-button"
-                className="submit-button"
-                variant="primary"
-                onClick={this.handleFormSubmit}
-              >
-                Login
-              </Button>
-              <Button variant="secondary">Cancel</Button>
-            </ActionGroup>
-          </div>
-        </Form>
-        <div className="container" />
       </div>
     );
   }
@@ -126,11 +101,11 @@ class LoginComponent extends React.Component<IProps, IState> {
 
 export default connect(
   state => ({
-    loggingIn: state.auth.loggingIn,
+    migMeta: state.migMeta,
+    auth: state.auth,
+    router: state.router,
   }),
   dispatch => ({
-    onLogin: (username, password) =>
-      dispatch(authOperations.loginRequest(username, password)),
-    setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user)),
-  }),
+    fetchOauthMeta: (clusterApi) => dispatch(authOperations.fetchOauthMeta(clusterApi))
+  })
 )(LoginComponent);

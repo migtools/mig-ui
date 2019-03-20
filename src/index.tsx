@@ -20,6 +20,8 @@ const migMeta = window['_mig_meta'];
 /* tslint:enable:no-string-literal */
 
 // Load the meta into the redux tree if it was found on the window
+// Will only be present in remote-dev and production scenarios where
+// oauth meta must be loaded
 if (!!migMeta) {
   store.dispatch(initMigMeta(migMeta));
 }

@@ -1,10 +1,9 @@
 import { createActions } from 'reduxsauce';
 
-const { Creators, Types } = createActions({
-  logout: [],
-  login: ['username', 'password'],
+const { Types, Creators }  = createActions({
   loginSuccess: ['user'],
   loginFailure: [],
+  setOauthMeta: ['oauthMeta'],
 });
 
-export { Creators, Types };
+export { Types, Creators };
