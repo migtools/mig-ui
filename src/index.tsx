@@ -28,5 +28,5 @@ render(
   <Provider store={store}>
     <AppComponent />
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

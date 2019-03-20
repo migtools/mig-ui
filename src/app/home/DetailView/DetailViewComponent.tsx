@@ -36,7 +36,6 @@ class DetailViewComponent extends Component<any, any> {
       migrationPlansList,
       migrationStorageList,
     } = this.props;
-    console.log('what are cluster props in detail view parent', this.props);
     return (
       <DataList aria-label="Expandable data list example">
         <DataListItem

@@ -47,19 +47,19 @@ class LoginComponent extends React.Component<any, any> {
     if (username && password) {
       this.props.onLogin(username, password, false);
     }
-  };
+  }
 
   updateState = <T extends string>(key: keyof ILoginState, value: T) => (
-    prevState: ILoginState
+    prevState: ILoginState,
   ): ILoginState => ({
     ...prevState,
     [key]: value,
-  });
+  })
 
   handleChange = (val, e) => {
     const { name, value } = e.target;
     this.setState(this.updateState(name, value));
-  };
+  }
   checkPopup() {
     // uncomment for oauth
     // const check = setInterval(() => {

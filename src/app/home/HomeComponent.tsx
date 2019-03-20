@@ -49,7 +49,7 @@ export default class HomeComponent extends React.Component<any, any> {
     this.setState(({ isModalOpen }) => ({
       isModalOpen: !isModalOpen,
     }));
-  };
+  }
 
   componentDidMount() {
     this.props.fetchDataList('migrationClusterList');
@@ -61,31 +61,31 @@ export default class HomeComponent extends React.Component<any, any> {
     this.setState({
       activeItem: result.itemId,
     });
-  };
+  }
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
       isDropdownOpen,
     });
-  };
+  }
 
   onDropdownSelect = event => {
     this.setState({
       isDropdownOpen: !this.state.isDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
       isKebabDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownSelect = event => {
     this.setState({
       isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
-  };
+  }
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -185,8 +185,7 @@ export default class HomeComponent extends React.Component<any, any> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user}</div>
-                </DropdownToggle>
-              }
+                </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
