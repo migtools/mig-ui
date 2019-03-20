@@ -1,14 +1,48 @@
 const path = require("path");
+const fs = require('fs');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
-// const paths = require("./paths");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || "9000";
 
-const config = {
+const remoteConfigFileName = 'remote.config.json';
+
+// Two dev modes: local | remote
+// local - auto authenticates as a fake user and uses a local
+// json mock server as its host cluster. Intended for pure
+// UI development without the need for e2e functionality
+// remote - expects the user to provide a remote.config.json
+// that contains an object with coordinates to a remote cluster
+const devMode = process.env.DEVMODE || "local"
+if(devMode !== "local" && devMode !== "remote") {
+  console.error(`Illegal DEVMODE: ${devMode}, must be 'local' or 'remote'`);
+  process.exit(1);
+}
+
+const htmlWebpackPluginOpt = {
+  template: `src/assets/index.${devMode}.html`,
+  title: "MIG UI",
+  inject: "body",
+}
+
+if(devMode === "remote") {
+  const configPath = path.join(__dirname, remoteConfigFileName);
+  if(!fs.existsSync(configPath)) {
+    console.error('DEVMODE is remote but no cluster has been configured')
+    console.error(
+      'Copy config/remote.config.json.example to config/remote.config.json ' +
+      'and fill in details to configure a remote cluster');
+    process.exit(1)
+  }
+
+  const remoteConfig = require(configPath)
+  htmlWebpackPluginOpt.migMeta = require('./mig_meta')(remoteConfig.clusterUrl)
+}
+
+const webpackConfig = {
   entry: {
     app: "./src/index.tsx"
   },
@@ -63,17 +97,13 @@ const config = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: true
+    open: false
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      template: "src/assets/index.html",
-      title: "MIG UI",
-      inject: "body"
-    }),
+    new HtmlWebpackPlugin(htmlWebpackPluginOpt),
     new Dotenv(),
     new ExtractTextPlugin({
       filename: "[name].[contenthash].css"
@@ -81,4 +111,4 @@ const config = {
   ]
 };
 
-module.exports = config;
+module.exports = webpackConfig;
