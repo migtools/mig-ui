@@ -1,20 +1,14 @@
-import React, { Component } from 'react';
-import {
-  DataList,
-  DataListItem,
-  DataListCell,
-  DataListToggle,
-  DataListContent,
-  DataListCheck,
-  DataListAction,
-} from '@patternfly/react-core';
-import './ClusterList.css';
-const ClusterListComponent = ({ clusterList, ...props }) => {
+import React from 'react';
+import { DataList, DataListItem, DataListCell } from '@patternfly/react-core';
+import { Flex, Box } from '@rebass/emotion';
+import theme from '../../theme';
+
+const ClusterListComponent = ({ dataList, ...props }) => {
   return (
     <React.Fragment>
-      {clusterList.length > 0 ? (
+      {dataList.length > 0 ? (
         <DataList aria-label="Simple data list example">
-          {clusterList.map((listItem, index) => (
+          {dataList.map((listItem, index) => (
             <DataListItem
               key={index}
               isExpanded={false}
@@ -29,7 +23,9 @@ const ClusterListComponent = ({ clusterList, ...props }) => {
           ))}
         </DataList>
       ) : (
-        <div className="empty-content"> No Content</div>
+        <Flex>
+          <Box color={theme.colors.navy}>No content</Box>
+        </Flex>
       )}
     </React.Fragment>
   );

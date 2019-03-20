@@ -1,5 +1,8 @@
 import React, { MouseEvent } from 'react';
 import { connect } from 'react-redux';
+import styled from '@emotion/styled';
+import { css, jsx } from '@emotion/core';
+import { Flex, Box } from '@rebass/emotion';
 import {
   Toolbar,
   ToolbarGroup,
@@ -29,16 +32,15 @@ import {
   EmptyStateSecondaryActions
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import DashboardCard from './components/DashboardCard';
 
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
 
-import DetailViewComponent from './DetailView/DetailViewComponent';
-import CardComponent from './components/CardComponent';
+import DetailViewComponent from './DetailViewComponent';
+import CardComponent from './CardComponent';
+
 import AddClusterModal from './components/AddClusterModal';
-
-import './HomeComponent.css';
-
 interface IProps {
   loggingIn?: boolean;
   user: string;
@@ -216,14 +218,19 @@ class HomeComponent extends React.Component<IProps, IState> {
         </ToolbarGroup>
       </Toolbar>
     );
+    const HeaderOverrideCss = css`
+      background-color: #4d5057 !important;
+      .pf-c-page__header-brand {
+        background-color: #4d5057 !important;
+      }
+    `;
     const Header = (
       <PageHeader
-        className="header-override"
-        // logo={<Brand src={brandImgSrc} alt="Patternfly Logo" />}
         toolbar={PageToolbar}
-        // avatar={<Avatar src={avatarImg} alt="Avatar image" />}
         showNavToggle
         isNavOpen={isNavOpen}
+        //@ts-ignore
+        css={HeaderOverrideCss}
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
@@ -234,29 +241,24 @@ class HomeComponent extends React.Component<IProps, IState> {
         <Page header={Header} sidebar={Sidebar}>
           <PageSection>
             <TextContent>
-              <div className="home-container">
-                <div className="card-container">
-                  <CardComponent
-                    title="Clusters"
-                    dataList={this.props.migrationClusterList}
-                  />
-                  <CardComponent
-                    title="Replication Repositories"
-                    dataList={[]}
-                  />
-                  <CardComponent title="Migration Plans" dataList={[]} />
-                </div>
-              </div>
+              <Flex justifyContent="center">
+                <CardComponent
+                  title="Clusters"
+                  dataList={this.props.migrationClusterList}
+                />
+                <CardComponent title="Replication Repositories" dataList={[]} />
+                <CardComponent title="Migration Plans" dataList={[]} />
+              </Flex>
             </TextContent>
           </PageSection>
           <PageSection>
-            <div className="detail-view-container">
+            <Flex>
               {this.state.dataExists ? (
-                <div className="data-list-container">
+                <Box flex="0 0 100%">
                   <DetailViewComponent />
-                </div>
+                </Box>
               ) : (
-                <div className="empty-state-container">
+                <Box>
                   <EmptyState>
                     <EmptyStateIcon icon={AddCircleOIcon} />
                     <Title size="lg">
@@ -270,9 +272,9 @@ class HomeComponent extends React.Component<IProps, IState> {
                     isModalOpen={this.state.isModalOpen}
                     onHandleModalToggle={this.handleModalToggle}
                   />
-                </div>
+                </Box>
               )}
-            </div>
+            </Flex>
           </PageSection>
         </Page>
       </React.Fragment>
