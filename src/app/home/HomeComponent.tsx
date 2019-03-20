@@ -30,9 +30,9 @@ import {
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import CardComponent from './components/CardComponent';
-import AddClusterModal from './components/AddClusterModal';
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
+import AddClusterModal from '../cluster/AddClusterModal';
 
 import './HomeComponent.css';
 
