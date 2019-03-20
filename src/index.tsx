@@ -8,6 +8,7 @@ import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './reducers';
 import AppComponent from './app/AppComponent';
 import '@patternfly/react-core/dist/styles/base.css';
+import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import { initMigMeta } from './mig_meta';
 
 const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
