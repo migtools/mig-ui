@@ -23,7 +23,7 @@ interface IProps {
 const AppComponent: React.SFC<IProps> = ({
   alertMessage,
   alertType,
-  loggedIn
+  loggedIn,
 }) => (
   <Flex flexDirection="column" width="100%">
     {alertMessage && (
@@ -72,8 +72,8 @@ const AppComponent: React.SFC<IProps> = ({
         'body.noScroll': {
           // Prevent scrolling; conditionally activate this
           // in subcomponents when necessary ...
-          overflow: 'hidden'
-        }
+          overflow: 'hidden',
+        },
       }}
     />
   </Flex>
@@ -83,9 +83,9 @@ export default connect(
   state => ({
     loggedIn: state.auth.loggedIn,
     alertMessage: state.common.alertMessage,
-    alertType: state.common.alertType
+    alertType: state.common.alertType,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(commonOperations.alertClear())
-  })
+    clearAlerts: () => dispatch(commonOperations.alertClear()),
+  }),
 )(AppComponent);

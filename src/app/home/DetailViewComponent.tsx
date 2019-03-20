@@ -4,7 +4,7 @@ import {
   DataListItem,
   DataListToggle,
   DataListContent,
-  Button
+  Button,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { connect } from 'react-redux';
@@ -14,7 +14,7 @@ import { Flex, Box } from '@rebass/emotion';
 import DataListComponent from './DataListComponent';
 class DetailViewComponent extends Component<any, any> {
   state = {
-    expanded: ['ex-toggle1']
+    expanded: ['ex-toggle1'],
   };
 
   render() {
@@ -25,7 +25,7 @@ class DetailViewComponent extends Component<any, any> {
         index >= 0
           ? [
               ...expanded.slice(0, index),
-              ...expanded.slice(index + 1, expanded.length)
+              ...expanded.slice(index + 1, expanded.length),
             ]
           : [...expanded, id];
       this.setState(() => ({ expanded: newExpanded }));
@@ -33,7 +33,7 @@ class DetailViewComponent extends Component<any, any> {
     const {
       migrationClusterList,
       migrationPlansList,
-      migrationStorageList
+      migrationStorageList,
     } = this.props;
     return (
       <DataList aria-label="Expandable data list example">
@@ -78,7 +78,7 @@ export default connect(
     user: state.auth.user,
     migrationClusterList: state.home.migrationClusterList,
     migrationStorageList: state.home.migrationStorageList,
-    migrationPlansList: state.home.migrationPlansList
+    migrationPlansList: state.home.migrationPlansList,
   }),
-  dispatch => ({})
+  dispatch => ({}),
 )(DetailViewComponent);
