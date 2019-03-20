@@ -12,7 +12,7 @@
     "build": "webpack --mode=production --config config/webpack.prod.js",
     "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js --open none", "clean": "yarn rimraf dist",
     "start:remote": "DEVMODE=remote webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js", "clean": "yarn rimraf dist",
-    "mock-server": "node mock/server.js"
+    "start:mock-server": "node mock/server.js"
   },
   "devDependencies": {
     "@types/node": "^11.11.2",

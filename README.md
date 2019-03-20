@@ -21,7 +21,7 @@ To add credentials to the mock json server, modify the contents of ./server/user
 To add mock data, modify the contents of ./server/db.json
 
 ```
-yarn mock-server # start the mock json server
+yarn start:mock-server # start the mock json server
 ```
 
 ### Remote dev mode
