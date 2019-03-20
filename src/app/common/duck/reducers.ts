@@ -7,7 +7,7 @@ export const success = (state = INITIAL_STATE, action) => {
 };
 
 export const failure = (state = INITIAL_STATE, action) => {
-  return { ...state, alertType: 'alert-failure', alertMessage: action.message };
+  return { ...state, alertMessage: action.alertMessage, alertType: 'error' };
 };
 export const clear = (state = INITIAL_STATE, action) => {
   return {};
