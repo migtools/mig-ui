@@ -3,5 +3,5 @@ dist/
 yarn-error.log
 .vscode/
 .env/
-config/remote.config.json
 .prettierrc
+config/config.dev.json
