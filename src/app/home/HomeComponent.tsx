@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
+import { connect } from 'react-redux';
 import {
   Toolbar,
   ToolbarGroup,
@@ -30,10 +31,30 @@ import {
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import CardComponent from './components/CardComponent';
 import AddClusterModal from './components/AddClusterModal';
+import { authOperations } from '../auth/duck';
+import { homeOperations } from './duck';
 
 import './HomeComponent.css';
 
-export default class HomeComponent extends React.Component<any, any> {
+interface IProps {
+  loggingIn?: boolean;
+  user: string;
+  migrationClusterList: any[];
+  fetchDataList: (dataType: string) => void;
+  onLogout: () => void;
+}
+
+interface IState {
+  isDropdownOpen?: boolean;
+  isKebabDropdownOpen?: boolean;
+  isNavOpen?: boolean;
+  isModalOpen?: boolean;
+  dataExists?: boolean;
+  activeGroup: string;
+  activeItem: string;
+}
+
+class HomeComponent extends React.Component<IProps, IState> {
   state = {
     isDropdownOpen: false,
     isKebabDropdownOpen: false,
@@ -252,3 +273,15 @@ export default class HomeComponent extends React.Component<any, any> {
     );
   }
 }
+
+export default connect(
+  state => ({
+    loggingIn: state.auth.loggingIn,
+    user: state.auth.user,
+    migrationClusterList: state.home.migrationClusterList,
+  }),
+  (dispatch) => ({
+    onLogout: () => dispatch(authOperations.logoutRequest()),
+    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
+  }),
+)(HomeComponent);

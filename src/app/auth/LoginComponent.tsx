@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -15,15 +16,22 @@ import twitterLogo from '../../assets/twitter.svg';
 // const socket = io(SOCKET_API_URL);
 const provider = 'twitter';
 import { JWT_API_URL, SOCKET_API_URL } from '../../config';
+import { authOperations } from './duck';
 
-interface ILoginState {
+interface IState {
   username: string;
   password: string;
-  submitted: boolean;
-  disabled: boolean;
+  submitted?: boolean;
+  disabled?: boolean;
 }
 
-class LoginComponent extends React.Component<any, any> {
+interface IProps {
+  loggingIn?: boolean;
+  onLogin: (username: string, password: string) => void;
+  setOAuthToken: (user: object) => void;
+}
+
+class LoginComponent extends React.Component<IProps, IState> {
   state = {
     username: '',
     password: '',
@@ -45,13 +53,13 @@ class LoginComponent extends React.Component<any, any> {
     this.setState({ submitted: true });
     const { username, password } = this.state;
     if (username && password) {
-      this.props.onLogin(username, password, false);
+      this.props.onLogin(username, password);
     }
   }
 
-  updateState = <T extends string>(key: keyof ILoginState, value: T) => (
-    prevState: ILoginState,
-  ): ILoginState => ({
+  updateState = <T extends string>(key: keyof IState, value: T) => (
+    prevState: IState,
+  ): IState => ({
     ...prevState,
     [key]: value,
   })
@@ -170,4 +178,14 @@ class LoginComponent extends React.Component<any, any> {
     );
   }
 }
-export default LoginComponent;
+
+export default connect(
+  state => ({
+    loggingIn: state.auth.loggingIn,
+  }),
+  dispatch => ({
+    onLogin: (username, password) =>
+      dispatch(authOperations.loginRequest(username, password)),
+    setOAuthToken: user => dispatch(authOperations.setOAuthTokenRequest(user)),
+  }),
+)(LoginComponent);
