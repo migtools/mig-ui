@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || '9000';
@@ -64,7 +65,12 @@ const webpackConfig = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: 'ts-loader'
+        use: 'babel-loader'
+      },
+      {
+        test: /\.js$/,
+        use: ['source-map-loader'],
+        enforce: 'pre'
       },
       {
         test: /\.css$/,
@@ -82,11 +88,8 @@ const webpackConfig = {
         }
       },
       {
-        test: /\.(png)$/,
-        use: {
-          loader: 'file-loader',
-          options: {}
-        }
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader']
       }
     ]
   },
@@ -106,9 +109,7 @@ const webpackConfig = {
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginOpt),
     new Dotenv(),
-    new ExtractTextPlugin({
-      filename: '[name].[contenthash].css'
-    })
+    new ForkTsCheckerWebpackPlugin()
   ]
 };
 

@@ -1,5 +1,6 @@
 import fetch from 'cross-fetch';
 import { Creators } from './actions';
+import { Creators as AlertCreators } from '../../common/duck/actions';
 import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from '../../../config';
 import { push } from 'connected-react-router';
 
@@ -7,6 +8,8 @@ const login = Creators.login;
 const logout = Creators.logout;
 const loginSuccess = Creators.loginSuccess;
 const loginFailure = Creators.loginFailure;
+const alertSuccess = AlertCreators.alertSuccess;
+const alertError = AlertCreators.alertError;
 
 const loginRequest = (username, password) => {
   return dispatch => {
@@ -16,8 +19,8 @@ const loginRequest = (username, password) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         password,
-        email: username,
-      }),
+        email: username
+      })
     })
       .then(handleResponse)
       .then(res => {
@@ -27,6 +30,8 @@ const loginRequest = (username, password) => {
       })
       .catch(error => {
         dispatch(loginFailure(error));
+        console.log('error', error);
+        dispatch(alertError(error));
       });
   };
 };
@@ -42,6 +47,7 @@ function handleResponse(response) {
       }
 
       const error = (data && data.message) || response.statusText;
+      console.log('response', response);
       return Promise.reject(error);
     }
 
@@ -68,5 +74,5 @@ const setOAuthTokenRequest = res => {
 export default {
   loginRequest,
   logoutRequest,
-  setOAuthTokenRequest,
+  setOAuthTokenRequest
 };
