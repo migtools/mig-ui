@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { Global, css } from '@emotion/core';
-import { Flex, Box, Card, Image, Heading, Text } from '@rebass/emotion';
+import { css } from '@emotion/core';
+import { Card } from '@rebass/emotion';
 
 const dynamicColor = props =>
   css`

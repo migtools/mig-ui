@@ -1,7 +1,6 @@
-import React, { MouseEvent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import styled from '@emotion/styled';
-import { css, jsx } from '@emotion/core';
+import { css } from '@emotion/core';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Toolbar,
@@ -13,12 +12,9 @@ import {
   DropdownItem,
   KebabToggle,
   DropdownToggle,
-  BackgroundImage,
   Page,
   PageHeader,
   PageSidebar,
-  Brand,
-  Avatar,
   Nav,
   NavList,
   NavExpandable,
@@ -27,20 +23,15 @@ import {
   TextContent,
   Title,
   EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateSecondaryActions
+  EmptyStateIcon
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import DashboardCard from './components/DashboardCard';
-
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
-
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './CardComponent';
-
 import AddClusterModal from './components/AddClusterModal';
+
 interface IProps {
   loggingIn?: boolean;
   user: string;
@@ -124,19 +115,8 @@ class HomeComponent extends React.Component<IProps, IState> {
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
-      {/* <Button onClick={this.props.onLogout}>Logout</Button> */}
     </DropdownItem>
   ];
-
-  // bgImages = {
-  //   [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
-  //   [BackgroundImageSrc.sm]: "/assets/images/pfbg_768.jpg",
-  //   [BackgroundImageSrc.sm2x]: "/assets/images/pfbg_768@2x.jpg",
-  //   [BackgroundImageSrc.xs]: "/assets/images/pfbg_576.jpg",
-  //   [BackgroundImageSrc.xs2x]: "/assets/images/pfbg_576@2x.jpg",
-  //   [BackgroundImageSrc.filter]:
-  //     "/assets/images/background-filter.svg#image_overlay"
-  // };
 
   render() {
     const { user } = this.props;
