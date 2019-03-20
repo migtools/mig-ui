@@ -1,6 +1,5 @@
 const path = require("path");
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
@@ -39,11 +38,6 @@ const config = {
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
-    new HtmlWebpackPlugin({
-      template: "src/assets/index.html",
-      title: "Account Management",
-      inject: "body"
-    }),
     new ExtractTextPlugin({
       filename: "style.css"
     })
