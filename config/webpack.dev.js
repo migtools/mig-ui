@@ -3,7 +3,6 @@ const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
 var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const HOST = process.env.HOST || 'localhost';
@@ -106,7 +105,7 @@ const webpackConfig = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin(htmlWebpackPluginOpt),
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
     new ExtractTextPlugin({
       filename: "[name].[contenthash].css"
     })
