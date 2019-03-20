@@ -26,14 +26,15 @@ import {
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions,
+  EmptyStateSecondaryActions
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import CardComponent from './components/CardComponent';
-import AddClusterModal from './components/AddClusterModal';
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
-import DetailViewContainer from './DetailView/DetailViewContainer';
+
+import DetailViewComponent from './DetailView/DetailViewComponent';
+import CardComponent from './components/CardComponent';
+import AddClusterModal from './components/AddClusterModal';
 
 import './HomeComponent.css';
 
@@ -63,14 +64,14 @@ class HomeComponent extends React.Component<IProps, IState> {
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
     dataExists: true,
-    isModalOpen: false,
+    isModalOpen: false
   };
 
   handleModalToggle = () => {
     this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen,
+      isModalOpen: !isModalOpen
     }));
-  }
+  };
 
   componentDidMount() {
     this.props.fetchDataList('migrationClusterList');
@@ -80,33 +81,33 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   onNavSelect = result => {
     this.setState({
-      activeItem: result.itemId,
+      activeItem: result.itemId
     });
-  }
+  };
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
-      isDropdownOpen,
+      isDropdownOpen
     });
-  }
+  };
 
   onDropdownSelect = event => {
     this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen,
+      isDropdownOpen: !this.state.isDropdownOpen
     });
-  }
+  };
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
-      isKebabDropdownOpen,
+      isKebabDropdownOpen
     });
-  }
+  };
 
   onKebabDropdownSelect = event => {
     this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
+      isKebabDropdownOpen: !this.state.isKebabDropdownOpen
     });
-  }
+  };
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -114,14 +115,14 @@ class HomeComponent extends React.Component<IProps, IState> {
     </DropdownItem>,
     <DropdownItem key="1">
       <CogIcon /> Settings
-    </DropdownItem>,
+    </DropdownItem>
   ];
 
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
       {/* <Button onClick={this.props.onLogout}>Logout</Button> */}
-    </DropdownItem>,
+    </DropdownItem>
   ];
 
   // bgImages = {
@@ -141,7 +142,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       isDropdownOpen,
       activeItem,
       activeGroup,
-      isNavOpen,
+      isNavOpen
     } = this.state;
     const PageNav = (
       <Nav onSelect={this.onNavSelect} aria-label="Nav">
@@ -206,7 +207,8 @@ class HomeComponent extends React.Component<IProps, IState> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user}</div>
-                </DropdownToggle>}
+                </DropdownToggle>
+              }
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
@@ -250,7 +252,7 @@ class HomeComponent extends React.Component<IProps, IState> {
             <div className="detail-view-container">
               {this.state.dataExists ? (
                 <div className="data-list-container">
-                  <DetailViewContainer />
+                  <DetailViewComponent />
                 </div>
               ) : (
                 <div className="empty-state-container">
@@ -281,10 +283,10 @@ export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
-    migrationClusterList: state.home.migrationClusterList,
+    migrationClusterList: state.home.migrationClusterList
   }),
   dispatch => ({
     onLogout: () => dispatch(authOperations.logoutRequest()),
-    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
-  }),
+    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType))
+  })
 )(HomeComponent);

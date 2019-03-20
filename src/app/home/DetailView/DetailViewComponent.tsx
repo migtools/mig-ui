@@ -7,15 +7,16 @@ import {
   DataListContent,
   DataListCheck,
   DataListAction,
-  Button,
+  Button
 } from '@patternfly/react-core';
 import { TimesIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { connect } from 'react-redux';
 
 import './DetailView.css';
 import ClusterListComponent from '../components/ClusterListComponent';
 class DetailViewComponent extends Component<any, any> {
   state = {
-    expanded: ['ex-toggle1'],
+    expanded: ['ex-toggle1']
   };
 
   render() {
@@ -26,7 +27,7 @@ class DetailViewComponent extends Component<any, any> {
         index >= 0
           ? [
               ...expanded.slice(0, index),
-              ...expanded.slice(index + 1, expanded.length),
+              ...expanded.slice(index + 1, expanded.length)
             ]
           : [...expanded, id];
       this.setState(() => ({ expanded: newExpanded }));
@@ -34,7 +35,7 @@ class DetailViewComponent extends Component<any, any> {
     const {
       migrationClusterList,
       migrationPlansList,
-      migrationStorageList,
+      migrationStorageList
     } = this.props;
     return (
       <DataList aria-label="Expandable data list example">
@@ -127,4 +128,13 @@ class DetailViewComponent extends Component<any, any> {
   }
 }
 
-export default DetailViewComponent;
+export default connect(
+  state => ({
+    loggingIn: state.auth.loggingIn,
+    user: state.auth.user,
+    migrationClusterList: state.home.migrationClusterList,
+    migrationStorageList: state.home.migrationStorageList,
+    migrationPlansList: state.home.migrationPlansList
+  }),
+  dispatch => ({})
+)(DetailViewComponent);
