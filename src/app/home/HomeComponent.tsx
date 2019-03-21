@@ -1,5 +1,7 @@
-import React, { MouseEvent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
+import { css } from '@emotion/core';
+import { Flex, Box } from '@rebass/emotion';
 import {
   Toolbar,
   ToolbarGroup,
@@ -10,12 +12,9 @@ import {
   DropdownItem,
   KebabToggle,
   DropdownToggle,
-  BackgroundImage,
   Page,
   PageHeader,
   PageSidebar,
-  Brand,
-  Avatar,
   Nav,
   NavList,
   NavExpandable,
@@ -25,16 +24,13 @@ import {
   Title,
   EmptyState,
   EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateSecondaryActions,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import CardComponent from './components/CardComponent';
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
-import AddClusterModal from '../cluster/AddClusterModal';
-
-import './HomeComponent.css';
+import DetailViewComponent from './DetailViewComponent';
+import CardComponent from './CardComponent';
+import AddClusterModal from './components/AddClusterModal';
 
 interface IProps {
   loggingIn?: boolean;
@@ -61,7 +57,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
-    dataExists: false,
+    dataExists: true,
     isModalOpen: false,
   };
 
@@ -73,7 +69,7 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.props.fetchDataList('migrationClusterList');
-    // this.props.fetchDataList("migrationPlanList");
+    // this.props.fetchDataList("migrationPlansList");
     // this.props.fetchDataList("migrationStorageList");
   }
 
@@ -119,19 +115,8 @@ class HomeComponent extends React.Component<IProps, IState> {
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
-      {/* <Button onClick={this.props.onLogout}>Logout</Button> */}
     </DropdownItem>,
   ];
-
-  // bgImages = {
-  //   [BackgroundImageSrc.lg]: "/assets/images/pfbg_1200.jpg",
-  //   [BackgroundImageSrc.sm]: "/assets/images/pfbg_768.jpg",
-  //   [BackgroundImageSrc.sm2x]: "/assets/images/pfbg_768@2x.jpg",
-  //   [BackgroundImageSrc.xs]: "/assets/images/pfbg_576.jpg",
-  //   [BackgroundImageSrc.xs2x]: "/assets/images/pfbg_576@2x.jpg",
-  //   [BackgroundImageSrc.filter]:
-  //     "/assets/images/background-filter.svg#image_overlay"
-  // };
 
   render() {
     const { user } = this.props;
@@ -212,14 +197,19 @@ class HomeComponent extends React.Component<IProps, IState> {
         </ToolbarGroup>
       </Toolbar>
     );
+    const HeaderOverrideCss = css`
+      background-color: #4d5057 !important;
+      .pf-c-page__header-brand {
+        background-color: #4d5057 !important;
+      }
+    `;
     const Header = (
       <PageHeader
-        className="header-override"
-        // logo={<Brand src={brandImgSrc} alt="Patternfly Logo" />}
         toolbar={PageToolbar}
-        // avatar={<Avatar src={avatarImg} alt="Avatar image" />}
         showNavToggle
         isNavOpen={isNavOpen}
+        //@ts-ignore
+        css={HeaderOverrideCss}
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
@@ -230,27 +220,24 @@ class HomeComponent extends React.Component<IProps, IState> {
         <Page header={Header} sidebar={Sidebar}>
           <PageSection>
             <TextContent>
-              <div className="home-container">
-                <div className="card-container">
-                  <CardComponent
-                    title="Clusters"
-                    dataList={this.props.migrationClusterList}
-                  />
-                  <CardComponent
-                    title="Replication Repositories"
-                    dataList={[]}
-                  />
-                  <CardComponent title="Migration Plans" dataList={[]} />
-                </div>
-              </div>
+              <Flex justifyContent="center">
+                <CardComponent
+                  title="Clusters"
+                  dataList={this.props.migrationClusterList}
+                />
+                <CardComponent title="Replication Repositories" dataList={[]} />
+                <CardComponent title="Migration Plans" dataList={[]} />
+              </Flex>
             </TextContent>
           </PageSection>
           <PageSection>
-            <div className="detail-view-container">
+            <Flex>
               {this.state.dataExists ? (
-                <div>data</div>
+                <Box flex="0 0 100%">
+                  <DetailViewComponent />
+                </Box>
               ) : (
-                <div className="empty-state-container">
+                <Box>
                   <EmptyState>
                     <EmptyStateIcon icon={AddCircleOIcon} />
                     <Title size="lg">
@@ -264,9 +251,9 @@ class HomeComponent extends React.Component<IProps, IState> {
                     isModalOpen={this.state.isModalOpen}
                     onHandleModalToggle={this.handleModalToggle}
                   />
-                </div>
+                </Box>
               )}
-            </div>
+            </Flex>
           </PageSection>
         </Page>
       </React.Fragment>
@@ -280,7 +267,7 @@ export default connect(
     user: state.auth.user,
     migrationClusterList: state.home.migrationClusterList,
   }),
-  (dispatch) => ({
+  dispatch => ({
     onLogout: () => dispatch(authOperations.logoutRequest()),
     fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
   }),
