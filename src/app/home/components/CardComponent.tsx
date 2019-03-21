@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Dropdown, KebabToggle } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
-import DashboardCard from './components/DashboardCard';
-import theme from '../../theme';
+import DashboardCard from './DashboardCard';
+import theme from '../../../theme';
 
 class CardComponent extends Component<any, any> {
   state = {

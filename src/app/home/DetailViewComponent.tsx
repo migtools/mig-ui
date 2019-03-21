@@ -1,35 +1,33 @@
 import React, { Component } from 'react';
-import {
-  DataList,
-  DataListItem,
-  DataListToggle,
-  DataListContent,
-  Button,
-} from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import { DataList } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 
-import { Flex, Box } from '@rebass/emotion';
-
-import DataListComponent from './DataListComponent';
+import DetailViewItem from './components/DetailViewItem';
 class DetailViewComponent extends Component<any, any> {
   state = {
-    expanded: ['ex-toggle1'],
+    expanded: [],
+    plansDisabled: true,
   };
+  componentDidMount() {
+    const { migrationClusterList, migrationStorageList } = this.props;
+    if (migrationClusterList > 1 && migrationStorageList > 1) {
+      this.setState({ plansDisabled: false });
+    }
+  }
 
+  handleToggle = id => {
+    const expanded = this.state.expanded;
+    const index = expanded.indexOf(id);
+    const newExpanded =
+      index >= 0
+        ? [
+            ...expanded.slice(0, index),
+            ...expanded.slice(index + 1, expanded.length),
+          ]
+        : [...expanded, id];
+    this.setState(() => ({ expanded: newExpanded }));
+  }
   render() {
-    const toggle = id => {
-      const expanded = this.state.expanded;
-      const index = expanded.indexOf(id);
-      const newExpanded =
-        index >= 0
-          ? [
-              ...expanded.slice(0, index),
-              ...expanded.slice(index + 1, expanded.length),
-            ]
-          : [...expanded, id];
-      this.setState(() => ({ expanded: newExpanded }));
-    };
     const {
       migrationClusterList,
       migrationPlansList,
@@ -37,36 +35,28 @@ class DetailViewComponent extends Component<any, any> {
     } = this.props;
     return (
       <DataList aria-label="Expandable data list example">
-        <DataListItem
-          aria-labelledby="ex-item1"
-          isExpanded={this.state.expanded.includes('ex-toggle1')}
-        >
-          <Flex width="100%" height="5em">
-            <Box flex="0 0 2em" my="auto">
-              <DataListToggle
-                onClick={() => toggle('ex-toggle1')}
-                isExpanded={this.state.expanded.includes('ex-toggle1')}
-                id="ex-toggle1"
-                aria-labelledby="ex-toggle1 ex-item1"
-                aria-label="Toggle details for"
-              />
-            </Box>
-            <Box flex="1" my="auto">
-              Clusters
-            </Box>
-            <Box textAlign="left" flex="0 0 15em" my="auto">
-              <Button variant="link">
-                <PlusCircleIcon /> Add Cluster
-              </Button>
-            </Box>
-          </Flex>
-          <DataListContent
-            aria-label="Primary Content Details"
-            isHidden={!this.state.expanded.includes('ex-toggle1')}
-          >
-            <DataListComponent dataList={migrationClusterList || []} />
-          </DataListContent>
-        </DataListItem>
+        <DetailViewItem
+          isExpanded={this.state.expanded.includes('migrationClusterList')}
+          onToggle={this.handleToggle}
+          dataList={migrationClusterList}
+          id="migrationClusterList"
+          title="Clusters"
+        />
+        <DetailViewItem
+          isExpanded={this.state.expanded.includes('repositoryList')}
+          onToggle={this.handleToggle}
+          dataList={migrationStorageList}
+          id="repositoryList"
+          title="Storage"
+        />
+        <DetailViewItem
+          isExpanded={this.state.expanded.includes('planList')}
+          onToggle={this.handleToggle}
+          dataList={migrationPlansList}
+          id="planList"
+          title="Plans"
+          plansDisabled={this.state.plansDisabled}
+        />
       </DataList>
     );
   }
