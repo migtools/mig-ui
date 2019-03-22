@@ -34,7 +34,7 @@ import AddClusterModal from './components/AddClusterModal';
 
 interface IProps {
   loggingIn?: boolean;
-  user: string;
+  user: any;
   migrationClusterList: any[];
   fetchDataList: (dataType: string) => void;
   onLogout: () => void;
@@ -189,7 +189,7 @@ class HomeComponent extends React.Component<IProps, IState> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  <div>{user}</div>
+                  <div>{user.username}</div>
                 </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
@@ -268,7 +268,7 @@ export default connect(
     migrationClusterList: state.home.migrationClusterList,
   }),
   dispatch => ({
-    onLogout: () => dispatch(authOperations.logoutRequest()),
+    onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
   }),
 )(HomeComponent);

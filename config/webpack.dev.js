@@ -38,12 +38,33 @@ if(!fs.existsSync(configPath)) {
 }
 
 const localConfig = require(configPath);
-const migMeta = require('./mig_meta')(localConfig.clusterUrl);
-migMeta.oauth.clientId = localConfig.oauthClientId;
-migMeta.oauth.clientSecret = localConfig.oauthClientSecret;
+const migMeta = require('./mig_meta')(localConfig.clusterApi);
+migMeta.oauth = {
+  clientId: localConfig.oauthClientId,
+  redirectUri: localConfig.redirectUri,
+  userScope: localConfig.userScope,
+}
+
 htmlWebpackPluginOpt.migMeta = migMeta
 
 const PORT = process.env.PORT || localConfig.devServerPort
+
+const plugins = [
+  new webpack.NoEmitOnErrorsPlugin(),
+  new webpack.NamedModulesPlugin(),
+  new webpack.HotModuleReplacementPlugin(),
+  new HtmlWebpackPlugin(htmlWebpackPluginOpt),
+  new ForkTsCheckerWebpackPlugin(),
+  new ExtractTextPlugin({
+    filename: "[name].[contenthash].css"
+  })
+]
+
+// Replace the normal OAuth login component with a mocked out login for local dev
+devMode === 'local' && plugins.push(new webpack.NormalModuleReplacementPlugin(
+  /LoginComponent.tsx/,
+  'MockLoginComponent.tsx'
+));
 
 const webpackConfig = {
   entry: {
@@ -100,16 +121,7 @@ const webpackConfig = {
     overlay: true,
     open: false
   },
-  plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin(htmlWebpackPluginOpt),
-    new ForkTsCheckerWebpackPlugin(),
-    new ExtractTextPlugin({
-      filename: "[name].[contenthash].css"
-    })
-  ]
+  plugins,
 };
 
 module.exports = webpackConfig;

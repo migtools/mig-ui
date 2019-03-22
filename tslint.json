@@ -14,7 +14,6 @@
       "no-console": {
         "severity": "warning",
         "options": [
-          "debug",
           "info",
           "log",
           "time",
@@ -32,7 +31,8 @@
       "member-ordering": false,
       "jsx-wrap-multiline": false,
       "quotemark": [true, "single", "jsx-double"],
-      "ordered-imports": false
+      "ordered-imports": false,
+      "variable-name": false
     },
     "jsRules": {
       "max-line-length": {

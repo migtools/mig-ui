@@ -3,16 +3,18 @@ import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
 
 interface IProps {
   component: React.ReactNode;
+  isLoggedIn: boolean;
 }
 
 const PrivateRoute: React.SFC<IProps & RouteComponentProps> = ({
   component: Component,
+  isLoggedIn,
   ...rest
 }) => (
   <Route
     {...rest}
     render={props =>
-      localStorage.getItem('currentUser') ? (
+      isLoggedIn ? (
         <Component {...props} />
       ) : (
         <Redirect

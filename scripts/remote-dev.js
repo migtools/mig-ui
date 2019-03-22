@@ -17,7 +17,7 @@ if(!fs.existsSync(remoteConfigFile)) {
 }
 
 const remoteConfig = JSON.parse(fs.readFileSync(remoteConfigFile))
-const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/auth/callback`
+const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/login/callback`
 
 // Validate Prereqs
 try{
@@ -52,14 +52,17 @@ try{
 
   console.log('Attempting to create oauthclient for mig-ui...')
 
-  // Client just doesn't exist yet, need to create it with a new secret
+  // Client doesn't exist yet, need to create it for our UI
+  // as a distinct public client
+  // NOTE: Not providing a secret since we are a public client, defined
+  // as one *without* a secret. Will implement PKCE.
   oauthClient = {
     apiVersion: "oauth.openshift.io/v1",
     kind: "OAuthClient",
     metadata: {
       name: oauthClientName
     },
-    secret: crypto.randomBytes(32).toString('base64'),
+    grantMethod: 'auto', // consider 'prompt'?
     redirectURIs: [oauthRedirectUri],
   };
 
@@ -75,9 +78,9 @@ try{
 console.log('Successfully created oauthclient for mig-ui')
 console.log('Writing details to config for injection into migMeta:')
 console.log(`oauthClientId: ${oauthClientName}`)
-console.log(`oauthClientSecret: ${oauthClient.secret}`)
+console.log(`oauthRedirectUri: ${oauthRedirectUri}`)
 
 // Write oauth details to config file so it can be injected into migMeta
 remoteConfig.oauthClientId = oauthClientName;
-remoteConfig.oauthClientSecret = oauthClient.secret;
+remoteConfig.redirectUri = oauthRedirectUri;
 fs.writeFileSync(remoteConfigFile, JSON.stringify(remoteConfig, null, 2));
