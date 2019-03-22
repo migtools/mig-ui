@@ -1,4 +1,3 @@
-//import fetch from 'cross-fetch';
 import axios from 'axios';
 import { Creators } from './actions';
 import { Creators as AlertCreators } from '../../common/duck/actions';

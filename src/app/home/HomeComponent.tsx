@@ -268,8 +268,7 @@ export default connect(
     migrationClusterList: state.home.migrationClusterList,
   }),
   dispatch => ({
-    //onLogout: () => dispatch(authOperations.logoutRequest()),
-    onLogout: () => console.log('user logged out.'),
+    onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
   }),
 )(HomeComponent);
