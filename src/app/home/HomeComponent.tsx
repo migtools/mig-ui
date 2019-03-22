@@ -20,23 +20,21 @@ import {
   NavExpandable,
   NavItem,
   PageSection,
-  TextContent,
-  Title,
-  EmptyState,
-  EmptyStateIcon,
+  TextContent
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
+import { clusterOperations } from '../cluster/duck';
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
-import AddClusterModal from './components/AddClusterModal';
+import EmptyStateComponent from './components/EmptyStateComponent';
 
 interface IProps {
   loggingIn?: boolean;
   user: any;
   migrationClusterList: any[];
-  fetchDataList: (dataType: string) => void;
+  fetchClusters: () => void;
+  addCluster: (values: any) => void;
   onLogout: () => void;
 }
 
@@ -44,12 +42,11 @@ interface IState {
   isDropdownOpen?: boolean;
   isKebabDropdownOpen?: boolean;
   isNavOpen?: boolean;
-  isModalOpen?: boolean;
+  isClusterModalOpen?: boolean;
   dataExists?: boolean;
   activeGroup: string;
   activeItem: string;
 }
-
 class HomeComponent extends React.Component<IProps, IState> {
   state = {
     isDropdownOpen: false,
@@ -58,50 +55,44 @@ class HomeComponent extends React.Component<IProps, IState> {
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
     dataExists: true,
-    isModalOpen: false,
+    isClusterModalOpen: false
   };
 
-  handleModalToggle = () => {
-    this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen,
-    }));
-  }
-
   componentDidMount() {
-    this.props.fetchDataList('migrationClusterList');
+    this.props.fetchClusters();
+    // this.props.fetchDataList('migrationStorageList');
     // this.props.fetchDataList("migrationPlansList");
-    // this.props.fetchDataList("migrationStorageList");
   }
 
   onNavSelect = result => {
     this.setState({
-      activeItem: result.itemId,
+      activeItem: result.itemId
     });
-  }
+  };
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
-      isDropdownOpen,
+      isDropdownOpen
     });
-  }
+  };
 
   onDropdownSelect = event => {
     this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen,
+      isDropdownOpen: !this.state.isDropdownOpen
     });
-  }
+  };
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
-      isKebabDropdownOpen,
+      isKebabDropdownOpen
     });
-  }
+  };
 
   onKebabDropdownSelect = event => {
     this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
+      isKebabDropdownOpen: !this.state.isKebabDropdownOpen
     });
-  }
+  };
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -109,13 +100,13 @@ class HomeComponent extends React.Component<IProps, IState> {
     </DropdownItem>,
     <DropdownItem key="1">
       <CogIcon /> Settings
-    </DropdownItem>,
+    </DropdownItem>
   ];
 
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
-    </DropdownItem>,
+    </DropdownItem>
   ];
 
   render() {
@@ -125,7 +116,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       isDropdownOpen,
       activeItem,
       activeGroup,
-      isNavOpen,
+      isNavOpen
     } = this.state;
     const PageNav = (
       <Nav onSelect={this.onNavSelect} aria-label="Nav">
@@ -190,7 +181,8 @@ class HomeComponent extends React.Component<IProps, IState> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user.username}</div>
-                </DropdownToggle>}
+                </DropdownToggle>
+              }
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
@@ -213,10 +205,8 @@ class HomeComponent extends React.Component<IProps, IState> {
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
-
     return (
       <React.Fragment>
-        {/* <BackgroundImage src={bgImages} /> */}
         <Page header={Header} sidebar={Sidebar}>
           <PageSection>
             <TextContent>
@@ -232,25 +222,14 @@ class HomeComponent extends React.Component<IProps, IState> {
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
-              {this.props.migrationClusterList.length > 0 ? (
+              {this.props.migrationClusterList &&
+              this.props.migrationClusterList.length > 0 ? (
                 <Box flex="0 0 100%">
                   <DetailViewComponent />
                 </Box>
               ) : (
                 <Box>
-                  <EmptyState>
-                    <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg">
-                      Add source and target clusters for the migration
-                    </Title>
-                    <Button variant="primary" onClick={this.handleModalToggle}>
-                      Add Cluster
-                    </Button>
-                  </EmptyState>
-                  <AddClusterModal
-                    isModalOpen={this.state.isModalOpen}
-                    onHandleModalToggle={this.handleModalToggle}
-                  />
+                  <EmptyStateComponent />
                 </Box>
               )}
             </Flex>
@@ -265,10 +244,11 @@ export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
-    migrationClusterList: state.home.migrationClusterList,
+    migrationClusterList: state.cluster.migrationClusterList
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
-    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
-  }),
+    fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
+    addCluster: values => dispatch(clusterOperations.addCluster(values))
+  })
 )(HomeComponent);

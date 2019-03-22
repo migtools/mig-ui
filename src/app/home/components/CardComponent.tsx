@@ -6,24 +6,25 @@ import theme from '../../../theme';
 
 class CardComponent extends Component<any, any> {
   state = {
-    isOpen: false,
+    isOpen: false
   };
 
   onToggle = isOpen => {
     this.setState({
-      isOpen,
+      isOpen
     });
-  }
+  };
 
   onSelect = event => {
     this.setState({
-      isOpen: !this.state.isOpen,
+      isOpen: !this.state.isOpen
     });
-  }
+  };
 
   render() {
     const { dataList, title } = this.props;
     const { isOpen } = this.state;
+    console.log('what is dataList', dataList);
     return (
       <Flex>
         <DashboardCard width="20em" flex="1" m={10} p={10}>
@@ -38,7 +39,9 @@ class CardComponent extends Component<any, any> {
               />
             </Box>
             <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
-              {dataList.length} {title}
+              <React.Fragment>
+                {dataList.length || 0} {title}
+              </React.Fragment>
             </Box>
           </Flex>
         </DashboardCard>

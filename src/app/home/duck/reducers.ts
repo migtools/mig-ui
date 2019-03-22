@@ -1,16 +1,8 @@
 // reducers.js
 import Types from './types';
 import { createReducer } from 'reduxsauce';
-export const INITIAL_STATE = {
-  isFetching: false,
-  migrationClusterList: [],
-  migrationPlansList: [],
-  migrationStorageList: [],
-};
+export const INITIAL_STATE = {};
 
-export const migrationClusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migrationClusterList: action.migrationClusterList };
-};
 // export const failure = (state = INITIAL_STATE, action) => {
 //   return { ...state, alertMessage: action.message };
 // };
@@ -35,7 +27,6 @@ export const migrationClusterFetchSuccess = (state = INITIAL_STATE, action) => {
 // };
 
 export const HANDLERS = {
-  [Types.MIGRATION_CLUSTER_FETCH_SUCCESS]: migrationClusterFetchSuccess,
   // [Types.LOGOUT]: logout,
   // [Types.LOGIN_SUCCESS]: loginSuccess,
   // [Types.LOGIN_FAILURE]: loginFailure
