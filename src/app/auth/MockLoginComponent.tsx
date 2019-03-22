@@ -17,13 +17,13 @@ interface IProps {
 class LoginComponent extends React.Component<IProps> {
   componentDidMount = () => {
     this.props.loginUser({
-      user: { token: 'mock', username: 'Bob' }
-    })
+      user: { token: 'mock', username: 'Bob' },
+    });
   }
 
   componentDidUpdate = (prevProps) => {
     const newUser = !prevProps.auth.user && this.props.auth.user;
-    if(newUser) {
+    if (newUser) {
       this.props.routeToHome();
     }
   }
@@ -57,5 +57,5 @@ export default connect(
   dispatch => ({
     loginUser: (user) => dispatch(authActionCreators.loginSuccess(user)),
     routeToHome: () => dispatch(push('/')),
-  })
+  }),
 )(LoginComponent);

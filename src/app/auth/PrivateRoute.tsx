@@ -14,7 +14,7 @@ const PrivateRoute: React.SFC<IProps & RouteComponentProps> = ({
   <Route
     {...rest}
     render={props =>
-      isLoggedIn? (
+      isLoggedIn ? (
         <Component {...props} />
       ) : (
         <Redirect

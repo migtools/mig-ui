@@ -15,30 +15,22 @@ interface IProps {
 
 class LoginComponent extends React.Component<IProps> {
   componentDidMount = () => {
-    console.log('LoginComponent::componentDidMount');
-    console.log('migMeta: ', this.props.migMeta);
-    console.log('auth: ', this.props.auth);
-
     const oauthMeta = this.props.auth.oauthMeta;
     const migMeta = this.props.migMeta;
 
-    if(!oauthMeta) {
+    if (!oauthMeta) {
       this.props.fetchOauthMeta(migMeta.clusterApi);
       return;
     }
   }
 
   componentDidUpdate = (prevProps) => {
-    console.log('LoginComponent::componentDidUpdate');
-    console.log('migMeta: ', this.props.migMeta);
-    console.log('auth: ', this.props.auth);
-
     const oauthMeta = this.props.auth.oauthMeta;
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
 
     const freshOauthMeta = !prevProps.oauthMeta && !!oauthMeta;
-    if(freshOauthMeta) {
+    if (freshOauthMeta) {
       ////////////////////////////////////////////////////////////
       // TODO: Currently using an empty secret value here since we
       // are strictly a public client
@@ -55,7 +47,7 @@ class LoginComponent extends React.Component<IProps> {
         scopes: [migMeta.oauth.userScope],
       });
 
-      switch(routerLoc.pathname) {
+      switch (routerLoc.pathname) {
         case '/login': {
           const uri = clusterAuth.code.getUri();
           window.location.replace(uri);
@@ -66,9 +58,9 @@ class LoginComponent extends React.Component<IProps> {
           const code = params.get('code');
           clusterAuth.code.getToken(window.location.href)
             .then(result => {
-              console.log('hit the good branch: ', result)
+              console.debug('hit the good branch: ', result);
             }).catch(err => {
-              console.log('bad things happened trying to do this: ', err);
+              console.debug('bad things happened trying to do this: ', err);
             });
           break;
         }
@@ -106,6 +98,6 @@ export default connect(
     router: state.router,
   }),
   dispatch => ({
-    fetchOauthMeta: (clusterApi) => dispatch(authOperations.fetchOauthMeta(clusterApi))
-  })
+    fetchOauthMeta: (clusterApi) => dispatch(authOperations.fetchOauthMeta(clusterApi)),
+  }),
 )(LoginComponent);

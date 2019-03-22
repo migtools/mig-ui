@@ -19,9 +19,9 @@ const fetchOauthMeta = clusterApi => {
       .catch(err => {
         dispatch(loginFailure());
         dispatch(alertError(err));
-      })
-  }
-}
+      });
+  };
+};
 
 export default {
   fetchOauthMeta,
