@@ -69,16 +69,36 @@ try{
   try {
     execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`)
   } catch(_error) {
-    console.error("ERROR: Something went wrong trying to create a new OAuthClient:")
-    console.error(error.stdout.toString())
-    process.exit(1)
+    console.error("ERROR: Something went wrong trying to create a new OAuthClient:");
+    console.error(error.stdout.toString());
+    process.exit(1);
   }
 }
 
-console.log('Successfully created oauthclient for mig-ui')
-console.log('Writing details to config for injection into migMeta:')
-console.log(`oauthClientId: ${oauthClientName}`)
-console.log(`oauthRedirectUri: ${oauthRedirectUri}`)
+// HACK: Need to patch in CORS support to the authentication server
+// until this is enabled by default on OCP4.
+try{
+  console.log('Patching in CORS support to the auth server')
+  const patch = {
+    spec: {
+      unsupportedConfigOverrides: [
+        '//127\.0\.0\.1(:|$)',
+        '//localhost(:|$)',
+      ],
+    }
+  };
+
+  execSync(`oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`);
+} catch (error) {
+  console.error("ERROR: Something went wrong while trying to patch in CORS support to the auth server");
+  console.error(error.stdout.toString());
+  process.exit(1);
+}
+
+console.log('Successfully created oauthclient for mig-ui');
+console.log('Writing details to config for injection into migMeta:');
+console.log(`oauthClientId: ${oauthClientName}`);
+console.log(`oauthRedirectUri: ${oauthRedirectUri}`);
 
 // Write oauth details to config file so it can be injected into migMeta
 remoteConfig.oauthClientId = oauthClientName;
