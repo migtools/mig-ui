@@ -1,0 +1,17 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Product001",
+      "cost": 10.0,
+      "quantity": 1000
+    },
+    {
+      "id": 2,
+      "name": "Product002",
+      "cost": 20.0,
+      "quantity": 2000
+    }
+  ],
+  "migrationClusterList": []
+}

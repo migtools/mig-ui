@@ -29,7 +29,7 @@ import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import { authOperations } from '../auth/duck';
 import { homeOperations } from './duck';
 import DetailViewComponent from './DetailViewComponent';
-import CardComponent from './CardComponent';
+import CardComponent from './components/CardComponent';
 import AddClusterModal from './components/AddClusterModal';
 
 interface IProps {
@@ -231,8 +231,8 @@ class HomeComponent extends React.Component<IProps, IState> {
             </TextContent>
           </PageSection>
           <PageSection>
-            <Flex>
-              {this.state.dataExists ? (
+            <Flex justifyContent="center">
+              {this.props.migrationClusterList.length > 0 ? (
                 <Box flex="0 0 100%">
                   <DetailViewComponent />
                 </Box>
