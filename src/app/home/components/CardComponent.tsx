@@ -29,13 +29,6 @@ class CardComponent extends Component<any, any> {
         <DashboardCard width="20em" flex="1" m={10} p={10}>
           <Flex flexDirection="column">
             <Box ml="auto" textAlign="right">
-              <Dropdown
-                onSelect={this.onSelect}
-                toggle={<KebabToggle onToggle={this.onToggle} />}
-                isOpen={isOpen}
-                isPlain
-                dropdownItems={[]}
-              />
             </Box>
             <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
               {dataList.length} {title}
