@@ -175,16 +175,6 @@ class HomeComponent extends React.Component<IProps, IState> {
             <Dropdown
               isPlain
               position="right"
-              onSelect={this.onKebabDropdownSelect}
-              toggle={<KebabToggle onToggle={this.onKebabDropdownToggle} />}
-              isOpen={isKebabDropdownOpen}
-              dropdownItems={this.kebabDropdownItems}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
-            <Dropdown
-              isPlain
-              position="right"
               onSelect={this.onDropdownSelect}
               isOpen={isDropdownOpen}
               toggle={
