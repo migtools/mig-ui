@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { DataList } from '@patternfly/react-core';
+import { DataList, Button } from '@patternfly/react-core';
 import { connect } from 'react-redux';
+import AddClusterModal from './components/AddClusterModal';
 
 import DetailViewItem from './components/DetailViewItem';
 class DetailViewComponent extends Component<any, any> {
@@ -41,6 +42,7 @@ class DetailViewComponent extends Component<any, any> {
           dataList={migrationClusterList}
           id="migrationClusterList"
           title="Clusters"
+          action={<AddClusterModal />}
         />
         <DetailViewItem
           isExpanded={this.state.expanded.includes('repositoryList')}
@@ -48,6 +50,7 @@ class DetailViewComponent extends Component<any, any> {
           dataList={migrationStorageList}
           id="repositoryList"
           title="Storage"
+          action='Add storage'
         />
         <DetailViewItem
           isExpanded={this.state.expanded.includes('planList')}
@@ -56,6 +59,7 @@ class DetailViewComponent extends Component<any, any> {
           id="planList"
           title="Plans"
           plansDisabled={this.state.plansDisabled}
+          action='Add plan'
         />
       </DataList>
     );
