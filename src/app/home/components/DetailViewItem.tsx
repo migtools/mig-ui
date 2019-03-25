@@ -7,10 +7,10 @@ import {
   DataList,
   DataListCell,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Flex, Box } from '@rebass/emotion';
 
 import DataListComponent from './DataListComponent';
+import AddClusterModal from './AddClusterModal';
 
 import {} from '@patternfly/react-core';
 import theme from '../../../theme';
@@ -20,6 +20,7 @@ interface IProps {
   title: string;
   onToggle: (id) => void;
   dataList: any[];
+  action: React.ReactNode;
   isExpanded: boolean;
   plansDisabled?: boolean;
 }
@@ -31,6 +32,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onToggle,
   dataList,
   plansDisabled,
+  action,
   ...props
 }) => {
   return (
@@ -47,9 +49,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
           {title}
         </Box>
         <Box textAlign="left" flex="0 0 15em" my="auto">
-          <Button isDisabled={plansDisabled} variant="link">
-            <PlusCircleIcon /> Add {title}
-          </Button>
+          {action}
         </Box>
       </Flex>
       <DataListContent
