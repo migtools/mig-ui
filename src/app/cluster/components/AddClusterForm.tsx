@@ -1,16 +1,16 @@
-import React from 'react';
-import { withFormik } from 'formik';
-import { Flex, Box, Text } from '@rebass/emotion';
+import React from "react";
+import { withFormik } from "formik";
+import { Flex, Box, Text } from "@rebass/emotion";
 import {
   Button,
   TextInput,
   TextContent,
   TextList,
   TextListItem,
-  TextArea,
-} from '@patternfly/react-core';
-import { IMigrationCluster, IClusterFormObject } from '../../../models';
-import uuidv4 from 'uuid/v4';
+  TextArea
+} from "@patternfly/react-core";
+import { IMigrationCluster, IClusterFormObject } from "../../../models";
+import uuidv4 from "uuid/v4";
 
 const WrappedAddClusterForm = props => {
   const {
@@ -19,7 +19,7 @@ const WrappedAddClusterForm = props => {
     errors,
     handleChange,
     handleBlur,
-    handleSubmit,
+    handleSubmit
   } = props;
   return (
     <Flex>
@@ -27,6 +27,17 @@ const WrappedAddClusterForm = props => {
         <Box>
           <TextContent>
             <TextList component="dl">
+              <TextListItem component="dt">Cluster Name</TextListItem>
+              <input
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                name="name"
+                type="text"
+              />
+              {errors.name && touched.name && (
+                <div id="feedback">{errors.name}</div>
+              )}
               <TextListItem component="dt">Cluster URL</TextListItem>
               <input
                 onChange={handleChange}
@@ -75,17 +86,21 @@ const WrappedAddClusterForm = props => {
 };
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({ url: '', token: '' }),
+  mapPropsToValues: () => ({ name: "", url: "", token: "" }),
 
-  // Custom sync validation
   validate: values => {
     const errors: any = {};
 
-    if (!values.url) {
-      errors.url = 'Required';
+    if (!values.name) {
+      errors.name = "Required";
     }
+
+    if (!values.url) {
+      errors.url = "Required";
+    }
+
     if (!values.token) {
-      errors.token = 'Required';
+      errors.token = "Required";
     }
 
     return errors;
@@ -94,35 +109,38 @@ const AddClusterForm: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     const newCluster: IMigrationCluster = {
       id: uuidv4(),
-      apiVersion: 'test',
-      kind: 'test',
+      apiVersion: "test",
+      kind: "test",
       metadata: {
-        creationTimestamp: '',
+        creationTimestamp: "",
         generation: 1,
         labels: {
-          'controller-ToolsIcon.k8s.io': 1,
-          'migrations.openshift.io/migration-group': 'test',
+          "controller-ToolsIcon.k8s.io": 1,
+          "migrations.openshift.io/migration-group": "test"
         },
-        name: '',
-        namespace: '',
-        resourceVersion: '',
-        selfLink: '',
-        uid: '',
+        name: values.name,
+        namespaces: [
+          { name: "ns1", info: "info" },
+          { name: "ns2", info: "info2" }
+        ],
+        resourceVersion: "",
+        selfLink: "",
+        uid: ""
       },
       spec: {
         clusterAuthSecretRef: {
           name: values.token,
-          namespace: '',
+          namespace: ""
         },
-        clusterUrl: values.url,
-      },
+        clusterUrl: values.url
+      }
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit('cluster', newCluster);
+    formikBag.props.onAddItemSubmit("cluster", newCluster);
   },
 
-  displayName: 'Add Cluster Form',
+  displayName: "Add Cluster Form"
 })(WrappedAddClusterForm);
 
 export default AddClusterForm;

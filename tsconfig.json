@@ -68,6 +68,6 @@
     "removeComments": true,
     "strictNullChecks": false,
     "skipLibCheck": true,
-    "lib": ["es6", "es7", "dom"]
+    "lib": ["es5", "es2015", "es6", "es7", "dom"]
   }
 }

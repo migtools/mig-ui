@@ -2,11 +2,11 @@ interface IMigrationClusterMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number;
-    'migrations.openshift.io/migration-group': string;
+    "controller-ToolsIcon.k8s.io": number;
+    "migrations.openshift.io/migration-group": string;
   };
   name: string;
-  namespace: string;
+  namespaces: Array<any>;
   resourceVersion: string;
   selfLink: string;
   uid: string;
@@ -34,8 +34,8 @@ interface IMigrationStorageMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number;
-    'migrations.openshift.io/migration-group': string;
+    "controller-ToolsIcon.k8s.io": number;
+    "migrations.openshift.io/migration-group": string;
   };
   name: string;
   namespace: string;
