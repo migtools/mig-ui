@@ -1,12 +1,12 @@
 import axios from 'axios';
-
+import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { JSON_SERVER_URL } from '../../../config';
 import { push } from 'connected-react-router';
 
 const axiosInstance = axios.create({
   baseURL: JSON_SERVER_URL,
-  responseType: 'json',
+  responseType: 'json'
 });
 
 const request = {
@@ -14,11 +14,11 @@ const request = {
   delete: (url: any, params?: any) => axiosInstance.delete(url, { params }),
   post: (url: any, payload?: any, headers?) =>
     axiosInstance.post(url, payload, headers),
-  put: (url: any, payload: any) => axiosInstance.put(url, payload),
+  put: (url: any, payload: any) => axiosInstance.put(url, payload)
 };
 
 const authHeaders = {
-  'Content-Type': 'application/json',
+  'Content-Type': 'application/json'
 };
 const migrationClusterFetchSuccess = Creators.migrationClusterFetchSuccess;
 const addClusterSuccess = Creators.addClusterSuccess;
@@ -37,9 +37,9 @@ const addCluster = values => {
         // push('/');
       },
       error => {
-        dispatch(addClusterFailure(error));
-        // dispatch(alertActions.error(error));
-      },
+        // dispatch(addClusterFailure(error));
+        dispatch(AlertCreators.alertError('Failed to add cluster'));
+      }
     );
   };
 };
@@ -57,7 +57,7 @@ const removeCluster = id => {
       error => {
         dispatch(removeClusterFailure(error));
         // dispatch(alertActions.error(error));
-      },
+      }
     );
   };
 };
@@ -72,7 +72,7 @@ const fetchClusters = () => {
       },
       error => {
         // dispatch((error));
-      },
+      }
     );
   };
 };
@@ -80,5 +80,5 @@ const fetchClusters = () => {
 export default {
   fetchClusters,
   addCluster,
-  removeCluster,
+  removeCluster
 };

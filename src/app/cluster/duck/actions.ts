@@ -4,6 +4,7 @@ const { Creators, Types } = createActions({
   migrationClusterFetchSuccess: ['migrationClusterList'],
   updateClusterSearchText: ['clusterSearchText'],
   addClusterSuccess: ['newCluster'],
+  addClusterFailure: ['error'],
   removeClusterSuccess: ['id'],
 });
 

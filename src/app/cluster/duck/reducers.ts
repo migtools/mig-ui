@@ -26,6 +26,7 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.MIGRATION_CLUSTER_FETCH_SUCCESS]: migrationClusterFetchSuccess,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  // [Types.ADD_CLUSTER_FAILURE]:addClusterfailure,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
 
   // [Types.LOGOUT]: logout,

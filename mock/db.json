@@ -13,56 +13,5 @@
       "quantity": 2000
     }
   ],
-  "migrationClusterList": [
-    {
-      "id": "7a49513f-527a-4a41-b9a1-63d1ac6411e0",
-      "apiVersion": "test",
-      "kind": "test",
-      "metadata": {
-        "creationTimestamp": "",
-        "generation": 1,
-        "labels": {
-          "controller-ToolsIcon.k8s.io": 1,
-          "migrations.openshift.io/migration-group": "test"
-        },
-        "name": "",
-        "namespace": "",
-        "resourceVersion": "",
-        "selfLink": "",
-        "uid": ""
-      },
-      "spec": {
-        "clusterAuthSecretRef": {
-          "name": "fdsafsdaf",
-          "namespace": ""
-        },
-        "clusterUrl": "1"
-      }
-    },
-    {
-      "id": "eee819cf-370a-4073-834c-48b1645b0293",
-      "apiVersion": "test",
-      "kind": "test",
-      "metadata": {
-        "creationTimestamp": "",
-        "generation": 1,
-        "labels": {
-          "controller-ToolsIcon.k8s.io": 1,
-          "migrations.openshift.io/migration-group": "test"
-        },
-        "name": "",
-        "namespace": "",
-        "resourceVersion": "",
-        "selfLink": "",
-        "uid": ""
-      },
-      "spec": {
-        "clusterAuthSecretRef": {
-          "name": "fdsa",
-          "namespace": ""
-        },
-        "clusterUrl": "2"
-      }
-    }
-  ]
+  "migrationClusterList": []
 }
