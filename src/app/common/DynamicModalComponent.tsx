@@ -1,13 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { css } from '@emotion/core';
-import { Flex, Box } from '@rebass/emotion';
-import {
-  IMigrationCluster,
-  IClusterFormObject,
-  IMigrationStorage,
-  IStorageFormObject,
-} from '../../models';
 import { Modal } from '@patternfly/react-core';
 import AddClusterForm from '../cluster/components/AddClusterForm';
 import AddStorageForm from '../storage/components/AddStorageForm';
@@ -15,8 +7,6 @@ import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 
 class DynamicModalComponent extends React.Component<any, any> {
-  state = {};
-
   handleAddItemSubmit = (type, dataItem) => {
     if (type === 'cluster') {
       this.props.addCluster(dataItem);
@@ -58,19 +48,11 @@ class DynamicModalComponent extends React.Component<any, any> {
     } else {
       return null;
     }
-
-    // if(this.props.type ===
-    //   'storage'){
-
-    //   return <AddStorageModal isModalOpen={this.props.isOpen} />;
-    //   }
   }
 }
 
 export default connect(
-  state => ({
-    migrationClusterList: state.home.migrationClusterList,
-  }),
+  state => ({}),
   dispatch => ({
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
     addStorage: values => dispatch(storageOperations.addStorage(values)),

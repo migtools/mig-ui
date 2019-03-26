@@ -21,13 +21,11 @@ interface IProps {
   id: string;
   title: string;
   onToggle: (id) => void;
-  onSearchTextChange?: (id) => void;
   onAddItem: () => void;
   onRemoveItem?: (type, id) => void;
   dataList: any[];
   isExpanded: boolean;
   plansDisabled?: boolean;
-  searchText?: string;
   type?: string;
 }
 
@@ -38,8 +36,6 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onToggle,
   dataList,
   plansDisabled,
-  searchText,
-  onSearchTextChange,
   onAddItem,
   onRemoveItem,
   type,
@@ -47,7 +43,6 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
 }) => {
   return (
     <React.Fragment>
-      {/* <TextInput onChange={onSearchTextChange} /> */}
       <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
         <Flex width="100%" height="5em">
           <Box flex="0 0 2em" my="auto">

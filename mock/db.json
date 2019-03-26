@@ -1,44 +1,4 @@
 {
-  "products": [
-    {
-      "id": 1,
-      "name": "Product001",
-      "cost": 10,
-      "quantity": 1000
-    },
-    {
-      "id": 2,
-      "name": "Product002",
-      "cost": 20,
-      "quantity": 2000
-    }
-  ],
-  "migrationClusterList": [
-    {
-      "id": "95f9d031-8b36-411f-8392-e7952a3767ed",
-      "apiVersion": "test",
-      "kind": "test",
-      "metadata": {
-        "creationTimestamp": "",
-        "generation": 1,
-        "labels": {
-          "controller-ToolsIcon.k8s.io": 1,
-          "migrations.openshift.io/migration-group": "test"
-        },
-        "name": "",
-        "namespace": "",
-        "resourceVersion": "",
-        "selfLink": "",
-        "uid": ""
-      },
-      "spec": {
-        "clusterAuthSecretRef": {
-          "name": "fdas",
-          "namespace": ""
-        },
-        "clusterUrl": "fdas"
-      }
-    }
-  ],
+  "migrationClusterList": [],
   "migrationStorageList": []
 }

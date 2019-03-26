@@ -2,7 +2,6 @@ import axios from 'axios';
 import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { JSON_SERVER_URL } from '../../../config';
-import { push } from 'connected-react-router';
 
 const axiosInstance = axios.create({
   baseURL: JSON_SERVER_URL,
@@ -34,10 +33,8 @@ const addStorage = values => {
     addStorageRequest(values).then(
       response => {
         dispatch(addStorageSuccess(response.data));
-        // push('/');
       },
       error => {
-        // dispatch(addStorageFailure(error));
         dispatch(AlertCreators.alertError('Failed to add Storage'));
       },
     );
@@ -52,11 +49,9 @@ const removeStorage = id => {
       response => {
         dispatch(removeStorageSuccess(id));
         dispatch(fetchStorage());
-        // push('/');
       },
       error => {
         dispatch(removeStorageFailure(error));
-        // dispatch(alertActions.error(error));
       },
     );
   };
@@ -71,7 +66,7 @@ const fetchStorage = () => {
         dispatch(migrationStorageFetchSuccess(response.data));
       },
       error => {
-        // dispatch((error));
+        dispatch(AlertCreators.alertError('Failed to get storage list'));
       },
     );
   };

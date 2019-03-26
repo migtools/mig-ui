@@ -44,8 +44,6 @@ interface IState {
   isDropdownOpen?: boolean;
   isKebabDropdownOpen?: boolean;
   isNavOpen?: boolean;
-  isClusterModalOpen?: boolean;
-  dataExists?: boolean;
   activeGroup: string;
   activeItem: string;
 }
@@ -56,15 +54,11 @@ class HomeComponent extends React.Component<IProps, IState> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
-    dataExists: true,
-    isClusterModalOpen: false,
   };
 
   componentDidMount() {
     this.props.fetchClusters();
     this.props.fetchStorage();
-    // this.props.fetchDataList('migrationStorageList');
-    // this.props.fetchDataList("migrationPlansList");
   }
 
   onNavSelect = result => {

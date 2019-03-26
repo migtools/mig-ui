@@ -18,15 +18,11 @@ export const addStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
   return { ...state };
-  // return state.migrationStorageList.filter(
-  //   (item, index) => item.id !== action.id
-  // );
 };
 
 export const HANDLERS = {
   [Types.MIGRATION_STORAGE_FETCH_SUCCESS]: migrationStorageFetchSuccess,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
-  // [Types.ADD_Storage_FAILURE]:addStoragefailure,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
 };
 

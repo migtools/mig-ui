@@ -49,13 +49,7 @@ class DetailViewComponent extends Component<any, any> {
   }
 
   render() {
-    const {
-      filteredClusters,
-      migrationClusterList,
-      migrationPlansList,
-      migrationStorageList,
-      clusterSearchText,
-    } = this.props;
+    const { migrationClusterList, migrationStorageList } = this.props;
     return (
       <React.Fragment>
         <DataList aria-label="Expandable data list example">
@@ -79,16 +73,6 @@ class DetailViewComponent extends Component<any, any> {
             onAddItem={() => this.handleModalToggle('storage')}
             onRemoveItem={this.handleRemoveItem}
           />
-          {/* <DetailViewItem
-            isExpanded={this.state.expanded.includes('planList')}
-            onToggle={this.handleToggle}
-            dataList={migrationPlansList}
-            id="planList"
-            title="Plans"
-            searchText={clusterSearchText}
-            plansDisabled={this.state.plansDisabled}
-            onAddItem={() => this.handleModalToggle('plan')}
-          /> */}
         </DataList>
         <DynamicModal
           onHandleModalToggle={this.handleModalToggle}

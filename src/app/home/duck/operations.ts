@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-import { Creators } from './actions';
-import { JWT_API_URL, SOCKET_API_URL, JSON_SERVER_URL } from '../../../config';
-import { push } from 'connected-react-router';
+import { JSON_SERVER_URL } from '../../../config';
 
 const axiosInstance = axios.create({
   baseURL: JSON_SERVER_URL,
@@ -18,7 +16,6 @@ const request = {
 
 const authHeaders = {
   'Content-Type': 'application/json',
-  // 'Access-Control-Allow-Credentials': 'true'
 };
 
 export default {};
