@@ -7,7 +7,7 @@ import {
   TextContent,
   TextList,
   TextListItem,
-  TextArea
+  TextArea,
 } from '@patternfly/react-core';
 import { IMigrationCluster, IClusterFormObject } from '../../../models';
 import uuidv4 from 'uuid/v4';
@@ -19,7 +19,7 @@ const WrappedAddClusterForm = props => {
     errors,
     handleChange,
     handleBlur,
-    handleSubmit
+    handleSubmit,
   } = props;
   return (
     <Flex>
@@ -101,28 +101,28 @@ const AddClusterForm: any = withFormik({
         generation: 1,
         labels: {
           'controller-ToolsIcon.k8s.io': 1,
-          'migrations.openshift.io/migration-group': 'test'
+          'migrations.openshift.io/migration-group': 'test',
         },
         name: '',
         namespace: '',
         resourceVersion: '',
         selfLink: '',
-        uid: ''
+        uid: '',
       },
       spec: {
         clusterAuthSecretRef: {
           name: values.token,
-          namespace: ''
+          namespace: '',
         },
-        clusterUrl: values.url
-      }
+        clusterUrl: values.url,
+      },
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
     formikBag.props.onAddClusterSubmit(newCluster);
   },
 
-  displayName: 'Add Cluster Form'
+  displayName: 'Add Cluster Form',
 })(WrappedAddClusterForm);
 
 export default AddClusterForm;

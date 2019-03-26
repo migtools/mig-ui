@@ -6,7 +6,7 @@ import { push } from 'connected-react-router';
 
 const axiosInstance = axios.create({
   baseURL: JSON_SERVER_URL,
-  responseType: 'json'
+  responseType: 'json',
 });
 
 const request = {
@@ -14,11 +14,11 @@ const request = {
   delete: (url: any, params?: any) => axiosInstance.delete(url, { params }),
   post: (url: any, payload?: any, headers?) =>
     axiosInstance.post(url, payload, headers),
-  put: (url: any, payload: any) => axiosInstance.put(url, payload)
+  put: (url: any, payload: any) => axiosInstance.put(url, payload),
 };
 
 const authHeaders = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
 };
 const migrationClusterFetchSuccess = Creators.migrationClusterFetchSuccess;
 const addClusterSuccess = Creators.addClusterSuccess;
@@ -33,14 +33,13 @@ const addCluster = values => {
   return dispatch => {
     addClusterRequest(values).then(
       response => {
-        console.log('response', response.data);
         dispatch(addClusterSuccess(response.data));
         // push('/');
       },
       error => {
         dispatch(addClusterFailure(error));
         // dispatch(alertActions.error(error));
-      }
+      },
     );
   };
 };
@@ -58,7 +57,7 @@ const removeCluster = id => {
       error => {
         dispatch(removeClusterFailure(error));
         // dispatch(alertActions.error(error));
-      }
+      },
     );
   };
 };
@@ -69,12 +68,11 @@ const fetchClusters = () => {
   return dispatch => {
     fetchClustersRequest().then(
       response => {
-        console.log('response on fetch', response);
         dispatch(migrationClusterFetchSuccess(response.data));
       },
       error => {
         // dispatch((error));
-      }
+      },
     );
   };
 };
@@ -82,5 +80,5 @@ const fetchClusters = () => {
 export default {
   fetchClusters,
   addCluster,
-  removeCluster
+  removeCluster,
 };

@@ -10,7 +10,7 @@ class DetailViewComponent extends Component<any, any> {
     expanded: [],
     plansDisabled: true,
     isOpen: false,
-    modalType: ''
+    modalType: '',
   };
   componentDidMount() {
     const { migrationClusterList, migrationStorageList } = this.props;
@@ -25,24 +25,24 @@ class DetailViewComponent extends Component<any, any> {
       index >= 0
         ? [
             ...expanded.slice(0, index),
-            ...expanded.slice(index + 1, expanded.length)
+            ...expanded.slice(index + 1, expanded.length),
           ]
         : [...expanded, id];
     this.setState(() => ({ expanded: newExpanded }));
-  };
+  }
 
   handleRemoveItem = (type, id) => {
     if (type === 'cluster') {
       this.props.removeCluster(id);
     }
-  };
+  }
 
   handleModalToggle = type => {
     this.setState(({ isOpen, modalType }) => ({
       isOpen: !isOpen,
-      modalType: type
+      modalType: type,
     }));
-  };
+  }
 
   render() {
     const {
@@ -50,7 +50,7 @@ class DetailViewComponent extends Component<any, any> {
       migrationClusterList,
       migrationPlansList,
       migrationStorageList,
-      clusterSearchText
+      clusterSearchText,
     } = this.props;
     return (
       <React.Fragment>
@@ -99,16 +99,16 @@ function mapStateToProps(state) {
   const { migrationStorageList } = state.storage;
   return {
     migrationClusterList,
-    migrationStorageList
+    migrationStorageList,
   };
 }
 const mapDispatchToProps = dispatch => {
   return {
-    removeCluster: id => dispatch(clusterOperations.removeCluster(id))
+    removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(DetailViewComponent);

@@ -15,7 +15,7 @@ class DynamicModalComponent extends React.Component<any, any> {
     if (newCluster) {
       this.props.addCluster(newCluster);
     }
-  };
+  }
 
   render() {
     if (this.props.modalType === 'cluster') {
@@ -51,9 +51,9 @@ class DynamicModalComponent extends React.Component<any, any> {
 
 export default connect(
   state => ({
-    migrationClusterList: state.home.migrationClusterList
+    migrationClusterList: state.home.migrationClusterList,
   }),
   dispatch => ({
-    addCluster: values => dispatch(clusterOperations.addCluster(values))
-  })
+    addCluster: values => dispatch(clusterOperations.addCluster(values)),
+  }),
 )(DynamicModalComponent);
