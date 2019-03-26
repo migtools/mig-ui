@@ -21,22 +21,22 @@ import {
   NavItem,
   PageSection,
   TextContent,
-  Title,
-  EmptyState,
-  EmptyStateIcon,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import { authOperations } from '../auth/duck';
-import { homeOperations } from './duck';
+import { clusterOperations } from '../cluster/duck';
+import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
-import AddClusterModal from './components/AddClusterModal';
+import EmptyStateComponent from './components/EmptyStateComponent';
 
 interface IProps {
   loggingIn?: boolean;
   user: any;
   migrationClusterList: any[];
-  fetchDataList: (dataType: string) => void;
+  migrationStorageList: any[];
+  fetchClusters: () => void;
+  fetchStorage: () => void;
+  addCluster: (values: any) => void;
   onLogout: () => void;
 }
 
@@ -44,12 +44,9 @@ interface IState {
   isDropdownOpen?: boolean;
   isKebabDropdownOpen?: boolean;
   isNavOpen?: boolean;
-  isModalOpen?: boolean;
-  dataExists?: boolean;
   activeGroup: string;
   activeItem: string;
 }
-
 class HomeComponent extends React.Component<IProps, IState> {
   state = {
     isDropdownOpen: false,
@@ -57,20 +54,11 @@ class HomeComponent extends React.Component<IProps, IState> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
-    dataExists: true,
-    isModalOpen: false,
   };
 
-  handleModalToggle = () => {
-    this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen,
-    }));
-  }
-
   componentDidMount() {
-    this.props.fetchDataList('migrationClusterList');
-    // this.props.fetchDataList("migrationPlansList");
-    // this.props.fetchDataList("migrationStorageList");
+    this.props.fetchClusters();
+    this.props.fetchStorage();
   }
 
   onNavSelect = result => {
@@ -213,10 +201,8 @@ class HomeComponent extends React.Component<IProps, IState> {
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
-
     return (
       <React.Fragment>
-        {/* <BackgroundImage src={bgImages} /> */}
         <Page header={Header} sidebar={Sidebar}>
           <PageSection>
             <TextContent>
@@ -225,32 +211,24 @@ class HomeComponent extends React.Component<IProps, IState> {
                   title="Clusters"
                   dataList={this.props.migrationClusterList}
                 />
-                <CardComponent title="Replication Repositories" dataList={[]} />
+                <CardComponent
+                  title="Replication Repositories"
+                  dataList={this.props.migrationStorageList}
+                />
                 <CardComponent title="Migration Plans" dataList={[]} />
               </Flex>
             </TextContent>
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
-              {this.props.migrationClusterList.length > 0 ? (
+              {this.props.migrationClusterList &&
+              this.props.migrationClusterList.length > 0 ? (
                 <Box flex="0 0 100%">
                   <DetailViewComponent />
                 </Box>
               ) : (
                 <Box>
-                  <EmptyState>
-                    <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg">
-                      Add source and target clusters for the migration
-                    </Title>
-                    <Button variant="primary" onClick={this.handleModalToggle}>
-                      Add Cluster
-                    </Button>
-                  </EmptyState>
-                  <AddClusterModal
-                    isModalOpen={this.state.isModalOpen}
-                    onHandleModalToggle={this.handleModalToggle}
-                  />
+                  <EmptyStateComponent />
                 </Box>
               )}
             </Flex>
@@ -265,10 +243,13 @@ export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
-    migrationClusterList: state.home.migrationClusterList,
+    migrationClusterList: state.cluster.migrationClusterList,
+    migrationStorageList: state.storage.migrationStorageList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
-    fetchDataList: dataType => dispatch(homeOperations.fetchDataList(dataType)),
+    fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
+    fetchStorage: () => dispatch(storageOperations.fetchStorage()),
+    addCluster: values => dispatch(clusterOperations.addCluster(values)),
   }),
 )(HomeComponent);

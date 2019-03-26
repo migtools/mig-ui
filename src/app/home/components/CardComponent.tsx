@@ -38,7 +38,9 @@ class CardComponent extends Component<any, any> {
               />
             </Box>
             <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
-              {dataList.length} {title}
+              <React.Fragment>
+                {dataList.length || 0} {title}
+              </React.Fragment>
             </Box>
           </Flex>
         </DashboardCard>

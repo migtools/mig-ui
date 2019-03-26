@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { authOperations } from './duck';
-import './LoginComponent.css';
 import ClientOAuth2 from 'client-oauth2';
-
-import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 
 interface IProps {
   migMeta: any;
@@ -25,7 +22,7 @@ class LoginComponent extends React.Component<IProps> {
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = prevProps => {
     const oauthMeta = this.props.auth.oauthMeta;
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
@@ -71,22 +68,7 @@ class LoginComponent extends React.Component<IProps> {
   }
 
   render() {
-    return (
-      <div className="login-container">
-        <div className="social">
-          <h4 className="connect-label">Connect with</h4>
-          <div className="social-links">
-            <div className="social-link">
-              <img
-                className="openshift-logo"
-                src={openShiftLogo}
-                alt="Logo"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div />;
   }
 }
 
@@ -97,7 +79,9 @@ export default connect(
     router: state.router,
   }),
   dispatch => ({
-    fetchOauthMeta: (clusterApi) => dispatch(authOperations.fetchOauthMeta(clusterApi)),
-    fetchToken: (oauthClient, codeRedirect) => dispatch(authOperations.fetchToken(oauthClient, codeRedirect)),
+    fetchOauthMeta: clusterApi =>
+      dispatch(authOperations.fetchOauthMeta(clusterApi)),
+    fetchToken: (oauthClient, codeRedirect) =>
+      dispatch(authOperations.fetchToken(oauthClient, codeRedirect)),
   }),
 )(LoginComponent);

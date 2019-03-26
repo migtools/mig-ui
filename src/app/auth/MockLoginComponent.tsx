@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { authActionCreators } from './duck';
-import './LoginComponent.css';
 import { push } from 'connected-react-router';
 
 import openShiftLogo from '../../assets/OpenShiftLogo.svg';
@@ -21,7 +20,7 @@ class LoginComponent extends React.Component<IProps> {
     });
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = prevProps => {
     const newUser = !prevProps.auth.user && this.props.auth.user;
     if (newUser) {
       this.props.routeToHome();
@@ -29,22 +28,7 @@ class LoginComponent extends React.Component<IProps> {
   }
 
   render() {
-    return (
-      <div className="login-container">
-        <div className="social">
-          <h4 className="connect-label">Connect with</h4>
-          <div className="social-links">
-            <div className="social-link">
-              <img
-                className="openshift-logo"
-                src={openShiftLogo}
-                alt="Logo"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div />;
   }
 }
 
@@ -55,7 +39,7 @@ export default connect(
     router: state.router,
   }),
   dispatch => ({
-    loginUser: (user) => dispatch(authActionCreators.loginSuccess(user)),
+    loginUser: user => dispatch(authActionCreators.loginSuccess(user)),
     routeToHome: () => dispatch(push('/')),
   }),
 )(LoginComponent);
