@@ -468,10 +468,10 @@
     "@babel/helper-module-transforms" "^7.1.0"
     "@babel/helper-plugin-utils" "^7.0.0"
 
-"@babel/plugin-transform-named-capturing-groups-regex@^7.3.0":
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-named-capturing-groups-regex/-/plugin-transform-named-capturing-groups-regex-7.3.0.tgz#140b52985b2d6ef0cb092ef3b29502b990f9cd50"
-  integrity sha512-NxIoNVhk9ZxS+9lSoAQ/LM0V2UEvARLttEHUrRDGKFaAxOYQcrkN/nLRE+BbbicCAvZPl7wMP0X60HsHE5DtQw==
+"@babel/plugin-transform-named-capturing-groups-regex@^7.4.2":
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-named-capturing-groups-regex/-/plugin-transform-named-capturing-groups-regex-7.4.2.tgz#800391136d6cbcc80728dbdba3c1c6e46f86c12e"
+  integrity sha512-NsAuliSwkL3WO2dzWTOL1oZJHm0TM8ZY8ZSxk2ANyKkt5SQlToGA4pzctmq1BEjoacurdwZ3xp2dCQWJkME0gQ==
   dependencies:
     regexp-tree "^0.1.0"
 
@@ -592,10 +592,10 @@
     "@babel/helper-regex" "^7.0.0"
     regexpu-core "^4.1.3"
 
-"@babel/preset-env@7.4.1":
-  version "7.4.1"
-  resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.4.1.tgz#80e19ad76f62fb136d57ee4b963db3e8a6840bad"
-  integrity sha512-uC2DeVb6ljdjBGhJCyHxNZfSJEVgPdUm2R5cX85GCl1Qreo5sMM5g85ntqtzRF7XRYGgnRmV5we9cdlvo1wJvg==
+"@babel/preset-env@7.4.2":
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.4.2.tgz#2f5ba1de2daefa9dcca653848f96c7ce2e406676"
+  integrity sha512-OEz6VOZaI9LW08CWVS3d9g/0jZA6YCn1gsKIy/fut7yZCJti5Lm1/Hi+uo/U+ODm7g4I6gULrCP+/+laT8xAsA==
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
     "@babel/helper-plugin-utils" "^7.0.0"
@@ -625,7 +625,7 @@
     "@babel/plugin-transform-modules-commonjs" "^7.4.0"
     "@babel/plugin-transform-modules-systemjs" "^7.4.0"
     "@babel/plugin-transform-modules-umd" "^7.2.0"
-    "@babel/plugin-transform-named-capturing-groups-regex" "^7.3.0"
+    "@babel/plugin-transform-named-capturing-groups-regex" "^7.4.2"
     "@babel/plugin-transform-new-target" "^7.4.0"
     "@babel/plugin-transform-object-super" "^7.2.0"
     "@babel/plugin-transform-parameters" "^7.4.0"
@@ -867,29 +867,28 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.2.tgz#63985d3d8b02530e0869962f4da09142ee8e200e"
   integrity sha512-n/VQ4mbfr81aqkx/XmVicOLjviMuy02eenSdJY33SVA7S2J42EU0P1H0mOogfYedb3wXA0d/LVtBrgTSm04WEA==
 
-"@patternfly/react-core@2.3.6":
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.3.6.tgz#644949d36f87a52b328f20ac0af210463856e0eb"
-  integrity sha512-A8Ajpbkn+kP7KRPBy9brP+QBpGQw0juMmKMBfjOqfTD+vnSfF3boCGGQGrrFZnnEQyYFJ0x/LMzNJVqyYDVNHQ==
+"@patternfly/react-core@2.9.2":
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.9.2.tgz#f21cfaaa244d690ff0429f53fff5f937d1c7d16b"
+  integrity sha512-v93pAA9dXTzsgFeR8W4+fg0kC0joB4BISFoSqzb22+/cNvSnEypC/DjBN4pOUEoBvsFC/JI8FotQoj9ZAx3GAw==
   dependencies:
-    "@patternfly/react-icons" "^3.1.1"
-    "@patternfly/react-styles" "^2.3.5"
-    "@patternfly/react-tokens" "^2.0.4"
+    "@patternfly/react-icons" "^3.6.1"
+    "@patternfly/react-styles" "^2.4.0"
+    "@patternfly/react-tokens" "^2.2.1"
     "@tippy.js/react" "^1.1.1"
     emotion "^9.2.9"
     exenv "^1.2.2"
     focus-trap-react "^4.0.1"
-    tippy.js "^3.4.1"
 
-"@patternfly/react-icons@^3.1.1":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.6.0.tgz#6d1467788dec4e4dd2307d69c607edb78d2e2652"
-  integrity sha512-epAP77t+tjXXb0iCdV1JkMV1y7yL23hNamfkCIM34VG0LGwSxHKrR3XEGXM8NT0ebiqYhPKKTsn4F2XJUbUJGw==
+"@patternfly/react-icons@^3.6.1":
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.6.1.tgz#e5c55bd0f52c5b48e17117a9db30233eb2f242af"
+  integrity sha512-7PkP7NC3sDmsFAnQIGl+9p14vgx7gj0TZSwtL1ABkAEV9tXcEjWsyyZP2fahfTKVE9aPrOZ/YINsr8+iGCOTnA==
 
-"@patternfly/react-styles@^2.3.5":
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-2.3.5.tgz#c5a020de2ca2a66489a195be74adbbf3babf5df9"
-  integrity sha512-48l5EFzSBIDFewHaBrzdQyQtZOXJyYHXmDjumLGnovFLypCfbAeBfwH7zOU500MIuTFjpkNF3ziQj0uSF1ydZQ==
+"@patternfly/react-styles@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-2.4.0.tgz#8ee4a3dc93a2293b0b833cca72ef454775fca853"
+  integrity sha512-BJQtg4zjj5Gw6OixHu2MGiT2T3vFTvyiGSXPQ+wk+vqR/wl0Y7/OOGNqI3fGYm1ON4q2ySOlGuJdHF+1NLbVyA==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0-beta.48"
     camel-case "^3.0.0"
@@ -904,10 +903,10 @@
     relative "^3.0.2"
     resolve-from "^4.0.0"
 
-"@patternfly/react-tokens@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.0.4.tgz#9f80bf761b16a622e57a30bf037368aacf6deeaa"
-  integrity sha512-ZiKBjsMmEC8xhqI2lscMve4+7C/qJlcnU7+fPsDxAiaR4OTfSASLY/XwAf08WuK3PwX2Jbz5kOyI04eGt6VfCg==
+"@patternfly/react-tokens@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.2.1.tgz#703d79535884d88a0c2cce517956318d6ba6156c"
+  integrity sha512-DVGrHRPpNvIhS9ekn7lqvXdHHAbkCawwfc8hRCuGvGS2Z6O45u1JFTyKWTyvW9b94pigaDTArtMlp++k5o1Xpw==
 
 "@rebass/emotion@3.0.0":
   version "3.0.0"
@@ -7868,7 +7867,7 @@ tiny-warning@^1.0.0:
   resolved "https://registry.yarnpkg.com/tiny-warning/-/tiny-warning-1.0.2.tgz#1dfae771ee1a04396bdfde27a3adcebc6b648b28"
   integrity sha512-rru86D9CpQRLvsFG5XFdy0KdLAvjdQDyZCsRcuu60WtzFylDM3eAWSxEVz5kzL2Gp544XiUvPbVKtOA/txLi9Q==
 
-tippy.js@^3.2.0, tippy.js@^3.4.1:
+tippy.js@^3.2.0:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-3.4.1.tgz#f0eb3081824ad6c5d364336451ad77ae2f543da8"
   integrity sha512-ZiyGP9WZyCCcjxKM4G88cm4U1r1ytjeMDGa5FSKPaPzwc/3yZJVZsb1ffcmqUMCpryRp5LNxRNGKLzbs11sb/Q==
