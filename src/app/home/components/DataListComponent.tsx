@@ -8,7 +8,7 @@ import {
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
 
-const DataListComponent = ({ dataList, ...props }) => {
+const DataListComponent = ({ dataList, type, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -25,7 +25,16 @@ const DataListComponent = ({ dataList, ...props }) => {
                 </DataListCell>
                 <DataListCell width={2}>
                   <a target="_blank" href={listItem.spec.clusterUrl}>
-                    {listItem.spec.clusterUrl}
+                    {type === 'cluster' && (
+                      <React.Fragment>
+                        {listItem.spec.clusterUrl}
+                      </React.Fragment>
+                    )}
+                    {type === 'storage' && (
+                      <React.Fragment>
+                        {listItem.spec.backupStorageLocationRef.name}
+                      </React.Fragment>
+                    )}
                   </a>
                 </DataListCell>
                 <DataListCell width={2}>Plans</DataListCell>
@@ -37,7 +46,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                     <Box mx={1}>
                       <Button
                         onClick={() =>
-                          props.onRemoveItem(props.type, dataList[index].id)
+                          props.onRemoveItem(type, dataList[index].id)
                         }
                         variant="danger"
                       >

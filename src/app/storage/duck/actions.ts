@@ -1,9 +1,11 @@
 import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  alertSuccess: ['success'],
-  alertError: ['alertMessage'],
-  alertClear: [],
+  migrationStorageFetchSuccess: ['migrationStorageList'],
+  updateStorageSearchText: ['StorageSearchText'],
+  addStorageSuccess: ['newStorage'],
+  addStorageFailure: ['error'],
+  removeStorageSuccess: ['id'],
 });
 
 export { Creators, Types };

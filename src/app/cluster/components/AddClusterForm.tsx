@@ -119,7 +119,7 @@ const AddClusterForm: any = withFormik({
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddClusterSubmit(newCluster);
+    formikBag.props.onAddItemSubmit('cluster', newCluster);
   },
 
   displayName: 'Add Cluster Form',

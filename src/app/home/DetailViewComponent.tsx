@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import DetailViewItem from './components/DetailViewItem';
 import DynamicModal from '../common/DynamicModalComponent';
 import clusterOperations from '../cluster/duck/operations';
+import storageOperations from '../storage/duck/operations';
 class DetailViewComponent extends Component<any, any> {
   state = {
     expanded: [],
@@ -34,6 +35,9 @@ class DetailViewComponent extends Component<any, any> {
   handleRemoveItem = (type, id) => {
     if (type === 'cluster') {
       this.props.removeCluster(id);
+    }
+    if (type === 'storage') {
+      this.props.removeStorage(id);
     }
   }
 
@@ -71,9 +75,11 @@ class DetailViewComponent extends Component<any, any> {
             dataList={migrationStorageList}
             id="repositoryList"
             title="Storage"
+            type="storage"
             onAddItem={() => this.handleModalToggle('storage')}
+            onRemoveItem={this.handleRemoveItem}
           />
-          <DetailViewItem
+          {/* <DetailViewItem
             isExpanded={this.state.expanded.includes('planList')}
             onToggle={this.handleToggle}
             dataList={migrationPlansList}
@@ -82,7 +88,7 @@ class DetailViewComponent extends Component<any, any> {
             searchText={clusterSearchText}
             plansDisabled={this.state.plansDisabled}
             onAddItem={() => this.handleModalToggle('plan')}
-          />
+          /> */}
         </DataList>
         <DynamicModal
           onHandleModalToggle={this.handleModalToggle}
@@ -105,6 +111,7 @@ function mapStateToProps(state) {
 const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
+    removeStorage: id => dispatch(storageOperations.removeStorage(id)),
   };
 };
 

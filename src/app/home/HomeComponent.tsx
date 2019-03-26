@@ -23,8 +23,8 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import { homeOperations } from './duck';
 import { clusterOperations } from '../cluster/duck';
+import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
@@ -33,7 +33,9 @@ interface IProps {
   loggingIn?: boolean;
   user: any;
   migrationClusterList: any[];
+  migrationStorageList: any[];
   fetchClusters: () => void;
+  fetchStorage: () => void;
   addCluster: (values: any) => void;
   onLogout: () => void;
 }
@@ -60,6 +62,7 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   componentDidMount() {
     this.props.fetchClusters();
+    this.props.fetchStorage();
     // this.props.fetchDataList('migrationStorageList');
     // this.props.fetchDataList("migrationPlansList");
   }
@@ -214,7 +217,10 @@ class HomeComponent extends React.Component<IProps, IState> {
                   title="Clusters"
                   dataList={this.props.migrationClusterList}
                 />
-                <CardComponent title="Replication Repositories" dataList={[]} />
+                <CardComponent
+                  title="Replication Repositories"
+                  dataList={this.props.migrationStorageList}
+                />
                 <CardComponent title="Migration Plans" dataList={[]} />
               </Flex>
             </TextContent>
@@ -244,10 +250,12 @@ export default connect(
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     migrationClusterList: state.cluster.migrationClusterList,
+    migrationStorageList: state.storage.migrationStorageList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
+    fetchStorage: () => dispatch(storageOperations.fetchStorage()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
   }),
 )(HomeComponent);
