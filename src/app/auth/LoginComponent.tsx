@@ -11,6 +11,7 @@ interface IProps {
   auth: any;
   router: any;
   fetchOauthMeta: (string) => void;
+  fetchToken: (any, string) => void;
 }
 
 class LoginComponent extends React.Component<IProps> {
@@ -29,7 +30,7 @@ class LoginComponent extends React.Component<IProps> {
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
 
-    const freshOauthMeta = !prevProps.oauthMeta && !!oauthMeta;
+    const freshOauthMeta = !prevProps.auth.oauthMeta && !!oauthMeta;
     if (freshOauthMeta) {
       ////////////////////////////////////////////////////////////
       // TODO: Currently using an empty secret value here since we
@@ -37,10 +38,15 @@ class LoginComponent extends React.Component<IProps> {
       // The correct thing to do here is to implement PKCE, which is
       // what oc uses and what is specfically implemented for public
       // clients: https://tools.ietf.org/html/rfc7636
+      // For now, using a temporarily hardcoded secret until PKCE can be
+      // implemented. (migrations.openshift.io | base64)
+      //
+      const loginSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
       ////////////////////////////////////////////////////////////
+
       const clusterAuth = new ClientOAuth2({
         clientId: migMeta.oauth.clientId,
-        clientSecret: '', // See note above
+        clientSecret: loginSecret, // See note above
         accessTokenUri: oauthMeta.token_endpoint,
         authorizationUri: oauthMeta.authorization_endpoint,
         redirectUri: migMeta.oauth.redirectUri,
@@ -54,14 +60,7 @@ class LoginComponent extends React.Component<IProps> {
           break;
         }
         case '/login/callback': {
-          const params = new URLSearchParams(routerLoc.search);
-          const code = params.get('code');
-          clusterAuth.code.getToken(window.location.href)
-            .then(result => {
-              console.debug('hit the good branch: ', result);
-            }).catch(err => {
-              console.debug('bad things happened trying to do this: ', err);
-            });
+          this.props.fetchToken(clusterAuth, window.location.href);
           break;
         }
         default: {
@@ -99,5 +98,6 @@ export default connect(
   }),
   dispatch => ({
     fetchOauthMeta: (clusterApi) => dispatch(authOperations.fetchOauthMeta(clusterApi)),
+    fetchToken: (oauthClient, codeRedirect) => dispatch(authOperations.fetchToken(oauthClient, codeRedirect)),
   }),
 )(LoginComponent);

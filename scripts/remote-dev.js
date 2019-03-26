@@ -64,6 +64,7 @@ try{
     },
     grantMethod: 'auto', // consider 'prompt'?
     redirectURIs: [oauthRedirectUri],
+    secret: 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K',
   };
 
   try {
@@ -81,10 +82,12 @@ try{
   console.log('Patching in CORS support to the auth server')
   const patch = {
     spec: {
-      unsupportedConfigOverrides: [
-        '//127\.0\.0\.1(:|$)',
-        '//localhost(:|$)',
-      ],
+      unsupportedConfigOverrides: {
+        corsAllowedOrigins: [
+          '//127\.0\.0\.1(:|$)',
+          '//localhost(:|$)',
+        ]
+      }
     }
   };
 

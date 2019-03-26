@@ -10,6 +10,7 @@ import AppComponent from './app/AppComponent';
 import '@patternfly/react-core/dist/styles/base.css';
 import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
 import { initMigMeta } from './mig_meta';
+import { authOperations } from './app/auth/duck';
 
 const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
 const store = createStore(rootReducer, middleware);
@@ -24,6 +25,10 @@ const migMeta = window['_mig_meta'];
 // oauth meta must be loaded
 if (!!migMeta) {
   store.dispatch(initMigMeta(migMeta));
+  // TODO: Apparently store.dispatch has some known issues with the compiler
+  // when passing it thunks. Need to come back around to this in the future.
+  // @ts-ignore
+  store.dispatch(authOperations.initFromStorage());
 }
 
 render(

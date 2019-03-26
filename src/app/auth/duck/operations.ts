@@ -9,6 +9,8 @@ const setOauthMeta = Creators.setOauthMeta;
 const alertSuccess = AlertCreators.alertSuccess;
 const alertError = AlertCreators.alertError;
 
+const LS_KEY_CURRENT_USER = 'currentUser';
+
 const fetchOauthMeta = clusterApi => {
   const oauthMetaUrl = `${clusterApi}/.well-known/oauth-authorization-server`;
 
@@ -22,6 +24,32 @@ const fetchOauthMeta = clusterApi => {
   };
 };
 
+const fetchToken = (oauthClient, codeRedirect) => {
+  return dispatch => {
+    oauthClient.code.getToken(codeRedirect).then(result => {
+      const user = result.data;
+      localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
+      dispatch(loginSuccess(user));
+      dispatch(push('/'));
+    }).catch(err => {
+      // TODO: Need to handle a failed login
+      dispatch(loginFailure());
+      dispatch(alertError(err));
+    });
+  };
+};
+
+const initFromStorage = () => {
+  return dispatch => {
+    const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
+    if (!!currentUser) {
+      dispatch(loginSuccess(JSON.parse(currentUser)));
+    }
+  };
+};
+
 export default {
   fetchOauthMeta,
+  fetchToken,
+  initFromStorage,
 };
