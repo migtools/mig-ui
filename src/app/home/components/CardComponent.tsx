@@ -3,6 +3,8 @@ import { Dropdown, KebabToggle } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import DashboardCard from './DashboardCard';
 import theme from '../../../theme';
+import { StyledBox, StyledConstants } from '@patternfly/react-styled-system';
+
 
 class CardComponent extends Component<any, any> {
   state = {
@@ -22,29 +24,22 @@ class CardComponent extends Component<any, any> {
   }
 
   render() {
+    const { space } = StyledConstants;
     const { dataList, title } = this.props;
     const { isOpen } = this.state;
     return (
-      <Flex>
-        <DashboardCard width="20em" flex="1" m={10} p={10}>
-          <Flex flexDirection="column">
-            <Box ml="auto" textAlign="right">
-              <Dropdown
-                onSelect={this.onSelect}
-                toggle={<KebabToggle onToggle={this.onToggle} />}
-                isOpen={isOpen}
-                isPlain
-                dropdownItems={[]}
-              />
-            </Box>
-            <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
-              <React.Fragment>
-                {dataList.length || 0} {title}
-              </React.Fragment>
-            </Box>
-          </Flex>
-        </DashboardCard>
-      </Flex>
+      <StyledBox pb={space.md}>
+        <Flex flexDirection="column" justifyContent="center">
+          <DashboardCard width="20em" flex="1" m={10} p={10}>
+              <Box ml="auto" textAlign="right" />
+              <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
+                <React.Fragment>
+                  {dataList.length || 0} {title}
+                </React.Fragment>
+              </Box>
+          </DashboardCard>
+        </Flex>
+      </StyledBox>
     );
   }
 }
