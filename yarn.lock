@@ -778,6 +778,13 @@
   dependencies:
     "@emotion/memoize" "0.7.1"
 
+"@emotion/is-prop-valid@^0.6.1":
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-0.6.8.tgz#68ad02831da41213a2089d2cab4e8ac8b30cbd85"
+  integrity sha512-IMSL7ekYhmFlILXcouA6ket3vV7u9BqStlXzbKOF9HBtpUPMMlHU+bBxrLOa2NvleVwNIxeq/zL8LafLbeUXcA==
+  dependencies:
+    "@emotion/memoize" "^0.6.6"
+
 "@emotion/memoize@0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.1.tgz#e93c13942592cf5ef01aa8297444dc192beee52f"
@@ -885,7 +892,20 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.6.1.tgz#e5c55bd0f52c5b48e17117a9db30233eb2f242af"
   integrity sha512-7PkP7NC3sDmsFAnQIGl+9p14vgx7gj0TZSwtL1ABkAEV9tXcEjWsyyZP2fahfTKVE9aPrOZ/YINsr8+iGCOTnA==
 
-"@patternfly/react-styles@^2.4.0":
+"@patternfly/react-styled-system@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styled-system/-/react-styled-system-2.0.1.tgz#ec7fd8acb484f4ae4fdf2baa5e2a6d53928eb590"
+  integrity sha512-RDBRmeAM6WEVsb6Nbx6i+C86UdruA5aI28kD1GSrC6+LJVNUfmQ/ypNas7scs6aH7+voBQhnhUHeaKYaWlVvzQ==
+  dependencies:
+    "@patternfly/react-styles" "^2.3.2"
+    "@patternfly/react-tokens" "^2.0.0"
+    emotion-theming "^9.2.9"
+    react-emotion "^9.2.12"
+    styled-system "^3.1.11"
+  optionalDependencies:
+    "@types/styled-system" "^3.0.7"
+
+"@patternfly/react-styles@^2.3.2", "@patternfly/react-styles@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-2.4.0.tgz#8ee4a3dc93a2293b0b833cca72ef454775fca853"
   integrity sha512-BJQtg4zjj5Gw6OixHu2MGiT2T3vFTvyiGSXPQ+wk+vqR/wl0Y7/OOGNqI3fGYm1ON4q2ySOlGuJdHF+1NLbVyA==
@@ -903,7 +923,7 @@
     relative "^3.0.2"
     resolve-from "^4.0.0"
 
-"@patternfly/react-tokens@^2.2.1":
+"@patternfly/react-tokens@^2.0.0", "@patternfly/react-tokens@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.2.1.tgz#703d79535884d88a0c2cce517956318d6ba6156c"
   integrity sha512-DVGrHRPpNvIhS9ekn7lqvXdHHAbkCawwfc8hRCuGvGS2Z6O45u1JFTyKWTyvW9b94pigaDTArtMlp++k5o1Xpw==
@@ -971,6 +991,13 @@
   integrity sha512-xwEvyet96u7WnB96kqY0yY7qxx/pEpU51QeACkKFtrgjjXITQn0oO1iwPEraXVgh10ZFPix7gs1R4OJXF7P5sg==
   dependencies:
     "@types/prop-types" "*"
+    csstype "^2.2.0"
+
+"@types/styled-system@^3.0.7":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@types/styled-system/-/styled-system-3.2.2.tgz#a40b30baf20a8d9820808688a370a973cb778e7c"
+  integrity sha512-QjjszVXRIeAT1fAQewWKh1Ewq3/i6xeYp2DH7DC151FfnLNtUbjT8CxUuqpnKrRiessoKdQVLw+3xu/RiMpNBQ==
+  dependencies:
     csstype "^2.2.0"
 
 "@types/tough-cookie@^2.3.0":
@@ -2801,6 +2828,13 @@ create-emotion-server@^9.2.12:
     multipipe "^1.0.2"
     through "^2.3.8"
 
+create-emotion-styled@^9.2.8:
+  version "9.2.8"
+  resolved "https://registry.yarnpkg.com/create-emotion-styled/-/create-emotion-styled-9.2.8.tgz#c0050e768ba439609bec108600467adf2de67cc3"
+  integrity sha512-2LrNM5MREWzI5hZK+LyiBHglwE18WE3AEbBQgpHQ1+zmyLSm/dJsUZBeFAwuIMb+TjNZP0KsMZlV776ufOtFdg==
+  dependencies:
+    "@emotion/is-prop-valid" "^0.6.1"
+
 create-emotion@^9.2.12:
   version "9.2.12"
   resolved "https://registry.yarnpkg.com/create-emotion/-/create-emotion-9.2.12.tgz#0fc8e7f92c4f8bb924b0fef6781f66b1d07cb26f"
@@ -3371,6 +3405,13 @@ emotion-theming@10.0.9:
     "@emotion/weak-memoize" "0.2.2"
     hoist-non-react-statics "^3.3.0"
     object-assign "^4.1.1"
+
+emotion-theming@^9.2.9:
+  version "9.2.9"
+  resolved "https://registry.yarnpkg.com/emotion-theming/-/emotion-theming-9.2.9.tgz#2bfd77fdd47d3f5e60d59d97dd4cea4622657220"
+  integrity sha512-Ncyr1WocmDDrTbuYAzklIUC5iKiGtHy3e5ymoFXcka6SuvZl/EDMawegk4wVp72Agrcm1xemab3QOHfnOkpoMA==
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
 
 emotion@^9.2.9:
   version "9.2.12"
@@ -4347,7 +4388,7 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^2.5.0, hoist-non-react-statics@^2.5.5:
+hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0, hoist-non-react-statics@^2.5.5:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
@@ -6711,6 +6752,14 @@ react-dom@16.8.4:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.13.4"
+
+react-emotion@^9.2.12:
+  version "9.2.12"
+  resolved "https://registry.yarnpkg.com/react-emotion/-/react-emotion-9.2.12.tgz#74d1494f89e22d0b9442e92a33ca052461955c83"
+  integrity sha512-qt7XbxnEKX5sZ73rERJ92JMbEOoyOwG3BuCRFRkXrsJhEe+rFBRTljRw7yOLHZUCQC4GBObZhjXIduQ8S0ZpYw==
+  dependencies:
+    babel-plugin-emotion "^9.2.11"
+    create-emotion-styled "^9.2.8"
 
 react-fast-compare@^2.0.1:
   version "2.0.4"
