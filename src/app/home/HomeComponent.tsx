@@ -206,7 +206,7 @@ class HomeComponent extends React.Component<IProps, IState> {
         <Page header={Header} sidebar={Sidebar}>
           <PageSection>
             <TextContent>
-              <Flex justifyContent="center">
+              <Flex justifyContent="center" flexWrap="wrap">
                 <CardComponent
                   title="Clusters"
                   dataList={this.props.migrationClusterList}
