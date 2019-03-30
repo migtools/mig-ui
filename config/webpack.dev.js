@@ -77,7 +77,7 @@ const webpackConfig = {
     app: './src/index.tsx'
   },
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
   output: {
     path: __dirname + '../dist',
@@ -125,7 +125,12 @@ const webpackConfig = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: false
+    open: false,
+    stats: {
+      // interfaces and type aliases are not left after transpilation, causing
+      // legitimate typescript exports to trigger warnings in webpack
+      warningsFilter: /export .* was not found in/,
+    },
   },
   plugins,
 };
