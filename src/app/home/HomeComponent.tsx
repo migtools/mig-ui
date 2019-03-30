@@ -243,7 +243,7 @@ export default connect(
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     clusterList: state.cluster.clusterList,
-    migrationStorageList: state.storage.migrationStorageList,
+    migrationStorageList: state.storage.migStorageList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
