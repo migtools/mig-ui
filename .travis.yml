@@ -7,4 +7,5 @@ git:
 jobs:
   include:
     - script: yarn lint
+    - script: yarn test
     - script: yarn build
