@@ -22,7 +22,7 @@ const addCluster = cluster => {
       client.create(resource, cluster)
         .then(res => dispatch(addClusterSuccess(res.data)))
         .catch(err => AlertCreators.alertError('Failed to add cluster'));
-    } catch (err) {
+    } catch(err) {
       dispatch(AlertCreators.alertError(err));
     }
   };
@@ -45,14 +45,18 @@ const removeCluster = id => {
 
 const fetchClusters = () => {
   return (dispatch, getState) => {
-    const { migMeta } = getState();
-    const client: IClusterClient = ClientFactory.hostCluster(getState());
-    const resource = new ClusterRegistryResource(
-      ClusterRegistryResourceKind.Cluster, migMeta.namespace);
-    client.list(resource)
-      .then(res => dispatch(clusterFetchSuccess(res.data)))
-      .catch(err => AlertCreators.alertError('Failed to get clusters'));
-  };
+    try {
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const resource = new ClusterRegistryResource(
+        ClusterRegistryResourceKind.Cluster, migMeta.namespace);
+      client.list(resource)
+        .then(res => dispatch(clusterFetchSuccess(res.data)))
+        .catch(err => AlertCreators.alertError('Failed to get clusters'));
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
+  }
 };
 
 export default {
