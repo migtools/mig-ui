@@ -56,4 +56,4 @@ export const ClientFactory = {
     // return new ClusterClient(apiRoot, cluster.token);
     throw new Error('forCluster NOT IMPLEMENTED');
   },
-}
+};

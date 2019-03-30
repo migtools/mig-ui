@@ -20,7 +20,7 @@ const addStorage = migStorage => {
       client.create(resource, migStorage)
         .then(res => dispatch(addStorageSuccess(res.data)))
         .catch(err => AlertCreators.alertError('Failed to add storage'));
-    } catch(err) {
+    } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
   };
@@ -51,7 +51,7 @@ const fetchStorage = () => {
       client.list(resource)
         .then(res => dispatch(migStorageFetchSuccess(res.data)))
         .catch(err => AlertCreators.alertError('Failed to get clusters'));
-    } catch(err) {
+    } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
   };

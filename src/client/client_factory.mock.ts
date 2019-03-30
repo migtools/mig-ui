@@ -7,4 +7,4 @@ export const ClientFactory = {
   forCluster: (clusterName: string, state: any) => {
     return new MockClusterClient(clusterName, state);
   },
-}
+};

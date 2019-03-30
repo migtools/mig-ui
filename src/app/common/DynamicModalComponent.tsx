@@ -54,7 +54,7 @@ class DynamicModalComponent extends React.Component<any, any> {
 export default connect(
   state => ({}),
   dispatch => ({
-    addCluster: values => dispatch(clusterOperations.addCluster(values)),
+    addCluster: cluster => dispatch(clusterOperations.addCluster(cluster)),
     addStorage: values => dispatch(storageOperations.addStorage(values)),
   }),
 )(DynamicModalComponent);

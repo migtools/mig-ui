@@ -11,7 +11,6 @@ export default class KubeStore {
     namespace: {},
     cluster: {},
   };
-  public constructor() {}
 
   public static get Instance() {
     return this.instance || (this.instance = new this());
@@ -60,10 +59,10 @@ export default class KubeStore {
     let resources;
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
-      if(!(namespacedResource.namespace in this.db.namespace)) {
+      if (!(namespacedResource.namespace in this.db.namespace)) {
         return [];
       }
-      if(!(gvk in this.db.namespace[namespacedResource.namespace])) {
+      if (!(gvk in this.db.namespace[namespacedResource.namespace])) {
         return this.db.namespace[namespacedResource.namespace][gvk];
       }
       resources = this.db.namespace[namespacedResource.namespace][gvk];

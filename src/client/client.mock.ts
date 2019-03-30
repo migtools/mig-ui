@@ -16,7 +16,7 @@ export class MockClusterClient {
       setTimeout(() => {
         res({
           data: KubeStore.Instance.listResource(resource),
-        })
+        });
       }, this.reqTime);
     });
   }
@@ -26,23 +26,29 @@ export class MockClusterClient {
       setTimeout(() => {
         res({
           data: KubeStore.Instance.getResource(resource, name),
-        })
+        });
       }, this.reqTime);
     });
   }
 
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
+      res({
+      });
     });
   }
 
   public create(resource: KubeResource, newObject: object): Promise<any> {
     return new Promise<any>((res, rej) => {
+      res({
+      });
     });
   }
 
   public delete(resource: KubeResource, name: string): Promise<any> {
     return new Promise<any>((res, rej) => {
+      res({
+      });
     });
   }
 }

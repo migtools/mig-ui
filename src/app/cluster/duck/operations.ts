@@ -22,7 +22,7 @@ const addCluster = cluster => {
       client.create(resource, cluster)
         .then(res => dispatch(addClusterSuccess(res.data)))
         .catch(err => AlertCreators.alertError('Failed to add cluster'));
-    } catch(err) {
+    } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
   };
@@ -56,7 +56,7 @@ const fetchClusters = () => {
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
-  }
+  };
 };
 
 export default {
