@@ -32,11 +32,10 @@ import EmptyStateComponent from './components/EmptyStateComponent';
 interface IProps {
   loggingIn?: boolean;
   user: any;
-  migrationClusterList: any[];
+  clusterList: any[];
   migrationStorageList: any[];
   fetchClusters: () => void;
   fetchStorage: () => void;
-  addCluster: (values: any) => void;
   onLogout: () => void;
 }
 
@@ -209,7 +208,7 @@ class HomeComponent extends React.Component<IProps, IState> {
               <Flex justifyContent="center">
                 <CardComponent
                   title="Clusters"
-                  dataList={this.props.migrationClusterList}
+                  dataList={this.props.clusterList}
                 />
                 <CardComponent
                   title="Replication Repositories"
@@ -221,8 +220,8 @@ class HomeComponent extends React.Component<IProps, IState> {
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
-              {this.props.migrationClusterList &&
-              this.props.migrationClusterList.length > 0 ? (
+              {this.props.clusterList &&
+              this.props.clusterList.length > 0 ? (
                 <Box flex="0 0 100%">
                   <DetailViewComponent />
                 </Box>
@@ -243,13 +242,12 @@ export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
-    migrationClusterList: state.cluster.migrationClusterList,
+    clusterList: state.cluster.clusterList,
     migrationStorageList: state.storage.migrationStorageList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
-    addCluster: values => dispatch(clusterOperations.addCluster(values)),
   }),
 )(HomeComponent);
