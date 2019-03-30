@@ -33,7 +33,7 @@ interface IProps {
   loggingIn?: boolean;
   user: any;
   clusterList: any[];
-  migrationStorageList: any[];
+  migStorageList: any[];
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
@@ -212,7 +212,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 />
                 <CardComponent
                   title="Replication Repositories"
-                  dataList={this.props.migrationStorageList}
+                  dataList={this.props.migStorageList}
                 />
                 <CardComponent title="Migration Plans" dataList={[]} />
               </Flex>
@@ -243,7 +243,7 @@ export default connect(
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     clusterList: state.cluster.clusterList,
-    migrationStorageList: state.storage.migStorageList,
+    migStorageList: state.storage.migStorageList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),

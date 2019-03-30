@@ -7,7 +7,7 @@ export const INITIAL_STATE = {
 };
 
 export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migStorageList: action.migrationStorageList };
+  return { ...state, migStorageList: action.migStorageList };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
@@ -21,7 +21,7 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIGRATION_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
+  [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
 };

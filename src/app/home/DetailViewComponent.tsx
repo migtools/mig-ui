@@ -14,8 +14,8 @@ class DetailViewComponent extends Component<any, any> {
     modalType: '',
   };
   componentDidMount() {
-    const { migrationClusterList, migrationStorageList } = this.props;
-    if (migrationClusterList > 1 && migrationStorageList > 1) {
+    const { clusterList, migStorageList } = this.props;
+    if (clusterList > 1 && migStorageList > 1) {
       this.setState({ plansDisabled: false });
     }
   }
@@ -49,15 +49,15 @@ class DetailViewComponent extends Component<any, any> {
   }
 
   render() {
-    const { migrationClusterList, migrationStorageList } = this.props;
+    const { clusterList, migStorageList } = this.props;
     return (
       <React.Fragment>
         <DataList aria-label="Expandable data list example">
           <DetailViewItem
-            isExpanded={this.state.expanded.includes('migrationClusterList')}
+            isExpanded={this.state.expanded.includes('clusterList')}
             onToggle={this.handleToggle}
-            dataList={migrationClusterList}
-            id="migrationClusterList"
+            dataList={clusterList}
+            id="clusterList"
             title="Clusters"
             type="cluster"
             onAddItem={() => this.handleModalToggle('cluster')}
@@ -66,7 +66,7 @@ class DetailViewComponent extends Component<any, any> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('repositoryList')}
             onToggle={this.handleToggle}
-            dataList={migrationStorageList}
+            dataList={migStorageList}
             id="repositoryList"
             title="Storage"
             type="storage"
@@ -85,11 +85,11 @@ class DetailViewComponent extends Component<any, any> {
 }
 
 function mapStateToProps(state) {
-  const { migrationClusterList } = state.cluster;
-  const { migrationStorageList } = state.storage;
+  const { clusterList } = state.cluster;
+  const { migStorageList } = state.storage;
   return {
-    migrationClusterList,
-    migrationStorageList,
+    clusterList,
+    migStorageList,
   };
 }
 const mapDispatchToProps = dispatch => {
