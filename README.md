@@ -18,7 +18,7 @@ yarn build # build the project
 yarn start # start the UI development server
 ```
 
-`yarn start` will run the UI's development server in "local dev mode. The purpose of
+`yarn start` will run the UI's development server in "local" dev mode. The purpose of
 this mode is to mock out any external dependencies like Login and the cluster api's
 server so the UI can be hacked on as easily as possible.
 
