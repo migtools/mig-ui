@@ -18,20 +18,11 @@ yarn build # build the project
 yarn start # start the UI development server
 ```
 
-### JSON Mock Server
-
-To add credentials to the mock json server, modify the contents of ./server/users.json
-To add mock data, modify the contents of ./server/db.json
-
-```
-yarn start:mock-server # start the mock json server
-```
-
 ### Remote dev mode
 
 If you would like to run the console locally, but communicate with real clusters
 on the backend, you must first configure the remote cluster acting as the UI's
-host. To do this, update the `clusterUrl` in `config/config.dev.json`.
+host. To do this, update the `clusterApi` in `config/config.dev.json`.
 The UI will use this cluster for oauth login and effectively run as if it were
 served from that cluster.
 
@@ -59,4 +50,3 @@ Run a full build
 Consistent styles are enforced by travis and will gate PR merges. To check your code prior
 to submission, run:
 `yarn lint`
-

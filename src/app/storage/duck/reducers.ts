@@ -1,19 +1,19 @@
-import Types from './types';
+import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
-  migrationStorageList: [],
+  migStorageList: [],
   StorageSearchText: '',
 };
 
-export const migrationStorageFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migrationStorageList: action.migrationStorageList };
+export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
+  return { ...state, migStorageList: action.migStorageList };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    migrationStorageList: [...state.migrationStorageList, action.newStorage],
+    migStorageList: [...state.migStorageList, action.newStorage],
   };
 };
 export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
@@ -21,7 +21,7 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIGRATION_STORAGE_FETCH_SUCCESS]: migrationStorageFetchSuccess,
+  [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
 };
