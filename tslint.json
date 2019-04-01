@@ -30,8 +30,10 @@
       "comment-format": false,
       "member-ordering": false,
       "jsx-wrap-multiline": false,
+      "max-classes-per-file": false,
       "quotemark": [true, "single", "jsx-double"],
       "ordered-imports": false,
+      "object-literal-key-quotes": false,
       "variable-name": false
     },
     "jsRules": {
