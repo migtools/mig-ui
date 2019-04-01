@@ -61,17 +61,23 @@ const plugins = [
 ]
 
 // Replace the normal OAuth login component with a mocked out login for local dev
-devMode === 'local' && plugins.push(new webpack.NormalModuleReplacementPlugin(
-  /LoginComponent.tsx/,
-  'MockLoginComponent.tsx'
-));
+if (devMode === 'local') {
+  plugins.push(new webpack.NormalModuleReplacementPlugin(
+    /LoginComponent.tsx/,
+    'MockLoginComponent.tsx'
+  ));
+  plugins.push(new webpack.NormalModuleReplacementPlugin(
+    /client_factory.ts/,
+    'client_factory.mock.ts'
+  ));
+}
 
 const webpackConfig = {
   entry: {
     app: './src/index.tsx'
   },
   node: {
-    fs: 'empty'
+    fs: 'empty',
   },
   output: {
     path: __dirname + '../dist',
@@ -119,7 +125,12 @@ const webpackConfig = {
     historyApiFallback: true,
     hot: true,
     overlay: true,
-    open: false
+    open: false,
+    stats: {
+      // interfaces and type aliases are not left after transpilation, causing
+      // legitimate typescript exports to trigger warnings in webpack
+      warningsFilter: /export .* was not found in/,
+    },
   },
   plugins,
 };
