@@ -1,7 +1,7 @@
-import React from "react";
-import { connect } from "react-redux";
-import { css } from "@emotion/core";
-import { Flex, Box } from "@rebass/emotion";
+import React from 'react';
+import { connect } from 'react-redux';
+import { css } from '@emotion/core';
+import { Flex, Box } from '@rebass/emotion';
 import {
   Toolbar,
   ToolbarGroup,
@@ -20,14 +20,14 @@ import {
   NavExpandable,
   NavItem,
   PageSection,
-  TextContent
-} from "@patternfly/react-core";
-import { BellIcon, CogIcon, AddCircleOIcon } from "@patternfly/react-icons";
-import { clusterOperations } from "../cluster/duck";
-import { storageOperations } from "../storage/duck";
-import DetailViewComponent from "./DetailViewComponent";
-import CardComponent from "./components/CardComponent";
-import EmptyStateComponent from "./components/EmptyStateComponent";
+  TextContent,
+} from '@patternfly/react-core';
+import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import { clusterOperations } from '../cluster/duck';
+import { storageOperations } from '../storage/duck';
+import DetailViewComponent from './DetailViewComponent';
+import CardComponent from './components/CardComponent';
+import EmptyStateComponent from './components/EmptyStateComponent';
 
 interface IProps {
   loggingIn?: boolean;
@@ -51,8 +51,8 @@ class HomeComponent extends React.Component<IProps, IState> {
     isDropdownOpen: false,
     isKebabDropdownOpen: false,
     isNavOpen: false,
-    activeGroup: "grp-1",
-    activeItem: "grp-1_itm-1"
+    activeGroup: 'grp-1',
+    activeItem: 'grp-1_itm-1',
   };
 
   componentDidMount() {
@@ -62,33 +62,33 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   onNavSelect = result => {
     this.setState({
-      activeItem: result.itemId
+      activeItem: result.itemId,
     });
-  };
+  }
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
-      isDropdownOpen
+      isDropdownOpen,
     });
-  };
+  }
 
   onDropdownSelect = event => {
     this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen
+      isDropdownOpen: !this.state.isDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
-      isKebabDropdownOpen
+      isKebabDropdownOpen,
     });
-  };
+  }
 
   onKebabDropdownSelect = event => {
     this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen
+      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
-  };
+  }
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -96,13 +96,13 @@ class HomeComponent extends React.Component<IProps, IState> {
     </DropdownItem>,
     <DropdownItem key="1">
       <CogIcon /> Settings
-    </DropdownItem>
+    </DropdownItem>,
   ];
 
   userDropdownItems = [
     <DropdownItem key="0" onClick={this.props.onLogout}>
       Logout
-    </DropdownItem>
+    </DropdownItem>,
   ];
 
   render() {
@@ -112,7 +112,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       isDropdownOpen,
       activeItem,
       activeGroup,
-      isNavOpen
+      isNavOpen,
     } = this.state;
     const PageNav = (
       <Nav onSelect={this.onNavSelect} aria-label="Nav">
@@ -120,14 +120,14 @@ class HomeComponent extends React.Component<IProps, IState> {
           <NavExpandable
             title="System Panel"
             groupId="grp-1"
-            isActive={activeGroup === "grp-1"}
+            isActive={activeGroup === 'grp-1'}
             isExpanded
           >
             <NavItem
               to="#expandable-1"
               groupId="grp-1"
               itemId="grp-1_itm-1"
-              isActive={activeItem === "grp-1_itm-1"}
+              isActive={activeItem === 'grp-1_itm-1'}
             >
               Overview
             </NavItem>
@@ -177,8 +177,7 @@ class HomeComponent extends React.Component<IProps, IState> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>{user.username}</div>
-                </DropdownToggle>
-              }
+                </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
@@ -243,11 +242,11 @@ export default connect(
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     clusterList: state.cluster.clusterList,
-    migStorageList: state.storage.migStorageList
+    migStorageList: state.storage.migStorageList,
   }),
   dispatch => ({
-    onLogout: () => console.debug("TODO: IMPLEMENT: user logged out."),
+    onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
-    fetchStorage: () => dispatch(storageOperations.fetchStorage())
-  })
+    fetchStorage: () => dispatch(storageOperations.fetchStorage()),
+  }),
 )(HomeComponent);

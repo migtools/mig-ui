@@ -1,25 +1,25 @@
-import React, { Component } from "react";
-import { Dropdown, KebabToggle } from "@patternfly/react-core";
-import { Flex, Box } from "@rebass/emotion";
-import DashboardCard from "./DashboardCard";
-import theme from "../../../theme";
+import React, { Component } from 'react';
+import { Dropdown, KebabToggle } from '@patternfly/react-core';
+import { Flex, Box } from '@rebass/emotion';
+import DashboardCard from './DashboardCard';
+import theme from '../../../theme';
 
 class CardComponent extends Component<any, any> {
   state = {
-    isOpen: false
+    isOpen: false,
   };
 
   onToggle = isOpen => {
     this.setState({
-      isOpen
+      isOpen,
     });
-  };
+  }
 
   onSelect = event => {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: !this.state.isOpen,
     });
-  };
+  }
 
   render() {
     const { dataList, title } = this.props;

@@ -1,41 +1,39 @@
-import React from "react";
-import { Pagination, Title } from "@patternfly/react-core";
-import { Card, CardHeader, CardBody, CardFooter } from "@patternfly/react-core";
-import { Table, TableHeader, TableBody } from "@patternfly/react-table";
+import React from 'react';
+import { Pagination, Title } from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 class NamespaceTable extends React.Component<any, any> {
   state = {
     page: 1,
     perPage: 20,
     pageOfItems: [],
-    columns: ["name", "info"],
-    rows: [["one", "two"]]
+    columns: ['name', 'info'],
+    rows: [['one', 'two']],
   };
-  handleAction = (e, data) => {};
 
   onChangePage = pageOfItems => {
-    this.setState({ pageOfItems: pageOfItems });
-  };
+    this.setState({ pageOfItems });
+  }
 
   onSetPage = (_event, pageNumber) => {
     this.setState({
-      page: pageNumber
+      page: pageNumber,
     });
-  };
+  }
 
   onPerPageSelect = (_event, perPage) => {
     this.setState({
-      perPage
+      perPage,
     });
-  };
+  }
 
   render() {
     const { selectedCluster } = this.props;
     const { columns, rows } = this.state;
 
     if (selectedCluster !== null) {
-      debugger;
-      let myRows = [];
-      for (var i = 0; i < selectedCluster.metadata.namespaces.length; i++) {
+      const myRows = [];
+      for (let i = 0; i < selectedCluster.metadata.namespaces.length; i++) {
         myRows[i] = new Array(selectedCluster.metadata.namespaces[i]);
       }
       return (
@@ -43,7 +41,7 @@ class NamespaceTable extends React.Component<any, any> {
           <Card>
             <CardHeader>
               <Title headingLevel="h2" size="3xl">
-                {selectedCluster.metadata.name || "nothing"}
+                {selectedCluster.metadata.name || 'nothing'}
               </Title>
             </CardHeader>
             <CardBody>
