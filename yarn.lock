@@ -1037,7 +1037,7 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.7.1.tgz#86fe0b75e871ddaeefb21c2d09f520eb6e88f1ea"
   integrity sha512-Q7MDYKy+/4SjMR4UVK35Dg1srE2i4zwFiMA8UpuKqfqPaE5DsfpJALLeedxIiuMjhVC2XwoEwiQQkNczB2ejQQ==
 
-"@patternfly/react-styled-system@^2.0.1":
+"@patternfly/react-styled-system@2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styled-system/-/react-styled-system-2.0.1.tgz#ec7fd8acb484f4ae4fdf2baa5e2a6d53928eb590"
   integrity sha512-RDBRmeAM6WEVsb6Nbx6i+C86UdruA5aI28kD1GSrC6+LJVNUfmQ/ypNas7scs6aH7+voBQhnhUHeaKYaWlVvzQ==
@@ -1182,6 +1182,11 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
+
+"@types/stack-utils@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
+  integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
 "@types/styled-system@^3.0.7":
   version "3.2.2"
@@ -8493,6 +8498,14 @@ styled-system@4.0.5:
   dependencies:
     "@babel/runtime" "^7.3.4"
     prop-types "^15.7.2"
+
+styled-system@^3.1.11:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-3.2.1.tgz#491e1e6f88d7ee021f6f49376f12852cde8007cb"
+  integrity sha512-ag0Yp7UeVHHc3t+1uM3jvlljaZYzwqpbJ8hMrFvpaKfUd8xsB9JeQXLwMpEsz8iLx8Lz/+9j0coWFZjmw8MogQ==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+    prop-types "^15.6.2"
 
 styled-system@^4.0.8:
   version "4.1.0"

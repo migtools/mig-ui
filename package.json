@@ -62,7 +62,7 @@
     "@babel/plugin-proposal-class-properties": "7.4.0",
     "@emotion/core": "10.0.9",
     "@patternfly/react-core": "2.9.2",
-    "@patternfly/react-styled-system": "^2.0.1",
+    "@patternfly/react-styled-system": "2.0.1",
     "@rebass/emotion": "3.1.0",
     "@types/react": "16.8.8",
     "axios": "0.18.0",
