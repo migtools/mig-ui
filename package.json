@@ -13,7 +13,6 @@
     "clean": "yarn rimraf dist",
     "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
     "start:remote": "./scripts/remote-dev.sh",
-    "start:mock-server": "node mock/server.js",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "test": "jest"
@@ -38,7 +37,6 @@
     "html-webpack-plugin": "3.2.0",
     "img-loader": "3.0.1",
     "jest": "^24.5.0",
-    "json-server": "0.14.2",
     "lodash": "^4.17.11",
     "node-sass": "4.11.0",
     "prettier": "1.16.4",
