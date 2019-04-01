@@ -1,4 +1,4 @@
-import Types from './types';
+import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {};
 
@@ -14,9 +14,9 @@ export const clear = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.CLEAR]: clear,
-  [Types.SUCCESS]: success,
-  [Types.ERROR]: failure,
+  [Types.ALERT_CLEAR]: clear,
+  [Types.ALERT_SUCCESS]: success,
+  [Types.ALERT_ERROR]: failure,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

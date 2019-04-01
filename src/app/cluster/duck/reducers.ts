@@ -1,4 +1,4 @@
-import Types from './types';
+import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
