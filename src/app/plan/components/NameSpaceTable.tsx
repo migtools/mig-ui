@@ -1,54 +1,66 @@
-import React from 'react';
-import { Pagination, Title } from '@patternfly/react-core';
-import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import React from "react";
+import { Pagination, Title } from "@patternfly/react-core";
+import { Card, CardHeader, CardBody, CardFooter } from "@patternfly/react-core";
+import ReactDataGrid from "react-data-grid";
+// import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 class NamespaceTable extends React.Component<any, any> {
   state = {
     page: 1,
     perPage: 20,
-    pageOfItems: [],
-    columns: ['name', 'info'],
-    rows: [['one', 'two']],
+    pageOfItems: []
+    // columns: ["name", "info"],
+    // rows: [["one", "two"]]
   };
 
   onChangePage = pageOfItems => {
     this.setState({ pageOfItems });
-  }
+  };
 
   onSetPage = (_event, pageNumber) => {
     this.setState({
-      page: pageNumber,
+      page: pageNumber
     });
-  }
+  };
 
   onPerPageSelect = (_event, perPage) => {
     this.setState({
-      perPage,
+      perPage
     });
-  }
+  };
 
   render() {
+    const columns = [
+      { key: "name", name: "Name" },
+      { key: "info", name: "Info" }
+    ];
     const { selectedCluster } = this.props;
-    const { columns, rows } = this.state;
+    // const { columns, rows } = this.state;
 
     if (selectedCluster !== null) {
-      const myRows = [];
-      for (let i = 0; i < selectedCluster.metadata.namespaces.length; i++) {
-        myRows[i] = new Array(selectedCluster.metadata.namespaces[i]);
-      }
+      //   debugger;
+      //   const myRows = [];
+      //   for (let i = 0; i < selectedCluster.metadata.namespaces.length; i++) {
+      //     myRows[i] = new Array(selectedCluster.metadata.namespaces[i]);
+      //   }
       return (
         <React.Fragment>
           <Card>
             <CardHeader>
               <Title headingLevel="h2" size="3xl">
-                {selectedCluster.metadata.name || 'nothing'}
+                {selectedCluster.metadata.name || "nothing"}
               </Title>
             </CardHeader>
             <CardBody>
-              <Table caption="Simple Table" cells={columns} rows={myRows}>
+              {/* <Table caption="Simple Table" cells={columns} rows={myRows}>
                 <TableHeader />
                 <TableBody />
-              </Table>
+              </Table> */}
+              <ReactDataGrid
+                columns={columns}
+                rowGetter={i => selectedCluster.metadata.namespaces[i]}
+                rowsCount={3}
+                minHeight={150}
+              />
             </CardBody>
             <CardFooter>
               <Pagination

@@ -1,10 +1,10 @@
-import React from 'react';
-import { withFormik } from 'formik';
-import { Flex } from '@rebass/emotion';
-import { Wizard as PFWizard } from '@patternfly/react-core';
-import GeneralForm from './GeneralForm';
-import MigrationSourceForm from './MigrationSourceForm';
-import { css } from '@emotion/core';
+import React from "react";
+import { withFormik } from "formik";
+import { Flex } from "@rebass/emotion";
+import { Wizard as PFWizard } from "@patternfly/react-core";
+import GeneralForm from "./GeneralForm";
+import MigrationSourceForm from "./MigrationSourceForm";
+import { css } from "@emotion/core";
 const WrappedWizard = props => {
   const {
     values,
@@ -15,11 +15,11 @@ const WrappedWizard = props => {
     handleSubmit,
     setFieldTouched,
     setFieldValue,
-    clusterList,
+    clusterList
   } = props;
   const steps = [
     {
-      name: 'General',
+      name: "General",
       component: (
         <GeneralForm
           values={values}
@@ -30,10 +30,10 @@ const WrappedWizard = props => {
           setFieldTouched={setFieldTouched}
         />
       ),
-      enableNext: !errors.planName && touched.planName === true,
+      enableNext: !errors.planName && touched.planName === true
     },
     {
-      name: 'Migration Source',
+      name: "Migration Source",
       component: (
         <MigrationSourceForm
           values={values}
@@ -46,8 +46,8 @@ const WrappedWizard = props => {
           setFieldValue={setFieldValue}
         />
       ),
-      enableNext: false,
-    },
+      enableNext: false
+    }
   ];
   const onSave = () => {
     handleSubmit();
@@ -71,7 +71,6 @@ const WrappedWizard = props => {
           description="Create a migration plan"
           onClose={onClose}
           steps={steps}
-          onNext={() => onNext()}
           onSave={() => onSave()}
         />
       </form>
@@ -81,18 +80,18 @@ const WrappedWizard = props => {
 
 const Wizard: any = withFormik({
   mapPropsToValues: () => ({
-    planName: '',
-    selectedCluster: '',
+    planName: "",
+    selectedCluster: ""
   }),
 
   validate: values => {
     const errors: any = {};
 
     if (!values.planName) {
-      errors.planName = 'Required';
+      errors.planName = "Required";
     }
     if (!values.selectedCluster) {
-      errors.selectedCluster = 'Required';
+      errors.selectedCluster = "Required";
     }
     return errors;
   },
@@ -103,7 +102,7 @@ const Wizard: any = withFormik({
   },
   validateOnBlur: false,
 
-  displayName: 'Page One Form',
+  displayName: "Page One Form"
 })(WrappedWizard);
 
 export default Wizard;
