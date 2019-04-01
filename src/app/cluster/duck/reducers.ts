@@ -2,18 +2,18 @@ import Types from './types';
 import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
-  migrationClusterList: [],
+  clusterList: [],
   clusterSearchText: '',
 };
 
-export const migrationClusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migrationClusterList: action.migrationClusterList };
+export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
+  return { ...state, clusterList: action.clusterList };
 };
 
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    migrationClusterList: [...state.migrationClusterList, action.newCluster],
+    clusterList: [...state.clusterList, action.newCluster],
   };
 };
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
@@ -21,7 +21,7 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIGRATION_CLUSTER_FETCH_SUCCESS]: migrationClusterFetchSuccess,
+  [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
 };
