@@ -1,74 +1,59 @@
-import axios from 'axios';
 import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
-import { JSON_SERVER_URL } from '../../../config';
+import { ClientFactory } from '../../../client/client_factory';
+import { IClusterClient } from '../../../client/client';
+import { MigResource, MigResourceKind } from '../../../client/resources';
 
-const axiosInstance = axios.create({
-  baseURL: JSON_SERVER_URL,
-  responseType: 'json',
-});
-
-const request = {
-  get: (url: any, params?: any) => axiosInstance.get(url, { params }),
-  delete: (url: any, params?: any) => axiosInstance.delete(url, { params }),
-  post: (url: any, payload?: any, headers?) =>
-    axiosInstance.post(url, payload, headers),
-  put: (url: any, payload: any) => axiosInstance.put(url, payload),
-};
-
-const authHeaders = {
-  'Content-Type': 'application/json',
-};
-const migrationStorageFetchSuccess = Creators.migrationStorageFetchSuccess;
+const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
 const addStorageSuccess = Creators.addStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
 
-const addStorageRequest = payload =>
-  request.post(JSON_SERVER_URL + 'migrationStorageList', payload, authHeaders);
-
-const addStorage = values => {
-  return dispatch => {
-    addStorageRequest(values).then(
-      response => {
-        dispatch(addStorageSuccess(response.data));
-      },
-      error => {
-        dispatch(AlertCreators.alertError('Failed to add Storage'));
-      },
-    );
+const addStorage = migStorage => {
+  return (dispatch, getState) => {
+    try {
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const resource = new MigResource(
+        MigResourceKind.MigStorage, migMeta.namespace);
+      client.create(resource, migStorage)
+        .then(res => dispatch(addStorageSuccess(res.data)))
+        .catch(err => AlertCreators.alertError('Failed to add storage'));
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
   };
 };
-const removeStorageRequest = id =>
-  request.delete(JSON_SERVER_URL + 'migrationStorageList/' + id, authHeaders);
 
 const removeStorage = id => {
-  return dispatch => {
-    removeStorageRequest(id).then(
-      response => {
-        dispatch(removeStorageSuccess(id));
-        dispatch(fetchStorage());
-      },
-      error => {
-        dispatch(removeStorageFailure(error));
-      },
-    );
-  };
+  throw new Error('NOT IMPLEMENTED');
+  // return dispatch => {
+  //   removeStorageRequest(id).then(
+  //     response => {
+  //       dispatch(removeStorageSuccess(id));
+  //       dispatch(fetchStorage());
+  //     },
+  //     error => {
+  //       dispatch(removeStorageFailure(error));
+  //     },
+  //   );
+  // };
 };
-const fetchStorageRequest = () =>
-  request.get(JSON_SERVER_URL + 'migrationStorageList', authHeaders);
 
 const fetchStorage = () => {
-  return dispatch => {
-    fetchStorageRequest().then(
-      response => {
-        dispatch(migrationStorageFetchSuccess(response.data));
-      },
-      error => {
-        dispatch(AlertCreators.alertError('Failed to get storage list'));
-      },
-    );
+  return (dispatch, getState) => {
+    try {
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const resource = new MigResource(
+        MigResourceKind.MigStorage, migMeta.namespace);
+      client.list(resource)
+        .then(res => dispatch(migStorageFetchSuccess(res.data)))
+        .catch(err => AlertCreators.alertError('Failed to get clusters'));
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
   };
 };
 

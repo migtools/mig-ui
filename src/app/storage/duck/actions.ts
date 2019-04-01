@@ -1,7 +1,7 @@
 import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  migrationStorageFetchSuccess: ['migrationStorageList'],
+  migStorageFetchSuccess: ['migStorageList'],
   updateStorageSearchText: ['StorageSearchText'],
   addStorageSuccess: ['newStorage'],
   addStorageFailure: ['error'],

@@ -1,7 +1,7 @@
 import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  migrationClusterFetchSuccess: ['migrationClusterList'],
+  clusterFetchSuccess: ['clusterList'],
   updateClusterSearchText: ['clusterSearchText'],
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
