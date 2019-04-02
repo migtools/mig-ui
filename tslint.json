@@ -34,6 +34,7 @@
       "quotemark": [true, "single", "jsx-double"],
       "ordered-imports": false,
       "object-literal-key-quotes": false,
+      "no-string-literal": false,
       "variable-name": false
     },
     "jsRules": {

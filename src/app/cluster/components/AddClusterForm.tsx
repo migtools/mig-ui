@@ -107,37 +107,9 @@ const AddClusterForm: any = withFormik({
   },
 
   handleSubmit: (values, formikBag: any) => {
-    const newCluster: IMigCluster = {
-      id: uuidv4(),
-      apiVersion: 'test',
-      kind: 'test',
-      metadata: {
-        creationTimestamp: '',
-        generation: 1,
-        labels: {
-          'controller-ToolsIcon.k8s.io': 1,
-          'migrations.openshift.io/migration-group': 'test',
-        },
-        name: values.name,
-        namespaces: [
-          { name: 'ns1', info: 'info' },
-          { name: 'ns2', info: 'info2' },
-        ],
-        resourceVersion: '',
-        selfLink: '',
-        uid: '',
-      },
-      spec: {
-        clusterAuthSecretRef: {
-          name: values.token,
-          namespace: '',
-        },
-        clusterUrl: values.url,
-      },
-    };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit('cluster', newCluster);
+    formikBag.props.onAddItemSubmit('cluster', values);
   },
 
   displayName: 'Add Cluster Form',

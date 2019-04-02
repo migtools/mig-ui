@@ -1,4 +1,4 @@
-apiVersion: migration.openshift.io/v1beta1
+apiVersion: migration.openshift.io/v1alpha1
 kind: MigCluster
 metadata:
   labels:

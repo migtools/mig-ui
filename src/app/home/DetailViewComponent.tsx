@@ -141,7 +141,7 @@ class DetailViewComponent extends Component<IProps, IState> {
 }
 
 function mapStateToProps(state) {
-  const { clusterList } = state.cluster;
+  const clusterList = state.cluster.clusterList.map(c => c.MigCluster);
   const { migStorageList } = state.storage;
   return {
     clusterList,

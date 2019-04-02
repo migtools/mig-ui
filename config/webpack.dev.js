@@ -45,6 +45,7 @@ migMeta.oauth = {
   userScope: localConfig.userScope,
 }
 migMeta.namespace = localConfig.namespace;
+migMeta.configNamespace = localConfig.configNamespace;
 
 htmlWebpackPluginOpt.migMeta = migMeta
 

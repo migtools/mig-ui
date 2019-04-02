@@ -9,9 +9,17 @@ export {
 } from './cluster_registry';
 
 export {
+  CoreNamespacedResource,
+  CoreClusterResource,
+  CoreNamespacedResourceKind,
+  CoreClusterResourceKind,
+ } from './core';
+
+export {
   IResource,
   IGroupVersionKindPlural,
   NamespacedResource,
   ClusterResource,
   KubeResource,
  } from './common';
+
