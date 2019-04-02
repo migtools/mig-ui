@@ -1053,7 +1053,7 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.8.0.tgz#7314f1d6ef118efb77473bded543bec0cc0f3f56"
   integrity sha512-qj9JyJUR4YZ5wYNdD5EiaZtn7rOBP658jp44wWIPLb7ufKQpt1pTf638NoIzD5nJKYa4yE5ZUtEwoTIF820ayw==
 
-"@patternfly/react-inline-edit-extension@^1.1.0":
+"@patternfly/react-inline-edit-extension@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@patternfly/react-inline-edit-extension/-/react-inline-edit-extension-1.1.0.tgz#eb5886d548ff63b8d8c1965c98e02882b0237876"
   integrity sha512-1jjQBuv5EUNAELQnm8wyB2v2G3Vn6Jfq46Dd/o/Uzm4etVSWdLXDoOcoZWS06MhZfpaJiZTty4BOK0dw3rkllw==
@@ -1105,7 +1105,7 @@
     relative "^3.0.2"
     resolve-from "^4.0.0"
 
-"@patternfly/react-table@^1.3.4":
+"@patternfly/react-table@1.3.4":
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-1.3.4.tgz#9594d30e8e7991da4717353f533d987a25386309"
   integrity sha512-QOMY7h7izLaYg6Po1f9rz6pOaK4mCuYVP4MG/FC+uZp1VJTVFXql468CDaGmKN8VnyaX/Wan74hThsdl+mAv4w==
@@ -7420,7 +7420,7 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-data-grid@^6.1.0-0:
+react-data-grid@6.1.0-0:
   version "6.1.0-0"
   resolved "https://registry.yarnpkg.com/react-data-grid/-/react-data-grid-6.1.0-0.tgz#7662a4c018fdc1fe14144d60176412e485ee0199"
   integrity sha512-YpOWhaNIVdo6svDDNpc/FvB8JHMAYzCg1IPwK5Ove1NZBiy5GOGzLg6ty+BZa2i6ug6p8OHGrT5p4ylFWtYA7A==
@@ -7503,7 +7503,7 @@ react-router@^4.3.1:
     prop-types "^15.6.1"
     warning "^4.0.1"
 
-react-select@^2.4.2:
+react-select@2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-select/-/react-select-2.4.2.tgz#27da80e3880e92b081be607207bebdf63bcf4f3a"
   integrity sha512-5xFOQ6JJktkY5NTaHrc6x9mKwIjhNIiBkGic1j71uyY+ulFpRFra6f4WKLd9fuCylk4WjLpO5zDhdF4CAcwFzA==
