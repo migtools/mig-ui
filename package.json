@@ -15,7 +15,7 @@
     "start:remote": "./scripts/remote-dev.sh",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "test": "jest"
+    "test": "jest --rootDir=. --config=config/jest.config.js"
   },
   "devDependencies": {
     "@babel/core": "7.4.0",
