@@ -122,13 +122,14 @@ class DetailViewComponent extends Component<IProps, IState> {
             type="plans"
             onAddItem={() => this.handleWizardToggle()}
             onRemoveItem={this.handleRemoveItem}
-            // plansDisabled={this.state.plansDisabled}
+            plansDisabled={this.state.plansDisabled}
           />
         </DataList>
         <Wizard
           isOpen={isWizardOpen}
           onWizardToggle={this.handleWizardToggle}
           clusterList={clusterList}
+          storageList={migStorageList}
         />
         <DynamicModal
           onHandleModalToggle={this.handleModalToggle}

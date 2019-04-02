@@ -6,8 +6,9 @@ import NamespaceTable from './NameSpaceTable';
 class MigSourceForm extends React.Component<any> {
   state = {
     options: [],
-    selectedOption: null,
+    sourceCluster: null,
   };
+
   componentDidMount() {
     const myOptions: any = [];
     const len = this.props.clusterList.length;
@@ -20,32 +21,36 @@ class MigSourceForm extends React.Component<any> {
     this.setState({ options: myOptions });
   }
   render() {
-    const { errors, touched, setFieldValue } = this.props;
-    const { options, selectedOption } = this.state;
+    const { errors, touched, setFieldValue, setFieldTouched } = this.props;
+    const { options, sourceCluster } = this.state;
     return (
       <Box>
         <TextContent>
           <TextList component="dl">
             <TextListItem component="dt">Source Cluster</TextListItem>
             <Select
-              name="selectedCluster"
+              name="sourceCluster"
               onChange={option => {
-                setFieldValue('selectedCluster', option.value);
+                setFieldValue('sourceCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
                   items => items.metadata.name === option.value,
                 );
 
-                this.setState({ selectedOption: matchingCluster[0] });
+                this.setState({ sourceCluster: matchingCluster[0] });
+                setFieldTouched('sourceCluster');
               }}
               options={options}
             />
 
-            {errors.selectedCluster && touched.selectedCluster && (
-              <div id="feedback">{errors.selectedCluster}</div>
+            {errors.sourceCluster && touched.sourceCluster && (
+              <div id="feedback">{errors.sourceCluster}</div>
             )}
           </TextList>
         </TextContent>
-        <NamespaceTable selectedCluster={selectedOption} />
+        <NamespaceTable
+          setFieldValue={setFieldValue}
+          sourceCluster={sourceCluster}
+        />
       </Box>
     );
   }
