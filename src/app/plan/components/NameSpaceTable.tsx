@@ -1,13 +1,13 @@
-import React from "react";
-import { Pagination, Title } from "@patternfly/react-core";
-import { Card, CardHeader, CardBody, CardFooter } from "@patternfly/react-core";
-import ReactDataGrid from "react-data-grid";
+import React from 'react';
+import { Pagination, Title } from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
+import ReactDataGrid from 'react-data-grid';
 // import { Table, TableHeader, TableBody } from '@patternfly/react-table';
 
 interface IState {
   page: number;
   perPage: number;
-  pageOfItems: Array<any>;
+  pageOfItems: any[];
 }
 interface IProps {
   selectedCluster: any;
@@ -17,29 +17,29 @@ class NamespaceTable extends React.Component<IProps, IState> {
   state = {
     page: 1,
     perPage: 20,
-    pageOfItems: []
+    pageOfItems: [],
   };
 
   onChangePage = pageOfItems => {
     this.setState({ pageOfItems });
-  };
+  }
 
   onSetPage = (_event, pageNumber) => {
     this.setState({
-      page: pageNumber
+      page: pageNumber,
     });
-  };
+  }
 
   onPerPageSelect = (_event, perPage) => {
     this.setState({
-      perPage
+      perPage,
     });
-  };
+  }
 
   render() {
     const columns = [
-      { key: "name", name: "Name" },
-      { key: "info", name: "Info" }
+      { key: 'name', name: 'Name' },
+      { key: 'info', name: 'Info' },
     ];
     const { selectedCluster } = this.props;
     // const { columns, rows } = this.state;
@@ -55,7 +55,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
           <Card>
             <CardHeader>
               <Title headingLevel="h2" size="3xl">
-                {selectedCluster.metadata.name || "nothing"}
+                {selectedCluster.metadata.name || 'nothing'}
               </Title>
             </CardHeader>
             <CardBody>

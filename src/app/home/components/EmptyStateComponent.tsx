@@ -1,29 +1,28 @@
-import React, { Component } from "react";
-import { Flex, Box } from "@rebass/emotion";
-import theme from "../../../theme";
+import React, { Component } from 'react';
+import { Flex, Box } from '@rebass/emotion';
+import theme from '../../../theme';
 import {
   Button,
   Title,
   EmptyState,
-  EmptyStateIcon
-} from "@patternfly/react-core";
-import DynamicModal from "../../common/DynamicModalComponent";
-import { AddCircleOIcon } from "@patternfly/react-icons";
+  EmptyStateIcon,
+} from '@patternfly/react-core';
+import DynamicModal from '../../common/DynamicModalComponent';
+import { AddCircleOIcon } from '@patternfly/react-icons';
 interface IState {
   isOpen: boolean;
 }
-interface IProps {}
 
-class EmptyStateComponent extends Component<IProps, IState> {
+class EmptyStateComponent extends Component<{}, IState> {
   state = {
-    isOpen: false
+    isOpen: false,
   };
 
   handleModalToggle = () => {
     this.setState(({ isOpen }) => ({
-      isOpen: !isOpen
+      isOpen: !isOpen,
     }));
-  };
+  }
 
   render() {
     return (

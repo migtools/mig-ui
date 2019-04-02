@@ -1,12 +1,11 @@
-import React from "react";
-import { connect } from "react-redux";
-import { Modal } from "@patternfly/react-core";
-import AddClusterForm from "../cluster/components/AddClusterForm";
-import AddStorageForm from "../storage/components/AddStorageForm";
-import { clusterOperations } from "../cluster/duck";
-import { storageOperations } from "../storage/duck";
+import React from 'react';
+import { connect } from 'react-redux';
+import { Modal } from '@patternfly/react-core';
+import AddClusterForm from '../cluster/components/AddClusterForm';
+import AddStorageForm from '../storage/components/AddStorageForm';
+import { clusterOperations } from '../cluster/duck';
+import { storageOperations } from '../storage/duck';
 
-interface IState {}
 interface IProps {
   isOpen: boolean;
   modalType: string;
@@ -15,18 +14,18 @@ interface IProps {
   addStorage: (item) => void;
 }
 
-class DynamicModalComponent extends React.Component<IProps, IState> {
+class DynamicModalComponent extends React.Component<IProps, {}> {
   handleAddItemSubmit = (type, dataItem) => {
-    if (type === "cluster") {
+    if (type === 'cluster') {
       this.props.addCluster(dataItem);
     }
-    if (type === "storage") {
+    if (type === 'storage') {
       this.props.addStorage(dataItem);
     }
-  };
+  }
 
   render() {
-    if (this.props.modalType === "cluster") {
+    if (this.props.modalType === 'cluster') {
       return (
         <Modal
           isOpen={this.props.isOpen}
@@ -41,7 +40,7 @@ class DynamicModalComponent extends React.Component<IProps, IState> {
         </Modal>
       );
     }
-    if (this.props.modalType === "storage") {
+    if (this.props.modalType === 'storage') {
       return (
         <Modal
           isOpen={this.props.isOpen}
@@ -64,6 +63,6 @@ export default connect(
   state => ({}),
   dispatch => ({
     addCluster: cluster => dispatch(clusterOperations.addCluster(cluster)),
-    addStorage: values => dispatch(storageOperations.addStorage(values))
-  })
+    addStorage: values => dispatch(storageOperations.addStorage(values)),
+  }),
 )(DynamicModalComponent);
