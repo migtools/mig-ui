@@ -1,9 +1,9 @@
-interface IMigrationClusterMetadata {
+interface IMigClusterMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number;
-    'migrations.openshift.io/migration-group': string;
+    "controller-ToolsIcon.k8s.io": number;
+    "migrations.openshift.io/migration-group": string;
   };
   name: string;
   namespaces: any[];
@@ -11,18 +11,18 @@ interface IMigrationClusterMetadata {
   selfLink: string;
   uid: string;
 }
-interface IMigrationClusterSpec {
+interface IMigClusterSpec {
   clusterAuthSecretRef: {
     name: string;
     namespace: string;
   };
   clusterUrl: string;
 }
-export interface IMigrationCluster {
+export interface IMigCluster {
   apiVersion: string;
   kind: string;
-  metadata: IMigrationClusterMetadata;
-  spec: IMigrationClusterSpec;
+  metadata: IMigClusterMetadata;
+  spec: IMigClusterSpec;
   id: string;
 }
 export interface IClusterFormObject {
@@ -30,12 +30,12 @@ export interface IClusterFormObject {
   token: string;
 }
 
-interface IMigrationStorageMetadata {
+interface IMigStorageMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number;
-    'migrations.openshift.io/migration-group': string;
+    "controller-ToolsIcon.k8s.io": number;
+    "migrations.openshift.io/migration-group": string;
   };
   name: string;
   namespace: string;
@@ -43,7 +43,7 @@ interface IMigrationStorageMetadata {
   selfLink: string;
   uid: string;
 }
-interface IMigrationStorageSpec {
+interface IMigStorageSpec {
   backupStorageLocationRef: {
     name: string;
   };
@@ -52,11 +52,11 @@ interface IMigrationStorageSpec {
     namespace: string;
   };
 }
-export interface IMigrationStorage {
+export interface IMigStorage {
   apiVersion: string;
   kind: string;
-  metadata: IMigrationStorageMetadata;
-  spec: IMigrationStorageSpec;
+  metadata: IMigStorageMetadata;
+  spec: IMigStorageSpec;
   id: string;
 }
 export interface IStorageFormObject {

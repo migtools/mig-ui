@@ -3,7 +3,7 @@ import { withFormik } from "formik";
 import { Flex } from "@rebass/emotion";
 import { Wizard as PFWizard } from "@patternfly/react-core";
 import GeneralForm from "./GeneralForm";
-import MigrationSourceForm from "./MigrationSourceForm";
+import MigSourceForm from "./MigSourceForm";
 import { css } from "@emotion/core";
 const WrappedWizard = props => {
   const {
@@ -35,7 +35,7 @@ const WrappedWizard = props => {
     {
       name: "Migration Source",
       component: (
-        <MigrationSourceForm
+        <MigSourceForm
           values={values}
           errors={errors}
           touched={touched}

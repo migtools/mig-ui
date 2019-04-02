@@ -1,19 +1,19 @@
-import { Types } from './actions';
-import { createReducer } from 'reduxsauce';
+import { Types } from "./actions";
+import { createReducer } from "reduxsauce";
 export const INITIAL_STATE = {
   isFetching: false,
-  migrationPlanList: [],
-  PlanSearchText: '',
+  migPlanList: [],
+  PlanSearchText: ""
 };
 
-export const migrationPlanFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migrationPlanList: action.migrationPlanList };
+export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
+  return { ...state, migPlanList: action.migPlanList };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    migrationPlanList: [...state.migrationPlanList, action.newPlan],
+    migPlanList: [...state.migPlanList, action.newPlan]
   };
 };
 export const removePlanSuccess = (state = INITIAL_STATE, action) => {
@@ -21,9 +21,9 @@ export const removePlanSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIGRATION_PLAN_FETCH_SUCCESS]: migrationPlanFetchSuccess,
+  [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
-  [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
+  [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

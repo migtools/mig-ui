@@ -1,16 +1,16 @@
-import React from 'react';
-import { withFormik } from 'formik';
-import { Flex, Box, Text } from '@rebass/emotion';
+import React from "react";
+import { withFormik } from "formik";
+import { Flex, Box, Text } from "@rebass/emotion";
 import {
   Button,
   TextInput,
   TextContent,
   TextList,
   TextListItem,
-  TextArea,
-} from '@patternfly/react-core';
-import { IMigrationStorage, IStorageFormObject } from '../../../models';
-import uuidv4 from 'uuid/v4';
+  TextArea
+} from "@patternfly/react-core";
+import { IMigStorage, IStorageFormObject } from "../../../models";
+import uuidv4 from "uuid/v4";
 
 const WrappedAddStorageForm = props => {
   const {
@@ -19,7 +19,7 @@ const WrappedAddStorageForm = props => {
     errors,
     handleChange,
     handleBlur,
-    handleSubmit,
+    handleSubmit
   } = props;
   return (
     <Flex>
@@ -99,10 +99,10 @@ const WrappedAddStorageForm = props => {
 
 const AddStorageForm: any = withFormik({
   mapPropsToValues: () => ({
-    name: '',
-    bucketUrl: '',
-    accessKey: '',
-    secret: '',
+    name: "",
+    bucketUrl: "",
+    accessKey: "",
+    secret: ""
   }),
 
   // Custom sync validation
@@ -110,55 +110,55 @@ const AddStorageForm: any = withFormik({
     const errors: any = {};
 
     if (!values.name) {
-      errors.name = 'Required';
+      errors.name = "Required";
     }
     if (!values.bucketUrl) {
-      errors.bucketUrl = 'Required';
+      errors.bucketUrl = "Required";
     }
     if (!values.accessKey) {
-      errors.accessKey = 'Required';
+      errors.accessKey = "Required";
     }
     if (!values.secret) {
-      errors.secret = 'Required';
+      errors.secret = "Required";
     }
 
     return errors;
   },
 
   handleSubmit: (values, formikBag: any) => {
-    const newStorage: IMigrationStorage = {
+    const newStorage: IMigStorage = {
       id: uuidv4(),
-      apiVersion: 'test',
-      kind: 'test',
+      apiVersion: "test",
+      kind: "test",
       metadata: {
-        creationTimestamp: '',
+        creationTimestamp: "",
         generation: 1,
         labels: {
-          'controller-ToolsIcon.k8s.io': 1,
-          'migrations.openshift.io/migration-group': 'test',
+          "controller-ToolsIcon.k8s.io": 1,
+          "migrations.openshift.io/migration-group": "test"
         },
         name: values.name,
-        namespace: '',
-        resourceVersion: '',
-        selfLink: '',
-        uid: '',
+        namespace: "",
+        resourceVersion: "",
+        selfLink: "",
+        uid: ""
       },
       spec: {
         backupStorageLocationRef: {
-          name: values.bucketUrl,
+          name: values.bucketUrl
         },
         migrationStorageSecretRef: {
           name: values.secret,
-          namespace: '',
-        },
-      },
+          namespace: ""
+        }
+      }
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit('storage', newStorage);
+    formikBag.props.onAddItemSubmit("storage", newStorage);
   },
 
-  displayName: 'Add Storage Form',
+  displayName: "Add Storage Form"
 })(WrappedAddStorageForm);
 
 export default AddStorageForm;
