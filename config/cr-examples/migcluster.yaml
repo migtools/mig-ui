@@ -1,0 +1,14 @@
+apiVersion: migration.openshift.io/v1beta1
+kind: MigCluster
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: my-cluster
+  namespace: mig
+spec:
+  clusterRef:
+    name: my-cluster
+    namespace: mig
+  serviceAccountSecretRef:
+    name: my-cluster
+    namespace: openshift-config

@@ -1,5 +1,6 @@
 {
   "clusterApi": "https://api.supercluster.example.com:6443",
   "devServerPort": 9000,
-  "userScope": "user:full"
+  "userScope": "user:full",
+  "namespace": "mig"
 }
