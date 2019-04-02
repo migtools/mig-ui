@@ -6,6 +6,7 @@ import {
   ClusterRegistryResource,
   ClusterRegistryResourceKind,
 } from '../../../client/resources';
+import { MigResource, MigResourceKind } from '../../../client/resources';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const addClusterSuccess = Creators.addClusterSuccess;
@@ -48,10 +49,10 @@ const fetchClusters = () => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
-      const resource = new ClusterRegistryResource(
-        ClusterRegistryResourceKind.Cluster, migMeta.namespace);
+      const resource = new MigResource(
+        MigResourceKind.MigCluster, migMeta.namespace);
       client.list(resource)
-        .then(res => dispatch(clusterFetchSuccess(res.data)))
+        .then(res => dispatch(clusterFetchSuccess(res.data.items)))
         .catch(err => AlertCreators.alertError('Failed to get clusters'));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));

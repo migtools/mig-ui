@@ -23,14 +23,14 @@ export class ClientFactoryMissingApiRoot extends Error {
 
 export const ClientFactory = {
   hostCluster: (state: any) => {
-    if (!!state.auth.user) {
+    if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
-    if (!!state.migMeta.clusterApi) {
+    if (!state.migMeta.clusterApi) {
       throw new ClientFactoryMissingApiRoot();
     }
 
-    return new ClusterClient(state.migMeta.clusterApi, state.auth.user.token);
+    return new ClusterClient(state.migMeta.clusterApi, state.auth.user.access_token);
   },
   forCluster: (clusterName: string, state: any) => {
     const clusters = state.kube.clusterregistry_k8s_io.clusters;
