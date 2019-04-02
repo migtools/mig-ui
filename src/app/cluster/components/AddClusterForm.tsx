@@ -9,7 +9,7 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigrationCluster, IClusterFormObject } from '../../../models';
+import { IMigCluster, IClusterFormObject } from '../../../models';
 import uuidv4 from 'uuid/v4';
 
 const WrappedAddClusterForm = props => {
@@ -27,6 +27,17 @@ const WrappedAddClusterForm = props => {
         <Box>
           <TextContent>
             <TextList component="dl">
+              <TextListItem component="dt">Cluster Name</TextListItem>
+              <input
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                name="name"
+                type="text"
+              />
+              {errors.name && touched.name && (
+                <div id="feedback">{errors.name}</div>
+              )}
               <TextListItem component="dt">Cluster URL</TextListItem>
               <input
                 onChange={handleChange}
@@ -75,15 +86,19 @@ const WrappedAddClusterForm = props => {
 };
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({ url: '', token: '' }),
+  mapPropsToValues: () => ({ name: '', url: '', token: '' }),
 
-  // Custom sync validation
   validate: values => {
     const errors: any = {};
+
+    if (!values.name) {
+      errors.name = 'Required';
+    }
 
     if (!values.url) {
       errors.url = 'Required';
     }
+
     if (!values.token) {
       errors.token = 'Required';
     }
@@ -92,7 +107,7 @@ const AddClusterForm: any = withFormik({
   },
 
   handleSubmit: (values, formikBag: any) => {
-    const newCluster: IMigrationCluster = {
+    const newCluster: IMigCluster = {
       id: uuidv4(),
       apiVersion: 'test',
       kind: 'test',
@@ -103,8 +118,11 @@ const AddClusterForm: any = withFormik({
           'controller-ToolsIcon.k8s.io': 1,
           'migrations.openshift.io/migration-group': 'test',
         },
-        name: '',
-        namespace: '',
+        name: values.name,
+        namespaces: [
+          { name: 'ns1', info: 'info' },
+          { name: 'ns2', info: 'info2' },
+        ],
         resourceVersion: '',
         selfLink: '',
         uid: '',

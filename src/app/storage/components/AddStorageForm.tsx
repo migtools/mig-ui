@@ -9,7 +9,7 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigrationStorage, IStorageFormObject } from '../../../models';
+import { IMigStorage, IStorageFormObject } from '../../../models';
 import uuidv4 from 'uuid/v4';
 
 const WrappedAddStorageForm = props => {
@@ -126,7 +126,7 @@ const AddStorageForm: any = withFormik({
   },
 
   handleSubmit: (values, formikBag: any) => {
-    const newStorage: IMigrationStorage = {
+    const newStorage: IMigStorage = {
       id: uuidv4(),
       apiVersion: 'test',
       kind: 'test',

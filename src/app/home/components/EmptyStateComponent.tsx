@@ -9,8 +9,11 @@ import {
 } from '@patternfly/react-core';
 import DynamicModal from '../../common/DynamicModalComponent';
 import { AddCircleOIcon } from '@patternfly/react-icons';
+interface IState {
+  isOpen: boolean;
+}
 
-class EmptyStateComponent extends Component<any, any> {
+class EmptyStateComponent extends Component<{}, IState> {
   state = {
     isOpen: false,
   };

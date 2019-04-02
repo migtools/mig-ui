@@ -6,7 +6,15 @@ import AddStorageForm from '../storage/components/AddStorageForm';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 
-class DynamicModalComponent extends React.Component<any, any> {
+interface IProps {
+  isOpen: boolean;
+  modalType: string;
+  onHandleModalToggle: () => void;
+  addCluster: (item) => void;
+  addStorage: (item) => void;
+}
+
+class DynamicModalComponent extends React.Component<IProps, {}> {
   handleAddItemSubmit = (type, dataItem) => {
     if (type === 'cluster') {
       this.props.addCluster(dataItem);
