@@ -7,7 +7,22 @@ import DynamicModal from "../common/DynamicModalComponent";
 import clusterOperations from "../cluster/duck/operations";
 import storageOperations from "../storage/duck/operations";
 import Wizard from "../plan/components/Wizard";
-class DetailViewComponent extends Component<any, any> {
+interface IProps {
+  clusterList: Array<any>;
+  migStorageList: Array<any>;
+  removeStorage: (id) => void;
+  removePlan: (id) => void;
+  removeCluster: (id) => void;
+}
+interface IState {
+  expanded: Array<any>;
+  plansDisabled: boolean;
+  isOpen: boolean;
+  isWizardOpen: boolean;
+  modalType: string;
+}
+
+class DetailViewComponent extends Component<IProps, IState> {
   state = {
     expanded: [],
     plansDisabled: true,
@@ -17,7 +32,7 @@ class DetailViewComponent extends Component<any, any> {
   };
   componentDidMount() {
     const { clusterList, migStorageList } = this.props;
-    if (clusterList > 1 && migStorageList > 1) {
+    if (clusterList.length > 1 && migStorageList.length > 1) {
       this.setState({ plansDisabled: false });
     }
   }

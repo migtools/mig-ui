@@ -3,13 +3,21 @@ import { Pagination, Title } from "@patternfly/react-core";
 import { Card, CardHeader, CardBody, CardFooter } from "@patternfly/react-core";
 import ReactDataGrid from "react-data-grid";
 // import { Table, TableHeader, TableBody } from '@patternfly/react-table';
-class NamespaceTable extends React.Component<any, any> {
+
+interface IState {
+  page: number;
+  perPage: number;
+  pageOfItems: Array<any>;
+}
+interface IProps {
+  selectedCluster: any;
+}
+
+class NamespaceTable extends React.Component<IProps, IState> {
   state = {
     page: 1,
     perPage: 20,
     pageOfItems: []
-    // columns: ["name", "info"],
-    // rows: [["one", "two"]]
   };
 
   onChangePage = pageOfItems => {

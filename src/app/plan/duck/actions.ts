@@ -1,10 +1,10 @@
-import { createActions } from 'reduxsauce';
+import { createActions } from "reduxsauce";
 
 const { Creators, Types } = createActions({
-  migrationPlanFetchSuccess: ['migrationPlanList'],
-  addPlanSuccess: ['newPlan'],
-  addPlanFailure: ['error'],
-  removePlanSuccess: ['id'],
+  migPlanFetchSuccess: ["migPlanList"],
+  addPlanSuccess: ["newPlan"],
+  addPlanFailure: ["error"],
+  removePlanSuccess: ["id"]
 });
 
 export { Creators, Types };
