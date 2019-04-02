@@ -44,6 +44,7 @@ migMeta.oauth = {
   redirectUri: localConfig.redirectUri,
   userScope: localConfig.userScope,
 }
+migMeta.namespace = localConfig.namespace;
 
 htmlWebpackPluginOpt.migMeta = migMeta
 

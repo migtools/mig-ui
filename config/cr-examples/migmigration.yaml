@@ -1,0 +1,11 @@
+apiVersion: migration.openshift.io/v1beta1
+kind: MigMigration
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: my-migration
+  namespace: mig
+spec:
+  migPlanRef:
+    name: my-plan
+    namespace: mig

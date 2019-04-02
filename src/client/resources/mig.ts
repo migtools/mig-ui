@@ -25,4 +25,5 @@ export enum MigResourceKind {
   MigAssetCollection = 'migassetcollections',
   MigStage = 'migstages',
   MigMigration = 'migmigrations',
+  MigCluster = 'migclusters',
 }

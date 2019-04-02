@@ -13,6 +13,7 @@
     "clean": "yarn rimraf dist",
     "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
     "start:remote": "./scripts/remote-dev.sh",
+    "prep-remote": "./scripts/prep-remote.sh",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "test": "jest --rootDir=. --config=config/jest.config.js"
