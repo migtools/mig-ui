@@ -22,7 +22,7 @@ if (devMode !== 'local' && devMode !== 'remote') {
 }
 
 const htmlWebpackPluginOpt = {
-  template: `src/assets/index.${devMode}.html`,
+  template: `src/assets/index.html`,
   title: 'MIG UI',
   inject: 'body'
 };
