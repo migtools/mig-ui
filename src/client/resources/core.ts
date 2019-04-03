@@ -34,7 +34,7 @@ export class CoreNamespacedResource extends NamespacedResource {
 
 export class CoreClusterResource extends ClusterResource {
   private _gvk: IGroupVersionKindPlural;
-  constructor(kind: CoreClusterResourceKind, namespace: string) {
+  constructor(kind: CoreClusterResourceKind) {
     super();
 
     this._gvk = {
@@ -52,7 +52,7 @@ export class CoreClusterResource extends ClusterResource {
     // not have an API group
     return [
       '/api',
-      this.gvk().group,
+      this.gvk().version,
       this.gvk().kindPlural,
     ].join('/');
   }
