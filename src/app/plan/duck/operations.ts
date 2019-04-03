@@ -16,7 +16,7 @@ const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
 const addPlan = migPlan => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
@@ -24,10 +24,8 @@ const addPlan = migPlan => {
         MigResourceKind.MigPlan,
         migMeta.namespace,
       );
-      client
-        .create(resource, migPlan)
-        .then(res => dispatch(addPlanSuccess(res.data)))
-        .catch(err => AlertCreators.alertError('Failed to add plan'));
+      const res = await client.create(resource, migPlan);
+      dispatch(addPlanSuccess(res.data));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
@@ -50,7 +48,7 @@ const removePlan = id => {
 };
 
 const fetchPlan = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
@@ -58,10 +56,8 @@ const fetchPlan = () => {
         MigResourceKind.MigPlan,
         migMeta.namespace,
       );
-      client
-        .list(resource)
-        .then(res => dispatch(migPlanFetchSuccess(res.data)))
-        .catch(err => AlertCreators.alertError('Failed to get plans'));
+      const res = await client.list(resource);
+      dispatch(migPlanFetchSuccess(res.data));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }

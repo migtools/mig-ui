@@ -11,15 +11,14 @@ const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
 
 const addStorage = migStorage => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const resource = new MigResource(
         MigResourceKind.MigStorage, migMeta.namespace);
-      client.create(resource, migStorage)
-        .then(res => dispatch(addStorageSuccess(res.data)))
-        .catch(err => AlertCreators.alertError('Failed to add storage'));
+      const res = await client.create(resource, migStorage);
+      dispatch(addStorageSuccess(res.data));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
@@ -42,15 +41,14 @@ const removeStorage = id => {
 };
 
 const fetchStorage = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const resource = new MigResource(
         MigResourceKind.MigStorage, migMeta.namespace);
-      client.list(resource)
-        .then(res => dispatch(migStorageFetchSuccess(res.data)))
-        .catch(err => AlertCreators.alertError('Failed to get clusters'));
+      const res = await client.list(resource);
+      dispatch(migStorageFetchSuccess(res.data));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
