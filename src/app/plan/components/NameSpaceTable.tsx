@@ -1,16 +1,20 @@
 import React from 'react';
-import { Pagination, Title } from '@patternfly/react-core';
+import { Title } from '@patternfly/react-core';
 import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
-import ReactDataGrid from 'react-data-grid';
-// import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
 
 interface IState {
   page: number;
   perPage: number;
   pageOfItems: any[];
+  rows: any;
+  selectAll: any;
+  checked: any;
 }
 interface IProps {
-  selectedCluster: any;
+  sourceCluster: any;
+  setFieldValue: (fieldName, fieldValue) => void;
 }
 
 class NamespaceTable extends React.Component<IProps, IState> {
@@ -18,68 +22,82 @@ class NamespaceTable extends React.Component<IProps, IState> {
     page: 1,
     perPage: 20,
     pageOfItems: [],
+    rows: [],
+    checked: [],
+    selectAll: false,
   };
 
-  onChangePage = pageOfItems => {
-    this.setState({ pageOfItems });
+  componentDidMount() {
+    if (this.props.sourceCluster) {
+      this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
+    }
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.sourceCluster !== this.props.sourceCluster) {
+      this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
+    }
+  }
+  selectRow = row => {
+    const index = row.index;
+    const checkedCopy = this.state.checked;
+    checkedCopy[index] = !this.state.checked[index];
 
-  onSetPage = (_event, pageNumber) => {
     this.setState({
-      page: pageNumber,
+      checked: checkedCopy,
     });
-  }
-
-  onPerPageSelect = (_event, perPage) => {
-    this.setState({
-      perPage,
+    const itemList = this.props.sourceCluster.metadata.namespaces;
+    const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
+      for (let i = 0; checkedCopy.length > i; i++) {
+        if (itemIndex === i) {
+          if (checkedCopy[i]) {
+            return item;
+          }
+        }
+      }
     });
+    this.props.setFieldValue('selectedNamespaces', formValuesForNamespaces);
   }
-
   render() {
-    const columns = [
-      { key: 'name', name: 'Name' },
-      { key: 'info', name: 'Info' },
-    ];
-    const { selectedCluster } = this.props;
-    // const { columns, rows } = this.state;
+    const { sourceCluster } = this.props;
+    const { rows } = this.state;
 
-    if (selectedCluster !== null) {
-      //   debugger;
-      //   const myRows = [];
-      //   for (let i = 0; i < selectedCluster.metadata.namespaces.length; i++) {
-      //     myRows[i] = new Array(selectedCluster.metadata.namespaces[i]);
-      //   }
+    if (sourceCluster !== null) {
       return (
         <React.Fragment>
           <Card>
             <CardHeader>
               <Title headingLevel="h2" size="3xl">
-                {selectedCluster.metadata.name || 'nothing'}
+                {sourceCluster.metadata.name || 'nothing'}
               </Title>
             </CardHeader>
             <CardBody>
-              {/* <Table caption="Simple Table" cells={columns} rows={myRows}>
-                <TableHeader />
-                <TableBody />
-              </Table> */}
-              <ReactDataGrid
-                columns={columns}
-                rowGetter={i => selectedCluster.metadata.namespaces[i]}
-                rowsCount={3}
-                minHeight={150}
+              <ReactTable
+                data={this.state.rows}
+                columns={[
+                  {
+                    accessor: 'id',
+                    Cell: row => (
+                      <input
+                        type="checkbox"
+                        onChange={() => this.selectRow(row)}
+                        checked={this.state.checked[row.index]}
+                      />
+                    ),
+                  },
+                  {
+                    Header: 'Name',
+                    accessor: 'name',
+                  },
+                  {
+                    Header: 'Info',
+                    accessor: 'info',
+                  },
+                ]}
+                defaultPageSize={10}
+                className="-striped -highlight"
               />
             </CardBody>
-            <CardFooter>
-              <Pagination
-                itemCount={selectedCluster.metadata.namespaces.length || 0}
-                perPage={this.state.perPage}
-                page={this.state.page}
-                onSetPage={this.onSetPage}
-                widgetId="pagination-options-menu-top"
-                onPerPageSelect={this.onPerPageSelect}
-              />
-            </CardFooter>
+            <CardFooter />
           </Card>
         </React.Fragment>
       );

@@ -4,6 +4,7 @@ import { Flex } from '@rebass/emotion';
 import { Wizard as PFWizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
+import MigTargetForm from './MigTargetForm';
 import { css } from '@emotion/core';
 const WrappedWizard = props => {
   const {
@@ -16,6 +17,7 @@ const WrappedWizard = props => {
     setFieldTouched,
     setFieldValue,
     clusterList,
+    storageList,
   } = props;
   const steps = [
     {
@@ -42,12 +44,48 @@ const WrappedWizard = props => {
           handleBlur={handleBlur}
           handleChange={handleChange}
           handleSubmit={handleSubmit}
-          clusterList={clusterList}
           setFieldValue={setFieldValue}
+          setFieldTouched={setFieldTouched}
+          clusterList={clusterList}
         />
       ),
-      enableNext: false,
+      // enableNext: !errors.planName && touched.planName === true
+      enableNext: !errors.sourceCluster && touched.sourceCluster === true,
     },
+    {
+      name: 'Migration Targets',
+      component: (
+        <MigTargetForm
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleBlur={handleBlur}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          setFieldValue={setFieldValue}
+          setFieldTouched={setFieldTouched}
+          clusterList={clusterList}
+          storageList={storageList}
+        />
+      ),
+      enableNext: !errors.targetCluster && touched.targetCluster === true,
+    },
+    // {
+    //   name: "Options",
+    //   component: (
+    //     <OptionsForm
+    //       values={values}
+    //       errors={errors}
+    //       touched={touched}
+    //       handleBlur={handleBlur}
+    //       handleChange={handleChange}
+    //       handleSubmit={handleSubmit}
+    //       setFieldValue={setFieldValue}
+    //       setFieldTouched={setFieldTouched}
+    //     />
+    //   ),
+    //   enableNext: true
+    // }
   ];
   const onSave = () => {
     handleSubmit();
@@ -81,7 +119,10 @@ const WrappedWizard = props => {
 const Wizard: any = withFormik({
   mapPropsToValues: () => ({
     planName: '',
-    selectedCluster: '',
+    sourceCluster: '',
+    targetCluster: '',
+    selectedNamespaces: [],
+    selectedStorage: '',
   }),
 
   validate: values => {
@@ -90,8 +131,17 @@ const Wizard: any = withFormik({
     if (!values.planName) {
       errors.planName = 'Required';
     }
-    if (!values.selectedCluster) {
-      errors.selectedCluster = 'Required';
+    if (!values.sourceCluster) {
+      errors.sourceCluster = 'Required';
+    }
+    if (!values.selectedNamespaces) {
+      errors.selectedNamespaces = 'Required';
+    }
+    if (!values.targetCluster) {
+      errors.targetCluster = 'Required';
+    }
+    if (!values.selectedStorage) {
+      errors.selectedStorage = 'Required';
     }
     return errors;
   },
