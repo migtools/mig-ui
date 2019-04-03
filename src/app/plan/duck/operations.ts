@@ -3,12 +3,17 @@ import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
+import {
+  CoreClusterResource,
+  CoreClusterResourceKind,
+} from '../../../client/resources';
 
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
 const removePlanSuccess = Creators.removePlanSuccess;
 const removePlanFailure = Creators.removePlanFailure;
+const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
 const addPlan = migPlan => {
   return (dispatch, getState) => {
@@ -63,8 +68,19 @@ const fetchPlan = () => {
   };
 };
 
+const fetchNamespacesForCluster = (clusterName) => {
+  return (dispatch, getState) => {
+    const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
+    const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
+    client.list(nsResource).then(res => {
+      dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
+    }).catch(err => AlertCreators.alertError('Failed to load namespaces for cluster'));
+  };
+};
+
 export default {
   fetchPlan,
   addPlan,
   removePlan,
+  fetchNamespacesForCluster,
 };

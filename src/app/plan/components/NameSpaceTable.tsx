@@ -3,6 +3,8 @@ import { Title } from '@patternfly/react-core';
 import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import { connect } from 'react-redux';
+import planOperations from '../../plan/duck/operations';
 
 interface IState {
   page: number;
@@ -14,6 +16,8 @@ interface IState {
 }
 interface IProps {
   sourceCluster: any;
+  sourceClusterNamespaces: any;
+  fetchNamespacesForCluster: any;
   setFieldValue: (fieldName, fieldValue) => void;
 }
 
@@ -34,7 +38,10 @@ class NamespaceTable extends React.Component<IProps, IState> {
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.sourceCluster !== this.props.sourceCluster) {
-      this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
+      this.props.fetchNamespacesForCluster(this.props.sourceCluster.metadata.name);
+    }
+    if (prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces) {
+      this.setState({ rows: this.props.sourceClusterNamespaces });
     }
   }
   selectRow = row => {
@@ -106,4 +113,22 @@ class NamespaceTable extends React.Component<IProps, IState> {
     }
   }
 }
-export default NamespaceTable;
+
+function mapStateToProps(state) {
+  return {
+    sourceClusterNamespaces: state.plan.sourceClusterNamespaces,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchNamespacesForCluster: clusterName => {
+      dispatch(planOperations.fetchNamespacesForCluster(clusterName));
+    },
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(NamespaceTable);
