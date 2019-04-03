@@ -15,6 +15,9 @@ export abstract class NamespacedResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public namespace: string;
   constructor(namespace: string) {
+    if(!namespace) {
+      throw new Error("NamespacedResource must be passed a namespace, it was undefined");
+    }
     this.namespace = namespace;
   }
 
