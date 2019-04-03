@@ -5,4 +5,5 @@
   "oauthClientId": "mig-ui-remote-dev",
   "redirectUri": "http://localhost:9000/auth/callback"
   "namespace": "mig"
+  "configNamespace": "openshift-config"
 }
