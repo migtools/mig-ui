@@ -25,7 +25,7 @@ interface IState {
 class DetailViewComponent extends Component<IProps, IState> {
   state = {
     expanded: [],
-    plansDisabled: false,
+    plansDisabled: true,
     isOpen: false,
     isWizardOpen: false,
     modalType: '',

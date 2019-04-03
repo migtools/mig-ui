@@ -117,15 +117,15 @@ class NamespaceTable extends React.Component<IProps, IState> {
 function mapStateToProps(state) {
   return {
     sourceClusterNamespaces: state.plan.sourceClusterNamespaces,
-  }
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     fetchNamespacesForCluster: clusterName => {
-      dispatch(planOperations.fetchNamespacesForCluster(clusterName))
-    }
-  }
+      dispatch(planOperations.fetchNamespacesForCluster(clusterName));
+    },
+  };
 }
 
 export default connect(

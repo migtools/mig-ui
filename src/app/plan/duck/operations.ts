@@ -6,7 +6,7 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import {
   CoreClusterResource,
   CoreClusterResourceKind,
-} from '../../../client/resources'
+} from '../../../client/resources';
 
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
@@ -71,7 +71,7 @@ const fetchPlan = () => {
 const fetchNamespacesForCluster = (clusterName) => {
   return (dispatch, getState) => {
     const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
-    const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace)
+    const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
     client.list(nsResource).then(res => {
       dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
     }).catch(err => AlertCreators.alertError('Failed to load namespaces for cluster'));
