@@ -9,7 +9,7 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigStorage, IStorageFormObject } from '../../../models';
+import { IMigStorage, IStorageFormObject } from '../../../../models';
 import uuidv4 from 'uuid/v4';
 
 const WrappedAddStorageForm = props => {

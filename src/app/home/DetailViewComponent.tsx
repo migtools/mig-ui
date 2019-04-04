@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
-import { DataList } from '@patternfly/react-core';
+import { DataList, Button } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 
+import { PlusCircleIcon } from '@patternfly/react-icons';
+
 import DetailViewItem from './components/DetailViewItem';
-import DynamicModal from '../common/DynamicModalComponent';
 import clusterOperations from '../cluster/duck/operations';
 import storageOperations from '../storage/duck/operations';
+import AddClusterModal from '../cluster/components/AddClusterModal';
+import AddStorageModal from '../storage/components/AddStorageModal';
+
 import Wizard from '../plan/components/Wizard';
 interface IProps {
   clusterList: any[];
@@ -38,15 +42,16 @@ class DetailViewComponent extends Component<IProps, IState> {
   }
   componentDidUpdate(prevProps, prevState) {
     if (
-      prevProps.clusterList !== this.props.clusterList ||
-      prevProps.migStorageList !== this.props.migStorageList
-    ) {
-      if (
+      (
+        prevProps.clusterList !== this.props.clusterList ||
+        prevProps.migStorageList !== this.props.migStorageList
+      ) &&
+      (
         this.props.clusterList.length > 1 &&
         this.props.migStorageList.length > 0
-      ) {
-        this.setState({ plansDisabled: false });
-      }
+      )
+    ) {
+      this.setState({ plansDisabled: false });
     }
   }
   handleToggle = id => {
@@ -63,22 +68,17 @@ class DetailViewComponent extends Component<IProps, IState> {
   }
 
   handleRemoveItem = (type, id) => {
-    if (type === 'cluster') {
-      this.props.removeCluster(id);
-    }
-    if (type === 'storage') {
-      this.props.removeStorage(id);
-    }
-    if (type === 'plan') {
-      this.props.removePlan(id);
-    }
-  }
-
-  handleModalToggle = type => {
-    this.setState(({ isOpen, modalType }) => ({
-      isOpen: !isOpen,
-      modalType: type,
-    }));
+    switch (type) {
+      case 'cluster':
+        this.props.removeCluster(id);
+        break;
+      case 'storage':
+        this.props.removeStorage(id);
+        break;
+      case 'plan':
+        this.props.removePlan(id);
+        break;
+     }
   }
 
   handleWizardToggle = () => {
@@ -100,7 +100,13 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="clusterList"
             title="Clusters"
             type="cluster"
-            onAddItem={() => this.handleModalToggle('cluster')}
+            addButton={
+              <AddClusterModal
+                trigger={<Button variant="link">
+                  <PlusCircleIcon /> Add cluster
+                </Button>}
+              />
+            }
             onRemoveItem={this.handleRemoveItem}
           />
           <DetailViewItem
@@ -110,7 +116,13 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="repositoryList"
             title="Storage"
             type="storage"
-            onAddItem={() => this.handleModalToggle('storage')}
+            addButton={
+              <AddStorageModal
+                trigger={<Button variant="link">
+                  <PlusCircleIcon /> Add storage
+                </Button>}
+              />
+            }
             onRemoveItem={this.handleRemoveItem}
           />
           <DetailViewItem
@@ -120,22 +132,19 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="plansList"
             title="Plans"
             type="plans"
-            onAddItem={() => this.handleWizardToggle()}
+            addButton={
+              <Wizard
+                clusterList={clusterList}
+                storageList={migStorageList}
+                trigger={<Button variant="link">
+                  <PlusCircleIcon /> Add plan
+                </Button>}
+              />
+            }
             onRemoveItem={this.handleRemoveItem}
             plansDisabled={this.state.plansDisabled}
           />
         </DataList>
-        <Wizard
-          isOpen={isWizardOpen}
-          onWizardToggle={this.handleWizardToggle}
-          clusterList={clusterList}
-          storageList={migStorageList}
-        />
-        <DynamicModal
-          onHandleModalToggle={this.handleModalToggle}
-          isOpen={this.state.isOpen}
-          modalType={this.state.modalType}
-        />
       </React.Fragment>
     );
   }

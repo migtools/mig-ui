@@ -9,7 +9,7 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigCluster, IClusterFormObject } from '../../../models';
+import { IMigCluster, IClusterFormObject } from '../../../../models';
 import uuidv4 from 'uuid/v4';
 
 const WrappedAddClusterForm = props => {

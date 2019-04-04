@@ -6,115 +6,124 @@ import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import { css } from '@emotion/core';
-const WrappedWizard = props => {
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    setFieldTouched,
-    setFieldValue,
-    clusterList,
-    storageList,
-  } = props;
-  const steps = [
-    {
-      name: 'General',
-      component: (
-        <GeneralForm
-          values={values}
-          errors={errors}
-          touched={touched}
-          handleBlur={handleBlur}
-          handleChange={handleChange}
-          setFieldTouched={setFieldTouched}
-        />
-      ),
-      enableNext: !errors.planName && touched.planName === true,
-    },
-    {
-      name: 'Migration Source',
-      component: (
-        <MigSourceForm
-          values={values}
-          errors={errors}
-          touched={touched}
-          handleBlur={handleBlur}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          setFieldValue={setFieldValue}
-          setFieldTouched={setFieldTouched}
-          clusterList={clusterList}
-        />
-      ),
-      // enableNext: !errors.planName && touched.planName === true
-      enableNext: !errors.sourceCluster && touched.sourceCluster === true,
-    },
-    {
-      name: 'Migration Targets',
-      component: (
-        <MigTargetForm
-          values={values}
-          errors={errors}
-          touched={touched}
-          handleBlur={handleBlur}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          setFieldValue={setFieldValue}
-          setFieldTouched={setFieldTouched}
-          clusterList={clusterList}
-          storageList={storageList}
-        />
-      ),
-      enableNext: !errors.targetCluster && touched.targetCluster === true,
-    },
-    // {
-    //   name: "Options",
-    //   component: (
-    //     <OptionsForm
-    //       values={values}
-    //       errors={errors}
-    //       touched={touched}
-    //       handleBlur={handleBlur}
-    //       handleChange={handleChange}
-    //       handleSubmit={handleSubmit}
-    //       setFieldValue={setFieldValue}
-    //       setFieldTouched={setFieldTouched}
-    //     />
-    //   ),
-    //   enableNext: true
-    // }
-  ];
-  const onSave = () => {
-    handleSubmit();
-  };
 
-  const onClose = () => {
-    props.resetForm();
-    props.onWizardToggle();
+class WrappedWizard extends React.Component<any, any> {
+  state = {
+    isOpen: false,
   };
-  return (
-    <Flex>
-      <form onSubmit={handleSubmit}>
-        <PFWizard
-          css={css`
-            .pf-c-wizard__main {
-              height: 100%;
-            }
-          `}
-          isOpen={props.isOpen}
-          title="Migration Plan Wizard"
-          description="Create a migration plan"
-          onClose={onClose}
-          steps={steps}
-          onSave={() => onSave()}
-        />
-      </form>
-    </Flex>
-  );
-};
+  handleToggle = () => {
+    this.setState((state) => ({ isOpen: !state.isOpen }));
+  }
+
+  onClose = () => {
+    this.props.resetForm();
+    this.handleToggle();
+  }
+  render() {
+    const {
+      values,
+      touched,
+      errors,
+      handleChange,
+      handleBlur,
+      handleSubmit,
+      setFieldTouched,
+      setFieldValue,
+      clusterList,
+      storageList,
+      trigger,
+      resetForm,
+    } = this.props;
+
+    const triggerNew = React.cloneElement(
+      trigger,
+      {
+        onClick: () => {
+          this.handleToggle();
+          if (trigger.props.onClick) {
+            trigger.props.onClick();
+          }
+        },
+      },
+    );
+
+    const steps = [
+      {
+        name: 'General',
+        component: (
+          <GeneralForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            setFieldTouched={setFieldTouched}
+          />
+        ),
+        enableNext: !errors.planName && touched.planName === true,
+      },
+      {
+        name: 'Migration Source',
+        component: (
+          <MigSourceForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            clusterList={clusterList}
+          />
+        ),
+        // enableNext: !errors.planName && touched.planName === true
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+      },
+      {
+        name: 'Migration Targets',
+        component: (
+          <MigTargetForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            clusterList={clusterList}
+            storageList={storageList}
+          />
+        ),
+        enableNext: !errors.targetCluster && touched.targetCluster === true,
+      },
+    ];
+
+    return (
+      <React.Fragment>
+        {triggerNew}
+        <Flex>
+          <form onSubmit={handleSubmit}>
+            <PFWizard
+              css={css`
+                .pf-c-wizard__main {
+                  height: 100%;
+                }
+              `}
+              isOpen={this.state.isOpen}
+              title="Migration Plan Wizard"
+              description="Create a migration plan"
+              onClose={this.onClose}
+              steps={steps}
+              onSave={handleSubmit}
+            />
+          </form>
+        </Flex>
+      </React.Fragment>
+    );
+  }
+}
 
 const Wizard: any = withFormik({
   mapPropsToValues: () => ({
