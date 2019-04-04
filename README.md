@@ -7,6 +7,8 @@
 Copy `config/config.dev.json.example` to `config/config.dev.json` where you can
 configure your local development settings.
 
+`cp config/config.dev.json.example config/config.dev.json`
+
 ### UI development server
 
 ```bash

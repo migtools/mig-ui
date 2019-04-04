@@ -3,7 +3,7 @@
   "devServerPort": 9000,
   "userScope": "user:full",
   "oauthClientId": "mig-ui-remote-dev",
-  "redirectUri": "http://localhost:9000/auth/callback"
-  "namespace": "mig"
+  "redirectUri": "http://localhost:9000/auth/callback",
+  "namespace": "mig",
   "configNamespace": "openshift-config"
 }
