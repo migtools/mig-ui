@@ -84,7 +84,7 @@ const fetchClusters = () => {
       const res = await client.list(resource);
       const migClusters = res.data.items;
       const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
-      const refs = await Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters))
+      const refs = await Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters));
       const groupedClusters = groupClusters(migClusters, refs);
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
