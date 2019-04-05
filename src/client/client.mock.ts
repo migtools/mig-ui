@@ -17,7 +17,7 @@ export class MockClusterClient {
         res({
           data: {
             items: KubeStore.Instance.listResource(resource),
-          }
+          },
         });
       }, this.reqTime);
     });
