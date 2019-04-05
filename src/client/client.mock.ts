@@ -15,7 +15,9 @@ export class MockClusterClient {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
         res({
-          data: KubeStore.Instance.listResource(resource),
+          data: {
+            items: KubeStore.Instance.listResource(resource),
+          }
         });
       }, this.reqTime);
     });
