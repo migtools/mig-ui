@@ -16,8 +16,8 @@ const fetchOauthMeta = clusterApi => {
 
   return async dispatch => {
     try {
-      const res = await axios.get(oauthMetaUrl)
-      dispatch(setOauthMeta(res.data))
+      const res = await axios.get(oauthMetaUrl);
+      dispatch(setOauthMeta(res.data));
     } catch (err) {
       dispatch(loginFailure());
       dispatch(alertError(err));
@@ -28,7 +28,7 @@ const fetchOauthMeta = clusterApi => {
 const fetchToken = (oauthClient, codeRedirect) => {
   return async dispatch => {
     try {
-      const result = oauthClient.code.getToken(codeRedirect)
+      const result = await oauthClient.code.getToken(codeRedirect);
       const user = result.data;
       localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
       dispatch(loginSuccess(user));
