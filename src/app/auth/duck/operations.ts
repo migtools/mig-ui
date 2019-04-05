@@ -14,28 +14,29 @@ const LS_KEY_CURRENT_USER = 'currentUser';
 const fetchOauthMeta = clusterApi => {
   const oauthMetaUrl = `${clusterApi}/.well-known/oauth-authorization-server`;
 
-  return dispatch => {
-    return axios.get(oauthMetaUrl)
-      .then(res => dispatch(setOauthMeta(res.data)))
-      .catch(err => {
-        dispatch(loginFailure());
-        dispatch(alertError(err));
-      });
+  return async dispatch => {
+    try {
+      const res = await axios.get(oauthMetaUrl);
+      dispatch(setOauthMeta(res.data));
+    } catch (err) {
+      dispatch(loginFailure());
+      dispatch(alertError(err));
+    }
   };
 };
 
 const fetchToken = (oauthClient, codeRedirect) => {
-  return dispatch => {
-    oauthClient.code.getToken(codeRedirect).then(result => {
+  return async dispatch => {
+    try {
+      const result = await oauthClient.code.getToken(codeRedirect);
       const user = result.data;
       localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
       dispatch(loginSuccess(user));
       dispatch(push('/'));
-    }).catch(err => {
-      // TODO: Need to handle a failed login
+    } catch (err) {
       dispatch(loginFailure());
       dispatch(alertError(err));
-    });
+    }
   };
 };
 

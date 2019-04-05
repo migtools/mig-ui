@@ -21,7 +21,7 @@ const removeClusterSuccess = Creators.removeClusterSuccess;
 const removeClusterFailure = Creators.removeClusterFailure;
 
 const addCluster = clusterValues => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const state = getState();
       const { migMeta } = state;
@@ -41,18 +41,16 @@ const addCluster = clusterValues => {
       const migClusterResource = new MigResource(
         MigResourceKind.MigCluster, migMeta.namespace);
 
-      Promise.all([
+      const arr = await Promise.all([
         client.create(clusterRegResource, clusterReg),
         client.create(secretResource, tokenSecret),
         client.create(migClusterResource, migCluster),
-      ]).then(arr => {
-        const cluster = arr.reduce((accum, res) => {
-          accum[res.data.kind] = res.data;
-          return accum;
-        }, {});
-        dispatch(addClusterSuccess(cluster));
-      }).catch(err => AlertCreators.alertError('Failed to add cluster'));
-
+      ]);
+      const cluster = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      dispatch(addClusterSuccess(cluster));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
@@ -75,7 +73,7 @@ const removeCluster = id => {
 };
 
 const fetchClusters = () => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
@@ -83,16 +81,12 @@ const fetchClusters = () => {
       const resource = new MigResource(
         MigResourceKind.MigCluster, migMeta.namespace);
 
-      client.list(resource)
-        .then(res => {
-          const migClusters = res.data.items;
-          const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
-          Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters)).then(refs => {
-            const groupedClusters = groupClusters(migClusters, refs);
-            dispatch(clusterFetchSuccess(groupedClusters));
-          });
-        })
-        .catch(err => AlertCreators.alertError('Failed to get clusters'));
+      const res = await client.list(resource);
+      const migClusters = res.data.items;
+      const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
+      const refs = await Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters));
+      const groupedClusters = groupClusters(migClusters, refs);
+      dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
