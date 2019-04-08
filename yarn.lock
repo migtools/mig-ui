@@ -944,19 +944,7 @@
   version "1.0.250"
   resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-1.0.250.tgz#02952d55039891ab4796b6e78e677ecd01c25855"
 
-"@patternfly/react-core@2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.9.2.tgz#f21cfaaa244d690ff0429f53fff5f937d1c7d16b"
-  dependencies:
-    "@patternfly/react-icons" "^3.6.1"
-    "@patternfly/react-styles" "^2.4.0"
-    "@patternfly/react-tokens" "^2.2.1"
-    "@tippy.js/react" "^1.1.1"
-    emotion "^9.2.9"
-    exenv "^1.2.2"
-    focus-trap-react "^4.0.1"
-
-"@patternfly/react-core@^2.10.0", "@patternfly/react-core@^2.9.2":
+"@patternfly/react-core@2.10.9", "@patternfly/react-core@^2.10.0", "@patternfly/react-core@^2.9.2":
   version "2.10.9"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.10.9.tgz#eae50f10542e9e820c24223cb8f319540131e157"
   dependencies:
@@ -1038,7 +1026,7 @@
     exenv "^1.2.2"
     reactabular-table "^8.14.0"
 
-"@patternfly/react-tokens@^2.0.2", "@patternfly/react-tokens@^2.2.1":
+"@patternfly/react-tokens@^2.0.2":
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.2.2.tgz#b0d9c175f47edc602f71d7fe5c10c4b475034cd5"
 
