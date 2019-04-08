@@ -31,7 +31,7 @@
     "@patternfly/react-inline-edit-extension": "1.1.0",
     "@patternfly/react-table": "1.4.10",
     "@types/jest": "24.0.11",
-    "@types/node": "11.12.2",
+    "@types/node": "11.13.0",
     "babel-loader": "8.0.5",
     "clean-webpack-plugin": "0.1.19",
     "css-loader": "1.0.1",
