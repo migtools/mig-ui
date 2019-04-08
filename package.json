@@ -19,11 +19,11 @@
     "test": "jest --rootDir=. --config=config/jest.config.js"
   },
   "devDependencies": {
-    "@babel/core": "7.4.0",
+    "@babel/core": "7.4.3",
     "@babel/plugin-proposal-class-properties": "7.4.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.4.3",
     "@babel/plugin-transform-runtime": "7.4.3",
-    "@babel/preset-env": "7.4.2",
+    "@babel/preset-env": "7.4.3",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.3.3",
     "@emotion/babel-preset-css-prop": "10.0.9",
