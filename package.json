@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@emotion/core": "10.0.9",
-    "@patternfly/react-core": "2.9.2",
+    "@patternfly/react-core": "2.10.9",
     "@rebass/emotion": "3.1.0",
     "@types/react": "16.8.8",
     "axios": "0.18.0",
