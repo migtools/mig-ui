@@ -36,7 +36,7 @@ class DetailViewComponent extends Component<IProps, IState> {
   };
   componentDidMount() {
     const { clusterList, migStorageList } = this.props;
-    if (clusterList.length > 1 && migStorageList.length > 1) {
+    if (clusterList.length > 1 && migStorageList.length > 0) {
       this.setState({ plansDisabled: false });
     }
   }

@@ -7,6 +7,8 @@ import {
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
+import ClusterStatusIcon from './ClusterStatusIcon';
+import { LinkIcon } from '@patternfly/react-icons';
 
 const DataListComponent = ({ dataList, type, ...props }) => {
   if (dataList) {
@@ -21,23 +23,30 @@ const DataListComponent = ({ dataList, type, ...props }) => {
                 aria-labelledby="simple-item1"
               >
                 <DataListCell width={1}>
+                  <ClusterStatusIcon isSuccessful />
                   <span id="simple-item1">{listItem.metadata.name}</span>
                 </DataListCell>
                 <DataListCell width={2}>
-                  <a target="_blank" href={listItem.spec.clusterUrl}>
-                    {type === 'cluster' && (
-                      <React.Fragment>
-                        {listItem.spec.clusterUrl}
-                      </React.Fragment>
-                    )}
-                    {type === 'storage' && (
-                      <React.Fragment>
-                        {listItem.spec.backupStorageLocationRef.name}
-                      </React.Fragment>
-                    )}
-                  </a>
+                  {type === 'cluster' && (
+                    <a
+                      target="_blank"
+                      href={`http://localhost:9999/${listItem.metadata.name}`}
+                    >
+                      {`http://localhost:9999/${listItem.metadata.name}`}
+                    </a>
+                  )}
+                  {type === 'storage' && (
+                    <a
+                      target="_blank"
+                      href={`http://localhost:9999/${listItem.metadata.name}`}
+                    >
+                      {`http://localhost:9999/${listItem.metadata.name}`}
+                    </a>
+                  )}
                 </DataListCell>
-                <DataListCell width={2}>Plans</DataListCell>
+                <DataListCell width={2}>
+                  <LinkIcon /> 0 associated migration plans
+                </DataListCell>
                 <DataListCell width={2}>
                   <Flex justifyContent="flex-end">
                     <Box mx={1}>
@@ -59,10 +68,10 @@ const DataListComponent = ({ dataList, type, ...props }) => {
             ))}
           </DataList>
         ) : (
-          <Flex>
-            <Box color={theme.colors.navy}>No content</Box>
-          </Flex>
-        )}
+            <Flex>
+              <Box color={theme.colors.navy}>No content</Box>
+            </Flex>
+          )}
       </React.Fragment>
     );
   }

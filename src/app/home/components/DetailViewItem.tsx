@@ -4,11 +4,8 @@ import {
   DataListToggle,
   DataListContent,
   Button,
-  DataList,
-  DataListCell,
 } from '@patternfly/react-core';
 
-import { TextInput } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Flex, Box } from '@rebass/emotion';
 

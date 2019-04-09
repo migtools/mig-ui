@@ -6,7 +6,7 @@ interface IProps {
   isLoggedIn: boolean;
 }
 
-const PrivateRoute: React.SFC<IProps & RouteComponentProps> = ({
+const PrivateRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
   component: Component,
   isLoggedIn,
   ...rest

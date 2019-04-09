@@ -21,7 +21,7 @@ class MigSourceForm extends React.Component<any> {
     this.setState({ options: myOptions });
   }
   render() {
-    const { errors, touched, setFieldValue, setFieldTouched } = this.props;
+    const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
     const { options, sourceCluster } = this.state;
     return (
       <Box>
@@ -50,6 +50,7 @@ class MigSourceForm extends React.Component<any> {
         <NamespaceTable
           setFieldValue={setFieldValue}
           sourceCluster={sourceCluster}
+          values={values}
         />
       </Box>
     );

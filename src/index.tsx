@@ -2,19 +2,20 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { history } from './helpers';
-import logger from 'redux-logger';
-import thunk from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
-import rootReducer from './reducers';
 import AppComponent from './app/AppComponent';
-import '@patternfly/react-core/dist/styles/base.css';
-import { routerMiddleware, ConnectedRouter } from 'connected-react-router';
+import { ConnectedRouter } from 'connected-react-router';
+import { PersistGate } from 'redux-persist/es/integration/react';
+import configureStore from './configureStore';
+const { persistor, store } = configureStore();
 import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
 
-const middleware = applyMiddleware(thunk, logger, routerMiddleware(history));
-const store = createStore(rootReducer, middleware);
+import Loader from 'react-loader-spinner';
 
+import '@patternfly/react-core/dist/styles/base.css';
+const onBeforeLift = () => {
+  // take some action before the gate lifts
+};
 // Some amount of meta data is delievered to the app by the server
 /* tslint:disable:no-string-literal */
 const migMeta = window['_mig_meta'];
@@ -33,9 +34,15 @@ if (!!migMeta) {
 
 render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-       <AppComponent />
-    </ConnectedRouter>
+    <PersistGate
+      loading={<Loader type="Puff" color="#00BFFF" height="100" width="100" />}
+      onBeforeLift={onBeforeLift}
+      persistor={persistor}
+    >
+      <ConnectedRouter history={history}>
+        <AppComponent />
+      </ConnectedRouter>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );

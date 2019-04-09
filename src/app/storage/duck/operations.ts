@@ -4,6 +4,7 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 
+const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
 const addStorageSuccess = Creators.addStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
@@ -16,7 +17,9 @@ const addStorage = migStorage => {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const resource = new MigResource(
-        MigResourceKind.MigStorage, migMeta.namespace);
+        MigResourceKind.MigStorage,
+        migMeta.namespace,
+      );
       const res = await client.create(resource, migStorage);
       dispatch(addStorageSuccess(res.data));
     } catch (err) {
@@ -42,13 +45,18 @@ const removeStorage = id => {
 
 const fetchStorage = () => {
   return async (dispatch, getState) => {
+    dispatch(migStorageFetchRequest());
+
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const resource = new MigResource(
-        MigResourceKind.MigStorage, migMeta.namespace);
+        MigResourceKind.MigStorage,
+        migMeta.namespace,
+      );
       const res = await client.list(resource);
-      dispatch(migStorageFetchSuccess(res.data));
+      //temporary for ui work
+      dispatch(migStorageFetchSuccess(res.data.items));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }

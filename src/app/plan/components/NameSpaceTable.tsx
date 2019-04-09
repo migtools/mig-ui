@@ -5,6 +5,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import planOperations from '../../plan/duck/operations';
+import matchSorter from 'match-sorter';
 
 interface IState {
   page: number;
@@ -33,15 +34,31 @@ class NamespaceTable extends React.Component<IProps, IState> {
 
   componentDidMount() {
     if (this.props.sourceCluster) {
-      this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
+      this.setState({
+        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+      });
+      //temporary for ui development
+      // this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
     }
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.sourceCluster !== this.props.sourceCluster) {
-      this.props.fetchNamespacesForCluster(this.props.sourceCluster.metadata.name);
+      this.setState({
+        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+      });
+      //temporary for ui development
+      // this.props.fetchNamespacesForCluster(
+      //   this.props.sourceCluster.metadata.name,
+      // );
     }
-    if (prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces) {
-      this.setState({ rows: this.props.sourceClusterNamespaces });
+    if (
+      prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces
+    ) {
+      this.setState({
+        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+      });
+      //temporary for ui development
+      // this.setState({ rows: this.props.sourceClusterNamespaces });
     }
   }
   selectRow = row => {
@@ -52,7 +69,9 @@ class NamespaceTable extends React.Component<IProps, IState> {
     this.setState({
       checked: checkedCopy,
     });
-    const itemList = this.props.sourceCluster.metadata.namespaces;
+    //temporary for ui development
+    // const itemList = this.props.sourceCluster.metadata.namespaces
+    const itemList = this.state.rows;
     const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
       for (let i = 0; checkedCopy.length > i; i++) {
         if (itemIndex === i) {
@@ -79,7 +98,11 @@ class NamespaceTable extends React.Component<IProps, IState> {
             </CardHeader>
             <CardBody>
               <ReactTable
-                data={this.state.rows}
+                filterable
+                defaultFilterMethod={(filter, row) =>
+                  String(row[filter.id]) === filter.value
+                }
+                data={rows}
                 columns={[
                   {
                     accessor: 'id',
@@ -94,10 +117,20 @@ class NamespaceTable extends React.Component<IProps, IState> {
                   {
                     Header: 'Name',
                     accessor: 'name',
+                    filterMethod: (filter, internalRows) =>
+                      matchSorter(internalRows, filter.value, {
+                        keys: ['name'],
+                      }),
+                    filterAll: true,
                   },
                   {
                     Header: 'Info',
                     accessor: 'info',
+                    filterMethod: (filter, internalRows) =>
+                      matchSorter(internalRows, filter.value, {
+                        keys: ['info'],
+                      }),
+                    filterAll: true,
                   },
                 ]}
                 defaultPageSize={10}

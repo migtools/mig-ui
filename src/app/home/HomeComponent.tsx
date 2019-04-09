@@ -28,7 +28,8 @@ import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
-
+import Loader from 'react-loader-spinner';
+import theme from '../../theme';
 interface IProps {
   loggingIn?: boolean;
   user: any;
@@ -37,6 +38,8 @@ interface IProps {
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
+  isFetchingClusters: boolean;
+  isFetchingStorage: boolean;
 }
 
 interface IState {
@@ -200,6 +203,12 @@ class HomeComponent extends React.Component<IProps, IState> {
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
+    const {
+      isFetchingStorage,
+      isFetchingClusters,
+      migStorageList,
+      clusterList,
+    } = this.props;
     return (
       <React.Fragment>
         <Page header={Header} sidebar={Sidebar}>
@@ -208,11 +217,13 @@ class HomeComponent extends React.Component<IProps, IState> {
               <Flex justifyContent="center" flexWrap="wrap">
                 <CardComponent
                   title="Clusters"
-                  dataList={this.props.clusterList}
+                  dataList={clusterList}
+                  isFetching={isFetchingClusters}
                 />
                 <CardComponent
                   title="Replication Repositories"
-                  dataList={this.props.migStorageList}
+                  dataList={migStorageList}
+                  isFetching={isFetchingStorage}
                 />
                 <CardComponent title="Migration Plans" dataList={[]} />
               </Flex>
@@ -241,6 +252,8 @@ export default connect(
   state => ({
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
+    isFetchingClusters: state.cluster.isFetching,
+    isFetchingStorage: state.storage.isFetching,
     clusterList: state.cluster.clusterList,
     migStorageList: state.storage.migStorageList,
   }),
