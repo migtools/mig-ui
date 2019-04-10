@@ -47,7 +47,12 @@ const AppComponent: React.SFC<IProps> = ({
       <ThemeProvider theme={theme}>
         <ConnectedRouter history={history}>
           <Switch>
-            <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+            <PrivateRoute
+              exact
+              path="/"
+              isLoggedIn={isLoggedIn}
+              component={HomeComponent}
+            />
             <Route path="/login" component={LoginComponent} />
           </Switch>
         </ConnectedRouter>

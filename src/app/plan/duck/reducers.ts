@@ -22,7 +22,10 @@ export const removePlanSuccess = (state = INITIAL_STATE, action) => {
   return { ...state };
 };
 
-export const sourceClusterNamespacesFetchSuccess = (state = INITIAL_STATE, action) => {
+export const sourceClusterNamespacesFetchSuccess = (
+  state = INITIAL_STATE,
+  action,
+) => {
   return { ...state, sourceClusterNamespaces: action.sourceClusterNamespaces };
 };
 

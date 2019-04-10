@@ -6,7 +6,10 @@ export const INITIAL_STATE = {
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, clusterList: action.clusterList };
+  return { ...state, clusterList: action.clusterList, isFetching: false };
+};
+export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isFetching: true };
 };
 
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
@@ -20,6 +23,7 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
+  [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,

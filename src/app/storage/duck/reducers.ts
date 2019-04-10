@@ -6,8 +6,11 @@ export const INITIAL_STATE = {
   StorageSearchText: '',
 };
 
+export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isFetching: true };
+};
 export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migStorageList: action.migStorageList };
+  return { ...state, migStorageList: action.migStorageList, isFetching: false };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
@@ -21,6 +24,7 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
+  [Types.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
   [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,

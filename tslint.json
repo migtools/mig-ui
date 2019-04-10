@@ -1,5 +1,8 @@
   {
-    "extends": ["tslint:recommended", "tslint-react"],
+    "extends": [
+      "tslint:recommended",
+      "tslint-react"
+    ],
     "rules": {
       "max-line-length": {
         "options": [
@@ -31,11 +34,19 @@
       "member-ordering": false,
       "jsx-wrap-multiline": false,
       "max-classes-per-file": false,
-      "quotemark": [true, "single", "jsx-double"],
+      "quotemark": [
+        true,
+        "single",
+        "jsx-double"
+      ],
       "ordered-imports": false,
       "object-literal-key-quotes": false,
       "no-string-literal": false,
-      "variable-name": false
+      "variable-name": false,
+      "semicolon": [
+        true,
+        "always"
+      ]
     },
     "jsRules": {
       "max-line-length": {

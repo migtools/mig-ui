@@ -6,8 +6,13 @@ const dynamicColor = props =>
   css`
     color: ${props.color};
   `;
+
 export default styled(Card)`
   ${dynamicColor};
+  width: 20em;
+  flex= 1;
+  margin: 10px;
+  padding: 10px;
   text-align: center;
   border-radius: 5px;
   height: 10em;
