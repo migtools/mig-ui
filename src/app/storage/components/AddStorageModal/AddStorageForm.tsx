@@ -155,7 +155,7 @@ const AddStorageForm: any = withFormik({
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit('storage', newStorage);
+    formikBag.props.onAddItemSubmit(newStorage);
   },
 
   displayName: 'Add Storage Form',
