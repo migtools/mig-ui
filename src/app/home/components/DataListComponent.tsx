@@ -65,9 +65,8 @@ const DataListComponent = ({ dataList, type, ...props }) => {
         )}
       </React.Fragment>
     );
-  } else {
-    return null;
   }
+  return null;
 };
 
 export default DataListComponent;

@@ -7,7 +7,7 @@ import {
   EmptyState,
   EmptyStateIcon,
 } from '@patternfly/react-core';
-import DynamicModal from '../../common/DynamicModalComponent';
+import AddClusterModal from '../../cluster/components/AddClusterModal';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 interface IState {
   isOpen: boolean;
@@ -32,15 +32,12 @@ class EmptyStateComponent extends Component<{}, IState> {
           <Title size="lg">
             Add source and target clusters for the migration
           </Title>
-          <Button variant="primary" onClick={this.handleModalToggle}>
-            Add Cluster
-          </Button>
+          <AddClusterModal
+            trigger={<Button variant="primary">
+              Add Cluster
+            </Button>}
+          />
         </EmptyState>
-        <DynamicModal
-          onHandleModalToggle={this.handleModalToggle}
-          isOpen={this.state.isOpen}
-          modalType="cluster"
-        />
       </React.Fragment>
     );
   }

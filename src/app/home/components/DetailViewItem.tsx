@@ -20,8 +20,8 @@ import theme from '../../../theme';
 interface IProps {
   id: string;
   title: string;
+  addButton?: React.ReactNode;
   onToggle: (id) => void;
-  onAddItem: () => void;
   onRemoveItem?: (type, id) => void;
   dataList: any[];
   isExpanded: boolean;
@@ -36,7 +36,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onToggle,
   dataList,
   plansDisabled,
-  onAddItem,
+  addButton,
   onRemoveItem,
   type,
   ...props
@@ -56,13 +56,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
             {title}
           </Box>
           <Box textAlign="left" flex="0 0 15em" my="auto">
-            <Button
-              isDisabled={plansDisabled}
-              variant="link"
-              onClick={onAddItem}
-            >
-              <PlusCircleIcon /> Add {title}
-            </Button>
+            {addButton}
           </Box>
         </Flex>
         <DataListContent
