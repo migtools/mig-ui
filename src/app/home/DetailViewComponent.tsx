@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { DataList, Button } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -9,14 +8,24 @@ import clusterOperations from '../cluster/duck/operations';
 import storageOperations from '../storage/duck/operations';
 import AddClusterModal from '../cluster/components/AddClusterModal';
 import AddStorageModal from '../storage/components/AddStorageModal';
+import clusterSelectors from '../cluster/duck/selectors';
 
 import Wizard from '../plan/components/Wizard';
+import {
+  Button,
+  ButtonVariant,
+  DataList,
+  InputGroup,
+  TextInput,
+} from '@patternfly/react-core';
+import { updateSearchTerm } from '../cluster/duck/reducers';
 interface IProps {
   clusterList: any[];
   migStorageList: any[];
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
+  updateSearchTerm: (searchTerm) => void;
 }
 interface IState {
   expanded: any[];
@@ -60,9 +69,9 @@ class DetailViewComponent extends Component<IProps, IState> {
     const newExpanded =
       index >= 0
         ? [
-            ...expanded.slice(0, index),
-            ...expanded.slice(index + 1, expanded.length),
-          ]
+          ...expanded.slice(0, index),
+          ...expanded.slice(index + 1, expanded.length),
+        ]
         : [...expanded, id];
     this.setState(() => ({ expanded: newExpanded }));
   }
@@ -78,7 +87,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       case 'plan':
         this.props.removePlan(id);
         break;
-     }
+    }
   }
 
   handleWizardToggle = () => {
@@ -86,7 +95,9 @@ class DetailViewComponent extends Component<IProps, IState> {
       isWizardOpen: !isWizardOpen,
     }));
   }
-
+  handleClusterSearch = (val, otherval) => {
+    this.props.updateSearchTerm(val);
+  }
   render() {
     const { clusterList, migStorageList } = this.props;
     const { isWizardOpen } = this.state;
@@ -97,6 +108,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isExpanded={this.state.expanded.includes('clusterList')}
             onToggle={this.handleToggle}
             dataList={clusterList}
+            onClusterSearch={this.handleClusterSearch}
             id="clusterList"
             title="Clusters"
             type="cluster"
@@ -151,7 +163,7 @@ class DetailViewComponent extends Component<IProps, IState> {
 }
 
 function mapStateToProps(state) {
-  const clusterList = state.cluster.clusterList.map(c => c.MigCluster);
+  const clusterList = clusterSelectors.getVisibleClusters(state);
   const { migStorageList } = state.storage;
   return {
     clusterList,
@@ -160,6 +172,7 @@ function mapStateToProps(state) {
 }
 const mapDispatchToProps = dispatch => {
   return {
+    updateSearchTerm: searchTerm => dispatch(clusterOperations.updateSearchTerm(searchTerm)),
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
   };

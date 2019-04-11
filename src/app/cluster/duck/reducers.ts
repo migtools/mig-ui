@@ -3,6 +3,7 @@ import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
   clusterList: [],
+  searchTerm: '',
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
@@ -22,11 +23,16 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
   return { ...state };
 };
 
+export const updateSearchTerm = (state = INITIAL_STATE, action) => {
+  return { ...state, searchTerm: action.searchTerm };
+};
+
 export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
+  [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

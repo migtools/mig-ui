@@ -20,6 +20,7 @@ const clusterFetchRequest = Creators.clusterFetchRequest;
 const addClusterSuccess = Creators.addClusterSuccess;
 const removeClusterSuccess = Creators.removeClusterSuccess;
 const removeClusterFailure = Creators.removeClusterFailure;
+const updateSearchTerm = Creators.updateSearchTerm;
 
 const addCluster = clusterValues => {
   return async (dispatch, getState) => {
@@ -115,11 +116,6 @@ const fetchClusters = () => {
   };
 };
 
-export default {
-  fetchClusters,
-  addCluster,
-  removeCluster,
-};
 
 function fetchMigClusterRefs(
   client: IClusterClient,
@@ -164,3 +160,9 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
     return fullCluster;
   });
 }
+export default {
+  fetchClusters,
+  addCluster,
+  removeCluster,
+  updateSearchTerm,
+};
