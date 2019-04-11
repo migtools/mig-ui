@@ -3,7 +3,7 @@ import { createActions } from 'reduxsauce';
 const { Creators, Types } = createActions({
   clusterFetchSuccess: ['clusterList'],
   clusterFetchRequest: [],
-  updateClusterSearchText: ['clusterSearchText'],
+  updateSearchTerm: ['searchTerm'],
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
   removeClusterSuccess: ['id'],
