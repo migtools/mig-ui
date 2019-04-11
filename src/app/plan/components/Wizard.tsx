@@ -5,6 +5,7 @@ import { Wizard as PFWizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
+import VolumesForm from './VolumesForm';
 import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
@@ -81,6 +82,24 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.sourceCluster && touched.sourceCluster === true,
       },
       {
+        name: 'Persistent Volumes',
+        component: (
+          <VolumesForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            clusterList={clusterList}
+          />
+        ),
+        // enableNext: !errors.planName && touched.planName === true
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+      },
+      {
         name: 'Migration Targets',
         component: (
           <MigTargetForm
@@ -107,8 +126,18 @@ class WrappedWizard extends React.Component<any, any> {
           <form onSubmit={handleSubmit}>
             <PFWizard
               css={css`
+                max-width: 100% !important;
+                .pf-c-wizard {
+                  max-width: 100% !important;
+                }
                 .pf-c-wizard__main {
                   height: 100%;
+                }
+                .pf-c-wizard__nav{
+                  width: 15em;
+                }
+                .pf-c-wizard__outer-wrap{
+                  padding-left: 15em;
                 }
               `}
               isOpen={this.state.isOpen}
