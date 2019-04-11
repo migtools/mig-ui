@@ -98,10 +98,6 @@ class NamespaceTable extends React.Component<IProps, IState> {
             </CardHeader>
             <CardBody>
               <ReactTable
-                filterable
-                defaultFilterMethod={(filter, row) =>
-                  String(row[filter.id]) === filter.value
-                }
                 data={rows}
                 columns={[
                   {
@@ -117,20 +113,16 @@ class NamespaceTable extends React.Component<IProps, IState> {
                   {
                     Header: 'Name',
                     accessor: 'name',
-                    filterMethod: (filter, internalRows) =>
-                      matchSorter(internalRows, filter.value, {
-                        keys: ['name'],
-                      }),
-                    filterAll: true,
                   },
                   {
-                    Header: 'Info',
+                    Header: 'Display Name',
                     accessor: 'info',
-                    filterMethod: (filter, internalRows) =>
-                      matchSorter(internalRows, filter.value, {
-                        keys: ['info'],
-                      }),
-                    filterAll: true,
+                  },
+                  {
+                    Header: 'Number of Pods',
+                  },
+                  {
+                    Header: 'Number of Services',
                   },
                 ]}
                 defaultPageSize={10}
