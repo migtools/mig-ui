@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Card } from '@rebass/emotion';
-import theme from "./../../../theme"
+import theme from './../../../theme';
 const dynamicColor = props =>
   css`
     color: ${props.color};
