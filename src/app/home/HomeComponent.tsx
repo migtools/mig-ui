@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { css } from '@emotion/core';
 import { Flex, Box } from '@rebass/emotion';
 import {
+  Brand,
   Toolbar,
   ToolbarGroup,
   Button,
@@ -29,6 +30,7 @@ import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
 import Loader from 'react-loader-spinner';
+import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 import theme from '../../theme';
 interface IProps {
   loggingIn?: boolean;
@@ -179,7 +181,8 @@ class HomeComponent extends React.Component<IProps, IState> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  <div>{user.username}</div>
+                  {/* <div>{user.username}</div> */}
+                  <div>testuser123</div>
                 </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
@@ -192,9 +195,14 @@ class HomeComponent extends React.Component<IProps, IState> {
       .pf-c-page__header-brand {
         background-color: #4d5057 !important;
       }
+      -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
+      -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
+      box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
     `;
     const Header = (
       <PageHeader
+        logo={<Brand src={openShiftLogo} alt="OpenShift Logo" />}
+
         toolbar={PageToolbar}
         showNavToggle
         isNavOpen={isNavOpen}
