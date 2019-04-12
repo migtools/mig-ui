@@ -22,9 +22,10 @@ if (devMode !== 'local' && devMode !== 'remote') {
 }
 
 const htmlWebpackPluginOpt = {
-  template: `src/assets/index.html`,
+  template: `public/index.html`,
   title: 'MIG UI',
-  inject: 'body'
+  inject: 'body',
+  favicon: "public/favicon.ico"
 };
 
 const configPath = path.join(__dirname, localConfigFileName);
@@ -48,7 +49,6 @@ migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
 
 htmlWebpackPluginOpt.migMeta = migMeta
-htmlWebpackPluginOpt.favicon = "./src/assets/favicon.ico"
 const PORT = process.env.PORT || localConfig.devServerPort
 
 const plugins = [
