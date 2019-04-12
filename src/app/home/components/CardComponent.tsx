@@ -5,7 +5,7 @@ import DashboardCard from './DashboardCard';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
 import ClusterStatusIcon from './ClusterStatusIcon';
-import styled from '@emotion/styled'
+import styled from '@emotion/styled';
 
 interface IState {
   isOpen: boolean;
@@ -42,16 +42,16 @@ class CardComponent extends Component<IProps, IState> {
     return (
       <React.Fragment>
         <ClusterStatusItem>
-          <ClusterStatusIcon isSuccessful={true}></ClusterStatusIcon>
+          <ClusterStatusIcon isSuccessful={true} />
           {dataList.length} clusters connected
       </ClusterStatusItem>
         <ClusterStatusItem>
-          <ClusterStatusIcon isSuccessful={false}></ClusterStatusIcon>
+          <ClusterStatusIcon isSuccessful={false} />
           0 clusters not connected
       </ClusterStatusItem>
       </React.Fragment>
 
-    )
+    );
   }
   render() {
     const { dataList, title, isFetching, type } = this.props;
@@ -84,7 +84,7 @@ class CardComponent extends Component<IProps, IState> {
                 width="100"
               />
             )}
-          {type === "cluster" && this.renderClusterStatus()}
+          {type === 'cluster' && this.renderClusterStatus()}
 
 
         </DashboardCard>

@@ -31,7 +31,7 @@ import EmptyStateComponent from './components/EmptyStateComponent';
 import Loader from 'react-loader-spinner';
 import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 import theme from '../../theme';
-import { css } from "@emotion/core"
+import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 interface IProps {
   loggingIn?: boolean;
