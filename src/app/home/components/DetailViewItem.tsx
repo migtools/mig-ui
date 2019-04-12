@@ -72,25 +72,26 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
             aria-label="Primary Content Details"
             isHidden={!isExpanded}
           >
-            <InputGroup
-              // @ts-ignore
-              css={css`
-            width: 20% !important;
-            margin: auto 0 2em 0 ;
-            `}
-            >
-              <TextInput
-                name="textInput11"
-                id="textInput11"
-                type="search"
-                aria-label="search input example"
-                onChange={onClusterSearch}
-              />
-              <Button variant={ButtonVariant.tertiary} aria-label="search button for search input">
-                <SearchIcon />
-              </Button>
-            </InputGroup>
-
+            {(dataList && dataList.length) > 0 &&
+              <InputGroup
+                // @ts-ignore
+                css={css`
+                width: 20% !important;
+                margin: auto 0 2em 0 ;
+              `}
+              >
+                <TextInput
+                  name="textInput11"
+                  id="textInput11"
+                  type="search"
+                  aria-label="search input example"
+                  onChange={onClusterSearch}
+                />
+                <Button variant={ButtonVariant.tertiary} aria-label="search button for search input">
+                  <SearchIcon />
+                </Button>
+              </InputGroup>
+            }
             <DataListComponent
               type={type}
               onRemoveItem={onRemoveItem}
