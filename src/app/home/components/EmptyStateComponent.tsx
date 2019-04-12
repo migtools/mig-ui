@@ -14,7 +14,7 @@ interface IState {
   isOpen: boolean;
 }
 interface IProps {
-  type?: string
+  type?: string;
 }
 
 class EmptyStateComponent extends Component<IProps, IState> {
@@ -41,7 +41,7 @@ class EmptyStateComponent extends Component<IProps, IState> {
 
       </React.Fragment>
 
-    )
+    );
   }
   renderClusterAdd() {
     return (
@@ -57,7 +57,7 @@ class EmptyStateComponent extends Component<IProps, IState> {
 
       </React.Fragment>
 
-    )
+    );
   }
   render() {
     const { type } = this.props;
@@ -65,9 +65,9 @@ class EmptyStateComponent extends Component<IProps, IState> {
       <React.Fragment>
         <EmptyState>
           <EmptyStateIcon icon={AddCircleOIcon} />
-          {type === "cluster" &&
+          {type === 'cluster' &&
             this.renderClusterAdd()}
-          {type === "storage" &&
+          {type === 'storage' &&
             this.renderStorageAdd()}
         </EmptyState>
       </React.Fragment>
