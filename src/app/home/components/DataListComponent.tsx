@@ -9,6 +9,7 @@ import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
 import ClusterStatusIcon from './ClusterStatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
+import EmptyStateComponent from './EmptyStateComponent';
 
 const DataListComponent = ({ dataList, type, ...props }) => {
   if (dataList) {
@@ -68,8 +69,11 @@ const DataListComponent = ({ dataList, type, ...props }) => {
             ))}
           </DataList>
         ) : (
-            <Flex>
-              <Box color={theme.colors.navy}>No content</Box>
+            <Flex alignItems="center" justifyContent="center">
+              <Box>
+
+              <EmptyStateComponent type={type} />
+              </Box>
             </Flex>
           )}
       </React.Fragment>

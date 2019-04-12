@@ -258,15 +258,9 @@ class HomeComponent extends React.Component<IProps, IState> {
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
-              {this.props.clusterList && this.props.clusterList.length > 0 ? (
                 <Box flex="0 0 100%">
                   <DetailViewComponent />
                 </Box>
-              ) : (
-                  <Box>
-                    <EmptyStateComponent />
-                  </Box>
-                )}
             </Flex>
           </PageSection>
         </Page>
