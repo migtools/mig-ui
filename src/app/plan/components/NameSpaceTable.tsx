@@ -15,10 +15,10 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter
+  CardFooter,
 } from '@patternfly/react-core';
-import { css } from "@emotion/core";
-import styled from "@emotion/styled";
+import { css } from '@emotion/core';
+import styled from '@emotion/styled';
 interface IState {
   page: number;
   perPage: number;

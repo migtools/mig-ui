@@ -3,8 +3,8 @@ import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
-import styled from "@emotion/styled";
-import { css } from "@emotion/core";
+import styled from '@emotion/styled';
+import { css } from '@emotion/core';
 
 // const SourceClusterSelect = styled(Select)`
 //     width: 20em;
