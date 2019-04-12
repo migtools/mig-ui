@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Card } from '@rebass/emotion';
-
+import theme from './../../../theme';
 const dynamicColor = props =>
   css`
     color: ${props.color};
@@ -10,14 +10,15 @@ const dynamicColor = props =>
 export default styled(Card)`
   ${dynamicColor};
   width: 20em;
-  flex= 1;
   margin: 10px;
   padding: 10px;
   text-align: center;
-  border-radius: 5px;
+  border-radius: 1px;
   height: 10em;
-  -webkit-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  -moz-box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  box-shadow: 7px 7px 20px -4px rgba(0, 0, 0, 0.27);
-  background: #ffffff;
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
+  -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
+  box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
+  border-top: 1px solid ${theme.colors.navy}
+
 `;
