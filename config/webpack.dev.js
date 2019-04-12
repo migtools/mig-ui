@@ -28,7 +28,7 @@ const htmlWebpackPluginOpt = {
 };
 
 const configPath = path.join(__dirname, localConfigFileName);
-if(!fs.existsSync(configPath)) {
+if (!fs.existsSync(configPath)) {
   console.error('ERROR: config/config.dev.json is missing')
   console.error(
     'Copy config/config.dev.json.example to config/config.dev.json' +
@@ -48,7 +48,7 @@ migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
 
 htmlWebpackPluginOpt.migMeta = migMeta
-
+htmlWebpackPluginOpt.favicon = "./src/assets/favicon.ico"
 const PORT = process.env.PORT || localConfig.devServerPort
 
 const plugins = [
