@@ -1,12 +1,24 @@
 import React from 'react';
 import { Title } from '@patternfly/react-core';
-import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import planOperations from '../../plan/duck/operations';
 import matchSorter from 'match-sorter';
-
+import {
+  Button,
+  TextInput,
+  TextContent,
+  TextList,
+  TextListItem,
+  TextArea,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+} from '@patternfly/react-core';
+import { css } from '@emotion/core';
+import styled from '@emotion/styled';
 interface IState {
   page: number;
   perPage: number;
@@ -83,54 +95,54 @@ class NamespaceTable extends React.Component<IProps, IState> {
     });
     this.props.setFieldValue('selectedNamespaces', formValuesForNamespaces);
   }
+
   render() {
     const { sourceCluster } = this.props;
     const { rows } = this.state;
-
+    const StyledTextContent = styled(TextContent)`
+      margin: 1em 0 1em 0;
+    `;
     if (sourceCluster !== null) {
       return (
         <React.Fragment>
-          <Card>
-            <CardHeader>
-              <Title headingLevel="h2" size="3xl">
-                {sourceCluster.metadata.name || 'nothing'}
-              </Title>
-            </CardHeader>
-            <CardBody>
-              <ReactTable
-                data={rows}
-                columns={[
-                  {
-                    accessor: 'id',
-                    Cell: row => (
-                      <input
-                        type="checkbox"
-                        onChange={() => this.selectRow(row)}
-                        checked={this.state.checked[row.index]}
-                      />
-                    ),
-                  },
-                  {
-                    Header: 'Name',
-                    accessor: 'name',
-                  },
-                  {
-                    Header: 'Display Name',
-                    accessor: 'info',
-                  },
-                  {
-                    Header: 'Number of Pods',
-                  },
-                  {
-                    Header: 'Number of Services',
-                  },
-                ]}
-                defaultPageSize={10}
-                className="-striped -highlight"
-              />
-            </CardBody>
-            <CardFooter />
-          </Card>
+          <StyledTextContent
+          >
+            <TextList component="dl">
+              <TextListItem component="dt" >Select projects to be migrated: </TextListItem>
+            </TextList>
+          </StyledTextContent>
+
+          <ReactTable
+            data={rows}
+            columns={[
+              {
+                accessor: 'id',
+                Cell: row => (
+                  <input
+                    type="checkbox"
+                    onChange={() => this.selectRow(row)}
+                    checked={this.state.checked[row.index]}
+                  />
+                ),
+              },
+              {
+                Header: 'Name',
+                accessor: 'name',
+              },
+              {
+                Header: 'Display Name',
+                accessor: 'info',
+              },
+              {
+                Header: 'Number of Pods',
+              },
+              {
+                Header: 'Number of Services',
+              },
+            ]}
+            defaultPageSize={10}
+            className="-striped -highlight"
+          />
         </React.Fragment>
       );
     } else {

@@ -3,7 +3,7 @@ import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import VolumesTable from './VolumesTable';
-import { css } from '@emotion/core';
+import styled from '@emotion/styled';
 class VolumesForm extends React.Component<any> {
   state = {
     options: [],
@@ -24,16 +24,15 @@ class VolumesForm extends React.Component<any> {
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
     const { options, sourceCluster } = this.state;
+    const StyledTextContent = styled(TextContent)` margin: 1em 0 1em 0;`;
     return (
       <Box>
-        <TextContent
-          //@ts-ignore
-          css={css`margin: 5px;`}
+        <StyledTextContent
         >
           <TextList component="dl">
             <TextListItem component="dt">Choose to move or copy persistent volumes:</TextListItem>
           </TextList>
-        </TextContent>
+        </StyledTextContent>
         <VolumesTable
           setFieldValue={setFieldValue}
           sourceCluster={sourceCluster}

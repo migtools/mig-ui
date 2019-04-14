@@ -22,13 +22,14 @@ if (devMode !== 'local' && devMode !== 'remote') {
 }
 
 const htmlWebpackPluginOpt = {
-  template: `src/assets/index.html`,
+  template: `public/index.html`,
   title: 'MIG UI',
-  inject: 'body'
+  inject: 'body',
+  favicon: "public/favicon.ico"
 };
 
 const configPath = path.join(__dirname, localConfigFileName);
-if(!fs.existsSync(configPath)) {
+if (!fs.existsSync(configPath)) {
   console.error('ERROR: config/config.dev.json is missing')
   console.error(
     'Copy config/config.dev.json.example to config/config.dev.json' +
@@ -48,7 +49,6 @@ migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
 
 htmlWebpackPluginOpt.migMeta = migMeta
-
 const PORT = process.env.PORT || localConfig.devServerPort
 
 const plugins = [

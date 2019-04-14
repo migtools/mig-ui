@@ -3,6 +3,13 @@ import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
+import styled from '@emotion/styled';
+import { css } from '@emotion/core';
+
+// const SourceClusterSelect = styled(Select)`
+//     width: 20em;
+//     `;
+
 class MigSourceForm extends React.Component<any> {
   state = {
     options: [],
@@ -29,6 +36,9 @@ class MigSourceForm extends React.Component<any> {
           <TextList component="dl">
             <TextListItem component="dt">Source Cluster</TextListItem>
             <Select
+              css={css`
+                width: 20em;
+              `}
               name="sourceCluster"
               onChange={option => {
                 setFieldValue('sourceCluster', option.value);

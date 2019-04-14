@@ -9,11 +9,11 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-
+import styled from '@emotion/styled';
 interface IProps {
   component: React.ReactNode;
 }
-
+const PlanNameInput = styled.input`width: 20em;`;
 const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   handleChange,
   handleBlur,
@@ -23,26 +23,26 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   setFieldTouched,
   ...rest
 }) => (
-  <React.Fragment>
-    <Box>
-      <TextContent>
-        <TextList component="dl">
-          <TextListItem component="dt">Plan Name</TextListItem>
-          <input
-            onChange={handleChange}
-            onInput={() => setFieldTouched('planName', true, true)}
-            onBlur={handleBlur}
-            value={values.planName}
-            name="planName"
-            type="text"
-          />
-          {errors.planName && touched.planName && (
-            <div id="feedback">{errors.planName}</div>
-          )}
-        </TextList>
-      </TextContent>
-    </Box>
-  </React.Fragment>
-);
+    <React.Fragment>
+      <Box>
+        <TextContent>
+          <TextList component="dl">
+            <TextListItem component="dt">Plan Name</TextListItem>
+            <PlanNameInput
+              onChange={handleChange}
+              onInput={() => setFieldTouched('planName', true, true)}
+              onBlur={handleBlur}
+              value={values.planName}
+              name="planName"
+              type="text"
+            />
+            {errors.planName && touched.planName && (
+              <div id="feedback">{errors.planName}</div>
+            )}
+          </TextList>
+        </TextContent>
+      </Box>
+    </React.Fragment>
+  );
 
 export default GeneralForm;
