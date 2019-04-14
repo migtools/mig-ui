@@ -9,6 +9,7 @@ import storageOperations from '../storage/duck/operations';
 import AddClusterModal from '../cluster/components/AddClusterModal';
 import AddStorageModal from '../storage/components/AddStorageModal';
 import clusterSelectors from '../cluster/duck/selectors';
+import storageSelectors from '../storage/duck/selectors';
 
 import Wizard from '../plan/components/Wizard';
 import {
@@ -18,14 +19,17 @@ import {
   InputGroup,
   TextInput,
 } from '@patternfly/react-core';
-import { updateSearchTerm } from '../cluster/duck/reducers';
 interface IProps {
-  clusterList: any[];
+  filteredClusterList: any[];
+  filteredStorageList: any[];
+  allClusters: any[];
+  allStorage: any[];
   migStorageList: any[];
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
-  updateSearchTerm: (searchTerm) => void;
+  updateClusterSearchTerm: (searchTerm) => void;
+  updateStorageSearchTerm: (searchTerm) => void;
 }
 interface IState {
   expanded: any[];
@@ -44,20 +48,22 @@ class DetailViewComponent extends Component<IProps, IState> {
     modalType: '',
   };
   componentDidMount() {
-    const { clusterList, migStorageList } = this.props;
-    if (clusterList.length > 1 && migStorageList.length > 0) {
+    const { allClusters, allStorage } = this.props;
+    if (allClusters.length > 1 && allStorage.length > 0) {
       this.setState({ plansDisabled: false });
     }
+    this.props.updateClusterSearchTerm('');
+    this.props.updateStorageSearchTerm('');
   }
   componentDidUpdate(prevProps, prevState) {
     if (
       (
-        prevProps.clusterList !== this.props.clusterList ||
-        prevProps.migStorageList !== this.props.migStorageList
+        prevProps.allClusters !== this.props.allClusters ||
+        prevProps.allStorage !== this.props.allStorage
       ) &&
       (
-        this.props.clusterList.length > 1 &&
-        this.props.migStorageList.length > 0
+        this.props.allClusters.length > 1 &&
+        this.props.allStorage.length > 0
       )
     ) {
       this.setState({ plansDisabled: false });
@@ -96,10 +102,14 @@ class DetailViewComponent extends Component<IProps, IState> {
     }));
   }
   handleClusterSearch = (val, otherval) => {
-    this.props.updateSearchTerm(val);
+    this.props.updateClusterSearchTerm(val);
+  }
+
+  handleStorageSearch = (val, otherval) => {
+    this.props.updateStorageSearchTerm(val);
   }
   render() {
-    const { clusterList, migStorageList } = this.props;
+    const { filteredClusterList, filteredStorageList, allStorage, allClusters, migStorageList } = this.props;
     const { isWizardOpen } = this.state;
     return (
       <React.Fragment>
@@ -107,8 +117,9 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('clusterList')}
             onToggle={this.handleToggle}
-            dataList={clusterList}
-            onClusterSearch={this.handleClusterSearch}
+            filteredDataList={filteredClusterList}
+            allData={allClusters}
+            onSearch={this.handleClusterSearch}
             id="clusterList"
             title="Clusters"
             type="cluster"
@@ -124,7 +135,9 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('repositoryList')}
             onToggle={this.handleToggle}
-            dataList={migStorageList}
+            filteredDataList={filteredStorageList}
+            allData={allStorage}
+            onSearch={this.handleStorageSearch}
             id="repositoryList"
             title="Storage"
             type="storage"
@@ -140,13 +153,13 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('plansList')}
             onToggle={this.handleToggle}
-            dataList={[]}
+            allData={[]}
             id="plansList"
             title="Plans"
             type="plans"
             addButton={
               <Wizard
-                clusterList={clusterList}
+                clusterList={allClusters}
                 storageList={migStorageList}
                 trigger={<Button variant="link">
                   <PlusCircleIcon /> Add plan
@@ -163,16 +176,23 @@ class DetailViewComponent extends Component<IProps, IState> {
 }
 
 function mapStateToProps(state) {
-  const clusterList = clusterSelectors.getVisibleClusters(state);
+  const filteredClusterList = clusterSelectors.getVisibleClusters(state);
+  const allClusters = clusterSelectors.getAllClusters(state);
+  const filteredStorageList = storageSelectors.getVisibleStorage(state);
+  const allStorage = storageSelectors.getAllStorage(state);
   const { migStorageList } = state.storage;
   return {
-    clusterList,
+    allClusters,
+    filteredClusterList,
+    allStorage,
+    filteredStorageList,
     migStorageList,
   };
 }
 const mapDispatchToProps = dispatch => {
   return {
-    updateSearchTerm: searchTerm => dispatch(clusterOperations.updateSearchTerm(searchTerm)),
+    updateClusterSearchTerm: searchTerm => dispatch(clusterOperations.updateSearchTerm(searchTerm)),
+    updateStorageSearchTerm: searchTerm => dispatch(storageOperations.updateSearchTerm(searchTerm)),
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
   };

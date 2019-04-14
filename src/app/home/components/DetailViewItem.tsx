@@ -29,11 +29,12 @@ interface IProps {
   addButton?: React.ReactNode;
   onToggle: (id) => void;
   onRemoveItem?: (type, id) => void;
-  dataList: any[];
+  filteredDataList?: any[];
+  allData: any[];
   isExpanded: boolean;
   plansDisabled?: boolean;
   type?: string;
-  onClusterSearch?: (val, otherval) => void;
+  onSearch?: (val, otherval) => void;
 }
 
 const DetailViewItem: React.FunctionComponent<IProps> = ({
@@ -41,12 +42,13 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   title,
   isExpanded,
   onToggle,
-  dataList,
+  filteredDataList,
+  allData,
   plansDisabled,
   addButton,
   onRemoveItem,
   type,
-  onClusterSearch,
+  onSearch,
   ...props
 }) => {
   return (
@@ -72,7 +74,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
             aria-label="Primary Content Details"
             isHidden={!isExpanded}
           >
-            {(dataList && dataList.length) > 0 &&
+            {(allData && allData.length) > 0 &&
               <InputGroup
                 // @ts-ignore
                 css={css`
@@ -85,7 +87,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
                   id="textInput11"
                   type="search"
                   aria-label="search input example"
-                  onChange={onClusterSearch}
+                  onChange={onSearch}
                 />
                 <Button variant={ButtonVariant.tertiary} aria-label="search button for search input">
                   <SearchIcon />
@@ -95,7 +97,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
             <DataListComponent
               type={type}
               onRemoveItem={onRemoveItem}
-              dataList={dataList}
+              dataList={filteredDataList}
             />
           </DataListContent>
         </DataListItem>

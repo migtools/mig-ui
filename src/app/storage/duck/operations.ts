@@ -10,6 +10,7 @@ const addStorageSuccess = Creators.addStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
+const updateSearchTerm = Creators.updateSearchTerm;
 
 const addStorage = migStorage => {
   return async (dispatch, getState) => {
@@ -67,4 +68,5 @@ export default {
   fetchStorage,
   addStorage,
   removeStorage,
+  updateSearchTerm,
 };
