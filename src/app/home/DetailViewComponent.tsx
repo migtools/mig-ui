@@ -19,7 +19,6 @@ import {
   InputGroup,
   TextInput,
 } from '@patternfly/react-core';
-import { updateSearchTerm } from '../cluster/duck/reducers';
 interface IProps {
   filteredClusterList: any[];
   filteredStorageList: any[];
@@ -49,25 +48,26 @@ class DetailViewComponent extends Component<IProps, IState> {
     modalType: '',
   };
   componentDidMount() {
-    // const { allClusters, migStorageList } = this.props;
-    // if (allClusters.length > 1 && migStorageList.length > 0) {
-    //   this.setState({ plansDisabled: false });
-    // }
-    // this.props.updateSearchTerm('');
+    const { allClusters, allStorage } = this.props;
+    if (allClusters.length > 1 && allStorage.length > 0) {
+      this.setState({ plansDisabled: false });
+    }
+    this.props.updateClusterSearchTerm('');
+    this.props.updateStorageSearchTerm('');
   }
   componentDidUpdate(prevProps, prevState) {
-    //   if (
-    //     (
-    //       prevProps.clusterList !== this.props.allClusters ||
-    //       prevProps.migStorageList !== this.props.migStorageList
-    //     ) &&
-    //     (
-    //       this.props.allClusters.length > 1 &&
-    //       this.props.migStorageList.length > 0
-    //     )
-    //   ) {
-    //     this.setState({ plansDisabled: false });
-    //   }
+    if (
+      (
+        prevProps.allClusters !== this.props.allClusters ||
+        prevProps.allStorage !== this.props.allStorage
+      ) &&
+      (
+        this.props.allClusters.length > 1 &&
+        this.props.allStorage.length > 0
+      )
+    ) {
+      this.setState({ plansDisabled: false });
+    }
   }
   handleToggle = id => {
     const expanded = this.state.expanded;
