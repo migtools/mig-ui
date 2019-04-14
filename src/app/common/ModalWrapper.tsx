@@ -1,15 +1,31 @@
 import React from 'react';
 import { Modal as ModalPf, ModalProps } from '@patternfly/react-core';
-
-interface IProps extends ModalProps {
+import styled from '@emotion/styled';
+import theme from '../../theme';
+interface IProps {
+  title: any;
   trigger: React.ReactElement;
-  children: React.ReactElement;
+  children?: any;
+  form?: any;
+  header?: any;
+  onClose: () => void;
 }
 
 interface IState {
   isOpen: boolean;
 }
-
+const StyledHeader = styled.div`
+height: 1px;
+width: 75%;
+margin: .5em 5em 2em 0;
+background: ${theme.colors.lightGray3};
+color: ${theme.colors.lightGray3};
+`;
+const StyledModal = styled(ModalPf)`
+  .pf-c-modal-box__body{
+    margin-top: 0 !important;
+  }
+  `;
 class ModalWrapper extends React.Component<IProps, IState> {
   state = {
     isOpen: false,
@@ -27,20 +43,19 @@ class ModalWrapper extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { trigger, children, ...rest } = this.props;
-    const triggerNew = React.cloneElement(
-      trigger,
+    const trigger = React.cloneElement(
+      this.props.trigger,
       {
         onClick: () => {
           this.handleOpen();
-          if (trigger.props.onClick) {
-            trigger.props.onClick();
+          if (this.props.trigger.props.onClick) {
+            this.props.trigger.props.onClick();
           }
         },
       },
     );
-    const childrenNew = React.cloneElement(
-      children,
+    const form = React.cloneElement(
+      this.props.form,
       {
         onHandleModalToggle: () => {
           this.handleClose();
@@ -49,14 +64,15 @@ class ModalWrapper extends React.Component<IProps, IState> {
     );
     return (
       <React.Fragment>
-        {triggerNew}
-        <ModalPf
-          {...rest as any}
+        {trigger}
+        <StyledModal
+          {...this.props as any}
           isOpen={this.state.isOpen}
           onClose={this.handleClose}
         >
-          {childrenNew}
-        </ModalPf>
+          <StyledHeader />
+          {form}
+        </StyledModal>
       </React.Fragment>
     );
   }

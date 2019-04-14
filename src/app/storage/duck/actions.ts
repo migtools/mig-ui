@@ -7,6 +7,7 @@ const { Creators, Types } = createActions({
   addStorageSuccess: ['newStorage'],
   addStorageFailure: ['error'],
   removeStorageSuccess: ['id'],
+  updateSearchTerm: ['searchTerm'],
 });
 
 export { Creators, Types };

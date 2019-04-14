@@ -12,9 +12,9 @@ class AddStorageModal extends React.Component<any, any> {
         onClose={onHandleModalToggle}
         title="Add Storage"
         trigger={trigger}
-      >
-        <AddStorageForm onHandleModalToggle={onHandleModalToggle} onAddItemSubmit={addStorage}  />
-      </Modal>
+        form={
+          <AddStorageForm onHandleModalToggle={onHandleModalToggle} onAddItemSubmit={addStorage} />}
+      />
     );
   }
 }

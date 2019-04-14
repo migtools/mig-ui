@@ -12,9 +12,9 @@ class AddClusterModal extends React.Component<any, any> {
         onClose={onHandleModalToggle}
         title="Add Cluster"
         trigger={trigger}
-      >
-        <AddClusterForm onHandleModalToggle={onHandleModalToggle} onAddItemSubmit={addCluster}  />
-      </Modal>
+        form={
+          <AddClusterForm onHandleModalToggle={onHandleModalToggle} onAddItemSubmit={addCluster} />}
+      />
     );
   }
 }

@@ -5,6 +5,13 @@ const clusterSelector = (state) =>
 
 const searchTermSelector = state => state.cluster.searchTerm;
 
+const getAllClusters = createSelector(
+    [clusterSelector],
+    (clusters) => {
+        return clusters;
+    },
+);
+
 const getVisibleClusters = createSelector(
     [clusterSelector, searchTermSelector],
     (clusters, searchTerm) => {
@@ -12,5 +19,6 @@ const getVisibleClusters = createSelector(
     },
 );
 export default {
+    getAllClusters,
     getVisibleClusters,
 };

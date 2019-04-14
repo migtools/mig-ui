@@ -62,7 +62,7 @@ const WrappedAddClusterForm = props => {
             </TextList>
           </TextContent>
         </Box>
-        <Box>
+        <Box mt={20}>
           <Flex>
             <Box m="10px 10px 10px 0">
               <Button
