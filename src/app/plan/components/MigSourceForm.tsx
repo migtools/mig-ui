@@ -6,10 +6,6 @@ import NamespaceTable from './NameSpaceTable';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 
-// const SourceClusterSelect = styled(Select)`
-//     width: 20em;
-//     `;
-
 class MigSourceForm extends React.Component<any> {
   state = {
     options: [],
