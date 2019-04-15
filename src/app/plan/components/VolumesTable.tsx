@@ -3,7 +3,6 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
-import styled from '@emotion/styled';
 
 const options = [
   { value: 'copy', label: 'copy' },
@@ -99,7 +98,6 @@ class VolumesTable extends React.Component<any, any> {
                 resizable: false,
                 Cell: row => (
                   <Select
-                    // value={row.original.type}
                     onChange={(val: any) => this.handleTypeChange(row, val)}
                     options={options}
                     name="persistentVolumes"
