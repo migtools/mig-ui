@@ -21,7 +21,7 @@ interface IProps {
   values: any;
 }
 
-class VolumesTable2 extends React.Component<any, any> {
+class VolumesTable extends React.Component<any, any> {
   handleTypeChange = (row, val) => {
     const { persistentVolumes } = this.props.values;
     const objIndex = persistentVolumes.findIndex(obj => obj.id === row.original.id);
@@ -34,8 +34,6 @@ class VolumesTable2 extends React.Component<any, any> {
       ...persistentVolumes.slice(objIndex + 1),
     ];
     this.props.setFieldValue('persistentVolumes', updatedData);
-
-    // this.setState({ data: updatedData });
   }
   state = {
     page: 1,
@@ -121,7 +119,8 @@ class VolumesTable2 extends React.Component<any, any> {
                     href="https://google.com"
                     target="_blank"
 
-                  >view</a>
+                  >view
+                  </a>
                 ),
               },
             ]}
@@ -135,4 +134,4 @@ class VolumesTable2 extends React.Component<any, any> {
     }
   }
 }
-export default VolumesTable2;
+export default VolumesTable;

@@ -170,7 +170,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 1
+        id: 1,
       },
       {
         name: 'persistent_volume1',
@@ -180,7 +180,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 2
+        id: 2,
       },
       {
         name: 'persistent_volume1',
@@ -190,7 +190,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 3
+        id: 3,
       },
       {
         name: 'persistent_volume1',
@@ -200,7 +200,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 4
+        id: 4,
       },
       {
         name: 'persistent_volume1',
@@ -210,7 +210,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 5
+        id: 5,
       },
       {
         name: 'persistent_volume1',
@@ -220,7 +220,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 6
+        id: 6,
       },
       {
         name: 'persistent_volume1',
@@ -230,7 +230,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 7
+        id: 7,
       },
       {
         name: 'persistent_volume1',
@@ -240,7 +240,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 8
+        id: 8,
       },
       {
         name: 'persistent_volume1',
@@ -250,7 +250,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 9
+        id: 9,
       },
       {
         name: 'persistent_volume1',
@@ -260,7 +260,7 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 10
+        id: 10,
       },
       {
         name: 'persistent_volume1',
@@ -270,9 +270,9 @@ const Wizard: any = withFormik({
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
-        id: 11
+        id: 11,
       },
-    ]
+    ],
 
   }),
 
