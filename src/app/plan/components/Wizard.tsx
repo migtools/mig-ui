@@ -161,6 +161,119 @@ const Wizard: any = withFormik({
     targetCluster: '',
     selectedNamespaces: [],
     selectedStorage: '',
+    persistentVolumes: [
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 1
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 2
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 3
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 4
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 5
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 6
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 7
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 8
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 9
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 10
+      },
+      {
+        name: 'persistent_volume1',
+        project: 'My Project1',
+        storageClass: 'OpenStack Cinder',
+        size: '120 GB',
+        deployment: 'deployment_name',
+        type: 'copy',
+        details: '',
+        id: 11
+      },
+    ]
+
   }),
 
   validate: values => {
