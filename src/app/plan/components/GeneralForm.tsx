@@ -38,7 +38,7 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
           <TextList component="dl">
             <TextListItem component="dt">Plan Name</TextListItem>
             <PlanNameInput
-              onChange={(v1, v2) => onHandleChange(v1, v2)}
+              onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}
               onBlur={handleBlur}
               value={values.planName}
