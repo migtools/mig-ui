@@ -115,11 +115,14 @@ class MigTargetForm extends React.Component<IProps, IState> {
             )}
           </TextList>
         </TextContent>
-        <TargetsTable
-          values={values}
+        {values.targetCluster !== null &&
+
+          <TargetsTable
+            values={values}
           // selectedRepo={selectedRepo}
           // selectedTarget={selectedTarget}
-        />
+          />
+        }
       </Box>
     );
   }

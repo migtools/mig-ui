@@ -47,7 +47,11 @@ class NamespaceTable extends React.Component<IProps, IState> {
   componentDidMount() {
     if (this.props.sourceCluster) {
       this.setState({
-        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+        rows: [
+          { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
+          { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+        ],
       });
       //temporary for ui development
       // this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
@@ -56,7 +60,11 @@ class NamespaceTable extends React.Component<IProps, IState> {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.sourceCluster !== this.props.sourceCluster) {
       this.setState({
-        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+        rows: [
+          { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
+          { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+        ],
       });
       //temporary for ui development
       // this.props.fetchNamespacesForCluster(
@@ -67,7 +75,11 @@ class NamespaceTable extends React.Component<IProps, IState> {
       prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces
     ) {
       this.setState({
-        rows: [{ name: 'n1', info: 'i1' }, { name: 'n2', info: 'i2' }],
+        rows: [
+          { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
+          { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+        ],
       });
       //temporary for ui development
       // this.setState({ rows: this.props.sourceClusterNamespaces });
@@ -131,13 +143,15 @@ class NamespaceTable extends React.Component<IProps, IState> {
               },
               {
                 Header: 'Display Name',
-                accessor: 'info',
+                accessor: 'displayName',
               },
               {
                 Header: 'Number of Pods',
+                accessor: 'pods',
               },
               {
                 Header: 'Number of Services',
+                accessor: 'services',
               },
             ]}
             defaultPageSize={10}
