@@ -47,6 +47,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     isWizardOpen: false,
     modalType: '',
   };
+
   componentDidMount() {
     const { allClusters, allStorage } = this.props;
     if (allClusters.length > 1 && allStorage.length > 0) {
@@ -159,6 +160,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             type="plans"
             addButton={
               <Wizard
+                isOpen={isWizardOpen}
+                onToggle={this.handleWizardToggle}
                 clusterList={allClusters}
                 storageList={migStorageList}
                 trigger={<Button variant="link">

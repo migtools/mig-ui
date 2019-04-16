@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box } from '@rebass/emotion';
+import { Flex, Box, Text } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import VolumesTable from './VolumesTable';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
+import { css } from '@emotion/core';
 import theme from "./../../../theme";
 const StyledBox = styled(Box)`
   text-align: center;
@@ -19,7 +20,7 @@ class VolumesForm extends React.Component<any> {
   componentDidMount() {
     setTimeout(() => {
       this.setState(() => ({ isLoading: false }))
-    }, 500);
+    }, 1500);
   }
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
@@ -27,14 +28,21 @@ class VolumesForm extends React.Component<any> {
     return (
       <React.Fragment>
         {this.state.isLoading ?
-          <StyledBox >
-            <Loader
-              type="ThreeDots"
-              color={theme.colors.navy}
-              height="100"
-              width="100"
-            />
-          </StyledBox>
+          <Flex css={css`
+                        height: 100%;
+                        text-align: center;
+                    `}>
+            <Box flex="1" m="auto">
+              <Loader
+                type="ThreeDots"
+                color={theme.colors.navy}
+                height="100"
+                width="100"
+              />
+              <Text fontSize={[2, 3, 4]}> Discovering persistent volumes attached to source projects.</Text>
+            </Box>
+
+          </Flex>
 
           :
           <Box>

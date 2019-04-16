@@ -29,6 +29,7 @@ interface IProps {
   addButton?: React.ReactNode;
   onToggle: (id) => void;
   onRemoveItem?: (type, id) => void;
+  onAddItem?: () => void;
   filteredDataList?: any[];
   allData: any[];
   isExpanded: boolean;
@@ -47,6 +48,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   plansDisabled,
   addButton,
   onRemoveItem,
+  onAddItem,
   type,
   onSearch,
   ...props

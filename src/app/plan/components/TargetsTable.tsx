@@ -36,72 +36,27 @@ class TargetsTable extends React.Component<IProps, IState> {
       this.setState({ rows: this.props.values.selectedNamespaces });
     }
   }
-  //   selectRow = row => {
-  //     const index = row.index;
-  //     var checkedCopy = this.state.checked;
-  //     checkedCopy[index] = !this.state.checked[index];
-  //     // if (checkedCopy[index] === false) {
-  //     //   this.setState({ selectAll: false });
-  //     // }
-
-  //     this.setState({
-  //       checked: checkedCopy
-  //     });
-  //     const itemList = this.props.sourceCluster.metadata.namespaces;
-  //     const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
-  //       for (var i = 0; checkedCopy.length > i; i++) {
-  //         if (itemIndex === i) {
-  //           if (checkedCopy[i]) {
-  //             return item;
-  //           }
-  //         }
-  //       }
-  //     });
-  //     this.props.setFieldValue("selectedNamespaces", formValuesForNamespaces);
-  //   };
   render() {
     const { values } = this.props;
     const { rows } = this.state;
 
     if (values.selectedNamespaces !== null && values.targetCluster !== null) {
       return (
-        <React.Fragment>
-          <Card>
-            <CardHeader>
-              <Title headingLevel="h2" size="3xl">
-                Source - Target Project Mapping
-              </Title>
-            </CardHeader>
-            <CardBody>
-              <ReactTable
-                data={this.state.rows}
-                columns={[
-                  //   {
-                  //     accessor: "id",
-                  //     Cell: row => (
-                  //       <input
-                  //         type="checkbox"
-                  //         // onChange={() => this.selectRow(row)}
-                  //         // checked={this.state.checked[row.index]}
-                  //       />
-                  //     )
-                  //   },
-                  {
-                    Header: 'Name',
-                    accessor: 'name',
-                  },
-                  {
-                    Header: 'Info',
-                    accessor: 'info',
-                  },
-                ]}
-                defaultPageSize={10}
-                className="-striped -highlight"
-              />
-            </CardBody>
-            <CardFooter />
-          </Card>
-        </React.Fragment>
+        <ReactTable
+          data={rows}
+          columns={[
+            {
+              Header: 'Source Project Name',
+              accessor: 'name',
+            },
+            {
+              Header: 'Target Project Name',
+              accessor: 'name',
+            },
+          ]}
+          defaultPageSize={10}
+          className="-striped -highlight"
+        />
       );
     } else {
       return <div />;
