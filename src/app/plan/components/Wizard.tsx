@@ -6,19 +6,14 @@ import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
+import ResultsStep from './ResultsStep';
 import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
-  state = {
-    isOpen: false,
-  };
-  handleToggle = () => {
-    this.setState((state) => ({ isOpen: !state.isOpen }));
-  }
 
   onClose = () => {
     this.props.resetForm();
-    this.handleToggle();
+    this.props.onToggle();
   }
   render() {
     const {
@@ -40,7 +35,7 @@ class WrappedWizard extends React.Component<any, any> {
       trigger,
       {
         onClick: () => {
-          this.handleToggle();
+          this.props.onToggle();
           if (trigger.props.onClick) {
             trigger.props.onClick();
           }
@@ -72,7 +67,6 @@ class WrappedWizard extends React.Component<any, any> {
             touched={touched}
             handleBlur={handleBlur}
             handleChange={handleChange}
-            handleSubmit={handleSubmit}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
@@ -90,7 +84,6 @@ class WrappedWizard extends React.Component<any, any> {
             touched={touched}
             handleBlur={handleBlur}
             handleChange={handleChange}
-            handleSubmit={handleSubmit}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
@@ -108,7 +101,6 @@ class WrappedWizard extends React.Component<any, any> {
             touched={touched}
             handleBlur={handleBlur}
             handleChange={handleChange}
-            handleSubmit={handleSubmit}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
@@ -116,6 +108,17 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         enableNext: !errors.targetCluster && touched.targetCluster === true,
+      },
+      {
+        name: 'Results',
+        component: (
+          <ResultsStep
+            values={values}
+            errors={errors}
+            handleSubmit={handleSubmit}
+          />
+        ),
+        enableNext: true,
       },
     ];
 
@@ -140,7 +143,7 @@ class WrappedWizard extends React.Component<any, any> {
                   padding-left: 15em;
                 }
               `}
-              isOpen={this.state.isOpen}
+              isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
               onClose={this.onClose}
@@ -158,13 +161,13 @@ const Wizard: any = withFormik({
   mapPropsToValues: () => ({
     planName: '',
     sourceCluster: '',
-    targetCluster: '',
+    targetCluster: null,
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [
       {
         name: 'persistent_volume1',
-        project: 'My Project1',
+        project: 'My Project 2',
         storageClass: 'OpenStack Cinder',
         size: '120 GB',
         deployment: 'deployment_name',
@@ -173,104 +176,14 @@ const Wizard: any = withFormik({
         id: 1,
       },
       {
-        name: 'persistent_volume1',
-        project: 'My Project1',
+        name: 'persistent_volume2',
+        project: 'My Project 2',
         storageClass: 'OpenStack Cinder',
         size: '120 GB',
         deployment: 'deployment_name',
         type: 'copy',
         details: '',
         id: 2,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 3,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 4,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 5,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 6,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 7,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 8,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 9,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 10,
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: 'copy',
-        details: '',
-        id: 11,
       },
     ],
 
@@ -299,7 +212,7 @@ const Wizard: any = withFormik({
 
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
-    formikBag.props.onHandleWizardToggle();
+    formikBag.props.onToggle();
   },
   validateOnBlur: false,
 

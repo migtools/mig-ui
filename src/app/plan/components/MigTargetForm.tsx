@@ -9,7 +9,6 @@ interface IProps {
   touched: any;
   handleBlur: any;
   handleChange: any;
-  handleSubmit: any;
   setFieldValue: any;
   setFieldTouched: any;
   clusterList: any;
@@ -71,12 +70,12 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const {
       clusterOptions,
       storageOptions,
-      targetCluster,
-      selectedStorage,
     } = this.state;
+
     return (
       <Box>
-        <TextContent>
+        <TextContent
+        >
           <TextList component="dl">
             <TextListItem component="dt">Replication Repository</TextListItem>
             <Select
@@ -115,11 +114,13 @@ class MigTargetForm extends React.Component<IProps, IState> {
             )}
           </TextList>
         </TextContent>
-        <TargetsTable
-          values={values}
-          // selectedRepo={selectedRepo}
-          // selectedTarget={selectedTarget}
-        />
+        {values.targetCluster !== null &&
+          <Box mt={20}>
+            <TargetsTable
+              values={values}
+            />
+          </Box>
+        }
       </Box>
     );
   }
