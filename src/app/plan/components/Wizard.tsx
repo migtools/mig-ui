@@ -11,10 +11,10 @@ import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
 
-  // onClose = () => {
-  //   this.props.resetForm();
-  //   this.handleToggle();
-  // }
+  onClose = () => {
+    this.props.resetForm();
+    this.props.onToggle();
+  }
   render() {
     const {
       values,

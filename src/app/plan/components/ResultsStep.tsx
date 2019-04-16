@@ -5,10 +5,10 @@ import Select from 'react-select';
 import { css } from '@emotion/core';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
-import theme from "./../../../theme";
+import theme from './../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { setNestedObjectValues } from 'formik';
-import ClusterStatusIcon from "../../home/components/ClusterStatusIcon";
+import ClusterStatusIcon from '../../home/components/ClusterStatusIcon';
 const StyledBox = styled(Box)`
     text-align: center;
   `;
@@ -30,7 +30,7 @@ interface IProps {
 
 class ResultsStep extends React.Component<any, any> {
     state = {
-        isLoading: true
+        isLoading: true,
     };
 
     componentDidMount() {
@@ -43,10 +43,12 @@ class ResultsStep extends React.Component<any, any> {
         return (
             <React.Fragment>
                 {this.state.isLoading ?
-                    <Flex css={css`
+                    <Flex
+                        css={css`
                         height: 100%;
                         text-align: center;
-                    `}>
+                    `}
+                    >
                         <Box flex="1" m="auto">
                             <Loader
                                 type="ThreeDots"
@@ -67,13 +69,15 @@ class ResultsStep extends React.Component<any, any> {
                     </Flex>
 
                     :
-                    <Flex css={css`
+                    <Flex
+                        css={css`
                         height: 100%;
                         text-align: center;
-                    `}>
+                    `}
+                    >
                         <Box flex="1" m="auto">
                             <Text fontSize={[2, 3, 4]}>
-                                <ClusterStatusIcon isSuccessful={true}></ClusterStatusIcon>
+                                <ClusterStatusIcon isSuccessful={true} />
                                 <StyledSpan >
                                     {this.props.values.planName}{' '}
                                 </StyledSpan>

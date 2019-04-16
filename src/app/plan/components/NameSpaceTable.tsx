@@ -50,7 +50,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
         rows: [
           { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
           { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
-          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' },
         ],
       });
       //temporary for ui development
@@ -63,7 +63,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
         rows: [
           { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
           { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
-          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' },
         ],
       });
       //temporary for ui development
@@ -78,7 +78,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
         rows: [
           { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
           { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
-          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' }
+          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' },
         ],
       });
       //temporary for ui development

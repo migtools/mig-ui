@@ -6,7 +6,7 @@ import VolumesTable from './VolumesTable';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
-import theme from "./../../../theme";
+import theme from './../../../theme';
 const StyledBox = styled(Box)`
   text-align: center;
   `;
@@ -14,12 +14,12 @@ class VolumesForm extends React.Component<any> {
   state = {
     options: [],
     sourceCluster: null,
-    isLoading: true
+    isLoading: true,
   };
 
   componentDidMount() {
     setTimeout(() => {
-      this.setState(() => ({ isLoading: false }))
+      this.setState(() => ({ isLoading: false }));
     }, 1500);
   }
   render() {
@@ -28,10 +28,12 @@ class VolumesForm extends React.Component<any> {
     return (
       <React.Fragment>
         {this.state.isLoading ?
-          <Flex css={css`
+          <Flex
+            css={css`
                         height: 100%;
                         text-align: center;
-                    `}>
+                    `}
+          >
             <Box flex="1" m="auto">
               <Loader
                 type="ThreeDots"
