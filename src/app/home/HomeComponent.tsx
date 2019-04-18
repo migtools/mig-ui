@@ -21,6 +21,7 @@ import {
   NavItem,
   PageSection,
   TextContent,
+  Title,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import { clusterOperations } from '../cluster/duck';
@@ -214,16 +215,13 @@ class HomeComponent extends React.Component<IProps, IState> {
       <PageHeader
         logo={
           <React.Fragment>
+            <Brand src={openShiftLogo} alt="OpenShift Logo" />
             <BrandBar
             />
-            <Brand src={openShiftLogo} alt="OpenShift Logo" />
-
           </React.Fragment>
         }
 
         toolbar={PageToolbar}
-        showNavToggle
-        isNavOpen={isNavOpen}
         //@ts-ignore
         css={HeaderOverrideCss}
       />
@@ -237,7 +235,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     } = this.props;
     return (
       <React.Fragment>
-        <Page header={Header} sidebar={Sidebar}>
+        <Page header={Header}>
           <PageSection>
             <TextContent>
               <Flex justifyContent="center" flexWrap="wrap">

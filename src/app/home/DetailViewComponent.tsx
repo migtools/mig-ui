@@ -140,7 +140,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             allData={allStorage}
             onSearch={this.handleStorageSearch}
             id="repositoryList"
-            title="Storage"
+            title="Replication Repositories"
             type="storage"
             addButton={
               <AddStorageModal
@@ -156,7 +156,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             onToggle={this.handleToggle}
             allData={[]}
             id="plansList"
-            title="Plans"
+            title="Migration Plans"
             type="plans"
             addButton={
               <Wizard
