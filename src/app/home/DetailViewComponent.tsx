@@ -121,6 +121,14 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.addPlanSuccess(plan);
   }
 
+  handleStageTriggered = (plan) => {
+    console.log('stage triggered for plan: ', plan);
+  }
+
+  handleMigrateTriggered = (plan) => {
+    console.log('migrate triggered for plan: ', plan);
+  }
+
   render() {
     const {
       filteredClusterList,
@@ -174,6 +182,7 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('plansList')}
             onToggle={this.handleToggle}
+            filteredDataList={filteredPlanList}
             allData={allPlans}
             id="plansList"
             title="Plans"
@@ -192,6 +201,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             }
             onRemoveItem={this.handleRemoveItem}
             plansDisabled={this.state.plansDisabled}
+            onStageTriggered={this.handleStageTriggered}
+            onMigrateTriggered={this.handleMigrateTriggered}
           />
         </DataList>
       </React.Fragment>
