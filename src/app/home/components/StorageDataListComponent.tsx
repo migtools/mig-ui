@@ -11,7 +11,7 @@ import ClusterStatusIcon from './ClusterStatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import EmptyStateComponent from './EmptyStateComponent';
 
-const DataListComponent = ({ dataList, type, ...props }) => {
+const DataListComponent = ({ dataList, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -28,22 +28,13 @@ const DataListComponent = ({ dataList, type, ...props }) => {
                   <span id="simple-item1">{listItem.metadata.name}</span>
                 </DataListCell>
                 <DataListCell width={2}>
-                  {type === 'cluster' && (
-                    <a
-                      target="_blank"
-                      href={`http://localhost:9999/${listItem.metadata.name}`}
-                    >
-                      {`http://localhost:9999/${listItem.metadata.name}`}
-                    </a>
-                  )}
-                  {type === 'storage' && (
-                    <a
-                      target="_blank"
-                      href={`http://localhost:9999/${listItem.metadata.name}`}
-                    >
-                      {`http://localhost:9999/${listItem.metadata.name}`}
-                    </a>
-                  )}
+                  {/* TODO: update to read with the correct fields */}
+                  <a
+                    target="_blank"
+                    href={`http://localhost:9999/${listItem.metadata.name}`}
+                  >
+                    {`http://localhost:9999/${listItem.metadata.name}`}
+                  </a>
                 </DataListCell>
                 <DataListCell width={2}>
                   <LinkIcon /> 0 associated migration plans
@@ -56,7 +47,7 @@ const DataListComponent = ({ dataList, type, ...props }) => {
                     <Box mx={1}>
                       <Button
                         onClick={() =>
-                          props.onRemoveItem(type, dataList[index].id)
+                          props.onRemoveItem('storage', dataList[index].id)
                         }
                         variant="danger"
                       >
@@ -72,7 +63,7 @@ const DataListComponent = ({ dataList, type, ...props }) => {
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-              <EmptyStateComponent type={type} />
+              <EmptyStateComponent type='storage' />
               </Box>
             </Flex>
           )}

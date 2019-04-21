@@ -66,14 +66,12 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   } else if(type === 'storage') {
     listComponent = (
       <StorageDataListComponent
-        type={type}
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList} />
     )
   } else {
     listComponent = (
       <PlanDataListComponent
-        type={type}
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList} />
     )
