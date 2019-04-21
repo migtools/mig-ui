@@ -12,9 +12,14 @@ export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
+  const planState = {
+    migrations: [],
+    status: 'Not Started'
+  };
+  const newPlan = {...action.newPlan, ...planState};
   return {
     ...state,
-    migPlanList: [...state.migPlanList, action.newPlan],
+    migPlanList: [...state.migPlanList, newPlan],
   };
 };
 

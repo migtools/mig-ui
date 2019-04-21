@@ -19,7 +19,7 @@ const devMode = process.env.DEVMODE || 'local';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['cluster', 'storage'],
+  whitelist: ['cluster', 'storage', 'plan'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
