@@ -37,6 +37,11 @@ interface IProps {
   isExpanded: boolean;
   plansDisabled?: boolean;
   type?: string;
+  // TODO: This all needs to get refactored to more generically handle the
+  // differences between those that have edit and remove (cluster and stage)
+  // and plans.
+  onStageTriggered?: (plan) => void;
+  onMigrateTriggered?: (plan) => void;
   onSearch?: (val, otherval) => void;
 }
 
@@ -53,6 +58,8 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onAddItem,
   type,
   onSearch,
+  onStageTriggered,
+  onMigrateTriggered,
   ...props
 }) => {
   let listComponent;
@@ -72,6 +79,8 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
     listComponent = (
       <PlanDataListComponent
         onRemoveItem={onRemoveItem}
+        onStageTriggered={onStageTriggered}
+        onMigrateTriggered={onMigrateTriggered}
         dataList={filteredDataList} />
     )
   }
