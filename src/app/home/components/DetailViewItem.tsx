@@ -19,7 +19,10 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Flex, Box } from '@rebass/emotion';
 import { css } from '@emotion/core';
 
-import DataListComponent from './DataListComponent';
+// import DataListComponent from './DataListComponent';
+import ClusterDataListComponent from './ClusterDataListComponent';
+import StorageDataListComponent from './StorageDataListComponent';
+import PlanDataListComponent from './PlanDataListComponent';
 
 import { } from '@patternfly/react-core';
 import theme from '../../../theme';
@@ -53,6 +56,30 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onSearch,
   ...props
 }) => {
+  let listComponent;
+  if(type === 'cluster') {
+    listComponent = (
+      <ClusterDataListComponent
+        type={type}
+        onRemoveItem={onRemoveItem}
+        dataList={filteredDataList} />
+    )
+  } else if(type === 'storage') {
+    listComponent = (
+      <StorageDataListComponent
+        type={type}
+        onRemoveItem={onRemoveItem}
+        dataList={filteredDataList} />
+    )
+  } else {
+    listComponent = (
+      <PlanDataListComponent
+        type={type}
+        onRemoveItem={onRemoveItem}
+        dataList={filteredDataList} />
+    )
+  }
+
   return (
     <Card>
       <CardBody>
@@ -96,11 +123,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
                 </Button>
               </InputGroup>
             }
-            <DataListComponent
-              type={type}
-              onRemoveItem={onRemoveItem}
-              dataList={filteredDataList}
-            />
+            {listComponent}
           </DataListContent>
         </DataListItem>
 
