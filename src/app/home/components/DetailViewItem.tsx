@@ -60,7 +60,6 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   if(type === 'cluster') {
     listComponent = (
       <ClusterDataListComponent
-        type={type}
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList} />
     )
