@@ -37,12 +37,12 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const len = this.props.clusterList.length;
     for (let i = 0; i < len; i++) {
       if (
-        this.props.clusterList[i].metadata.name !==
+        this.props.clusterList[i].MigCluster.metadata.name !==
         this.props.values.sourceCluster
       ) {
         myClusterOptions.push({
-          label: this.props.clusterList[i].metadata.name,
-          value: this.props.clusterList[i].metadata.name,
+          label: this.props.clusterList[i].MigCluster.metadata.name,
+          value: this.props.clusterList[i].MigCluster.metadata.name,
         });
       }
     }
@@ -106,7 +106,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
                 this.setState({ isLoading: true });
                 setFieldValue('targetCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
-                  items => items.metadata.name === option.value,
+                  c => c.MigCluster.metadata.name === option.value,
                 );
 
                 this.setState({ targetCluster: matchingCluster[0] });

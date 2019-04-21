@@ -86,7 +86,6 @@ class WrappedWizard extends React.Component<any, any> {
             handleChange={handleChange}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
-            clusterList={clusterList}
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
@@ -213,6 +212,7 @@ const Wizard: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onToggle();
+    formikBag.props.onPlanSubmit(values);
   },
   validateOnBlur: false,
 
