@@ -126,7 +126,7 @@ function statusComponent(plan) {
     plan.status.state === 'Not Started' ||
     plan.status.state === 'Staged Successfully' ||
     plan.status.state === 'Migrated Successfully';
-  
+
   const printStateAndProgress =
     plan.status.state === 'Staging' ||
     plan.status.state === 'Migrating';
