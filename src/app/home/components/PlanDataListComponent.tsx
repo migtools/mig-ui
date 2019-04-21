@@ -72,7 +72,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                   <span>{plan.persistentVolumes.length}</span>
                 </DataListCell>
                 <DataListCell width={1}>
-                  <span>{plan.status}</span>
+                  {statusComponent(plan)}
                 </DataListCell>
                 <DataListCell width={2}>
                   <Flex justifyContent="flex-end">
@@ -111,5 +111,32 @@ const DataListComponent = ({ dataList, ...props }) => {
   }
   return null;
 };
+
+function statusComponent(plan) {
+  let statusComponent;
+
+  const printState =
+    plan.status.state === 'Not Started' ||
+    plan.status.state === 'Staged Successfully';
+
+  if(printState) {
+    statusComponent = (
+      <span>{plan.status.state}</span>
+    )
+  } else if(plan.status.state === 'Staging') {
+    statusComponent = (
+      <div>
+        <div>{plan.status.state}</div>
+        <div>{plan.status.progress}</div>
+      </div>
+    )
+  } else {
+    statusComponent = (
+      <span>Not understood</span>
+    )
+  }
+
+  return statusComponent
+}
 
 export default DataListComponent;

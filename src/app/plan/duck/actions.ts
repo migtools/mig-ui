@@ -5,6 +5,9 @@ const { Creators, Types } = createActions({
   addPlanSuccess: ['newPlan'],
   addPlanFailure: ['error'],
   removePlanSuccess: ['id'],
+  updatePlanProgress: ['planName', 'progress'],
+  initStage: ['planName'],
+  stagingSuccess: ['planName'],
   sourceClusterNamespacesFetchSuccess: ['sourceClusterNamespaces'],
 });
 

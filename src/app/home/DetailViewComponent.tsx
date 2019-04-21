@@ -6,6 +6,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import DetailViewItem from './components/DetailViewItem';
 import clusterOperations from '../cluster/duck/operations';
 import storageOperations from '../storage/duck/operations';
+import planOperations from '../plan/duck/operations';
 import AddClusterModal from '../cluster/components/AddClusterModal';
 import AddStorageModal from '../storage/components/AddStorageModal';
 import clusterSelectors from '../cluster/duck/selectors';
@@ -36,6 +37,9 @@ interface IProps {
   updateClusterSearchTerm: (searchTerm) => void;
   updateStorageSearchTerm: (searchTerm) => void;
   addPlanSuccess: (plan) => void;
+  runStage: (plan) => void;
+  updateStageProgress: (plan, progress) => void;
+  stagingSuccess: (plan) => void;
 }
 
 interface IState {
@@ -123,6 +127,7 @@ class DetailViewComponent extends Component<IProps, IState> {
 
   handleStageTriggered = (plan) => {
     console.log('stage triggered for plan: ', plan);
+    this.props.runStage(plan);
   }
 
   handleMigrateTriggered = (plan) => {
@@ -236,6 +241,9 @@ const mapDispatchToProps = dispatch => {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     addPlanSuccess: plan => dispatch(PlanCreators.addPlanSuccess(plan)),
+    runStage: plan => dispatch(planOperations.runStage(plan)),
+    updateStageProgress: (plan, progress) => dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
+    stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
   };
 };
 
