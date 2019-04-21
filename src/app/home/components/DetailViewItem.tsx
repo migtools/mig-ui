@@ -19,7 +19,6 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Flex, Box } from '@rebass/emotion';
 import { css } from '@emotion/core';
 
-// import DataListComponent from './DataListComponent';
 import ClusterDataListComponent from './ClusterDataListComponent';
 import StorageDataListComponent from './StorageDataListComponent';
 import PlanDataListComponent from './PlanDataListComponent';

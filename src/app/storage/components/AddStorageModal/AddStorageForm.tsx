@@ -144,6 +144,7 @@ const AddStorageForm: any = withFormik({
         uid: '',
       },
       spec: {
+        bucketUrl: values.bucketUrl,
         backupStorageLocationRef: {
           name: values.bucketUrl,
         },
