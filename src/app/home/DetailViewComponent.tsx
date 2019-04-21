@@ -37,9 +37,12 @@ interface IProps {
   updateClusterSearchTerm: (searchTerm) => void;
   updateStorageSearchTerm: (searchTerm) => void;
   addPlanSuccess: (plan) => void;
+<<<<<<< HEAD
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
+=======
+>>>>>>> Add plan persist
 }
 
 interface IState {
@@ -125,6 +128,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.addPlanSuccess(plan);
   }
 
+<<<<<<< HEAD
   handleStageTriggered = (plan) => {
     this.props.runStage(plan);
   }
@@ -133,6 +137,8 @@ class DetailViewComponent extends Component<IProps, IState> {
   //   console.log('migrate triggered for plan: ', plan);
   // }
 
+=======
+>>>>>>> Add plan persist
   render() {
     const {
       filteredClusterList,
@@ -186,7 +192,10 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('plansList')}
             onToggle={this.handleToggle}
+<<<<<<< HEAD
             filteredDataList={filteredPlanList}
+=======
+>>>>>>> Add plan persist
             allData={allPlans}
             id="plansList"
             title="Migration Plans"
@@ -240,9 +249,12 @@ const mapDispatchToProps = dispatch => {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     addPlanSuccess: plan => dispatch(PlanCreators.addPlanSuccess(plan)),
+<<<<<<< HEAD
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) => dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
+=======
+>>>>>>> Add plan persist
   };
 };
 

@@ -19,7 +19,7 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
       progress: 0,
     }
   };
-  const newPlan = {...action.newPlan, ...planState};
+  const newPlan = { ...action.newPlan, ...planState };
   return {
     ...state,
     migPlanList: [...state.migPlanList, newPlan],
