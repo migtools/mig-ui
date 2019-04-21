@@ -44,6 +44,7 @@ interface IMigStorageMetadata {
   uid: string;
 }
 interface IMigStorageSpec {
+  bucketUrl: string;
   backupStorageLocationRef: {
     name: string,
   };

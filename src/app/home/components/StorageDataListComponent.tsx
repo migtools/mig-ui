@@ -28,12 +28,11 @@ const DataListComponent = ({ dataList, ...props }) => {
                   <span id="simple-item1">{listItem.metadata.name}</span>
                 </DataListCell>
                 <DataListCell width={2}>
-                  {/* TODO: update to read with the correct fields */}
                   <a
                     target="_blank"
-                    href={`http://localhost:9999/${listItem.metadata.name}`}
+                    href={listItem.spec.bucketUrl}
                   >
-                    {`http://localhost:9999/${listItem.metadata.name}`}
+                    {listItem.spec.bucketUrl}
                   </a>
                 </DataListCell>
                 <DataListCell width={2}>
