@@ -18,8 +18,12 @@ class VolumesForm extends React.Component<any> {
   };
 
   componentDidMount() {
+    this.props.onWizardLoadingToggle(true)
+
     setTimeout(() => {
       this.setState(() => ({ isLoading: false }));
+      this.props.onWizardLoadingToggle(false)
+
     }, 1500);
   }
   render() {

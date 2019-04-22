@@ -10,6 +10,12 @@ import ResultsStep from './ResultsStep';
 import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
+  state = {
+    isWizardLoading: false
+  }
+  handleWizardLoadingToggle = (isLoading) => {
+    this.setState({ isWizardLoading: isLoading })
+  }
 
   onClose = () => {
     this.props.resetForm();
@@ -70,10 +76,11 @@ class WrappedWizard extends React.Component<any, any> {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
         name: 'Persistent Volumes',
@@ -86,10 +93,11 @@ class WrappedWizard extends React.Component<any, any> {
             handleChange={handleChange}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
         name: 'Migration Targets',
@@ -104,9 +112,10 @@ class WrappedWizard extends React.Component<any, any> {
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
             storageList={storageList}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        enableNext: !errors.targetCluster && touched.targetCluster === true,
+        enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
       {
         name: 'Results',
@@ -115,9 +124,10 @@ class WrappedWizard extends React.Component<any, any> {
             values={values}
             errors={errors}
             handleSubmit={handleSubmit}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        enableNext: true,
+        enableNext: !this.state.isWizardLoading,
       },
     ];
 
