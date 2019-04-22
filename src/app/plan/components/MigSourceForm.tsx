@@ -47,10 +47,10 @@ class MigSourceForm extends React.Component<any> {
                 this.setState({ sourceCluster: matchingCluster[0] });
                 setFieldTouched('sourceCluster');
                 this.setState({ isLoading: true });
-                this.props.onWizardLoadingToggle(true)
+                this.props.onWizardLoadingToggle(true);
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
-                  this.props.onWizardLoadingToggle(false)
+                  this.props.onWizardLoadingToggle(false);
                 }, 1500);
 
               }}

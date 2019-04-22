@@ -62,7 +62,7 @@ const DataListComponent = ({ dataList, ...props }) => {
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-              <EmptyStateComponent type='storage' />
+              <EmptyStateComponent type="storage" />
               </Box>
             </Flex>
           )}

@@ -60,14 +60,14 @@ const DataListComponent = ({ dataList, ...props }) => {
                     </Flex>
                   </DataListCell>
                 </DataListItem>
-              )
+              );
             })}
           </DataList>
         ) : (
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-              <EmptyStateComponent type='cluster' />
+              <EmptyStateComponent type="cluster" />
               </Box>
             </Flex>
           )}

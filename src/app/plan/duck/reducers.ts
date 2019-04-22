@@ -17,9 +17,9 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
     status: {
       state: 'Not Started',
       progress: 0,
-    }
+    },
   };
-  const newPlan = {...action.newPlan, ...planState};
+  const newPlan = { ...action.newPlan, ...planState };
   return {
     ...state,
     migPlanList: [...state.migPlanList, newPlan],
@@ -46,8 +46,8 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
-  }
-}
+  };
+};
 
 export const initStage = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
@@ -56,15 +56,15 @@ export const initStage = (state = INITIAL_STATE, action) => {
   updatedPlan.status = {
     state: 'Staging',
     progress: 0,
-  }
+  };
 
   updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
 
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
-  }
-}
+  };
+};
 
 export const stagingSuccess = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
@@ -73,13 +73,13 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
   updatedPlan.status = {
     state: 'Staged Successfully',
     progress: 0,
-  }
+  };
 
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
-  }
-}
+  };
+};
 
 export const initMigration = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
@@ -88,15 +88,15 @@ export const initMigration = (state = INITIAL_STATE, action) => {
   updatedPlan.status = {
     state: 'Migrating',
     progress: 0,
-  }
+  };
 
   updatedPlan.migrations = [...updatedPlan.migrations, 'migration'];
 
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
-  }
-}
+  };
+};
 
 export const migrationSuccess = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
@@ -105,13 +105,13 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
   updatedPlan.status = {
     state: 'Migrated Successfully',
     progress: 0,
-  }
+  };
 
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
-  }
-}
+  };
+};
 
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,

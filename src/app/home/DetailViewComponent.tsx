@@ -129,10 +129,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.runStage(plan);
   }
 
-  // handleMigrateTriggered = (plan) => {
-  //   console.log('migrate triggered for plan: ', plan);
-  // }
-
   render() {
     const {
       filteredClusterList,
@@ -206,7 +202,6 @@ class DetailViewComponent extends Component<IProps, IState> {
             onRemoveItem={this.handleRemoveItem}
             plansDisabled={this.state.plansDisabled}
             onStageTriggered={this.handleStageTriggered}
-          // onMigrateTriggered={this.handleMigrateTriggered}
           />
         </DataList>
       </React.Fragment>

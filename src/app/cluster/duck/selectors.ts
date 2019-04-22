@@ -16,7 +16,7 @@ const getVisibleClusters = createSelector(
     [clusterSelector, searchTermSelector],
     (clusters, searchTerm) => {
       return clusters.filter(cluster => {
-        return cluster.MigCluster.metadata.name.match(new RegExp(searchTerm, 'i'))
+        return cluster.MigCluster.metadata.name.match(new RegExp(searchTerm, 'i'));
       });
     },
 );
