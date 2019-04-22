@@ -204,23 +204,12 @@ class HomeComponent extends React.Component<IProps, IState> {
       -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
     `;
-    const BrandBar = styled.div`
-      width: 1px;
-      background-color: ${theme.colors.navy};
-      height: 45px;
-      float: left;
-      border: 1px inset;
-      margin-right: 1em;
-      `;
-
 
     const Header = (
       <PageHeader
         logo={
           <React.Fragment>
             <Brand src={openShiftLogo} alt="OpenShift Logo" />
-            <BrandBar
-            />
           </React.Fragment>
         }
 
