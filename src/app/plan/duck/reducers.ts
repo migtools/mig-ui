@@ -81,6 +81,38 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
   }
 }
 
+export const initMigration = (state = INITIAL_STATE, action) => {
+  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+
+  updatedPlan.status = {
+    state: 'Migrating',
+    progress: 0,
+  }
+
+  updatedPlan.migrations = [...updatedPlan.migrations, 'migration'];
+
+  return {
+    ...state,
+    migPlanList: [...filteredPlans, updatedPlan],
+  }
+}
+
+export const migrationSuccess = (state = INITIAL_STATE, action) => {
+  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+
+  updatedPlan.status = {
+    state: 'Migrated Successfully',
+    progress: 0,
+  }
+
+  return {
+    ...state,
+    migPlanList: [...filteredPlans, updatedPlan],
+  }
+}
+
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
@@ -89,6 +121,8 @@ export const HANDLERS = {
   [Types.UPDATE_PLAN_PROGRESS]: updatePlanProgress,
   [Types.INIT_STAGE]: initStage,
   [Types.STAGING_SUCCESS]: stagingSuccess,
+  [Types.INIT_MIGRATION]: initMigration,
+  [Types.MIGRATION_SUCCESS]: migrationSuccess,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

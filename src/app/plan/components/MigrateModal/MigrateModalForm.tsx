@@ -8,7 +8,11 @@ import {
 const MigrateModalForm = props => {
   return (
     <Flex>
-      <form onSubmit={() => props.handleSubmit()}>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        props.onHandleModalToggle(null);
+        props.handleSubmit();
+      }}>
         <Box>
           Migrating a migration plan means that all transactions on the source cluster will be halted
           before the migration begins and will remain halted for the duration of the migration.

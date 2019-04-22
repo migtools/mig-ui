@@ -86,9 +86,9 @@ const DataListComponent = ({ dataList, ...props }) => {
                       </Box>
                       <Box mx={1}>
                         <MigrateModal
+                          plan={plan}
                           trigger={
                             <Button
-                              // onClick={() => props.onMigrateTriggered(plan)}
                               variant="primary"
                             >
                               Migrate
@@ -124,13 +124,18 @@ function statusComponent(plan) {
 
   const printState =
     plan.status.state === 'Not Started' ||
-    plan.status.state === 'Staged Successfully';
+    plan.status.state === 'Staged Successfully' ||
+    plan.status.state === 'Migrated Successfully';
+  
+  const printStateAndProgress =
+    plan.status.state === 'Staging' ||
+    plan.status.state === 'Migrating';
 
   if (printState) {
     statusComponent = (
       <span>{plan.status.state}</span>
     )
-  } else if (plan.status.state === 'Staging') {
+  } else if (printStateAndProgress) {
     statusComponent = (
       <div>
         <div>{plan.status.state}</div>

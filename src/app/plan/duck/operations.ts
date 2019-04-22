@@ -35,6 +35,26 @@ const runStage = plan => {
   }
 }
 
+const runMigration = plan => {
+  return (dispatch, getState) => {
+    dispatch(Creators.initMigration(plan.planName))
+    const planNameToStage = plan.planName;
+    const interval = setInterval(() => {
+      const planList = getState().plan.migPlanList;
+
+      const plan = planList.find(p => p.planName === planNameToStage);
+      if(plan.status.progress === 100) {
+        dispatch(Creators.migrationSuccess(plan.planName));
+        clearInterval(interval);
+        return;
+      }
+
+      const nextProgress = plan.status.progress + 10;
+      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress))
+    }, 1000)
+  }
+}
+
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
@@ -100,4 +120,5 @@ export default {
   removePlan,
   fetchNamespacesForCluster,
   runStage,
+  runMigration,
 };

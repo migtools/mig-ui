@@ -9,6 +9,8 @@ const { Creators, Types } = createActions({
   initStage: ['planName'],
   stagingSuccess: ['planName'],
   sourceClusterNamespacesFetchSuccess: ['sourceClusterNamespaces'],
+  initMigration: ['planName'],
+  migrationSuccess: ['planName'],
 });
 
 export { Creators, Types };
