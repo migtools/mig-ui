@@ -58,6 +58,8 @@ export const initStage = (state = INITIAL_STATE, action) => {
     progress: 0,
   }
 
+  updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
+
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
