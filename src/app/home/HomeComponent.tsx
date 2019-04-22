@@ -34,16 +34,19 @@ import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 import theme from '../../theme';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
+
 interface IProps {
   loggingIn?: boolean;
   user: any;
   clusterList: any[];
   migStorageList: any[];
+  migPlanList: any[];
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
+  isFetchingPlans: boolean;
 }
 
 interface IState {
@@ -230,7 +233,9 @@ class HomeComponent extends React.Component<IProps, IState> {
     const {
       isFetchingStorage,
       isFetchingClusters,
+      isFetchingPlans,
       migStorageList,
+      migPlanList,
       clusterList,
     } = this.props;
     return (
@@ -250,7 +255,11 @@ class HomeComponent extends React.Component<IProps, IState> {
                   dataList={migStorageList}
                   isFetching={isFetchingStorage}
                 />
-                <CardComponent title="Migration Plans" dataList={[]} />
+                <CardComponent
+                  title="Migration Plans"
+                  dataList={migPlanList}
+                  isFetching={isFetchingPlans}
+                />
               </Flex>
             </TextContent>
           </PageSection>
@@ -273,8 +282,10 @@ export default connect(
     user: state.auth.user,
     isFetchingClusters: state.cluster.isFetching,
     isFetchingStorage: state.storage.isFetching,
+    isFetchingPlans: state.plan.isFetching,
     clusterList: state.cluster.clusterList,
     migStorageList: state.storage.migStorageList,
+    migPlanList: state.plan.migPlanList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
