@@ -10,7 +10,6 @@ import AddClusterModal from '../cluster/components/AddClusterModal';
 import AddStorageModal from '../storage/components/AddStorageModal';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
-
 import Wizard from '../plan/components/Wizard';
 import {
   Button,
@@ -47,6 +46,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     isWizardOpen: false,
     modalType: '',
   };
+
   componentDidMount() {
     const { allClusters, allStorage } = this.props;
     if (allClusters.length > 1 && allStorage.length > 0) {
@@ -139,7 +139,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             allData={allStorage}
             onSearch={this.handleStorageSearch}
             id="repositoryList"
-            title="Storage"
+            title="Replication Repositories"
             type="storage"
             addButton={
               <AddStorageModal
@@ -155,10 +155,12 @@ class DetailViewComponent extends Component<IProps, IState> {
             onToggle={this.handleToggle}
             allData={[]}
             id="plansList"
-            title="Plans"
+            title="Migration Plans"
             type="plans"
             addButton={
               <Wizard
+                isOpen={isWizardOpen}
+                onToggle={this.handleWizardToggle}
                 clusterList={allClusters}
                 storageList={migStorageList}
                 trigger={<Button variant="link">

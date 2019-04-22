@@ -10,10 +10,13 @@ import {
   TextArea,
 } from '@patternfly/react-core';
 import styled from '@emotion/styled';
+import theme from './../../../theme';
+import FormErrorDiv from './../../common/components/FormErrorDiv';
 interface IProps {
   component: React.ReactNode;
 }
-const PlanNameInput = styled.input`width: 20em;`;
+const PlanNameInput = styled(TextInput)`width: 20em !important;`;
+
 const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   handleChange,
   handleBlur,
@@ -22,27 +25,36 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   touched,
   setFieldTouched,
   ...rest
-}) => (
+}) => {
+
+  const onHandleChange = (val, e) => {
+    handleChange(e);
+  };
+
+  return (
     <React.Fragment>
       <Box>
         <TextContent>
           <TextList component="dl">
             <TextListItem component="dt">Plan Name</TextListItem>
             <PlanNameInput
-              onChange={handleChange}
+              onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}
               onBlur={handleBlur}
               value={values.planName}
               name="planName"
               type="text"
+              isValid={!errors.planName && touched.planName}
+              id="planName"
             />
-            {errors.planName && touched.planName && (
-              <div id="feedback">{errors.planName}</div>
-            )}
           </TextList>
+          {errors.planName && touched.planName && (
+            <FormErrorDiv id="feedback">{errors.planName}</FormErrorDiv>
+          )}
         </TextContent>
       </Box>
     </React.Fragment>
   );
+};
 
 export default GeneralForm;

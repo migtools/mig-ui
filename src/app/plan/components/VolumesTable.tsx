@@ -20,9 +20,19 @@ interface IProps {
   values: any;
 }
 
-class VolumesTable2 extends React.Component<any, any> {
-  handleChange = (selectedOption) => {
-    this.setState({ selectedOption });
+class VolumesTable extends React.Component<any, any> {
+  handleTypeChange = (row, val) => {
+    const { persistentVolumes } = this.props.values;
+    const objIndex = persistentVolumes.findIndex(obj => obj.id === row.original.id);
+
+    const updatedObj = { ...persistentVolumes[objIndex], type: val.value };
+
+    const updatedData = [
+      ...persistentVolumes.slice(0, objIndex),
+      updatedObj,
+      ...persistentVolumes.slice(objIndex + 1),
+    ];
+    this.props.setFieldValue('persistentVolumes', updatedData);
   }
   state = {
     page: 1,
@@ -37,114 +47,17 @@ class VolumesTable2 extends React.Component<any, any> {
   render() {
     const { values } = this.props;
     const { rows, selectedOption } = this.state;
-    const data = [
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-      {
-        name: 'persistent_volume1',
-        project: 'My Project1',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
-        type: '',
-        details: '',
-      },
-    ];
     if (rows !== null) {
       return (
         <React.Fragment>
           <ReactTable
             css={css`
-          font-size: 14px;`}
-            data={data}
+              font-size: 14px;
+              .rt-td{
+                overflow: visible;
+              }
+            `}
+            data={values.persistentVolumes}
             columns={[
               {
                 Header: 'PV Name',
@@ -185,9 +98,11 @@ class VolumesTable2 extends React.Component<any, any> {
                 resizable: false,
                 Cell: row => (
                   <Select
-                    value={selectedOption}
-                    onChange={this.handleChange}
+                    onChange={(val: any) => this.handleTypeChange(row, val)}
                     options={options}
+                    name="persistentVolumes"
+                    value={{ label: row.original.type, value: row.original.type }}
+
                   />
                 ),
               },
@@ -197,9 +112,17 @@ class VolumesTable2 extends React.Component<any, any> {
                 accessor: 'details',
                 width: 40,
                 resizable: false,
+                Cell: row => (
+                  <a
+                    href="https://google.com"
+                    target="_blank"
+
+                  >view
+                  </a>
+                ),
               },
             ]}
-            defaultPageSize={10}
+            defaultPageSize={5}
             className="-striped -highlight"
           />
         </React.Fragment>
@@ -209,4 +132,4 @@ class VolumesTable2 extends React.Component<any, any> {
     }
   }
 }
-export default VolumesTable2;
+export default VolumesTable;

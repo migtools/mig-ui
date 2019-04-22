@@ -61,15 +61,6 @@ class CardComponent extends Component<IProps, IState> {
         <DashboardCard>
           {dataList && !isFetching ? (
             <Flex flexDirection="column">
-              <Box ml="auto" textAlign="right">
-                <Dropdown
-                  onSelect={this.onSelect}
-                  toggle={<KebabToggle onToggle={this.onToggle} />}
-                  isOpen={isOpen}
-                  isPlain
-                  dropdownItems={[]}
-                />
-              </Box>
               <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
                 <Title headingLevel="h3" size="2xl">
                   {dataList.length || 0} {title}{' '}
