@@ -63,13 +63,13 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   ...props
 }) => {
   let listComponent;
-  if(type === 'cluster') {
+  if (type === 'cluster') {
     listComponent = (
       <ClusterDataListComponent
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList} />
     )
-  } else if(type === 'storage') {
+  } else if (type === 'storage') {
     listComponent = (
       <StorageDataListComponent
         onRemoveItem={onRemoveItem}
@@ -80,7 +80,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
       <PlanDataListComponent
         onRemoveItem={onRemoveItem}
         onStageTriggered={onStageTriggered}
-        onMigrateTriggered={onMigrateTriggered}
+        // onMigrateTriggered={onMigrateTriggered}
         dataList={filteredDataList} />
     )
   }
