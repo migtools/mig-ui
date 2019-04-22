@@ -1,21 +1,18 @@
 import React from 'react';
 import { withFormik } from 'formik';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
-  TextInput,
   TextContent,
   TextList,
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigStorage, IStorageFormObject } from '../../../../models';
+import { IMigStorage } from '../../../../models';
 import uuidv4 from 'uuid/v4';
-import styled from '@emotion/styled';
 import { css } from '@emotion/core';
-import theme from '../../../../theme';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
-import KeyDisplayIcon from "./../KeyDisplayIcon"
+import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
 
 
 class WrappedAddStorageForm extends React.Component<any, any>{
@@ -104,12 +101,11 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                 <TextArea
                   value={values.accessKey}
                   onChange={(val, e) => this.onHandleChange(val, e)}
-                  onInput={() => setFieldTouched('planName', true, true)}
+                  onInput={() => setFieldTouched('accessKey', true, true)}
                   onBlur={handleBlur}
                   name="accessKey"
-                  isValid={!errors.accessKey && touched.accessKey}
+                  // isValid={!errors.accessKey && touched.accessKey}
                   id="accessKey"
-                  isRequired
                   //@ts-ignore
                   css={css`
                     height: 5em !important;
@@ -119,7 +115,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   `}
                 />
                 {errors.accessKey && touched.accessKey && (
-                  <FormErrorDiv id="feedback">{errors.accessKey}</FormErrorDiv>
+                  <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
                 )}
 
                 <TextListItem component="dt">
@@ -140,9 +136,8 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   onInput={() => setFieldTouched('secret', true, true)}
                   onBlur={handleBlur}
                   name="secret"
-                  isValid={!errors.secret && touched.secret}
+                  // isValid={!errors.secret && touched.secret}
                   id="secretKey"
-                  isRequired
                   //@ts-ignore
                   css={css`
                     height: 5em !important;
@@ -152,7 +147,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   `}
                 />
                 {errors.secret && touched.secret && (
-                  <FormErrorDiv id="feedback">{errors.secret}</FormErrorDiv>
+                  <FormErrorDiv id="feedback-secret">{errors.secret}</FormErrorDiv>
                 )}
               </TextList>
             </TextContent>
