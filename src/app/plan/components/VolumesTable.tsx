@@ -122,7 +122,7 @@ class VolumesTable extends React.Component<any, any> {
                 ),
               },
             ]}
-            defaultPageSize={10}
+            defaultPageSize={5}
             className="-striped -highlight"
           />
         </React.Fragment>

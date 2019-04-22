@@ -1,8 +1,9 @@
 import React from 'react';
 import { Title } from '@patternfly/react-core';
-import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
+import { Button, Card, CardHeader, CardBody, CardFooter, Switch } from '@patternfly/react-core';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+import { EditAltIcon, TimesIcon } from '@patternfly/react-icons';
 
 interface IState {
   page: number;
@@ -10,7 +11,7 @@ interface IState {
   pageOfItems: any[];
   rows: any;
   selectAll: any;
-  checked: any;
+  editableList: any;
 }
 interface IProps {
   values: any;
@@ -22,9 +23,10 @@ class TargetsTable extends React.Component<IProps, IState> {
     perPage: 20,
     pageOfItems: [],
     rows: [],
-    checked: [],
     selectAll: false,
+    editableList: [],
   };
+
 
   componentDidMount() {
     if (this.props.values.selectedNamespaces) {
@@ -36,6 +38,36 @@ class TargetsTable extends React.Component<IProps, IState> {
       this.setState({ rows: this.props.values.selectedNamespaces });
     }
   }
+  renderEditable = (cellInfo) => {
+
+    return (
+      <div
+        style={{ backgroundColor: '#fafafa' }}
+        contentEditable={this.state.editableList[cellInfo.row._index]}
+
+        suppressContentEditableWarning
+        onBlur={e => {
+          const rows = [...this.state.rows];
+          rows[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+          this.setState({ rows });
+        }}
+        dangerouslySetInnerHTML={{
+          __html: this.state.rows[cellInfo.index][cellInfo.column.id],
+        }}
+      />
+    );
+  }
+  toggleRowEditable = row => {
+
+    const index = row.index;
+    const editableListCopy = this.state.editableList;
+    editableListCopy[index] = !this.state.editableList[index];
+
+    this.setState({
+      editableList: editableListCopy,
+    });
+  }
+
   render() {
     const { values } = this.props;
     const { rows } = this.state;
@@ -48,13 +80,40 @@ class TargetsTable extends React.Component<IProps, IState> {
             {
               Header: 'Source Project Name',
               accessor: 'name',
+              Cell: this.renderEditable,
             },
             {
               Header: 'Target Project Name',
-              accessor: 'name',
+              accessor: 'targetName',
+              Cell: this.renderEditable,
             },
+            {
+              accessor: 'id',
+              Cell: row => (
+                <Button
+                  id={`id-${row.index}`}
+                  // label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
+                  // isChecked={this.state.editableList[row.index] || false}
+                  onClick={() => this.toggleRowEditable(row)}
+                  aria-label="Edit"
+                  variant="link"
+                >
+                  {this.state.editableList[row.index] ?
+                    <TimesIcon /> : <EditAltIcon />
+                  }
+                </Button>
+                // <Switch
+                //   id={`id-${row.index}`}
+                //   label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
+                //   isChecked={this.state.editableList[row.index] || false}
+                //   onChange={() => this.toggleRowEditable(row)}
+                //   aria-label="Edit"
+                // />
+              ),
+            },
+
           ]}
-          defaultPageSize={10}
+          defaultPageSize={5}
           className="-striped -highlight"
         />
       );
