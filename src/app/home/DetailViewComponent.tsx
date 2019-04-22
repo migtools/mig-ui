@@ -126,7 +126,6 @@ class DetailViewComponent extends Component<IProps, IState> {
   }
 
   handleStageTriggered = (plan) => {
-    console.log('stage triggered for plan: ', plan);
     this.props.runStage(plan);
   }
 

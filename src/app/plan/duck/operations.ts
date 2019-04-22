@@ -19,12 +19,8 @@ const runStage = plan => {
   return (dispatch, getState) => {
     dispatch(Creators.initStage(plan.planName))
     const planNameToStage = plan.planName;
-    console.log('running stage for planNameToStage: ', planNameToStage);
-    console.log('raw plan', plan);
     const interval = setInterval(() => {
       const planList = getState().plan.migPlanList;
-      console.log('checking planList: ', planList);
-      console.log('lookign for planNametoStage: ', planNameToStage);
 
       const plan = planList.find(p => p.planName === planNameToStage);
       if(plan.status.progress === 100) {
