@@ -19,8 +19,10 @@ import {
   OutlinedTimesCircleIcon,
 } from '@patternfly/react-icons';
 import PlanStatusIcon from './PlanStatusIcon';
-import { Progress } from 'semantic-ui-react'
-import 'semantic-ui-css/semantic.min.css'
+// import { Progress } from 'semantic-ui-react'
+import { Progress, ProgressSize, ProgressMeasureLocation, ProgressVariant } from '@patternfly/react-core';
+
+// import 'semantic-ui-css/semantic.min.css'
 
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
@@ -192,8 +194,7 @@ function statusComponent(plan) {
     statusComponent = (
       <div>
         <div>{plan.status.state}</div>
-        <Progress percent={plan.status.progress} indicating />
-
+        <Progress value={plan.status.progress} title="" size={ProgressSize.sm}/>
       </div>
     );
   } else {
