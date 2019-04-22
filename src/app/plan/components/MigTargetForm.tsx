@@ -1,8 +1,11 @@
 import React from 'react';
-import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import TargetsTable from './TargetsTable';
+import { Box, Flex, Text } from '@rebass/emotion';
+import theme from '../../../theme';
+import Loader from 'react-loader-spinner';
+import { css } from '@emotion/core';
 interface IProps {
   values: any;
   errors: any;
@@ -19,6 +22,7 @@ interface IState {
   storageOptions: any[];
   targetCluster: any;
   selectedStorage: any;
+  isLoading: boolean;
 }
 class MigTargetForm extends React.Component<IProps, IState> {
   state = {
@@ -26,6 +30,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
     storageOptions: [],
     targetCluster: null,
     selectedStorage: null,
+    isLoading: false,
   };
   populateClusterDropdown() {
     const myClusterOptions: any = [];
@@ -98,6 +103,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
             <Select
               name="targetCluster"
               onChange={option => {
+                this.setState({ isLoading: true });
                 setFieldValue('targetCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
                   items => items.metadata.name === option.value,
@@ -105,6 +111,10 @@ class MigTargetForm extends React.Component<IProps, IState> {
 
                 this.setState({ targetCluster: matchingCluster[0] });
                 setFieldTouched('targetCluster');
+                setTimeout(() => {
+                  this.setState(() => ({ isLoading: false }));
+                }, 1500);
+
               }}
               options={clusterOptions}
             />
@@ -114,7 +124,27 @@ class MigTargetForm extends React.Component<IProps, IState> {
             )}
           </TextList>
         </TextContent>
-        {values.targetCluster !== null &&
+        {/* values.targetCluster !== null && */}
+        {this.state.isLoading ?
+          <Flex
+            css={css`
+                        height: 100%;
+                        text-align: center;
+                    `}
+          >
+            <Box flex="1" m="auto">
+              <Loader
+                type="ThreeDots"
+                color={theme.colors.navy}
+                height="100"
+                width="100"
+              />
+              <Text fontSize={[2, 3, 4]}> Loading </Text>
+            </Box>
+
+          </Flex>
+
+          :
           <Box mt={20}>
             <TargetsTable
               values={values}

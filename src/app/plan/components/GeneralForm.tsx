@@ -45,6 +45,7 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
               name="planName"
               type="text"
               isValid={!errors.planName && touched.planName}
+              id="planName"
             />
           </TextList>
           {errors.planName && touched.planName && (

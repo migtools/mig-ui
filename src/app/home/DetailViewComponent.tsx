@@ -10,7 +10,6 @@ import AddClusterModal from '../cluster/components/AddClusterModal';
 import AddStorageModal from '../storage/components/AddStorageModal';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
-
 import Wizard from '../plan/components/Wizard';
 import {
   Button,
