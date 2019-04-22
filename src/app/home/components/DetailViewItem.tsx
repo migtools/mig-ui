@@ -81,7 +81,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
       <PlanDataListComponent
         onRemoveItem={onRemoveItem}
         onStageTriggered={onStageTriggered}
-        // onMigrateTriggered={onMigrateTriggered}
+        onMigrateTriggered={onMigrateTriggered}
         dataList={filteredDataList} />
     );
   }
