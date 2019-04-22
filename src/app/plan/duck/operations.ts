@@ -49,7 +49,7 @@ const runMigration = plan => {
         return;
       }
 
-      const nextProgress = plan.status.progress + 10;
+      const nextProgress = plan.status.progress + 20;
       dispatch(Creators.updatePlanProgress(plan.planName, nextProgress))
     }, 1000)
   }
