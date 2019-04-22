@@ -10,6 +10,14 @@ import theme from '../../../theme';
 import ClusterStatusIcon from './ClusterStatusIcon';
 import EmptyStateComponent from './EmptyStateComponent';
 import MigrateModal from "../../plan/components/MigrateModal";
+import styled from "@emotion/styled";
+const HeaderDataListCell = styled(DataListCell)`
+  font-weight: 600;
+  margin: auto !important;
+`
+const ChildDataListCell = styled(DataListCell)`
+  margin: auto !important;
+`
 const DataListComponent = ({ dataList, ...props }) => {
   if (dataList) {
     return (
@@ -21,27 +29,27 @@ const DataListComponent = ({ dataList, ...props }) => {
               isExpanded={false}
               aria-labelledby="simple-item1"
             >
-              <DataListCell width={1}>
+              <HeaderDataListCell width={1}>
                 <span>Name</span>
-              </DataListCell>
-              <DataListCell width={1}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
                 <span>Migrations</span>
-              </DataListCell>
-              <DataListCell width={1}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
                 <span>Source</span>
-              </DataListCell>
-              <DataListCell width={1}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
                 <span>Target</span>
-              </DataListCell>
-              <DataListCell width={1}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
                 <span>Repository</span>
-              </DataListCell>
-              <DataListCell width={1}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
                 <span>Persistent Volumes</span>
-              </DataListCell>
-              <DataListCell width={3}>
+              </HeaderDataListCell>
+              <HeaderDataListCell width={3}>
                 <span>Last Status</span>
-              </DataListCell>
+              </HeaderDataListCell>
             </DataListItem>
             {dataList.map((plan, i) => {
               const index = i + 1;
@@ -51,30 +59,30 @@ const DataListComponent = ({ dataList, ...props }) => {
                   isExpanded={false}
                   aria-labelledby="simple-item1"
                 >
-                  <DataListCell width={1}>
+                  <ChildDataListCell width={1}>
                     {/* TODO: <ClusterStatusIcon isSuccessful /> */}
                     <span >{plan.planName}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     {/* TODO: mig logo */}
                     <span>{plan.migrations.length}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     <span>{plan.sourceCluster}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     <span>{plan.targetCluster}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     <span>{plan.selectedStorage}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     <span>{plan.persistentVolumes.length}</span>
-                  </DataListCell>
-                  <DataListCell width={1}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={1}>
                     {statusComponent(plan)}
-                  </DataListCell>
-                  <DataListCell width={2}>
+                  </ChildDataListCell>
+                  <ChildDataListCell width={2}>
                     <Flex justifyContent="flex-end">
                       <Box mx={1}>
                         <Button
@@ -100,7 +108,7 @@ const DataListComponent = ({ dataList, ...props }) => {
 
                       </Box>
                     </Flex>
-                  </DataListCell>
+                  </ChildDataListCell>
                 </DataListItem>
               )
             })}
