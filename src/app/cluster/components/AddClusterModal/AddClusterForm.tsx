@@ -9,8 +9,7 @@ import {
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import { IMigCluster, IClusterFormObject } from '../../../../models';
-import uuidv4 from 'uuid/v4';
+import ConnectionState from '../../../common/connection_state';
 
 const WrappedAddClusterForm = props => {
   const {
@@ -20,7 +19,9 @@ const WrappedAddClusterForm = props => {
     handleChange,
     handleBlur,
     handleSubmit,
+    connectionState,
   } = props;
+
   return (
     <Flex>
       <form onSubmit={handleSubmit}>
@@ -73,6 +74,9 @@ const WrappedAddClusterForm = props => {
               Check connection
             </Button>
           </Flex>
+
+          {renderConnectionState(connectionState)}
+
           <Flex width="100">
             <Box m="10px 10px 10px 0" style={{marginLeft: 'auto'}}>
               <Button
@@ -92,6 +96,30 @@ const WrappedAddClusterForm = props => {
     </Flex>
   );
 };
+
+function renderConnectionState(connectionState: ConnectionState) {
+  let cxStateContents;
+
+  switch(connectionState) {
+    case ConnectionState.Checking:
+      cxStateContents = 'Checking...';
+      break;
+    case ConnectionState.Success:
+      cxStateContents = 'Success!';
+      break;
+    case ConnectionState.Failed:
+      cxStateContents = 'Failed!';
+      break;
+  }
+
+  return (
+    <Flex width="100" m="10px 10px 10px 0">
+      <Box>
+        {cxStateContents}
+      </Box>
+    </Flex>
+  );
+}
 
 const AddClusterForm: any = withFormik({
   mapPropsToValues: () => ({ name: '', url: '', token: '' }),

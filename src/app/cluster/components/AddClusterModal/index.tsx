@@ -25,6 +25,7 @@ class AddClusterModal extends React.Component<any, any> {
         trigger={trigger}
         form={
           <AddClusterForm
+            connectionState={this.props.connectionState}
             onHandleModalToggle={onCloseHook}
             onAddItemSubmit={addCluster}
             checkConnection={checkConnection}
@@ -35,7 +36,11 @@ class AddClusterModal extends React.Component<any, any> {
 }
 
 export default connect(
-  state => ({}),
+  state => {
+    return {
+      connectionState: state.cluster.connectionState,
+    }
+  },
   dispatch => ({
     checkConnection: () => dispatch(clusterOperations.checkConnection()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
