@@ -4,6 +4,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   clusterList: [],
   searchTerm: '',
+  isConnected: false,
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
@@ -12,7 +13,9 @@ export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
-
+export const checkConnectionSuccess = (state = INITIAL_STATE, action) => {
+  return {...state, isConnected: action.connected};
+};
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -33,6 +36,7 @@ export const HANDLERS = {
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
+  [Types.SET_CONNECTED]: checkConnectionSuccess,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

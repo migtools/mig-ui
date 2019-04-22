@@ -6,14 +6,18 @@ import { clusterOperations } from '../../duck';
 
 class AddClusterModal extends React.Component<any, any> {
   render() {
-    const { trigger, onHandleModalToggle, addCluster } = this.props;
+    const { trigger, onHandleModalToggle, addCluster, checkConnectionSuccess } = this.props;
     return (
       <Modal
         onClose={onHandleModalToggle}
         title="Add Cluster"
         trigger={trigger}
         form={
-          <AddClusterForm onHandleModalToggle={onHandleModalToggle} onAddItemSubmit={addCluster} />}
+          <AddClusterForm
+            onHandleModalToggle={onHandleModalToggle}
+            onAddItemSubmit={addCluster}
+            checkConnectionSuccess={checkConnectionSuccess}
+          />}
       />
     );
   }
@@ -22,6 +26,7 @@ class AddClusterModal extends React.Component<any, any> {
 export default connect(
   state => ({}),
   dispatch => ({
+    checkConnectionSuccess: () => dispatch(clusterOperations.checkConnection()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
   }),
 )(AddClusterModal);

@@ -7,6 +7,7 @@ const { Creators, Types } = createActions({
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
   removeClusterSuccess: ['id'],
+  setConnected: ['connected'],
 });
 
 export { Creators, Types };

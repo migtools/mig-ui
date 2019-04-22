@@ -116,6 +116,11 @@ const fetchClusters = () => {
   };
 };
 
+function checkConnection() {
+  return (dispatch, getState) => {
+    dispatch(Creators.setConnected(true));
+  };
+}
 
 function fetchMigClusterRefs(
   client: IClusterClient,
@@ -165,4 +170,5 @@ export default {
   addCluster,
   removeCluster,
   updateSearchTerm,
+  checkConnection,
 };

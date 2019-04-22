@@ -63,18 +63,26 @@ const WrappedAddClusterForm = props => {
           </TextContent>
         </Box>
         <Box mt={20}>
-          <Flex>
-            <Box m="10px 10px 10px 0">
+          <Flex width="100" m="10px 10px 10px 0">
+            <Button
+              style={{marginLeft: 'auto'}}
+              key="check connection"
+              variant="secondary"
+              onClick={() => props.checkConnectionSuccess()}
+            >
+              Check connection
+            </Button>
+          </Flex>
+          <Flex width="100">
+            <Box m="10px 10px 10px 0" style={{marginLeft: 'auto'}}>
               <Button
-                key="cancel"
-                variant="secondary"
-                onClick={() => props.onHandleModalToggle(null)}
+                  key="cancel"
+                  variant="secondary"
+                  onClick={() => props.onHandleModalToggle(null)}
               >
-                Cancel
+                  Cancel
               </Button>
-            </Box>
-            <Box m={10}>
-              <Button variant="secondary" type="submit">
+              <Button variant="secondary" type="submit" style={{marginLeft: '10px'}}>
                 Add
               </Button>
             </Box>
