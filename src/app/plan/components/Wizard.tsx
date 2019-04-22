@@ -11,10 +11,10 @@ import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
   state = {
-    isWizardLoading: false
-  }
+    isWizardLoading: false,
+  };
   handleWizardLoadingToggle = (isLoading) => {
-    this.setState({ isWizardLoading: isLoading })
+    this.setState({ isWizardLoading: isLoading });
   }
 
   onClose = () => {

@@ -9,16 +9,20 @@ import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
 import ClusterStatusIcon from './ClusterStatusIcon';
 import EmptyStateComponent from './EmptyStateComponent';
-import MigrateModal from "../../plan/components/MigrateModal";
-import styled from "@emotion/styled";
+import MigrateModal from '../../plan/components/MigrateModal';
+import styled from '@emotion/styled';
+import { ServiceIcon } from '@patternfly/react-icons';
+
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
   margin: auto !important;
-`
+`;
 const ChildDataListCell = styled(DataListCell)`
   margin: auto !important;
-`
+`;
 const DataListComponent = ({ dataList, ...props }) => {
+
+
   if (dataList) {
     return (
       <React.Fragment>
@@ -53,6 +57,11 @@ const DataListComponent = ({ dataList, ...props }) => {
             </DataListItem>
             {dataList.map((plan, i) => {
               const index = i + 1;
+              const MigrationsIcon = styled(ServiceIcon)`
+                color: ${() =>
+                  plan.migrations.length > 0 ? theme.colors.blue : theme.colors.black};
+              `;
+
               return (
                 <DataListItem
                   key={index}
@@ -64,8 +73,16 @@ const DataListComponent = ({ dataList, ...props }) => {
                     <span >{plan.planName}</span>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
-                    {/* TODO: mig logo */}
-                    <span>{plan.migrations.length}</span>
+                    <Flex>
+                      <Box m="0 5px 0 0" fontSize="2em">
+                        <MigrationsIcon />
+
+                      </Box>
+                      <Box m="auto 0 auto 0">
+                        <span>{plan.migrations.length}</span>
+
+                      </Box>
+                    </Flex>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
                     <span>{plan.sourceCluster}</span>
@@ -110,14 +127,14 @@ const DataListComponent = ({ dataList, ...props }) => {
                     </Flex>
                   </ChildDataListCell>
                 </DataListItem>
-              )
+              );
             })}
           </DataList>
         ) : (
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-                <EmptyStateComponent type='plan' />
+                <EmptyStateComponent type="plan" />
               </Box>
             </Flex>
           )}
@@ -142,21 +159,21 @@ function statusComponent(plan) {
   if (printState) {
     statusComponent = (
       <span>{plan.status.state}</span>
-    )
+    );
   } else if (printStateAndProgress) {
     statusComponent = (
       <div>
         <div>{plan.status.state}</div>
         <div>{plan.status.progress}</div>
       </div>
-    )
+    );
   } else {
     statusComponent = (
       <span>Not understood</span>
-    )
+    );
   }
 
-  return statusComponent
+  return statusComponent;
 }
 
 export default DataListComponent;

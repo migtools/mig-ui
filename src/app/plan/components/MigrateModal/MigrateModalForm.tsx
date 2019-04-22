@@ -2,7 +2,7 @@ import React from 'react';
 import { Flex, Box, Text } from '@rebass/emotion';
 import {
   Button,
-  Checkbox
+  Checkbox,
 } from '@patternfly/react-core';
 
 const MigrateModalForm = props => {

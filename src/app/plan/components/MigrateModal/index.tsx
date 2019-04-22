@@ -32,8 +32,8 @@ class MigrateModal extends React.Component<any, any> {
 
 const mapDispatchToProps = dispatch => {
   return {
-    runMigration: plan=> dispatch(planOperations.runMigration(plan))
-  }
-}
+    runMigration: plan => dispatch(planOperations.runMigration(plan)),
+  };
+};
 
 export default connect(null, mapDispatchToProps)(MigrateModal);

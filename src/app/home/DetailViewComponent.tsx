@@ -37,12 +37,9 @@ interface IProps {
   updateClusterSearchTerm: (searchTerm) => void;
   updateStorageSearchTerm: (searchTerm) => void;
   addPlanSuccess: (plan) => void;
-<<<<<<< HEAD
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
-=======
->>>>>>> Add plan persist
 }
 
 interface IState {
@@ -128,28 +125,14 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.addPlanSuccess(plan);
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   handleStageTriggered = (plan) => {
     this.props.runStage(plan);
-  }
-
-  // handleMigrateTriggered = (plan) => {
-  //   console.log('migrate triggered for plan: ', plan);
-  // }
-
-=======
->>>>>>> Add plan persist
-=======
-  handleStageTriggered = (plan) => {
-    console.log('stage triggered for plan: ', plan);
   }
 
   handleMigrateTriggered = (plan) => {
     console.log('migrate triggered for plan: ', plan);
   }
 
->>>>>>> Initial plan item added with stage/mig triggers
   render() {
     const {
       filteredClusterList,
@@ -203,14 +186,7 @@ class DetailViewComponent extends Component<IProps, IState> {
           <DetailViewItem
             isExpanded={this.state.expanded.includes('plansList')}
             onToggle={this.handleToggle}
-<<<<<<< HEAD
-<<<<<<< HEAD
             filteredDataList={filteredPlanList}
-=======
->>>>>>> Add plan persist
-=======
-            filteredDataList={filteredPlanList}
->>>>>>> Initial plan item added with stage/mig triggers
             allData={allPlans}
             id="plansList"
             title="Migration Plans"
@@ -230,11 +206,6 @@ class DetailViewComponent extends Component<IProps, IState> {
             onRemoveItem={this.handleRemoveItem}
             plansDisabled={this.state.plansDisabled}
             onStageTriggered={this.handleStageTriggered}
-<<<<<<< HEAD
-          // onMigrateTriggered={this.handleMigrateTriggered}
-=======
-            onMigrateTriggered={this.handleMigrateTriggered}
->>>>>>> Initial plan item added with stage/mig triggers
           />
         </DataList>
       </React.Fragment>
@@ -268,12 +239,9 @@ const mapDispatchToProps = dispatch => {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     addPlanSuccess: plan => dispatch(PlanCreators.addPlanSuccess(plan)),
-<<<<<<< HEAD
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) => dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
-=======
->>>>>>> Add plan persist
   };
 };
 

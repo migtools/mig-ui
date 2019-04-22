@@ -17,43 +17,43 @@ const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetc
 
 const runStage = plan => {
   return (dispatch, getState) => {
-    dispatch(Creators.initStage(plan.planName))
+    dispatch(Creators.initStage(plan.planName));
     const planNameToStage = plan.planName;
     const interval = setInterval(() => {
       const planList = getState().plan.migPlanList;
 
       const plan = planList.find(p => p.planName === planNameToStage);
-      if(plan.status.progress === 100) {
+      if (plan.status.progress === 100) {
         dispatch(Creators.stagingSuccess(plan.planName));
         clearInterval(interval);
         return;
       }
 
       const nextProgress = plan.status.progress + 10;
-      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress))
-    }, 1000)
-  }
-}
+      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
+    }, 1000);
+  };
+};
 
 const runMigration = plan => {
   return (dispatch, getState) => {
-    dispatch(Creators.initMigration(plan.planName))
+    dispatch(Creators.initMigration(plan.planName));
     const planNameToStage = plan.planName;
     const interval = setInterval(() => {
       const planList = getState().plan.migPlanList;
 
       const plan = planList.find(p => p.planName === planNameToStage);
-      if(plan.status.progress === 100) {
+      if (plan.status.progress === 100) {
         dispatch(Creators.migrationSuccess(plan.planName));
         clearInterval(interval);
         return;
       }
 
       const nextProgress = plan.status.progress + 20;
-      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress))
-    }, 1000)
-  }
-}
+      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
+    }, 1000);
+  };
+};
 
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
