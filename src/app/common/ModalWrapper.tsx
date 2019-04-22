@@ -37,8 +37,8 @@ class ModalWrapper extends React.Component<IProps, IState> {
 
   handleClose = () => {
     this.setState({ isOpen: false });
-    if (this.props.trigger.props.onClose) {
-      this.props.trigger.props.onClose();
+    if (this.props.onClose) {
+      this.props.onClose();
     }
   }
 

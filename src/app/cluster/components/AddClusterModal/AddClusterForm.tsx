@@ -68,7 +68,7 @@ const WrappedAddClusterForm = props => {
               style={{marginLeft: 'auto'}}
               key="check connection"
               variant="secondary"
-              onClick={() => props.checkConnectionSuccess()}
+              onClick={() => props.checkConnection()}
             >
               Check connection
             </Button>

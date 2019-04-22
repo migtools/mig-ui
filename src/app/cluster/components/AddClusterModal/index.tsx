@@ -3,20 +3,31 @@ import { connect } from 'react-redux';
 import Modal from '../../../common/ModalWrapper';
 import AddClusterForm from './AddClusterForm';
 import { clusterOperations } from '../../duck';
+import { Creators } from '../../duck/actions';
+import ConnectionState from '../../../common/connection_state';
 
 class AddClusterModal extends React.Component<any, any> {
   render() {
-    const { trigger, onHandleModalToggle, addCluster, checkConnectionSuccess } = this.props;
+    const {
+      trigger,
+      addCluster,
+      checkConnection,
+     } = this.props;
+
+     const onCloseHook = () => {
+       this.props.resetConnectionState();
+     }
+
     return (
       <Modal
-        onClose={onHandleModalToggle}
+        onClose={onCloseHook}
         title="Add Cluster"
         trigger={trigger}
         form={
           <AddClusterForm
-            onHandleModalToggle={onHandleModalToggle}
+            onHandleModalToggle={onCloseHook}
             onAddItemSubmit={addCluster}
-            checkConnectionSuccess={checkConnectionSuccess}
+            checkConnection={checkConnection}
           />}
       />
     );
@@ -26,7 +37,8 @@ class AddClusterModal extends React.Component<any, any> {
 export default connect(
   state => ({}),
   dispatch => ({
-    checkConnectionSuccess: () => dispatch(clusterOperations.checkConnection()),
+    checkConnection: () => dispatch(clusterOperations.checkConnection()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
+    resetConnectionState: () => dispatch(Creators.setConnectionState(ConnectionState.Pending)),
   }),
 )(AddClusterModal);

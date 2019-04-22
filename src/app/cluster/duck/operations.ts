@@ -2,6 +2,8 @@ import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
+import ConnectionState from '../../common/connection_state';
+
 import {
   ClusterRegistryResource,
   ClusterRegistryResourceKind,
@@ -118,7 +120,10 @@ const fetchClusters = () => {
 
 function checkConnection() {
   return (dispatch, getState) => {
-    dispatch(Creators.setConnected(true));
+    dispatch(Creators.setConnectionState(ConnectionState.Checking))
+    setTimeout(() => {
+      dispatch(Creators.setConnectionState(ConnectionState.Success));
+    }, 2000);
   };
 }
 
