@@ -7,22 +7,15 @@ import {
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
-import ClusterStatusIcon from './ClusterStatusIcon';
 import EmptyStateComponent from './EmptyStateComponent';
 import MigrateModal from '../../plan/components/MigrateModal';
 import styled from '@emotion/styled';
 import {
   ServiceIcon,
   DatabaseIcon,
-  InProgressIcon,
-  OutlinedCircleIcon,
-  OutlinedTimesCircleIcon,
 } from '@patternfly/react-icons';
 import PlanStatusIcon from './PlanStatusIcon';
-// import { Progress } from 'semantic-ui-react'
 import { Progress, ProgressSize, ProgressMeasureLocation, ProgressVariant } from '@patternfly/react-core';
-
-// import 'semantic-ui-css/semantic.min.css'
 
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
@@ -194,7 +187,7 @@ function statusComponent(plan) {
     statusComponent = (
       <div>
         <div>{plan.status.state}</div>
-        <Progress value={plan.status.progress} title="" size={ProgressSize.sm}/>
+        <Progress value={plan.status.progress} title="" size={ProgressSize.sm} />
       </div>
     );
   } else {
