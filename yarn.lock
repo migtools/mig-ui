@@ -973,6 +973,11 @@
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.7.1.tgz#86fe0b75e871ddaeefb21c2d09f520eb6e88f1ea"
 
+"@patternfly/react-icons@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.8.0.tgz#7314f1d6ef118efb77473bded543bec0cc0f3f56"
+  integrity sha512-qj9JyJUR4YZ5wYNdD5EiaZtn7rOBP658jp44wWIPLb7ufKQpt1pTf638NoIzD5nJKYa4yE5ZUtEwoTIF820ayw==
+
 "@patternfly/react-inline-edit-extension@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@patternfly/react-inline-edit-extension/-/react-inline-edit-extension-1.1.0.tgz#eb5886d548ff63b8d8c1965c98e02882b0237876"
@@ -1005,7 +1010,37 @@
     relative "^3.0.2"
     resolve-from "^4.0.0"
 
-"@patternfly/react-table@1.4.10", "@patternfly/react-table@^1.4.0":
+"@patternfly/react-styles@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-2.5.0.tgz#0c832406483ebd8cc78f7a3f700a346fee5b31e1"
+  integrity sha512-WS97UIRdLQMvu5O15WJt8xndIS99Ii9GHs9a8YsojeAwjVcZuBxV2V0o5fdMDW3SaXIQnpdfmwUotkrC6vPaRg==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.0.0-beta.48"
+    camel-case "^3.0.0"
+    css "^2.2.3"
+    cssom "^0.3.4"
+    cssstyle "^0.3.1"
+    emotion "^9.2.9"
+    emotion-server "^9.2.9"
+    fbjs-scripts "^0.8.3"
+    fs-extra "^6.0.1"
+    jsdom "^11.11.0"
+    relative "^3.0.2"
+    resolve-from "^4.0.0"
+
+"@patternfly/react-table@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-1.5.0.tgz#1529ead1e0f66357aa72389712b8b021e23301ed"
+  integrity sha512-TklyXP3ynFblor6ZK5DSCxoTMKgjgKayZHqI72V86B5MYyYaPJn+txzreWqPZkoTpghUVjSWcVM2FiTOelRllw==
+  dependencies:
+    "@patternfly/patternfly" "1.0.244"
+    "@patternfly/react-core" "^2.11.0"
+    "@patternfly/react-icons" "^3.8.0"
+    "@patternfly/react-styles" "^2.5.0"
+    exenv "^1.2.2"
+    reactabular-table "^8.14.0"
+
+"@patternfly/react-table@^1.4.0":
   version "1.4.10"
   resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-1.4.10.tgz#69d48d4c3829fc9cf3f56aac65ccdfe4063fd39f"
   dependencies:
