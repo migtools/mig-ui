@@ -11,7 +11,14 @@ import ClusterStatusIcon from './ClusterStatusIcon';
 import EmptyStateComponent from './EmptyStateComponent';
 import MigrateModal from '../../plan/components/MigrateModal';
 import styled from '@emotion/styled';
-import { ServiceIcon } from '@patternfly/react-icons';
+import {
+  ServiceIcon,
+  DatabaseIcon,
+  InProgressIcon,
+  OutlinedCircleIcon,
+  OutlinedTimesCircleIcon,
+} from '@patternfly/react-icons';
+import PlanStatusIcon from './PlanStatusIcon';
 
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
@@ -61,6 +68,10 @@ const DataListComponent = ({ dataList, ...props }) => {
                 color: ${() =>
                   plan.migrations.length > 0 ? theme.colors.blue : theme.colors.black};
               `;
+              const PVIcon = styled(DatabaseIcon)`
+                color: ${() =>
+                  plan.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
+              `;
 
               return (
                 <DataListItem
@@ -69,8 +80,14 @@ const DataListComponent = ({ dataList, ...props }) => {
                   aria-labelledby="simple-item1"
                 >
                   <ChildDataListCell width={1}>
-                    {/* TODO: <ClusterStatusIcon isSuccessful /> */}
-                    <span >{plan.planName}</span>
+                    <Flex>
+                      <Box m="0 5px 0 0" fontSize="2em">
+                        <PlanStatusIcon status={plan.status} />
+                      </Box>
+                      <Box m="auto 0 auto 0">
+                        <span >{plan.planName}</span>
+                      </Box>
+                    </Flex>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
                     <Flex>
@@ -94,7 +111,16 @@ const DataListComponent = ({ dataList, ...props }) => {
                     <span>{plan.selectedStorage}</span>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
-                    <span>{plan.persistentVolumes.length}</span>
+                    <Flex>
+                      <Box m="0 5px 0 0" fontSize="2em">
+                        <PVIcon />
+
+                      </Box>
+                      <Box m="auto 0 auto 0">
+                        <span>{plan.persistentVolumes.length}</span>
+
+                      </Box>
+                    </Flex>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
                     {statusComponent(plan)}
