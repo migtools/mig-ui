@@ -34,8 +34,11 @@ class ResultsStep extends React.Component<any, any> {
     };
 
     componentDidMount() {
+        this.props.onWizardLoadingToggle(true)
+
         setTimeout(() => {
             this.setState(() => ({ isLoading: false }));
+            this.props.onWizardLoadingToggle(false);
         }, 1500);
     }
 
