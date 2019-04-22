@@ -10,12 +10,15 @@ import theme from '../../../theme';
 import EmptyStateComponent from './EmptyStateComponent';
 import MigrateModal from '../../plan/components/MigrateModal';
 import styled from '@emotion/styled';
+import { css } from '@emotion/core';
 import {
   ServiceIcon,
   DatabaseIcon,
 } from '@patternfly/react-icons';
 import PlanStatusIcon from './PlanStatusIcon';
 import { Progress, ProgressSize, ProgressMeasureLocation, ProgressVariant } from '@patternfly/react-core';
+import { Dropdown, DropdownToggle, DropdownItem, DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle } from '@patternfly/react-core';
+
 
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
@@ -148,6 +151,19 @@ const DataListComponent = ({ dataList, ...props }) => {
 
                       </Box>
                     </Flex>
+                  </ChildDataListCell>
+                  <ChildDataListCell 
+                  //@ts-ignore
+                  css={css` text-align: right;`}
+                  >
+                    <Dropdown
+                      // onSelect={this.onSelect}
+                      toggle={<KebabToggle />}
+                      // isOpen={isOpen}
+                      isPlain
+                    // dropdownItems={dropdownItems}
+                    />
+
                   </ChildDataListCell>
                 </DataListItem>
               );
