@@ -129,10 +129,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.runStage(plan);
   }
 
-  handleMigrateTriggered = (plan) => {
-    console.log('migrate triggered for plan: ', plan);
-  }
-
   render() {
     const {
       filteredClusterList,
