@@ -42,6 +42,8 @@ interface IProps {
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
+  isStaging?: boolean;
+  isMigrating?: boolean;
 }
 
 interface IState {
@@ -209,6 +211,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             onRemoveItem={this.handleRemoveItem}
             plansDisabled={this.state.plansDisabled}
             onStageTriggered={this.handleStageTriggered}
+            isLoading={this.props.isMigrating || this.props.isStaging}
           />
         </DataList>
       </React.Fragment>
@@ -244,6 +247,7 @@ function mapStateToProps(state) {
   }, {});
 
   const { migStorageList } = state.storage;
+  const { isMigrating, isStaging } = state.plan;
   return {
     allClusters,
     filteredClusterList,
@@ -254,6 +258,8 @@ function mapStateToProps(state) {
     allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,
+    isMigrating,
+    isStaging
   };
 }
 const mapDispatchToProps = dispatch => {

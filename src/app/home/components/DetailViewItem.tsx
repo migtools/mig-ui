@@ -26,6 +26,7 @@ import PlanDataListComponent from './PlanDataListComponent';
 import { } from '@patternfly/react-core';
 import theme from '../../../theme';
 interface IProps {
+  isLoading?: boolean;
   id: string;
   title: string;
   addButton?: React.ReactNode;
@@ -64,6 +65,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onMigrateTriggered,
   associatedPlans,
   onWizardToggle,
+  isLoading,
   ...props
 }) => {
   let listComponent;
@@ -91,6 +93,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         onMigrateTriggered={onMigrateTriggered}
         dataList={filteredDataList}
         onWizardToggle={onWizardToggle}
+        isLoading={isLoading}
       />
     );
   }

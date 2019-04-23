@@ -29,7 +29,7 @@ const HeaderDataListCell = styled(DataListCell)`
 const ChildDataListCell = styled(DataListCell)`
   margin: auto !important;
 `;
-const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
+const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -83,7 +83,7 @@ const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
                 >
                   <ChildDataListCell width={1}>
                     <Flex>
-                      <Box m="0 5px 0 0" fontSize="2em">
+                      <Box m="0 5px 0 0" >
                         <PlanStatusIcon status={plan.status} />
                       </Box>
                       <Box m="auto 0 auto 0">
@@ -131,6 +131,7 @@ const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
                     <Flex justifyContent="flex-end">
                       <Box mx={1}>
                         <Button
+                          isDisabled={isLoading}
                           variant="primary"
                           onClick={() => props.onStageTriggered(plan)}
                         >
@@ -142,6 +143,7 @@ const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
                           plan={plan}
                           trigger={
                             <Button
+                              isDisabled={isLoading}
                               variant="primary"
                             >
                               Migrate
@@ -157,11 +159,8 @@ const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
                     css={css` text-align: right;`}
                   >
                     <Dropdown
-                      // onSelect={this.onSelect}
                       toggle={<KebabToggle />}
-                      // isOpen={isOpen}
                       isPlain
-                    // dropdownItems={dropdownItems}
                     />
 
                   </ChildDataListCell>
