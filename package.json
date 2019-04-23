@@ -1,7 +1,7 @@
 {
   "name": "mig-ui",
   "version": "0.1.0",
-  "description": "Migration engineering UI",
+  "description": "Cluster Application Migration Tool",
   "main": "index.js",
   "license": "MIT",
   "private": true,

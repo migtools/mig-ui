@@ -61,6 +61,9 @@ const DataListComponent = ({ dataList, ...props }) => {
               <HeaderDataListCell width={3}>
                 <span>Last Status</span>
               </HeaderDataListCell>
+              <HeaderDataListCell width={1}>
+                <span></span>
+              </HeaderDataListCell>
             </DataListItem>
             {dataList.map((plan, i) => {
               const index = i + 1;
@@ -152,9 +155,9 @@ const DataListComponent = ({ dataList, ...props }) => {
                       </Box>
                     </Flex>
                   </ChildDataListCell>
-                  <ChildDataListCell 
-                  //@ts-ignore
-                  css={css` text-align: right;`}
+                  <ChildDataListCell
+                    //@ts-ignore
+                    css={css` text-align: right;`}
                   >
                     <Dropdown
                       // onSelect={this.onSelect}
