@@ -4,7 +4,7 @@ import { Flex, Box } from '@rebass/emotion';
 import DashboardCard from './DashboardCard';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
-import StatusIcon from '../../c../../common/components/StatusIcon
+import StatusIcon from '../../common/components/StatusIcon';
 import styled from '@emotion/styled';
 
 interface IState {

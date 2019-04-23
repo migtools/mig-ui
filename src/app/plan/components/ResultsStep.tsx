@@ -8,7 +8,7 @@ import styled from '@emotion/styled';
 import theme from './../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { setNestedObjectValues } from 'formik';
-import StatusIcon from '../../c../../common/components/StatusIcon
+import StatusIcon from '../../common/components/StatusIcon';
 const StyledBox = styled(Box)`
     text-align: center;
   `;
