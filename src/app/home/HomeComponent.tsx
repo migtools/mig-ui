@@ -261,10 +261,12 @@ class HomeComponent extends React.Component<IProps, IState> {
                 />
                 <CardComponent
                   title="Replication Repositories"
+                  type="storage"
                   dataList={migStorageList}
                   isFetching={isFetchingStorage}
                 />
                 <CardComponent
+                  type="plans"
                   title="Migration Plans"
                   dataList={migPlanList}
                   isFetching={isFetchingPlans}

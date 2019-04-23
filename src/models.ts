@@ -59,6 +59,7 @@ export interface IMigStorage {
   metadata: IMigStorageMetadata;
   spec: IMigStorageSpec;
   id: string;
+  status: string;
 }
 export interface IStorageFormObject {
   url: string;

@@ -125,6 +125,7 @@ class WrappedWizard extends React.Component<any, any> {
             errors={errors}
             handleSubmit={handleSubmit}
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
+            setFieldValue={setFieldValue}
           />
         ),
         enableNext: !this.state.isWizardLoading,
@@ -168,6 +169,7 @@ class WrappedWizard extends React.Component<any, any> {
 
 const Wizard: any = withFormik({
   mapPropsToValues: () => ({
+    connectionStatus: '',
     planName: '',
     sourceCluster: '',
     targetCluster: null,
