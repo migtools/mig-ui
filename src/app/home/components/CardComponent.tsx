@@ -39,6 +39,7 @@ class CardComponent extends Component<IProps, IState> {
       margin: 1em 0 .4em 0.4em;
     `;
     const { dataList, title, isFetching, type } = this.props;
+    // const successList = datalist.filter
     return (
       <React.Fragment>
         <ClusterStatusItem>
