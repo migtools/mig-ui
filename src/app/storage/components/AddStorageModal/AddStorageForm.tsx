@@ -13,6 +13,7 @@ import uuidv4 from 'uuid/v4';
 import { css } from '@emotion/core';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
+import ConnectionState from '../../../common/connection_state';
 
 
 class WrappedAddStorageForm extends React.Component<any, any>{
@@ -52,7 +53,8 @@ class WrappedAddStorageForm extends React.Component<any, any>{
       handleChange,
       handleBlur,
       handleSubmit,
-      setFieldTouched
+      setFieldTouched,
+      connectionState,
     } = this.props;
 
     const dynamicAccessKeySecurity = this.state.accessKeyHidden ? 'disc' : 'inherit';
@@ -153,6 +155,19 @@ class WrappedAddStorageForm extends React.Component<any, any>{
             </TextContent>
           </Box>
           <Box mt={20}>
+            <Flex width="100" m="10px 10px 10px 0">
+              <Button
+                style={{ marginLeft: 'auto' }}
+                key="check connection"
+                variant="secondary"
+                onClick={() => this.props.checkConnection()}
+              >
+                Check connection
+            </Button>
+            </Flex>
+
+            {renderConnectionState(connectionState)}
+
             <Flex>
               <Box m="10px 10px 10px 0">
                 <Button
@@ -177,6 +192,30 @@ class WrappedAddStorageForm extends React.Component<any, any>{
   }
 
 };
+
+function renderConnectionState(connectionState: ConnectionState) {
+  let cxStateContents;
+
+  switch (connectionState) {
+    case ConnectionState.Checking:
+      cxStateContents = 'Checking...';
+      break;
+    case ConnectionState.Success:
+      cxStateContents = 'Success!';
+      break;
+    case ConnectionState.Failed:
+      cxStateContents = 'Failed!';
+      break;
+  }
+
+  return (
+    <Flex width="100" m="10px 10px 10px 0">
+      <Box>
+        {cxStateContents}
+      </Box>
+    </Flex>
+  );
+}
 
 const AddStorageForm: any = withFormik({
   mapPropsToValues: () => ({
