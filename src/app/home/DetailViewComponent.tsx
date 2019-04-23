@@ -30,6 +30,8 @@ interface IProps {
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
+  clusterAssociatedPlans: any,
+  storageAssociatedPlans: any,
   migStorageList: any[];
   removeStorage: (id) => void;
   removePlan: (id) => void;
@@ -138,6 +140,8 @@ class DetailViewComponent extends Component<IProps, IState> {
       migStorageList,
       filteredPlanList,
       allPlans,
+      clusterAssociatedPlans,
+      storageAssociatedPlans,
     } = this.props;
     const { isWizardOpen } = this.state;
     return (
@@ -152,6 +156,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="clusterList"
             title="Clusters"
             type="cluster"
+            associatedPlans={clusterAssociatedPlans}
             addButton={
               <AddClusterModal
                 trigger={<Button variant="link">
@@ -170,6 +175,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="repositoryList"
             title="Replication Repositories"
             type="storage"
+            associatedPlans={storageAssociatedPlans}
             addButton={
               <AddStorageModal
                 trigger={<Button variant="link">
@@ -217,6 +223,25 @@ function mapStateToProps(state) {
   const filteredPlanList = planSelectors.getVisiblePlans(state);
   const allPlans = planSelectors.getAllPlans(state);
 
+
+  const clusterAssociatedPlans = allClusters.reduce((associatedPlans, cluster) => {
+    const clusterName = cluster.MigCluster.metadata.name;
+    associatedPlans[clusterName] = allPlans.reduce((count, plan) => {
+      const isAssociated = plan.sourceCluster === clusterName || plan.targetCluster === clusterName;
+      return isAssociated ? count + 1 : count;
+    }, 0)
+    return associatedPlans;
+  }, {});
+
+  const storageAssociatedPlans = allStorage.reduce((associatedPlans, storage) => {
+    const storageName = storage.metadata.name;
+    associatedPlans[storageName] = allPlans.reduce((count, plan) => {
+      const isAssociated = plan.selectedStorage === storageName;
+      return isAssociated ? count + 1 : count;
+    }, 0)
+    return associatedPlans;
+  }, {});
+
   const { migStorageList } = state.storage;
   return {
     allClusters,
@@ -226,6 +251,8 @@ function mapStateToProps(state) {
     migStorageList,
     filteredPlanList,
     allPlans,
+    clusterAssociatedPlans,
+    storageAssociatedPlans,
   };
 }
 const mapDispatchToProps = dispatch => {

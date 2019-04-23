@@ -17,7 +17,10 @@ const DataListComponent = ({ dataList, ...props }) => {
       <React.Fragment>
         {dataList.length > 0 ? (
           <DataList aria-label="Simple data list example">
-            {dataList.map((listItem, index) => (
+            {dataList.map((listItem, index) => {
+              const associatedPlanCount = props.associatedPlans[listItem.metadata.name];
+              const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
+              return (
               <DataListItem
                 key={index}
                 isExpanded={false}
@@ -36,7 +39,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                   </a>
                 </DataListCell>
                 <DataListCell width={2}>
-                  <LinkIcon /> 0 associated migration plans
+                  <LinkIcon /> {associatedPlanCount} associated migration {planText}
                 </DataListCell>
                 <DataListCell width={2}>
                   <Flex justifyContent="flex-end">
@@ -56,7 +59,8 @@ const DataListComponent = ({ dataList, ...props }) => {
                   </Flex>
                 </DataListCell>
               </DataListItem>
-            ))}
+            )
+          })}
           </DataList>
         ) : (
             <Flex alignItems="center" justifyContent="center">

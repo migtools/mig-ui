@@ -37,6 +37,7 @@ interface IProps {
   isExpanded: boolean;
   plansDisabled?: boolean;
   type?: string;
+  associatedPlans?: any;
   // TODO: This all needs to get refactored to more generically handle the
   // differences between those that have edit and remove (cluster and stage)
   // and plans.
@@ -60,6 +61,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onSearch,
   onStageTriggered,
   onMigrateTriggered,
+  associatedPlans,
   ...props
 }) => {
   let listComponent;
@@ -68,13 +70,16 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
       <ClusterDataListComponent
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList}
+        associatedPlans={associatedPlans}
       />
     );
   } else if (type === 'storage') {
     listComponent = (
       <StorageDataListComponent
         onRemoveItem={onRemoveItem}
-        dataList={filteredDataList} />
+        dataList={filteredDataList}
+        associatedPlans={associatedPlans}
+      />
     );
   } else {
     listComponent = (

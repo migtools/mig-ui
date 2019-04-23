@@ -22,6 +22,10 @@ const DataListComponent = ({ dataList, ...props }) => {
               const clusterStatus = listItem.status;
               const clusterUrl =
                 listItem.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+              
+              const associatedPlanCount = props.associatedPlans[clusterName];
+              const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
+
               return (
                 <DataListItem
                   key={index}
@@ -41,7 +45,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                     </a>
                   </DataListCell>
                   <DataListCell width={2}>
-                    <LinkIcon /> 0 associated migration plans
+                    <LinkIcon /> {associatedPlanCount} associated migration {planText}
                   </DataListCell>
                   <DataListCell width={2}>
                     <Flex justifyContent="flex-end">
