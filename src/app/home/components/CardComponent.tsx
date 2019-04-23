@@ -4,7 +4,7 @@ import { Flex, Box } from '@rebass/emotion';
 import DashboardCard from './DashboardCard';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
-import ClusterStatusIcon from './ClusterStatusIcon';
+import ClusterStatusIcon from '../../common/components/ClusterStatusIcon';
 import styled from '@emotion/styled';
 
 interface IState {
@@ -39,15 +39,17 @@ class CardComponent extends Component<IProps, IState> {
       margin: 1em 0 .4em 0.4em;
     `;
     const { dataList, title, isFetching, type } = this.props;
+    const successList = dataList.filter((item) => item.status === 'success')
+    const failureList = dataList.filter((item) => item.failure !== 'success')
     return (
       <React.Fragment>
         <ClusterStatusItem>
-          <ClusterStatusIcon isSuccessful={true} />
-          {dataList.length} clusters connected
+          <ClusterStatusIcon status="success" />
+          {successList.length} clusters connected
       </ClusterStatusItem>
         <ClusterStatusItem>
-          <ClusterStatusIcon isSuccessful={false} />
-          0 clusters not connected
+          <ClusterStatusIcon status="failed" />
+          {failureList.length} clusters not connected
       </ClusterStatusItem>
       </React.Fragment>
 

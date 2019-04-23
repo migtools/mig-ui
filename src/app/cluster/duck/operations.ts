@@ -70,6 +70,7 @@ const addCluster = clusterValues => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
+      cluster.status = clusterValues.connectionStatus;
       dispatch(addClusterSuccess(cluster));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));

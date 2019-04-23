@@ -6,11 +6,11 @@ import theme from '../../../theme';
 import * as React from 'react';
 
 interface IProps {
-  isSuccessful: boolean;
+  status: string;
 }
 
 const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
-  isSuccessful,
+  status,
   ...rest
 }) => {
   const SuccessIcon = styled(CheckIcon)`
@@ -21,11 +21,27 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.statusRed};
     margin-right: 10px;
   `;
+  if (status === "success") {
+    return (
+      <React.Fragment>
+        <SuccessIcon />
+      </React.Fragment>
+    );
+
+  }
+  if (status === "failed") {
+    return (
+      <React.Fragment>
+        <FailureIcon />
+      </React.Fragment>
+    );
+  }
   return (
     <React.Fragment>
-      {isSuccessful ? <SuccessIcon /> : <FailureIcon />}
+      <FailureIcon />
     </React.Fragment>
   );
+
 };
 
 export default ClusterStatusIcon;

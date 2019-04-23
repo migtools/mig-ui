@@ -8,7 +8,7 @@ import styled from '@emotion/styled';
 import theme from './../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { setNestedObjectValues } from 'formik';
-import ClusterStatusIcon from '../../home/components/ClusterStatusIcon';
+import ClusterStatusIcon from '../../common/components/ClusterStatusIcon';
 const StyledBox = styled(Box)`
     text-align: center;
   `;
@@ -80,7 +80,7 @@ class ResultsStep extends React.Component<any, any> {
                     >
                         <Box flex="1" m="auto">
                             <Text fontSize={[2, 3, 4]}>
-                                <ClusterStatusIcon isSuccessful={true} />
+                                <ClusterStatusIcon status="success" />
                                 <StyledSpan >
                                     {this.props.values.planName}{' '}
                                 </StyledSpan>
