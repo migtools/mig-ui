@@ -18,8 +18,8 @@ import ConnectionState from '../../../common/connection_state';
 
 class WrappedAddStorageForm extends React.Component<any, any>{
   state = {
-    accessKeyHidden: false,
-    secretHidden: false
+    accessKeyHidden: true,
+    secretHidden: true
   }
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
@@ -183,7 +183,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   variant="secondary"
                   type="submit"
                   isDisabled={connectionState !== ConnectionState.Success}
-                  >
+                >
                   Add
               </Button>
               </Box>

@@ -16,7 +16,7 @@ import { css } from '@emotion/core';
 
 class WrappedAddClusterForm extends React.Component<any, any>{
   state = {
-    tokenHidden: false,
+    tokenHidden: true,
   }
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
@@ -113,21 +113,25 @@ class WrappedAddClusterForm extends React.Component<any, any>{
             </TextContent>
           </Box>
           <Box mt={20}>
-            <Flex width="100" m="10px 10px 10px 0">
-              <Button
-                style={{ marginLeft: 'auto' }}
-                key="check connection"
-                variant="secondary"
-                onClick={() => this.props.checkConnection()}
-              >
-                Check connection
-            </Button>
-            </Flex>
+            <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+              <Box>
+                <Flex flexDirection="column" >
+                  <Box alignSelf="flex-end">
+                    <Button
+                      key="check connection"
+                      variant="secondary"
+                      onClick={() => this.props.checkConnection()}
+                    >
+                      Check connection
+                  </Button>
+                  </Box>
+                  <Box alignSelf="flex-end">
+                    {renderConnectionState(connectionState)}
+                  </Box>
+                </Flex>
 
-            {renderConnectionState(connectionState)}
-
-            <Flex width="100">
-              <Box m="10px 10px 10px 0" style={{ marginLeft: 'auto' }}>
+              </Box>
+              <Box mt={30} alignSelf="flex-end">
                 <Button
                   key="cancel"
                   variant="secondary"
@@ -144,6 +148,10 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                   Add
               </Button>
               </Box>
+            </Flex>
+
+
+            <Flex width="100">
             </Flex>
           </Box>
         </form>

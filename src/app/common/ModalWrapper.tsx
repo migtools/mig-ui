@@ -22,6 +22,7 @@ background: ${theme.colors.lightGray3};
 color: ${theme.colors.lightGray3};
 `;
 const StyledModal = styled(ModalPf)`
+  width: 36em !important;
   .pf-c-modal-box__body{
     margin-top: 0 !important;
   }
