@@ -9,12 +9,14 @@ import {
 } from '@patternfly/react-core';
 import AddClusterModal from '../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../storage/components/AddStorageModal';
+import Wizard from '../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 interface IState {
   isOpen: boolean;
 }
 interface IProps {
   type?: string;
+  onWizardToggle?: () => void;
 }
 
 class EmptyStateComponent extends Component<IProps, IState> {
@@ -26,6 +28,20 @@ class EmptyStateComponent extends Component<IProps, IState> {
     this.setState(({ isOpen }) => ({
       isOpen: !isOpen,
     }));
+  }
+  renderPlanAdd() {
+    return (
+      <React.Fragment>
+        <Title size="lg">
+          Start a migration plan
+          </Title>
+        <Button onClick={this.props.onWizardToggle} variant="primary">
+          Start Plan
+        </Button>
+
+      </React.Fragment>
+
+    );
   }
   renderStorageAdd() {
     return (
@@ -69,6 +85,8 @@ class EmptyStateComponent extends Component<IProps, IState> {
             this.renderClusterAdd()}
           {type === 'storage' &&
             this.renderStorageAdd()}
+          {type === 'plan' &&
+            this.renderPlanAdd()}
         </EmptyState>
       </React.Fragment>
     );

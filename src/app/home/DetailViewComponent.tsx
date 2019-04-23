@@ -189,6 +189,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isExpanded={this.state.expanded.includes('plansList')}
             onToggle={this.handleToggle}
             filteredDataList={filteredPlanList}
+            onWizardToggle={this.handleWizardToggle}
             allData={allPlans}
             id="plansList"
             title="Migration Plans"

@@ -22,9 +22,6 @@ import {
   DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle,
 } from '@patternfly/react-core';
 
-
-
-
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;
   margin: auto !important;
@@ -32,9 +29,7 @@ const HeaderDataListCell = styled(DataListCell)`
 const ChildDataListCell = styled(DataListCell)`
   margin: auto !important;
 `;
-const DataListComponent = ({ dataList, ...props }) => {
-
-
+const DataListComponent = ({ onWizardToggle, dataList, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -178,7 +173,7 @@ const DataListComponent = ({ dataList, ...props }) => {
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-                <EmptyStateComponent type="plan" />
+                <EmptyStateComponent onWizardToggle={onWizardToggle} type="plan" />
               </Box>
             </Flex>
           )}
