@@ -12,34 +12,34 @@ import { IMigStorage } from '../../../../models';
 import uuidv4 from 'uuid/v4';
 import { css } from '@emotion/core';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
-import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
+import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import ConnectionState from '../../../common/connection_state';
-import StatusIcon from "../../../common/components/StatusIcon";
+import StatusIcon from '../../../common/components/StatusIcon';
 
 
-class WrappedAddStorageForm extends React.Component<any, any>{
+class WrappedAddStorageForm extends React.Component<any, any> {
   state = {
     accessKeyHidden: true,
-    secretHidden: true
-  }
+    secretHidden: true,
+  };
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
-  };
+  }
 
   handleKeyToggle = (keyName, e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (keyName === "accessKey") {
+    if (keyName === 'accessKey') {
 
       this.setState({
-        accessKeyHidden: !this.state.accessKeyHidden
-      }
-      )
+        accessKeyHidden: !this.state.accessKeyHidden,
+      },
+      );
     }
-    if (keyName === "secret") {
+    if (keyName === 'secret') {
       this.setState({
-        secretHidden: !this.state.secretHidden
-      })
+        secretHidden: !this.state.secretHidden,
+      });
     }
   }
 
@@ -165,7 +165,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                       onClick={() => this.props.checkConnection()}
                     >
                       Check connection
-              </Button>
+                    </Button>
 
                   </Box>
                   <Box alignSelf="flex-end">
@@ -180,7 +180,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   onClick={() => this.props.onHandleModalToggle(null)}
                 >
                   Cancel
-              </Button>
+                </Button>
                 <Button
                   variant="secondary"
                   style={{ marginLeft: '10px' }}
@@ -188,7 +188,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                   isDisabled={connectionState !== ConnectionState.Success}
                 >
                   Add
-              </Button>
+                </Button>
               </Box>
             </Flex>
           </Box>
@@ -198,7 +198,7 @@ class WrappedAddStorageForm extends React.Component<any, any>{
 
   }
 
-};
+}
 
 function renderConnectionState(connectionState: ConnectionState) {
   let cxStateContents;
@@ -207,15 +207,15 @@ function renderConnectionState(connectionState: ConnectionState) {
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
-      iconStatus = "checking";
+      iconStatus = 'checking';
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
-      iconStatus = "success"
+      iconStatus = 'success';
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
-      iconStatus = "failed"
+      iconStatus = 'failed';
       break;
   }
 

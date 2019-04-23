@@ -59,7 +59,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                   </Flex>
                 </DataListCell>
               </DataListItem>
-            )
+            );
           })}
           </DataList>
         ) : (

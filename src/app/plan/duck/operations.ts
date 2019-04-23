@@ -22,9 +22,9 @@ const runStage = plan => {
     const interval = setInterval(() => {
       const planList = getState().plan.migPlanList;
 
-      const plan = planList.find(p => p.planName === planNameToStage);
-      if (plan.status.progress === 100) {
-        dispatch(Creators.stagingSuccess(plan.planName));
+      const planItem = planList.find(p => p.planName === planNameToStage);
+      if (planItem.status.progress === 100) {
+        dispatch(Creators.stagingSuccess(planItem.planName));
         clearInterval(interval);
         return;
       }
@@ -42,9 +42,9 @@ const runMigration = plan => {
     const interval = setInterval(() => {
       const planList = getState().plan.migPlanList;
 
-      const plan = planList.find(p => p.planName === planNameToStage);
-      if (plan.status.progress === 100) {
-        dispatch(Creators.migrationSuccess(plan.planName));
+      const planItem = planList.find(p => p.planName === planNameToStage);
+      if (planItem.status.progress === 100) {
+        dispatch(Creators.migrationSuccess(planItem.planName));
         clearInterval(interval);
         return;
       }

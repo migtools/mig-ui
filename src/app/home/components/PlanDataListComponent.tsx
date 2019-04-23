@@ -17,7 +17,12 @@ import {
 } from '@patternfly/react-icons';
 import PlanStatusIcon from './PlanStatusIcon';
 import { Progress, ProgressSize, ProgressMeasureLocation, ProgressVariant } from '@patternfly/react-core';
-import { Dropdown, DropdownToggle, DropdownItem, DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle } from '@patternfly/react-core';
+import {
+  Dropdown, DropdownToggle, DropdownItem,
+  DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle,
+} from '@patternfly/react-core';
+
+
 
 
 const HeaderDataListCell = styled(DataListCell)`
@@ -62,7 +67,6 @@ const DataListComponent = ({ dataList, ...props }) => {
                 <span>Last Status</span>
               </HeaderDataListCell>
               <HeaderDataListCell width={1}>
-                <span></span>
               </HeaderDataListCell>
             </DataListItem>
             {dataList.map((plan, i) => {
@@ -136,7 +140,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                           onClick={() => props.onStageTriggered(plan)}
                         >
                           Stage
-                      </Button>
+                        </Button>
                       </Box>
                       <Box mx={1}>
                         <MigrateModal
@@ -146,11 +150,9 @@ const DataListComponent = ({ dataList, ...props }) => {
                               variant="primary"
                             >
                               Migrate
-                      </Button>
+                            </Button>
                           }
-                        >
-
-                        </MigrateModal>
+                        />
 
                       </Box>
                     </Flex>

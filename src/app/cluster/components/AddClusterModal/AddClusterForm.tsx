@@ -9,26 +9,26 @@ import {
   TextArea,
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
-import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
-import StatusIcon from "../../../common/components/StatusIcon";
+import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
+import StatusIcon from '../../../common/components/StatusIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 
-class WrappedAddClusterForm extends React.Component<any, any>{
+class WrappedAddClusterForm extends React.Component<any, any> {
   state = {
     tokenHidden: true,
-  }
+  };
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
-  };
+  }
 
   handleKeyToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     this.setState({
-      tokenHidden: !this.state.tokenHidden
-    })
+      tokenHidden: !this.state.tokenHidden,
+    });
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.connectionState !== this.props.connectionState) {
@@ -46,7 +46,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
       handleSubmit,
       connectionState,
       setFieldTouched,
-      setFieldValue
+      setFieldValue,
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
@@ -122,7 +122,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                       onClick={() => this.props.checkConnection()}
                     >
                       Check connection
-                  </Button>
+                    </Button>
                   </Box>
                   <Box alignSelf="flex-end">
                     {renderConnectionState(connectionState)}
@@ -137,7 +137,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                   onClick={() => this.props.onHandleModalToggle(null)}
                 >
                   Cancel
-              </Button>
+                </Button>
                 <Button
                   variant="secondary"
                   type="submit"
@@ -145,7 +145,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                   style={{ marginLeft: '10px' }}
                 >
                   Add
-              </Button>
+                </Button>
               </Box>
             </Flex>
           </Box>
@@ -154,7 +154,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
     );
 
   }
-};
+}
 
 function renderConnectionState(connectionState: ConnectionState) {
   let cxStateContents;
@@ -163,15 +163,15 @@ function renderConnectionState(connectionState: ConnectionState) {
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
-      iconStatus = "checking";
+      iconStatus = 'checking';
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
-      iconStatus = "success"
+      iconStatus = 'success';
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
-      iconStatus = "failed"
+      iconStatus = 'failed';
       break;
   }
 

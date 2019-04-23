@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
-import StatusIcon from '../../c../../common/components/StatusIcon'
+import StatusIcon from '../../c../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import EmptyStateComponent from './EmptyStateComponent';
 

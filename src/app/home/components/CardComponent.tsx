@@ -4,9 +4,8 @@ import { Flex, Box } from '@rebass/emotion';
 import DashboardCard from './DashboardCard';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
-import StatusIcon from '../../common/components/StatusIcon';
 import styled from '@emotion/styled';
-
+import StatusIcon from '../../common/components/StatusIcon';
 interface IState {
   isOpen: boolean;
 }

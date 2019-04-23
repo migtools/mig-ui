@@ -87,7 +87,8 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         onRemoveItem={onRemoveItem}
         onStageTriggered={onStageTriggered}
         onMigrateTriggered={onMigrateTriggered}
-        dataList={filteredDataList} />
+        dataList={filteredDataList}
+      />
     );
   }
 

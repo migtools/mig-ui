@@ -31,28 +31,28 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
   if (status.state === 'Not Started') {
     return (
       <NotStarted />
-    )
+    );
   }
 
   if (status.state === 'Staged Successfully') {
     return (
       <Complete />
-    )
+    );
   }
   if (status.state === 'Migrated Successfully') {
     return (
       <Complete />
-    )
+    );
   }
   if (status.state === 'Staging') {
     return (
       <InProgress />
-    )
+    );
   }
   if (status.state === 'Migrating') {
     return (
       <InProgress />
-    )
+    );
   }
 };
 

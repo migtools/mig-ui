@@ -21,7 +21,7 @@ const StatusIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.statusRed};
     margin-right: 10px;
   `;
-  if (status === "success") {
+  if (status === 'success') {
     return (
       <React.Fragment>
         <SuccessIcon />
@@ -29,7 +29,7 @@ const StatusIcon: React.FunctionComponent<IProps> = ({
     );
 
   }
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <React.Fragment>
         <FailureIcon />

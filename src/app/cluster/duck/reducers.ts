@@ -15,7 +15,7 @@ export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
-export const setConnectionState = (state = INITIAL_STATE, action)=> {
+export const setConnectionState = (state = INITIAL_STATE, action) => {
   return {...state, connectionState: action.connectionState};
 };
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {

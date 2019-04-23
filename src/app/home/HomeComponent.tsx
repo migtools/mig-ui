@@ -46,7 +46,7 @@ font-weight: 300;
   background: /* gradient can be an image */
   linear-gradient( to left,#4D5057 0%,#4D5057 11%,#4D5057 18%,#333 100% ) left bottom rgba(0,0,0,0) no-repeat;
   background-size:100% 1px ;/* if linear-gradient, we need to resize it */
-`
+`;
 interface IProps {
   loggingIn?: boolean;
   user: any;

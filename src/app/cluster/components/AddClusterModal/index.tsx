@@ -7,6 +7,9 @@ import { Creators } from '../../duck/actions';
 import ConnectionState from '../../../common/connection_state';
 
 class AddClusterModal extends React.Component<any, any> {
+  componentDidMount() {
+    this.props.resetConnectionState();
+  }
   render() {
     const {
       trigger,
@@ -18,8 +21,7 @@ class AddClusterModal extends React.Component<any, any> {
     const onCloseHook = () => {
       this.props.resetConnectionState();
 
-    }
-
+    };
     return (
       <Modal
         onClose={onCloseHook}
@@ -41,7 +43,7 @@ export default connect(
   state => {
     return {
       connectionState: state.cluster.connectionState,
-    }
+    };
   },
   dispatch => ({
     checkConnection: () => dispatch(clusterOperations.checkConnection()),
