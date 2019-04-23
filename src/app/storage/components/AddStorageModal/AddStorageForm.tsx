@@ -43,8 +43,11 @@ class WrappedAddStorageForm extends React.Component<any, any> {
     }
   }
 
-  // handleKeyToggle = (keyName) => {
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.connectionState !== this.props.connectionState) {
+      this.props.setFieldValue('connectionStatus', this.props.connectionState);
+    }
+  }
 
   render() {
     const {
@@ -236,6 +239,7 @@ const AddStorageForm: any = withFormik({
     bucketUrl: '',
     accessKey: '',
     secret: '',
+    connectionStatus: ''
   }),
 
   // Custom sync validation
@@ -286,6 +290,7 @@ const AddStorageForm: any = withFormik({
           namespace: '',
         },
       },
+      status: values.connectionStatus,
     };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();

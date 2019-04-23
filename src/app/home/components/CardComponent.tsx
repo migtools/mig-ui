@@ -32,6 +32,28 @@ class CardComponent extends Component<IProps, IState> {
       isOpen: !this.state.isOpen,
     });
   }
+  renderStorageStatus() {
+    const StorageStatusItem = styled.div`
+      text-align: left;
+      margin: 1em 0 .4em 0.4em;
+    `;
+    const { dataList, title, isFetching, type } = this.props;
+    const successList = dataList.filter((item) => item.status === 'success')
+    const failureList = dataList.filter((item) => item.status !== 'success')
+    return (
+      <React.Fragment>
+        <StorageStatusItem>
+          <StatusIcon status="success" />
+          {successList.length} repositories connected
+      </StorageStatusItem>
+        <StorageStatusItem>
+          <StatusIcon status="failed" />
+          {failureList.length} not connected
+      </StorageStatusItem>
+      </React.Fragment>
+
+    );
+  }
   renderClusterStatus() {
     const ClusterStatusItem = styled.div`
       text-align: left;
@@ -50,6 +72,28 @@ class CardComponent extends Component<IProps, IState> {
           <StatusIcon status="failed" />
           {failureList.length} clusters not connected
       </ClusterStatusItem>
+      </React.Fragment>
+
+    );
+  }
+  renderPlanStatus() {
+    const PlansStatusItem = styled.div`
+      text-align: left;
+      margin: 1em 0 .4em 0.4em;
+    `;
+    const { dataList, title, isFetching, type } = this.props;
+    const successList = dataList.filter((item) => item.connectionStatus === 'success')
+    const failureList = dataList.filter((item) => item.connectionStatus !== 'success')
+    return (
+      <React.Fragment>
+        <PlansStatusItem>
+          <StatusIcon status="success" />
+          {successList.length} migrations successful
+      </PlansStatusItem>
+        <PlansStatusItem>
+          <StatusIcon status="failed" />
+          {failureList.length} migrations failed
+      </PlansStatusItem>
       </React.Fragment>
 
     );
@@ -77,6 +121,8 @@ class CardComponent extends Component<IProps, IState> {
               />
             )}
           {type === 'cluster' && this.renderClusterStatus()}
+          {type === 'storage' && this.renderStorageStatus()}
+          {type === 'plans' && this.renderPlanStatus()}
 
 
         </DashboardCard>
