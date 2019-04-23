@@ -127,7 +127,12 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                 >
                   Cancel
               </Button>
-                <Button variant="secondary" type="submit" style={{ marginLeft: '10px' }}>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  isDisabled={connectionState !== ConnectionState.Success}
+                  style={{ marginLeft: '10px' }}
+                  >
                   Add
               </Button>
               </Box>

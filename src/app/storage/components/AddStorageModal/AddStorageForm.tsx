@@ -179,7 +179,11 @@ class WrappedAddStorageForm extends React.Component<any, any>{
               </Button>
               </Box>
               <Box m={10}>
-                <Button variant="secondary" type="submit">
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  isDisabled={connectionState !== ConnectionState.Success}
+                  >
                   Add
               </Button>
               </Box>
