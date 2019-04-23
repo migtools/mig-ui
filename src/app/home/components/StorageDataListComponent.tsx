@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
-import ClusterStatusIcon from '../../common/components/ClusterStatusIcon';
+import StatusIcon from '../../c../../common/components/StatusIcon
 import { LinkIcon } from '@patternfly/react-icons';
 import EmptyStateComponent from './EmptyStateComponent';
 
@@ -27,7 +27,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                 aria-labelledby="simple-item1"
               >
                 <DataListCell width={1}>
-                  <ClusterStatusIcon status="success" />
+                  <StatusIcon status="success" />
                   <span id="simple-item1">{listItem.metadata.name}</span>
                 </DataListCell>
                 <DataListCell width={2}>

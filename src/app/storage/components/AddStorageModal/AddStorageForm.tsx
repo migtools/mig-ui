@@ -14,6 +14,7 @@ import { css } from '@emotion/core';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
 import ConnectionState from '../../../common/connection_state';
+import StatusIcon from "../../../common/components/StatusIcon";
 
 
 class WrappedAddStorageForm extends React.Component<any, any>{
@@ -119,7 +120,6 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                 {errors.accessKey && touched.accessKey && (
                   <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
                 )}
-
                 <TextListItem component="dt">
                   <Flex>
                     <Box flex="1" m="auto">
@@ -155,21 +155,25 @@ class WrappedAddStorageForm extends React.Component<any, any>{
             </TextContent>
           </Box>
           <Box mt={20}>
-            <Flex width="100" m="10px 10px 10px 0">
-              <Button
-                style={{ marginLeft: 'auto' }}
-                key="check connection"
-                variant="secondary"
-                onClick={() => this.props.checkConnection()}
-              >
-                Check connection
-            </Button>
-            </Flex>
+            <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+              <Box >
+                <Flex flexDirection="column">
+                  <Box alignSelf="flex-end">
+                    <Button
+                      key="check connection"
+                      variant="secondary"
+                      onClick={() => this.props.checkConnection()}
+                    >
+                      Check connection
+              </Button>
 
-            {renderConnectionState(connectionState)}
-
-            <Flex>
-              <Box m="10px 10px 10px 0">
+                  </Box>
+                  <Box alignSelf="flex-end">
+                    {renderConnectionState(connectionState)}
+                  </Box>
+                </Flex>
+              </Box>
+              <Box mt={30} alignSelf="flex-end">
                 <Button
                   key="cancel"
                   variant="secondary"
@@ -177,10 +181,9 @@ class WrappedAddStorageForm extends React.Component<any, any>{
                 >
                   Cancel
               </Button>
-              </Box>
-              <Box m={10}>
                 <Button
                   variant="secondary"
+                  style={{ marginLeft: '10px' }}
                   type="submit"
                   isDisabled={connectionState !== ConnectionState.Success}
                 >
@@ -189,8 +192,8 @@ class WrappedAddStorageForm extends React.Component<any, any>{
               </Box>
             </Flex>
           </Box>
-        </form>
-      </Flex>
+        </form >
+      </Flex >
     );
 
   }
@@ -199,23 +202,29 @@ class WrappedAddStorageForm extends React.Component<any, any>{
 
 function renderConnectionState(connectionState: ConnectionState) {
   let cxStateContents;
+  let iconStatus;
 
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
+      iconStatus = "checking";
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
+      iconStatus = "success"
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
+      iconStatus = "failed"
       break;
   }
 
   return (
-    <Flex width="100" m="10px 10px 10px 0">
+    <Flex m="10px 10px 10px 0">
       <Box>
         {cxStateContents}
+        {' '}
+        <StatusIcon status={iconStatus} />
       </Box>
     </Flex>
   );

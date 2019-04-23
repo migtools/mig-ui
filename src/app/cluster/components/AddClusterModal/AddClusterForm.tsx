@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
 import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
-import ClusterStatusIcon from "../../../common/components/ClusterStatusIcon";
+import StatusIcon from "../../../common/components/StatusIcon";
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 
@@ -54,7 +54,6 @@ class WrappedAddClusterForm extends React.Component<any, any>{
         <form onSubmit={handleSubmit}>
           <Box>
             <TextContent>
-
               <TextList component="dl">
                 <TextListItem component="dt">Cluster Name</TextListItem>
                 <input
@@ -149,10 +148,6 @@ class WrappedAddClusterForm extends React.Component<any, any>{
               </Button>
               </Box>
             </Flex>
-
-
-            <Flex width="100">
-            </Flex>
           </Box>
         </form>
       </Flex>
@@ -181,11 +176,11 @@ function renderConnectionState(connectionState: ConnectionState) {
   }
 
   return (
-    <Flex width="100" m="10px 10px 10px 0">
+    <Flex m="10px 10px 10px 0">
       <Box>
-        <ClusterStatusIcon status={iconStatus} />
-        {' '}
         {cxStateContents}
+        {' '}
+        <StatusIcon status={iconStatus} />
       </Box>
     </Flex>
   );

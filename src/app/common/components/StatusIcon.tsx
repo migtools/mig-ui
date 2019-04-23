@@ -9,7 +9,7 @@ interface IProps {
   status: string;
 }
 
-const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
+const StatusIcon: React.FunctionComponent<IProps> = ({
   status,
   ...rest
 }) => {
@@ -42,4 +42,4 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
 
 };
 
-export default ClusterStatusIcon;
+export default StatusIcon;

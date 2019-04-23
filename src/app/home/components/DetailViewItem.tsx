@@ -95,7 +95,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
     <Card>
       <CardBody>
         <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
-          <Flex width="100%" height="5em" >
+          <Flex width="100%" height="5em" margin=" .5em" >
             <Box flex="0 0 2em" my="auto">
               <DataListToggle
                 onClick={() => onToggle(id)}
