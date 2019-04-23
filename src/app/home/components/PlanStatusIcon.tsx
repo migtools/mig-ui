@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Card } from '@rebass/emotion';
 import { CheckIcon, ErrorCircleOIcon } from '@patternfly/react-icons';
+import Loader from 'react-loader-spinner';
 import theme from '../../../theme';
 import {
   InProgressIcon,
@@ -23,9 +24,11 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.medGray3};
   `;
   const NotStarted = styled(OutlinedCircleIcon)`
+  font-size: 2em;
     color: ${theme.colors.blue};
   `;
   const Complete = styled(OutlinedCircleIcon)`
+  font-size: 2em;
     color: ${theme.colors.statusGreen};
   `;
   if (status.state === 'Not Started') {
@@ -46,12 +49,22 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
   }
   if (status.state === 'Staging') {
     return (
-      <InProgress />
+      <Loader
+        type="RevolvingDot"
+        color={theme.colors.medGray3}
+        height="2em"
+        width="2em"
+      />
     );
   }
   if (status.state === 'Migrating') {
     return (
-      <InProgress />
+      <Loader
+        type="RevolvingDot"
+        color={theme.colors.medGray3}
+        height="2em"
+        width="2em"
+      />
     );
   }
 };

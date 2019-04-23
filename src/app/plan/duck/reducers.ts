@@ -5,6 +5,8 @@ export const INITIAL_STATE = {
   migPlanList: [],
   PlanSearchText: '',
   sourceClusterNamespaces: [],
+  isStaging: false,
+  isMigrating: false
 };
 
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
@@ -63,6 +65,7 @@ export const initStage = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+    isStaging: true
   };
 };
 
@@ -78,6 +81,7 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+    isStaging: false
   };
 };
 
@@ -95,6 +99,7 @@ export const initMigration = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+    isMigrating: true
   };
 };
 
@@ -110,6 +115,7 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+    isMigrating: false
   };
 };
 
