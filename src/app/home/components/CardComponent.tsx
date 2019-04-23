@@ -40,7 +40,7 @@ class CardComponent extends Component<IProps, IState> {
     `;
     const { dataList, title, isFetching, type } = this.props;
     const successList = dataList.filter((item) => item.status === 'success')
-    const failureList = dataList.filter((item) => item.failure !== 'success')
+    const failureList = dataList.filter((item) => item.status !== 'success')
     return (
       <React.Fragment>
         <ClusterStatusItem>
