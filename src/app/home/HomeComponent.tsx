@@ -30,7 +30,9 @@ import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
 import Loader from 'react-loader-spinner';
-import openShiftLogo from '../../assets/OpenShiftLogo.svg';
+import openShiftLogo from 'openshift-logo-package/logos/PNG/Logo-Red_Hat-OpenShift_Container_Platform-B-Reverse-RGB.png';
+import oldOpenShiftLogo from '../../assets/OpenShiftLogo.svg';
+
 import theme from '../../theme';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
@@ -209,7 +211,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       <PageHeader
         logo={
           <React.Fragment>
-            <Brand src={openShiftLogo} alt="OpenShift Logo" />
+            <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" />
           </React.Fragment>
         }
 
@@ -254,9 +256,9 @@ class HomeComponent extends React.Component<IProps, IState> {
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
-                <Box flex="0 0 100%">
-                  <DetailViewComponent />
-                </Box>
+              <Box flex="0 0 100%">
+                <DetailViewComponent />
+              </Box>
             </Flex>
           </PageSection>
         </Page>
