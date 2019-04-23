@@ -32,7 +32,7 @@ const addStorage = migStorage => {
 
 function checkConnection() {
   return (dispatch, getState) => {
-    dispatch(Creators.setConnectionState(ConnectionState.Checking))
+    dispatch(Creators.setConnectionState(ConnectionState.Checking));
     setTimeout(() => {
       dispatch(Creators.setConnectionState(ConnectionState.Success));
     }, 2000);

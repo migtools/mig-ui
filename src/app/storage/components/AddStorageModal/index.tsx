@@ -7,6 +7,10 @@ import { Creators } from '../../duck/actions';
 import ConnectionState from '../../../common/connection_state';
 
 class AddStorageModal extends React.Component<any, any> {
+  componentDidMount() {
+    this.props.resetConnectionState();
+  }
+
   render() {
     const {
       trigger,
@@ -17,7 +21,7 @@ class AddStorageModal extends React.Component<any, any> {
 
     const onCloseHook = () => {
       this.props.resetConnectionState();
-    }
+    };
 
     return (
       <Modal
@@ -30,7 +34,7 @@ class AddStorageModal extends React.Component<any, any> {
             onAddItemSubmit={addStorage}
             connectionState={connectionState}
             checkConnection={checkConnection}
-            />}
+          />}
       />
     );
   }
@@ -40,7 +44,7 @@ export default connect(
   state => {
     return {
       connectionState: state.storage.connectionState,
-    }
+    };
   },
   dispatch => ({
     addStorage: values => dispatch(storageOperations.addStorage(values)),

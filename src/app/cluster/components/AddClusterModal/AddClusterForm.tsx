@@ -9,26 +9,26 @@ import {
   TextArea,
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
-import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
-import ClusterStatusIcon from "../../../common/components/ClusterStatusIcon";
+import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
+import StatusIcon from '../../../common/components/StatusIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 
-class WrappedAddClusterForm extends React.Component<any, any>{
+class WrappedAddClusterForm extends React.Component<any, any> {
   state = {
-    tokenHidden: false,
-  }
+    tokenHidden: true,
+  };
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
-  };
+  }
 
   handleKeyToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     this.setState({
-      tokenHidden: !this.state.tokenHidden
-    })
+      tokenHidden: !this.state.tokenHidden,
+    });
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.connectionState !== this.props.connectionState) {
@@ -46,7 +46,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
       handleSubmit,
       connectionState,
       setFieldTouched,
-      setFieldValue
+      setFieldValue,
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
@@ -54,7 +54,6 @@ class WrappedAddClusterForm extends React.Component<any, any>{
         <form onSubmit={handleSubmit}>
           <Box>
             <TextContent>
-
               <TextList component="dl">
                 <TextListItem component="dt">Cluster Name</TextListItem>
                 <input
@@ -113,28 +112,32 @@ class WrappedAddClusterForm extends React.Component<any, any>{
             </TextContent>
           </Box>
           <Box mt={20}>
-            <Flex width="100" m="10px 10px 10px 0">
-              <Button
-                style={{ marginLeft: 'auto' }}
-                key="check connection"
-                variant="secondary"
-                onClick={() => this.props.checkConnection()}
-              >
-                Check connection
-            </Button>
-            </Flex>
+            <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+              <Box>
+                <Flex flexDirection="column" >
+                  <Box alignSelf="flex-end">
+                    <Button
+                      key="check connection"
+                      variant="secondary"
+                      onClick={() => this.props.checkConnection()}
+                    >
+                      Check connection
+                    </Button>
+                  </Box>
+                  <Box alignSelf="flex-end">
+                    {renderConnectionState(connectionState)}
+                  </Box>
+                </Flex>
 
-            {renderConnectionState(connectionState)}
-
-            <Flex width="100">
-              <Box m="10px 10px 10px 0" style={{ marginLeft: 'auto' }}>
+              </Box>
+              <Box mt={30} alignSelf="flex-end">
                 <Button
                   key="cancel"
                   variant="secondary"
                   onClick={() => this.props.onHandleModalToggle(null)}
                 >
                   Cancel
-              </Button>
+                </Button>
                 <Button
                   variant="secondary"
                   type="submit"
@@ -142,7 +145,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                   style={{ marginLeft: '10px' }}
                 >
                   Add
-              </Button>
+                </Button>
               </Box>
             </Flex>
           </Box>
@@ -151,7 +154,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
     );
 
   }
-};
+}
 
 function renderConnectionState(connectionState: ConnectionState) {
   let cxStateContents;
@@ -160,24 +163,24 @@ function renderConnectionState(connectionState: ConnectionState) {
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
-      iconStatus = "checking";
+      iconStatus = 'checking';
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
-      iconStatus = "success"
+      iconStatus = 'success';
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
-      iconStatus = "failed"
+      iconStatus = 'failed';
       break;
   }
 
   return (
-    <Flex width="100" m="10px 10px 10px 0">
+    <Flex m="10px 10px 10px 0">
       <Box>
-        <ClusterStatusIcon status={iconStatus} />
-        {' '}
         {cxStateContents}
+        {' '}
+        <StatusIcon status={iconStatus} />
       </Box>
     </Flex>
   );

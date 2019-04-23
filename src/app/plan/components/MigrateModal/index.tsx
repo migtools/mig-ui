@@ -24,7 +24,9 @@ class MigrateModal extends React.Component<any, any> {
         form={
           <MigrateModalForm
             onHandleModalToggle={onHandleModalToggle}
-            handleSubmit={this.handleSubmit} />}
+            handleSubmit={this.handleSubmit}
+          />
+        }
       />
     );
   }

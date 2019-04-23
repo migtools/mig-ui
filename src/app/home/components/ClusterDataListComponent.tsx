@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../theme';
-import ClusterStatusIcon from '../../common/components/ClusterStatusIcon';
+import StatusIcon from '../../c../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import EmptyStateComponent from './EmptyStateComponent';
 
@@ -22,7 +22,7 @@ const DataListComponent = ({ dataList, ...props }) => {
               const clusterStatus = listItem.status;
               const clusterUrl =
                 listItem.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
-              
+
               const associatedPlanCount = props.associatedPlans[clusterName];
               const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
@@ -33,7 +33,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                   aria-labelledby="simple-item1"
                 >
                   <DataListCell width={1}>
-                    <ClusterStatusIcon status={clusterStatus} />
+                    <StatusIcon status={clusterStatus} />
                     <span id="simple-item1">{clusterName}</span>
                   </DataListCell>
                   <DataListCell width={2}>

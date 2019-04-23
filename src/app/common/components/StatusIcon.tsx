@@ -9,7 +9,7 @@ interface IProps {
   status: string;
 }
 
-const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
+const StatusIcon: React.FunctionComponent<IProps> = ({
   status,
   ...rest
 }) => {
@@ -21,7 +21,7 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.statusRed};
     margin-right: 10px;
   `;
-  if (status === "success") {
+  if (status === 'success') {
     return (
       <React.Fragment>
         <SuccessIcon />
@@ -29,7 +29,7 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
     );
 
   }
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <React.Fragment>
         <FailureIcon />
@@ -37,11 +37,9 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
     );
   }
   return (
-    <React.Fragment>
-      <FailureIcon />
-    </React.Fragment>
+    null
   );
 
 };
 
-export default ClusterStatusIcon;
+export default StatusIcon;

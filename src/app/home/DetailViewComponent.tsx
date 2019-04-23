@@ -30,8 +30,8 @@ interface IProps {
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
-  clusterAssociatedPlans: any,
-  storageAssociatedPlans: any,
+  clusterAssociatedPlans: any;
+  storageAssociatedPlans: any;
   migStorageList: any[];
   removeStorage: (id) => void;
   removePlan: (id) => void;
@@ -229,7 +229,7 @@ function mapStateToProps(state) {
     associatedPlans[clusterName] = allPlans.reduce((count, plan) => {
       const isAssociated = plan.sourceCluster === clusterName || plan.targetCluster === clusterName;
       return isAssociated ? count + 1 : count;
-    }, 0)
+    }, 0);
     return associatedPlans;
   }, {});
 
@@ -238,7 +238,7 @@ function mapStateToProps(state) {
     associatedPlans[storageName] = allPlans.reduce((count, plan) => {
       const isAssociated = plan.selectedStorage === storageName;
       return isAssociated ? count + 1 : count;
-    }, 0)
+    }, 0);
     return associatedPlans;
   }, {});
 

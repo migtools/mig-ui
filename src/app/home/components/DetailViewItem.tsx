@@ -87,7 +87,8 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         onRemoveItem={onRemoveItem}
         onStageTriggered={onStageTriggered}
         onMigrateTriggered={onMigrateTriggered}
-        dataList={filteredDataList} />
+        dataList={filteredDataList}
+      />
     );
   }
 
@@ -95,7 +96,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
     <Card>
       <CardBody>
         <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
-          <Flex width="100%" height="5em" >
+          <Flex width="100%" height="5em" margin=" .5em" >
             <Box flex="0 0 2em" my="auto">
               <DataListToggle
                 onClick={() => onToggle(id)}
@@ -106,7 +107,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
             <Box flex="1" my="auto">
               {title}
             </Box>
-            <Box textAlign="left" flex="0 0 15em" my="auto">
+            <Box textAlign="left" flex="0 0 9em" my="auto">
               {addButton}
             </Box>
           </Flex>

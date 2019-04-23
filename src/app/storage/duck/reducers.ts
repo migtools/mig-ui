@@ -16,7 +16,7 @@ export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, migStorageList: action.migStorageList, isFetching: false };
 };
 
-export const setConnectionState = (state = INITIAL_STATE, action)=> {
+export const setConnectionState = (state = INITIAL_STATE, action) => {
   return {...state, connectionState: action.connectionState};
 };
 
