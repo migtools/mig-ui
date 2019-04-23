@@ -32,6 +32,7 @@ interface IProps {
   onToggle: (id) => void;
   onRemoveItem?: (type, id) => void;
   onAddItem?: () => void;
+  onWizardToggle?: () => void;
   filteredDataList?: any[];
   allData: any[];
   isExpanded: boolean;
@@ -62,6 +63,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   onStageTriggered,
   onMigrateTriggered,
   associatedPlans,
+  onWizardToggle,
   ...props
 }) => {
   let listComponent;
@@ -88,6 +90,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         onStageTriggered={onStageTriggered}
         onMigrateTriggered={onMigrateTriggered}
         dataList={filteredDataList}
+        onWizardToggle={onWizardToggle}
       />
     );
   }
