@@ -79,7 +79,6 @@
     "history": "4.9.0",
     "jsonwebtoken": "8.5.1",
     "match-sorter": "2.3.0",
-    "openshift-logo-package": "file:.yalc/openshift-logo-package",
     "react": "16.8.4",
     "react-dom": "16.8.4",
     "react-redux": "6.0.1",
@@ -88,5 +87,8 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0"
+  },
+  "optionalDependencies": {
+    "openshift-logo-package": "file:.yalc/openshift-logo-package"
   }
 }
