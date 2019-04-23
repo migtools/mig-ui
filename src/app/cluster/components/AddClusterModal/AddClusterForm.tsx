@@ -30,6 +30,12 @@ class WrappedAddClusterForm extends React.Component<any, any>{
       tokenHidden: !this.state.tokenHidden
     })
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.connectionState !== this.props.connectionState) {
+      this.props.setFieldValue('connectionStatus', this.props.connectionState);
+    }
+  }
+
   render() {
     const {
       values,
@@ -39,7 +45,8 @@ class WrappedAddClusterForm extends React.Component<any, any>{
       handleBlur,
       handleSubmit,
       connectionState,
-      setFieldTouched
+      setFieldTouched,
+      setFieldValue
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
@@ -133,7 +140,7 @@ class WrappedAddClusterForm extends React.Component<any, any>{
                   type="submit"
                   isDisabled={connectionState !== ConnectionState.Success}
                   style={{ marginLeft: '10px' }}
-                  >
+                >
                   Add
               </Button>
               </Box>
@@ -177,7 +184,7 @@ function renderConnectionState(connectionState: ConnectionState) {
 }
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({ name: '', url: '', token: '' }),
+  mapPropsToValues: () => ({ name: '', url: '', token: '', connectionStatus: '' }),
 
   validate: values => {
     const errors: any = {};

@@ -19,6 +19,7 @@ const DataListComponent = ({ dataList, ...props }) => {
           <DataList aria-label="Simple data list example">
             {dataList.map((listItem, index) => {
               const clusterName = listItem.MigCluster.metadata.name;
+              const clusterStatus = listItem.status;
               const clusterUrl =
                 listItem.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
               return (
@@ -28,7 +29,7 @@ const DataListComponent = ({ dataList, ...props }) => {
                   aria-labelledby="simple-item1"
                 >
                   <DataListCell width={1}>
-                    <ClusterStatusIcon status="success" />
+                    <ClusterStatusIcon status={clusterStatus} />
                     <span id="simple-item1">{clusterName}</span>
                   </DataListCell>
                   <DataListCell width={2}>

@@ -39,16 +39,17 @@ class CardComponent extends Component<IProps, IState> {
       margin: 1em 0 .4em 0.4em;
     `;
     const { dataList, title, isFetching, type } = this.props;
-    // const successList = datalist.filter
+    const successList = dataList.filter((item) => item.status === 'success')
+    const failureList = dataList.filter((item) => item.failure !== 'success')
     return (
       <React.Fragment>
         <ClusterStatusItem>
           <ClusterStatusIcon status="success" />
-          {dataList.length} clusters connected
+          {successList.length} clusters connected
       </ClusterStatusItem>
         <ClusterStatusItem>
           <ClusterStatusIcon status="failed" />
-          0 clusters not connected
+          {failureList.length} clusters not connected
       </ClusterStatusItem>
       </React.Fragment>
 

@@ -36,7 +36,11 @@ const ClusterStatusIcon: React.FunctionComponent<IProps> = ({
       </React.Fragment>
     );
   }
-  return null;
+  return (
+    <React.Fragment>
+      <FailureIcon />
+    </React.Fragment>
+  );
 
 };
 
