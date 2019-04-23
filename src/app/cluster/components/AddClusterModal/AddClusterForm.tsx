@@ -10,6 +10,7 @@ import {
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
 import KeyDisplayIcon from "../../../common/components/KeyDisplayIcon";
+import ClusterStatusIcon from "../../../common/components/ClusterStatusIcon";
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 
@@ -147,22 +148,28 @@ class WrappedAddClusterForm extends React.Component<any, any>{
 
 function renderConnectionState(connectionState: ConnectionState) {
   let cxStateContents;
+  let iconStatus;
 
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
+      iconStatus = "checking";
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
+      iconStatus = "success"
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
+      iconStatus = "failed"
       break;
   }
 
   return (
     <Flex width="100" m="10px 10px 10px 0">
       <Box>
+        <ClusterStatusIcon status={iconStatus} />
+        {' '}
         {cxStateContents}
       </Box>
     </Flex>

@@ -13,11 +13,12 @@ class AddClusterModal extends React.Component<any, any> {
       addCluster,
       checkConnection,
       connectionState,
-     } = this.props;
+    } = this.props;
 
-     const onCloseHook = () => {
-       this.props.resetConnectionState();
-     }
+    const onCloseHook = () => {
+      this.props.resetConnectionState();
+
+    }
 
     return (
       <Modal
