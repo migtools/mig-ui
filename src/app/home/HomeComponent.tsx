@@ -40,18 +40,17 @@ import styled from '@emotion/styled';
 const BrandBar = styled.div`
       width: 1px;
       background-color: ${theme.colors.navy};
-      height: 45px;
+      height: 35px;
       float: left;
       border: 1px inset;
-      margin: 0 2em 0 2em;
+      margin: 0 1.7em 0 1.7em;
 
       `;
 const LogoBox = styled(Box)`
 width: 20em;
 color: #ffffff;
-font-size: 25px;
+font-size: 18px;
 font-weight: 300;
-margin: 30px 0 0 0;
 `;
 interface IProps {
   loggingIn?: boolean;
@@ -214,9 +213,12 @@ class HomeComponent extends React.Component<IProps, IState> {
       </Toolbar>
     );
     const HeaderOverrideCss = css`
-      background-color: #4d5057 !important;
+      .pf-c-brand{
+        height: 2.5em;
+      }
+      background-color: #151515 !important;
       .pf-c-page__header-brand {
-        background-color: #4d5057 !important;
+        background-color: #151515 !important;
         min-width: 56em;
       }
       -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);

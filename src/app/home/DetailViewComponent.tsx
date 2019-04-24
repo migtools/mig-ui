@@ -90,14 +90,14 @@ class DetailViewComponent extends Component<IProps, IState> {
     const index = expanded.indexOf(id);
     let newExpanded;
     if (forceOpen) {
+      // this.setState(() => ({ expanded }));
       newExpanded =
         index >= 0
-          ? [
-            ...expanded.slice(0, index),
-            ...expanded.slice(index + 1, expanded.length),
-          ]
+          ?
+          [...expanded]
           : [...expanded, id];
 
+      this.setState(() => ({ expanded: newExpanded }));
 
     } else {
       newExpanded =
@@ -108,8 +108,8 @@ class DetailViewComponent extends Component<IProps, IState> {
           ]
           : [...expanded, id];
 
+      this.setState(() => ({ expanded: newExpanded }));
     }
-    this.setState(() => ({ expanded: newExpanded }));
   }
 
   handleRemoveItem = (type, id) => {
