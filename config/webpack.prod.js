@@ -29,7 +29,7 @@ const config = {
         loaders: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(svg|ttf|eot|woff|woff2)$/,
+        test: /\.(svg|ttf|eot|woff|woff2|png)$/,
         use: {
           loader: 'file-loader',
           options: {
