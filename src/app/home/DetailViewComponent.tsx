@@ -195,6 +195,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             associatedPlans={storageAssociatedPlans}
             addButton={
               <AddStorageModal
+                onToggle={() => this.handleToggle('repositoryList', true)}
                 trigger={<Button variant="link">
                   <PlusCircleIcon /> Add storage
                 </Button>}
@@ -215,6 +216,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               <Wizard
                 isOpen={isWizardOpen}
                 onToggle={this.handleWizardToggle}
+                onExpandToggle={() => this.handleToggle('plansList', true)}
                 clusterList={allClusters}
                 storageList={migStorageList}
                 onPlanSubmit={this.handlePlanSubmit}
