@@ -1,0 +1,79 @@
+---
+
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: mig-ui
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mig-ui
+  namespace: mig-ui
+  labels:
+    app: mig-ui
+    service: mig-ui
+spec:
+  ports:
+    - name: port-9000
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    app: mig-ui
+    service: mig-ui
+
+---
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/timeout: 300s
+  name: mig-ui
+  namespace: mig-ui
+  labels:
+    app: mig-ui
+    service: mig-ui
+spec:
+  to:
+    kind: Service
+    name: mig-ui
+  port:
+    targetPort: port-9000
+  #tls:
+    #termination: reencrypt
+
+---
+
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: mig-ui
+  namespace: mig-ui
+  labels:
+    app: mig-ui
+    service: mig-ui
+spec:
+  replicas: 1
+  selector:
+    app: mig-ui
+    service: mig-ui
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: mig-ui
+        service: mig-ui
+    spec:
+      containers:
+        - name: mig-ui
+          image: eriknelson/mig-ui
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+          resources: {}

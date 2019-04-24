@@ -128,6 +128,7 @@ const webpackConfig = {
     hot: true,
     overlay: true,
     open: false,
+    disableHostCheck: true,
     stats: {
       // interfaces and type aliases are not left after transpilation, causing
       // legitimate typescript exports to trigger warnings in webpack
