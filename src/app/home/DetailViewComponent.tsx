@@ -85,16 +85,30 @@ class DetailViewComponent extends Component<IProps, IState> {
       this.setState({ plansDisabled: false });
     }
   }
-  handleToggle = id => {
+  handleToggle = (id, forceOpen?) => {
     const expanded = this.state.expanded;
     const index = expanded.indexOf(id);
-    const newExpanded =
-      index >= 0
-        ? [
-          ...expanded.slice(0, index),
-          ...expanded.slice(index + 1, expanded.length),
-        ]
-        : [...expanded, id];
+    let newExpanded;
+    if (forceOpen) {
+      newExpanded =
+        index >= 0
+          ? [
+            ...expanded.slice(0, index),
+            ...expanded.slice(index + 1, expanded.length),
+          ]
+          : [...expanded, id];
+
+
+    } else {
+      newExpanded =
+        index >= 0
+          ? [
+            ...expanded.slice(0, index),
+            ...expanded.slice(index + 1, expanded.length),
+          ]
+          : [...expanded, id];
+
+    }
     this.setState(() => ({ expanded: newExpanded }));
   }
 
@@ -161,6 +175,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             associatedPlans={clusterAssociatedPlans}
             addButton={
               <AddClusterModal
+                onToggle={() => this.handleToggle('clusterList', true)}
                 trigger={<Button variant="link">
                   <PlusCircleIcon /> Add cluster
                 </Button>}
