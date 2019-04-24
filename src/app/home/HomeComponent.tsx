@@ -37,15 +37,20 @@ import theme from '../../theme';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 
+const BrandBar = styled.div`
+      width: 1px;
+      background-color: ${theme.colors.navy};
+      height: 35px;
+      float: left;
+      border: 1px inset;
+      margin: 0 1.7em 0 1.7em;
+
+      `;
 const LogoBox = styled(Box)`
 width: 20em;
 color: #ffffff;
-font-size: 23px;
+font-size: 18px;
 font-weight: 300;
-  padding-bottom:2px;
-  background: /* gradient can be an image */
-  linear-gradient( to left,#4D5057 0%,#4D5057 11%,#4D5057 18%,#333 100% ) left bottom rgba(0,0,0,0) no-repeat;
-  background-size:100% 1px ;/* if linear-gradient, we need to resize it */
 `;
 interface IProps {
   loggingIn?: boolean;
@@ -208,9 +213,13 @@ class HomeComponent extends React.Component<IProps, IState> {
       </Toolbar>
     );
     const HeaderOverrideCss = css`
-      background-color: #4d5057 !important;
+      .pf-c-brand{
+        height: 2.5em;
+      }
+      background-color: #151515 !important;
       .pf-c-page__header-brand {
-        background-color: #4d5057 !important;
+        background-color: #151515 !important;
+        min-width: 56em;
       }
       -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
@@ -226,10 +235,12 @@ class HomeComponent extends React.Component<IProps, IState> {
       <PageHeader
         logo={
           <React.Fragment>
+            <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" />
+            <BrandBar
+            />
             <LogoBox>
               Cluster Application Migration Tool
             </LogoBox>
-            {/* <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" /> */}
           </React.Fragment>
         }
 
@@ -250,7 +261,11 @@ class HomeComponent extends React.Component<IProps, IState> {
     return (
       <React.Fragment>
         <Page header={Header}>
-          <PageSection>
+          <PageSection
+            //@ts-ignore
+            css={css`
+            margin-top: 30px;
+          `}>
             <TextContent>
               <Flex justifyContent="center" flexWrap="wrap">
                 <CardComponent

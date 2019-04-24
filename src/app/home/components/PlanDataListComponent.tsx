@@ -40,19 +40,19 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) =>
               isExpanded={false}
               aria-labelledby="simple-item1"
             >
-              <HeaderDataListCell width={1}>
+              <HeaderDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                 <span>Name</span>
               </HeaderDataListCell>
               <HeaderDataListCell width={1}>
                 <span>Migrations</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}>
+              <HeaderDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                 <span>Source</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}>
+              <HeaderDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                 <span>Target</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}>
+              <HeaderDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                 <span>Repository</span>
               </HeaderDataListCell>
               <HeaderDataListCell width={1}>
@@ -81,7 +81,7 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) =>
                   isExpanded={false}
                   aria-labelledby="simple-item1"
                 >
-                  <ChildDataListCell width={1}>
+                  <ChildDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                     <Flex>
                       <Box m="0 5px 0 0" >
                         <PlanStatusIcon status={plan.status} />
@@ -103,13 +103,13 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) =>
                       </Box>
                     </Flex>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}>
+                  <ChildDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                     <span>{plan.sourceCluster}</span>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}>
+                  <ChildDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                     <span>{plan.targetCluster}</span>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}>
+                  <ChildDataListCell width={1} css={css`flex: 0 0 9em !important;`}>
                     <span>{plan.selectedStorage}</span>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>

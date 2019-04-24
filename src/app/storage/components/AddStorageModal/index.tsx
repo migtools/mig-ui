@@ -17,11 +17,17 @@ class AddStorageModal extends React.Component<any, any> {
       addStorage,
       connectionState,
       checkConnection,
+      onToggle,
     } = this.props;
 
     const onCloseHook = () => {
       this.props.resetConnectionState();
     };
+
+    const onAddHook = (vals) => {
+      addStorage(vals);
+      onToggle();
+    }
 
     return (
       <Modal
@@ -31,7 +37,7 @@ class AddStorageModal extends React.Component<any, any> {
         form={
           <AddStorageForm
             onHandleModalToggle={onCloseHook}
-            onAddItemSubmit={addStorage}
+            onAddItemSubmit={onAddHook}
             connectionState={connectionState}
             checkConnection={checkConnection}
           />}

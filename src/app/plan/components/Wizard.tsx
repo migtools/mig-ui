@@ -21,6 +21,8 @@ class WrappedWizard extends React.Component<any, any> {
     this.props.resetForm();
     this.props.onToggle();
   }
+
+
   render() {
     const {
       values,
@@ -224,6 +226,7 @@ const Wizard: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onToggle();
+    formikBag.props.onExpandToggle();
     formikBag.props.onPlanSubmit(values);
   },
   validateOnBlur: false,

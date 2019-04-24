@@ -12,16 +12,22 @@ class AddClusterModal extends React.Component<any, any> {
   }
   render() {
     const {
+
       trigger,
       addCluster,
       checkConnection,
       connectionState,
+      onToggle,
     } = this.props;
 
     const onCloseHook = () => {
       this.props.resetConnectionState();
 
     };
+    const onAddHook = (vals) => {
+      addCluster(vals);
+      onToggle();
+    }
     return (
       <Modal
         onClose={onCloseHook}
@@ -31,7 +37,7 @@ class AddClusterModal extends React.Component<any, any> {
           <AddClusterForm
             connectionState={connectionState}
             onHandleModalToggle={onCloseHook}
-            onAddItemSubmit={addCluster}
+            onAddItemSubmit={onAddHook}
             checkConnection={checkConnection}
           />}
       />
