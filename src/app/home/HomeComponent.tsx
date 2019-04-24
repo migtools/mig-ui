@@ -259,7 +259,11 @@ class HomeComponent extends React.Component<IProps, IState> {
     return (
       <React.Fragment>
         <Page header={Header}>
-          <PageSection>
+          <PageSection
+            //@ts-ignore
+            css={css`
+            margin-top: 30px;
+          `}>
             <TextContent>
               <Flex justifyContent="center" flexWrap="wrap">
                 <CardComponent
