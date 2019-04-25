@@ -47,11 +47,19 @@ class NamespaceTable extends React.Component<IProps, IState> {
   componentDidMount() {
     if (this.props.sourceCluster) {
       this.setState({
-        rows: [
-          { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6', targetName: 'OCP_Project1' },
-          { name: 'OCP_Project2', displayName: 'My Project 2', pods: '3', services: '6', targetName: 'OCP_Project2' },
-          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '3', services: '6', targetName: 'OCP_Project3' },
-        ],
+        rows: [{
+          name: 'robot-shop',
+          displayName: '',
+          pods: '12',
+          services: '12',
+          targetName: 'robot-shop',
+        }, {
+          name: 'sandbox',
+          displayName: '',
+          pods: '3',
+          services: '1',
+          targetName: 'sandbox',
+        }],
       });
       //temporary for ui development
       // this.props.fetchNamespacesForCluster(

@@ -86,8 +86,8 @@ class VolumesTable extends React.Component<any, any> {
                 resizable: false,
               },
               {
-                Header: 'Deployment',
-                accessor: 'deployment',
+                Header: 'Claim',
+                accessor: 'claim',
                 width: 180,
                 resizable: false,
               },
