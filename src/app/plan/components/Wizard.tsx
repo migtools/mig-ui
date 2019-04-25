@@ -154,6 +154,7 @@ class WrappedWizard extends React.Component<any, any> {
                 .pf-c-wizard__outer-wrap{
                   padding-left: 15em;
                 }
+                .pf-c-wizard__header { background-color: #151515; }
               `}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"

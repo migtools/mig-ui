@@ -145,7 +145,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             </Box>
             <Box mt={30} alignSelf="flex-start">
               <Button
-                variant="secondary"
+                variant="primary"
                 type="submit"
                 isDisabled={connectionState !== ConnectionState.Success}
                 style={{ marginRight: '10px' }}
