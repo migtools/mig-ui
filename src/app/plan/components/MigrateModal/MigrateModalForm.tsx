@@ -34,17 +34,17 @@ const MigrateModalForm = props => {
         <Box mt={20}>
           <Flex>
             <Box m="10px 10px 10px 0">
+              <Button variant="primary" type="submit">
+                Migrate
+              </Button>
+            </Box>
+            <Box m={10}>
               <Button
                 key="cancel"
                 variant="secondary"
                 onClick={() => props.onHandleModalToggle(null)}
               >
                 Cancel
-              </Button>
-            </Box>
-            <Box m={10}>
-              <Button variant="secondary" type="submit">
-                Migrate
               </Button>
             </Box>
           </Flex>
