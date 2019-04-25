@@ -54,7 +54,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
       <Form onSubmit={handleSubmit}
-        style={{ marginTop: 'px' }}>
+        style={{ marginTop: '24px' }}>
         <FormGroup
           label="Cluster Name"
           isRequired

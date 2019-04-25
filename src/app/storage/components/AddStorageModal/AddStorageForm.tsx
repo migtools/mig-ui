@@ -7,6 +7,9 @@ import {
   TextList,
   TextListItem,
   TextArea,
+  TextInput,
+  Form,
+  FormGroup
 } from '@patternfly/react-core';
 import { IMigStorage } from '../../../../models';
 import uuidv4 from 'uuid/v4';
@@ -64,139 +67,144 @@ class WrappedAddStorageForm extends React.Component<any, any> {
     const dynamicAccessKeySecurity = this.state.accessKeyHidden ? 'disc' : 'inherit';
     const dynamicSecretKeySecurity = this.state.secretHidden ? 'disc' : 'inherit';
     return (
-      <Flex>
-        <form onSubmit={handleSubmit}>
-          <Box>
-            <TextContent>
-              <TextList component="dl">
-                <TextListItem component="dt">Storage Name</TextListItem>
-                <input
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.name}
-                  name="name"
-                  type="text"
-                />
-                {errors.name && touched.name && (
-                  <FormErrorDiv id="feedback">{errors.name}</FormErrorDiv>
-                )}
-                <TextListItem component="dt">S3 Bucket URL</TextListItem>
-                <input
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.bucketUrl}
-                  name="bucketUrl"
-                  type="text"
-                />
-                {errors.bucketUrl && touched.bucketUrl && (
-                  <FormErrorDiv id="feedback">{errors.bucketUrl}</FormErrorDiv>
-                )}
-                <TextListItem component="dt">
-                  <Flex>
-                    <Box flex="1" m="auto">
-                      S3 Provider Access Key
+      <Form onSubmit={handleSubmit}
+        style={{ marginTop: '24px' }}>
+        <FormGroup
+          label="Storage Name"
+          isRequired
+          fieldId="name"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('name', true, true)}
+            onBlur={handleBlur}
+            value={values.name}
+            name="name"
+            type="text"
+            // isValid={!errors.name && touched.name}
+            id="name" />
+          {errors.name && touched.name && (
+            <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
+          )}
 
-                  </Box>
-                    <Box flex="0 0 1em" m="auto">
-                      <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('accessKey', e)}>
-                        <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
-                      </Button>
-                    </Box>
-                  </Flex>
-                </TextListItem>
-                <TextArea
-                  value={values.accessKey}
-                  onChange={(val, e) => this.onHandleChange(val, e)}
-                  onInput={() => setFieldTouched('accessKey', true, true)}
-                  onBlur={handleBlur}
-                  name="accessKey"
-                  // isValid={!errors.accessKey && touched.accessKey}
-                  id="accessKey"
-                  //@ts-ignore
-                  css={css`
-                    height: 5em !important;
-                    -webkit-text-security: ${dynamicAccessKeySecurity};
-                    -moz-text-security: ${dynamicAccessKeySecurity};
-                    text-security: ${dynamicAccessKeySecurity};
-                  `}
-                />
-                {errors.accessKey && touched.accessKey && (
-                  <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
-                )}
-                <TextListItem component="dt">
-                  <Flex>
-                    <Box flex="1" m="auto">
-                      S3 Provider Secret Access Key
-                  </Box>
-                    <Box flex="0 0 1em">
-                      <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('secret', e)}>
-                        <KeyDisplayIcon id="secretKeyIcon" isHidden={this.state.secretHidden} />
-                      </Button>
-                    </Box>
-                  </Flex>
-                </TextListItem>
-                <TextArea
-                  value={values.secret}
-                  onChange={(val, e) => this.onHandleChange(val, e)}
-                  onInput={() => setFieldTouched('secret', true, true)}
-                  onBlur={handleBlur}
-                  name="secret"
-                  // isValid={!errors.secret && touched.secret}
-                  id="secretKey"
-                  //@ts-ignore
-                  css={css`
-                    height: 5em !important;
-                    -webkit-text-security: ${dynamicSecretKeySecurity};
-                    -moz-text-security: ${dynamicSecretKeySecurity};
-                    text-security: ${dynamicSecretKeySecurity};
-                  `}
-                />
-                {errors.secret && touched.secret && (
-                  <FormErrorDiv id="feedback-secret">{errors.secret}</FormErrorDiv>
-                )}
-              </TextList>
-            </TextContent>
-          </Box>
-          <Box mt={20}>
-            <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
-              <Box >
-                <Flex flexDirection="column">
-                  <Box alignSelf="flex-end">
-                    <Button
-                      key="check connection"
-                      variant="secondary"
-                      onClick={() => this.props.checkConnection()}
-                    >
-                      Check connection
-                    </Button>
+        </FormGroup>
+        <FormGroup
+          label="Bucket URL~"
+          isRequired
+          fieldId="url"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('bucketUrl', true, true)}
+            onBlur={handleBlur}
+            value={values.url}
+            name="bucketUrl"
+            type="text"
+            // isValid={!errors.bucketUrl && touched.bucketUrl}
+            id="bucketUrl"
+          />
+          {errors.bucketUrl && touched.bucketUrl && (
+            <FormErrorDiv id="feedback-url">{errors.bucketUrl}</FormErrorDiv>
+          )}
 
-                  </Box>
-                  <Box alignSelf="flex-end">
-                    {renderConnectionState(connectionState)}
-                  </Box>
-                </Flex>
-              </Box>
-              <Box mt={30} alignSelf="flex-end">
-                <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => this.props.onHandleModalToggle(null)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="secondary"
-                  style={{ marginLeft: '10px' }}
-                  type="submit"
-                  isDisabled={connectionState !== ConnectionState.Success}
-                >
-                  Add
-                </Button>
-              </Box>
-            </Flex>
-          </Box>
-        </form >
-      </Flex >
+        </FormGroup>
+        <FormGroup
+          label="S3 Provider Access Key"
+          isRequired
+          fieldId="s3-provider-access-key"
+        >
+          <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('accessKey', e)}>
+            <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
+          </Button>
+          <TextArea
+            value={values.accessKey}
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('accessKey', true, true)}
+            onBlur={handleBlur}
+            name="accessKey"
+            id="accessKey"
+            //@ts-ignore
+            css={css`
+                       height: 5em !important;
+                       -webkit-text-security: ${dynamicAccessKeySecurity};
+                       -moz-text-security: ${dynamicAccessKeySecurity};
+                       text-security: ${dynamicAccessKeySecurity};
+                     `}
+          />
+          {errors.accessKey && touched.accessKey && (
+            <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
+          )}
+        </FormGroup>
+        <FormGroup
+          label="S3 Provider Secret Access Key"
+          isRequired
+          fieldId="s3-provider-secret-access-key"
+        >
+          <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('secret', e)}>
+            <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
+          </Button>
+          <TextArea
+            value={values.secret}
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('secret', true, true)}
+            onBlur={handleBlur}
+            name="secret"
+            id="secret"
+            //@ts-ignore
+            css={css`
+                       height: 5em !important;
+                       -webkit-text-security: ${dynamicSecretKeySecurity};
+                       -moz-text-security: ${dynamicSecretKeySecurity};
+                       text-security: ${dynamicSecretKeySecurity};
+                     `}
+          />
+          {errors.secretKey && touched.secretKey && (
+            <FormErrorDiv id="feedback-secret-key">{errors.secretKey}</FormErrorDiv>
+          )}
+        </FormGroup>
+        <FormGroup
+          fieldId="check-connection"
+          id="check-connection"
+        >
+          <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+            <Box>
+              <Flex flexDirection="column" >
+                <Box alignSelf="flex-start">
+                  <Button
+                    key="check connection"
+                    variant="secondary"
+                    onClick={() => this.props.checkConnection()}
+                  >
+                    Check connection
+                      </Button>
+                </Box>
+                <Box alignSelf="flex-start">
+                  {renderConnectionState(connectionState)}
+                </Box>
+              </Flex>
+
+            </Box>
+            <Box mt={30} alignSelf="flex-start">
+              <Button
+                variant="secondary"
+                type="submit"
+                isDisabled={connectionState !== ConnectionState.Success}
+                style={{ marginRight: '10px' }}
+              >
+                Add
+              </Button>
+              <Button
+                key="cancel"
+                variant="secondary"
+                onClick={() => this.props.onHandleModalToggle(null)}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Flex>
+        </FormGroup>
+      </Form >
+
     );
 
   }
