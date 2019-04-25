@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Dropdown, KebabToggle, Title } from '@patternfly/react-core';
-import { Flex, Box } from '@rebass/emotion';
-import DashboardCard from './DashboardCard';
+import { Card, CardHeader, CardBody, CardFooter, Title} from '@patternfly/react-core';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
-import styled from '@emotion/styled';
-import StatusIcon from '../../common/components/StatusIcon';
+import CardStatusComponent from './CardStatusComponent';
 interface IState {
   isOpen: boolean;
 }
@@ -32,86 +29,16 @@ class CardComponent extends Component<IProps, IState> {
       isOpen: !this.state.isOpen,
     });
   }
-  renderStorageStatus() {
-    const StorageStatusItem = styled.div`
-      text-align: left;
-      margin: 1em 0 .4em 0.4em;
-    `;
-    const { dataList, title, isFetching, type } = this.props;
-    const successList = dataList.filter((item) => item.status === 'success')
-    const failureList = dataList.filter((item) => item.status !== 'success')
-    return (
-      <React.Fragment>
-        <StorageStatusItem>
-          <StatusIcon status="success" />
-          {successList.length} repositories connected
-      </StorageStatusItem>
-        <StorageStatusItem>
-          <StatusIcon status="failed" />
-          {failureList.length} not connected
-      </StorageStatusItem>
-      </React.Fragment>
-
-    );
-  }
-  renderClusterStatus() {
-    const ClusterStatusItem = styled.div`
-      text-align: left;
-      margin: 1em 0 .4em 0.4em;
-    `;
-    const { dataList, title, isFetching, type } = this.props;
-    const successList = dataList.filter((item) => item.status === 'success')
-    const failureList = dataList.filter((item) => item.status !== 'success')
-    return (
-      <React.Fragment>
-        <ClusterStatusItem>
-          <StatusIcon status="success" />
-          {successList.length} clusters connected
-      </ClusterStatusItem>
-        <ClusterStatusItem>
-          <StatusIcon status="failed" />
-          {failureList.length} clusters not connected
-      </ClusterStatusItem>
-      </React.Fragment>
-
-    );
-  }
-  renderPlanStatus() {
-    const PlansStatusItem = styled.div`
-      text-align: left;
-      margin: 1em 0 .4em 0.4em;
-    `;
-    const { dataList, title, isFetching, type } = this.props;
-    const successList = dataList.filter((item) => item.connectionStatus === 'success')
-    const failureList = dataList.filter((item) => item.connectionStatus !== 'success')
-    return (
-      <React.Fragment>
-        <PlansStatusItem>
-          <StatusIcon status="success" />
-          {successList.length} migrations successful
-      </PlansStatusItem>
-        <PlansStatusItem>
-          <StatusIcon status="failed" />
-          {failureList.length} migrations failed
-      </PlansStatusItem>
-      </React.Fragment>
-
-    );
-  }
   render() {
     const { dataList, title, isFetching, type } = this.props;
     const { isOpen } = this.state;
     return (
-      <Flex>
-        <DashboardCard>
+      <Card>
+        <CardHeader>
           {dataList && !isFetching ? (
-            <Flex flexDirection="column">
-              <Box fontSize="2em" fontWeight="200" color={theme.colors.navy}>
-                <Title headingLevel="h3" size="2xl">
-                  {dataList.length || 0} {title}{' '}
-                </Title>
-              </Box>
-            </Flex>
+            <Title headingLevel="h3" size="md">
+              {dataList.length || 0} {title}{' '}
+            </Title>
           ) : (
               <Loader
                 type="ThreeDots"
@@ -120,13 +47,14 @@ class CardComponent extends Component<IProps, IState> {
                 width="100"
               />
             )}
-          {type === 'cluster' && this.renderClusterStatus()}
-          {type === 'storage' && this.renderStorageStatus()}
-          {type === 'plans' && this.renderPlanStatus()}
-
-
-        </DashboardCard>
-      </Flex>
+        </CardHeader>
+        <CardBody>
+          <CardStatusComponent dataList={dataList} type={type} />
+        </CardBody>
+        <CardFooter>
+          <a href="#">View all {dataList.length} {type}</a>
+        </CardFooter>
+      </Card>
     );
   }
 }

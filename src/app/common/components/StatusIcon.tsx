@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import { Card } from '@rebass/emotion';
-import { CheckIcon, ErrorCircleOIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import theme from '../../../theme';
 import * as React from 'react';
 
@@ -13,13 +13,13 @@ const StatusIcon: React.FunctionComponent<IProps> = ({
   status,
   ...rest
 }) => {
-  const SuccessIcon = styled(CheckIcon)`
+  const SuccessIcon = styled(CheckCircleIcon)`
     color: ${theme.colors.statusGreen};
-    margin-right: 10px;
+    margin-right: .75rem;
   `;
-  const FailureIcon = styled(ErrorCircleOIcon)`
+  const FailureIcon = styled(ExclamationCircleIcon)`
     color: ${theme.colors.statusRed};
-    margin-right: 10px;
+    margin-right: .75rem;
   `;
   if (status === 'success') {
     return (
