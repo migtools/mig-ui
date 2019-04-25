@@ -99,49 +99,56 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   }
 
   return (
-        <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
-          <Flex width="100%" height="5em" margin=" .5em" >
-            <Box flex="0 0 2em" my="auto">
-              <DataListToggle
-                onClick={() => onToggle(id)}
-                isExpanded={isExpanded}
-                id={id}
-              />
-            </Box>
-            <Box flex="1" my="auto">
-              {title}
-            </Box>
-            <Box textAlign="left" flex="0 0 9em" my="auto">
-              {addButton}
-            </Box>
-          </Flex>
-          <DataListContent
-            aria-label="Primary Content Details"
-            isHidden={!isExpanded}
-          >
-            {(allData && allData.length) > 0 &&
-              <InputGroup
-                // @ts-ignore
-                css={css`
+    <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
+      <Flex width="100%" height="5em" margin=" .5em" >
+        <Box flex="0 0 2em" my="auto">
+          <DataListToggle
+            onClick={() => onToggle(id)}
+            isExpanded={isExpanded}
+            id={id}
+          />
+        </Box>
+        <Box flex="1" my="auto">
+          {title}
+        </Box>
+        <Box textAlign="left" flex="0 0 10em" my="auto">
+          {addButton}
+        </Box>
+      </Flex>
+      <DataListContent
+        // @ts-ignore
+        css={css`
+        padding: 0 !important;
+          .pf-c-data-list__expandable-content{ 
+            padding: 0 !important;
+          }
+        `}
+        aria-label="Primary Content Details"
+        isHidden={!isExpanded}
+      >
+        {/* {(allData && allData.length) > 0 &&
+          <InputGroup
+            // @ts-ignore
+            css={css`
                 width: 20% !important;
                 margin: auto 0 2em 0 ;
               `}
-              >
-                <TextInput
-                  name="textInput11"
-                  id="textInput11"
-                  type="search"
-                  aria-label="search input example"
-                  onChange={onSearch}
-                />
-                <Button variant={ButtonVariant.tertiary} aria-label="search button for search input">
-                  <SearchIcon />
-                </Button>
-              </InputGroup>
-            }
-            {listComponent}
-          </DataListContent>
-        </DataListItem>
+          >
+            <TextInput
+              name="textInput11"
+              id="textInput11"
+              type="search"
+              aria-label="search input example"
+              onChange={onSearch}
+            />
+            <Button variant={ButtonVariant.tertiary} aria-label="search button for search input">
+              <SearchIcon />
+            </Button>
+          </InputGroup>
+        } */}
+        {listComponent}
+      </DataListContent>
+    </DataListItem>
   );
 };
 

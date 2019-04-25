@@ -14,6 +14,7 @@ import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import Wizard from '../plan/components/Wizard';
+import {css} from '@emotion/core';
 
 import {
   Button,
@@ -162,7 +163,12 @@ class DetailViewComponent extends Component<IProps, IState> {
     const { isWizardOpen } = this.state;
     return (
       <React.Fragment>
-        <DataList aria-label="Expandable data list example">
+        <DataList aria-label="Expandable data list example"
+          //@ts-ignore
+          css={css`
+            pf-c-data-list__expandable-content { padding: 0 !important; }
+          `}
+        >
           <DetailViewItem
             isExpanded={this.state.expanded.includes('clusterList')}
             onToggle={this.handleToggle}
