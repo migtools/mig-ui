@@ -22,6 +22,8 @@ import {
   PageSection,
   TextContent,
   Title,
+  Grid,
+  GridItem,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import { clusterOperations } from '../cluster/duck';
@@ -266,28 +268,35 @@ class HomeComponent extends React.Component<IProps, IState> {
             css={css`
             margin-top: 30px;
           `}>
-            <TextContent>
-              <Flex justifyContent="center" flexWrap="wrap">
+            <Grid gutter="md">
+              <GridItem span={4}>
                 <CardComponent
-                  type="cluster"
+                  type="clusters"
                   title="Clusters"
                   dataList={clusterList}
                   isFetching={isFetchingClusters}
                 />
+
+              </GridItem>
+              <GridItem span={4}>
                 <CardComponent
                   title="Replication Repositories"
-                  type="storage"
+                  type="repositories"
                   dataList={migStorageList}
                   isFetching={isFetchingStorage}
                 />
+
+              </GridItem>
+              <GridItem span={4}>
                 <CardComponent
                   type="plans"
                   title="Migration Plans"
                   dataList={migPlanList}
                   isFetching={isFetchingPlans}
                 />
-              </Flex>
-            </TextContent>
+
+              </GridItem>
+            </Grid>
           </PageSection>
           <PageSection>
             <Flex justifyContent="center">
