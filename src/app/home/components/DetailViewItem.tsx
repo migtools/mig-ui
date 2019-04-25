@@ -112,7 +112,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
           <Box flex="1" my="auto">
             {title}
           </Box>
-          <Box textAlign="left" flex="0 0 9em" my="auto">
+          <Box textAlign="left" flex="0 0 10em" my="auto">
             {addButton}
           </Box>
         </Flex>
