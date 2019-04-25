@@ -7,6 +7,9 @@ import {
   TextList,
   TextListItem,
   TextArea,
+  TextInput,
+  Form,
+  FormGroup
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
@@ -50,107 +53,116 @@ class WrappedAddClusterForm extends React.Component<any, any> {
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
-      <Flex>
-        <form onSubmit={handleSubmit}>
-          <Box>
-            <TextContent>
-              <TextList component="dl">
-                <TextListItem component="dt">Cluster Name</TextListItem>
-                <input
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.name}
-                  name="name"
-                  type="text"
-                />
-                {errors.name && touched.name && (
-                  <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-                )}
-                <TextListItem component="dt">Cluster URL</TextListItem>
-                <input
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.url}
-                  name="url"
-                  type="text"
-                />
-                {errors.url && touched.url && (
-                  <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>
-                )}
-                <TextListItem component="dt">
-                  <Flex>
-                    <Box flex="1" m="auto">
-                      Service account token
-                  </Box>
-                    <Box flex="0 0 1em" m="auto">
-                      <Button variant="plain" aria-label="Action" onClick={this.handleKeyToggle}>
-                        <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
-                      </Button>
-                    </Box>
-                  </Flex>
-                </TextListItem>
-                <TextArea
-                  value={values.token}
-                  onChange={(val, e) => this.onHandleChange(val, e)}
-                  onInput={() => setFieldTouched('token', true, true)}
-                  onBlur={handleBlur}
-                  name="token"
-                  // isValid={!errors.accessKey && touched.accessKey}
-                  id="token"
-                  //@ts-ignore
-                  css={css`
-                    height: 5em !important;
-                    -webkit-text-security: ${dynamicTokenSecurity};
-                    -moz-text-security: ${dynamicTokenSecurity};
-                    text-security: ${dynamicTokenSecurity};
-                  `}
-                />
-                {errors.token && touched.token && (
-                  <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
-                )}
-              </TextList>
-            </TextContent>
-          </Box>
-          <Box mt={20}>
-            <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
-              <Box>
-                <Flex flexDirection="column" >
-                  <Box alignSelf="flex-end">
-                    <Button
-                      key="check connection"
-                      variant="secondary"
-                      onClick={() => this.props.checkConnection()}
-                    >
-                      Check connection
-                    </Button>
-                  </Box>
-                  <Box alignSelf="flex-end">
-                    {renderConnectionState(connectionState)}
-                  </Box>
-                </Flex>
+      <Form onSubmit={handleSubmit}
+        style={{ marginTop: 'px' }}>
+        <FormGroup
+          label="Cluster Name"
+          isRequired
+          fieldId="name"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('name', true, true)}
+            onBlur={handleBlur}
+            value={values.name}
+            name="name"
+            type="text"
+            isValid={!errors.planName && touched.planName}
+            id="name" />
+          {errors.name && touched.name && (
+            <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
+          )}
 
-              </Box>
-              <Box mt={30} alignSelf="flex-end">
-                <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => this.props.onHandleModalToggle(null)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="secondary"
-                  type="submit"
-                  isDisabled={connectionState !== ConnectionState.Success}
-                  style={{ marginLeft: '10px' }}
-                >
-                  Add
-                </Button>
-              </Box>
-            </Flex>
-          </Box>
-        </form>
-      </Flex>
+        </FormGroup>
+        <FormGroup
+          label="Url"
+          isRequired
+          fieldId="url"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('url', true, true)}
+            onBlur={handleBlur}
+            value={values.url}
+            name="url"
+            type="text"
+            isValid={!errors.url && touched.url}
+            id="url"
+          />
+          {errors.url && touched.url && (
+            <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>
+          )}
+
+        </FormGroup>
+        <FormGroup
+          label="Service account token"
+          isRequired
+          fieldId="url"
+        >
+          <Button variant="plain" aria-label="Action" onClick={this.handleKeyToggle}>
+            <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
+          </Button>
+          <TextArea
+            value={values.token}
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('token', true, true)}
+            onBlur={handleBlur}
+            name="token"
+            id="token"
+            //@ts-ignore
+            css={css`
+                       height: 5em !important;
+                       -webkit-text-security: ${dynamicTokenSecurity};
+                       -moz-text-security: ${dynamicTokenSecurity};
+                       text-security: ${dynamicTokenSecurity};
+                     `}
+          />
+          {errors.token && touched.token && (
+            <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
+          )}
+        </FormGroup>
+        <FormGroup
+          fieldId="check-connection"
+          id="check-connection"
+        >
+          <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+            <Box>
+              <Flex flexDirection="column" >
+                <Box alignSelf="flex-start">
+                  <Button
+                    key="check connection"
+                    variant="secondary"
+                    onClick={() => this.props.checkConnection()}
+                  >
+                    Check connection
+                      </Button>
+                </Box>
+                <Box alignSelf="flex-start">
+                  {renderConnectionState(connectionState)}
+                </Box>
+              </Flex>
+
+            </Box>
+            <Box mt={30} alignSelf="flex-start">
+              <Button
+                variant="secondary"
+                type="submit"
+                isDisabled={connectionState !== ConnectionState.Success}
+                style={{ marginRight: '10px' }}
+              >
+                Add
+              </Button>
+              <Button
+                key="cancel"
+                variant="secondary"
+                onClick={() => this.props.onHandleModalToggle(null)}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Flex>
+        </FormGroup>
+      </Form >
     );
 
   }

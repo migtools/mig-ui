@@ -14,12 +14,6 @@ interface IProps {
 interface IState {
   isOpen: boolean;
 }
-const StyledHeader = styled.div`
-height: 1px;
-width: 75%;
-margin: .5em 5em 2em 0;
-color: ${theme.colors.lightGray3};
-`;
 const StyledModal = styled(ModalPf)`
   width: 36em !important;
   .pf-c-modal-box__body{
@@ -70,7 +64,6 @@ class ModalWrapper extends React.Component<IProps, IState> {
           isOpen={this.state.isOpen}
           onClose={this.handleClose}
         >
-          <StyledHeader />
           {form}
         </StyledModal>
       </React.Fragment>

@@ -43,13 +43,13 @@ const BrandBar = styled.div`
       height: 35px;
       float: left;
       border: 1px inset;
-      margin: 0 1.7em 0 1.7em;
+      margin: 0 1.5em 0 1.7em;
 
       `;
 const LogoBox = styled(Box)`
 width: 20em;
 color: #ffffff;
-font-size: 18px;
+font-size: 20px;
 font-weight: 300;
 `;
 interface IProps {
