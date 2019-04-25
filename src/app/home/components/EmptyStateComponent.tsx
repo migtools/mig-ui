@@ -33,10 +33,10 @@ class EmptyStateComponent extends Component<IProps, IState> {
     return (
       <React.Fragment>
         <Title size="lg">
-          Start a migration plan
+          Add a migration plan
           </Title>
         <Button onClick={this.props.onWizardToggle} variant="primary">
-          Start Plan
+          Add Plan
         </Button>
 
       </React.Fragment>

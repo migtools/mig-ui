@@ -197,7 +197,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               <AddStorageModal
                 onToggle={() => this.handleToggle('repositoryList', true)}
                 trigger={<Button variant="link">
-                  <PlusCircleIcon /> Add storage
+                  <PlusCircleIcon /> Add repository
                 </Button>}
               />
             }
