@@ -67,7 +67,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             value={values.name}
             name="name"
             type="text"
-            isValid={!errors.planName && touched.planName}
+            // isValid={!errors.planName && touched.planName}
             id="name" />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -86,7 +86,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             value={values.url}
             name="url"
             type="text"
-            isValid={!errors.url && touched.url}
+            // isValid={!errors.url && touched.url}
             id="url"
           />
           {errors.url && touched.url && (
@@ -99,23 +99,25 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           isRequired
           fieldId="url"
         >
-          <Button variant="plain" aria-label="Action" onClick={this.handleKeyToggle}>
+          <div
+            //@ts-ignore
+            css={css`
+              display: inline;
+              padding: 1em;
+              cursor: pointer;
+          `}
+            onClick={this.handleKeyToggle}>
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
-          </Button>
-          <TextArea
+          </div>
+          <TextInput
             value={values.token}
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('token', true, true)}
             onBlur={handleBlur}
             name="token"
             id="token"
-            //@ts-ignore
-            css={css`
-                       height: 5em !important;
-                       -webkit-text-security: ${dynamicTokenSecurity};
-                       -moz-text-security: ${dynamicTokenSecurity};
-                       text-security: ${dynamicTokenSecurity};
-                     `}
+            type={this.state.tokenHidden ? "password" : "text"}
+          //@ts-ignore
           />
           {errors.token && touched.token && (
             <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>

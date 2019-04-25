@@ -64,8 +64,6 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       connectionState,
     } = this.props;
 
-    const dynamicAccessKeySecurity = this.state.accessKeyHidden ? 'disc' : 'inherit';
-    const dynamicSecretKeySecurity = this.state.secretHidden ? 'disc' : 'inherit';
     return (
       <Form onSubmit={handleSubmit}
         style={{ marginTop: '24px' }}>
@@ -89,7 +87,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
 
         </FormGroup>
         <FormGroup
-          label="Bucket URL~"
+          label="Bucket URL"
           isRequired
           fieldId="url"
         >
@@ -113,23 +111,24 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           isRequired
           fieldId="s3-provider-access-key"
         >
-          <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('accessKey', e)}>
+          <div
+            //@ts-ignore
+            css={css`
+              display: inline;
+              padding: 1em;
+              cursor: pointer;
+          `}
+            onClick={(e) => this.handleKeyToggle('accessKey', e)}>
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
-          </Button>
-          <TextArea
-            value={values.accessKey}
+          </div>
+          <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('accessKey', true, true)}
             onBlur={handleBlur}
+            value={values.accessKey}
             name="accessKey"
+            type={this.state.accessKeyHidden ? "password" : "text"}
             id="accessKey"
-            //@ts-ignore
-            css={css`
-                       height: 5em !important;
-                       -webkit-text-security: ${dynamicAccessKeySecurity};
-                       -moz-text-security: ${dynamicAccessKeySecurity};
-                       text-security: ${dynamicAccessKeySecurity};
-                     `}
           />
           {errors.accessKey && touched.accessKey && (
             <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
@@ -140,26 +139,28 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           isRequired
           fieldId="s3-provider-secret-access-key"
         >
-          <Button variant="plain" aria-label="Action" onClick={(e) => this.handleKeyToggle('secret', e)}>
+          <div
+            //@ts-ignore
+            css={css`
+              display: inline;
+              padding: 1em;
+              cursor: pointer;
+          `}
+            onClick={(e) => this.handleKeyToggle('secret', e)}>
+
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
-          </Button>
-          <TextArea
-            value={values.secret}
+          </div>
+          <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('secret', true, true)}
             onBlur={handleBlur}
+            value={values.secret}
             name="secret"
+            type={this.state.secretHidden ? "password" : "text"}
             id="secret"
-            //@ts-ignore
-            css={css`
-                       height: 5em !important;
-                       -webkit-text-security: ${dynamicSecretKeySecurity};
-                       -moz-text-security: ${dynamicSecretKeySecurity};
-                       text-security: ${dynamicSecretKeySecurity};
-                     `}
           />
-          {errors.secretKey && touched.secretKey && (
-            <FormErrorDiv id="feedback-secret-key">{errors.secretKey}</FormErrorDiv>
+          {errors.secret && touched.secret && (
+            <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
           )}
         </FormGroup>
         <FormGroup
