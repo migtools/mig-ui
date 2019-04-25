@@ -4,6 +4,7 @@ import {
   Button,
   Checkbox,
 } from '@patternfly/react-core';
+import { css } from '@emotion/core';
 
 const MigrateModalForm = props => {
   return (
@@ -19,7 +20,11 @@ const MigrateModalForm = props => {
           Persistent volumes associated with the projects being migrated will be moved or copied
           to the target cluster as specified in the migration plan.
         </Box>
-        <Box>
+        <Box
+          css={css`
+            margin-top: 20px;
+          `}
+          >
           <Checkbox
             label="Don't halt transactions on the source while migrating"
             aria-label="don't halt transactions on the source while migrating"
