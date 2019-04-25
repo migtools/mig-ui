@@ -176,21 +176,21 @@ class WrappedAddStorageForm extends React.Component<any, any> {
                   </Box>
                 </Flex>
               </Box>
-              <Box mt={30} alignSelf="flex-end">
+              <Box mt={30}>
                 <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => this.props.onHandleModalToggle(null)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="secondary"
-                  style={{ marginLeft: '10px' }}
+                  variant="primary"
                   type="submit"
                   isDisabled={connectionState !== ConnectionState.Success}
                 >
                   Add
+                </Button>
+                <Button
+                  key="cancel"
+                  variant="secondary"
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => this.props.onHandleModalToggle(null)}
+                >
+                  Cancel
                 </Button>
               </Box>
             </Flex>

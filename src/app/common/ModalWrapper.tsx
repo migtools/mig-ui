@@ -18,7 +18,6 @@ const StyledHeader = styled.div`
 height: 1px;
 width: 75%;
 margin: .5em 5em 2em 0;
-background: ${theme.colors.lightGray3};
 color: ${theme.colors.lightGray3};
 `;
 const StyledModal = styled(ModalPf)`
