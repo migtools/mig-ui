@@ -21,7 +21,7 @@ const MigrateModalForm = props => {
         </Box>
         <Box>
           <Checkbox
-            label="Don't halt transations on the source while migrating"
+            label="Don't halt transactions on the source while migrating"
             aria-label="don't halt transactions on the source while migrating"
             id="transaction-halt-checkbox"
             />
