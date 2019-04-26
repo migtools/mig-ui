@@ -94,7 +94,7 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) =>
                     css={css`flex: 0 0 9em !important;`}>
                     <Flex>
                       <Box m="0 5px 0 0" >
-                        <PlanStatusIcon status={plan.status} />
+                        <PlanStatusIcon status={plan.status.state} />
                       </Box>
                       <Box m="auto 0 auto 0">
                         <span >{plan.planName}</span>
