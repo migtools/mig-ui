@@ -175,7 +175,7 @@ class HomeComponent extends React.Component<IProps, IState> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  <div>testuser123</div>
+                  <div>jmatthews</div>
                 </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
