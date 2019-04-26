@@ -1,17 +1,10 @@
 import React from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
-import Select from 'react-select';
 import { css } from '@emotion/core';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import theme from './../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
-import { setNestedObjectValues } from 'formik';
 import StatusIcon from '../../common/components/StatusIcon';
-const StyledBox = styled(Box)`
-    text-align: center;
-  `;
 const StyledSpan = styled.span`
     font-weight: 600;
   `;

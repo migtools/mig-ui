@@ -26,13 +26,13 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import { clusterOperations } from '../cluster/duck';
+import { clusterOperations } from '../cluster/duck'; ``
 import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
 import Loader from 'react-loader-spinner';
-import openShiftLogo from 'openshift-logo-package/logos/PNG/Logo-Red_Hat-OpenShift_Container_Platform-B-Reverse-RGB.png';
+import openShiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 import oldOpenShiftLogo from '../../assets/OpenShiftLogo.svg';
 
 import theme from '../../theme';
@@ -168,36 +168,6 @@ class HomeComponent extends React.Component<IProps, IState> {
       <Toolbar>
         <ToolbarGroup>
           <ToolbarItem>
-            <Button
-              id="default-example-uid-01"
-              aria-label="Notifications actions"
-              variant={ButtonVariant.plain}
-            >
-              <BellIcon />
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              id="default-example-uid-02"
-              aria-label="Settings actions"
-              variant={ButtonVariant.plain}
-            >
-              <CogIcon />
-            </Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Dropdown
-              isPlain
-              position="right"
-              onSelect={this.onKebabDropdownSelect}
-              toggle={<KebabToggle onToggle={this.onKebabDropdownToggle} />}
-              isOpen={isKebabDropdownOpen}
-              dropdownItems={this.kebabDropdownItems}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
             <Dropdown
               isPlain
               position="right"
@@ -205,7 +175,6 @@ class HomeComponent extends React.Component<IProps, IState> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  {/* <div>{user.username}</div> */}
                   <div>testuser123</div>
                 </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
@@ -238,11 +207,6 @@ class HomeComponent extends React.Component<IProps, IState> {
         logo={
           <React.Fragment>
             <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" />
-            <BrandBar
-            />
-            <LogoBox>
-              Cluster Application Migration Tool
-            </LogoBox>
           </React.Fragment>
         }
 
