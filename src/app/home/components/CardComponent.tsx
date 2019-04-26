@@ -4,6 +4,7 @@ import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
 import CardStatusComponent from './CardStatusComponent';
 import MigrationStatusComponent from './MigrationStatusComponent';
+import FooterText from './FooterText';
 interface IState {
   isOpen: boolean;
 }
@@ -56,7 +57,7 @@ class CardComponent extends Component<IProps, IState> {
           }
         </CardBody>
         <CardFooter>
-          <a href="#">View all {dataList.length} {type}</a>
+          <FooterText dataList={dataList} type={type} />
         </CardFooter>
       </Card>
     );

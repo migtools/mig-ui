@@ -2,6 +2,10 @@ import React from 'react';
 import theme from '../../../theme';
 import PlanStatusIcon from '../../home/components/PlanStatusIcon';
 import { css } from '@emotion/core';
+import {
+    Grid,
+    GridItem,
+} from '@patternfly/react-core';
 
 const MigrationStatusComponent = ({ dataList, ...props }) => {
     const notStartedList = dataList.filter((item) => item.status.state === 'Not Started');
@@ -18,24 +22,36 @@ const MigrationStatusComponent = ({ dataList, ...props }) => {
 
     return (
         <React.Fragment>
-            <div>
-                <span style={{ fontSize: "28px", marginRight: ".75rem" }}>
-                    {notStartedLength}
-                </span>
-                Not started
-            </div>
-            <div>
-                <span style={{ fontSize: "28px", marginRight: ".75rem" }}>
-                    {inProgressLength}
-                </span>
-                In progress
-            </div>
-            <div>
-                <span style={{ fontSize: "28px", marginRight: ".75rem" }}>
-                    {migSuccessList.length}
-                </span>
-                Complete
-            </div>
+            <Grid>
+                <GridItem span={2} style={{ fontSize: "28px" }}>
+                    <div style={{ marginLeft: "1em" }}>
+                        {notStartedLength}
+                    </div>
+                </GridItem>
+                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                    Not started
+                </GridItem>
+            </Grid>
+            <Grid>
+                <GridItem span={2} style={{ fontSize: "28px", }}>
+                    <div style={{ marginLeft: "1em" }}>
+                        {inProgressLength}
+                    </div>
+                </GridItem>
+                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                    In progress
+                </GridItem>
+            </Grid>
+            <Grid>
+                <GridItem span={2} style={{ fontSize: "28px", }}>
+                    <div style={{ marginLeft: "1em" }}>
+                        {migSuccessList.length}
+                    </div>
+                </GridItem>
+                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                    Complete
+                </GridItem>
+            </Grid>
         </React.Fragment >
 
     );
