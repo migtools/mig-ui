@@ -162,7 +162,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     } = this.props;
     const { isWizardOpen } = this.state;
 
-    const isAddPlanDisabled = allClusters.length < 2 && allStorage.length < 1;
+    const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
 
     return (
       <React.Fragment>
