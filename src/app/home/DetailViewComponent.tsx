@@ -14,7 +14,7 @@ import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import Wizard from '../plan/components/Wizard';
-import {css} from '@emotion/core';
+import { css } from '@emotion/core';
 
 import {
   Button,
@@ -235,7 +235,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               />
             }
             onRemoveItem={this.handleRemoveItem}
-            plansDisabled={this.state.plansDisabled}
+            plansDisabled={isAddPlanDisabled}
             onStageTriggered={this.handleStageTriggered}
             isLoading={this.props.isMigrating || this.props.isStaging}
           />

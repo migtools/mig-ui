@@ -94,6 +94,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         dataList={filteredDataList}
         onWizardToggle={onWizardToggle}
         isLoading={isLoading}
+        plansDisabled={plansDisabled}
       />
     );
   }

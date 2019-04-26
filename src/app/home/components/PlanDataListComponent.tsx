@@ -29,7 +29,7 @@ const HeaderDataListCell = styled(DataListCell)`
 const ChildDataListCell = styled(DataListCell)`
   margin: auto !important;
 `;
-const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) => {
+const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -188,7 +188,7 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, ...props }) =>
             <Flex alignItems="center" justifyContent="center">
               <Box>
 
-                <EmptyStateComponent onWizardToggle={onWizardToggle} type="plan" />
+                <EmptyStateComponent onWizardToggle={onWizardToggle} type="plan" plansDisabled={plansDisabled} />
               </Box>
             </Flex>
           )}

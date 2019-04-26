@@ -16,6 +16,7 @@ interface IState {
 }
 interface IProps {
   type?: string;
+  plansDisabled?: boolean;
   onWizardToggle?: () => void;
 }
 
@@ -35,7 +36,7 @@ class EmptyStateComponent extends Component<IProps, IState> {
         <Title size="lg">
           Add a migration plan
           </Title>
-        <Button onClick={this.props.onWizardToggle} variant="primary">
+        <Button isDisabled={this.props.plansDisabled} onClick={this.props.onWizardToggle} variant="primary">
           Add Plan
         </Button>
 
