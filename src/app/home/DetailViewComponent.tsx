@@ -161,6 +161,9 @@ class DetailViewComponent extends Component<IProps, IState> {
       storageAssociatedPlans,
     } = this.props;
     const { isWizardOpen } = this.state;
+
+    const isAddPlanDisabled = allClusters.length < 2 && allStorage.length < 1;
+
     return (
       <React.Fragment>
         <DataList aria-label="Expandable data list example"
@@ -226,7 +229,7 @@ class DetailViewComponent extends Component<IProps, IState> {
                 clusterList={allClusters}
                 storageList={migStorageList}
                 onPlanSubmit={this.handlePlanSubmit}
-                trigger={<Button variant="link">
+                trigger={<Button variant="link" isDisabled={isAddPlanDisabled}>
                   <PlusCircleIcon /> Add plan
                 </Button>}
               />
