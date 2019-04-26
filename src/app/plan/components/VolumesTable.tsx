@@ -159,7 +159,7 @@ class VolumesTable extends React.Component<any, any> {
                   >Details
                   </div>),
                 accessor: 'details',
-                width: 40,
+                width: 50,
                 resizable: false,
                 textAlign: "left",
                 Cell: row => (
