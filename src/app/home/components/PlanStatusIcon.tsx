@@ -13,7 +13,7 @@ import {
 import * as React from 'react';
 
 interface IProps {
-  status: any;
+  status: string;
 }
 
 const PlanStatusIcon: React.FunctionComponent<IProps> = ({
@@ -31,39 +31,41 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
   font-size: 2em;
     color: ${theme.colors.statusGreen};
   `;
-  if (status.state === 'Not Started') {
+  if (status === 'Not Started') {
     return (
       <NotStarted />
     );
   }
 
-  if (status.state === 'Staged Successfully') {
+  if (status === 'Staged Successfully') {
     return (
       <Complete />
     );
   }
-  if (status.state === 'Migrated Successfully') {
+  if (status === 'Migrated Successfully') {
     return (
       <Complete />
     );
   }
-  if (status.state === 'Staging') {
+  if (status === 'Staging') {
     return (
       <Loader
         type="RevolvingDot"
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
+        style={{display: "inline"}}
       />
     );
   }
-  if (status.state === 'Migrating') {
+  if (status === 'Migrating') {
     return (
       <Loader
         type="RevolvingDot"
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
+        style={{display: "inline"}}
       />
     );
   }

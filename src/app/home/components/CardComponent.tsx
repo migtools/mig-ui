@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Title} from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
 import theme from '../../../theme';
 import Loader from 'react-loader-spinner';
 import CardStatusComponent from './CardStatusComponent';
+import MigrationStatusComponent from './MigrationStatusComponent';
 interface IState {
   isOpen: boolean;
 }
@@ -33,7 +34,7 @@ class CardComponent extends Component<IProps, IState> {
     const { dataList, title, isFetching, type } = this.props;
     const { isOpen } = this.state;
     return (
-      <Card>
+      <Card style={{ minHeight: "100%" }}>
         <CardHeader>
           {dataList && !isFetching ? (
             <Title headingLevel="h3" size="md">
@@ -49,7 +50,10 @@ class CardComponent extends Component<IProps, IState> {
             )}
         </CardHeader>
         <CardBody>
-          <CardStatusComponent dataList={dataList} type={type} />
+          {type === "plans" ?
+            <MigrationStatusComponent dataList={dataList} /> :
+            <CardStatusComponent dataList={dataList} type={type} />
+          }
         </CardBody>
         <CardFooter>
           <a href="#">View all {dataList.length} {type}</a>
