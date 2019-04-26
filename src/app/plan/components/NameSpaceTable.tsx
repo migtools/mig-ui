@@ -137,6 +137,12 @@ class NamespaceTable extends React.Component<IProps, IState> {
           </StyledTextContent>
 
           <ReactTable
+            css={css`
+              font-size: 14px;
+              .rt-td{
+                overflow: visible;
+              }
+            `}
             data={rows}
             columns={[
               {
@@ -150,19 +156,43 @@ class NamespaceTable extends React.Component<IProps, IState> {
                 ),
               },
               {
-                Header: 'Name',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 600
+                    }}
+                  >Name</div>),
                 accessor: 'name',
               },
               {
-                Header: 'Display Name',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 600
+                    }}
+                  >Display Name</div>),
                 accessor: 'displayName',
               },
               {
-                Header: 'Number of Pods',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 600
+                    }}
+                  >Number of Pods</div>),
                 accessor: 'pods',
               },
               {
-                Header: 'Number of Services',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 600
+                    }}
+                  >Number of Services</div>),
                 accessor: 'services',
               },
             ]}
