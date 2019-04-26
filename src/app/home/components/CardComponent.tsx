@@ -5,6 +5,7 @@ import Loader from 'react-loader-spinner';
 import CardStatusComponent from './CardStatusComponent';
 import MigrationStatusComponent from './MigrationStatusComponent';
 import FooterText from './FooterText';
+import HeaderText from './HeaderText';
 interface IState {
   isOpen: boolean;
 }
@@ -39,7 +40,7 @@ class CardComponent extends Component<IProps, IState> {
         <CardHeader>
           {dataList && !isFetching ? (
             <Title headingLevel="h3" size="md">
-              {dataList.length || 0} {title}{' '}
+              <HeaderText type={type} dataList={dataList} />
             </Title>
           ) : (
               <Loader
