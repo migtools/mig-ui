@@ -179,6 +179,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
                     key="check connection"
                     variant="secondary"
                     onClick={() => this.props.checkConnection()}
+                    isDisabled={Object.keys(errors).length || !Object.keys(touched).length}
                   >
                     Check connection
                       </Button>

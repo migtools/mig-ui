@@ -1,5 +1,6 @@
 import React from 'react';
 import { withFormik } from 'formik';
+import Yup from 'yup';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
@@ -139,6 +140,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
                     key="check connection"
                     variant="secondary"
                     onClick={() => this.props.checkConnection()}
+                    isDisabled={Object.keys(errors).length || !Object.keys(touched).length}
                   >
                     Check connection
                   </Button>
