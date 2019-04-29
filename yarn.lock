@@ -936,15 +936,7 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@patternfly/patternfly@1.0.244":
-  version "1.0.244"
-  resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-1.0.244.tgz#cadce7bc60e8cef40e098468d2ab285eee2e65c3"
-
-"@patternfly/patternfly@1.0.250":
-  version "1.0.250"
-  resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-1.0.250.tgz#02952d55039891ab4796b6e78e677ecd01c25855"
-
-"@patternfly/react-core@2.11.1", "@patternfly/react-core@^2.11.0":
+"@patternfly/react-core@2.11.1":
   version "2.11.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.11.1.tgz#2778e06fd84780138ac1664c8379dac0a6543419"
   integrity sha512-nJSwQwbavwnKlt8WEqJFE+VUjoUaUTYV4LBRh+EJT1NDi4fvR43F1jD5K4N70iSzpmwfLD16azUj8Y8KdqKdBw==
@@ -957,36 +949,9 @@
     exenv "^1.2.2"
     focus-trap-react "^4.0.1"
 
-"@patternfly/react-core@^2.10.0":
-  version "2.10.9"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.10.9.tgz#eae50f10542e9e820c24223cb8f319540131e157"
-  dependencies:
-    "@patternfly/react-icons" "^3.7.1"
-    "@patternfly/react-styles" "^2.4.0"
-    "@patternfly/react-tokens" "^2.3.0"
-    "@tippy.js/react" "^1.1.1"
-    emotion "^9.2.9"
-    exenv "^1.2.2"
-    focus-trap-react "^4.0.1"
-
-"@patternfly/react-icons@^3.6.1", "@patternfly/react-icons@^3.7.1":
+"@patternfly/react-icons@^3.7.1":
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.7.1.tgz#86fe0b75e871ddaeefb21c2d09f520eb6e88f1ea"
-
-"@patternfly/react-inline-edit-extension@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-inline-edit-extension/-/react-inline-edit-extension-1.1.0.tgz#eb5886d548ff63b8d8c1965c98e02882b0237876"
-  dependencies:
-    "@patternfly/patternfly" "1.0.244"
-    "@patternfly/react-core" "^2.10.0"
-    "@patternfly/react-icons" "^3.6.1"
-    "@patternfly/react-styles" "^2.4.0"
-    "@patternfly/react-table" "^1.4.0"
-    classnames "^2.2.5"
-    exenv "^1.2.2"
-    reactabular-table "^8.14.0"
-  optionalDependencies:
-    "@patternfly/react-tokens" "^2.0.2"
 
 "@patternfly/react-styles@^2.4.0":
   version "2.4.1"
@@ -1004,21 +969,6 @@
     jsdom "^11.11.0"
     relative "^3.0.2"
     resolve-from "^4.0.0"
-
-"@patternfly/react-table@1.4.10", "@patternfly/react-table@^1.4.0":
-  version "1.4.10"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-1.4.10.tgz#69d48d4c3829fc9cf3f56aac65ccdfe4063fd39f"
-  dependencies:
-    "@patternfly/patternfly" "1.0.250"
-    "@patternfly/react-core" "^2.11.0"
-    "@patternfly/react-icons" "^3.7.1"
-    "@patternfly/react-styles" "^2.4.0"
-    exenv "^1.2.2"
-    reactabular-table "^8.14.0"
-
-"@patternfly/react-tokens@^2.0.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.2.2.tgz#b0d9c175f47edc602f71d7fe5c10c4b475034cd5"
 
 "@patternfly/react-tokens@^2.3.0":
   version "2.3.0"
@@ -3771,10 +3721,10 @@ form-data@^2.0.0, form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
-formik@1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/formik/-/formik-1.5.2.tgz#bb46853f10433f6f0a83415122c2a8e7e2e285fc"
-  integrity sha512-gVrNN4OmxvtwV4IvoyQJk797D3ptl3X8C1lJjbOBX48EFxxFTzchtUX5XiDSmhMIhtsg2rahT41VEbZPpgM6lQ==
+formik@1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/formik/-/formik-1.5.4.tgz#e2e3182d030134a1bf7fddfb394290660212475c"
+  integrity sha512-m7Tboq9O6MntCM8+J/b3jGGKXNXRq1dTzLvEdujSySejlewqVeYLy/goulrvr152wPe9ycKV0NlFSQ8Q1EwycQ==
   dependencies:
     create-react-context "^0.2.2"
     deepmerge "^2.1.1"
@@ -6588,12 +6538,6 @@ react@16.8.4:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.13.4"
-
-reactabular-table@^8.14.0:
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/reactabular-table/-/reactabular-table-8.14.0.tgz#2ce05de47d499db91678fa9518505ea509bf3d7f"
-  dependencies:
-    classnames "^2.2.5"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
