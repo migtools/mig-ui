@@ -936,15 +936,7 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@patternfly/patternfly@1.0.244":
-  version "1.0.244"
-  resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-1.0.244.tgz#cadce7bc60e8cef40e098468d2ab285eee2e65c3"
-
-"@patternfly/patternfly@1.0.250":
-  version "1.0.250"
-  resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-1.0.250.tgz#02952d55039891ab4796b6e78e677ecd01c25855"
-
-"@patternfly/react-core@2.11.1", "@patternfly/react-core@^2.11.0":
+"@patternfly/react-core@2.11.1":
   version "2.11.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.11.1.tgz#2778e06fd84780138ac1664c8379dac0a6543419"
   integrity sha512-nJSwQwbavwnKlt8WEqJFE+VUjoUaUTYV4LBRh+EJT1NDi4fvR43F1jD5K4N70iSzpmwfLD16azUj8Y8KdqKdBw==
@@ -957,36 +949,9 @@
     exenv "^1.2.2"
     focus-trap-react "^4.0.1"
 
-"@patternfly/react-core@^2.10.0":
-  version "2.10.9"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-2.10.9.tgz#eae50f10542e9e820c24223cb8f319540131e157"
-  dependencies:
-    "@patternfly/react-icons" "^3.7.1"
-    "@patternfly/react-styles" "^2.4.0"
-    "@patternfly/react-tokens" "^2.3.0"
-    "@tippy.js/react" "^1.1.1"
-    emotion "^9.2.9"
-    exenv "^1.2.2"
-    focus-trap-react "^4.0.1"
-
-"@patternfly/react-icons@^3.6.1", "@patternfly/react-icons@^3.7.1":
+"@patternfly/react-icons@^3.7.1":
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-3.7.1.tgz#86fe0b75e871ddaeefb21c2d09f520eb6e88f1ea"
-
-"@patternfly/react-inline-edit-extension@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-inline-edit-extension/-/react-inline-edit-extension-1.1.0.tgz#eb5886d548ff63b8d8c1965c98e02882b0237876"
-  dependencies:
-    "@patternfly/patternfly" "1.0.244"
-    "@patternfly/react-core" "^2.10.0"
-    "@patternfly/react-icons" "^3.6.1"
-    "@patternfly/react-styles" "^2.4.0"
-    "@patternfly/react-table" "^1.4.0"
-    classnames "^2.2.5"
-    exenv "^1.2.2"
-    reactabular-table "^8.14.0"
-  optionalDependencies:
-    "@patternfly/react-tokens" "^2.0.2"
 
 "@patternfly/react-styles@^2.4.0":
   version "2.4.1"
@@ -1004,21 +969,6 @@
     jsdom "^11.11.0"
     relative "^3.0.2"
     resolve-from "^4.0.0"
-
-"@patternfly/react-table@1.4.10", "@patternfly/react-table@^1.4.0":
-  version "1.4.10"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-1.4.10.tgz#69d48d4c3829fc9cf3f56aac65ccdfe4063fd39f"
-  dependencies:
-    "@patternfly/patternfly" "1.0.250"
-    "@patternfly/react-core" "^2.11.0"
-    "@patternfly/react-icons" "^3.7.1"
-    "@patternfly/react-styles" "^2.4.0"
-    exenv "^1.2.2"
-    reactabular-table "^8.14.0"
-
-"@patternfly/react-tokens@^2.0.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-2.2.2.tgz#b0d9c175f47edc602f71d7fe5c10c4b475034cd5"
 
 "@patternfly/react-tokens@^2.3.0":
   version "2.3.0"
@@ -3751,9 +3701,10 @@ forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
 
-fork-ts-checker-webpack-plugin@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-1.0.1.tgz#140453c4dc3dc35937034b7416b66a3bacfbc3a8"
+fork-ts-checker-webpack-plugin@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/fork-ts-checker-webpack-plugin/-/fork-ts-checker-webpack-plugin-1.2.0.tgz#2d0b0d94ef6a2479ac94f44cb9edfa9e8f1de160"
+  integrity sha512-JY+qctuwZkg25tt3GdX3q4MOAI4mddWTs4ugAZD3EhJ12P3K0xtg0wvU+MMRPNBP0zT1hvQXemT2xeeQ8DYSWg==
   dependencies:
     babel-code-frame "^6.22.0"
     chalk "^2.4.1"
@@ -3762,6 +3713,7 @@ fork-ts-checker-webpack-plugin@1.0.1:
     minimatch "^3.0.4"
     semver "^5.6.0"
     tapable "^1.0.0"
+    worker-rpc "^0.1.0"
 
 form-data@^2.0.0, form-data@~2.3.2:
   version "2.3.3"
@@ -5456,6 +5408,11 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
+microevent.ts@~0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/microevent.ts/-/microevent.ts-0.1.0.tgz#390748b8a515083e6b63cd5112a3f18c2fe0eba8"
+  integrity sha1-OQdIuKUVCD5rY81REqPxjC/g66g=
+
 micromatch@^3.0.4, micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8:
   version "3.1.10"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
@@ -6588,12 +6545,6 @@ react@16.8.4:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.13.4"
-
-reactabular-table@^8.14.0:
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/reactabular-table/-/reactabular-table-8.14.0.tgz#2ce05de47d499db91678fa9518505ea509bf3d7f"
-  dependencies:
-    classnames "^2.2.5"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
@@ -8271,6 +8222,13 @@ worker-farm@^1.5.2:
   resolved "https://registry.yarnpkg.com/worker-farm/-/worker-farm-1.6.0.tgz#aecc405976fab5a95526180846f0dba288f3a4a0"
   dependencies:
     errno "~0.1.7"
+
+worker-rpc@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/worker-rpc/-/worker-rpc-0.1.0.tgz#5f1258dca3d617cd18ca86587f8a05ac0eebd834"
+  integrity sha1-XxJY3KPWF80YyoZYf4oFrA7r2DQ=
+  dependencies:
+    microevent.ts "~0.1.0"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"
