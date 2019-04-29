@@ -173,7 +173,8 @@ class DetailViewComponent extends Component<IProps, IState> {
           `}
         >
           <DetailViewItem
-            isExpanded={this.state.expanded.includes('clusterList')}
+            isExpanded={this.state.expanded.includes('clusterList') &&
+              this.state.expanded.pop(!'clusterList')}
             onToggle={this.handleToggle}
             filteredDataList={filteredClusterList}
             allData={allClusters}
@@ -193,7 +194,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             onRemoveItem={this.handleRemoveItem}
           />
           <DetailViewItem
-            isExpanded={this.state.expanded.includes('repositoryList')}
+            isExpanded={this.state.expanded.includes('repositoryList') &&
+              this.state.expanded.pop(!'repositoryList')}
             onToggle={this.handleToggle}
             filteredDataList={filteredStorageList}
             allData={allStorage}
@@ -213,7 +215,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             onRemoveItem={this.handleRemoveItem}
           />
           <DetailViewItem
-            isExpanded={this.state.expanded.includes('plansList')}
+            isExpanded={this.state.expanded.includes('plansList') &&
+              this.state.expanded.pop(!'plansList')}
             onToggle={this.handleToggle}
             filteredDataList={filteredPlanList}
             onWizardToggle={this.handleWizardToggle}
