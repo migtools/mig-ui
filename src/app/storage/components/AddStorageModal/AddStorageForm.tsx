@@ -9,7 +9,7 @@ import {
   TextArea,
   TextInput,
   Form,
-  FormGroup
+  FormGroup,
 } from '@patternfly/react-core';
 import { IMigStorage } from '../../../../models';
 import uuidv4 from 'uuid/v4';
@@ -65,8 +65,10 @@ class WrappedAddStorageForm extends React.Component<any, any> {
     } = this.props;
 
     return (
-      <Form onSubmit={handleSubmit}
-        style={{ marginTop: '24px' }}>
+      <Form
+        onSubmit={handleSubmit}
+        style={{ marginTop: '24px' }}
+      >
         <FormGroup
           label="Storage Name"
           isRequired
@@ -118,7 +120,8 @@ class WrappedAddStorageForm extends React.Component<any, any> {
               padding: 1em;
               cursor: pointer;
           `}
-            onClick={(e) => this.handleKeyToggle('accessKey', e)}>
+            onClick={(e) => this.handleKeyToggle('accessKey', e)}
+          >
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
           </div>
           <TextInput
@@ -127,7 +130,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             onBlur={handleBlur}
             value={values.accessKey}
             name="accessKey"
-            type={this.state.accessKeyHidden ? "password" : "text"}
+            type={this.state.accessKeyHidden ? 'password' : 'text'}
             id="accessKey"
           />
           {errors.accessKey && touched.accessKey && (
@@ -146,7 +149,8 @@ class WrappedAddStorageForm extends React.Component<any, any> {
               padding: 1em;
               cursor: pointer;
           `}
-            onClick={(e) => this.handleKeyToggle('secret', e)}>
+            onClick={(e) => this.handleKeyToggle('secret', e)}
+          >
 
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
           </div>
@@ -156,7 +160,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             onBlur={handleBlur}
             value={values.secret}
             name="secret"
-            type={this.state.secretHidden ? "password" : "text"}
+            type={this.state.secretHidden ? 'password' : 'text'}
             id="secret"
           />
           {errors.secret && touched.secret && (
