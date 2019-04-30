@@ -7,7 +7,7 @@ import {
     GridItem,
 } from '@patternfly/react-core';
 
-const MigrationStatusComponent = ({ dataList, ...props }) => {
+const MigrationStatus = ({ dataList, ...props }) => {
     const notStartedList = dataList.filter((item) => item.status.state === 'Not Started');
     const stagedSuccessList = dataList.filter((item) => item.status.state === 'Staged Successfully');
     const migSuccessList = dataList.filter((item) => item.status.state === 'Migrated Successfully');
@@ -23,32 +23,32 @@ const MigrationStatusComponent = ({ dataList, ...props }) => {
     return (
         <React.Fragment>
             <Grid>
-                <GridItem span={2} style={{ fontSize: "28px" }}>
-                    <div style={{ marginLeft: "1em" }}>
+                <GridItem span={2} style={{ fontSize: '28px' }}>
+                    <div style={{ marginLeft: '1em' }}>
                         {notStartedLength}
                     </div>
                 </GridItem>
-                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
                     Not started
                 </GridItem>
             </Grid>
             <Grid>
-                <GridItem span={2} style={{ fontSize: "28px", }}>
-                    <div style={{ marginLeft: "1em" }}>
+                <GridItem span={2} style={{ fontSize: '28px' }}>
+                    <div style={{ marginLeft: '1em' }}>
                         {inProgressLength}
                     </div>
                 </GridItem>
-                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
                     In progress
                 </GridItem>
             </Grid>
             <Grid>
-                <GridItem span={2} style={{ fontSize: "28px", }}>
-                    <div style={{ marginLeft: "1em" }}>
+                <GridItem span={2} style={{ fontSize: '28px' }}>
+                    <div style={{ marginLeft: '1em' }}>
                         {migSuccessList.length}
                     </div>
                 </GridItem>
-                <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
                     Complete
                 </GridItem>
             </Grid>
@@ -57,6 +57,6 @@ const MigrationStatusComponent = ({ dataList, ...props }) => {
     );
 };
 
-export default MigrationStatusComponent;
+export default MigrationStatus;
 
 

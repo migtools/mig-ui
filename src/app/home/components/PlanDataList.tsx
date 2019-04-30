@@ -29,7 +29,7 @@ const HeaderDataListCell = styled(DataListCell)`
 const ChildDataListCell = styled(DataListCell)`
   margin: auto !important;
 `;
-const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled, ...props }) => {
+const PlanDataList = ({ isLoading, onWizardToggle, dataList, plansDisabled, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -40,27 +40,35 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled,
               isExpanded={false}
               aria-labelledby="simple-item1"
             >
-              <HeaderDataListCell width={1}
+              <HeaderDataListCell
+                width={1}
                 //@ts-ignore
-                css={css`flex: 0 0 9em !important;`}>
+                css={css`flex: 0 0 9em !important;`}
+              >
                 <span>Name</span>
               </HeaderDataListCell>
               <HeaderDataListCell width={1}>
                 <span>Migrations</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}
+              <HeaderDataListCell
+                width={1}
                 //@ts-ignore
-                css={css`flex: 0 0 9em !important;`}>
+                css={css`flex: 0 0 9em !important;`}
+              >
                 <span>Source</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}
+              <HeaderDataListCell
+                width={1}
                 //@ts-ignore
-                css={css`flex: 0 0 9em !important;`}>
+                css={css`flex: 0 0 9em !important;`}
+              >
                 <span>Target</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}
+              <HeaderDataListCell
+                width={1}
                 //@ts-ignore
-                css={css`flex: 0 0 9em !important;`}>
+                css={css`flex: 0 0 9em !important;`}
+              >
                 <span>Repository</span>
               </HeaderDataListCell>
               <HeaderDataListCell width={1}>
@@ -69,8 +77,7 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled,
               <HeaderDataListCell width={3}>
                 <span>Last Status</span>
               </HeaderDataListCell>
-              <HeaderDataListCell width={1}>
-              </HeaderDataListCell>
+              <HeaderDataListCell width={1} />
             </DataListItem>
             {dataList.map((plan, i) => {
               const index = i + 1;
@@ -89,9 +96,11 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled,
                   isExpanded={false}
                   aria-labelledby="simple-item1"
                 >
-                  <ChildDataListCell width={1}
+                  <ChildDataListCell
+                    width={1}
                     //@ts-ignore
-                    css={css`flex: 0 0 9em !important;`}>
+                    css={css`flex: 0 0 9em !important;`}
+                  >
                     <Flex>
                       <Box m="0 5px 0 0" >
                         <PlanStatusIcon status={plan.status.state} />
@@ -113,19 +122,25 @@ const DataListComponent = ({ isLoading, onWizardToggle, dataList, plansDisabled,
                       </Box>
                     </Flex>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}
+                  <ChildDataListCell
+                    width={1}
                     //@ts-ignore
-                    css={css`flex: 0 0 9em !important;`}>
+                    css={css`flex: 0 0 9em !important;`}
+                  >
                     <span>{plan.sourceCluster}</span>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}
+                  <ChildDataListCell
+                    width={1}
                     //@ts-ignore
-                    css={css`flex: 0 0 9em !important;`}>
+                    css={css`flex: 0 0 9em !important;`}
+                  >
                     <span>{plan.targetCluster}</span>
                   </ChildDataListCell>
-                  <ChildDataListCell width={1}
+                  <ChildDataListCell
+                    width={1}
                     //@ts-ignore
-                    css={css`flex: 0 0 9em !important;`}>
+                    css={css`flex: 0 0 9em !important;`}
+                  >
                     <span>{plan.selectedStorage}</span>
                   </ChildDataListCell>
                   <ChildDataListCell width={1}>
@@ -230,4 +245,4 @@ function statusComponent(plan) {
   return statusComponent;
 }
 
-export default DataListComponent;
+export default PlanDataList;

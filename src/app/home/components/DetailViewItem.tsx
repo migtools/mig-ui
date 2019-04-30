@@ -19,9 +19,9 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Flex, Box } from '@rebass/emotion';
 import { css } from '@emotion/core';
 
-import ClusterDataListComponent from './ClusterDataListComponent';
-import StorageDataListComponent from './StorageDataListComponent';
-import PlanDataListComponent from './PlanDataListComponent';
+import ClusterDataList from './ClusterDataList';
+import StorageDataList from './StorageDataList';
+import PlanDataList from './PlanDataList';
 
 import { } from '@patternfly/react-core';
 import theme from '../../../theme';
@@ -71,7 +71,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
   let listComponent;
   if (type === 'cluster') {
     listComponent = (
-      <ClusterDataListComponent
+      <ClusterDataList
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList}
         associatedPlans={associatedPlans}
@@ -79,7 +79,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
     );
   } else if (type === 'storage') {
     listComponent = (
-      <StorageDataListComponent
+      <StorageDataList
         onRemoveItem={onRemoveItem}
         dataList={filteredDataList}
         associatedPlans={associatedPlans}
@@ -87,7 +87,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
     );
   } else {
     listComponent = (
-      <PlanDataListComponent
+      <PlanDataList
         onRemoveItem={onRemoveItem}
         onStageTriggered={onStageTriggered}
         onMigrateTriggered={onMigrateTriggered}
@@ -120,7 +120,7 @@ const DetailViewItem: React.FunctionComponent<IProps> = ({
         // @ts-ignore
         css={css`
         padding: 0 !important;
-          .pf-c-data-list__expandable-content{ 
+          .pf-c-data-list__expandable-content{
             padding: 0 !important;
           }
         `}

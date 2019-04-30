@@ -7,7 +7,7 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 
-const CardStatusComponent = ({ type, dataList, ...props }) => {
+const CardStatus = ({ type, dataList, ...props }) => {
   const successList = dataList.filter((item) => item.status === 'success');
   const failureList = dataList.filter((item) => item.status !== 'success');
   return (
@@ -39,5 +39,5 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   );
 };
 
-export default CardStatusComponent;
+export default CardStatus;
 

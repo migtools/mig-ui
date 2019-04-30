@@ -11,7 +11,7 @@ import StatusIcon from '../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import EmptyStateComponent from './EmptyStateComponent';
 
-const DataListComponent = ({ dataList, ...props }) => {
+const StorageDataList = ({ dataList, ...props }) => {
   if (dataList) {
     return (
       <React.Fragment>
@@ -76,4 +76,4 @@ const DataListComponent = ({ dataList, ...props }) => {
   return null;
 };
 
-export default DataListComponent;
+export default StorageDataList;
