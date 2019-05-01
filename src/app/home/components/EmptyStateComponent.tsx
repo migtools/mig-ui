@@ -13,14 +13,6 @@ import Wizard from '../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import { useExpandDataList, useOpenModal } from '../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-interface IState {
-  isOpen: boolean;
-}
-interface IProps {
-  type?: string;
-  plansDisabled?: boolean;
-  onWizardToggle?: () => void;
-}
 
 const EmptyStateComponent = ({ ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
@@ -31,10 +23,20 @@ const EmptyStateComponent = ({ ...props }) => {
       <React.Fragment>
         <Title size="lg">
           Add a migration plan
-          </Title>
+        </Title>
         <Button isDisabled={props.plansDisabled} onClick={toggleOpen} variant="primary">
           Add Plan
         </Button>
+
+        <Wizard
+          clusterList={props.clusterList}
+          storageList={props.storageList}
+          isOpen={isOpen}
+          onHandleClose={toggleOpen}
+          isLoading={props.isLoading}
+          onPlanSubmit={props.onPlanSubmit}
+        />
+
       </React.Fragment>
     );
   }
@@ -65,16 +67,15 @@ const EmptyStateComponent = ({ ...props }) => {
       </React.Fragment>
     );
   }
-  const { type } = props;
   return (
     <React.Fragment>
       <EmptyState variant="large">
         <EmptyStateIcon icon={AddCircleOIcon} />
-        {type === 'cluster' &&
+        {props.type === 'cluster' &&
           renderClusterAdd()}
-        {type === 'storage' &&
+        {props.type === 'storage' &&
           renderStorageAdd()}
-        {type === 'plan' &&
+        {props.type === 'plan' &&
           renderPlanAdd()}
       </EmptyState>
     </React.Fragment>

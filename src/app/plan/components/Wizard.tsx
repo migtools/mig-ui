@@ -12,21 +12,33 @@ import { css } from '@emotion/core';
 class WrappedWizard extends React.Component<any, any> {
   state = {
     isWizardLoading: false,
+    step: 1
   };
   handleClose = () => {
     this.props.onHandleClose();
     this.props.resetForm();
-  }
+    this.setState({
+      step: 1
+    });
 
-  handleAdd = (vals) => {
-    this.props.addStorage(vals);
   }
 
   handleWizardLoadingToggle = (isLoading) => {
     this.setState({ isWizardLoading: isLoading });
   }
 
-
+  onMove = (curr, prev) => {
+    this.setState({
+      step: curr.id
+    });
+  }
+  handleSave = () => {
+    this.props.handleSubmit();
+    this.setState({
+      step: 1,
+      isOpen: false,
+    })
+  }
 
   render() {
     const {
@@ -46,6 +58,7 @@ class WrappedWizard extends React.Component<any, any> {
 
     const steps = [
       {
+        id: 1,
         name: 'General',
         component: (
           <GeneralForm
@@ -60,6 +73,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.planName && touched.planName === true,
       },
       {
+        id: 2,
         name: 'Migration Source',
         component: (
           <MigSourceForm
@@ -78,6 +92,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 3,
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
@@ -95,6 +110,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 4,
         name: 'Migration Targets',
         component: (
           <MigTargetForm
@@ -113,6 +129,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 5,
         name: 'Results',
         component: (
           <ResultsStep
@@ -124,6 +141,7 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         enableNext: !this.state.isWizardLoading,
+        nextButtonText: 'Close'
       },
     ];
 
@@ -138,9 +156,14 @@ class WrappedWizard extends React.Component<any, any> {
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
+              onNext={this.onMove}
+              onBack={this.onMove}
               onClose={this.handleClose}
               steps={steps}
-              onSave={handleSubmit}
+              onSave={this.handleSave}
+              isFullWidth
+              isCompactNav
+              startAtStep={1}
             />
           </form>
         </Flex>
@@ -205,9 +228,8 @@ const Wizard: any = withFormik({
 
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
-    formikBag.props.onToggle();
-    formikBag.props.onExpandToggle();
     formikBag.props.onPlanSubmit(values);
+    formikBag.props.onHandleClose();
   },
   validateOnBlur: false,
 

@@ -230,7 +230,7 @@ const PlanDataListItem = ({
           ) : (
               <Flex alignItems="center" justifyContent="center">
                 <Box>
-                  <EmptyStateComponent type="plan" plansDisabled={plansDisabled} />
+                  <EmptyStateComponent type="plan" {...props} />
                 </Box>
               </Flex>
             )}
