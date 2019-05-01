@@ -13,14 +13,19 @@ class WrappedWizard extends React.Component<any, any> {
   state = {
     isWizardLoading: false,
   };
+  handleClose = () => {
+    this.props.onHandleClose();
+    this.props.resetForm();
+  }
+
+  handleAdd = (vals) => {
+    this.props.addStorage(vals);
+  }
+
   handleWizardLoadingToggle = (isLoading) => {
     this.setState({ isWizardLoading: isLoading });
   }
 
-  onClose = () => {
-    this.props.resetForm();
-    this.props.onToggle();
-  }
 
 
   render() {
@@ -38,18 +43,6 @@ class WrappedWizard extends React.Component<any, any> {
       trigger,
       resetForm,
     } = this.props;
-
-    const triggerNew = React.cloneElement(
-      trigger,
-      {
-        onClick: () => {
-          this.props.onToggle();
-          if (trigger.props.onClick) {
-            trigger.props.onClick();
-          }
-        },
-      },
-    );
 
     const steps = [
       {
@@ -136,30 +129,16 @@ class WrappedWizard extends React.Component<any, any> {
 
     return (
       <React.Fragment>
-        {triggerNew}
         <Flex>
           <form onSubmit={handleSubmit}>
             <PFWizard
               css={css`
-                max-width: 100% !important;
-                .pf-c-wizard {
-                  max-width: 100% !important;
-                }
-                .pf-c-wizard__main {
-                  height: 100%;
-                }
-                .pf-c-wizard__nav{
-                  width: 15em;
-                }
-                .pf-c-wizard__outer-wrap{
-                  padding-left: 15em;
-                }
                 .pf-c-wizard__header { background-color: #151515; }
               `}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
-              onClose={this.onClose}
+              onClose={this.handleClose}
               steps={steps}
               onSave={handleSubmit}
             />

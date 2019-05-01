@@ -1,6 +1,9 @@
+// this comment tells babel to convert jsx to calls to a function called jsx instead of React.createElement
+/** @jsx jsx */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box } from '@rebass/emotion';
+import { css, jsx } from '@emotion/core';
 import {
   Brand,
   Toolbar,
@@ -32,28 +35,11 @@ import DetailViewComponent from './DetailViewComponent';
 import CardComponent from './components/CardComponent';
 import EmptyStateComponent from './components/EmptyStateComponent';
 import Loader from 'react-loader-spinner';
-import openShiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
-import oldOpenShiftLogo from '../../assets/OpenShiftLogo.svg';
+// import openShiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 
 import theme from '../../theme';
-import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 
-const BrandBar = styled.div`
-      width: 1px;
-      background-color: ${theme.colors.navy};
-      height: 35px;
-      float: left;
-      border: 1px inset;
-      margin: 0 1.5em 0 1.7em;
-
-      `;
-const LogoBox = styled(Box)`
-width: 20em;
-color: #ffffff;
-font-size: 20px;
-font-weight: 300;
-`;
 interface IProps {
   loggingIn?: boolean;
   user: any;
@@ -206,13 +192,11 @@ class HomeComponent extends React.Component<IProps, IState> {
       <PageHeader
         logo={
           <React.Fragment>
-            <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" />
+            {/* <Brand src={openShiftLogo} alt="OpenShift Logo" /> */}
           </React.Fragment>
         }
-
         toolbar={PageToolbar}
-        //@ts-ignore
-        css={HeaderOverrideCss}
+      // css={HeaderOverrideCss}
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
@@ -224,14 +208,14 @@ class HomeComponent extends React.Component<IProps, IState> {
       migPlanList,
       clusterList,
     } = this.props;
+    const SectionStyle = css({ paddingTop: '50px' })
     return (
       <React.Fragment>
         <Page header={Header}>
           <PageSection
             //@ts-ignore
-            css={css`
-            margin-top: 30px;
-          `}>
+            css={SectionStyle}
+          >
             <Grid gutter="md">
               <GridItem span={4}>
                 <CardComponent

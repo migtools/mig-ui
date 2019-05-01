@@ -39,7 +39,7 @@ class CardComponent extends Component<IProps, IState> {
       <Card style={{ minHeight: "100%" }}>
         <CardHeader>
           {dataList && !isFetching ? (
-            <Title headingLevel="h3" size="md">
+            <Title size="md">
               <HeaderText type={type} dataList={dataList} />
             </Title>
           ) : (

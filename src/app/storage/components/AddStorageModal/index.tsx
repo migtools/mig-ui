@@ -1,47 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Modal from '../../../common/ModalWrapper';
 import AddStorageForm from './AddStorageForm';
 import { storageOperations } from '../../duck';
 import { Creators } from '../../duck/actions';
 import ConnectionState from '../../../common/connection_state';
+import { Modal } from '@patternfly/react-core';
 
 class AddStorageModal extends React.Component<any, any> {
   componentDidMount() {
     this.props.resetConnectionState();
   }
+  handleClose = () => {
+    this.props.onHandleClose();
+    this.props.resetConnectionState();
+  }
+
+  handleAdd = (vals) => {
+    this.props.addStorage(vals);
+  }
 
   render() {
     const {
-      trigger,
-      addStorage,
       connectionState,
       checkConnection,
-      onToggle,
     } = this.props;
-
-    const onCloseHook = () => {
-      this.props.resetConnectionState();
-    };
-
-    const onAddHook = (vals) => {
-      addStorage(vals);
-      onToggle();
-    }
 
     return (
       <Modal
-        onClose={onCloseHook}
+        isOpen={this.props.isOpen}
+        onClose={this.handleClose}
         title="Add Storage"
-        trigger={trigger}
-        form={
-          <AddStorageForm
-            onHandleModalToggle={onCloseHook}
-            onAddItemSubmit={onAddHook}
-            connectionState={connectionState}
-            checkConnection={checkConnection}
-          />}
-      />
+      >
+        <AddStorageForm
+          connectionState={connectionState}
+          onHandleModalToggle={this.handleClose}
+          onAddItemSubmit={this.handleAdd}
+          checkConnection={checkConnection}
+        />
+      </Modal>
     );
   }
 }

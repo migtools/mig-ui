@@ -11,6 +11,8 @@ import AddClusterModal from '../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../storage/components/AddStorageModal';
 import Wizard from '../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
+import { useExpandDataList, useOpenModal } from '../duck/hooks';
+import { PlusCircleIcon } from '@patternfly/react-icons';
 interface IState {
   isOpen: boolean;
 }
@@ -20,78 +22,63 @@ interface IProps {
   onWizardToggle?: () => void;
 }
 
-class EmptyStateComponent extends Component<IProps, IState> {
-  state = {
-    isOpen: false,
-  };
+const EmptyStateComponent = ({ ...props }) => {
+  const [isExpanded, toggleExpanded] = useExpandDataList(false);
+  const [isOpen, toggleOpen] = useOpenModal(false);
 
-  handleModalToggle = () => {
-    this.setState(({ isOpen }) => ({
-      isOpen: !isOpen,
-    }));
-  }
-  renderPlanAdd() {
+  const renderPlanAdd = () => {
     return (
       <React.Fragment>
         <Title size="lg">
           Add a migration plan
           </Title>
-        <Button isDisabled={this.props.plansDisabled} onClick={this.props.onWizardToggle} variant="primary">
+        <Button isDisabled={props.plansDisabled} onClick={toggleOpen} variant="primary">
           Add Plan
         </Button>
-
       </React.Fragment>
-
     );
   }
-  renderStorageAdd() {
+  const renderStorageAdd = () => {
     return (
       <React.Fragment>
         <Title size="lg">
           Add replication repositories for the migration
           </Title>
-        <AddStorageModal
-          trigger={<Button variant="primary">
-            Add Storage
-            </Button>}
-        />
-
+        <Button onClick={toggleOpen} variant="primary">
+          Add Storage
+            </Button>
+        <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>
 
     );
   }
-  renderClusterAdd() {
+  const renderClusterAdd = () => {
     return (
       <React.Fragment>
         <Title size="lg">
           Add source and target clusters for the migration
           </Title>
-        <AddClusterModal
-          trigger={<Button variant="primary">
-            Add Cluster
-            </Button>}
-        />
-
-      </React.Fragment>
-
-    );
-  }
-  render() {
-    const { type } = this.props;
-    return (
-      <React.Fragment>
-        <EmptyState>
-          <EmptyStateIcon icon={AddCircleOIcon} />
-          {type === 'cluster' &&
-            this.renderClusterAdd()}
-          {type === 'storage' &&
-            this.renderStorageAdd()}
-          {type === 'plan' &&
-            this.renderPlanAdd()}
-        </EmptyState>
+        <Button onClick={toggleOpen} variant="primary">
+          Add Cluster
+            </Button>
+        <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>
     );
   }
+  const { type } = props;
+  return (
+    <React.Fragment>
+      <EmptyState variant="large">
+        <EmptyStateIcon icon={AddCircleOIcon} />
+        {type === 'cluster' &&
+          renderClusterAdd()}
+        {type === 'storage' &&
+          renderStorageAdd()}
+        {type === 'plan' &&
+          renderPlanAdd()}
+      </EmptyState>
+    </React.Fragment>
+  );
 }
 
 export default EmptyStateComponent;
