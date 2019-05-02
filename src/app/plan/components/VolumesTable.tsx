@@ -60,39 +60,81 @@ class VolumesTable extends React.Component<any, any> {
             data={values.persistentVolumes}
             columns={[
               {
-                Header: 'PV Name',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >PV Name
+                  </div>),
                 accessor: 'name',
                 width: 180,
                 resizable: false,
 
               },
               {
-                Header: 'Project',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Project
+                  </div>),
                 accessor: 'project',
                 width: 150,
                 resizable: false,
               },
               {
-                Header: 'Storage Class',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Storage Class
+                  </div>),
                 accessor: 'storageClass',
                 width: 150,
                 resizable: false,
 
               },
               {
-                Header: 'Size',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Size
+                  </div>),
                 accessor: 'size',
                 width: 75,
                 resizable: false,
               },
               {
-                Header: 'Deployment',
-                accessor: 'deployment',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Claim
+                  </div>),
+                accessor: 'claim',
                 width: 180,
                 resizable: false,
               },
               {
-                Header: 'Type',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Type
+                  </div>),
                 accessor: 'type',
                 width: 120,
                 resizable: false,
@@ -108,10 +150,18 @@ class VolumesTable extends React.Component<any, any> {
               },
 
               {
-                Header: 'Details',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Details
+                  </div>),
                 accessor: 'details',
-                width: 40,
+                width: 50,
                 resizable: false,
+                textAlign: 'left',
                 Cell: row => (
                   <a
                     href="https://google.com"

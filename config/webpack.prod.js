@@ -1,7 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const config = {
   entry: './src/index.tsx',
   output: {
@@ -17,7 +18,7 @@ const config = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: 'ts-loader'
       },
       {
         test: /\.js$/,
@@ -29,7 +30,7 @@ const config = {
         loaders: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(svg|ttf|eot|woff|woff2)$/,
+        test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -43,8 +44,12 @@ const config = {
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
+    new CleanWebpackPlugin(),
     new ExtractTextPlugin({
       filename: 'style.css'
+    }),
+    new HtmlWebpackPlugin({
+      title: 'Production Build'
     })
   ]
 };

@@ -1,100 +1,209 @@
 import React from 'react';
 import { withFormik } from 'formik';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
-  TextInput,
   TextContent,
   TextList,
   TextListItem,
   TextArea,
+  TextInput,
+  Form,
+  FormGroup,
 } from '@patternfly/react-core';
-import { IMigCluster, IClusterFormObject } from '../../../../models';
-import uuidv4 from 'uuid/v4';
+import ConnectionState from '../../../common/connection_state';
+import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
+import StatusIcon from '../../../common/components/StatusIcon';
+import FormErrorDiv from './../../../common/components/FormErrorDiv';
+import { css } from '@emotion/core';
 
-const WrappedAddClusterForm = props => {
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-  } = props;
-  return (
-    <Flex>
-      <form onSubmit={handleSubmit}>
-        <Box>
-          <TextContent>
-            <TextList component="dl">
-              <TextListItem component="dt">Cluster Name</TextListItem>
-              <input
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.name}
-                name="name"
-                type="text"
-              />
-              {errors.name && touched.name && (
-                <div id="feedback">{errors.name}</div>
-              )}
-              <TextListItem component="dt">Cluster URL</TextListItem>
-              <input
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.url}
-                name="url"
-                type="text"
-              />
-              {errors.url && touched.url && (
-                <div id="feedback">{errors.url}</div>
-              )}
-              <TextListItem component="dt">Service account token</TextListItem>
-              <textarea
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.token}
-                name="token"
-              />
-              {errors.token && touched.token && (
-                <div id="feedback">{errors.token}</div>
-              )}
-            </TextList>
-          </TextContent>
-        </Box>
-        <Box mt={20}>
-          <Flex width="100" m="10px 10px 10px 0">
-            <Button
-              style={{marginLeft: 'auto'}}
-              key="check connection"
-              variant="secondary"
-              onClick={() => props.checkConnectionSuccess()}
-            >
-              Check connection
-            </Button>
-          </Flex>
-          <Flex width="100">
-            <Box m="10px 10px 10px 0" style={{marginLeft: 'auto'}}>
+class WrappedAddClusterForm extends React.Component<any, any> {
+  state = {
+    tokenHidden: true,
+  };
+  onHandleChange = (val, e) => {
+    this.props.handleChange(e);
+  }
+
+  handleKeyToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.setState({
+      tokenHidden: !this.state.tokenHidden,
+    });
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.connectionState !== this.props.connectionState) {
+      this.props.setFieldValue('connectionStatus', this.props.connectionState);
+    }
+  }
+
+  render() {
+    const {
+      values,
+      touched,
+      errors,
+      handleChange,
+      handleBlur,
+      handleSubmit,
+      connectionState,
+      setFieldTouched,
+      setFieldValue,
+    } = this.props;
+    const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
+    return (
+      <Form
+        onSubmit={handleSubmit}
+        style={{ marginTop: '24px' }}
+      >
+        <FormGroup
+          label="Cluster Name"
+          isRequired
+          fieldId="name"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('name', true, true)}
+            onBlur={handleBlur}
+            value={values.name}
+            name="name"
+            type="text"
+            id="name"
+          />
+          {errors.name && touched.name && (
+            <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
+          )}
+
+        </FormGroup>
+        <FormGroup
+          label="Url"
+          isRequired
+          fieldId="url"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('url', true, true)}
+            onBlur={handleBlur}
+            value={values.url}
+            name="url"
+            type="text"
+            // isValid={!errors.url && touched.url}
+            id="url"
+          />
+          {errors.url && touched.url && (
+            <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>
+          )}
+
+        </FormGroup>
+        <FormGroup
+          label="Service account token"
+          isRequired
+          fieldId="url"
+        >
+          <div
+            //@ts-ignore
+            css={css`
+              display: inline;
+              padding: 1em;
+              cursor: pointer;
+          `}
+            onClick={this.handleKeyToggle}
+          >
+            <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
+          </div>
+          <TextInput
+            value={values.token}
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('token', true, true)}
+            onBlur={handleBlur}
+            name="token"
+            id="token"
+            type={this.state.tokenHidden ? 'password' : 'text'}
+          //@ts-ignore
+          />
+          {errors.token && touched.token && (
+            <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
+          )}
+        </FormGroup>
+        <FormGroup
+          fieldId="check-connection"
+          id="check-connection"
+        >
+          <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
+            <Box>
+              <Flex flexDirection="column" >
+                <Box alignSelf="flex-start">
+                  <Button
+                    key="check connection"
+                    variant="secondary"
+                    onClick={() => this.props.checkConnection()}
+                  >
+                    Check connection
+                  </Button>
+                </Box>
+                <Box alignSelf="flex-start">
+                  {renderConnectionState(connectionState)}
+                </Box>
+              </Flex>
+
+            </Box>
+            <Box mt={30} alignSelf="flex-start">
               <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => props.onHandleModalToggle(null)}
+                variant="primary"
+                type="submit"
+                isDisabled={connectionState !== ConnectionState.Success}
+                style={{ marginRight: '10px' }}
               >
-                  Cancel
-              </Button>
-              <Button variant="secondary" type="submit" style={{marginLeft: '10px'}}>
                 Add
+              </Button>
+              <Button
+                key="cancel"
+                variant="secondary"
+                onClick={() => this.props.onHandleModalToggle(null)}
+              >
+                Cancel
               </Button>
             </Box>
           </Flex>
-        </Box>
-      </form>
+        </FormGroup>
+      </Form >
+    );
+  }
+}
+
+function renderConnectionState(connectionState: ConnectionState) {
+  let cxStateContents;
+  let iconStatus;
+
+  switch (connectionState) {
+    case ConnectionState.Checking:
+      cxStateContents = 'Checking...';
+      iconStatus = 'checking';
+      break;
+    case ConnectionState.Success:
+      cxStateContents = 'Success!';
+      iconStatus = 'success';
+      break;
+    case ConnectionState.Failed:
+      cxStateContents = 'Failed!';
+      iconStatus = 'failed';
+      break;
+  }
+
+  return (
+    <Flex m="10px 10px 10px 0">
+      <Box>
+        {cxStateContents}
+        {' '}
+        <StatusIcon status={iconStatus} />
+      </Box>
     </Flex>
   );
-};
+}
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({ name: '', url: '', token: '' }),
+  mapPropsToValues: () => ({ name: '', url: '', token: '', connectionStatus: '' }),
 
   validate: values => {
     const errors: any = {};

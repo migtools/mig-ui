@@ -3,6 +3,7 @@ import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
+import ConnectionState from '../../common/connection_state';
 
 const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
@@ -28,6 +29,15 @@ const addStorage = migStorage => {
     }
   };
 };
+
+function checkConnection() {
+  return (dispatch, getState) => {
+    dispatch(Creators.setConnectionState(ConnectionState.Checking));
+    setTimeout(() => {
+      dispatch(Creators.setConnectionState(ConnectionState.Success));
+    }, 2000);
+  };
+}
 
 const removeStorage = id => {
   throw new Error('NOT IMPLEMENTED');
@@ -69,4 +79,5 @@ export default {
   addStorage,
   removeStorage,
   updateSearchTerm,
+  checkConnection,
 };

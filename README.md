@@ -9,6 +9,20 @@ configure your local development settings.
 
 `cp config/config.dev.json.example config/config.dev.json`
 
+### Openshift Logo
+
+The project requires some logos that are not checked in with the project, and
+require set up prior to running. Download and extract the logo package to a known location
+and install as follows:
+
+```
+yarn global add yalc
+cd <EXTRACTED_LOCATION>/openshift-logo-package
+yalc publish --private
+cd <MIG_UI_PROJECT>
+yalc add openshift-logo-package
+```
+
 ### UI development server
 
 ```bash

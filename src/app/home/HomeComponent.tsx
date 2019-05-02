@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box } from '@rebass/emotion';
+import styled from '@emotion/styled';
 import {
   Brand,
   Toolbar,
@@ -20,30 +21,27 @@ import {
   NavExpandable,
   NavItem,
   PageSection,
-  TextContent,
-  Title,
+  Grid,
+  GridItem,
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import { BellIcon, CogIcon } from '@patternfly/react-icons';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
-import CardComponent from './components/CardComponent';
-import EmptyStateComponent from './components/EmptyStateComponent';
-import Loader from 'react-loader-spinner';
-import openShiftLogo from '../../assets/OpenShiftLogo.svg';
-import theme from '../../theme';
-import { css } from '@emotion/core';
-import styled from '@emotion/styled';
+import DashboardCard from './components/Card/DashboardCard';
+// import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 interface IProps {
   loggingIn?: boolean;
   user: any;
   clusterList: any[];
   migStorageList: any[];
+  migPlanList: any[];
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
+  isFetchingPlans: boolean;
 }
 
 interface IState {
@@ -61,11 +59,6 @@ class HomeComponent extends React.Component<IProps, IState> {
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
   };
-
-  componentDidMount() {
-    // this.props.fetchClusters();
-    // this.props.fetchStorage();
-  }
 
   onNavSelect = result => {
     this.setState({
@@ -113,9 +106,7 @@ class HomeComponent extends React.Component<IProps, IState> {
   ];
 
   render() {
-    const { user } = this.props;
     const {
-      isKebabDropdownOpen,
       isDropdownOpen,
       activeItem,
       activeGroup,
@@ -146,36 +137,6 @@ class HomeComponent extends React.Component<IProps, IState> {
       <Toolbar>
         <ToolbarGroup>
           <ToolbarItem>
-            <Button
-              id="default-example-uid-01"
-              aria-label="Notifications actions"
-              variant={ButtonVariant.plain}
-            >
-              <BellIcon />
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              id="default-example-uid-02"
-              aria-label="Settings actions"
-              variant={ButtonVariant.plain}
-            >
-              <CogIcon />
-            </Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Dropdown
-              isPlain
-              position="right"
-              onSelect={this.onKebabDropdownSelect}
-              toggle={<KebabToggle onToggle={this.onKebabDropdownToggle} />}
-              isOpen={isKebabDropdownOpen}
-              dropdownItems={this.kebabDropdownItems}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
             <Dropdown
               isPlain
               position="right"
@@ -183,8 +144,7 @@ class HomeComponent extends React.Component<IProps, IState> {
               isOpen={isDropdownOpen}
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
-                  {/* <div>{user.username}</div> */}
-                  <div>testuser123</div>
+                  <div>jmatthews</div>
                 </DropdownToggle>}
               dropdownItems={this.userDropdownItems}
             />
@@ -192,73 +152,84 @@ class HomeComponent extends React.Component<IProps, IState> {
         </ToolbarGroup>
       </Toolbar>
     );
-    const HeaderOverrideCss = css`
-      background-color: #4d5057 !important;
+    const StyledPageHeader = styled(PageHeader)`
+      .pf-c-brand{
+        height: 2.5em;
+      }
+      background-color: #151515 !important;
       .pf-c-page__header-brand {
-        background-color: #4d5057 !important;
+        background-color: #151515 !important;
+        min-width: 56em;
       }
       -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
-    `;
-    const BrandBar = styled.div`
-      width: 1px;
-      background-color: ${theme.colors.navy};
-      height: 45px;
-      float: left;
-      border: 1px inset;
-      margin-right: 1em;
-      `;
+      text-decoration: none;
+      .pf-c-page__header-brand-link{
+        text-decoration: none;
+      }
 
+    `;
 
     const Header = (
-      <PageHeader
+      <StyledPageHeader
         logo={
           <React.Fragment>
-            <Brand src={openShiftLogo} alt="OpenShift Logo" />
-            <BrandBar
-            />
+            {/* <Brand src={openshiftLogo} alt="OpenShift Logo" /> */}
           </React.Fragment>
         }
-
         toolbar={PageToolbar}
-        //@ts-ignore
-        css={HeaderOverrideCss}
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
     const {
       isFetchingStorage,
       isFetchingClusters,
+      isFetchingPlans,
       migStorageList,
+      migPlanList,
       clusterList,
     } = this.props;
+    const StyledPageSection = styled(PageSection)`
+      padding-top: '50px';
+    `;
     return (
       <React.Fragment>
         <Page header={Header}>
-          <PageSection>
-            <TextContent>
-              <Flex justifyContent="center" flexWrap="wrap">
-                <CardComponent
-                  type="cluster"
+          <StyledPageSection
+          >
+            <Grid gutter="md">
+              <GridItem span={4}>
+                <DashboardCard
+                  type="clusters"
                   title="Clusters"
                   dataList={clusterList}
                   isFetching={isFetchingClusters}
                 />
-                <CardComponent
+              </GridItem>
+              <GridItem span={4}>
+                <DashboardCard
                   title="Replication Repositories"
+                  type="repositories"
                   dataList={migStorageList}
                   isFetching={isFetchingStorage}
                 />
-                <CardComponent title="Migration Plans" dataList={[]} />
-              </Flex>
-            </TextContent>
-          </PageSection>
+              </GridItem>
+              <GridItem span={4}>
+                <DashboardCard
+                  type="plans"
+                  title="Migration Plans"
+                  dataList={migPlanList}
+                  isFetching={isFetchingPlans}
+                />
+              </GridItem>
+            </Grid>
+          </StyledPageSection>
           <PageSection>
             <Flex justifyContent="center">
-                <Box flex="0 0 100%">
-                  <DetailViewComponent />
-                </Box>
+              <Box flex="0 0 100%">
+                <DetailViewComponent />
+              </Box>
             </Flex>
           </PageSection>
         </Page>
@@ -273,8 +244,10 @@ export default connect(
     user: state.auth.user,
     isFetchingClusters: state.cluster.isFetching,
     isFetchingStorage: state.storage.isFetching,
+    isFetchingPlans: state.plan.isFetching,
     clusterList: state.cluster.clusterList,
     migStorageList: state.storage.migStorageList,
+    migPlanList: state.plan.migPlanList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),

@@ -19,8 +19,8 @@ class MigSourceForm extends React.Component<any> {
     const len = this.props.clusterList.length;
     for (let i = 0; i < len; i++) {
       myOptions.push({
-        label: this.props.clusterList[i].metadata.name,
-        value: this.props.clusterList[i].metadata.name,
+        label: this.props.clusterList[i].MigCluster.metadata.name,
+        value: this.props.clusterList[i].MigCluster.metadata.name,
       });
     }
     this.setState({ options: myOptions });
@@ -41,14 +41,16 @@ class MigSourceForm extends React.Component<any> {
               onChange={option => {
                 setFieldValue('sourceCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
-                  items => items.metadata.name === option.value,
+                  c => c.MigCluster.metadata.name === option.value,
                 );
 
                 this.setState({ sourceCluster: matchingCluster[0] });
                 setFieldTouched('sourceCluster');
                 this.setState({ isLoading: true });
+                this.props.onWizardLoadingToggle(true);
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
+                  this.props.onWizardLoadingToggle(false);
                 }, 1500);
 
               }}

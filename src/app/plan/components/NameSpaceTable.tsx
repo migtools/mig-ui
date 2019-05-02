@@ -47,11 +47,19 @@ class NamespaceTable extends React.Component<IProps, IState> {
   componentDidMount() {
     if (this.props.sourceCluster) {
       this.setState({
-        rows: [
-          { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6', targetName: 'OCP_Project1' },
-          { name: 'OCP_Project2', displayName: 'My Project 2', pods: '3', services: '6', targetName: 'OCP_Project2' },
-          { name: 'OCP_Project3', displayName: 'My Project 3', pods: '3', services: '6', targetName: 'OCP_Project3' },
-        ],
+        rows: [{
+          name: 'robot-shop',
+          displayName: '',
+          pods: '12',
+          services: '12',
+          targetName: 'robot-shop',
+        }, {
+          name: 'sandbox',
+          displayName: '',
+          pods: '3',
+          services: '1',
+          targetName: 'sandbox',
+        }],
       });
       //temporary for ui development
       // this.props.fetchNamespacesForCluster(
@@ -129,6 +137,12 @@ class NamespaceTable extends React.Component<IProps, IState> {
           </StyledTextContent>
 
           <ReactTable
+            css={css`
+              font-size: 14px;
+              .rt-td{
+                overflow: visible;
+              }
+            `}
             data={rows}
             columns={[
               {
@@ -142,19 +156,49 @@ class NamespaceTable extends React.Component<IProps, IState> {
                 ),
               },
               {
-                Header: 'Name',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Name
+                  </div>),
                 accessor: 'name',
               },
               {
-                Header: 'Display Name',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Display Name
+                  </div>),
                 accessor: 'displayName',
               },
               {
-                Header: 'Number of Pods',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Number of Pods
+                  </div>
+                ),
                 accessor: 'pods',
               },
               {
-                Header: 'Number of Services',
+                Header: () => (
+                  <div
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 600,
+                    }}
+                  >Number of Services
+                  </div>),
                 accessor: 'services',
               },
             ]}

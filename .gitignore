@@ -5,3 +5,6 @@ yarn-error.log
 .env/
 .prettierrc
 config/config.dev.json
+.yalc/
+yalc.lock
+lib/

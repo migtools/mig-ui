@@ -10,11 +10,36 @@ import ResultsStep from './ResultsStep';
 import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
-
-  onClose = () => {
+  state = {
+    isWizardLoading: false,
+    step: 1,
+  };
+  handleClose = () => {
+    this.props.onHandleClose();
     this.props.resetForm();
-    this.props.onToggle();
+    this.setState({
+      step: 1,
+    });
+
   }
+
+  handleWizardLoadingToggle = (isLoading) => {
+    this.setState({ isWizardLoading: isLoading });
+  }
+
+  onMove = (curr, prev) => {
+    this.setState({
+      step: curr.id,
+    });
+  }
+  handleSave = () => {
+    this.props.handleSubmit();
+    this.setState({
+      step: 1,
+      isOpen: false,
+    });
+  }
+
   render() {
     const {
       values,
@@ -31,20 +56,9 @@ class WrappedWizard extends React.Component<any, any> {
       resetForm,
     } = this.props;
 
-    const triggerNew = React.cloneElement(
-      trigger,
-      {
-        onClick: () => {
-          this.props.onToggle();
-          if (trigger.props.onClick) {
-            trigger.props.onClick();
-          }
-        },
-      },
-    );
-
     const steps = [
       {
+        id: 1,
         name: 'General',
         component: (
           <GeneralForm
@@ -59,6 +73,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.planName && touched.planName === true,
       },
       {
+        id: 2,
         name: 'Migration Source',
         component: (
           <MigSourceForm
@@ -70,12 +85,14 @@ class WrappedWizard extends React.Component<any, any> {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 3,
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
@@ -86,13 +103,14 @@ class WrappedWizard extends React.Component<any, any> {
             handleChange={handleChange}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
-            clusterList={clusterList}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true,
+        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 4,
         name: 'Migration Targets',
         component: (
           <MigTargetForm
@@ -105,50 +123,47 @@ class WrappedWizard extends React.Component<any, any> {
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
             storageList={storageList}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        enableNext: !errors.targetCluster && touched.targetCluster === true,
+        enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 5,
         name: 'Results',
         component: (
           <ResultsStep
             values={values}
             errors={errors}
             handleSubmit={handleSubmit}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
+            setFieldValue={setFieldValue}
           />
         ),
-        enableNext: true,
+        enableNext: !this.state.isWizardLoading,
+        nextButtonText: 'Close',
       },
     ];
 
     return (
       <React.Fragment>
-        {triggerNew}
         <Flex>
           <form onSubmit={handleSubmit}>
             <PFWizard
               css={css`
-                max-width: 100% !important;
-                .pf-c-wizard {
-                  max-width: 100% !important;
-                }
-                .pf-c-wizard__main {
-                  height: 100%;
-                }
-                .pf-c-wizard__nav{
-                  width: 15em;
-                }
-                .pf-c-wizard__outer-wrap{
-                  padding-left: 15em;
-                }
+                .pf-c-wizard__header { background-color: #151515; }
               `}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
-              onClose={this.onClose}
+              onNext={this.onMove}
+              onBack={this.onMove}
+              onClose={this.handleClose}
               steps={steps}
-              onSave={handleSubmit}
+              onSave={this.handleSave}
+              isFullWidth
+              isCompactNav
+              startAtStep={1}
             />
           </form>
         </Flex>
@@ -159,6 +174,7 @@ class WrappedWizard extends React.Component<any, any> {
 
 const Wizard: any = withFormik({
   mapPropsToValues: () => ({
+    connectionStatus: '',
     planName: '',
     sourceCluster: '',
     targetCluster: null,
@@ -166,21 +182,21 @@ const Wizard: any = withFormik({
     selectedStorage: '',
     persistentVolumes: [
       {
-        name: 'persistent_volume1',
-        project: 'My Project 2',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
+        name: 'pv007',
+        project: 'robot-shop',
+        storageClass: '',
+        size: '100 Gi',
+        claim: 'robot-shop/mongodata',
         type: 'copy',
         details: '',
         id: 1,
       },
       {
-        name: 'persistent_volume2',
-        project: 'My Project 2',
-        storageClass: 'OpenStack Cinder',
-        size: '120 GB',
-        deployment: 'deployment_name',
+        name: 'pv097',
+        project: 'robot-shop',
+        storageClass: '',
+        size: '100 Gi',
+        claim: 'robot-shop/mysqldata',
         type: 'copy',
         details: '',
         id: 2,
@@ -212,7 +228,8 @@ const Wizard: any = withFormik({
 
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
-    formikBag.props.onToggle();
+    formikBag.props.onPlanSubmit(values);
+    formikBag.props.onHandleClose();
   },
   validateOnBlur: false,
 

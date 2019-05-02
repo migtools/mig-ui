@@ -15,6 +15,46 @@ const removePlanSuccess = Creators.removePlanSuccess;
 const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
+const runStage = plan => {
+  return (dispatch, getState) => {
+    dispatch(Creators.initStage(plan.planName));
+    const planNameToStage = plan.planName;
+    const interval = setInterval(() => {
+      const planList = getState().plan.migPlanList;
+
+      const planItem = planList.find(p => p.planName === planNameToStage);
+      if (planItem.status.progress === 100) {
+        dispatch(Creators.stagingSuccess(planItem.planName));
+        clearInterval(interval);
+        return;
+      }
+
+      const nextProgress = plan.status.progress + 10;
+      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
+    }, 1000);
+  };
+};
+
+const runMigration = plan => {
+  return (dispatch, getState) => {
+    dispatch(Creators.initMigration(plan.planName));
+    const planNameToStage = plan.planName;
+    const interval = setInterval(() => {
+      const planList = getState().plan.migPlanList;
+
+      const planItem = planList.find(p => p.planName === planNameToStage);
+      if (planItem.status.progress === 100) {
+        dispatch(Creators.migrationSuccess(planItem.planName));
+        clearInterval(interval);
+        return;
+      }
+
+      const nextProgress = plan.status.progress + 20;
+      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
+    }, 1000);
+  };
+};
+
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
@@ -79,4 +119,6 @@ export default {
   addPlan,
   removePlan,
   fetchNamespacesForCluster,
+  runStage,
+  runMigration,
 };

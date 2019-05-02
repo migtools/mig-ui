@@ -4,7 +4,7 @@ import { Button, Card, CardHeader, CardBody, CardFooter, Switch } from '@pattern
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { EditAltIcon, TimesIcon } from '@patternfly/react-icons';
-
+import { css } from '@emotion/core';
 interface IState {
   page: number;
   perPage: number;
@@ -16,7 +16,6 @@ interface IState {
 interface IProps {
   values: any;
 }
-
 class TargetsTable extends React.Component<IProps, IState> {
   state = {
     page: 1,
@@ -75,15 +74,39 @@ class TargetsTable extends React.Component<IProps, IState> {
     if (values.selectedNamespaces !== null && values.targetCluster !== null) {
       return (
         <ReactTable
+          css={css`
+              font-size: 14px;
+              .rt-td{
+                overflow: visible;
+              }
+            `}
+
           data={rows}
           columns={[
             {
-              Header: 'Source Project Name',
+              Header: () => (
+                <div
+                  style={{
+                    fontWeight: 600,
+                    textAlign: 'left',
+                  }}
+                >Source Project Name
+                </div>
+              ),
               accessor: 'name',
               Cell: this.renderEditable,
             },
             {
-              Header: 'Target Project Name',
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Target Project Name
+                </div>
+              ),
               accessor: 'targetName',
               Cell: this.renderEditable,
             },
@@ -92,8 +115,6 @@ class TargetsTable extends React.Component<IProps, IState> {
               Cell: row => (
                 <Button
                   id={`id-${row.index}`}
-                  // label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
-                  // isChecked={this.state.editableList[row.index] || false}
                   onClick={() => this.toggleRowEditable(row)}
                   aria-label="Edit"
                   variant="link"
@@ -102,13 +123,6 @@ class TargetsTable extends React.Component<IProps, IState> {
                     <TimesIcon /> : <EditAltIcon />
                   }
                 </Button>
-                // <Switch
-                //   id={`id-${row.index}`}
-                //   label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
-                //   isChecked={this.state.editableList[row.index] || false}
-                //   onChange={() => this.toggleRowEditable(row)}
-                //   aria-label="Edit"
-                // />
               ),
             },
 

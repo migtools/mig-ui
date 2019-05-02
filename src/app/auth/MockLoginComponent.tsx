@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { authActionCreators } from './duck';
 import { push } from 'connected-react-router';
 
-import openShiftLogo from '../../assets/OpenShiftLogo.svg';
+// import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 
 interface IProps {
   migMeta: any;

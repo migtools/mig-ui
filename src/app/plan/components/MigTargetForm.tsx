@@ -16,6 +16,7 @@ interface IProps {
   setFieldTouched: any;
   clusterList: any;
   storageList: any;
+  onWizardLoadingToggle: (isLoading) => void;
 }
 interface IState {
   clusterOptions: any[];
@@ -37,12 +38,12 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const len = this.props.clusterList.length;
     for (let i = 0; i < len; i++) {
       if (
-        this.props.clusterList[i].metadata.name !==
+        this.props.clusterList[i].MigCluster.metadata.name !==
         this.props.values.sourceCluster
       ) {
         myClusterOptions.push({
-          label: this.props.clusterList[i].metadata.name,
-          value: this.props.clusterList[i].metadata.name,
+          label: this.props.clusterList[i].MigCluster.metadata.name,
+          value: this.props.clusterList[i].MigCluster.metadata.name,
         });
       }
     }
@@ -104,15 +105,18 @@ class MigTargetForm extends React.Component<IProps, IState> {
               name="targetCluster"
               onChange={option => {
                 this.setState({ isLoading: true });
+                this.props.onWizardLoadingToggle(true);
+
                 setFieldValue('targetCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
-                  items => items.metadata.name === option.value,
+                  c => c.MigCluster.metadata.name === option.value,
                 );
 
                 this.setState({ targetCluster: matchingCluster[0] });
                 setFieldTouched('targetCluster');
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
+                  this.props.onWizardLoadingToggle(false);
                 }, 1500);
 
               }}

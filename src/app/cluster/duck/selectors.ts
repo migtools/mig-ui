@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 const clusterSelector = (state) =>
-    state.cluster.clusterList.map(c => c.MigCluster);
+    state.cluster.clusterList.map(c => c);
 
 const searchTermSelector = state => state.cluster.searchTerm;
 
@@ -15,7 +15,9 @@ const getAllClusters = createSelector(
 const getVisibleClusters = createSelector(
     [clusterSelector, searchTermSelector],
     (clusters, searchTerm) => {
-        return clusters.filter(cluster => cluster.metadata.name.match(new RegExp(searchTerm, 'i')));
+      return clusters.filter(cluster => {
+        return cluster.MigCluster.metadata.name.match(new RegExp(searchTerm, 'i'));
+      });
     },
 );
 export default {
