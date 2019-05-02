@@ -7,3 +7,4 @@ yarn-error.log
 config/config.dev.json
 .yalc/
 yalc.lock
+lib/
