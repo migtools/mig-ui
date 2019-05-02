@@ -14,7 +14,7 @@ import { AddCircleOIcon } from '@patternfly/react-icons';
 import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
-const EmptyStateComponent = ({ ...props }) => {
+const DataListEmptyState = ({ ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
 
@@ -82,4 +82,4 @@ const EmptyStateComponent = ({ ...props }) => {
   );
 }
 
-export default EmptyStateComponent;
+export default DataListEmptyState;

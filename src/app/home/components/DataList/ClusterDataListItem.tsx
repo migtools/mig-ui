@@ -8,10 +8,9 @@ import {
   DataListContent,
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
-import theme from '../../../../theme';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
-import EmptyStateComponent from './EmptyState';
+import DataListEmptyState from './DataListEmptyState';
 import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddClusterModal from '../../../cluster/components/AddClusterModal';
@@ -102,8 +101,7 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
           ) : (
               <Flex alignItems="center" justifyContent="center">
                 <Box>
-
-                  <EmptyStateComponent type="cluster" />
+                  <DataListEmptyState type="cluster" />
                 </Box>
               </Flex>
             )}

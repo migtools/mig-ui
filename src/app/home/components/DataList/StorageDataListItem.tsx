@@ -10,7 +10,7 @@ import {
 import { Flex, Box } from '@rebass/emotion';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
-import EmptyStateComponent from './EmptyState';
+import DataListEmptyState from './DataListEmptyState';
 import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddStorageModal from '../../../storage/components/AddStorageModal';
@@ -95,7 +95,7 @@ const StorageDataListItem = ({ dataList, ...props }) => {
               <Flex alignItems="center" justifyContent="center">
                 <Box>
 
-                  <EmptyStateComponent type="storage" />
+                  <DataListEmptyState type="storage" />
                 </Box>
               </Flex>
             )}

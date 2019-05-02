@@ -11,7 +11,7 @@ import Wizard from '../plan/components/Wizard';
 import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/StorageDataListItem';
-import PlanDataListItem from './components/DataList/PlanDataListItem';
+import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import {
   Button,
   ButtonVariant,
