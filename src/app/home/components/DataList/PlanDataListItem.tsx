@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, Box } from '@rebass/emotion';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import {
   Progress, ProgressSize, ProgressMeasureLocation, ProgressVariant,
   Dropdown, DropdownToggle, DropdownItem,
@@ -12,18 +12,18 @@ import {
   DataListToggle,
   DataListContent,
 } from '@patternfly/react-core';
-import EmptyStateComponent from './EmptyStateComponent';
-import MigrateModal from '../../plan/components/MigrateModal';
+import EmptyStateComponent from './EmptyState';
+import MigrateModal from '../../../plan/components/MigrateModal';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import {
   ServiceIcon,
   DatabaseIcon,
 } from '@patternfly/react-icons';
-import PlanStatusIcon from './PlanStatusIcon';
-import { useExpandDataList, useOpenModal } from '../duck/hooks';
+import PlanStatusIcon from '../Card/Status/PlanStatusIcon';
+import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import Wizard from '../../plan/components/Wizard';
+import Wizard from '../../../plan/components/Wizard';
 
 const HeaderDataListCell = styled(DataListCell)`
   font-weight: 600;

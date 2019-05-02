@@ -9,9 +9,9 @@ import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import Wizard from '../plan/components/Wizard';
 import { css } from '@emotion/core';
-import ClusterDataListItem from './components/ClusterDataListItem';
-import StorageDataListItem from './components/StorageDataListItem';
-import PlanDataListItem from './components/PlanDataListItem';
+import ClusterDataListItem from './components/DataList/ClusterDataListItem';
+import StorageDataListItem from './components/DataList/StorageDataListItem';
+import PlanDataListItem from './components/DataList/PlanDataListItem';
 import {
   Button,
   ButtonVariant,

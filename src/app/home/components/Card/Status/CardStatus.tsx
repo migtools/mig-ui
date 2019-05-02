@@ -1,6 +1,6 @@
 import React from 'react';
-import theme from '../../../theme';
-import StatusIcon from '../../common/components/StatusIcon';
+import theme from '../../../../../theme';
+import StatusIcon from '../../../../common/components/StatusIcon';
 import { css } from '@emotion/core';
 import {
   Grid,

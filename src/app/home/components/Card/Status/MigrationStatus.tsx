@@ -1,13 +1,13 @@
 import React from 'react';
-import theme from '../../../theme';
-import PlanStatusIcon from '../../home/components/PlanStatusIcon';
+import theme from '../../../../../theme';
+import PlanStatusIcon from './PlanStatusIcon';
 import { css } from '@emotion/core';
 import {
     Grid,
     GridItem,
 } from '@patternfly/react-core';
 
-const MigrationStatusComponent = ({ dataList, ...props }) => {
+const MigrationStatus = ({ dataList, ...props }) => {
     const notStartedList = dataList.filter((item) => item.status.state === 'Not Started');
     const stagedSuccessList = dataList.filter((item) => item.status.state === 'Staged Successfully');
     const migSuccessList = dataList.filter((item) => item.status.state === 'Migrated Successfully');
@@ -57,6 +57,6 @@ const MigrationStatusComponent = ({ dataList, ...props }) => {
     );
 };
 
-export default MigrationStatusComponent;
+export default MigrationStatus;
 
 

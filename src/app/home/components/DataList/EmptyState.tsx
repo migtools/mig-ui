@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { Flex, Box } from '@rebass/emotion';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import {
   Button,
   Title,
   EmptyState,
   EmptyStateIcon,
 } from '@patternfly/react-core';
-import AddClusterModal from '../../cluster/components/AddClusterModal';
-import AddStorageModal from '../../storage/components/AddStorageModal';
-import Wizard from '../../plan/components/Wizard';
+import AddClusterModal from '../../../cluster/components/AddClusterModal';
+import AddStorageModal from '../../../storage/components/AddStorageModal';
+import Wizard from '../../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
-import { useExpandDataList, useOpenModal } from '../duck/hooks';
+import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 
 const EmptyStateComponent = ({ ...props }) => {

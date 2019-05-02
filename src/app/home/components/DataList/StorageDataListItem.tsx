@@ -8,16 +8,14 @@ import {
   DataListContent,
 } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
-import theme from '../../../theme';
-import StatusIcon from '../../c../../common/components/StatusIcon';
+import StatusIcon from '../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
-import EmptyStateComponent from './EmptyStateComponent';
-import { useExpandDataList, useOpenModal } from '../duck/hooks';
+import EmptyStateComponent from './EmptyState';
+import { useExpandDataList, useOpenModal } from '../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import AddClusterModal from '../../cluster/components/AddClusterModal';
+import AddStorageModal from '../../../storage/components/AddStorageModal';
 
-
-const ClusterDataListItem = ({ dataList, ...props }) => {
+const StorageDataListItem = ({ dataList, ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -28,17 +26,17 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
             <DataListToggle
               onClick={() => toggleExpanded()}
               isExpanded={isExpanded}
-              id='cluster-toggle'
+              id='storage-toggle'
             />
           </Box>
           <Box flex="1" my="auto">
-            Clusters
+            Storage
           </Box>
           <Box textAlign="left" flex="0 0 10em" my="auto">
             <Button onClick={toggleOpen} variant="link">
-              <PlusCircleIcon /> Add cluster
+              <PlusCircleIcon /> Add Storage
             </Button>
-            <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
+            <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
           </Box>
         </Flex>
         <DataListContent
@@ -47,16 +45,10 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
           isHidden={!isExpanded}
         >
           {dataList.length > 0 ? (
-            <DataList aria-label="Simple data list example">
+            <DataList aria-label="Storage Data List">
               {dataList.map((listItem, index) => {
-                const clusterName = listItem.MigCluster.metadata.name;
-                const clusterStatus = listItem.status;
-                const clusterUrl =
-                  listItem.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
-
-                const associatedPlanCount = props.associatedPlans[clusterName];
+                const associatedPlanCount = props.associatedPlans[listItem.metadata.name];
                 const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
-
                 return (
                   <DataListItem
                     key={index}
@@ -64,15 +56,15 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
                     aria-labelledby="simple-item1"
                   >
                     <DataListCell width={1}>
-                      <StatusIcon status={clusterStatus} />
-                      <span id="simple-item1">{clusterName}</span>
+                      <StatusIcon status="success" />
+                      <span id="simple-item1">{listItem.metadata.name}</span>
                     </DataListCell>
                     <DataListCell width={2}>
                       <a
                         target="_blank"
-                        href={clusterUrl}
+                        href={listItem.spec.bucketUrl}
                       >
-                        {clusterUrl}
+                        {listItem.spec.bucketUrl}
                       </a>
                     </DataListCell>
                     <DataListCell width={2}>
@@ -86,12 +78,12 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
                         <Box mx={1}>
                           <Button
                             onClick={() =>
-                              props.onRemoveItem('cluster', dataList[index].id)
+                              props.onRemoveItem('storage', dataList[index].id)
                             }
                             variant="danger"
                           >
                             Remove
-                        </Button>
+                      </Button>
                         </Box>
                       </Flex>
                     </DataListCell>
@@ -103,7 +95,7 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
               <Flex alignItems="center" justifyContent="center">
                 <Box>
 
-                  <EmptyStateComponent type="cluster" />
+                  <EmptyStateComponent type="storage" />
                 </Box>
               </Flex>
             )}
@@ -114,4 +106,4 @@ const ClusterDataListItem = ({ dataList, ...props }) => {
   return null;
 };
 
-export default ClusterDataListItem;
+export default StorageDataListItem;
