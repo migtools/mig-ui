@@ -63,8 +63,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >PV Name
                   </div>),
@@ -77,8 +77,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Project
                   </div>),
@@ -90,8 +90,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Storage Class
                   </div>),
@@ -104,8 +104,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Size
                   </div>),
@@ -117,8 +117,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Claim
                   </div>),
@@ -130,8 +130,8 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Type
                   </div>),
@@ -153,15 +153,15 @@ class VolumesTable extends React.Component<any, any> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
                   >Details
                   </div>),
                 accessor: 'details',
                 width: 50,
                 resizable: false,
-                textAlign: "left",
+                textAlign: 'left',
                 Cell: row => (
                   <a
                     href="https://google.com"

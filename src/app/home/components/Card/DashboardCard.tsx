@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
-import CardStatusComponent from './CardStatusComponent';
-import MigrationStatusComponent from './MigrationStatusComponent';
+import CardStatus from './Status/CardStatus';
+import MigrationStatus from './Status/MigrationStatus';
 import FooterText from './FooterText';
 import HeaderText from './HeaderText';
 interface IState {
@@ -16,7 +16,7 @@ interface IProps {
   type?: string;
 }
 
-class CardComponent extends Component<IProps, IState> {
+class DashboardCard extends Component<IProps, IState> {
   state = {
     isOpen: false,
   };
@@ -36,10 +36,10 @@ class CardComponent extends Component<IProps, IState> {
     const { dataList, title, isFetching, type } = this.props;
     const { isOpen } = this.state;
     return (
-      <Card style={{ minHeight: "100%" }}>
+      <Card style={{ minHeight: '100%' }}>
         <CardHeader>
           {dataList && !isFetching ? (
-            <Title headingLevel="h3" size="md">
+            <Title size="md">
               <HeaderText type={type} dataList={dataList} />
             </Title>
           ) : (
@@ -52,9 +52,9 @@ class CardComponent extends Component<IProps, IState> {
             )}
         </CardHeader>
         <CardBody>
-          {type === "plans" ?
-            <MigrationStatusComponent dataList={dataList} /> :
-            <CardStatusComponent dataList={dataList} type={type} />
+          {type === 'plans' ?
+            <MigrationStatus dataList={dataList} /> :
+            <CardStatus dataList={dataList} type={type} />
           }
         </CardBody>
         <CardFooter>
@@ -65,4 +65,4 @@ class CardComponent extends Component<IProps, IState> {
   }
 }
 
-export default CardComponent;
+export default DashboardCard;

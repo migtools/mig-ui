@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box } from '@rebass/emotion';
+import styled from '@emotion/styled';
 import {
   Brand,
   Toolbar,
@@ -20,40 +21,15 @@ import {
   NavExpandable,
   NavItem,
   PageSection,
-  TextContent,
-  Title,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon, AddCircleOIcon } from '@patternfly/react-icons';
-import { clusterOperations } from '../cluster/duck'; ``
+import { BellIcon, CogIcon } from '@patternfly/react-icons';
+import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
-import CardComponent from './components/CardComponent';
-import EmptyStateComponent from './components/EmptyStateComponent';
-import Loader from 'react-loader-spinner';
-import openShiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
-import oldOpenShiftLogo from '../../assets/OpenShiftLogo.svg';
-
-import theme from '../../theme';
-import { css } from '@emotion/core';
-import styled from '@emotion/styled';
-
-const BrandBar = styled.div`
-      width: 1px;
-      background-color: ${theme.colors.navy};
-      height: 35px;
-      float: left;
-      border: 1px inset;
-      margin: 0 1.5em 0 1.7em;
-
-      `;
-const LogoBox = styled(Box)`
-width: 20em;
-color: #ffffff;
-font-size: 20px;
-font-weight: 300;
-`;
+import DashboardCard from './components/Card/DashboardCard';
+import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 interface IProps {
   loggingIn?: boolean;
   user: any;
@@ -83,11 +59,6 @@ class HomeComponent extends React.Component<IProps, IState> {
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
   };
-
-  componentDidMount() {
-    // this.props.fetchClusters();
-    // this.props.fetchStorage();
-  }
 
   onNavSelect = result => {
     this.setState({
@@ -135,9 +106,7 @@ class HomeComponent extends React.Component<IProps, IState> {
   ];
 
   render() {
-    const { user } = this.props;
     const {
-      isKebabDropdownOpen,
       isDropdownOpen,
       activeItem,
       activeGroup,
@@ -183,7 +152,7 @@ class HomeComponent extends React.Component<IProps, IState> {
         </ToolbarGroup>
       </Toolbar>
     );
-    const HeaderOverrideCss = css`
+    const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand{
         height: 2.5em;
       }
@@ -203,16 +172,13 @@ class HomeComponent extends React.Component<IProps, IState> {
     `;
 
     const Header = (
-      <PageHeader
+      <StyledPageHeader
         logo={
           <React.Fragment>
-            <Brand src={openShiftLogo || oldOpenShiftLogo} alt="OpenShift Logo" />
+            <Brand src={openshiftLogo} alt="OpenShift Logo" />
           </React.Fragment>
         }
-
         toolbar={PageToolbar}
-        //@ts-ignore
-        css={HeaderOverrideCss}
       />
     );
     const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
@@ -224,44 +190,41 @@ class HomeComponent extends React.Component<IProps, IState> {
       migPlanList,
       clusterList,
     } = this.props;
+    const StyledPageSection = styled(PageSection)`
+      padding-top: '50px';
+    `;
     return (
       <React.Fragment>
         <Page header={Header}>
-          <PageSection
-            //@ts-ignore
-            css={css`
-            margin-top: 30px;
-          `}>
+          <StyledPageSection
+          >
             <Grid gutter="md">
               <GridItem span={4}>
-                <CardComponent
+                <DashboardCard
                   type="clusters"
                   title="Clusters"
                   dataList={clusterList}
                   isFetching={isFetchingClusters}
                 />
-
               </GridItem>
               <GridItem span={4}>
-                <CardComponent
+                <DashboardCard
                   title="Replication Repositories"
                   type="repositories"
                   dataList={migStorageList}
                   isFetching={isFetchingStorage}
                 />
-
               </GridItem>
               <GridItem span={4}>
-                <CardComponent
+                <DashboardCard
                   type="plans"
                   title="Migration Plans"
                   dataList={migPlanList}
                   isFetching={isFetchingPlans}
                 />
-
               </GridItem>
             </Grid>
-          </PageSection>
+          </StyledPageSection>
           <PageSection>
             <Flex justifyContent="center">
               <Box flex="0 0 100%">

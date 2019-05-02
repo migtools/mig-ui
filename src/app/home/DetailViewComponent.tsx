@@ -1,21 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
-import { PlusCircleIcon } from '@patternfly/react-icons';
-
-import DetailViewItem from './components/DetailViewItem';
 import clusterOperations from '../cluster/duck/operations';
 import storageOperations from '../storage/duck/operations';
 import planOperations from '../plan/duck/operations';
-import AddClusterModal from '../cluster/components/AddClusterModal';
-import AddStorageModal from '../storage/components/AddStorageModal';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import Wizard from '../plan/components/Wizard';
 import { css } from '@emotion/core';
-
+import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
+import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
+import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import {
   Button,
   ButtonVariant,
@@ -86,32 +82,6 @@ class DetailViewComponent extends Component<IProps, IState> {
       this.setState({ plansDisabled: false });
     }
   }
-  handleToggle = (id, forceOpen?) => {
-    const expanded = this.state.expanded;
-    const index = expanded.indexOf(id);
-    let newExpanded;
-    if (forceOpen) {
-      // this.setState(() => ({ expanded }));
-      newExpanded =
-        index >= 0
-          ?
-          [...expanded]
-          : [...expanded, id];
-
-      this.setState(() => ({ expanded: newExpanded }));
-
-    } else {
-      newExpanded =
-        index >= 0
-          ? [
-            ...expanded.slice(0, index),
-            ...expanded.slice(index + 1, expanded.length),
-          ]
-          : [...expanded, id];
-
-      this.setState(() => ({ expanded: newExpanded }));
-    }
-  }
 
   handleRemoveItem = (type, id) => {
     switch (type) {
@@ -132,14 +102,6 @@ class DetailViewComponent extends Component<IProps, IState> {
       isWizardOpen: !isWizardOpen,
     }));
   }
-  handleClusterSearch = (val, otherval) => {
-    this.props.updateClusterSearchTerm(val);
-  }
-
-  handleStorageSearch = (val, otherval) => {
-    this.props.updateStorageSearchTerm(val);
-  }
-
   handlePlanSubmit = (plan) => {
     this.props.addPlanSuccess(plan);
   }
@@ -166,75 +128,27 @@ class DetailViewComponent extends Component<IProps, IState> {
 
     return (
       <React.Fragment>
-        <DataList aria-label="Expandable data list example"
-          //@ts-ignore
-          css={css`
-            pf-c-data-list__expandable-content { padding: 0 !important; }
-          `}
+        <DataList
+          aria-label="data-list-main-container"
         >
-          <DetailViewItem
-            isExpanded={this.state.expanded.includes('clusterList')}
-            onToggle={this.handleToggle}
-            filteredDataList={filteredClusterList}
-            allData={allClusters}
-            onSearch={this.handleClusterSearch}
+          <ClusterDataListItem
+            dataList={allClusters}
             id="clusterList"
-            title="Clusters"
-            type="cluster"
             associatedPlans={clusterAssociatedPlans}
-            addButton={
-              <AddClusterModal
-                onToggle={() => this.handleToggle('clusterList', true)}
-                trigger={<Button variant="link">
-                  <PlusCircleIcon /> Add cluster
-                </Button>}
-              />
-            }
-            onRemoveItem={this.handleRemoveItem}
+            isLoading={this.props.isMigrating || this.props.isStaging}
           />
-          <DetailViewItem
-            isExpanded={this.state.expanded.includes('repositoryList')}
-            onToggle={this.handleToggle}
-            filteredDataList={filteredStorageList}
-            allData={allStorage}
-            onSearch={this.handleStorageSearch}
-            id="repositoryList"
-            title="Replication Repositories"
-            type="storage"
+          <StorageDataListItem
+            dataList={allStorage}
+            id="storageList"
             associatedPlans={storageAssociatedPlans}
-            addButton={
-              <AddStorageModal
-                onToggle={() => this.handleToggle('repositoryList', true)}
-                trigger={<Button variant="link">
-                  <PlusCircleIcon /> Add repository
-                </Button>}
-              />
-            }
-            onRemoveItem={this.handleRemoveItem}
+            isLoading={this.props.isMigrating || this.props.isStaging}
           />
-          <DetailViewItem
-            isExpanded={this.state.expanded.includes('plansList')}
-            onToggle={this.handleToggle}
-            filteredDataList={filteredPlanList}
-            onWizardToggle={this.handleWizardToggle}
-            allData={allPlans}
+          <PlanDataListItem
+            dataList={allPlans}
             id="plansList"
-            title="Migration Plans"
-            type="plans"
-            addButton={
-              <Wizard
-                isOpen={isWizardOpen}
-                onToggle={this.handleWizardToggle}
-                onExpandToggle={() => this.handleToggle('plansList', true)}
-                clusterList={allClusters}
-                storageList={migStorageList}
-                onPlanSubmit={this.handlePlanSubmit}
-                trigger={<Button variant="link" isDisabled={isAddPlanDisabled}>
-                  <PlusCircleIcon /> Add plan
-                </Button>}
-              />
-            }
-            onRemoveItem={this.handleRemoveItem}
+            clusterList={allClusters}
+            storageList={allStorage}
+            onPlanSubmit={this.handlePlanSubmit}
             plansDisabled={isAddPlanDisabled}
             onStageTriggered={this.handleStageTriggered}
             isLoading={this.props.isMigrating || this.props.isStaging}
@@ -252,7 +166,6 @@ function mapStateToProps(state) {
   const allStorage = storageSelectors.getAllStorage(state);
   const filteredPlanList = planSelectors.getVisiblePlans(state);
   const allPlans = planSelectors.getAllPlans(state);
-
 
   const clusterAssociatedPlans = allClusters.reduce((associatedPlans, cluster) => {
     const clusterName = cluster.MigCluster.metadata.name;
@@ -285,7 +198,7 @@ function mapStateToProps(state) {
     clusterAssociatedPlans,
     storageAssociatedPlans,
     isMigrating,
-    isStaging
+    isStaging,
   };
 }
 const mapDispatchToProps = dispatch => {

@@ -1,3 +1,4 @@
+import '@patternfly/react-core/dist/styles/base.css';
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -12,7 +13,6 @@ import { authOperations } from './app/auth/duck';
 
 import Loader from 'react-loader-spinner';
 
-import '@patternfly/react-core/dist/styles/base.css';
 const onBeforeLift = () => {
   // take some action before the gate lifts
 };

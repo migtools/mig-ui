@@ -25,41 +25,33 @@ const AppComponent: React.SFC<IProps> = ({
   alertType,
   isLoggedIn,
 }) => (
-  <Flex flexDirection="column" width="100%">
-    {alertMessage && (
-      <Box alignSelf="center">
-        <AlertCard
-          fontSize={3}
-          fontWeight="bold"
-          width={1}
-          p={4}
-          mt={10}
-          bg="#f6f6ff"
-          borderRadius={8}
-          color={alertType === 'error' ? 'red' : 'green'}
-        >
-          {alertMessage}
-        </AlertCard>
-      </Box>
-    )}
+    <Flex flexDirection="column" width="100%">
+      {alertMessage && (
+        <Box alignSelf="center">
+          <AlertCard
+          >
+            {alertMessage}
+          </AlertCard>
+        </Box>
+      )}
 
-    <Box>
-      <ThemeProvider theme={theme}>
-        <ConnectedRouter history={history}>
-          <Switch>
-            <PrivateRoute
-              exact
-              path="/"
-              isLoggedIn={isLoggedIn}
-              component={HomeComponent}
-            />
-            <Route path="/login" component={LoginComponent} />
-          </Switch>
-        </ConnectedRouter>
-      </ThemeProvider>
-    </Box>
-    <Global
-      styles={css`
+      <Box>
+        <ThemeProvider theme={theme}>
+          <ConnectedRouter history={history}>
+            <Switch>
+              <PrivateRoute
+                exact
+                path="/"
+                isLoggedIn={isLoggedIn}
+                component={HomeComponent}
+              />
+              <Route path="/login" component={LoginComponent} />
+            </Switch>
+          </ConnectedRouter>
+        </ThemeProvider>
+      </Box>
+      <Global
+        styles={css`
         body html,
         body,
         #root,
@@ -71,18 +63,18 @@ const AppComponent: React.SFC<IProps> = ({
           background-color: #ededed;
         }
       `}
-    />
-    <Global
-      styles={{
-        'body.noScroll': {
-          // Prevent scrolling; conditionally activate this
-          // in subcomponents when necessary ...
-          overflow: 'hidden',
-        },
-      }}
-    />
-  </Flex>
-);
+      />
+      <Global
+        styles={{
+          'body.noScroll': {
+            // Prevent scrolling; conditionally activate this
+            // in subcomponents when necessary ...
+            overflow: 'hidden',
+          },
+        }}
+      />
+    </Flex>
+  );
 
 export default connect(
   state => ({

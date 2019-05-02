@@ -12,16 +12,33 @@ import { css } from '@emotion/core';
 class WrappedWizard extends React.Component<any, any> {
   state = {
     isWizardLoading: false,
+    step: 1,
   };
+  handleClose = () => {
+    this.props.onHandleClose();
+    this.props.resetForm();
+    this.setState({
+      step: 1,
+    });
+
+  }
+
   handleWizardLoadingToggle = (isLoading) => {
     this.setState({ isWizardLoading: isLoading });
   }
 
-  onClose = () => {
-    this.props.resetForm();
-    this.props.onToggle();
+  onMove = (curr, prev) => {
+    this.setState({
+      step: curr.id,
+    });
   }
-
+  handleSave = () => {
+    this.props.handleSubmit();
+    this.setState({
+      step: 1,
+      isOpen: false,
+    });
+  }
 
   render() {
     const {
@@ -39,20 +56,9 @@ class WrappedWizard extends React.Component<any, any> {
       resetForm,
     } = this.props;
 
-    const triggerNew = React.cloneElement(
-      trigger,
-      {
-        onClick: () => {
-          this.props.onToggle();
-          if (trigger.props.onClick) {
-            trigger.props.onClick();
-          }
-        },
-      },
-    );
-
     const steps = [
       {
+        id: 1,
         name: 'General',
         component: (
           <GeneralForm
@@ -67,6 +73,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.planName && touched.planName === true,
       },
       {
+        id: 2,
         name: 'Migration Source',
         component: (
           <MigSourceForm
@@ -85,6 +92,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 3,
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
@@ -102,6 +110,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 4,
         name: 'Migration Targets',
         component: (
           <MigTargetForm
@@ -120,6 +129,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
       {
+        id: 5,
         name: 'Results',
         component: (
           <ResultsStep
@@ -131,37 +141,29 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         enableNext: !this.state.isWizardLoading,
+        nextButtonText: 'Close',
       },
     ];
 
     return (
       <React.Fragment>
-        {triggerNew}
         <Flex>
           <form onSubmit={handleSubmit}>
             <PFWizard
               css={css`
-                max-width: 100% !important;
-                .pf-c-wizard {
-                  max-width: 100% !important;
-                }
-                .pf-c-wizard__main {
-                  height: 100%;
-                }
-                .pf-c-wizard__nav{
-                  width: 15em;
-                }
-                .pf-c-wizard__outer-wrap{
-                  padding-left: 15em;
-                }
                 .pf-c-wizard__header { background-color: #151515; }
               `}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
-              onClose={this.onClose}
+              onNext={this.onMove}
+              onBack={this.onMove}
+              onClose={this.handleClose}
               steps={steps}
-              onSave={handleSubmit}
+              onSave={this.handleSave}
+              isFullWidth
+              isCompactNav
+              startAtStep={1}
             />
           </form>
         </Flex>
@@ -226,9 +228,8 @@ const Wizard: any = withFormik({
 
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
-    formikBag.props.onToggle();
-    formikBag.props.onExpandToggle();
     formikBag.props.onPlanSubmit(values);
+    formikBag.props.onHandleClose();
   },
   validateOnBlur: false,
 

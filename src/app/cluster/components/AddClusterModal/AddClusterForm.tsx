@@ -9,7 +9,7 @@ import {
   TextArea,
   TextInput,
   Form,
-  FormGroup
+  FormGroup,
 } from '@patternfly/react-core';
 import ConnectionState from '../../../common/connection_state';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
@@ -53,8 +53,10 @@ class WrappedAddClusterForm extends React.Component<any, any> {
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     return (
-      <Form onSubmit={handleSubmit}
-        style={{ marginTop: '24px' }}>
+      <Form
+        onSubmit={handleSubmit}
+        style={{ marginTop: '24px' }}
+      >
         <FormGroup
           label="Cluster Name"
           isRequired
@@ -67,8 +69,8 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             value={values.name}
             name="name"
             type="text"
-            // isValid={!errors.planName && touched.planName}
-            id="name" />
+            id="name"
+          />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
           )}
@@ -106,7 +108,8 @@ class WrappedAddClusterForm extends React.Component<any, any> {
               padding: 1em;
               cursor: pointer;
           `}
-            onClick={this.handleKeyToggle}>
+            onClick={this.handleKeyToggle}
+          >
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
           </div>
           <TextInput
@@ -116,7 +119,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             onBlur={handleBlur}
             name="token"
             id="token"
-            type={this.state.tokenHidden ? "password" : "text"}
+            type={this.state.tokenHidden ? 'password' : 'text'}
           //@ts-ignore
           />
           {errors.token && touched.token && (
@@ -137,7 +140,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
                     onClick={() => this.props.checkConnection()}
                   >
                     Check connection
-                      </Button>
+                  </Button>
                 </Box>
                 <Box alignSelf="flex-start">
                   {renderConnectionState(connectionState)}
@@ -166,7 +169,6 @@ class WrappedAddClusterForm extends React.Component<any, any> {
         </FormGroup>
       </Form >
     );
-
   }
 }
 

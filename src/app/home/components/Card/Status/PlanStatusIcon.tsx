@@ -3,7 +3,7 @@ import { css } from '@emotion/core';
 import { Card } from '@rebass/emotion';
 import { CheckIcon, ErrorCircleOIcon } from '@patternfly/react-icons';
 import Loader from 'react-loader-spinner';
-import theme from '../../../theme';
+import theme from '../../../../../theme';
 import {
   InProgressIcon,
   OutlinedCircleIcon,
@@ -54,7 +54,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
-        style={{display: "inline"}}
+        style={{ display: 'inline' }}
       />
     );
   }
@@ -65,7 +65,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
-        style={{display: "inline"}}
+        style={{ display: 'inline' }}
       />
     );
   }

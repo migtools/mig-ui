@@ -3,10 +3,7 @@ const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-var ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-
 const HOST = process.env.HOST || 'localhost';
-
 const localConfigFileName = 'config.dev.json';
 
 // Two dev modes: local | remote
@@ -56,7 +53,6 @@ const plugins = [
   new webpack.NamedModulesPlugin(),
   new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
-  new ForkTsCheckerWebpackPlugin(),
   new ExtractTextPlugin({
     filename: "[name].[contenthash].css"
   })
@@ -95,7 +91,7 @@ const webpackConfig = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: 'ts-loader'
       },
       {
         test: /\.js$/,
@@ -107,7 +103,7 @@ const webpackConfig = {
         loaders: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(svg|ttf|eot|woff|woff2|png)$/,
+        test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
         use: {
           loader: 'file-loader',
           options: {
