@@ -9,8 +9,8 @@ import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import Wizard from '../plan/components/Wizard';
 import { css } from '@emotion/core';
-import ClusterDataListItem from './components/DataList/ClusterDataListItem';
-import StorageDataListItem from './components/DataList/StorageDataListItem';
+import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
+import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import {
   Button,
@@ -128,17 +128,19 @@ class DetailViewComponent extends Component<IProps, IState> {
 
     return (
       <React.Fragment>
-        <DataList aria-label="Expandable data list example"
+        <DataList aria-label="data-list-main-container"
         >
           <ClusterDataListItem
             dataList={allClusters}
             id="clusterList"
             associatedPlans={clusterAssociatedPlans}
+            isLoading={this.props.isMigrating || this.props.isStaging}
           />
           <StorageDataListItem
             dataList={allStorage}
             id="storageList"
             associatedPlans={storageAssociatedPlans}
+            isLoading={this.props.isMigrating || this.props.isStaging}
           />
           <PlanDataListItem
             dataList={allPlans}

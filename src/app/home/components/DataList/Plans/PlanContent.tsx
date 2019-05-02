@@ -18,10 +18,10 @@ const PlanContent = ({ isLoading, isExpanded, ...props }) => {
     return (
         <DataListContent
             noPadding
-            aria-label="Primary Content Details"
+            aria-label="plan-items-content-containter"
             isHidden={!isExpanded}
         >
-            <DataList aria-label="Simple data list example">
+            <DataList aria-label="plan-item-list">
                 <PlanHeader />
                 {props.dataList.map((plan, planIndex) => {
                     return (
