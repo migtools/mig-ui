@@ -29,7 +29,7 @@ import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import DetailViewComponent from './DetailViewComponent';
 import DashboardCard from './components/Card/DashboardCard';
-import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
+// import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 interface IProps {
   loggingIn?: boolean;
   user: any;
@@ -175,7 +175,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       <StyledPageHeader
         logo={
           <React.Fragment>
-            <Brand src={openshiftLogo} alt="OpenShift Logo" />
+            {/* <Brand src={openshiftLogo} alt="OpenShift Logo" /> */}
           </React.Fragment>
         }
         toolbar={PageToolbar}
