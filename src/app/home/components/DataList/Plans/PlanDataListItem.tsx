@@ -4,6 +4,10 @@ import {
     Button,
     DataListItem,
     DataListToggle,
+    DataListItemRow,
+    DataListItemCells,
+    DataListCell,
+    DataListAction,
 } from '@patternfly/react-core';
 import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -26,18 +30,20 @@ const PlanDataListItem = ({
     if (dataList) {
         return (
             <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
-                <Flex width="100%" height="5em" margin=" .5em" >
-                    <Box flex="0 0 2em" my="auto">
-                        <DataListToggle
-                            onClick={() => toggleExpanded()}
-                            isExpanded={isExpanded}
-                            id='cluster-toggle'
-                        />
-                    </Box>
-                    <Box flex="1" my="auto">
-                        Plans
-                    </Box>
-                    <Box textAlign="left" flex="0 0 10em" my="auto">
+                <DataListItemRow>
+                    <DataListToggle
+                        onClick={() => toggleExpanded()}
+                        isExpanded={isExpanded}
+                        id='cluster-toggle'
+                    />
+                    <DataListItemCells
+                        dataListCells={[
+                            <DataListCell id="plan-item" key="plans">
+                                <span id="name" >Plans</span>
+                            </DataListCell>,
+                        ]}
+                    />
+                    <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
                         <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="link">
                             <PlusCircleIcon /> Add Plan
                         </Button>
@@ -49,20 +55,22 @@ const PlanDataListItem = ({
                             isLoading={isLoading}
                             onPlanSubmit={onPlanSubmit}
                         />
-                    </Box>
-                </Flex>
-                {dataList.length > 0 ? (
+                    </DataListAction>
+                </DataListItemRow>
+                {
+                    dataList.length > 0 ? (
 
-                    <PlanContent dataList={dataList} isLoading={isLoading} isExpanded={isExpanded} {...props} />
-                ) : (
-                        <Flex alignItems="center" justifyContent="center">
-                            <Box>
-                                <DataListEmptyState type="plan" {...props} />
-                            </Box>
-                        </Flex>
-                    )}
+                        <PlanContent dataList={dataList} isLoading={isLoading} isExpanded={isExpanded} {...props} />
+                    ) : (
+                            <Flex alignItems="center" justifyContent="center">
+                                <Box>
+                                    <DataListEmptyState type="plan" {...props} />
+                                </Box>
+                            </Flex>
+                        )
+                }
 
-            </DataListItem>
+            </DataListItem >
         );
     }
     return null;
