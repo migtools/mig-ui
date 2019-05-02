@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export const useExpandDataList = (initialState) => {
     const [isExpanded, setExpanded] = useState(initialState);
@@ -15,7 +15,7 @@ export const useOpenModal = (initialState) => {
     const [isOpen, setOpen] = useState(initialState);
 
     const toggleOpen = () => {
-        const openState= !isOpen;
+        const openState = !isOpen;
         setOpen(openState);
     };
 

@@ -28,6 +28,6 @@ const ClusterContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
                 })}
             </DataList>
         </DataListContent>
-    )
-}
+    );
+};
 export default ClusterContent;

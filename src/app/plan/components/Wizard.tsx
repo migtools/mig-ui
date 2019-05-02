@@ -12,13 +12,13 @@ import { css } from '@emotion/core';
 class WrappedWizard extends React.Component<any, any> {
   state = {
     isWizardLoading: false,
-    step: 1
+    step: 1,
   };
   handleClose = () => {
     this.props.onHandleClose();
     this.props.resetForm();
     this.setState({
-      step: 1
+      step: 1,
     });
 
   }
@@ -29,7 +29,7 @@ class WrappedWizard extends React.Component<any, any> {
 
   onMove = (curr, prev) => {
     this.setState({
-      step: curr.id
+      step: curr.id,
     });
   }
   handleSave = () => {
@@ -37,7 +37,7 @@ class WrappedWizard extends React.Component<any, any> {
     this.setState({
       step: 1,
       isOpen: false,
-    })
+    });
   }
 
   render() {
@@ -141,7 +141,7 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         enableNext: !this.state.isWizardLoading,
-        nextButtonText: 'Close'
+        nextButtonText: 'Close',
       },
     ];
 

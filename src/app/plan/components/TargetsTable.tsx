@@ -16,7 +16,6 @@ interface IState {
 interface IProps {
   values: any;
 }
-
 class TargetsTable extends React.Component<IProps, IState> {
   state = {
     page: 1,
@@ -89,10 +88,11 @@ class TargetsTable extends React.Component<IProps, IState> {
                 <div
                   style={{
                     fontWeight: 600,
-                    textAlign: "left"
+                    textAlign: 'left',
                   }}
                 >Source Project Name
-                  </div>),
+                </div>
+              ),
               accessor: 'name',
               Cell: this.renderEditable,
             },
@@ -100,11 +100,13 @@ class TargetsTable extends React.Component<IProps, IState> {
               Header: () => (
                 <div
                   style={{
-                    textAlign: "left",
-                    fontWeight: 600
+                    textAlign: 'left',
+                    fontWeight: 600,
                   }}
-                >Target Project Name
-                  </div>),
+                >
+                  Target Project Name
+                </div>
+              ),
               accessor: 'targetName',
               Cell: this.renderEditable,
             },
@@ -113,8 +115,6 @@ class TargetsTable extends React.Component<IProps, IState> {
               Cell: row => (
                 <Button
                   id={`id-${row.index}`}
-                  // label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
-                  // isChecked={this.state.editableList[row.index] || false}
                   onClick={() => this.toggleRowEditable(row)}
                   aria-label="Edit"
                   variant="link"
@@ -123,13 +123,6 @@ class TargetsTable extends React.Component<IProps, IState> {
                     <TimesIcon /> : <EditAltIcon />
                   }
                 </Button>
-                // <Switch
-                //   id={`id-${row.index}`}
-                //   label={this.state.editableList[row.index] ? 'Edit' : 'Locked'}
-                //   isChecked={this.state.editableList[row.index] || false}
-                //   onChange={() => this.toggleRowEditable(row)}
-                //   aria-label="Edit"
-                // />
               ),
             },
 

@@ -32,5 +32,5 @@ const PlanContent = ({ isLoading, isExpanded, ...props }) => {
             </DataList>
         </DataListContent>
     );
-}
+};
 export default PlanContent;

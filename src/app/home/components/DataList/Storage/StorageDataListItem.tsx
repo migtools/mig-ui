@@ -25,7 +25,7 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           <DataListToggle
             onClick={() => toggleExpanded()}
             isExpanded={isExpanded}
-            id='storage-toggle'
+            id="storage-toggle"
           />
           <DataListItemCells
             dataListCells={[
@@ -35,7 +35,8 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
               >
                 <span id="name" >Repositories</span>
               </DataListCell>,
-            ]} />
+            ]}
+          />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button onClick={toggleOpen} variant="link">
               <PlusCircleIcon /> Add storage

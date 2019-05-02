@@ -39,7 +39,7 @@ const DataListEmptyState = ({ ...props }) => {
 
       </React.Fragment>
     );
-  }
+  };
   const renderStorageAdd = () => {
     return (
       <React.Fragment>
@@ -53,7 +53,7 @@ const DataListEmptyState = ({ ...props }) => {
       </React.Fragment>
 
     );
-  }
+  };
   const renderClusterAdd = () => {
     return (
       <React.Fragment>
@@ -66,7 +66,7 @@ const DataListEmptyState = ({ ...props }) => {
         <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>
     );
-  }
+  };
   return (
     <React.Fragment>
       <EmptyState variant="large">
@@ -80,6 +80,6 @@ const DataListEmptyState = ({ ...props }) => {
       </EmptyState>
     </React.Fragment>
   );
-}
+};
 
 export default DataListEmptyState;

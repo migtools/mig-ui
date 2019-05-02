@@ -26,6 +26,6 @@ const PlanStatus = ({ plan, ...props }) => {
   } else {
     return null;
   }
-}
+};
 
 export default PlanStatus;

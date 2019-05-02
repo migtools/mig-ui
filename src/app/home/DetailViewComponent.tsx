@@ -128,7 +128,8 @@ class DetailViewComponent extends Component<IProps, IState> {
 
     return (
       <React.Fragment>
-        <DataList aria-label="data-list-main-container"
+        <DataList
+          aria-label="data-list-main-container"
         >
           <ClusterDataListItem
             dataList={allClusters}
@@ -197,7 +198,7 @@ function mapStateToProps(state) {
     clusterAssociatedPlans,
     storageAssociatedPlans,
     isMigrating,
-    isStaging
+    isStaging,
   };
 }
 const mapDispatchToProps = dispatch => {

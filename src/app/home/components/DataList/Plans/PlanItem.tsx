@@ -103,7 +103,7 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                                 onClick={() => props.onStageTriggered(plan)}
                             >
                                 Stage
-                         </Button>
+                            </Button>
                         </Box>
                         <Box mx={1}>
                             <Button
@@ -111,10 +111,10 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                                 variant="primary"
                             >
                                 Migrate
-                             </Button>
+                            </Button>
                             <MigrateModal
-                                plan={plan}>
-                            </MigrateModal>
+                                plan={plan}
+                            />
                         </Box>
                     </Flex>
 
@@ -122,7 +122,7 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
             </DataListItemRow>
         </DataListItem>
     );
-}
+};
 
 
 export default PlanItem;

@@ -27,7 +27,7 @@ class AddStorageModal extends React.Component<any, any> {
 
     return (
       <Modal
-      isSmall
+        isSmall
         isOpen={this.props.isOpen}
         onClose={this.handleClose}
         title="Add Storage"

@@ -13,24 +13,24 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   return (
     <React.Fragment>
       <Grid>
-        <GridItem span={1} style={{ textAlign: "center", margin: 'auto' }}>
+        <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
           <StatusIcon status="success" />
         </GridItem>
-        <GridItem span={1} style={{ fontSize: "28px" }}>
+        <GridItem span={1} style={{ fontSize: '28px' }}>
           {successList.length}
         </GridItem>
-        <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+        <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
           Connected
                 </GridItem>
       </Grid>
       <Grid>
-        <GridItem span={1} style={{ textAlign: "center", margin: 'auto' }}>
+        <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
           <StatusIcon status="failed" />
         </GridItem>
-        <GridItem span={1} style={{ fontSize: "28px" }}>
+        <GridItem span={1} style={{ fontSize: '28px' }}>
           {failureList.length}
         </GridItem>
-        <GridItem span={10} style={{ margin: "auto 0 auto 0" }}>
+        <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
           Connection failed
                 </GridItem>
       </Grid>

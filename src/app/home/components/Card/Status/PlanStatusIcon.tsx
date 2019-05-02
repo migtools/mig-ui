@@ -54,7 +54,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
-        style={{ display: "inline" }}
+        style={{ display: 'inline' }}
       />
     );
   }
@@ -65,7 +65,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
         color={theme.colors.medGray3}
         height="2em"
         width="2em"
-        style={{ display: "inline" }}
+        style={{ display: 'inline' }}
       />
     );
   }

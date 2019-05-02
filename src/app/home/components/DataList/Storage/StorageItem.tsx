@@ -11,12 +11,7 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 
 const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
-    const clusterName = storage.MigCluster.metadata.name;
-    const clusterStatus = storage.status;
-    const clusterUrl =
-        storage.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
-
-    const associatedPlanCount = props.associatedPlans[clusterName];
+    const associatedPlanCount = props.associatedPlans[storage.metadata.name];
     const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
     return (
@@ -52,11 +47,12 @@ const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
                                         variant="danger"
                                     >
                                         Remove
-                      </Button>
+                                    </Button>
                                 </Box>
                             </Flex>
                         </DataListCell>,
-                    ]} />
+                    ]}
+                />
 
             </DataListItemRow>
         </DataListItem>

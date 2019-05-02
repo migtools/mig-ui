@@ -34,7 +34,7 @@ const PlanDataListItem = ({
                     <DataListToggle
                         onClick={() => toggleExpanded()}
                         isExpanded={isExpanded}
-                        id='cluster-toggle'
+                        id="cluster-toggle"
                     />
                     <DataListItemCells
                         dataListCells={[

@@ -5,7 +5,7 @@ import {
     DataListItemRow,
     DataListItemCells,
     DataListAction,
-    DataList
+    DataList,
 } from '@patternfly/react-core';
 import styled from '@emotion/styled';
 
@@ -50,11 +50,11 @@ const PlanHeader = ({ ...props }) => {
                     ]}
                 />
                 <StyledDataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan" >
-                    <span></span>
+                    <span/>
                 </StyledDataListAction>
 
             </DataListItemRow>
         </DataListItem>
     );
-}
+};
 export default PlanHeader;

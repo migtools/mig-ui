@@ -9,11 +9,13 @@ import { css } from '@emotion/core';
 const MigrateModalForm = props => {
   return (
     <Flex>
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        props.onHandleModalToggle(null);
-        props.handleSubmit();
-      }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          props.onHandleModalToggle(null);
+          props.handleSubmit();
+        }}
+      >
         <Box>
           Migrating a migration plan means that all transactions on the source cluster will be halted
           before the migration begins and will remain halted for the duration of the migration.
@@ -24,12 +26,12 @@ const MigrateModalForm = props => {
           css={css`
             margin-top: 20px;
           `}
-          >
+        >
           <Checkbox
             label="Don't halt transactions on the source while migrating"
             aria-label="don't halt transactions on the source while migrating"
             id="transaction-halt-checkbox"
-            />
+          />
         </Box>
         <Box mt={20}>
           <Flex>

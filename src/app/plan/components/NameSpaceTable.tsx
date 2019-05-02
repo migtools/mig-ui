@@ -159,40 +159,46 @@ class NamespaceTable extends React.Component<IProps, IState> {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
-                  >Name</div>),
+                  >Name
+                  </div>),
                 accessor: 'name',
               },
               {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
-                  >Display Name</div>),
+                  >Display Name
+                  </div>),
                 accessor: 'displayName',
               },
               {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
-                  >Number of Pods</div>),
+                  >
+                    Number of Pods
+                  </div>
+                ),
                 accessor: 'pods',
               },
               {
                 Header: () => (
                   <div
                     style={{
-                      textAlign: "left",
-                      fontWeight: 600
+                      textAlign: 'left',
+                      fontWeight: 600,
                     }}
-                  >Number of Services</div>),
+                  >Number of Services
+                  </div>),
                 accessor: 'services',
               },
             ]}

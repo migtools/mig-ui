@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Box } from "@rebass/emotion";
+import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
   DataList,
@@ -27,7 +27,7 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           <DataListToggle
             onClick={() => toggleExpanded()}
             isExpanded={isExpanded}
-            id='cluster-toggle'
+            id="cluster-toggle"
           />
           <DataListItemCells
             dataListCells={[
@@ -37,7 +37,8 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
               >
                 <span id="name" >Clusters</span>
               </DataListCell>,
-            ]} />
+            ]}
+          />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button onClick={toggleOpen} variant="link">
               <PlusCircleIcon /> Add cluster

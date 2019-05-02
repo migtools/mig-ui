@@ -26,6 +26,6 @@ const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
                 })}
             </DataList>
         </DataListContent>
-    )
-}
+    );
+};
 export default StorageContent;

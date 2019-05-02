@@ -22,7 +22,8 @@ class MigrateModal extends React.Component<any, any> {
         isSmall
         isOpen={this.props.isOpen}
         onClose={this.handleClose}
-        title={`Migrate ${plan.planName}`}>
+        title={`Migrate ${plan.planName}`}
+      >
         <MigrateModalForm
           onHandleModalToggle={this.handleClose}
           handleSubmit={this.handleSubmit}
