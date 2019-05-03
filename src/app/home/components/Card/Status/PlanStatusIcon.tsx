@@ -24,11 +24,9 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.medGray3};
   `;
   const NotStarted = styled(OutlinedCircleIcon)`
-  font-size: 2em;
     color: ${theme.colors.blue};
   `;
   const Complete = styled(OutlinedCircleIcon)`
-  font-size: 2em;
     color: ${theme.colors.statusGreen};
   `;
   if (status === 'Not Started') {
@@ -52,8 +50,8 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
       <Loader
         type="RevolvingDot"
         color={theme.colors.medGray3}
-        height="2em"
-        width="2em"
+        height="1em"
+        width="1em"
         style={{ display: 'inline' }}
       />
     );
@@ -63,8 +61,8 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({
       <Loader
         type="RevolvingDot"
         color={theme.colors.medGray3}
-        height="2em"
-        width="2em"
+        height="1em"
+        width="1em"
         style={{ display: 'inline' }}
       />
     );

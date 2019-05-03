@@ -6,6 +6,7 @@ import {
     Grid,
     GridItem,
 } from '@patternfly/react-core';
+import { Flex, Box } from '@rebass/emotion';
 
 const MigrationStatus = ({ dataList, ...props }) => {
     const notStartedList = dataList.filter((item) => item.status.state === 'Not Started');
@@ -22,41 +23,42 @@ const MigrationStatus = ({ dataList, ...props }) => {
 
     return (
         <React.Fragment>
-            <Grid>
-                <GridItem span={2} style={{ fontSize: '28px' }}>
+            <Flex>
+                <Box m="0 .5em 0 0"
+                    style={{ fontSize: '28px' }}
+                >
                     <div style={{ marginLeft: '1em' }}>
                         {notStartedLength}
                     </div>
-                </GridItem>
-                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
+                </Box>
+                <Box style={{ margin: 'auto 0 auto 0' }}>
                     Not started
-                </GridItem>
-            </Grid>
-            <Grid>
-                <GridItem span={2} style={{ fontSize: '28px' }}>
+                </Box>
+            </Flex>
+            <Flex>
+                <Box m="0 .5em 0 0"
+                    style={{ fontSize: '28px' }}>
                     <div style={{ marginLeft: '1em' }}>
                         {inProgressLength}
                     </div>
-                </GridItem>
-                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
+                </Box>
+                <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
                     In progress
-                </GridItem>
-            </Grid>
-            <Grid>
-                <GridItem span={2} style={{ fontSize: '28px' }}>
+                </Box>
+            </Flex>
+            <Flex>
+                <Box m="0 .5em 0 0"
+                    style={{ fontSize: '28px' }}>
                     <div style={{ marginLeft: '1em' }}>
                         {migSuccessList.length}
                     </div>
-                </GridItem>
-                <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
+                </Box>
+                <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
                     Complete
-                </GridItem>
-            </Grid>
+                </Box >
+            </Flex>
         </React.Fragment >
 
     );
 };
-
 export default MigrationStatus;
-
-
