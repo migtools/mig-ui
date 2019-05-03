@@ -24,7 +24,8 @@ const MigrationStatus = ({ dataList, ...props }) => {
     return (
         <React.Fragment>
             <Flex>
-                <Box m="0 .5em 0 0"
+                <Box
+                    m="0 .5em 0 0"
                     style={{ fontSize: '28px' }}
                 >
                     <div style={{ marginLeft: '1em' }}>
@@ -36,8 +37,10 @@ const MigrationStatus = ({ dataList, ...props }) => {
                 </Box>
             </Flex>
             <Flex>
-                <Box m="0 .5em 0 0"
-                    style={{ fontSize: '28px' }}>
+                <Box
+                    m="0 .5em 0 0"
+                    style={{ fontSize: '28px' }}
+                >
                     <div style={{ marginLeft: '1em' }}>
                         {inProgressLength}
                     </div>
@@ -47,8 +50,10 @@ const MigrationStatus = ({ dataList, ...props }) => {
                 </Box>
             </Flex>
             <Flex>
-                <Box m="0 .5em 0 0"
-                    style={{ fontSize: '28px' }}>
+                <Box
+                    m="0 .5em 0 0"
+                    style={{ fontSize: '28px' }}
+                >
                     <div style={{ marginLeft: '1em' }}>
                         {migSuccessList.length}
                     </div>

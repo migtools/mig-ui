@@ -38,7 +38,7 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
     const StyledDataListAction = styled(DataListAction)`
     width: 15em;
 `;
-const [isOpen, toggleOpen] = useOpenModal(false);
+    const [isOpen, toggleOpen] = useOpenModal(false);
 
     return (
         <DataListItem
