@@ -1,13 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../../../theme';
 import {
     Button,
-    DataList,
-    DataListToggle,
-    DataListContent,
-    Dropdown,
-    KebabToggle,
     DataListItem,
     DataListCell,
     DataListItemRow,
@@ -22,7 +17,7 @@ import {
 import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import PlanStatus from './PlanStatus';
 import MigrateModal from '../../../../plan/components/MigrateModal';
-import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck/hooks';
 
 
 const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
@@ -34,10 +29,10 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
     const PVIcon = styled(DatabaseIcon)`
                 color: ${() =>
             plan.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
-              `;
+                `;
     const StyledDataListAction = styled(DataListAction)`
-    width: 15em;
-`;
+        width: 15em;
+    `;
     const [isOpen, toggleOpen] = useOpenModal(false);
 
     return (
@@ -48,7 +43,7 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
             <DataListItemRow>
                 <DataListItemCells
                     dataListCells={[
-                        <DataListCell key="name" width={1}>
+                        <DataListCell key="name" width={2}>
                             <Flex>
                                 <Box m="0 5px 0 0" >
                                     <PlanStatusIcon status={plan.status.state || 'N/A'} />
@@ -58,9 +53,9 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                                 </Box>
                             </Flex>
                         </DataListCell>,
-                        <DataListCell key="migrations" width={1}>
+                        <DataListCell key="migrations" width={2}>
                             <Flex>
-                                <Box m="0 5px 0 0" fontSize="2em">
+                                <Box m="0 5px 0 0" >
                                     <MigrationsIcon />
                                 </Box>
                                 <Box m="auto 0 auto 0">
@@ -68,18 +63,18 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                                 </Box>
                             </Flex>
                         </DataListCell>,
-                        <DataListCell key="source" width={1}>
+                        <DataListCell key="source" width={2}>
                             <span>{plan.sourceCluster}</span>
                         </DataListCell>,
-                        <DataListCell key="target" width={1}>
+                        <DataListCell key="target" width={2}>
                             <span>{plan.targetCluster}</span>
                         </DataListCell>,
-                        <DataListCell key="repo" width={1}>
+                        <DataListCell key="repo" width={2}>
                             <span>{plan.selectedStorage}</span>
                         </DataListCell>,
-                        <DataListCell key="vols" width={1}>
+                        <DataListCell key="vols" width={2}>
                             <Flex>
-                                <Box m="0 5px 0 0" fontSize="2em">
+                                <Box m="0 5px 0 0" >
                                     <PVIcon />
 
                                 </Box>
@@ -92,7 +87,6 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                         <DataListCell key="status" width={3}>
                             <PlanStatus plan={plan} {...props} />
                         </DataListCell>,
-                        <DataListCell width={1} key="spacer" />,
 
                     ]}
                 />
