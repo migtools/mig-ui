@@ -22,6 +22,7 @@ import {
 import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import PlanStatus from './PlanStatus';
 import MigrateModal from '../../../../plan/components/MigrateModal';
+import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 
 
 const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
@@ -37,6 +38,7 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
     const StyledDataListAction = styled(DataListAction)`
     width: 15em;
 `;
+    const [isOpen, toggleOpen] = useOpenModal(false);
 
     return (
         <DataListItem
@@ -109,11 +111,14 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
                             <Button
                                 isDisabled={isLoading}
                                 variant="primary"
+                                onClick={toggleOpen}
                             >
                                 Migrate
                             </Button>
                             <MigrateModal
                                 plan={plan}
+                                isOpen={isOpen}
+                                onHandleClose={toggleOpen}
                             />
                         </Box>
                     </Flex>
