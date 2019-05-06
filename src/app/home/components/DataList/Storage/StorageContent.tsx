@@ -4,6 +4,8 @@ import {
     DataListContent,
 } from '@patternfly/react-core';
 import StorageItem from './StorageItem';
+import { Flex, Box } from '@rebass/emotion';
+import DataListEmptyState from '../DataListEmptyState';
 
 const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...props }) => {
     return (
@@ -12,19 +14,27 @@ const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
             aria-label="storage-items-content-container"
             isHidden={!isExpanded}
         >
-            <DataList aria-label="storage-item-list">
-                {dataList.map((storage, storageIndex) => {
-                    return (
-                        <StorageItem
-                            key={storageIndex}
-                            isLoading
-                            storage={storage}
-                            storageIndex={storageIndex}
-                            associatedPlans={associatedPlans}
-                        />
-                    );
-                })}
-            </DataList>
+            {dataList.length > 0 ?
+                <DataList aria-label="storage-item-list">
+                    {dataList.map((storage, storageIndex) => {
+                        return (
+                            <StorageItem
+                                key={storageIndex}
+                                isLoading
+                                storage={storage}
+                                storageIndex={storageIndex}
+                                associatedPlans={associatedPlans}
+                            />
+                        );
+                    })}
+                </DataList>
+                : (
+                    <Flex alignItems="center" justifyContent="center">
+                        <Box>
+                            <DataListEmptyState type="storage" />
+                        </Box>
+                    </Flex>
+                )}
         </DataListContent>
     );
 };

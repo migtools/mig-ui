@@ -44,23 +44,13 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
             <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
           </DataListAction>
         </DataListItemRow>
-        {
-          dataList.length > 0 ? (
-            <StorageContent
-              associatedPlans={associatedPlans}
-              dataList={dataList}
-              isLoading={isLoading}
-              isExpanded={isExpanded}
-              {...props}
-            />
-          ) : (
-              <Flex alignItems="center" justifyContent="center">
-                <Box>
-                  <DataListEmptyState type="storage" />
-                </Box>
-              </Flex>
-            )}
-
+        <StorageContent
+          associatedPlans={associatedPlans}
+          dataList={dataList}
+          isLoading={isLoading}
+          isExpanded={isExpanded}
+          {...props}
+        />
       </DataListItem >
     );
   }
