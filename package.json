@@ -45,7 +45,7 @@
     "node-sass": "4.11.0",
     "prettier": "1.16.4",
     "react-loader-spinner": "2.3.0",
-    "react-select": "2.4.2",
+    "react-select": "2.4.3",
     "react-table": "6.9.2",
     "redux-persist": "5.10.0",
     "reduxsauce": "1.0.1",
