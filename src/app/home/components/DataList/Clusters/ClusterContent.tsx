@@ -6,6 +6,7 @@ import {
     DataListContent,
 } from '@patternfly/react-core';
 import ClusterItem from './ClusterItem';
+import DataListEmptyState from '../DataListEmptyState';
 
 const ClusterContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...props }) => {
     return (
@@ -14,19 +15,29 @@ const ClusterContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
             aria-label="cluster-items-content-container"
             isHidden={!isExpanded}
         >
-            <DataList aria-label="cluster-item-list">
-                {dataList.map((cluster, clusterIndex) => {
-                    return (
-                        <ClusterItem
-                            key={clusterIndex}
-                            isLoading
-                            cluster={cluster}
-                            clusterIndex={clusterIndex}
-                            associatedPlans={associatedPlans}
-                        />
-                    );
-                })}
-            </DataList>
+            {dataList.length > 0 ?
+                <DataList aria-label="cluster-item-list">
+                    {dataList.map((cluster, clusterIndex) => {
+                        return (
+                            <ClusterItem
+                                key={clusterIndex}
+                                isLoading
+                                cluster={cluster}
+                                clusterIndex={clusterIndex}
+                                associatedPlans={associatedPlans}
+                            />
+                        );
+                    })}
+                </DataList>
+
+                : (
+                    <Flex alignItems="center" justifyContent="center">
+                        <Box>
+                            <DataListEmptyState type="cluster" />
+                        </Box>
+                    </Flex>
+                )}
+
         </DataListContent>
     );
 };

@@ -18,13 +18,14 @@ const DataListEmptyState = ({ ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
 
+  const { plansDisabled } = props;
   const renderPlanAdd = () => {
     return (
       <React.Fragment>
         <Title size="lg">
           Add a migration plan
         </Title>
-        <Button isDisabled={props.plansDisabled} onClick={toggleOpen} variant="primary">
+        <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
           Add Plan
         </Button>
 

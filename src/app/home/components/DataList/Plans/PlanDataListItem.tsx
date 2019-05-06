@@ -57,18 +57,13 @@ const PlanDataListItem = ({
                         />
                     </DataListAction>
                 </DataListItemRow>
-                {
-                    dataList.length > 0 ? (
-
-                        <PlanContent dataList={dataList} isLoading={isLoading} isExpanded={isExpanded} {...props} />
-                    ) : (
-                            <Flex alignItems="center" justifyContent="center">
-                                <Box>
-                                    <DataListEmptyState type="plan" {...props} />
-                                </Box>
-                            </Flex>
-                        )
-                }
+                <PlanContent
+                    plansDisabled={plansDisabled}
+                    dataList={dataList}
+                    isLoading={isLoading}
+                    isExpanded={isExpanded}
+                    {...props}
+                />
 
             </DataListItem >
         );
