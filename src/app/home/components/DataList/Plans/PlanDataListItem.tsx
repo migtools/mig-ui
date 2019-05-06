@@ -57,7 +57,13 @@ const PlanDataListItem = ({
                         />
                     </DataListAction>
                 </DataListItemRow>
-                <PlanContent dataList={dataList} isLoading={isLoading} isExpanded={isExpanded} {...props} />
+                <PlanContent
+                    plansDisabled={plansDisabled}
+                    dataList={dataList}
+                    isLoading={isLoading}
+                    isExpanded={isExpanded}
+                    {...props}
+                />
 
             </DataListItem >
         );

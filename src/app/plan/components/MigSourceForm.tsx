@@ -15,15 +15,25 @@ class MigSourceForm extends React.Component<any> {
   };
 
   componentDidMount() {
-    const myOptions: any = [];
-    const len = this.props.clusterList.length;
-    for (let i = 0; i < len; i++) {
+    const { clusterList } = this.props;
+    if (clusterList.length) {
+      const myOptions: any = [];
+      const len = this.props.clusterList.length;
+      for (let i = 0; i < len; i++) {
+        myOptions.push({
+          label: this.props.clusterList[i].MigCluster.metadata.name,
+          value: this.props.clusterList[i].MigCluster.metadata.name,
+        });
+      }
+      this.setState({ options: myOptions });
+    } else {
+      const myOptions: any = [];
       myOptions.push({
-        label: this.props.clusterList[i].MigCluster.metadata.name,
-        value: this.props.clusterList[i].MigCluster.metadata.name,
+        label: 'No Valid Clusters Found',
+        value: 'N/A',
       });
+      this.setState({ options: myOptions });
     }
-    this.setState({ options: myOptions });
   }
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
