@@ -13,12 +13,11 @@ import {
 } from '@patternfly/react-core';
 import { IMigStorage } from '../../../../models';
 import uuidv4 from 'uuid/v4';
-import { css } from '@emotion/core';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import ConnectionState from '../../../common/connection_state';
 import StatusIcon from '../../../common/components/StatusIcon';
-
+import HideWrapper from '../../../common/components/HideWrapper';
 
 class WrappedAddStorageForm extends React.Component<any, any> {
   state = {
@@ -63,7 +62,6 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       setFieldTouched,
       connectionState,
     } = this.props;
-
     return (
       <Form
         onSubmit={handleSubmit}
@@ -113,17 +111,11 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           isRequired
           fieldId="s3-provider-access-key"
         >
-          <div
-            //@ts-ignore
-            css={css`
-              display: inline;
-              padding: 1em;
-              cursor: pointer;
-          `}
+          <HideWrapper
             onClick={(e) => this.handleKeyToggle('accessKey', e)}
           >
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
-          </div>
+          </HideWrapper>
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('accessKey', true, true)}
@@ -142,18 +134,12 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           isRequired
           fieldId="s3-provider-secret-access-key"
         >
-          <div
-            //@ts-ignore
-            css={css`
-              display: inline;
-              padding: 1em;
-              cursor: pointer;
-          `}
+          <HideWrapper
             onClick={(e) => this.handleKeyToggle('secret', e)}
           >
 
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
-          </div>
+          </HideWrapper>
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('secret', true, true)}

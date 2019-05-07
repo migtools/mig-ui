@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { css } from '@emotion/core';
 import Loader from 'react-loader-spinner';

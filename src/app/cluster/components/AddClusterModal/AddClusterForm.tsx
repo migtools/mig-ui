@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { withFormik } from 'formik';
 import { Flex, Box } from '@rebass/emotion';
@@ -16,6 +18,7 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import StatusIcon from '../../../common/components/StatusIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
+import HideWrapper from './../../../common/components/HideWrapper';
 
 class WrappedAddClusterForm extends React.Component<any, any> {
   state = {
@@ -52,6 +55,11 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       setFieldValue,
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
+    const customCss = css`
+      display: inline;
+      padding: 1em;
+      cursor: pointer;
+    `;
     return (
       <Form
         onSubmit={handleSubmit}
@@ -101,17 +109,11 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           isRequired
           fieldId="url"
         >
-          <div
-            //@ts-ignore
-            css={css`
-              display: inline;
-              padding: 1em;
-              cursor: pointer;
-          `}
+          <HideWrapper
             onClick={this.handleKeyToggle}
           >
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
-          </div>
+          </HideWrapper>
           <TextInput
             value={values.token}
             onChange={(val, e) => this.onHandleChange(val, e)}
@@ -120,7 +122,6 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             name="token"
             id="token"
             type={this.state.tokenHidden ? 'password' : 'text'}
-          //@ts-ignore
           />
           {errors.token && touched.token && (
             <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>

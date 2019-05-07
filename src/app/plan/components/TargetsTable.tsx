@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { Title } from '@patternfly/react-core';
 import { Button, Card, CardHeader, CardBody, CardFooter, Switch } from '@patternfly/react-core';

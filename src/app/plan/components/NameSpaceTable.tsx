@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { Title } from '@patternfly/react-core';
 import ReactTable from 'react-table';
