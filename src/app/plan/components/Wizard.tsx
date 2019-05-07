@@ -1,3 +1,6 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
+
 import React from 'react';
 import { withFormik } from 'formik';
 import { Flex } from '@rebass/emotion';
@@ -7,6 +10,7 @@ import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
+import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 
 class WrappedWizard extends React.Component<any, any> {
@@ -144,15 +148,17 @@ class WrappedWizard extends React.Component<any, any> {
         nextButtonText: 'Close',
       },
     ];
-
+    const customStyle = css`
+    .pf-c-wizard__main{
+      flex: 1 1 auto;
+    }`;
     return (
       <React.Fragment>
         <Flex>
           <form onSubmit={handleSubmit}>
             <PFWizard
-              css={css`
-                .pf-c-wizard__header { background-color: #151515; }
-              `}
+              css={customStyle
+              }
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
@@ -163,7 +169,6 @@ class WrappedWizard extends React.Component<any, any> {
               onSave={this.handleSave}
               isFullWidth
               isCompactNav
-              startAtStep={1}
             />
           </form>
         </Flex>

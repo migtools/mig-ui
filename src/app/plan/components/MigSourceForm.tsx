@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../theme';

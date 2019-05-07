@@ -24,7 +24,7 @@ const PlanContent = ({ dataList, isLoading, isExpanded, ...props }) => {
             {dataList.length > 0 ?
                 <DataList aria-label="plan-item-list">
                     <PlanHeader />
-                    {props.dataList.map((plan, planIndex) => {
+                    {dataList.map((plan, planIndex) => {
                         return (
                             <PlanItem
                                 key={planIndex}

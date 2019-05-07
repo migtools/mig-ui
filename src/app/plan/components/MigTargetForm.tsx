@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
