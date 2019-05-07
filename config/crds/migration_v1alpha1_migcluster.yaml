@@ -28,28 +28,14 @@ spec:
           type: object
         spec:
           properties:
+            clusterRef:
+              type: object
             isHostCluster:
               type: boolean
-            clusterRef:
-              properties:
-                name:
-                  type: string
-                namespace:
-                  type: string
-              required:
-              - name
-              - namespace
-              type: object
             serviceAccountSecretRef:
-              properties:
-                name:
-                  type: string
-                namespace:
-                  type: string
-              required:
-              - name
-              - namespace
               type: object
+          required:
+          - isHostCluster
           type: object
         status:
           type: object
