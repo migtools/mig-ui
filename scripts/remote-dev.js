@@ -78,24 +78,28 @@ try{
 
 // HACK: Need to patch in CORS support to the authentication server
 // until this is enabled by default on OCP4.
-try{
-  console.log('Patching in CORS support to the auth server')
-  const patch = {
-    spec: {
-      unsupportedConfigOverrides: {
-        corsAllowedOrigins: [
-          '//127\.0\.0\.1(:|$)',
-          '//localhost(:|$)',
-        ]
+if(!process.env.ORIGIN3_HOST) {
+  try{
+    console.log('Patching in CORS support to the auth server')
+    const patch = {
+      spec: {
+        unsupportedConfigOverrides: {
+          corsAllowedOrigins: [
+            '//127\.0\.0\.1(:|$)',
+            '//localhost(:|$)',
+          ]
+        }
       }
-    }
-  };
+    };
 
-  execSync(`oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`);
-} catch (error) {
-  console.error("ERROR: Something went wrong while trying to patch in CORS support to the auth server");
-  console.error(error.stdout.toString());
-  process.exit(1);
+    execSync(`oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`);
+  } catch (error) {
+    console.error("ERROR: Something went wrong while trying to patch in CORS support to the auth server");
+    console.error(error.stdout.toString());
+    process.exit(1);
+  }
+} else {
+  console.log('Detected an origin3 host, skipping CORS config')
 }
 
 console.log('Successfully created oauthclient for mig-ui');
