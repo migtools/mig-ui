@@ -6,7 +6,7 @@ export function createTokenSecret(
   return {
     'apiVersion': 'v1',
     'data': {
-      'token': encodedToken,
+      'saToken': encodedToken,
     },
     'kind': 'Secret',
     'metadata': {
