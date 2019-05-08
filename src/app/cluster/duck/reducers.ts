@@ -10,7 +10,12 @@ export const INITIAL_STATE = {
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, clusterList: action.clusterList, isFetching: false };
+  // TODO: Obviously thsi needs to be removed when connected is actually implemented!
+  const clusterList = action.clusterList.map(cluster => {
+    cluster.status = 'success';
+    return cluster;
+  })
+  return { ...state, clusterList: clusterList, isFetching: false };
 };
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };

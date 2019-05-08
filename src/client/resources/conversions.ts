@@ -55,6 +55,7 @@ export function createMigCluster(
       'namespace': namespace,
     },
     'spec': {
+      'isHostCluster': false,
       'clusterRef': {
         'name': clusterRegistryObj.metadata.name,
         'namespace': clusterRegistryObj.metadata.namespace,
