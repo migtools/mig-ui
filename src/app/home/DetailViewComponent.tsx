@@ -41,6 +41,7 @@ interface IProps {
   stagingSuccess: (plan) => void;
   isStaging?: boolean;
   isMigrating?: boolean;
+  migMeta: string;
 }
 
 interface IState {
@@ -136,6 +137,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="clusterList"
             associatedPlans={clusterAssociatedPlans}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            migMeta={this.props.migMeta}
           />
           <StorageDataListItem
             dataList={allStorage}
@@ -187,6 +189,8 @@ function mapStateToProps(state) {
 
   const { migStorageList } = state.storage;
   const { isMigrating, isStaging } = state.plan;
+  const migMeta = state.migMeta;
+
   return {
     allClusters,
     filteredClusterList,
@@ -199,6 +203,7 @@ function mapStateToProps(state) {
     storageAssociatedPlans,
     isMigrating,
     isStaging,
+    migMeta,
   };
 }
 const mapDispatchToProps = dispatch => {
