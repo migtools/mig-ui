@@ -8,7 +8,14 @@ import {
 import ClusterItem from './ClusterItem';
 import DataListEmptyState from '../DataListEmptyState';
 
-const ClusterContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...props }) => {
+const ClusterContent = ({
+  dataList,
+  isLoading,
+  isExpanded,
+  associatedPlans,
+  migMeta,
+  ...props
+}) => {
     return (
         <DataListContent
             noPadding
@@ -24,6 +31,7 @@ const ClusterContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
                                 isLoading
                                 cluster={cluster}
                                 clusterIndex={clusterIndex}
+                                migMeta={migMeta}
                                 associatedPlans={associatedPlans}
                             />
                         );

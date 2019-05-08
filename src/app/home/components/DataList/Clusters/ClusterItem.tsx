@@ -10,10 +10,12 @@ import {
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 
-const ClusterItem = ({ cluster, clusterIndex, isLoading, ...props }) => {
+const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
   const clusterStatus = cluster.status;
   const clusterUrl =
+    cluster.MigCluster.spec.isHostCluster ?
+    migMeta.clusterApi :
     cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
 
   const associatedPlanCount = props.associatedPlans[clusterName];

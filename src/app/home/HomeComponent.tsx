@@ -105,6 +105,10 @@ class HomeComponent extends React.Component<IProps, IState> {
     </DropdownItem>,
   ];
 
+  componentDidMount = () => {
+    this.props.fetchClusters()
+  }
+
   render() {
     const {
       isDropdownOpen,
