@@ -77,7 +77,7 @@ export function createMigStorage(
 ) {
   return {
     'apiVersion': 'migration.openshift.io/v1alpha1',
-    'kind': 'MigCluster',
+    'kind': 'MigStorage',
     'metadata': {
       'name': name,
       'namespace': namespace,
@@ -89,14 +89,14 @@ export function createMigStorage(
         'awsBucketName': bucketName,
         'awsRegion': region,
         'credsSecretRef': {
-          'name: ': tokenSecret.metadata.name,
+          'name': tokenSecret.metadata.name,
           'namespace': tokenSecret.metadata.namespace,
         },
       },
       'volumeSnapshotConfig': {
         'awsRegion': ' ',
         'credsSecretRef': {
-          'name: ': tokenSecret.metadata.name,
+          'name': tokenSecret.metadata.name,
           'namespace': tokenSecret.metadata.namespace,
         },
       },

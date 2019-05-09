@@ -21,7 +21,7 @@ const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
                             <StorageItem
                                 key={storageIndex}
                                 isLoading
-                                storage={storage}
+                                storage={storage.MigStorage}
                                 storageIndex={storageIndex}
                                 associatedPlans={associatedPlans}
                             />

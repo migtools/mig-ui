@@ -239,6 +239,8 @@ const AddStorageForm: any = withFormik({
     accessKey: '',
     secret: '',
     connectionStatus: '',
+    region: 'USA',
+    bucketName: 'TestingName'
   }),
 
   // Custom sync validation
@@ -257,43 +259,20 @@ const AddStorageForm: any = withFormik({
     if (!values.secret) {
       errors.secret = 'Required';
     }
+    if (!values.region) {
+      errors.region = 'Required';
+    }
+    if (!values.bucketName) {
+      errors.bucketName = 'Required';
+    }
 
     return errors;
   },
 
   handleSubmit: (values, formikBag: any) => {
-    const newStorage: IMigStorage = {
-      id: uuidv4(),
-      apiVersion: 'test',
-      kind: 'test',
-      metadata: {
-        creationTimestamp: '',
-        generation: 1,
-        labels: {
-          'controller-ToolsIcon.k8s.io': 1,
-          'migrations.openshift.io/migration-group': 'test',
-        },
-        name: values.name,
-        namespace: '',
-        resourceVersion: '',
-        selfLink: '',
-        uid: '',
-      },
-      spec: {
-        bucketUrl: values.bucketUrl,
-        backupStorageLocationRef: {
-          name: values.bucketUrl,
-        },
-        migrationStorageSecretRef: {
-          name: values.secret,
-          namespace: '',
-        },
-      },
-      status: values.connectionStatus,
-    };
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit(newStorage);
+    formikBag.props.onAddItemSubmit(values);
   },
 
   displayName: 'Add Storage Form',

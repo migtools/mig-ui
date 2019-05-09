@@ -179,7 +179,7 @@ function mapStateToProps(state) {
   }, {});
 
   const storageAssociatedPlans = allStorage.reduce((associatedPlans, storage) => {
-    const storageName = storage.metadata.name;
+    const storageName = storage.MigStorage.metadata.name;
     associatedPlans[storageName] = allPlans.reduce((count, plan) => {
       const isAssociated = plan.selectedStorage === storageName;
       return isAssociated ? count + 1 : count;

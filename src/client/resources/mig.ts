@@ -21,7 +21,7 @@ export class MigResource extends NamespacedResource {
 
 export enum MigResourceKind {
   MigPlan = 'migplans',
-  MigStorage = 'migstorage',
+  MigStorage = 'migstorages',
   MigAssetCollection = 'migassetcollections',
   MigStage = 'migstages',
   MigMigration = 'migmigrations',

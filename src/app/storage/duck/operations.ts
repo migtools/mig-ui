@@ -27,7 +27,7 @@ const updateSearchTerm = Creators.updateSearchTerm;
 const addStorage = storageValues => {
   return async (dispatch, getState) => {
     try {
-      const { state } = getState();
+      const state = getState();
       const { migMeta } = state;
       const client: IClusterClient =
         ClientFactory.hostCluster(getState());
@@ -35,7 +35,7 @@ const addStorage = storageValues => {
       const tokenSecret = createStorageSecret(
         storageValues.name,
         migMeta.namespace,
-        storageValues.secretKey,
+        storageValues.secret,
         storageValues.accessKey
       )
 
@@ -110,18 +110,49 @@ const fetchStorage = () => {
       );
       const res = await client.list(resource);
       //temporary for ui work
-      const migStorage = res.data.items;
-      // const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
-      // const refs = await Promise.all(
-      //   fetchMigClusterRefs(client, migMeta, nonHostClusters),
-      // );
-      // const groupedClusters = groupClusters(migClusters, refs);
-      // dispatch(migStorageFetchSuccess(res.data.items));
+      const migStorages = res.data.items;
+      const refs = await Promise.all(
+        fetchMigStorageRefs(client, migMeta, migStorages),
+      );
+      const groupedStorages = groupStorages(migStorages, refs);
+      dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
   };
 };
+function fetchMigStorageRefs(
+  client: IClusterClient,
+  migMeta,
+  migStorages,
+): Array<Promise<any>> {
+  const refs: Array<Promise<any>> = [];
+
+  migStorages.forEach(storage => {
+    const secretRef = storage.spec.backupStorageConfig.credsSecretRef;
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      secretRef.namespace,
+    );
+    refs.push(client.get(secretResource, secretRef.name));
+  });
+
+  return refs;
+}
+
+function groupStorages(migStorages: any[], refs: any[]): any[] {
+  return migStorages.map(ms => {
+    const fullStorage = {
+      MigStorage: ms,
+    };
+      fullStorage['Secret'] = refs.find(i =>
+        i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
+      ).data;
+
+
+    return fullStorage;
+  });
+}
 
 export default {
   fetchStorage,
