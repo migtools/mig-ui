@@ -240,7 +240,7 @@ const AddStorageForm: any = withFormik({
     secret: '',
     connectionStatus: '',
     region: 'USA',
-    bucketName: 'TestingName'
+    bucketName: 'TestingName',
   }),
 
   // Custom sync validation

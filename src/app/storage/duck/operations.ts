@@ -36,8 +36,8 @@ const addStorage = storageValues => {
         storageValues.name,
         migMeta.namespace,
         storageValues.secret,
-        storageValues.accessKey
-      )
+        storageValues.accessKey,
+      );
 
       const migStorage = createMigStorage(
         storageValues.name,
@@ -145,7 +145,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     const fullStorage = {
       MigStorage: ms,
     };
-      fullStorage['Secret'] = refs.find(i =>
+    fullStorage['Secret'] = refs.find(i =>
         i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
       ).data;
 
