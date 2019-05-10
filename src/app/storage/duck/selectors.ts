@@ -15,7 +15,8 @@ const getAllStorage = createSelector(
 const getVisibleStorage = createSelector(
     [storageSelector, searchTermSelector],
     (storage, searchTerm) => {
-        return storage.filter(storageItem => storageItem.metadata.name.match(new RegExp(searchTerm, 'i')));
+        return storage.filter(storageItem =>
+            storageItem.MigStorage.metadata.name.match(new RegExp(searchTerm, 'i')));
     },
 );
 export default {

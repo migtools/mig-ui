@@ -106,7 +106,8 @@ class HomeComponent extends React.Component<IProps, IState> {
   ];
 
   componentDidMount = () => {
-    this.props.fetchClusters()
+    this.props.fetchClusters();
+    this.props.fetchStorage();
   }
 
   render() {

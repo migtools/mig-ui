@@ -14,8 +14,8 @@ export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
   const clusterList = action.clusterList.map(cluster => {
     cluster.status = 'success';
     return cluster;
-  })
-  return { ...state, clusterList: clusterList, isFetching: false };
+  });
+  return { ...state, clusterList, isFetching: false };
 };
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
