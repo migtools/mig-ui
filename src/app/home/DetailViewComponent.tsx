@@ -146,7 +146,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
           />
           <PlanDataListItem
-            dataList={allPlans}
+            planList={allPlans}
             id="plansList"
             clusterList={allClusters}
             storageList={allStorage}

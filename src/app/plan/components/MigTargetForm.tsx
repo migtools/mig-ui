@@ -56,8 +56,8 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const len = this.props.storageList.length;
     for (let i = 0; i < len; i++) {
       myStorageOptions.push({
-        label: this.props.storageList[i].metadata.name,
-        value: this.props.storageList[i].metadata.name,
+        label: this.props.storageList[i].MigStorage.metadata.name,
+        value: this.props.storageList[i].MigStorage.metadata.name,
       });
     }
     this.setState({ storageOptions: myStorageOptions });
@@ -91,7 +91,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
               onChange={option => {
                 setFieldValue('selectedStorage', option.value);
                 const matchingRepo = this.props.storageList.filter(
-                  items => items.metadata.name === option.value,
+                  item => item.MigStorage.metadata.name === option.value,
                 );
 
                 this.setState({ selectedStorage: matchingRepo[0] });

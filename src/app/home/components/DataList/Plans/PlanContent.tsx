@@ -13,24 +13,34 @@ import styled from '@emotion/styled';
 import PlanHeader from './PlanHeader';
 import PlanItem from './PlanItem';
 import DataListEmptyState from '../DataListEmptyState';
+interface PlanContentProps {
+    planList: any,
+    onPlanSubmit: () => void,
+    clusterList: any,
+    storageList: any
+    isLoading: boolean,
+    isExpanded: boolean,
+    plansDisabled: boolean,
 
-const PlanContent = ({ dataList, isLoading, isExpanded, ...props }) => {
+}
+
+const PlanContent: React.FunctionComponent<PlanContentProps> = (props) => {
     return (
         <DataListContent
             noPadding
             aria-label="plan-items-content-containter"
-            isHidden={!isExpanded}
+            isHidden={!props.isExpanded}
         >
-            {dataList.length > 0 ?
+            {props.planList.length > 0 ?
                 <DataList aria-label="plan-item-list">
                     <PlanHeader />
-                    {dataList.map((plan, planIndex) => {
+                    {props.planList.map((plan, planIndex) => {
                         return (
                             <PlanItem
                                 key={planIndex}
                                 plan={plan}
                                 planIndex={planIndex}
-                                isLoading={isLoading}
+                                isLoading={props.isLoading}
                                 {...props}
                             />
                         );
@@ -40,7 +50,14 @@ const PlanContent = ({ dataList, isLoading, isExpanded, ...props }) => {
                 : (
                     <Flex alignItems="center" justifyContent="center">
                         <Box>
-                            <DataListEmptyState type="plan" {...props} />
+                            <DataListEmptyState
+                                type="plan"
+                                clusterList={props.clusterList}
+                                storageList={props.storageList}
+                                onPlanSubmit={props.onPlanSubmit}
+                                isLoading={props.isLoading}
+                                {...props}
+                            />
                         </Box>
                     </Flex>
                 )
