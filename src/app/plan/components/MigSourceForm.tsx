@@ -63,7 +63,7 @@ class MigSourceForm extends React.Component<any> {
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
                   this.props.onWizardLoadingToggle(false);
-                }, 1500);
+                }, 500);
 
               }}
               options={options}

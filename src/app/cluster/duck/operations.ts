@@ -124,7 +124,7 @@ function checkConnection() {
     dispatch(Creators.setConnectionState(ConnectionState.Checking));
     setTimeout(() => {
       dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 2000);
+    }, 500);
   };
 }
 

@@ -15,9 +15,9 @@ const getAllPlans = createSelector(
 const getVisiblePlans = createSelector(
     [planSelector, searchTermSelector],
     (plans, searchTerm) => {
-      return plans.filter(plan => {
-        return plan.planName.match(new RegExp(searchTerm, 'i'));
-      });
+        return plans.filter(plan => {
+            return plan.MigPlan.planName.match(new RegExp(searchTerm, 'i'));
+        });
     },
 );
 export default {

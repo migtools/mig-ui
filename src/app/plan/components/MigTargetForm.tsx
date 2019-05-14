@@ -119,7 +119,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
                   this.props.onWizardLoadingToggle(false);
-                }, 1500);
+                }, 500);
 
               }}
               options={clusterOptions}

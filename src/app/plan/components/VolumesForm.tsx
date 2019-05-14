@@ -26,7 +26,7 @@ class VolumesForm extends React.Component<any> {
       this.setState(() => ({ isLoading: false }));
       this.props.onWizardLoadingToggle(false);
 
-    }, 1500);
+    }, 500);
   }
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;

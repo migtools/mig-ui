@@ -127,3 +127,39 @@ export function createStorageSecret(
     'type': 'Opaque',
   };
 }
+
+export function createMigPlan(
+  name: string,
+  namespace: string,
+  sourceClusterObj: any,
+  destinationClusterObj: any,
+  storageObj: any,
+  assetObj: any,
+) {
+  return {
+    'apiVersion': 'migration.openshift.io/v1alpha1',
+    'kind': 'MigPlan',
+    'metadata': {
+      'name': name,
+      'namespace': namespace,
+    },
+    'spec': {
+      'srcMigClusterRef': {
+        'name': sourceClusterObj,
+        'namespace': namespace,
+      },
+      'destMigClusterRef': {
+        'name': destinationClusterObj,
+        'namespace': namespace,
+      },
+      'migStorageRef': {
+        'name': storageObj,
+        'namespace': namespace,
+      },
+      'migAssetCollectionRef': {
+        'name': assetObj,
+        'namespace': namespace,
+      },
+    },
+  };
+}

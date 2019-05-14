@@ -27,6 +27,7 @@ import {
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
+import { planOperations } from '../plan/duck';
 import DetailViewComponent from './DetailViewComponent';
 import DashboardCard from './components/Card/DashboardCard';
 // import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
@@ -36,6 +37,7 @@ interface IProps {
   clusterList: any[];
   migStorageList: any[];
   migPlanList: any[];
+  fetchPlans: () => void;
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
@@ -108,6 +110,7 @@ class HomeComponent extends React.Component<IProps, IState> {
   componentDidMount = () => {
     this.props.fetchClusters();
     this.props.fetchStorage();
+    this.props.fetchPlans();
   }
 
   render() {
@@ -258,5 +261,6 @@ export default connect(
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
+    fetchPlans: () => dispatch(planOperations.fetchPlans()),
   }),
 )(HomeComponent);

@@ -78,7 +78,7 @@ function checkConnection() {
     dispatch(Creators.setConnectionState(ConnectionState.Checking));
     setTimeout(() => {
       dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 2000);
+    }, 500);
   };
 }
 
@@ -146,8 +146,8 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
       MigStorage: ms,
     };
     fullStorage['Secret'] = refs.find(i =>
-        i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
-      ).data;
+      i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
+    ).data;
 
 
     return fullStorage;

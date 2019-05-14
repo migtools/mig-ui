@@ -10,6 +10,7 @@ import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
+import ConfirmationStep from './ConfirmationStep';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 
@@ -36,12 +37,12 @@ class WrappedWizard extends React.Component<any, any> {
       step: curr.id,
     });
   }
-  handleSave = () => {
+  handleAddPlan = () => {
     this.props.handleSubmit();
-    this.setState({
-      step: 1,
-      isOpen: false,
-    });
+    // this.setState({
+    //   step: 1,
+    //   isOpen: false,
+    // });
   }
 
   render() {
@@ -134,12 +135,25 @@ class WrappedWizard extends React.Component<any, any> {
       },
       {
         id: 5,
+        name: 'Confirmation',
+        component: (
+          <ConfirmationStep
+            values={values}
+            errors={errors}
+            onAddPlan={this.handleAddPlan}
+            onWizardLoadingToggle={this.handleWizardLoadingToggle}
+            setFieldValue={setFieldValue}
+          />
+        ),
+        enableNext: !this.state.isWizardLoading,
+      },
+      {
+        id: 6,
         name: 'Results',
         component: (
           <ResultsStep
             values={values}
             errors={errors}
-            handleSubmit={handleSubmit}
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
             setFieldValue={setFieldValue}
           />
@@ -166,7 +180,6 @@ class WrappedWizard extends React.Component<any, any> {
               onBack={this.onMove}
               onClose={this.handleClose}
               steps={steps}
-              onSave={this.handleSave}
               isFullWidth
               isCompactNav
             />
@@ -234,7 +247,6 @@ const Wizard: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onPlanSubmit(values);
-    formikBag.props.onHandleClose();
   },
   validateOnBlur: false,
 
