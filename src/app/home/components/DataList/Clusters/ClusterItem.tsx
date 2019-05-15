@@ -12,7 +12,12 @@ import { LinkIcon } from '@patternfly/react-icons';
 
 const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
-  const clusterStatus = cluster.status;
+  let clusterStatus;
+  if (typeof cluster.MigCluster.status === 'undefined' || cluster.MigCluster.status === null) {
+    clusterStatus = null;
+  } else {
+    clusterStatus = cluster.MigCluster.status.conditions[0].type;
+  }
   const clusterUrl =
     cluster.MigCluster.spec.isHostCluster ?
       migMeta.clusterApi :

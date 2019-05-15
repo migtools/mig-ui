@@ -10,13 +10,35 @@ import {
 } from '@patternfly/react-core';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
-  const successList = dataList.filter((item) => item.status === 'success');
-  const failureList = dataList.filter((item) => item.status !== 'success');
+  let successList = [];
+  let failureList = [];
+  if (type === 'repositories') {
+    successList = dataList.filter((item) => {
+      if (item.MigStorage.status) {
+        return item.MigStorage.status.conditions[0].status === 'True'
+      }
+    })
+    failureList = dataList.filter((item) => {
+      if (item.MigStorage.status) {
+        return item.MigStorage.status.conditions[0].status !== 'True'
+      }
+    })
+  }
+
+  else if (type === 'clusters') {
+    successList = dataList.filter((item) => {
+      if (item.MigCluster.status && item.MigCluster.status.conditions[0].status === 'True') {
+        return item.MigCluster.status.conditions[0].status === 'True';
+      } else {
+        failureList.push(item);
+      }
+    });
+  }
   return (
     <React.Fragment>
       <Grid>
         <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
-          <StatusIcon status="success" />
+          <StatusIcon status="Ready" />
         </GridItem>
         <GridItem span={1} style={{ fontSize: '28px' }}>
           {successList.length}

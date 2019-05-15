@@ -36,14 +36,17 @@ class WrappedWizard extends React.Component<any, any> {
     this.setState({
       step: curr.id,
     });
+    if (curr.id === 5) {
+      this.props.handleSubmit();
+    }
   }
-  handleAddPlan = () => {
-    this.props.handleSubmit();
-    // this.setState({
-    //   step: 1,
-    //   isOpen: false,
-    // });
-  }
+  // handleAddPlan = () => {
+  //   this.props.handlesubmit();
+  //   // this.setState({
+  //   //   step: 1,
+  //   //   isOpen: false,
+  //   // });
+  // }
 
   render() {
     const {
@@ -133,22 +136,22 @@ class WrappedWizard extends React.Component<any, any> {
         ),
         enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
+      // {
+      //   id: 5,
+      //   name: 'Confirmation',
+      //   component: (
+      //     <ConfirmationStep
+      //       values={values}
+      //       errors={errors}
+      //       onAddPlan={this.handleAddPlan}
+      //       onWizardLoadingToggle={this.handleWizardLoadingToggle}
+      //       setFieldValue={setFieldValue}
+      //     />
+      //   ),
+      //   enableNext: !this.state.isWizardLoading,
+      // },
       {
         id: 5,
-        name: 'Confirmation',
-        component: (
-          <ConfirmationStep
-            values={values}
-            errors={errors}
-            onAddPlan={this.handleAddPlan}
-            onWizardLoadingToggle={this.handleWizardLoadingToggle}
-            setFieldValue={setFieldValue}
-          />
-        ),
-        enableNext: !this.state.isWizardLoading,
-      },
-      {
-        id: 6,
         name: 'Results',
         component: (
           <ResultsStep
