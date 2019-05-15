@@ -11,17 +11,7 @@ import {
 import { Flex, Box } from '@rebass/emotion';
 
 const MigrationStatus = ({ dataList, ...props }) => {
-    const notStartedList = dataList.filter((item) => item.status.state === 'Not Started');
-    const stagedSuccessList = dataList.filter((item) => item.status.state === 'Staged Successfully');
-    const migSuccessList = dataList.filter((item) => item.status.state === 'Migrated Successfully');
-    const stagingList = dataList.filter((item) => item.status.state === 'Staging');
-    const migratingList = dataList.filter((item) => item.status.state === 'Migrating');
-    const inProgressLength = [migratingList.length, stagingList.length].reduce(add);
-    const notStartedLength = 0;
 
-    function add(accumulator, a) {
-        return accumulator + a;
-    }
 
     return (
         <React.Fragment>
@@ -31,7 +21,7 @@ const MigrationStatus = ({ dataList, ...props }) => {
                     style={{ fontSize: '28px' }}
                 >
                     <div style={{ marginLeft: '1em' }}>
-                        {notStartedLength}
+                        {/* {notStartedLength} */}
                     </div>
                 </Box>
                 <Box style={{ margin: 'auto 0 auto 0' }}>
@@ -44,7 +34,7 @@ const MigrationStatus = ({ dataList, ...props }) => {
                     style={{ fontSize: '28px' }}
                 >
                     <div style={{ marginLeft: '1em' }}>
-                        {inProgressLength}
+                        {/* {inProgressLength} */}
                     </div>
                 </Box>
                 <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
@@ -57,7 +47,7 @@ const MigrationStatus = ({ dataList, ...props }) => {
                     style={{ fontSize: '28px' }}
                 >
                     <div style={{ marginLeft: '1em' }}>
-                        {migSuccessList.length}
+                        {/* {migSuccessList.length} */}
                     </div>
                 </Box>
                 <Box span={10} style={{ margin: 'auto 0 auto 0' }}>

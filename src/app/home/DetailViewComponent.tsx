@@ -23,7 +23,7 @@ import {
 interface IProps {
   filteredClusterList: any[];
   filteredStorageList: any[];
-  filteredPlanList: any[];
+  // filteredPlanList: any[];
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
@@ -118,7 +118,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       allStorage,
       allClusters,
       migStorageList,
-      filteredPlanList,
+      // filteredPlanList,
       allPlans,
       clusterAssociatedPlans,
       storageAssociatedPlans,
@@ -166,7 +166,7 @@ function mapStateToProps(state) {
   const allClusters = clusterSelectors.getAllClusters(state);
   const filteredStorageList = storageSelectors.getVisibleStorage(state);
   const allStorage = storageSelectors.getAllStorage(state);
-  const filteredPlanList = planSelectors.getVisiblePlans(state);
+  // const filteredPlanList = planSelectors.getVisiblePlans(state);
   const allPlans = planSelectors.getAllPlans(state);
 
   const clusterAssociatedPlans = allClusters.reduce((associatedPlans, cluster) => {
@@ -197,7 +197,7 @@ function mapStateToProps(state) {
     allStorage,
     filteredStorageList,
     migStorageList,
-    filteredPlanList,
+    // filteredPlanList,
     allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,

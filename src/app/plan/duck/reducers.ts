@@ -3,7 +3,8 @@ import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
   migPlanList: [],
-  PlanSearchText: '',
+  planStateMap: [],
+  planSearchText: '',
   sourceClusterNamespaces: [],
   isStaging: false,
   isMigrating: false,
@@ -22,6 +23,7 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
     },
   };
   const newPlan = { ...action.newPlan, ...planState };
+
   return {
     ...state,
     migPlanList: [...state.migPlanList, newPlan],
