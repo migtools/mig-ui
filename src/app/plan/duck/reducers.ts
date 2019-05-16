@@ -10,8 +10,12 @@ export const INITIAL_STATE = {
   isMigrating: false,
 };
 
+export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isFetching: true };
+};
+
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migPlanList: action.migPlanList };
+  return { ...state, migPlanList: action.migPlanList, isFetching: false };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
@@ -122,6 +126,7 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
+  [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,

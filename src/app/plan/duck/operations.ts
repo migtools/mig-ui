@@ -14,6 +14,7 @@ import {
   createMigPlan,
 } from '../../../client/resources/conversions';
 
+const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
@@ -125,6 +126,7 @@ const removePlan = id => {
 
 const fetchPlans = () => {
   return async (dispatch, getState) => {
+    dispatch(migPlanFetchRequest());
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());

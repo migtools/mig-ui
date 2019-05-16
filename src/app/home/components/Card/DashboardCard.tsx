@@ -78,20 +78,7 @@ class DashboardCard extends Component<IProps, IState> {
               </Box>
 
             </Flex>
-
-
-            // <Loader
-            //   type="ThreeDots"
-            //   color={theme.colors.navy}
-            //   height="100"
-            //   width="100"
-            //   css={css`
-            //     text-align: center;
-            //     margin: auto;
-            //   `}
-            // />
           )}
-
       </Card>
     );
   }
