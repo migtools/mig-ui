@@ -19,14 +19,15 @@ export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
-  const planState = {
+  const newPlanState = {
     migrations: [],
+    persistentVolumes: [],
     status: {
       state: 'Not Started',
       progress: 0,
     },
   };
-  const newPlan = { ...action.newPlan, ...planState };
+  const newPlan = { ...action.newPlan, planState: newPlanState };
 
   return {
     ...state,
