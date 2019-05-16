@@ -40,7 +40,7 @@ class DashboardCard extends Component<IProps, IState> {
     const { dataList, title, isFetching, type } = this.props;
     const { isOpen } = this.state;
     return (
-      <Card style={{ minHeight: '100%' }}>
+      <Card style={{ minHeight: '100%', height: '16em' }}>
         {dataList && !isFetching ? (
           <React.Fragment>
             <CardHeader>
