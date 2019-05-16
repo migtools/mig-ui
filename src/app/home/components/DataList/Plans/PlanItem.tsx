@@ -26,6 +26,7 @@ import { useOpenModal } from '../../../duck/hooks';
 
 
 const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
+    console.log('plan', plan)
     const index = planIndex + 1;
     const MigrationsIcon = styled(ServiceIcon)`
                     color: ${() =>

@@ -92,15 +92,15 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const initMigration = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.status = {
+  updatedPlan.planState.status = {
     state: 'Migrating',
     progress: 0,
   };
 
-  updatedPlan.migrations = [...updatedPlan.migrations, 'migration'];
+  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, 'migration'];
 
   return {
     ...state,
@@ -110,10 +110,10 @@ export const initMigration = (state = INITIAL_STATE, action) => {
 };
 
 export const migrationSuccess = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.status = {
+  updatedPlan.planState.status = {
     state: 'Migrated Successfully',
     progress: 0,
   };

@@ -163,3 +163,23 @@ export function createMigPlan(
     },
   };
 }
+export function createMigMigration(
+  migID: string,
+  planName: string,
+  namespace: string,
+) {
+  return {
+    'apiVersion': 'migration.openshift.io/v1alpha1',
+    'kind': 'MigMigration',
+    'metadata': {
+      'name': migID,
+      'namespace': namespace,
+    },
+    'spec': {
+      'migPlanRef': {
+        'name': planName,
+        'namespace': namespace,
+      },
+    },
+  };
+}

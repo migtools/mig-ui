@@ -12,10 +12,12 @@ import {
 
 import {
   createMigPlan,
+  createMigMigration,
 } from '../../../client/resources/conversions';
-
+const uuidv1 = require('uuid/v1');
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
+const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
 const removePlanSuccess = Creators.removePlanSuccess;
@@ -43,24 +45,53 @@ const runStage = plan => {
 };
 
 const runMigration = plan => {
-  return (dispatch, getState) => {
-    dispatch(Creators.initMigration(plan.planName));
-    const planNameToStage = plan.planName;
-    const interval = setInterval(() => {
-      const planList = getState().plan.migPlanList;
+  return async (dispatch, getState) => {
+    try {
+      dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const planItem = planList.find(p => p.planName === planNameToStage);
-      if (planItem.status.progress === 100) {
-        dispatch(Creators.migrationSuccess(planItem.planName));
-        clearInterval(interval);
-        return;
-      }
+      const migMigrationObj = createMigMigration(
+        uuidv1(),
+        plan.MigPlan.metadata.name,
+        migMeta.namespace
+      );
+      const migMigrationResource = new MigResource(
+        MigResourceKind.MigMigration,
+        migMeta.namespace,
+      );
 
-      const nextProgress = plan.status.progress + 20;
-      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
-    }, 1000);
+
+      const arr = await Promise.all([
+        // client.create(secretResource, tokenSecret),
+        client.create(migMigrationResource, migMigrationObj),
+      ]);
+      const migration = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
+
+      // const planNameToStage = plan.planName;
+      // const interval = setInterval(() => {
+      //   const planList = getState().plan.migPlanList;
+
+      //   const planItem = planList.find(p => p.planName === planNameToStage);
+      //   if (planItem.status.progress === 100) {
+      //     dispatch(Creators.migrationSuccess(planItem.planName));
+      //     clearInterval(interval);
+      //     return;
+      //   }
+
+      //   const nextProgress = plan.status.progress + 20;
+      //   dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
+      // }, 1000);
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
   };
-};
+}
+
 
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
@@ -74,8 +105,9 @@ const addPlan = migPlan => {
         migPlan.sourceCluster,
         migPlan.targetCluster,
         migPlan.selectedStorage,
-        'temp asset name'
+        'temp asset name',
       );
+
 
       // const assetCollectionObj = createAssetCollectionObj(
       //   clusterValues.name,
@@ -167,10 +199,19 @@ function fetchMigPlanRefs(
 }
 
 function groupPlans(migPlans: any[], refs: any[]): any[] {
+  const newPlanState = {
+    migrations: [],
+    persistentVolumes: [],
+    status: {
+      state: 'Not Started',
+      progress: 0,
+    },
+  };
+
   return migPlans.map(mp => {
     const fullPlan = {
       MigPlan: mp,
-
+      planState: newPlanState,
     };
     // fullStorage['Secret'] = refs.find(i =>
     //   i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,

@@ -19,12 +19,9 @@ const newPlanState = {
 const getAllPlans = createSelector(
     [planSelector],
     (plans) => {
-        return plans.map(plan => ({ ...plan, planState: newPlanState }));
+        // return plans.map(plan => ({ ...plan, planState: newPlanState }));
+        return plans;
     });
-// return plans.filter(plan=> plan.MigPlan.metadata.name === planState.plan)
-// return plans.map(plan => 
-//     {...plan, planState: newPlanState}
-// )
 const getFakePlans = createSelector(
 
     [planSelector],
