@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
 import theme from '../../../../theme';
@@ -6,6 +8,8 @@ import CardStatus from './Status/CardStatus';
 import MigrationStatus from './Status/MigrationStatus';
 import FooterText from './FooterText';
 import HeaderText from './HeaderText';
+import { css } from '@emotion/core';
+import { Flex, Box, Text } from '@rebass/emotion';
 interface IState {
   isOpen: boolean;
 }
@@ -37,29 +41,57 @@ class DashboardCard extends Component<IProps, IState> {
     const { isOpen } = this.state;
     return (
       <Card style={{ minHeight: '100%' }}>
-        <CardHeader>
-          {dataList && !isFetching ? (
-            <Title size="md">
-              <HeaderText type={type} dataList={dataList} />
-            </Title>
-          ) : (
-              <Loader
-                type="ThreeDots"
-                color={theme.colors.navy}
-                height="100"
-                width="100"
-              />
-            )}
-        </CardHeader>
-        <CardBody>
-          {type === 'plans' ?
-            <MigrationStatus dataList={dataList} /> :
-            <CardStatus dataList={dataList} type={type} />
-          }
-        </CardBody>
-        <CardFooter>
-          <FooterText dataList={dataList} type={type} />
-        </CardFooter>
+        {dataList && !isFetching ? (
+          <React.Fragment>
+            <CardHeader>
+              <Title size="md">
+                <HeaderText type={type} dataList={dataList} />
+              </Title>
+            </CardHeader>
+            <CardBody>
+              {type === 'plans' ?
+                <MigrationStatus dataList={dataList} /> :
+                <CardStatus dataList={dataList} type={type} />
+              }
+            </CardBody>
+            <CardFooter>
+              <FooterText dataList={dataList} type={type} />
+            </CardFooter>
+
+          </React.Fragment>
+        ) : (
+            <Flex
+              css={css`
+                        height: 100%;
+                        text-align: center;
+                        margin: auto;
+                    `}
+            >
+              <Box flex="1" m="auto">
+                <Loader
+                  type="ThreeDots"
+                  color={theme.colors.navy}
+                  height="100"
+                  width="100"
+                />
+                <Text fontSize={[2, 3, 4]}> Loading </Text>
+              </Box>
+
+            </Flex>
+
+
+            // <Loader
+            //   type="ThreeDots"
+            //   color={theme.colors.navy}
+            //   height="100"
+            //   width="100"
+            //   css={css`
+            //     text-align: center;
+            //     margin: auto;
+            //   `}
+            // />
+          )}
+
       </Card>
     );
   }
