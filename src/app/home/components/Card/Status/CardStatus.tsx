@@ -14,13 +14,10 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   let failureList = [];
   if (type === 'repositories') {
     successList = dataList.filter((item) => {
-      if (item.MigStorage.status) {
-        return item.MigStorage.status.conditions[0].status === 'True'
-      }
-    })
-    failureList = dataList.filter((item) => {
-      if (item.MigStorage.status) {
-        return item.MigStorage.status.conditions[0].status !== 'True'
+      if (item.MigStorage.status && item.MigStorage.status.conditions[0].status === 'True') {
+        return item.MigStorage.status.conditions[0].status === 'True';
+      } else {
+        failureList.push(item);
       }
     })
   }
