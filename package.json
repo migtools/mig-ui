@@ -28,7 +28,7 @@
     "@babel/preset-typescript": "7.3.3",
     "@emotion/babel-preset-css-prop": "10.0.9",
     "@emotion/styled": "10.0.9",
-    "@types/jest": "24.0.11",
+    "@types/jest": "24.0.13",
     "@types/node": "11.13.6",
     "babel-loader": "8.0.6",
     "babel-plugin-emotion": "10.0.9",
