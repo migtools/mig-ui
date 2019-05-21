@@ -40,11 +40,11 @@ export class MockClusterClient {
     });
   }
 
-  public create(resource: KubeResource, newObject: object): Promise<any> {
+  public create(resource: KubeResource, newObject: any): Promise<any> {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
         res({
-          data: KubeStore.Instance.setResource(resource, name, newObject),
+          data: KubeStore.Instance.setResource(resource, newObject.metadata.name, newObject),
         });
       }, this.reqTime);
     });

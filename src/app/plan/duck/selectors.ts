@@ -35,26 +35,26 @@ const getNotStartedList = createSelector(
     (plans) => {
         plans.filter((item) => item.status.state === 'Not Started');
     },
-)
+);
 
 const getStagedSuccessList = createSelector(
     [planSelector],
     (plans) => {
         plans.filter((item) => item.status.state === 'Staged Successfully');
     },
-)
+);
 const getMigSuccessList = createSelector(
     [planSelector],
     (plans) => {
         plans.filter((item) => item.status.state === 'Migrated Successfully');
     },
-)
+);
 const getStagingList = createSelector(
     [planSelector],
     (plans) => {
         plans.filter((item) => item.status.state === 'Staging');
     },
-)
+);
 
 
 const getMigratingList = createSelector(
@@ -62,7 +62,7 @@ const getMigratingList = createSelector(
     (plans) => {
         plans.filter((item) => item.status.state === 'Migrating');
     },
-)
+);
 
 function add(accumulator, a) {
     return accumulator + a;

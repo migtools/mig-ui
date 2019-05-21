@@ -11,18 +11,18 @@ import Wizard from '../../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../duck/hooks';
 
-interface EmptyStateProps {
-  clusterList?: any,
-  onPlanSubmit?: () => void,
-  storageList?: any,
-  isLoading?: boolean,
-  plansDisabled?: boolean,
-  type: string,
+interface IEmptyStateProps {
+  clusterList?: any;
+  onPlanSubmit?: () => void;
+  storageList?: any;
+  isLoading?: boolean;
+  plansDisabled?: boolean;
+  type: string;
 
 
 }
 
-const DataListEmptyState: React.FunctionComponent<EmptyStateProps> = ({
+const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
   clusterList,
   storageList,
   isLoading,

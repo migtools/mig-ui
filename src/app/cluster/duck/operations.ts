@@ -20,8 +20,8 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const addClusterSuccess = Creators.addClusterSuccess;
-const removeClusterSuccess = Creators.removeClusterSuccess;
-const removeClusterFailure = Creators.removeClusterFailure;
+// const removeClusterSuccess = Creators.removeClusterSuccess;
+// const removeClusterFailure = Creators.removeClusterFailure;
 const updateSearchTerm = Creators.updateSearchTerm;
 
 const addCluster = clusterValues => {

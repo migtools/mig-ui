@@ -1,13 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../../../theme';
 import {
     Button,
-    DataList,
-    DataListToggle,
-    DataListContent,
-    Dropdown,
-    KebabToggle,
     DataListItem,
     DataListCell,
     DataListItemRow,
@@ -26,8 +21,6 @@ import { useOpenModal } from '../../../duck/hooks';
 
 
 const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
-    console.log('plan', plan)
-    const index = planIndex + 1;
     const MigrationsIcon = styled(ServiceIcon)`
                     color: ${() =>
             plan.planState.migrations.length > 0 ? theme.colors.blue : theme.colors.black};
@@ -128,6 +121,4 @@ const PlanItem = ({ plan, planIndex, isLoading, ...props }) => {
     );
 };
 
-
 export default PlanItem;
-

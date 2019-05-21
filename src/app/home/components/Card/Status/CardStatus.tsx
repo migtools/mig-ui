@@ -11,7 +11,7 @@ import {
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
-  let failureList = [];
+  const failureList = [];
   if (type === 'repositories') {
     successList = dataList.filter((item) => {
       if (item.MigStorage.status && item.MigStorage.status.conditions[0].status === 'True') {
@@ -19,10 +19,8 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
       } else {
         failureList.push(item);
       }
-    })
-  }
-
-  else if (type === 'clusters') {
+    });
+  } else if (type === 'clusters') {
     successList = dataList.filter((item) => {
       if (item.MigCluster.status && item.MigCluster.status.conditions[0].status === 'True') {
         return item.MigCluster.status.conditions[0].status === 'True';

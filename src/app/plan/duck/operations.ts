@@ -14,14 +14,17 @@ import {
   createMigPlan,
   createMigMigration,
 } from '../../../client/resources/conversions';
+
+/* tslint:disable */
 const uuidv1 = require('uuid/v1');
+/* tslint:enable */
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
-const addPlanFailure = Creators.addPlanFailure;
-const removePlanSuccess = Creators.removePlanSuccess;
-const removePlanFailure = Creators.removePlanFailure;
+// const addPlanFailure = Creators.addPlanFailure;
+// const removePlanSuccess = Creators.removePlanSuccess;
+// const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
 const runStage = plan => {
@@ -54,7 +57,7 @@ const runMigration = plan => {
       const migMigrationObj = createMigMigration(
         uuidv1(),
         plan.MigPlan.metadata.name,
-        migMeta.namespace
+        migMeta.namespace,
       );
       const migMigrationResource = new MigResource(
         MigResourceKind.MigMigration,
@@ -63,7 +66,6 @@ const runMigration = plan => {
 
 
       const arr = await Promise.all([
-        // client.create(secretResource, tokenSecret),
         client.create(migMigrationResource, migMigrationObj),
       ]);
       const migration = arr.reduce((accum, res) => {
@@ -90,7 +92,7 @@ const runMigration = plan => {
       dispatch(AlertCreators.alertError(err));
     }
   };
-}
+};
 
 
 const addPlan = migPlan => {
@@ -125,7 +127,6 @@ const addPlan = migPlan => {
       );
 
       const arr = await Promise.all([
-        // client.create(secretResource, tokenSecret),
         client.create(migPlanResource, migPlanObj),
       ]);
 
@@ -133,7 +134,6 @@ const addPlan = migPlan => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
-      // storage.status = storageValues.connectionStatus;
       dispatch(addPlanSuccess(plan));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
@@ -143,17 +143,6 @@ const addPlan = migPlan => {
 
 const removePlan = id => {
   throw new Error('NOT IMPLEMENTED');
-  // return dispatch => {
-  //   removeStorageRequest(id).then(
-  //     response => {
-  //       dispatch(removeStorageSuccess(id));
-  //       dispatch(fetchStorage());
-  //     },
-  //     error => {
-  //       dispatch(removeStorageFailure(error));
-  //     },
-  //   );
-  // };
 };
 
 const fetchPlans = () => {
@@ -167,38 +156,16 @@ const fetchPlans = () => {
         migMeta.namespace,
       );
       const res = await client.list(resource);
-      //temporary for ui work
-      const migPlans = res.data.items;
-      const refs = await Promise.all(
-        fetchMigPlanRefs(client, migMeta, migPlans),
-      );
-      const groupedPlans = groupPlans(migPlans, refs);
+      const migPlans = res.data.items || [];
+      const groupedPlans = groupPlans(migPlans);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
       dispatch(AlertCreators.alertError(err));
     }
   };
 };
-function fetchMigPlanRefs(
-  client: IClusterClient,
-  migMeta,
-  migPlans,
-): Array<Promise<any>> {
-  const refs: Array<Promise<any>> = [];
 
-  migPlans.forEach(plan => {
-    // const secretRef = plan.spec.backupStorageConfig.credsSecretRef;
-    // const secretResource = new CoreNamespacedResource(
-    //   CoreNamespacedResourceKind.Secret,
-    //   secretRef.namespace,
-    // );
-    // refs.push(client.get(secretResource, secretRef.name));
-  });
-
-  return refs;
-}
-
-function groupPlans(migPlans: any[], refs: any[]): any[] {
+function groupPlans(migPlans: any[]): any[] {
   const newPlanState = {
     migrations: [],
     persistentVolumes: [],
@@ -213,11 +180,6 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
       MigPlan: mp,
       planState: newPlanState,
     };
-    // fullStorage['Secret'] = refs.find(i =>
-    //   i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
-    // ).data;
-
-
     return fullPlan;
   });
 }

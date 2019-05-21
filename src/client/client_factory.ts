@@ -51,7 +51,7 @@ function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
   }
   const clusterApi =
     cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
-  const accessToken = atob(cluster.Secret.data.token);
+  const accessToken = atob(cluster.Secret.data.token || cluster.Secret.data.saToken);
 
   return { clusterApi, accessToken };
 }

@@ -13,18 +13,18 @@ import styled from '@emotion/styled';
 import PlanHeader from './PlanHeader';
 import PlanItem from './PlanItem';
 import DataListEmptyState from '../DataListEmptyState';
-interface PlanContentProps {
-    planList: any,
-    onPlanSubmit: () => void,
-    clusterList: any,
-    storageList: any
-    isLoading: boolean,
-    isExpanded: boolean,
-    plansDisabled: boolean,
+interface IPlanContentProps {
+    planList: any;
+    onPlanSubmit: () => void;
+    clusterList: any;
+    storageList: any;
+    isLoading: boolean;
+    isExpanded: boolean;
+    plansDisabled: boolean;
 
 }
 
-const PlanContent: React.FunctionComponent<PlanContentProps> = (props) => {
+const PlanContent: React.FunctionComponent<IPlanContentProps> = (props) => {
     return (
         <DataListContent
             noPadding
