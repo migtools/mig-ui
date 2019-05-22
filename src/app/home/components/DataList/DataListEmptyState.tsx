@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Flex, Box } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Button,
   Title,
@@ -11,11 +9,26 @@ import AddClusterModal from '../../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../../storage/components/AddStorageModal';
 import Wizard from '../../../plan/components/Wizard';
 import { AddCircleOIcon } from '@patternfly/react-icons';
-import { useExpandDataList, useOpenModal } from '../../duck/hooks';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import { useOpenModal } from '../../duck/hooks';
 
-const DataListEmptyState = ({ ...props }) => {
-  const [isExpanded, toggleExpanded] = useExpandDataList(false);
+interface IEmptyStateProps {
+  clusterList?: any;
+  onPlanSubmit?: () => void;
+  storageList?: any;
+  isLoading?: boolean;
+  plansDisabled?: boolean;
+  type: string;
+
+
+}
+
+const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
+  clusterList,
+  storageList,
+  isLoading,
+  onPlanSubmit,
+  ...props
+}) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
 
   const { plansDisabled } = props;
@@ -30,12 +43,12 @@ const DataListEmptyState = ({ ...props }) => {
         </Button>
 
         <Wizard
-          clusterList={props.clusterList}
-          storageList={props.storageList}
+          clusterList={clusterList}
+          storageList={storageList}
           isOpen={isOpen}
           onHandleClose={toggleOpen}
-          isLoading={props.isLoading}
-          onPlanSubmit={props.onPlanSubmit}
+          isLoading={isLoading}
+          onPlanSubmit={onPlanSubmit}
         />
 
       </React.Fragment>

@@ -38,20 +38,16 @@ spec:
                   type: string
                 awsRegion:
                   type: string
+                awsS3ForcePathStyle:
+                  type: boolean
                 awsSignatureVersion:
                   type: string
                 azureResourceGroup:
                   type: string
                 azureStorageAccount:
                   type: string
-              required:
-              - awsBucketName
-              - awsRegion
-              - awsPublicUrl
-              - awsKmsKeyId
-              - awsSignatureVersion
-              - azureStorageAccount
-              - azureResourceGroup
+                credsSecretRef:
+                  type: object
               type: object
             backupStorageProvider:
               type: string
@@ -63,16 +59,12 @@ spec:
                   type: string
                 azureResourceGroup:
                   type: string
-              required:
-              - awsRegion
-              - azureApiTimeout
-              - azureResourceGroup
+                credsSecretRef:
+                  type: object
               type: object
             volumeSnapshotProvider:
               type: string
           required:
-          - volumeSnapshotProvider
-          - volumeSnapshotConfig
           - backupStorageProvider
           - backupStorageConfig
           type: object

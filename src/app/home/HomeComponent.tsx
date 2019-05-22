@@ -27,15 +27,21 @@ import {
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
+import { planOperations } from '../plan/duck';
 import DetailViewComponent from './DetailViewComponent';
 import DashboardCard from './components/Card/DashboardCard';
+import clusterSelectors from '../cluster/duck/selectors';
+import storageSelectors from '../storage/duck/selectors';
+import planSelectors from '../plan/duck/selectors';
+
 // import openshiftLogo from 'openshift-logo-package/logos/SVG/Logo-Cluster_Application_Migration.svg';
 interface IProps {
   loggingIn?: boolean;
   user: any;
-  clusterList: any[];
-  migStorageList: any[];
-  migPlanList: any[];
+  allClusters: any[];
+  allStorage: any[];
+  allPlans: any[];
+  fetchPlans: () => void;
   fetchClusters: () => void;
   fetchStorage: () => void;
   onLogout: () => void;
@@ -104,6 +110,12 @@ class HomeComponent extends React.Component<IProps, IState> {
       Logout
     </DropdownItem>,
   ];
+
+  componentDidMount = () => {
+    this.props.fetchClusters();
+    this.props.fetchStorage();
+    this.props.fetchPlans();
+  }
 
   render() {
     const {
@@ -186,9 +198,9 @@ class HomeComponent extends React.Component<IProps, IState> {
       isFetchingStorage,
       isFetchingClusters,
       isFetchingPlans,
-      migStorageList,
-      migPlanList,
-      clusterList,
+      allStorage,
+      allPlans,
+      allClusters,
     } = this.props;
     const StyledPageSection = styled(PageSection)`
       padding-top: '50px';
@@ -203,7 +215,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 <DashboardCard
                   type="clusters"
                   title="Clusters"
-                  dataList={clusterList}
+                  dataList={allClusters}
                   isFetching={isFetchingClusters}
                 />
               </GridItem>
@@ -211,7 +223,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 <DashboardCard
                   title="Replication Repositories"
                   type="repositories"
-                  dataList={migStorageList}
+                  dataList={allStorage}
                   isFetching={isFetchingStorage}
                 />
               </GridItem>
@@ -219,7 +231,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 <DashboardCard
                   type="plans"
                   title="Migration Plans"
-                  dataList={migPlanList}
+                  dataList={allPlans}
                   isFetching={isFetchingPlans}
                 />
               </GridItem>
@@ -240,18 +252,20 @@ class HomeComponent extends React.Component<IProps, IState> {
 
 export default connect(
   state => ({
+    allClusters: clusterSelectors.getAllClusters(state),
+    allStorage: storageSelectors.getAllStorage(state),
+    allPlans: planSelectors.getAllPlans(state),
+    filteredClusterList: clusterSelectors.getVisibleClusters(state),
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     isFetchingClusters: state.cluster.isFetching,
     isFetchingStorage: state.storage.isFetching,
     isFetchingPlans: state.plan.isFetching,
-    clusterList: state.cluster.clusterList,
-    migStorageList: state.storage.migStorageList,
-    migPlanList: state.plan.migPlanList,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
+    fetchPlans: () => dispatch(planOperations.fetchPlans()),
   }),
 )(HomeComponent);

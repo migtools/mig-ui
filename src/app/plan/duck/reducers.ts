@@ -3,25 +3,32 @@ import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {
   isFetching: false,
   migPlanList: [],
-  PlanSearchText: '',
+  planStateMap: [],
+  planSearchText: '',
   sourceClusterNamespaces: [],
   isStaging: false,
   isMigrating: false,
 };
 
+export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isFetching: true };
+};
+
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migPlanList: action.migPlanList };
+  return { ...state, migPlanList: action.migPlanList, isFetching: false };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
-  const planState = {
+  const newPlanState = {
     migrations: [],
+    persistentVolumes: [],
     status: {
       state: 'Not Started',
       progress: 0,
     },
   };
-  const newPlan = { ...action.newPlan, ...planState };
+  const newPlan = { ...action.newPlan, planState: newPlanState };
+
   return {
     ...state,
     migPlanList: [...state.migPlanList, newPlan],
@@ -86,15 +93,15 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const initMigration = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.status = {
+  updatedPlan.planState.status = {
     state: 'Migrating',
     progress: 0,
   };
 
-  updatedPlan.migrations = [...updatedPlan.migrations, 'migration'];
+  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, 'migration'];
 
   return {
     ...state,
@@ -104,10 +111,10 @@ export const initMigration = (state = INITIAL_STATE, action) => {
 };
 
 export const migrationSuccess = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.status = {
+  updatedPlan.planState.status = {
     state: 'Migrated Successfully',
     progress: 0,
   };
@@ -120,6 +127,7 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
+  [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,

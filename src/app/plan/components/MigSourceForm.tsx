@@ -56,14 +56,14 @@ class MigSourceForm extends React.Component<any> {
                   c => c.MigCluster.metadata.name === option.value,
                 );
 
-                this.setState({ sourceCluster: matchingCluster[0] });
+                this.setState({ sourceCluster: matchingCluster[0].MigCluster });
                 setFieldTouched('sourceCluster');
                 this.setState({ isLoading: true });
                 this.props.onWizardLoadingToggle(true);
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
                   this.props.onWizardLoadingToggle(false);
-                }, 1500);
+                }, 500);
 
               }}
               options={options}

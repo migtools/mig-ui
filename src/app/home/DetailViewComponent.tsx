@@ -23,7 +23,7 @@ import {
 interface IProps {
   filteredClusterList: any[];
   filteredStorageList: any[];
-  filteredPlanList: any[];
+  // filteredPlanList: any[];
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
@@ -35,12 +35,13 @@ interface IProps {
   removeCluster: (id) => void;
   updateClusterSearchTerm: (searchTerm) => void;
   updateStorageSearchTerm: (searchTerm) => void;
-  addPlanSuccess: (plan) => void;
+  addPlan: (plan) => void;
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
   isStaging?: boolean;
   isMigrating?: boolean;
+  migMeta: string;
 }
 
 interface IState {
@@ -103,7 +104,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     }));
   }
   handlePlanSubmit = (plan) => {
-    this.props.addPlanSuccess(plan);
+    this.props.addPlan(plan);
   }
 
   handleStageTriggered = (plan) => {
@@ -117,7 +118,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       allStorage,
       allClusters,
       migStorageList,
-      filteredPlanList,
+      // filteredPlanList,
       allPlans,
       clusterAssociatedPlans,
       storageAssociatedPlans,
@@ -136,6 +137,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="clusterList"
             associatedPlans={clusterAssociatedPlans}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            migMeta={this.props.migMeta}
           />
           <StorageDataListItem
             dataList={allStorage}
@@ -144,7 +146,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
           />
           <PlanDataListItem
-            dataList={allPlans}
+            planList={allPlans}
             id="plansList"
             clusterList={allClusters}
             storageList={allStorage}
@@ -164,7 +166,7 @@ function mapStateToProps(state) {
   const allClusters = clusterSelectors.getAllClusters(state);
   const filteredStorageList = storageSelectors.getVisibleStorage(state);
   const allStorage = storageSelectors.getAllStorage(state);
-  const filteredPlanList = planSelectors.getVisiblePlans(state);
+  // const filteredPlanList = planSelectors.getVisiblePlans(state);
   const allPlans = planSelectors.getAllPlans(state);
 
   const clusterAssociatedPlans = allClusters.reduce((associatedPlans, cluster) => {
@@ -177,7 +179,7 @@ function mapStateToProps(state) {
   }, {});
 
   const storageAssociatedPlans = allStorage.reduce((associatedPlans, storage) => {
-    const storageName = storage.metadata.name;
+    const storageName = storage.MigStorage.metadata.name;
     associatedPlans[storageName] = allPlans.reduce((count, plan) => {
       const isAssociated = plan.selectedStorage === storageName;
       return isAssociated ? count + 1 : count;
@@ -187,18 +189,21 @@ function mapStateToProps(state) {
 
   const { migStorageList } = state.storage;
   const { isMigrating, isStaging } = state.plan;
+  const migMeta = state.migMeta;
+
   return {
     allClusters,
     filteredClusterList,
     allStorage,
     filteredStorageList,
     migStorageList,
-    filteredPlanList,
+    // filteredPlanList,
     allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,
     isMigrating,
     isStaging,
+    migMeta,
   };
 }
 const mapDispatchToProps = dispatch => {
@@ -207,7 +212,7 @@ const mapDispatchToProps = dispatch => {
     updateStorageSearchTerm: searchTerm => dispatch(storageOperations.updateSearchTerm(searchTerm)),
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    addPlanSuccess: plan => dispatch(PlanCreators.addPlanSuccess(plan)),
+    addPlan: plan => dispatch(planOperations.addPlan(plan)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) => dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),

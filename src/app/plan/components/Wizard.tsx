@@ -10,6 +10,7 @@ import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
+import ConfirmationStep from './ConfirmationStep';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 
@@ -35,14 +36,17 @@ class WrappedWizard extends React.Component<any, any> {
     this.setState({
       step: curr.id,
     });
+    if (curr.id === 5) {
+      this.props.handleSubmit();
+    }
   }
-  handleSave = () => {
-    this.props.handleSubmit();
-    this.setState({
-      step: 1,
-      isOpen: false,
-    });
-  }
+  // handleAddPlan = () => {
+  //   this.props.handlesubmit();
+  //   // this.setState({
+  //   //   step: 1,
+  //   //   isOpen: false,
+  //   // });
+  // }
 
   render() {
     const {
@@ -132,6 +136,20 @@ class WrappedWizard extends React.Component<any, any> {
         ),
         enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
+      // {
+      //   id: 5,
+      //   name: 'Confirmation',
+      //   component: (
+      //     <ConfirmationStep
+      //       values={values}
+      //       errors={errors}
+      //       onAddPlan={this.handleAddPlan}
+      //       onWizardLoadingToggle={this.handleWizardLoadingToggle}
+      //       setFieldValue={setFieldValue}
+      //     />
+      //   ),
+      //   enableNext: !this.state.isWizardLoading,
+      // },
       {
         id: 5,
         name: 'Results',
@@ -139,7 +157,6 @@ class WrappedWizard extends React.Component<any, any> {
           <ResultsStep
             values={values}
             errors={errors}
-            handleSubmit={handleSubmit}
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
             setFieldValue={setFieldValue}
           />
@@ -166,7 +183,6 @@ class WrappedWizard extends React.Component<any, any> {
               onBack={this.onMove}
               onClose={this.handleClose}
               steps={steps}
-              onSave={this.handleSave}
               isFullWidth
               isCompactNav
             />
@@ -186,26 +202,26 @@ const Wizard: any = withFormik({
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [
-      {
-        name: 'pv007',
-        project: 'robot-shop',
-        storageClass: '',
-        size: '100 Gi',
-        claim: 'robot-shop/mongodata',
-        type: 'copy',
-        details: '',
-        id: 1,
-      },
-      {
-        name: 'pv097',
-        project: 'robot-shop',
-        storageClass: '',
-        size: '100 Gi',
-        claim: 'robot-shop/mysqldata',
-        type: 'copy',
-        details: '',
-        id: 2,
-      },
+      // {
+      //   name: 'pv007',
+      //   project: 'robot-shop',
+      //   storageClass: '',
+      //   size: '100 Gi',
+      //   claim: 'robot-shop/mongodata',
+      //   type: 'copy',
+      //   details: '',
+      //   id: 1,
+      // },
+      // {
+      //   name: 'pv097',
+      //   project: 'robot-shop',
+      //   storageClass: '',
+      //   size: '100 Gi',
+      //   claim: 'robot-shop/mysqldata',
+      //   type: 'copy',
+      //   details: '',
+      //   id: 2,
+      // },
     ],
 
   }),
@@ -234,7 +250,6 @@ const Wizard: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onPlanSubmit(values);
-    formikBag.props.onHandleClose();
   },
   validateOnBlur: false,
 

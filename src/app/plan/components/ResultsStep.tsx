@@ -36,7 +36,7 @@ class ResultsStep extends React.Component<any, any> {
             this.props.onWizardLoadingToggle(false);
             this.props.setFieldValue('connectionStatus', 'success');
 
-        }, 1500);
+        }, 500);
     }
 
     render() {
