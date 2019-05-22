@@ -2853,10 +2853,10 @@ clean-webpack-plugin@2.0.1:
   dependencies:
     del "^4.0.0"
 
-client-oauth2@4.2.3:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/client-oauth2/-/client-oauth2-4.2.3.tgz#07d474b51fd4fad8dbcf4a896b02a2f53d5ff2e2"
-  integrity sha512-wYr6y+7gh+XtpX4wmmWiq+XPWe/worg92evt8+LB3ODUQLaafKrdtRVEdvF/fGQRyCtIlb2/6BS1AzHgyP86Tg==
+client-oauth2@4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/client-oauth2/-/client-oauth2-4.2.4.tgz#e9a08b84321154de443aacd3e27c4fa94b1c33a7"
+  integrity sha512-T5YtobWNDS6DeW7Cxw1CoTIbO5Ry9VpR/3JatZY7HDFVvxLOaaJFJGA5CkDyX8OZWSey//Z7eY6A+HrvG3RWug==
   dependencies:
     popsicle "^10.0.0"
     safe-buffer "^5.1.1"
