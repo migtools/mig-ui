@@ -1081,10 +1081,10 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@patternfly/react-core@3.16.4":
-  version "3.16.4"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-3.16.4.tgz#b89fa9f40a4b5cd854951edf5a7b3d4ff01e68be"
-  integrity sha512-kgMttEO2XCEyKWG4O2I00pFASZ3J6UhsYMRdUWFsmxuB/uCGpENqPDQwvAyXkdIuvABjBsF3kV4gdfZdrgPpKA==
+"@patternfly/react-core@3.16.10":
+  version "3.16.10"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-3.16.10.tgz#32b9e29345c9fc8a1b8b1ffbec14196ef7d55dda"
+  integrity sha512-ASoNNuC+S2UjUeT2aR7LsAuDJpvXzMHYCjRc9WmXD9S52nvqA5p4SS9cXV60RCTvRpUbXJ7/55gnxi4Dt9u6/A==
   dependencies:
     "@patternfly/react-icons" "^3.8.1"
     "@patternfly/react-styles" "^3.2.0"
