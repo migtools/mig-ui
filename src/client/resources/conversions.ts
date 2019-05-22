@@ -71,7 +71,7 @@ export function createMigCluster(
 export function createMigStorage(
   name: string,
   bucketName: string,
-  region: string,
+  bucketRegion: string,
   namespace: string,
   tokenSecret: any,
 ) {
@@ -87,14 +87,14 @@ export function createMigStorage(
       'volumeSnapshotProvider': 'aws',
       'backupStorageConfig': {
         'awsBucketName': bucketName,
-        'awsRegion': region,
+        'awsRegion': bucketRegion,
         'credsSecretRef': {
           'name': tokenSecret.metadata.name,
           'namespace': tokenSecret.metadata.namespace,
         },
       },
       'volumeSnapshotConfig': {
-        'awsRegion': ' ',
+        'awsRegion': bucketRegion,
         'credsSecretRef': {
           'name': tokenSecret.metadata.name,
           'namespace': tokenSecret.metadata.namespace,
