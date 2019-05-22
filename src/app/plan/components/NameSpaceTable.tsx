@@ -1,23 +1,14 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { Title } from '@patternfly/react-core';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import planOperations from '../../plan/duck/operations';
-import matchSorter from 'match-sorter';
 import {
-  Button,
-  TextInput,
   TextContent,
   TextList,
   TextListItem,
-  TextArea,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
 } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
@@ -48,57 +39,20 @@ class NamespaceTable extends React.Component<IProps, IState> {
 
   componentDidMount() {
     if (this.props.sourceCluster) {
-      this.setState({
-        rows: [{
-          name: 'robot-shop',
-          displayName: '',
-          pods: '12',
-          services: '12',
-          targetName: 'robot-shop',
-        }, {
-          name: 'sandbox',
-          displayName: '',
-          pods: '3',
-          services: '1',
-          targetName: 'sandbox',
-        }],
-      });
-      //temporary for ui development
-      // this.props.fetchNamespacesForCluster(
-      //   this.props.sourceCluster.metadata.name,
-      // );
-
-      // this.setState({ rows: this.props.sourceCluster.metadata.namespaces });
+      this.props.fetchNamespacesForCluster(
+        this.props.sourceCluster.metadata.name,
+      );
     }
   }
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevProps.sourceCluster !== this.props.sourceCluster) {
-  //     this.setState({
-  //       rows: [
-  //         { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
-  //         { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
-  //         { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' },
-  //       ],
-  //     });
-  //     //temporary for ui development
-  //     // this.props.fetchNamespacesForCluster(
-  //     //   this.props.sourceCluster.metadata.name,
-  //     // );
-  //   }
-  //   if (
-  //     prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces
-  //   ) {
-  //     this.setState({
-  //       rows: [
-  //         { name: 'OCP_Project1', displayName: 'My Project 1', pods: '3', services: '6' },
-  //         { name: 'OCP_Project2', displayName: 'My Project 2', pods: '4', services: '5' },
-  //         { name: 'OCP_Project3', displayName: 'My Project 3', pods: '4', services: '7' },
-  //       ],
-  //     });
-  //     //temporary for ui development
-  //     // this.setState({ rows: this.props.sourceClusterNamespaces });
-  //   }
-  // }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces
+    ) {
+      this.setState({ rows: this.props.sourceClusterNamespaces });
+    }
+  }
+
   selectRow = row => {
     const index = row.index;
     const checkedCopy = this.state.checked;
@@ -107,8 +61,6 @@ class NamespaceTable extends React.Component<IProps, IState> {
     this.setState({
       checked: checkedCopy,
     });
-    //temporary for ui development
-    // const itemList = this.props.sourceCluster.metadata.namespaces
     const itemList = this.state.rows;
     const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
       for (let i = 0; checkedCopy.length > i; i++) {
@@ -166,7 +118,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
                     }}
                   >Name
                   </div>),
-                accessor: 'name',
+                accessor: 'metadata.name',
               },
               {
                 Header: () => (

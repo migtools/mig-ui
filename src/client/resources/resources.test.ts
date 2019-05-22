@@ -11,7 +11,6 @@ test('MigResource namedPath should be correct', () => {
 
 test('MigResource listPath should be correct', () => {
   const ns = 'test-ns';
-  const planName = 'eriks-plan';
   const migResource = new MigResource(MigResourceKind.MigPlan, ns);
   expect(migResource.listPath()).toBe(
     `/apis/migration.openshift.io/v1alpha1/namespaces/${ns}/migplans`,

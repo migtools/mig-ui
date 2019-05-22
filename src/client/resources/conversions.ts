@@ -6,7 +6,7 @@ export function createTokenSecret(
   return {
     'apiVersion': 'v1',
     'data': {
-      'token': encodedToken,
+      'saToken': encodedToken,
     },
     'kind': 'Secret',
     'metadata': {
@@ -55,6 +55,7 @@ export function createMigCluster(
       'namespace': namespace,
     },
     'spec': {
+      'isHostCluster': false,
       'clusterRef': {
         'name': clusterRegistryObj.metadata.name,
         'namespace': clusterRegistryObj.metadata.namespace,
@@ -62,6 +63,122 @@ export function createMigCluster(
       'serviceAccountSecretRef': {
         'name': tokenSecret.metadata.name,
         'namespace': tokenSecret.metadata.namespace,
+      },
+    },
+  };
+}
+
+export function createMigStorage(
+  name: string,
+  bucketName: string,
+  region: string,
+  namespace: string,
+  tokenSecret: any,
+) {
+  return {
+    'apiVersion': 'migration.openshift.io/v1alpha1',
+    'kind': 'MigStorage',
+    'metadata': {
+      'name': name,
+      'namespace': namespace,
+    },
+    'spec': {
+      'backupStorageProvider': 'aws',
+      'volumeSnapshotProvider': 'aws',
+      'backupStorageConfig': {
+        'awsBucketName': bucketName,
+        'awsRegion': region,
+        'credsSecretRef': {
+          'name': tokenSecret.metadata.name,
+          'namespace': tokenSecret.metadata.namespace,
+        },
+      },
+      'volumeSnapshotConfig': {
+        'awsRegion': ' ',
+        'credsSecretRef': {
+          'name': tokenSecret.metadata.name,
+          'namespace': tokenSecret.metadata.namespace,
+        },
+      },
+    },
+  };
+}
+
+export function createStorageSecret(
+  name: string,
+  namespace: string,
+  secretKey: any,
+  accessKey: string,
+) {
+  // btoa => to base64, atob => from base64
+  const encodedAccessKey = btoa(accessKey);
+  const encodedSecretKey = btoa(secretKey);
+  return {
+    'apiVersion': 'v1',
+    'data': {
+      'aws-access-key-id': encodedAccessKey,
+      'aws-secret-access-key-id': encodedSecretKey,
+    },
+    'kind': 'Secret',
+    'metadata': {
+      'name': name,
+      'namespace': namespace,
+    },
+    'type': 'Opaque',
+  };
+}
+
+export function createMigPlan(
+  name: string,
+  namespace: string,
+  sourceClusterObj: any,
+  destinationClusterObj: any,
+  storageObj: any,
+  assetObj: any,
+) {
+  return {
+    'apiVersion': 'migration.openshift.io/v1alpha1',
+    'kind': 'MigPlan',
+    'metadata': {
+      'name': name,
+      'namespace': namespace,
+    },
+    'spec': {
+      'srcMigClusterRef': {
+        'name': sourceClusterObj,
+        'namespace': namespace,
+      },
+      'destMigClusterRef': {
+        'name': destinationClusterObj,
+        'namespace': namespace,
+      },
+      'migStorageRef': {
+        'name': storageObj,
+        'namespace': namespace,
+      },
+      'migAssetCollectionRef': {
+        'name': assetObj,
+        'namespace': namespace,
+      },
+    },
+  };
+}
+export function createMigMigration(
+  migID: string,
+  planName: string,
+  namespace: string,
+) {
+  return {
+    'apiVersion': 'migration.openshift.io/v1alpha1',
+    'kind': 'MigMigration',
+    'metadata': {
+      'name': migID,
+      'namespace': namespace,
+    },
+    'spec': {
+      'migPlanRef': {
+        'name': planName,
+        'namespace': namespace,
       },
     },
   };

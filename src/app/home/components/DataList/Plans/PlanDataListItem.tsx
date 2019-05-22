@@ -20,14 +20,14 @@ const PlanDataListItem = ({
     storageList,
     onPlanSubmit,
     isLoading,
-    dataList,
+    planList,
     plansDisabled,
     ...props
 }) => {
     const [isExpanded, toggleExpanded] = useExpandDataList(false);
     const [isOpen, toggleOpen] = useOpenModal(false);
 
-    if (dataList) {
+    if (planList) {
         return (
             <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
                 <DataListItemRow>
@@ -58,8 +58,11 @@ const PlanDataListItem = ({
                     </DataListAction>
                 </DataListItemRow>
                 <PlanContent
+                    onPlanSubmit={onPlanSubmit}
                     plansDisabled={plansDisabled}
-                    dataList={dataList}
+                    planList={planList}
+                    clusterList={clusterList}
+                    storageList={storageList}
                     isLoading={isLoading}
                     isExpanded={isExpanded}
                     {...props}

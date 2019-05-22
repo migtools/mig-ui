@@ -13,7 +13,12 @@ import { LinkIcon } from '@patternfly/react-icons';
 const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
     const associatedPlanCount = props.associatedPlans[storage.metadata.name];
     const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
-
+    let storageStatus;
+    if (typeof storage.status === 'undefined' || storage.status === null) {
+        storageStatus = null;
+    } else {
+        storageStatus = storage.status.conditions[0].type;
+    }
     return (
         <DataListItem
             key={storageIndex}
@@ -23,7 +28,7 @@ const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
                 <DataListItemCells
                     dataListCells={[
                         <DataListCell key={name} width={1}>
-                            <StatusIcon status="success" />
+                            <StatusIcon status={storageStatus} />
                             <span id="simple-item1">{storage.metadata.name}</span>
                         </DataListCell>,
                         <DataListCell key="url" width={2}>
