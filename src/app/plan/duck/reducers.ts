@@ -1,5 +1,7 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
+import moment from 'moment';
+
 export const INITIAL_STATE = {
   isFetching: false,
   migPlanList: [],
@@ -122,8 +124,16 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     state: 'Migrating',
     progress: 0,
   };
+  const newMigObject = {
+    type: 'Migrate',
+    start: moment().format(),
+    end: moment().format(),
+    moved: 0,
+    copied: 0,
+    status: 'Complete',
+  };
 
-  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, 'migration'];
+  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, newMigObject];
 
   return {
     ...state,

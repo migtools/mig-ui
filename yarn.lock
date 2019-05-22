@@ -1106,10 +1106,28 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
+"@patternfly/patternfly@2.6.5":
+  version "2.6.5"
+  resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-2.6.5.tgz#6e4f22f0e7ac6d06bd42473b8282ce92a1cab8e1"
+  integrity sha512-L0k+ea2N679ytQwTqYJ7RewVDx6FDpm9burtHgD8fhcIN0UJJo7v2IkhLya2WzH2/O7L7TiF45lb/ZVoFVckDA==
+
 "@patternfly/react-core@3.16.4":
   version "3.16.4"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-3.16.4.tgz#b89fa9f40a4b5cd854951edf5a7b3d4ff01e68be"
   integrity sha512-kgMttEO2XCEyKWG4O2I00pFASZ3J6UhsYMRdUWFsmxuB/uCGpENqPDQwvAyXkdIuvABjBsF3kV4gdfZdrgPpKA==
+  dependencies:
+    "@patternfly/react-icons" "^3.8.1"
+    "@patternfly/react-styles" "^3.2.0"
+    "@patternfly/react-tokens" "^2.5.1"
+    "@tippy.js/react" "^1.1.1"
+    emotion "^9.2.9"
+    exenv "^1.2.2"
+    focus-trap-react "^4.0.1"
+
+"@patternfly/react-core@^3.16.10":
+  version "3.16.10"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-3.16.10.tgz#32b9e29345c9fc8a1b8b1ffbec14196ef7d55dda"
+  integrity sha512-ASoNNuC+S2UjUeT2aR7LsAuDJpvXzMHYCjRc9WmXD9S52nvqA5p4SS9cXV60RCTvRpUbXJ7/55gnxi4Dt9u6/A==
   dependencies:
     "@patternfly/react-icons" "^3.8.1"
     "@patternfly/react-styles" "^3.2.0"
@@ -1141,6 +1159,18 @@
     jsdom "^11.11.0"
     relative "^3.0.2"
     resolve-from "^4.0.0"
+
+"@patternfly/react-table@^2.5.11":
+  version "2.5.11"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-2.5.11.tgz#bded6682354151e344624f435f8a5ea5f01a37f3"
+  integrity sha512-5iaF4RE52vXvko0mgdjS60gCfqR06bZ8E7ALdnsf32mzDuLHjZ2/PqX9uy6Kvz3BaVUQIC1mT1Jow2R2p/VFew==
+  dependencies:
+    "@patternfly/patternfly" "2.6.5"
+    "@patternfly/react-core" "^3.16.10"
+    "@patternfly/react-icons" "^3.8.1"
+    "@patternfly/react-styles" "^3.2.0"
+    exenv "^1.2.2"
+    reactabular-table "^8.14.0"
 
 "@patternfly/react-tokens@^2.5.1":
   version "2.5.1"
@@ -7056,7 +7086,11 @@ mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@0.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@
   dependencies:
     minimist "0.0.8"
 
+<<<<<<< HEAD
 moment@2.24.0:
+=======
+moment@^2.24.0:
+>>>>>>> Add mig history tabl & expandable view
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
@@ -8349,6 +8383,13 @@ react@16.8.4:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.13.4"
+
+reactabular-table@^8.14.0:
+  version "8.14.0"
+  resolved "https://registry.yarnpkg.com/reactabular-table/-/reactabular-table-8.14.0.tgz#2ce05de47d499db91678fa9518505ea509bf3d7f"
+  integrity sha512-F3qOa7yJCi1hnxsESmo2QBWVl1RQfUfZhMhpG81zOxDQKsk/nsXlq/5aBtQ17NadYI6PDdMNourNs+255GpmFQ==
+  dependencies:
+    classnames "^2.2.5"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"

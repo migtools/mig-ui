@@ -11,8 +11,6 @@ import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
-import ConfirmationStep from './ConfirmationStep';
-import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import planOperations from '../duck/operations';
 
@@ -102,7 +100,6 @@ class WrappedWizard extends React.Component<any, any> {
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        // enableNext: !errors.planName && touched.planName === true
         enableNext:
           !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
@@ -121,7 +118,6 @@ class WrappedWizard extends React.Component<any, any> {
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        // enableNext: !errors.planName && touched.planName === true
         enableNext:
           !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
