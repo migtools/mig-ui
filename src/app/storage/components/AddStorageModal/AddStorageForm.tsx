@@ -12,6 +12,7 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import ConnectionState from '../../../common/connection_state';
 import StatusIcon from '../../../common/components/StatusIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
+import CheckConnection from './../../../common/components/CheckConnection';
 
 class WrappedAddStorageForm extends React.Component<any, any> {
   state = {
@@ -55,6 +56,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       handleSubmit,
       setFieldTouched,
       connectionState,
+      checkConnection,
     } = this.props;
     return (
       <Form
@@ -167,47 +169,12 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
           )}
         </FormGroup>
-        <FormGroup
-          fieldId="check-connection"
-          id="check-connection"
-        >
-          <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
-            <Box>
-              <Flex flexDirection="column" >
-                <Box alignSelf="flex-start">
-                  <Button
-                    key="check connection"
-                    variant="secondary"
-                    onClick={() => this.props.checkConnection()}
-                  >
-                    Check connection
-                  </Button>
-                </Box>
-                <Box alignSelf="flex-start">
-                  {renderConnectionState(connectionState)}
-                </Box>
-              </Flex>
-
-            </Box>
-            <Box mt={30} alignSelf="flex-start">
-              <Button
-                variant="primary"
-                type="submit"
-                isDisabled={connectionState !== ConnectionState.Success}
-                style={{ marginRight: '10px' }}
-              >
-                Add
-              </Button>
-              <Button
-                key="cancel"
-                variant="secondary"
-                onClick={() => this.props.onHandleModalToggle(null)}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Flex>
-        </FormGroup>
+        <CheckConnection
+          errors={errors}
+          touched={touched}
+          connectionState={connectionState}
+          checkConnection={checkConnection}
+        />
       </Form >
 
     );
