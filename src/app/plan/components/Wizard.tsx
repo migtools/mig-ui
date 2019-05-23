@@ -136,20 +136,6 @@ class WrappedWizard extends React.Component<any, any> {
         ),
         enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
-      // {
-      //   id: 5,
-      //   name: 'Confirmation',
-      //   component: (
-      //     <ConfirmationStep
-      //       values={values}
-      //       errors={errors}
-      //       onAddPlan={this.handleAddPlan}
-      //       onWizardLoadingToggle={this.handleWizardLoadingToggle}
-      //       setFieldValue={setFieldValue}
-      //     />
-      //   ),
-      //   enableNext: !this.state.isWizardLoading,
-      // },
       {
         id: 5,
         name: 'Results',
@@ -163,6 +149,8 @@ class WrappedWizard extends React.Component<any, any> {
         ),
         enableNext: !this.state.isWizardLoading,
         nextButtonText: 'Close',
+        hideCancelButton: true,
+        hideBackButton: true
       },
     ];
     const customStyle = css`
