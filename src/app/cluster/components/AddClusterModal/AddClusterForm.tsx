@@ -13,13 +13,11 @@ import {
   Form,
   FormGroup,
 } from '@patternfly/react-core';
-import ConnectionState from '../../../common/connection_state';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
-import StatusIcon from '../../../common/components/StatusIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 import HideWrapper from './../../../common/components/HideWrapper';
-
+import CheckConnection from './../../../common/components/CheckConnection';
 class WrappedAddClusterForm extends React.Component<any, any> {
   state = {
     tokenHidden: true,
@@ -53,6 +51,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       connectionState,
       setFieldTouched,
       setFieldValue,
+      checkConnection,
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     const customCss = css`
@@ -127,80 +126,15 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
           )}
         </FormGroup>
-        <FormGroup
-          fieldId="check-connection"
-          id="check-connection"
-        >
-          <Flex width="100%" m="20px 10px 10px 0" flexDirection="column">
-            <Box>
-              <Flex flexDirection="column" >
-                <Box alignSelf="flex-start">
-                  <Button
-                    key="check connection"
-                    variant="secondary"
-                    onClick={() => this.props.checkConnection()}
-                  >
-                    Check connection
-                  </Button>
-                </Box>
-                <Box alignSelf="flex-start">
-                  {renderConnectionState(connectionState)}
-                </Box>
-              </Flex>
-
-            </Box>
-            <Box mt={30} alignSelf="flex-start">
-              <Button
-                variant="primary"
-                type="submit"
-                isDisabled={connectionState !== ConnectionState.Success}
-                style={{ marginRight: '10px' }}
-              >
-                Add
-              </Button>
-              <Button
-                key="cancel"
-                variant="secondary"
-                onClick={() => this.props.onHandleModalToggle(null)}
-              >
-                Cancel
-              </Button>
-            </Box>
-          </Flex>
-        </FormGroup>
+        <CheckConnection
+          errors={errors}
+          touched={touched}
+          connectionState={connectionState}
+          checkConnection={checkConnection}
+        />
       </Form >
     );
   }
-}
-
-function renderConnectionState(connectionState: ConnectionState) {
-  let cxStateContents;
-  let iconStatus;
-
-  switch (connectionState) {
-    case ConnectionState.Checking:
-      cxStateContents = 'Checking...';
-      iconStatus = 'checking';
-      break;
-    case ConnectionState.Success:
-      cxStateContents = 'Success!';
-      iconStatus = 'success';
-      break;
-    case ConnectionState.Failed:
-      cxStateContents = 'Failed!';
-      iconStatus = 'failed';
-      break;
-  }
-
-  return (
-    <Flex m="10px 10px 10px 0">
-      <Box>
-        {cxStateContents}
-        {' '}
-        <StatusIcon status={iconStatus} />
-      </Box>
-    </Flex>
-  );
 }
 
 const AddClusterForm: any = withFormik({
