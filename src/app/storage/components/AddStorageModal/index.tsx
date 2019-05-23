@@ -30,7 +30,7 @@ class AddStorageModal extends React.Component<any, any> {
         isSmall
         isOpen={this.props.isOpen}
         onClose={this.handleClose}
-        title="Add Storage"
+        title="Add Repository"
       >
         <AddStorageForm
           connectionState={connectionState}

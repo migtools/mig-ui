@@ -40,7 +40,7 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, ..
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button onClick={toggleOpen} variant="link">
-              <PlusCircleIcon /> Add cluster
+              <PlusCircleIcon /> Add Cluster
             </Button>
             <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
           </DataListAction>

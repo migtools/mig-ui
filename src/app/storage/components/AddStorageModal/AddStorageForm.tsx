@@ -285,7 +285,7 @@ const AddStorageForm: any = withFormik({
     formikBag.props.onAddItemSubmit(values);
   },
 
-  displayName: 'Add Storage Form',
+  displayName: 'Add Respository Form',
 })(WrappedAddStorageForm);
 
 export default AddStorageForm;

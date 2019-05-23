@@ -61,7 +61,7 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
           Add replication repositories for the migration
           </Title>
         <Button onClick={toggleOpen} variant="primary">
-          Add Storage
+          Add Repository
             </Button>
         <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>

@@ -39,7 +39,7 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button onClick={toggleOpen} variant="link">
-              <PlusCircleIcon /> Add storage
+              <PlusCircleIcon /> Add Repository
             </Button>
             <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
           </DataListAction>
