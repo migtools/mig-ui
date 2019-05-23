@@ -168,8 +168,22 @@ class NamespaceTable extends React.Component<IProps, IState> {
 }
 
 function mapStateToProps(state) {
+  const allSourceClusterNamespaces = state.plan.sourceClusterNamespaces;
+  const filteredSourceClusterNamespaces = allSourceClusterNamespaces.filter(ns => {
+    const rejectedRegex = [
+      RegExp('^kube-.*', "i"),
+      RegExp('^openshift-.*', "i"),
+      RegExp('^openshift$', "i"),
+      RegExp('^velero$', "i"),
+    ];
+
+    // Short circuit the regex check if any of them match a rejected regex and filter it out
+    return !rejectedRegex.some(rx => rx.test(ns.metadata.name));
+  });
+
+
   return {
-    sourceClusterNamespaces: state.plan.sourceClusterNamespaces,
+    sourceClusterNamespaces: filteredSourceClusterNamespaces,
   };
 }
 
