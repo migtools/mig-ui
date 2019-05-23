@@ -95,7 +95,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             // isValid={!errors.bucketName && touched.bucketName}
             id="bucketName"
           />
-          {errors.bucketName&& touched.bucketName && (
+          {errors.bucketName && touched.bucketName && (
             <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
           )}
         </FormGroup>
