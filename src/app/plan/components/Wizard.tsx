@@ -150,7 +150,7 @@ class WrappedWizard extends React.Component<any, any> {
         enableNext: !this.state.isWizardLoading,
         nextButtonText: 'Close',
         hideCancelButton: true,
-        hideBackButton: true
+        hideBackButton: true,
       },
     ];
     const customStyle = css`
