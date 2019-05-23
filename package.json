@@ -64,7 +64,7 @@
     "typescript": "3.3.4000",
     "uuid": "^3.3.2",
     "webpack": "4.29.6",
-    "webpack-bundle-analyzer": "3.1.0",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "3.3.0",
     "webpack-dev-server": "3.2.1"
   },
