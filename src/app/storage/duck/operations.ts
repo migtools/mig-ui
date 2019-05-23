@@ -42,7 +42,7 @@ const addStorage = storageValues => {
       const migStorage = createMigStorage(
         storageValues.name,
         storageValues.bucketName,
-        storageValues.region,
+        storageValues.bucketRegion,
         migMeta.namespace,
         tokenSecret,
       );

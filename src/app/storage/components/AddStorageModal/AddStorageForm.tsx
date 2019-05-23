@@ -3,16 +3,10 @@ import { withFormik } from 'formik';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
-  TextContent,
-  TextList,
-  TextListItem,
-  TextArea,
   TextInput,
   Form,
   FormGroup,
 } from '@patternfly/react-core';
-import { IMigStorage } from '../../../../models';
-import uuidv4 from 'uuid/v4';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import ConnectionState from '../../../common/connection_state';
@@ -68,7 +62,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
         style={{ marginTop: '24px' }}
       >
         <FormGroup
-          label="Storage Name"
+          label="Repository Name"
           isRequired
           fieldId="name"
         >
@@ -87,25 +81,45 @@ class WrappedAddStorageForm extends React.Component<any, any> {
 
         </FormGroup>
         <FormGroup
-          label="Bucket URL"
+          label="AWS S3 Bucket Name"
           isRequired
-          fieldId="url"
+          fieldId="bucketName"
         >
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
-            onInput={() => setFieldTouched('bucketUrl', true, true)}
+            onInput={() => setFieldTouched('bucketName', true, true)}
             onBlur={handleBlur}
-            value={values.url}
-            name="bucketUrl"
+            value={values.bucketName}
+            name="bucketName"
             type="text"
-            // isValid={!errors.bucketUrl && touched.bucketUrl}
-            id="bucketUrl"
+            // isValid={!errors.bucketName && touched.bucketName}
+            id="bucketName"
           />
-          {errors.bucketUrl && touched.bucketUrl && (
-            <FormErrorDiv id="feedback-url">{errors.bucketUrl}</FormErrorDiv>
+          {errors.bucketName && touched.bucketName && (
+            <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
           )}
-
         </FormGroup>
+
+        <FormGroup
+          label="AWS S3 Bucket Region"
+          isRequired
+          fieldId="bucketRegion"
+        >
+          <TextInput
+            onChange={(val, e) => this.onHandleChange(val, e)}
+            onInput={() => setFieldTouched('bucketRegion', true, true)}
+            onBlur={handleBlur}
+            value={values.bucketRegion}
+            name="bucketRegion"
+            type="text"
+            // isValid={!errors.bucketRegion && touched.bucketRegion}
+            id="bucketRegion"
+          />
+          {errors.bucketRegion && touched.bucketRegion && (
+            <FormErrorDiv id="feedback-bucket-region">{errors.bucketRegion}</FormErrorDiv>
+          )}
+        </FormGroup>
+
         <FormGroup
           label="S3 Provider Access Key"
           isRequired
@@ -235,12 +249,11 @@ function renderConnectionState(connectionState: ConnectionState) {
 const AddStorageForm: any = withFormik({
   mapPropsToValues: () => ({
     name: '',
-    bucketUrl: '',
+    bucketName: '',
+    bucketRegion: '',
     accessKey: '',
     secret: '',
     connectionStatus: '',
-    region: 'USA',
-    bucketName: 'TestingName',
   }),
 
   // Custom sync validation
@@ -250,20 +263,17 @@ const AddStorageForm: any = withFormik({
     if (!values.name) {
       errors.name = 'Required';
     }
-    if (!values.bucketUrl) {
-      errors.bucketUrl = 'Required';
+    if (!values.bucketName) {
+      errors.bucketName = 'Required';
+    }
+    if (!values.bucketRegion) {
+      errors.bucketRegion = 'Required';
     }
     if (!values.accessKey) {
       errors.accessKey = 'Required';
     }
     if (!values.secret) {
       errors.secret = 'Required';
-    }
-    if (!values.region) {
-      errors.region = 'Required';
-    }
-    if (!values.bucketName) {
-      errors.bucketName = 'Required';
     }
 
     return errors;
