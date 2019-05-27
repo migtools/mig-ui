@@ -36,6 +36,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
                 variant="secondary"
                 isDisabled={!errorsObj || touchedObj}
                 onClick={() => checkConnection()}
+                id="check-connection-btn"
               >
                 Check connection
               </Button>
@@ -49,6 +50,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
             type="submit"
             isDisabled={connectionState !== ConnectionState.Success}
             style={{ marginRight: '10px' }}
+            id="submit-cluster-btn"
           >
             Add
           </Button>

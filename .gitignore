@@ -8,3 +8,4 @@ config/config.dev.json
 .yalc/
 yalc.lock
 lib/
+cypress/fixtures
