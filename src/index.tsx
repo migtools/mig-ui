@@ -16,7 +16,7 @@ import Loader from 'react-loader-spinner';
 const onBeforeLift = () => {
   // take some action before the gate lifts
 };
-// Some amount of meta data is delievered to the app by the server
+// Some amount of meta data is delivered to the app by the server
 /* tslint:disable:no-string-literal */
 const migMeta = window['_mig_meta'];
 /* tslint:enable:no-string-literal */
