@@ -174,6 +174,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           touched={touched}
           connectionState={connectionState}
           checkConnection={checkConnection}
+          onHandleModalToggle={this.props.onHandleModalToggle}
         />
       </Form >
 
