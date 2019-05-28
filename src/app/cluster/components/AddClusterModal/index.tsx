@@ -13,26 +13,17 @@ class AddClusterModal extends React.Component<any, any> {
   handleClose = () => {
     this.props.onHandleClose();
     this.props.resetConnectionState();
-  }
+  };
 
-  handleAdd = (vals) => {
+  handleAdd = vals => {
     this.props.addCluster(vals);
-  }
+  };
 
   render() {
-    const {
-      checkConnection,
-      connectionState,
-    } = this.props;
-
+    const { checkConnection, connectionState } = this.props;
 
     return (
-      <Modal
-        isSmall
-        isOpen={this.props.isOpen}
-        onClose={this.handleClose}
-        title="Add Cluster"
-      >
+      <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Add Cluster">
         <AddClusterForm
           connectionState={connectionState}
           onHandleModalToggle={this.handleClose}
@@ -54,5 +45,5 @@ export default connect(
     checkConnection: () => dispatch(clusterOperations.checkConnection()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
     resetConnectionState: () => dispatch(Creators.setConnectionState(ConnectionState.Pending)),
-  }),
+  })
 )(AddClusterModal);

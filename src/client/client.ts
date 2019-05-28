@@ -20,7 +20,7 @@ export class ClusterClient {
     this.requester = axios.create({
       baseURL: this.apiRoot,
       headers: {
-        'Authorization': `Bearer ${this.token}`,
+        Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json',
       },
       responseType: 'json',
@@ -43,4 +43,3 @@ export class ClusterClient {
     return this.requester.delete(resource.namedPath(name));
   }
 }
-

@@ -7,15 +7,13 @@ import planOperations from '../../duck/operations';
 class MigrateModal extends React.Component<any, any> {
   handleSubmit = () => {
     this.props.runMigration(this.props.plan);
-  }
+  };
   handleClose = () => {
     this.props.onHandleClose();
-  }
+  };
 
   render() {
-    const {
-      plan,
-    } = this.props;
+    const { plan } = this.props;
 
     return (
       <Modal
@@ -24,10 +22,7 @@ class MigrateModal extends React.Component<any, any> {
         onClose={this.handleClose}
         title={`Migrate ${plan.planName}`}
       >
-        <MigrateModalForm
-          onHandleModalToggle={this.handleClose}
-          handleSubmit={this.handleSubmit}
-        />
+        <MigrateModalForm onHandleModalToggle={this.handleClose} handleSubmit={this.handleSubmit} />
       </Modal>
     );
   }
@@ -39,4 +34,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(MigrateModal);
+export default connect(
+  null,
+  mapDispatchToProps
+)(MigrateModal);

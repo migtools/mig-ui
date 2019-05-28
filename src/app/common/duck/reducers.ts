@@ -3,7 +3,11 @@ import { createReducer } from 'reduxsauce';
 export const INITIAL_STATE = {};
 
 export const success = (state = INITIAL_STATE, action) => {
-  return { ...state, alertType: 'alert-success', alertMessage: action.message };
+  return {
+    ...state,
+    alertType: 'alert-success',
+    alertMessage: action.message,
+  };
 };
 
 export const failure = (state = INITIAL_STATE, action) => {
@@ -19,9 +23,7 @@ export const failure = (state = INITIAL_STATE, action) => {
   } else if (am instanceof Error) {
     msg = am.toString();
   } else {
-    throw new Error(
-      'AlertError received an alert message that is not a string, or an Error!',
-    );
+    throw new Error('AlertError received an alert message that is not a string, or an Error!');
   }
 
   return { ...state, alertMessage: msg, alertType: 'error' };

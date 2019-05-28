@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
-import { css } from '@emotion/core';
-import { Card } from '@rebass/emotion';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 import theme from '../../../theme';
 import * as React from 'react';
@@ -12,11 +10,7 @@ interface IProps {
   id: string;
 }
 
-const KeyDisplayIcon: React.FunctionComponent<IProps> = ({
-  isHidden,
-  id,
-  ...rest
-}) => {
+const KeyDisplayIcon: React.FunctionComponent<IProps> = ({ isHidden, id, ...rest }) => {
   const HiddenIcon = styled(EyeSlashIcon)`
     color: ${theme.colors.blue};
   `;
@@ -24,9 +18,7 @@ const KeyDisplayIcon: React.FunctionComponent<IProps> = ({
     color: ${theme.colors.blue};
   `;
   return (
-    <React.Fragment >
-      {isHidden ? <HiddenIcon id={id} /> : <VisibleIcon id={id} />}
-    </React.Fragment>
+    <React.Fragment>{isHidden ? <HiddenIcon id={id} /> : <VisibleIcon id={id} />}</React.Fragment>
   );
 };
 

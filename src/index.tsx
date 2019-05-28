@@ -44,5 +44,5 @@ render(
       </ConnectedRouter>
     </PersistGate>
   </Provider>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );

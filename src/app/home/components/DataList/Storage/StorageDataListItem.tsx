@@ -29,11 +29,8 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           />
           <DataListItemCells
             dataListCells={[
-              <DataListCell
-                id="storage-item"
-                key="storage"
-              >
-                <span id="name" >Repositories</span>
+              <DataListCell id="storage-item" key="storage">
+                <span id="name">Repositories</span>
               </DataListCell>,
             ]}
           />
@@ -51,7 +48,7 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           isExpanded={isExpanded}
           {...props}
         />
-      </DataListItem >
+      </DataListItem>
     );
   }
   return null;

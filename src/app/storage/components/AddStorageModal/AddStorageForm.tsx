@@ -1,16 +1,8 @@
 import React from 'react';
 import { withFormik } from 'formik';
-import { Flex, Box } from '@rebass/emotion';
-import {
-  Button,
-  TextInput,
-  Form,
-  FormGroup,
-} from '@patternfly/react-core';
+import { TextInput, Form, FormGroup } from '@patternfly/react-core';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
-import ConnectionState from '../../../common/connection_state';
-import StatusIcon from '../../../common/components/StatusIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
 import CheckConnection from './../../../common/components/CheckConnection';
 
@@ -21,24 +13,22 @@ class WrappedAddStorageForm extends React.Component<any, any> {
   };
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
-  }
+  };
 
   handleKeyToggle = (keyName, e) => {
     e.preventDefault();
     e.stopPropagation();
     if (keyName === 'accessKey') {
-
       this.setState({
         accessKeyHidden: !this.state.accessKeyHidden,
-      },
-      );
+      });
     }
     if (keyName === 'secret') {
       this.setState({
         secretHidden: !this.state.secretHidden,
       });
     }
-  }
+  };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.connectionState !== this.props.connectionState) {
@@ -59,15 +49,8 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       checkConnection,
     } = this.props;
     return (
-      <Form
-        onSubmit={handleSubmit}
-        style={{ marginTop: '24px' }}
-      >
-        <FormGroup
-          label="Repository Name"
-          isRequired
-          fieldId="name"
-        >
+      <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
+        <FormGroup label="Repository Name" isRequired fieldId="name">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('name', true, true)}
@@ -80,13 +63,8 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
           )}
-
         </FormGroup>
-        <FormGroup
-          label="AWS S3 Bucket Name"
-          isRequired
-          fieldId="bucketName"
-        >
+        <FormGroup label="AWS S3 Bucket Name" isRequired fieldId="bucketName">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('bucketName', true, true)}
@@ -102,11 +80,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           )}
         </FormGroup>
 
-        <FormGroup
-          label="AWS S3 Bucket Region"
-          isRequired
-          fieldId="bucketRegion"
-        >
+        <FormGroup label="AWS S3 Bucket Region" isRequired fieldId="bucketRegion">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('bucketRegion', true, true)}
@@ -122,14 +96,8 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           )}
         </FormGroup>
 
-        <FormGroup
-          label="S3 Provider Access Key"
-          isRequired
-          fieldId="s3-provider-access-key"
-        >
-          <HideWrapper
-            onClick={(e) => this.handleKeyToggle('accessKey', e)}
-          >
+        <FormGroup label="S3 Provider Access Key" isRequired fieldId="s3-provider-access-key">
+          <HideWrapper onClick={e => this.handleKeyToggle('accessKey', e)}>
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
           </HideWrapper>
           <TextInput
@@ -150,10 +118,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           isRequired
           fieldId="s3-provider-secret-access-key"
         >
-          <HideWrapper
-            onClick={(e) => this.handleKeyToggle('secret', e)}
-          >
-
+          <HideWrapper onClick={e => this.handleKeyToggle('secret', e)}>
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
           </HideWrapper>
           <TextInput
@@ -176,42 +141,9 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           checkConnection={checkConnection}
           onHandleModalToggle={this.props.onHandleModalToggle}
         />
-      </Form >
-
+      </Form>
     );
-
   }
-
-}
-
-function renderConnectionState(connectionState: ConnectionState) {
-  let cxStateContents;
-  let iconStatus;
-
-  switch (connectionState) {
-    case ConnectionState.Checking:
-      cxStateContents = 'Checking...';
-      iconStatus = 'checking';
-      break;
-    case ConnectionState.Success:
-      cxStateContents = 'Success!';
-      iconStatus = 'success';
-      break;
-    case ConnectionState.Failed:
-      cxStateContents = 'Failed!';
-      iconStatus = 'failed';
-      break;
-  }
-
-  return (
-    <Flex m="10px 10px 10px 0">
-      <Box>
-        {cxStateContents}
-        {' '}
-        <StatusIcon status={iconStatus} />
-      </Box>
-    </Flex>
-  );
 }
 
 const AddStorageForm: any = withFormik({
@@ -224,7 +156,6 @@ const AddStorageForm: any = withFormik({
     connectionStatus: '',
   }),
 
-  // Custom sync validation
   validate: values => {
     const errors: any = {};
 

@@ -70,31 +70,31 @@ class HomeComponent extends React.Component<IProps, IState> {
     this.setState({
       activeItem: result.itemId,
     });
-  }
+  };
 
   onDropdownToggle = isDropdownOpen => {
     this.setState({
       isDropdownOpen,
     });
-  }
+  };
 
   onDropdownSelect = event => {
     this.setState({
       isDropdownOpen: !this.state.isDropdownOpen,
     });
-  }
+  };
 
   onKebabDropdownToggle = isKebabDropdownOpen => {
     this.setState({
       isKebabDropdownOpen,
     });
-  }
+  };
 
   onKebabDropdownSelect = event => {
     this.setState({
       isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
-  }
+  };
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -115,15 +115,10 @@ class HomeComponent extends React.Component<IProps, IState> {
     this.props.fetchClusters();
     this.props.fetchStorage();
     this.props.fetchPlans();
-  }
+  };
 
   render() {
-    const {
-      isDropdownOpen,
-      activeItem,
-      activeGroup,
-      isNavOpen,
-    } = this.state;
+    const { isDropdownOpen, activeItem, activeGroup, isNavOpen } = this.state;
     const PageNav = (
       <Nav onSelect={this.onNavSelect} aria-label="Nav">
         <NavList>
@@ -157,7 +152,8 @@ class HomeComponent extends React.Component<IProps, IState> {
               toggle={
                 <DropdownToggle onToggle={this.onDropdownToggle}>
                   <div>jmatthews</div>
-                </DropdownToggle>}
+                </DropdownToggle>
+              }
               dropdownItems={this.userDropdownItems}
             />
           </ToolbarItem>
@@ -165,7 +161,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       </Toolbar>
     );
     const StyledPageHeader = styled(PageHeader)`
-      .pf-c-brand{
+      .pf-c-brand {
         height: 2.5em;
       }
       background-color: #151515 !important;
@@ -177,10 +173,9 @@ class HomeComponent extends React.Component<IProps, IState> {
       -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
       text-decoration: none;
-      .pf-c-page__header-brand-link{
+      .pf-c-page__header-brand-link {
         text-decoration: none;
       }
-
     `;
 
     const Header = (
@@ -208,8 +203,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     return (
       <React.Fragment>
         <Page header={Header}>
-          <StyledPageSection
-          >
+          <StyledPageSection>
             <Grid gutter="md">
               <GridItem span={4}>
                 <DashboardCard
@@ -267,5 +261,5 @@ export default connect(
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
     fetchPlans: () => dispatch(planOperations.fetchPlans()),
-  }),
+  })
 )(HomeComponent);

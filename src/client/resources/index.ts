@@ -1,19 +1,13 @@
-export {
-  MigResource,
-  MigResourceKind,
-} from './mig';
+export { MigResource, MigResourceKind } from './mig';
 
-export {
-  ClusterRegistryResource,
-  ClusterRegistryResourceKind,
-} from './cluster_registry';
+export { ClusterRegistryResource, ClusterRegistryResourceKind } from './cluster_registry';
 
 export {
   CoreNamespacedResource,
   CoreClusterResource,
   CoreNamespacedResourceKind,
   CoreClusterResourceKind,
- } from './core';
+} from './core';
 
 export {
   IResource,
@@ -21,5 +15,4 @@ export {
   NamespacedResource,
   ClusterResource,
   KubeResource,
- } from './common';
-
+} from './common';

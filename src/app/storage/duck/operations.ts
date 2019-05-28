@@ -5,10 +5,7 @@ import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import ConnectionState from '../../common/connection_state';
 
-import {
-  CoreNamespacedResource,
-  CoreNamespacedResourceKind,
-} from '../../../client/resources';
+import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 
 import {
   createClusterRegistryObj,
@@ -29,14 +26,13 @@ const addStorage = storageValues => {
     try {
       const state = getState();
       const { migMeta } = state;
-      const client: IClusterClient =
-        ClientFactory.hostCluster(getState());
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
 
       const tokenSecret = createStorageSecret(
         storageValues.name,
         migMeta.namespace,
         storageValues.secret,
-        storageValues.accessKey,
+        storageValues.accessKey
       );
 
       const migStorage = createMigStorage(
@@ -44,17 +40,14 @@ const addStorage = storageValues => {
         storageValues.bucketName,
         storageValues.bucketRegion,
         migMeta.namespace,
-        tokenSecret,
+        tokenSecret
       );
 
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace,
+        migMeta.configNamespace
       );
-      const migStorageResource = new MigResource(
-        MigResourceKind.MigStorage,
-        migMeta.namespace,
-      );
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
       const arr = await Promise.all([
         client.create(secretResource, tokenSecret),
@@ -104,16 +97,11 @@ const fetchStorage = () => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
-      const resource = new MigResource(
-        MigResourceKind.MigStorage,
-        migMeta.namespace,
-      );
+      const resource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
       const res = await client.list(resource);
       //temporary for ui work
       const migStorages = res.data.items;
-      const refs = await Promise.all(
-        fetchMigStorageRefs(client, migMeta, migStorages),
-      );
+      const refs = await Promise.all(fetchMigStorageRefs(client, migMeta, migStorages));
       const groupedStorages = groupStorages(migStorages, refs);
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
@@ -121,18 +109,14 @@ const fetchStorage = () => {
     }
   };
 };
-function fetchMigStorageRefs(
-  client: IClusterClient,
-  migMeta,
-  migStorages,
-): Array<Promise<any>> {
+function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migStorages.forEach(storage => {
     const secretRef = storage.spec.backupStorageConfig.credsSecretRef;
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
-      secretRef.namespace,
+      secretRef.namespace
     );
     refs.push(client.get(secretResource, secretRef.name));
   });
@@ -145,10 +129,9 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     const fullStorage = {
       MigStorage: ms,
     };
-    fullStorage['Secret'] = refs.find(i =>
-      i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name,
+    fullStorage['Secret'] = refs.find(
+      i => i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name
     ).data;
-
 
     return fullStorage;
   });

@@ -34,32 +34,29 @@ const addCluster = clusterValues => {
       const clusterReg = createClusterRegistryObj(
         clusterValues.name,
         migMeta.namespace,
-        clusterValues.url,
+        clusterValues.url
       );
       const tokenSecret = createTokenSecret(
         clusterValues.name,
         migMeta.configNamespace,
-        clusterValues.token,
+        clusterValues.token
       );
       const migCluster = createMigCluster(
         clusterValues.name,
         migMeta.namespace,
         clusterReg,
-        tokenSecret,
+        tokenSecret
       );
 
       const clusterRegResource = new ClusterRegistryResource(
         ClusterRegistryResourceKind.Cluster,
-        migMeta.namespace,
+        migMeta.namespace
       );
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace,
+        migMeta.configNamespace
       );
-      const migClusterResource = new MigResource(
-        MigResourceKind.MigCluster,
-        migMeta.namespace,
-      );
+      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
 
       const arr = await Promise.all([
         client.create(clusterRegResource, clusterReg),
@@ -100,17 +97,12 @@ const fetchClusters = () => {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const resource = new MigResource(
-        MigResourceKind.MigCluster,
-        migMeta.namespace,
-      );
+      const resource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
 
       const res = await client.list(resource);
       const migClusters = res.data.items;
       const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
-      const refs = await Promise.all(
-        fetchMigClusterRefs(client, migMeta, nonHostClusters),
-      );
+      const refs = await Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters));
       const groupedClusters = groupClusters(migClusters, refs);
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
@@ -128,11 +120,7 @@ function checkConnection() {
   };
 }
 
-function fetchMigClusterRefs(
-  client: IClusterClient,
-  migMeta,
-  migClusters,
-): Array<Promise<any>> {
+function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migClusters.forEach(cluster => {
@@ -140,11 +128,11 @@ function fetchMigClusterRefs(
     const secretRef = cluster.spec.serviceAccountSecretRef;
     const clusterRegResource = new ClusterRegistryResource(
       ClusterRegistryResourceKind.Cluster,
-      clusterRef.namespace,
+      clusterRef.namespace
     );
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
-      secretRef.namespace,
+      secretRef.namespace
     );
     refs.push(client.get(clusterRegResource, clusterRef.name));
     refs.push(client.get(secretResource, secretRef.name));
@@ -160,11 +148,11 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
     };
 
     if (!mc.spec.isHostCluster) {
-      fullCluster['Cluster'] = refs.find(i =>
-        i.data.kind === 'Cluster' && i.data.metadata.name === mc.metadata.name,
+      fullCluster['Cluster'] = refs.find(
+        i => i.data.kind === 'Cluster' && i.data.metadata.name === mc.metadata.name
       ).data;
-      fullCluster['Secret'] = refs.find(i =>
-        i.data.kind === 'Secret' && i.data.metadata.name === mc.metadata.name,
+      fullCluster['Secret'] = refs.find(
+        i => i.data.kind === 'Secret' && i.data.metadata.name === mc.metadata.name
       ).data;
     }
 

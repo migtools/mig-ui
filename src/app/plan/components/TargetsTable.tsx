@@ -28,7 +28,6 @@ class TargetsTable extends React.Component<IProps, IState> {
     editableList: [],
   };
 
-
   componentDidMount() {
     if (this.props.values.selectedNamespaces) {
       this.setState({ rows: this.props.values.selectedNamespaces });
@@ -39,13 +38,11 @@ class TargetsTable extends React.Component<IProps, IState> {
       this.setState({ rows: this.props.values.selectedNamespaces });
     }
   }
-  renderEditable = (cellInfo) => {
-
+  renderEditable = cellInfo => {
     return (
       <div
         style={{ backgroundColor: '#fafafa' }}
         contentEditable={this.state.editableList[cellInfo.row._index]}
-
         suppressContentEditableWarning
         onBlur={e => {
           const rows = [...this.state.rows];
@@ -57,9 +54,8 @@ class TargetsTable extends React.Component<IProps, IState> {
         }}
       />
     );
-  }
+  };
   toggleRowEditable = row => {
-
     const index = row.index;
     const editableListCopy = this.state.editableList;
     editableListCopy[index] = !this.state.editableList[index];
@@ -67,7 +63,7 @@ class TargetsTable extends React.Component<IProps, IState> {
     this.setState({
       editableList: editableListCopy,
     });
-  }
+  };
 
   render() {
     const { values } = this.props;
@@ -77,12 +73,11 @@ class TargetsTable extends React.Component<IProps, IState> {
       return (
         <ReactTable
           css={css`
-              font-size: 14px;
-              .rt-td{
-                overflow: visible;
-              }
-            `}
-
+            font-size: 14px;
+            .rt-td {
+              overflow: visible;
+            }
+          `}
           data={rows}
           columns={[
             {
@@ -92,7 +87,8 @@ class TargetsTable extends React.Component<IProps, IState> {
                     fontWeight: 600,
                     textAlign: 'left',
                   }}
-                >Source Project Name
+                >
+                  Source Project Name
                 </div>
               ),
               accessor: 'name',
@@ -121,13 +117,10 @@ class TargetsTable extends React.Component<IProps, IState> {
                   aria-label="Edit"
                   variant="link"
                 >
-                  {this.state.editableList[row.index] ?
-                    <TimesIcon /> : <EditAltIcon />
-                  }
+                  {this.state.editableList[row.index] ? <TimesIcon /> : <EditAltIcon />}
                 </Button>
               ),
             },
-
           ]}
           defaultPageSize={5}
           className="-striped -highlight"

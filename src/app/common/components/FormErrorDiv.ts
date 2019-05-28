@@ -6,7 +6,6 @@ import { Card } from '@rebass/emotion';
 import theme from './../../../theme';
 
 export default styled.div`
-margin: 1em 0 0 0;
-color: ${theme.colors.statusRed}`;
-
-
+  margin: 1em 0 0 0;
+  color: ${theme.colors.statusRed};
+`;

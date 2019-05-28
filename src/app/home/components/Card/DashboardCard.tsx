@@ -29,13 +29,13 @@ class DashboardCard extends Component<IProps, IState> {
     this.setState({
       isOpen,
     });
-  }
+  };
 
   onSelect = event => {
     this.setState({
       isOpen: !this.state.isOpen,
     });
-  }
+  };
   render() {
     const { dataList, title, isFetching, type } = this.props;
     const { isOpen } = this.state;
@@ -49,36 +49,30 @@ class DashboardCard extends Component<IProps, IState> {
               </Title>
             </CardHeader>
             <CardBody>
-              {type === 'plans' ?
-                <MigrationStatus dataList={dataList} /> :
+              {type === 'plans' ? (
+                <MigrationStatus dataList={dataList} />
+              ) : (
                 <CardStatus dataList={dataList} type={type} />
-              }
+              )}
             </CardBody>
             <CardFooter>
               <FooterText dataList={dataList} type={type} />
             </CardFooter>
-
           </React.Fragment>
         ) : (
-            <Flex
-              css={css`
-                        height: 100%;
-                        text-align: center;
-                        margin: auto;
-                    `}
-            >
-              <Box flex="1" m="auto">
-                <Loader
-                  type="ThreeDots"
-                  color={theme.colors.navy}
-                  height="100"
-                  width="100"
-                />
-                <Text fontSize={[2, 3, 4]}> Loading </Text>
-              </Box>
-
-            </Flex>
-          )}
+          <Flex
+            css={css`
+              height: 100%;
+              text-align: center;
+              margin: auto;
+            `}
+          >
+            <Box flex="1" m="auto">
+              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+              <Text fontSize={[2, 3, 4]}> Loading </Text>
+            </Box>
+          </Flex>
+        )}
       </Card>
     );
   }

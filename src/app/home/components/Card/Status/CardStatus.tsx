@@ -1,19 +1,14 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import theme from '../../../../../theme';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import { css } from '@emotion/core';
-import {
-  Grid,
-  GridItem,
-} from '@patternfly/react-core';
+import { Grid, GridItem } from '@patternfly/react-core';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
   const failureList = [];
   if (type === 'repositories') {
-    successList = dataList.filter((item) => {
+    successList = dataList.filter(item => {
       if (item.MigStorage.status && item.MigStorage.status.conditions[0].status === 'True') {
         return item.MigStorage.status.conditions[0].status === 'True';
       } else {
@@ -21,7 +16,7 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
       }
     });
   } else if (type === 'clusters') {
-    successList = dataList.filter((item) => {
+    successList = dataList.filter(item => {
       if (item.MigCluster.status && item.MigCluster.status.conditions[0].status === 'True') {
         return item.MigCluster.status.conditions[0].status === 'True';
       } else {
@@ -40,7 +35,7 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
         </GridItem>
         <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
           Connected
-                </GridItem>
+        </GridItem>
       </Grid>
       <Grid>
         <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
@@ -51,12 +46,10 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
         </GridItem>
         <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
           Connection failed
-                </GridItem>
+        </GridItem>
       </Grid>
     </React.Fragment>
-
   );
 };
 
 export default CardStatusComponent;
-

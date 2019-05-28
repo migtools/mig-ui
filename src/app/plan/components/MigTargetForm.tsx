@@ -39,10 +39,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const myClusterOptions: any = [];
     const len = this.props.clusterList.length;
     for (let i = 0; i < len; i++) {
-      if (
-        this.props.clusterList[i].MigCluster.metadata.name !==
-        this.props.values.sourceCluster
-      ) {
+      if (this.props.clusterList[i].MigCluster.metadata.name !== this.props.values.sourceCluster) {
         myClusterOptions.push({
           label: this.props.clusterList[i].MigCluster.metadata.name,
           value: this.props.clusterList[i].MigCluster.metadata.name,
@@ -68,22 +65,12 @@ class MigTargetForm extends React.Component<IProps, IState> {
     this.populateStorageDropdown();
   }
   render() {
-    const {
-      errors,
-      touched,
-      setFieldValue,
-      setFieldTouched,
-      values,
-    } = this.props;
-    const {
-      clusterOptions,
-      storageOptions,
-    } = this.state;
+    const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
+    const { clusterOptions, storageOptions } = this.state;
 
     return (
       <Box>
-        <TextContent
-        >
+        <TextContent>
           <TextList component="dl">
             <TextListItem component="dt">Replication Repository</TextListItem>
             <Select
@@ -91,10 +78,12 @@ class MigTargetForm extends React.Component<IProps, IState> {
               onChange={option => {
                 setFieldValue('selectedStorage', option.value);
                 const matchingRepo = this.props.storageList.filter(
-                  item => item.MigStorage.metadata.name === option.value,
+                  item => item.MigStorage.metadata.name === option.value
                 );
 
-                this.setState({ selectedStorage: matchingRepo[0] });
+                this.setState({
+                  selectedStorage: matchingRepo[0],
+                });
               }}
               options={storageOptions}
             />
@@ -111,16 +100,17 @@ class MigTargetForm extends React.Component<IProps, IState> {
 
                 setFieldValue('targetCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
-                  c => c.MigCluster.metadata.name === option.value,
+                  c => c.MigCluster.metadata.name === option.value
                 );
 
-                this.setState({ targetCluster: matchingCluster[0] });
+                this.setState({
+                  targetCluster: matchingCluster[0],
+                });
                 setFieldTouched('targetCluster');
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
                   this.props.onWizardLoadingToggle(false);
                 }, 500);
-
               }}
               options={clusterOptions}
             />
@@ -131,32 +121,23 @@ class MigTargetForm extends React.Component<IProps, IState> {
           </TextList>
         </TextContent>
         {/* values.targetCluster !== null && */}
-        {this.state.isLoading ?
+        {this.state.isLoading ? (
           <Flex
             css={css`
-                        height: 100%;
-                        text-align: center;
-                    `}
+              height: 100%;
+              text-align: center;
+            `}
           >
             <Box flex="1" m="auto">
-              <Loader
-                type="ThreeDots"
-                color={theme.colors.navy}
-                height="100"
-                width="100"
-              />
+              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
               <Text fontSize={[2, 3, 4]}> Loading </Text>
             </Box>
-
           </Flex>
-
-          :
+        ) : (
           <Box mt={20}>
-            <TargetsTable
-              values={values}
-            />
+            <TargetsTable values={values} />
           </Box>
-        }
+        )}
       </Box>
     );
   }

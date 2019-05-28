@@ -1,7 +1,4 @@
-import {
-  NamespacedResource,
-  IGroupVersionKindPlural,
-} from './common';
+import { NamespacedResource, IGroupVersionKindPlural } from './common';
 
 export class ClusterRegistryResource extends NamespacedResource {
   private _gvk: IGroupVersionKindPlural;

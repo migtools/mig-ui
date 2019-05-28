@@ -1,25 +1,25 @@
 import { useState } from 'react';
 
-export const useExpandDataList = (initialState) => {
-    const [isExpanded, setExpanded] = useState(initialState);
+export const useExpandDataList = initialState => {
+  const [isExpanded, setExpanded] = useState(initialState);
 
-    const toggleExpanded = () => {
-        const expandedState = !isExpanded;
-        setExpanded(expandedState);
-    };
+  const toggleExpanded = () => {
+    const expandedState = !isExpanded;
+    setExpanded(expandedState);
+  };
 
-    return [isExpanded, toggleExpanded];
+  return [isExpanded, toggleExpanded];
 };
 
-export const useOpenModal = (initialState) => {
-    const [isOpen, setOpen] = useState(initialState);
+export const useOpenModal = initialState => {
+  const [isOpen, setOpen] = useState(initialState);
 
-    const toggleOpen = () => {
-        const openState = !isOpen;
-        setOpen(openState);
-    };
+  const toggleOpen = () => {
+    const openState = !isOpen;
+    setOpen(openState);
+  };
 
-    return [isOpen, toggleOpen];
+  return [isOpen, toggleOpen];
 };
 
 // export default {

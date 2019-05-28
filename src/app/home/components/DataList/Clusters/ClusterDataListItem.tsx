@@ -30,11 +30,8 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, ..
           />
           <DataListItemCells
             dataListCells={[
-              <DataListCell
-                id="cluster-item"
-                key="clusters"
-              >
-                <span id="name" >Clusters</span>
+              <DataListCell id="cluster-item" key="clusters">
+                <span id="name">Clusters</span>
               </DataListCell>,
             ]}
           />
@@ -53,8 +50,7 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, ..
           migMeta={migMeta}
           {...props}
         />
-
-      </DataListItem >
+      </DataListItem>
     );
   }
   return null;

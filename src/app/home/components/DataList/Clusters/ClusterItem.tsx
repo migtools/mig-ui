@@ -18,19 +18,15 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) =>
   } else {
     clusterStatus = cluster.MigCluster.status.conditions[0].type;
   }
-  const clusterUrl =
-    cluster.MigCluster.spec.isHostCluster ?
-      migMeta.clusterApi :
-      cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const clusterUrl = cluster.MigCluster.spec.isHostCluster
+    ? migMeta.clusterApi
+    : cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
 
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
   return (
-    <DataListItem
-      key={clusterIndex}
-      aria-labelledby="cluster-item"
-    >
+    <DataListItem key={clusterIndex} aria-labelledby="cluster-item">
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
@@ -39,10 +35,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) =>
               <span id="cluster-name">{clusterName}</span>
             </DataListCell>,
             <DataListCell key="url" width={2}>
-              <a
-                target="_blank"
-                href={clusterUrl}
-              >
+              <a target="_blank" href={clusterUrl}>
                 {clusterUrl}
               </a>
             </DataListCell>,
@@ -55,11 +48,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) =>
                   <Button variant="secondary">Edit</Button>
                 </Box>
                 <Box mx={1}>
-                  <Button
-                    variant="danger"
-                  >
-                    Remove
-                  </Button>
+                  <Button variant="danger">Remove</Button>
                 </Box>
               </Flex>
             </DataListCell>,
