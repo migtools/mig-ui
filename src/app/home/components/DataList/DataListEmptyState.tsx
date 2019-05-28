@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Title,
-  EmptyState,
-  EmptyStateIcon,
-} from '@patternfly/react-core';
+import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import AddClusterModal from '../../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../../storage/components/AddStorageModal';
 import Wizard from '../../../plan/components/Wizard';
@@ -18,8 +13,6 @@ interface IEmptyStateProps {
   isLoading?: boolean;
   plansDisabled?: boolean;
   type: string;
-
-
 }
 
 const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
@@ -35,9 +28,7 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
   const renderPlanAdd = () => {
     return (
       <React.Fragment>
-        <Title size="lg">
-          Add a migration plan
-        </Title>
+        <Title size="lg">Add a migration plan</Title>
         <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
           Add Plan
         </Button>
@@ -50,33 +41,27 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
           isLoading={isLoading}
           onPlanSubmit={onPlanSubmit}
         />
-
       </React.Fragment>
     );
   };
   const renderStorageAdd = () => {
     return (
       <React.Fragment>
-        <Title size="lg">
-          Add replication repositories for the migration
-          </Title>
+        <Title size="lg">Add replication repositories for the migration</Title>
         <Button onClick={toggleOpen} variant="primary">
           Add Repository
-            </Button>
+        </Button>
         <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>
-
     );
   };
   const renderClusterAdd = () => {
     return (
       <React.Fragment>
-        <Title size="lg">
-          Add source and target clusters for the migration
-          </Title>
+        <Title size="lg">Add source and target clusters for the migration</Title>
         <Button onClick={toggleOpen} variant="primary">
           Add Cluster
-            </Button>
+        </Button>
         <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
       </React.Fragment>
     );
@@ -85,12 +70,9 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
     <React.Fragment>
       <EmptyState variant="large">
         <EmptyStateIcon icon={AddCircleOIcon} />
-        {props.type === 'cluster' &&
-          renderClusterAdd()}
-        {props.type === 'storage' &&
-          renderStorageAdd()}
-        {props.type === 'plan' &&
-          renderPlanAdd()}
+        {props.type === 'cluster' && renderClusterAdd()}
+        {props.type === 'storage' && renderStorageAdd()}
+        {props.type === 'plan' && renderPlanAdd()}
       </EmptyState>
     </React.Fragment>
   );

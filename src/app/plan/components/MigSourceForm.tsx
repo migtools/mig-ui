@@ -53,10 +53,12 @@ class MigSourceForm extends React.Component<any> {
               onChange={option => {
                 setFieldValue('sourceCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
-                  c => c.MigCluster.metadata.name === option.value,
+                  c => c.MigCluster.metadata.name === option.value
                 );
 
-                this.setState({ sourceCluster: matchingCluster[0].MigCluster });
+                this.setState({
+                  sourceCluster: matchingCluster[0].MigCluster,
+                });
                 setFieldTouched('sourceCluster');
                 this.setState({ isLoading: true });
                 this.props.onWizardLoadingToggle(true);
@@ -64,7 +66,6 @@ class MigSourceForm extends React.Component<any> {
                   this.setState(() => ({ isLoading: false }));
                   this.props.onWizardLoadingToggle(false);
                 }, 500);
-
               }}
               options={options}
             />
@@ -74,32 +75,25 @@ class MigSourceForm extends React.Component<any> {
             )}
           </TextList>
         </TextContent>
-        {this.state.isLoading ?
+        {this.state.isLoading ? (
           <Flex
             css={css`
-                        height: 100%;
-                        text-align: center;
-                    `}
+              height: 100%;
+              text-align: center;
+            `}
           >
             <Box flex="1" m="auto">
-              <Loader
-                type="ThreeDots"
-                color={theme.colors.navy}
-                height="100"
-                width="100"
-              />
+              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
               <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
             </Box>
-
           </Flex>
-
-          :
+        ) : (
           <NamespaceTable
             setFieldValue={setFieldValue}
             sourceCluster={sourceCluster}
             values={values}
           />
-        }
+        )}
       </Box>
     );
   }

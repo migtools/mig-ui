@@ -12,13 +12,7 @@ import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
-import {
-  Button,
-  ButtonVariant,
-  DataList,
-  InputGroup,
-  TextInput,
-} from '@patternfly/react-core';
+import { Button, ButtonVariant, DataList, InputGroup, TextInput } from '@patternfly/react-core';
 
 interface IProps {
   filteredClusterList: any[];
@@ -71,14 +65,9 @@ class DetailViewComponent extends Component<IProps, IState> {
   }
   componentDidUpdate(prevProps, prevState) {
     if (
-      (
-        prevProps.allClusters !== this.props.allClusters ||
-        prevProps.allStorage !== this.props.allStorage
-      ) &&
-      (
-        this.props.allClusters.length > 1 &&
-        this.props.allStorage.length > 0
-      )
+      (prevProps.allClusters !== this.props.allClusters ||
+        prevProps.allStorage !== this.props.allStorage) &&
+      (this.props.allClusters.length > 1 && this.props.allStorage.length > 0)
     ) {
       this.setState({ plansDisabled: false });
     }
@@ -96,20 +85,20 @@ class DetailViewComponent extends Component<IProps, IState> {
         this.props.removePlan(id);
         break;
     }
-  }
+  };
 
   handleWizardToggle = () => {
     this.setState(({ isWizardOpen }) => ({
       isWizardOpen: !isWizardOpen,
     }));
-  }
-  handlePlanSubmit = (plan) => {
+  };
+  handlePlanSubmit = plan => {
     this.props.addPlan(plan);
-  }
+  };
 
-  handleStageTriggered = (plan) => {
+  handleStageTriggered = plan => {
     this.props.runStage(plan);
-  }
+  };
 
   render() {
     const {
@@ -129,9 +118,7 @@ class DetailViewComponent extends Component<IProps, IState> {
 
     return (
       <React.Fragment>
-        <DataList
-          aria-label="data-list-main-container"
-        >
+        <DataList aria-label="data-list-main-container">
           <ClusterDataListItem
             dataList={allClusters}
             id="clusterList"
@@ -214,12 +201,13 @@ const mapDispatchToProps = dispatch => {
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     addPlan: plan => dispatch(planOperations.addPlan(plan)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
-    updateStageProgress: (plan, progress) => dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
+    updateStageProgress: (plan, progress) =>
+      dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(DetailViewComponent);

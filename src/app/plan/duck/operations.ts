@@ -10,10 +10,7 @@ import {
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
 
-import {
-  createMigPlan,
-  createMigMigration,
-} from '../../../client/resources/conversions';
+import { createMigPlan, createMigMigration } from '../../../client/resources/conversions';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -57,17 +54,11 @@ const runMigration = plan => {
       const migMigrationObj = createMigMigration(
         uuidv1(),
         plan.MigPlan.metadata.name,
-        migMeta.namespace,
+        migMeta.namespace
       );
-      const migMigrationResource = new MigResource(
-        MigResourceKind.MigMigration,
-        migMeta.namespace,
-      );
+      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-
-      const arr = await Promise.all([
-        client.create(migMigrationResource, migMigrationObj),
-      ]);
+      const arr = await Promise.all([client.create(migMigrationResource, migMigrationObj)]);
       const migration = arr.reduce((accum, res) => {
         accum[res.data.kind] = res.data;
         return accum;
@@ -94,7 +85,6 @@ const runMigration = plan => {
   };
 };
 
-
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
@@ -107,9 +97,8 @@ const addPlan = migPlan => {
         migPlan.sourceCluster,
         migPlan.targetCluster,
         migPlan.selectedStorage,
-        'temp asset name',
+        'temp asset name'
       );
-
 
       // const assetCollectionObj = createAssetCollectionObj(
       //   clusterValues.name,
@@ -118,17 +107,12 @@ const addPlan = migPlan => {
       // );
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace,
+        migMeta.configNamespace
       );
 
-      const migPlanResource = new MigResource(
-        MigResourceKind.MigPlan,
-        migMeta.namespace,
-      );
+      const migPlanResource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
 
-      const arr = await Promise.all([
-        client.create(migPlanResource, migPlanObj),
-      ]);
+      const arr = await Promise.all([client.create(migPlanResource, migPlanObj)]);
 
       const plan = arr.reduce((accum, res) => {
         accum[res.data.kind] = res.data;
@@ -151,10 +135,7 @@ const fetchPlans = () => {
     try {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
-      const resource = new MigResource(
-        MigResourceKind.MigPlan,
-        migMeta.namespace,
-      );
+      const resource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
       const res = await client.list(resource);
       const migPlans = res.data.items || [];
       const groupedPlans = groupPlans(migPlans);
@@ -184,13 +165,16 @@ function groupPlans(migPlans: any[]): any[] {
   });
 }
 
-const fetchNamespacesForCluster = (clusterName) => {
+const fetchNamespacesForCluster = clusterName => {
   return (dispatch, getState) => {
     const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
     const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
-    client.list(nsResource).then(res => {
-      dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
-    }).catch(err => AlertCreators.alertError('Failed to load namespaces for cluster'));
+    client
+      .list(nsResource)
+      .then(res => {
+        dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
+      })
+      .catch(err => AlertCreators.alertError('Failed to load namespaces for cluster'));
   };
 };
 

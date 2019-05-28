@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import {
-  Progress, ProgressSize,
-} from '@patternfly/react-core';
+import React from 'react';
+import { Progress, ProgressSize } from '@patternfly/react-core';
 
 const PlanStatus = ({ plan, ...props }) => {
   const printState =
@@ -10,12 +8,9 @@ const PlanStatus = ({ plan, ...props }) => {
     plan.status.state === 'Migrated Successfully';
 
   const printStateAndProgress =
-    plan.status.state === 'Staging' ||
-    plan.status.state === 'Migrating';
+    plan.status.state === 'Staging' || plan.status.state === 'Migrating';
   if (printState) {
-    return (
-      <span>{plan.status.state}</span>
-    );
+    return <span>{plan.status.state}</span>;
   } else if (printStateAndProgress) {
     return (
       <div>

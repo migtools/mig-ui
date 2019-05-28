@@ -35,8 +35,7 @@ export class MockClusterClient {
 
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({
-      });
+      res({});
     });
   }
 
@@ -52,9 +51,7 @@ export class MockClusterClient {
 
   public delete(resource: KubeResource, name: string): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({
-      });
+      res({});
     });
   }
 }
-

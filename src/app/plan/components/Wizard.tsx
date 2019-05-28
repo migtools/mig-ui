@@ -25,12 +25,11 @@ class WrappedWizard extends React.Component<any, any> {
     this.setState({
       step: 1,
     });
+  };
 
-  }
-
-  handleWizardLoadingToggle = (isLoading) => {
+  handleWizardLoadingToggle = isLoading => {
     this.setState({ isWizardLoading: isLoading });
-  }
+  };
 
   onMove = (curr, prev) => {
     this.setState({
@@ -39,7 +38,7 @@ class WrappedWizard extends React.Component<any, any> {
     if (curr.id === 5) {
       this.props.handleSubmit();
     }
-  }
+  };
   // handleAddPlan = () => {
   //   this.props.handlesubmit();
   //   // this.setState({
@@ -97,7 +96,8 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
+        enableNext:
+          !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
         id: 3,
@@ -115,7 +115,8 @@ class WrappedWizard extends React.Component<any, any> {
           />
         ),
         // enableNext: !errors.planName && touched.planName === true
-        enableNext: !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
+        enableNext:
+          !errors.sourceCluster && touched.sourceCluster === true && !this.state.isWizardLoading,
       },
       {
         id: 4,
@@ -134,7 +135,8 @@ class WrappedWizard extends React.Component<any, any> {
             onWizardLoadingToggle={this.handleWizardLoadingToggle}
           />
         ),
-        enableNext: !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
+        enableNext:
+          !errors.targetCluster && touched.targetCluster === true && !this.state.isWizardLoading,
       },
       {
         id: 5,
@@ -154,16 +156,16 @@ class WrappedWizard extends React.Component<any, any> {
       },
     ];
     const customStyle = css`
-    .pf-c-wizard__main{
-      flex: 1 1 auto;
-    }`;
+      .pf-c-wizard__main {
+        flex: 1 1 auto;
+      }
+    `;
     return (
       <React.Fragment>
         <Flex>
           <form onSubmit={handleSubmit}>
             <PFWizard
-              css={customStyle
-              }
+              css={customStyle}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
@@ -211,7 +213,6 @@ const Wizard: any = withFormik({
       //   id: 2,
       // },
     ],
-
   }),
 
   validate: values => {

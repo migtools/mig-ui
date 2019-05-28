@@ -37,7 +37,7 @@ if (devMode === 'local') {
 }
 const composedEnhancers = compose(
   applyMiddleware(...middleware),
-  ...enhancers,
+  ...enhancers
 );
 
 export default () => {

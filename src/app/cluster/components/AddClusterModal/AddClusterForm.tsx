@@ -2,17 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { withFormik } from 'formik';
-import { Flex, Box } from '@rebass/emotion';
-import {
-  Button,
-  TextContent,
-  TextList,
-  TextListItem,
-  TextArea,
-  TextInput,
-  Form,
-  FormGroup,
-} from '@patternfly/react-core';
+import { TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
@@ -24,16 +14,16 @@ class WrappedAddClusterForm extends React.Component<any, any> {
   };
   onHandleChange = (val, e) => {
     this.props.handleChange(e);
-  }
+  };
 
-  handleKeyToggle = (e) => {
+  handleKeyToggle = e => {
     e.preventDefault();
     e.stopPropagation();
 
     this.setState({
       tokenHidden: !this.state.tokenHidden,
     });
-  }
+  };
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.connectionState !== this.props.connectionState) {
       this.props.setFieldValue('connectionStatus', this.props.connectionState);
@@ -61,15 +51,8 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       cursor: pointer;
     `;
     return (
-      <Form
-        onSubmit={handleSubmit}
-        style={{ marginTop: '24px' }}
-      >
-        <FormGroup
-          label="Cluster Name"
-          isRequired
-          fieldId="name"
-        >
+      <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
+        <FormGroup label="Cluster Name" isRequired fieldId="name">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('name', true, true)}
@@ -82,13 +65,8 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
           )}
-
         </FormGroup>
-        <FormGroup
-          label="Url"
-          isRequired
-          fieldId="url"
-        >
+        <FormGroup label="Url" isRequired fieldId="url">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('url', true, true)}
@@ -99,19 +77,10 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             // isValid={!errors.url && touched.url}
             id="url"
           />
-          {errors.url && touched.url && (
-            <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>
-          )}
-
+          {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
         </FormGroup>
-        <FormGroup
-          label="Service account token"
-          isRequired
-          fieldId="url"
-        >
-          <HideWrapper
-            onClick={this.handleKeyToggle}
-          >
+        <FormGroup label="Service account token" isRequired fieldId="url">
+          <HideWrapper onClick={this.handleKeyToggle}>
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
           </HideWrapper>
           <TextInput
@@ -134,13 +103,18 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           checkConnection={checkConnection}
           onHandleModalToggle={onHandleModalToggle}
         />
-      </Form >
+      </Form>
     );
   }
 }
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({ name: '', url: '', token: '', connectionStatus: '' }),
+  mapPropsToValues: () => ({
+    name: '',
+    url: '',
+    token: '',
+    connectionStatus: '',
+  }),
 
   validate: values => {
     const errors: any = {};

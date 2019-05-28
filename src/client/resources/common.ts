@@ -40,12 +40,7 @@ export abstract class NamespacedResource {
 export abstract class ClusterResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public listPath(): string {
-    return [
-      '/apis',
-      this.gvk().group,
-      this.gvk().version,
-      this.gvk().kindPlural,
-    ].join('/');
+    return ['/apis', this.gvk().group, this.gvk().version, this.gvk().kindPlural].join('/');
   }
   public namedPath(): string {
     return namedPath(this.listPath(), name);
@@ -53,5 +48,5 @@ export abstract class ClusterResource {
 }
 
 function namedPath(listPath, name) {
-    return [listPath, name].join('/');
+  return [listPath, name].join('/');
 }

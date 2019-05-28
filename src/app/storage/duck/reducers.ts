@@ -13,11 +13,15 @@ export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migStorageList: action.migStorageList, isFetching: false };
+  return {
+    ...state,
+    migStorageList: action.migStorageList,
+    isFetching: false,
+  };
 };
 
 export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return {...state, connectionState: action.connectionState};
+  return { ...state, connectionState: action.connectionState };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {

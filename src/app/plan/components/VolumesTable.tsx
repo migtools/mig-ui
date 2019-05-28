@@ -6,10 +6,7 @@ import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
 
-const options = [
-  { value: 'copy', label: 'copy' },
-  { value: 'move', label: 'move' },
-];
+const options = [{ value: 'copy', label: 'copy' }, { value: 'move', label: 'move' }];
 interface IState {
   page: number;
   perPage: number;
@@ -35,7 +32,7 @@ class VolumesTable extends React.Component<any, any> {
       ...persistentVolumes.slice(objIndex + 1),
     ];
     this.props.setFieldValue('persistentVolumes', updatedData);
-  }
+  };
   state = {
     page: 1,
     selectedOption: null,
@@ -55,7 +52,7 @@ class VolumesTable extends React.Component<any, any> {
           <ReactTable
             css={css`
               font-size: 14px;
-              .rt-td{
+              .rt-td {
                 overflow: visible;
               }
             `}
@@ -68,12 +65,13 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >PV Name
-                  </div>),
+                  >
+                    PV Name
+                  </div>
+                ),
                 accessor: 'name',
                 width: 180,
                 resizable: false,
-
               },
               {
                 Header: () => (
@@ -82,8 +80,10 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Project
-                  </div>),
+                  >
+                    Project
+                  </div>
+                ),
                 accessor: 'project',
                 width: 150,
                 resizable: false,
@@ -95,12 +95,13 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Storage Class
-                  </div>),
+                  >
+                    Storage Class
+                  </div>
+                ),
                 accessor: 'storageClass',
                 width: 150,
                 resizable: false,
-
               },
               {
                 Header: () => (
@@ -109,8 +110,10 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Size
-                  </div>),
+                  >
+                    Size
+                  </div>
+                ),
                 accessor: 'size',
                 width: 75,
                 resizable: false,
@@ -122,8 +125,10 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Claim
-                  </div>),
+                  >
+                    Claim
+                  </div>
+                ),
                 accessor: 'claim',
                 width: 180,
                 resizable: false,
@@ -135,8 +140,10 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Type
-                  </div>),
+                  >
+                    Type
+                  </div>
+                ),
                 accessor: 'type',
                 width: 120,
                 resizable: false,
@@ -145,8 +152,10 @@ class VolumesTable extends React.Component<any, any> {
                     onChange={(val: any) => this.handleTypeChange(row, val)}
                     options={options}
                     name="persistentVolumes"
-                    value={{ label: row.original.type, value: row.original.type }}
-
+                    value={{
+                      label: row.original.type,
+                      value: row.original.type,
+                    }}
                   />
                 ),
               },
@@ -158,18 +167,17 @@ class VolumesTable extends React.Component<any, any> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Details
-                  </div>),
+                  >
+                    Details
+                  </div>
+                ),
                 accessor: 'details',
                 width: 50,
                 resizable: false,
                 textAlign: 'left',
                 Cell: row => (
-                  <a
-                    href="https://google.com"
-                    target="_blank"
-
-                  >view
+                  <a href="https://google.com" target="_blank">
+                    view
                   </a>
                 ),
               },

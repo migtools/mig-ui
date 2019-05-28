@@ -44,13 +44,11 @@ interface IAuthDetails {
 }
 
 function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
-  const cluster = state.cluster.clusterList
-    .find(c => c.MigCluster.metadata.name === clusterName);
+  const cluster = state.cluster.clusterList.find(c => c.MigCluster.metadata.name === clusterName);
   if (!cluster) {
     throw new ClientFactoryUnknownClusterError(clusterName);
   }
-  const clusterApi =
-    cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const clusterApi = cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
   const accessToken = atob(cluster.Secret.data.token || cluster.Secret.data.saToken);
 
   return { clusterApi, accessToken };

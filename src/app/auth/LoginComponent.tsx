@@ -20,7 +20,7 @@ class LoginComponent extends React.Component<IProps> {
       this.props.fetchOauthMeta(migMeta.clusterApi);
       return;
     }
-  }
+  };
 
   componentDidUpdate = prevProps => {
     const oauthMeta = this.props.auth.oauthMeta;
@@ -65,7 +65,7 @@ class LoginComponent extends React.Component<IProps> {
         }
       }
     }
-  }
+  };
 
   render() {
     return <div />;
@@ -79,9 +79,8 @@ export default connect(
     router: state.router,
   }),
   dispatch => ({
-    fetchOauthMeta: clusterApi =>
-      dispatch(authOperations.fetchOauthMeta(clusterApi)),
+    fetchOauthMeta: clusterApi => dispatch(authOperations.fetchOauthMeta(clusterApi)),
     fetchToken: (oauthClient, codeRedirect) =>
       dispatch(authOperations.fetchToken(oauthClient, codeRedirect)),
-  }),
+  })
 )(LoginComponent);

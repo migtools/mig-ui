@@ -15,7 +15,9 @@ import FormErrorDiv from './../../common/components/FormErrorDiv';
 interface IProps {
   component: React.ReactNode;
 }
-const PlanNameInput = styled(TextInput)`width: 20em !important;`;
+const PlanNameInput = styled(TextInput)`
+  width: 20em !important;
+`;
 
 const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   handleChange,
@@ -26,7 +28,6 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   setFieldTouched,
   ...rest
 }) => {
-
   const onHandleChange = (val, e) => {
     handleChange(e);
   };

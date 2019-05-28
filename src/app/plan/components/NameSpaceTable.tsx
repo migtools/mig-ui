@@ -5,11 +5,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
 import planOperations from '../../plan/duck/operations';
-import {
-  TextContent,
-  TextList,
-  TextListItem,
-} from '@patternfly/react-core';
+import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 interface IState {
@@ -39,16 +35,12 @@ class NamespaceTable extends React.Component<IProps, IState> {
 
   componentDidMount() {
     if (this.props.sourceCluster) {
-      this.props.fetchNamespacesForCluster(
-        this.props.sourceCluster.metadata.name,
-      );
+      this.props.fetchNamespacesForCluster(this.props.sourceCluster.metadata.name);
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (
-      prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces
-    ) {
+    if (prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces) {
       this.setState({ rows: this.props.sourceClusterNamespaces });
     }
   }
@@ -72,7 +64,7 @@ class NamespaceTable extends React.Component<IProps, IState> {
       }
     });
     this.props.setFieldValue('selectedNamespaces', formValuesForNamespaces);
-  }
+  };
 
   render() {
     const { sourceCluster } = this.props;
@@ -83,17 +75,16 @@ class NamespaceTable extends React.Component<IProps, IState> {
     if (sourceCluster !== null) {
       return (
         <React.Fragment>
-          <StyledTextContent
-          >
+          <StyledTextContent>
             <TextList component="dl">
-              <TextListItem component="dt" >Select projects to be migrated: </TextListItem>
+              <TextListItem component="dt">Select projects to be migrated: </TextListItem>
             </TextList>
           </StyledTextContent>
 
           <ReactTable
             css={css`
               font-size: 14px;
-              .rt-td{
+              .rt-td {
                 overflow: visible;
               }
             `}
@@ -116,8 +107,10 @@ class NamespaceTable extends React.Component<IProps, IState> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Name
-                  </div>),
+                  >
+                    Name
+                  </div>
+                ),
                 accessor: 'metadata.name',
               },
               {
@@ -127,8 +120,10 @@ class NamespaceTable extends React.Component<IProps, IState> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Display Name
-                  </div>),
+                  >
+                    Display Name
+                  </div>
+                ),
                 accessor: 'displayName',
               },
               {
@@ -151,8 +146,10 @@ class NamespaceTable extends React.Component<IProps, IState> {
                       textAlign: 'left',
                       fontWeight: 600,
                     }}
-                  >Number of Services
-                  </div>),
+                  >
+                    Number of Services
+                  </div>
+                ),
                 accessor: 'services',
               },
             ]}
@@ -181,7 +178,6 @@ function mapStateToProps(state) {
     return !rejectedRegex.some(rx => rx.test(ns.metadata.name));
   });
 
-
   return {
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
   };
@@ -197,5 +193,5 @@ function mapDispatchToProps(dispatch) {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(NamespaceTable);

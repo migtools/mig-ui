@@ -2,27 +2,24 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { Flex, Box, Text } from '@rebass/emotion';
-import {
-  Button,
-  Checkbox,
-} from '@patternfly/react-core';
+import { Button, Checkbox } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 
 const MigrateModalForm = props => {
   return (
     <Flex>
       <form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault();
           props.onHandleModalToggle(null);
           props.handleSubmit();
         }}
       >
         <Box>
-          Migrating a migration plan means that all transactions on the source cluster will be halted
-          before the migration begins and will remain halted for the duration of the migration.
-          Persistent volumes associated with the projects being migrated will be moved or copied
-          to the target cluster as specified in the migration plan.
+          Migrating a migration plan means that all transactions on the source cluster will be
+          halted before the migration begins and will remain halted for the duration of the
+          migration. Persistent volumes associated with the projects being migrated will be moved or
+          copied to the target cluster as specified in the migration plan.
         </Box>
         <Box
           css={css`

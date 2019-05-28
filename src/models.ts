@@ -2,8 +2,8 @@ interface IMigClusterMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number
-    'migrations.openshift.io/migration-group': string,
+    'controller-ToolsIcon.k8s.io': number;
+    'migrations.openshift.io/migration-group': string;
   };
   name: string;
   namespaces: any[];
@@ -13,8 +13,8 @@ interface IMigClusterMetadata {
 }
 interface IMigClusterSpec {
   clusterAuthSecretRef: {
-    name: string
-    namespace: string,
+    name: string;
+    namespace: string;
   };
   clusterUrl: string;
 }
@@ -34,8 +34,8 @@ interface IMigStorageMetadata {
   creationTimestamp: any;
   generation: number;
   labels: {
-    'controller-ToolsIcon.k8s.io': number
-    'migrations.openshift.io/migration-group': string,
+    'controller-ToolsIcon.k8s.io': number;
+    'migrations.openshift.io/migration-group': string;
   };
   name: string;
   namespace: string;
@@ -46,11 +46,11 @@ interface IMigStorageMetadata {
 interface IMigStorageSpec {
   bucketUrl: string;
   backupStorageLocationRef: {
-    name: string,
+    name: string;
   };
   migrationStorageSecretRef: {
-    name: string
-    namespace: string,
+    name: string;
+    namespace: string;
   };
 }
 export interface IMigStorage {
