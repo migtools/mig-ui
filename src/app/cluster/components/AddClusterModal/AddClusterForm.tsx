@@ -52,6 +52,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       setFieldTouched,
       setFieldValue,
       checkConnection,
+      onHandleModalToggle,
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     const customCss = css`
@@ -131,6 +132,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           touched={touched}
           connectionState={connectionState}
           checkConnection={checkConnection}
+          onHandleModalToggle={onHandleModalToggle}
         />
       </Form >
     );

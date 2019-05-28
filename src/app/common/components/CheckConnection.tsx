@@ -17,6 +17,7 @@ interface IProps {
   errors: any;
   touched: any;
   checkConnection: () => void;
+  onHandleModalToggle: (arg0?: any) => void;
 }
 
 const CheckConnection: React.FunctionComponent<IProps> = ({
@@ -24,6 +25,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
   checkConnection,
   errors,
   touched,
+  onHandleModalToggle,
   ...props
 }) => {
 
@@ -66,7 +68,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
           <Button
             key="cancel"
             variant="secondary"
-            onClick={() => this.props.onHandleModalToggle(null)}
+            onClick={() => onHandleModalToggle(null)}
           >
             Cancel
           </Button>
