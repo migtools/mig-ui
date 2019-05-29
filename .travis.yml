@@ -6,7 +6,7 @@ git:
   depth: 3
 jobs:
   include:
-    - script cp ./config/config.dev.json.example ./config/config.dev.json
+    - script: cp ./config/config.dev.json.example ./config/config.dev.json
     - script: yarn lint
     - script: yarn test
     - script: yarn build
