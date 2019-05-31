@@ -30,22 +30,24 @@ spec:
           properties:
             migPlanRef:
               type: object
+            stage:
+              type: boolean
+          required:
+          - stage
           type: object
         status:
           properties:
             completionTimestamp:
               format: date-time
               type: string
-            destRestoreRef:
-              type: object
             migrationCompleted:
               type: boolean
             migrationStarted:
               type: boolean
-            srcBackupRef:
-              type: object
             startTimestamp:
               format: date-time
+              type: string
+            taskPhase:
               type: string
           type: object
   version: v1alpha1
