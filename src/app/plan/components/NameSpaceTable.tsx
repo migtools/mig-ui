@@ -172,6 +172,7 @@ function mapStateToProps(state) {
       RegExp('^openshift-.*', 'i'),
       RegExp('^openshift$', 'i'),
       RegExp('^velero$', 'i'),
+      RegExp('^default$', 'i'),
     ];
 
     // Short circuit the regex check if any of them match a rejected regex and filter it out
