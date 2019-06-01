@@ -21,8 +21,8 @@ const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const clusterFetchFailure = Creators.clusterFetchFailure;
 const addClusterSuccess = Creators.addClusterSuccess;
-// const removeClusterSuccess = Creators.removeClusterSuccess;
-// const removeClusterFailure = Creators.removeClusterFailure;
+const removeClusterSuccess = Creators.removeClusterSuccess;
+const removeClusterFailure = Creators.removeClusterFailure;
 const updateSearchTerm = Creators.updateSearchTerm;
 
 const addCluster = clusterValues => {
@@ -78,18 +78,38 @@ const addCluster = clusterValues => {
 };
 
 const removeCluster = id => {
-  throw new Error('NOT IMPLEMENTED');
-  // return dispatch => {
-  //   removeClusterRequest(id).then(
-  //     response => {
-  //       dispatch(removeClusterSuccess(id));
-  //       dispatch(fetchClusters());
-  //     },
-  //     error => {
-  //       dispatch(removeClusterFailure(error));
-  //     },
-  //   );
-  // };
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const clusterRegResource = new ClusterRegistryResource(
+        ClusterRegistryResourceKind.Cluster,
+        migMeta.namespace
+      );
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.configNamespace
+      );
+      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.delete(clusterRegResource, id),
+        client.delete(secretResource, id),
+        client.delete(migClusterResource, id),
+      ]);
+
+      // TODO:  Unsure if both dispatches below are needed.
+      //        Do we want the removeClusterSuccess(id)
+      //        or is dispatch(fetchClusters()) sufficient?
+      //
+      dispatch(removeClusterSuccess(id));
+      dispatch(fetchClusters());
+    } catch (err) {
+      dispatch(removeClusterFailure(err));
+    }
+  };
 };
 
 const fetchClusters = () => {

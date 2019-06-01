@@ -10,7 +10,7 @@ import {
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 
-const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) => {
+const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
   let clusterStatus;
   if (typeof cluster.MigCluster.status === 'undefined' || cluster.MigCluster.status === null) {
@@ -48,7 +48,17 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, ...props }) =>
                   <Button variant="secondary">Edit</Button>
                 </Box>
                 <Box mx={1}>
-                  <Button variant="danger">Remove</Button>
+                    <Button onClick={() => {
+                      // TODO:  Not sure best way to ensure that user wants to really delete this item.
+                      if (confirm('Are you sure?')) {
+                        removeCluster(clusterName);
+                      }
+                      }}
+                      variant="danger"
+                      key="remove-action"
+                    >
+                      Remove
+                    </Button>
                 </Box>
               </Flex>
             </DataListCell>,

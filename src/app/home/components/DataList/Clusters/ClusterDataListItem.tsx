@@ -16,7 +16,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddClusterModal from '../../../../cluster/components/AddClusterModal';
 import ClusterContent from './ClusterContent';
 
-const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, ...props }) => {
+const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, removeCluster, ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -48,6 +48,7 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, ..
           isLoading={isLoading}
           isExpanded={isExpanded}
           migMeta={migMeta}
+          removeCluster={removeCluster}
           {...props}
         />
       </DataListItem>

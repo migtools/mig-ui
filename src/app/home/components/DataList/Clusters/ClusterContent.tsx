@@ -11,6 +11,7 @@ const ClusterContent = ({
   isExpanded,
   associatedPlans,
   migMeta,
+  removeCluster,
   ...props
 }) => {
   return (
@@ -25,6 +26,7 @@ const ClusterContent = ({
                 cluster={cluster}
                 clusterIndex={clusterIndex}
                 migMeta={migMeta}
+                removeCluster={removeCluster}
                 associatedPlans={associatedPlans}
               />
             );
