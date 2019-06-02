@@ -47,6 +47,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       setFieldTouched,
       connectionState,
       checkConnection,
+      mode,
     } = this.props;
     return (
       <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -140,6 +141,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           connectionState={connectionState}
           checkConnection={checkConnection}
           onHandleModalToggle={this.props.onHandleModalToggle}
+          mode={mode}
         />
       </Form>
     );
