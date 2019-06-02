@@ -15,6 +15,16 @@ export function createTokenSecret(name: string, namespace: string, rawToken: str
   };
 }
 
+export function updateTokenSecret(rawToken: string) {
+  // btoa => to base64, atob => from base64
+  const encodedToken = btoa(rawToken);
+  return {
+    data: {
+      saToken: encodedToken,
+    },
+  };
+}
+
 export function tokenFromSecret(secret: any) {
   return atob(secret.data.token);
 }
@@ -37,6 +47,21 @@ export function createClusterRegistryObj(name: string, namespace: string, server
         ],
       },
     },
+  };
+}
+
+export function updateClusterRegistryObj(serverAddress: string) {
+  return {
+      spec: {
+        kubernetesApiEndpoints: {
+          serverEndpoints: [
+            {
+              clientCIDR: '0.0.0.0',
+              serverAddress,
+            },
+          ],
+        },
+      }
   };
 }
 
@@ -64,6 +89,24 @@ export function createMigCluster(
         namespace: tokenSecret.metadata.namespace,
       },
     },
+  };
+}
+
+// TODO:  Initial phase, ignore the 'name' updating for the objects.
+//  That means no changes them to MigCluster
+export function updateMigCluster(
+  name: string,
+  namespace: string,
+  clusterRegistryObj: any,
+  tokenSecret: any
+) {
+  return {
+      clusterRef: {
+        name: clusterRegistryObj.metadata.name,
+      },
+      serviceAccountSecretRef: {
+        name: tokenSecret.metadata.name,
+      },
   };
 }
 

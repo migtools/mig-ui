@@ -26,7 +26,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
 }) => {
   const errorsObj = Object.entries(errors).length === 0 && errors.constructor === Object;
   const touchedObj = Object.entries(touched).length === 0 && touched.constructor === Object;
-  const displayMode = (mode !== 'undefined' ) ? (mode.charAt(0).toUpperCase() + mode.substring(1)) : 'Add';
+  const displayMode = (typeof mode === 'undefined' ) ? 'Add' : (mode.charAt(0).toUpperCase() + mode.substring(1));
 
   return (
     <FormGroup fieldId="check-connection" id="check-connection">

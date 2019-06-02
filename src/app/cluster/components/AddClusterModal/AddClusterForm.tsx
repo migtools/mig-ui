@@ -62,6 +62,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             name="name"
             type="text"
             id="cluster-name-input"
+            isDisabled = { (mode === 'update') ? true : false }
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
