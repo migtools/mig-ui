@@ -15,7 +15,6 @@ import {
   createMigCluster,
   updateClusterRegistryObj,
   updateTokenSecret,
-  updateMigCluster,
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { commonOperations } from '../../common/duck';

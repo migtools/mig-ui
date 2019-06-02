@@ -92,24 +92,6 @@ export function createMigCluster(
   };
 }
 
-// TODO:  Initial phase, ignore the 'name' updating for the objects.
-//  That means no changes them to MigCluster
-export function updateMigCluster(
-  name: string,
-  namespace: string,
-  clusterRegistryObj: any,
-  tokenSecret: any
-) {
-  return {
-      clusterRef: {
-        name: clusterRegistryObj.metadata.name,
-      },
-      serviceAccountSecretRef: {
-        name: tokenSecret.metadata.name,
-      },
-  };
-}
-
 export function createMigStorage(
   name: string,
   bucketName: string,
