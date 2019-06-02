@@ -132,6 +132,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             id="storageList"
             associatedPlans={storageAssociatedPlans}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            removeStorage={this.props.removeStorage}
           />
           <PlanDataListItem
             planList={allPlans}

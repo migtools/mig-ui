@@ -4,7 +4,7 @@ import StorageItem from './StorageItem';
 import { Flex, Box } from '@rebass/emotion';
 import DataListEmptyState from '../DataListEmptyState';
 
-const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...props }) => {
+const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, removeStorage, ...props }) => {
   return (
     <DataListContent noPadding aria-label="storage-items-content-container" isHidden={!isExpanded}>
       {dataList.length > 0 ? (
@@ -17,6 +17,7 @@ const StorageContent = ({ dataList, isLoading, isExpanded, associatedPlans, ...p
                 storage={storage}
                 storageIndex={storageIndex}
                 associatedPlans={associatedPlans}
+                removeStorage={removeStorage}
               />
             );
           })}

@@ -12,7 +12,7 @@ import AddStorageModal from '../../../../storage/components/AddStorageModal';
 import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 
-const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
+const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props }) => {
   const associatedPlanCount = props.associatedPlans[storage.MigStorage.metadata.name];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
   const [isOpen, toggleOpen] = useOpenModal(false);
@@ -36,11 +36,11 @@ const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
           dataListCells={[
             <DataListCell key={name} width={1}>
               <StatusIcon status={storageStatus} />
-              <span id="simple-item1">{storage.MigStorage.metadata.name}</span>
+              <span id="simple-item1">{name}</span>
             </DataListCell>,
             <DataListCell key="url" width={2}>
-              <a target="_blank" href={storage.MigStorage.spec.bucketUrl}>
-                {storage.MigStorage.spec.bucketUrl}
+              <a target="_blank" href={storage.MigStorage.spec.bucketName}>
+                {storage.MigStorage.spec.bucketName}
               </a>
             </DataListCell>,
             <DataListCell key="count" width={2}>
@@ -56,7 +56,17 @@ const StorageItem = ({ storage, storageIndex, isLoading, ...props }) => {
                    />
                 </Box>
                 <Box mx={1}>
-                  <Button variant="danger">Remove</Button>
+                  <Button onClick={() => {
+                      // TODO:  Not sure best way to ensure that user wants to really delete this item.
+                      if (confirm('Are you sure?')) {
+                        removeStorage(name);
+                      }
+                      }}
+                      variant="danger"
+                      key="remove-action"
+                    >
+                      Remove
+                    </Button>
                 </Box>
               </Flex>
             </DataListCell>,

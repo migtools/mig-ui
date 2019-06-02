@@ -15,7 +15,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddStorageModal from '../../../../storage/components/AddStorageModal';
 import StorageContent from './StorageContent';
 
-const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props }) => {
+const StorageDataListItem = ({ dataList, isLoading, associatedPlans, removeStorage, ...props }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -46,6 +46,7 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
           dataList={dataList}
           isLoading={isLoading}
           isExpanded={isExpanded}
+          removeStorage={removeStorage}
           {...props}
         />
       </DataListItem>

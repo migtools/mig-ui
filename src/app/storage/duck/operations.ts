@@ -117,18 +117,28 @@ function checkConnection() {
 }
 
 const removeStorage = id => {
-  throw new Error('NOT IMPLEMENTED');
-  // return dispatch => {
-  //   removeStorageRequest(id).then(
-  //     response => {
-  //       dispatch(removeStorageSuccess(id));
-  //       dispatch(fetchStorage());
-  //     },
-  //     error => {
-  //       dispatch(removeStorageFailure(error));
-  //     },
-  //   );
-  // };
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.namespace
+      );
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.delete(secretResource, id),
+        client.delete(migStorageResource, id),
+      ]);
+
+      dispatch(fetchStorage());
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
+  };
 };
 
 const fetchStorage = () => {
