@@ -46,7 +46,7 @@ const addStorage = storageValues => {
 
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace
+        migMeta.namespace
       );
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
