@@ -10,6 +10,8 @@ import {
   createClusterRegistryObj,
   createStorageSecret,
   createMigStorage,
+  updateMigStorage,
+  updateStorageSecret,
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 
@@ -49,7 +51,6 @@ const addStorage = storageValues => {
         migMeta.namespace
       );
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
-
       const arr = await Promise.all([
         client.create(secretResource, tokenSecret),
         client.create(migStorageResource, migStorage),
@@ -69,6 +70,42 @@ const addStorage = storageValues => {
     }
   };
 };
+
+const updateStorage = storageValues => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+
+      const tokenSecret = updateStorageSecret(
+        storageValues.secret,
+        storageValues.accessKey
+      );
+
+      const migStorage = updateMigStorage(
+        storageValues.bucketName,
+        storageValues.bucketRegion,
+      );
+
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.namespace
+      );
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.patch(secretResource, storageValues.name, tokenSecret),
+        client.patch(migStorageResource, storageValues.name, migStorage),
+      ]);
+
+      dispatch(fetchStorage());
+    } catch (err) {
+      dispatch(AlertCreators.alertError(err));
+    }
+  };
+};
+
 
 function checkConnection() {
   return (dispatch, getState) => {
@@ -145,6 +182,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 export default {
   fetchStorage,
   addStorage,
+  updateStorage,
   removeStorage,
   updateSearchTerm,
   checkConnection,

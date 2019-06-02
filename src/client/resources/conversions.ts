@@ -146,6 +146,24 @@ export function createMigStorage(
   };
 }
 
+export function updateMigStorage(
+  bucketName: string,
+  bucketRegion: string,
+) {
+  return {
+    spec: {
+      backupStorageConfig: {
+        awsBucketName: bucketName,
+        awsRegion: bucketRegion,
+      },
+      volumeSnapshotConfig: {
+        awsRegion: bucketRegion,
+      },
+    },
+  };
+}
+
+
 export function createStorageSecret(
   name: string,
   namespace: string,
@@ -167,6 +185,21 @@ export function createStorageSecret(
       namespace,
     },
     type: 'Opaque',
+  };
+}
+
+export function updateStorageSecret(
+  secretKey: any,
+  accessKey: string
+) {
+  // btoa => to base64, atob => from base64
+  const encodedAccessKey = btoa(accessKey);
+  const encodedSecretKey = btoa(secretKey);
+  return {
+    data: {
+      'aws-access-key-id': encodedAccessKey,
+      'aws-secret-access-key-id': encodedSecretKey,
+    },
   };
 }
 

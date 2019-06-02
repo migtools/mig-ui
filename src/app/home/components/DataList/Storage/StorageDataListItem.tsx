@@ -38,7 +38,7 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, ...props })
             <Button onClick={toggleOpen} variant="link" id="add-repo-btn">
               <PlusCircleIcon /> Add Repository
             </Button>
-            <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
+            <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} mode={'add'} />
           </DataListAction>
         </DataListItemRow>
         <StorageContent

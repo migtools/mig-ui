@@ -19,16 +19,26 @@ class AddStorageModal extends React.Component<any, any> {
     this.props.addStorage(vals);
   };
 
+  handleUpdate = vals => {
+    this.props.updateStorage(vals);
+  }
+
   render() {
-    const { connectionState, checkConnection } = this.props;
+    const { connectionState, checkConnection, name, bucketName, bucketRegion, accessKey, secret, mode } = this.props;
 
     return (
       <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Add Repository">
         <AddStorageForm
           connectionState={connectionState}
           onHandleModalToggle={this.handleClose}
-          onAddItemSubmit={this.handleAdd}
+          onItemSubmit={ (mode === 'update') ? this.handleUpdate : this.handleAdd}
           checkConnection={checkConnection}
+          name={name}
+          bucketName={bucketName}
+          bucketRegion={bucketRegion}
+          accessKey={accessKey}
+          secret={secret}
+          mode={mode}
         />
       </Modal>
     );
@@ -43,6 +53,7 @@ export default connect(
   },
   dispatch => ({
     addStorage: values => dispatch(storageOperations.addStorage(values)),
+    updateStorage: values => dispatch(storageOperations.updateStorage(values)),
     checkConnection: () => dispatch(storageOperations.checkConnection()),
     resetConnectionState: () => dispatch(Creators.setConnectionState(ConnectionState.Pending)),
   })
