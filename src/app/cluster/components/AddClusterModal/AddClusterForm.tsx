@@ -60,7 +60,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             value={values.name}
             name="name"
             type="text"
-            id="name"
+            id="cluster-name-input"
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -75,7 +75,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             name="url"
             type="text"
             // isValid={!errors.url && touched.url}
-            id="url"
+            id="url-input"
           />
           {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
         </FormGroup>
@@ -89,7 +89,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             onInput={() => setFieldTouched('token', true, true)}
             onBlur={handleBlur}
             name="token"
-            id="token"
+            id="token-input"
             type={this.state.tokenHidden ? 'password' : 'text'}
           />
           {errors.token && touched.token && (
