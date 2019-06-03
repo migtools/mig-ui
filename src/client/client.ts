@@ -4,6 +4,7 @@ import axios, { AxiosPromise, AxiosInstance } from 'axios';
 export interface IClusterClient {
   list(resource: KubeResource): Promise<any>;
   get(resource: KubeResource, name: string): Promise<any>;
+  put(resource: KubeResource, name: string, updatedObject: object): Promise<any>;
   patch(resource: KubeResource, name: string, patch: object): Promise<any>;
   create(resource: KubeResource, newObject: object): Promise<any>;
   delete(resource: KubeResource, name: string): Promise<any>;
@@ -32,6 +33,9 @@ export class ClusterClient {
   }
   public get(resource: KubeResource, name: string): AxiosPromise<any> {
     return this.requester.get(resource.namedPath(name));
+  }
+  public put(resource: KubeResource, name: string, updatedObject: Object): AxiosPromise<any> {
+    return this.requester.put(resource.namedPath(name), updatedObject);
   }
   public patch(resource: KubeResource, name: string, patch: object): AxiosPromise<any> {
     return this.requester.patch(resource.namedPath(name), patch);

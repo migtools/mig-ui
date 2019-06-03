@@ -12,6 +12,7 @@ const { Creators, Types } = createActions({
   sourceClusterNamespacesFetchSuccess: ['sourceClusterNamespaces'],
   initMigration: ['planName'],
   migrationSuccess: ['planName'],
+  updatePlan: ['updatedPlan'],
 });
 
 export { Creators, Types };

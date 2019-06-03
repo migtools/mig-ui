@@ -116,7 +116,7 @@ export function createStorageSecret(
     apiVersion: 'v1',
     data: {
       'aws-access-key-id': encodedAccessKey,
-      'aws-secret-access-key-id': encodedSecretKey,
+      'aws-secret-access-key': encodedSecretKey,
     },
     kind: 'Secret',
     metadata: {
@@ -133,7 +133,6 @@ export function createMigPlan(
   sourceClusterObj: any,
   destinationClusterObj: any,
   storageObj: any,
-  assetObj: any
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -155,13 +154,71 @@ export function createMigPlan(
         name: storageObj,
         namespace,
       },
-      migAssetCollectionRef: {
-        name: assetObj,
-        namespace,
-      },
     },
   };
 }
+
+export function updateMigPlanFromValues(
+  migPlan: any,
+  planValues: any,
+) {
+  const updatedSpec = Object.assign({}, migPlan.spec);
+
+  updatedSpec.migStorageRef = {
+    name: planValues.selectedStorage,
+    namespace: migPlan.metadata.namespace,
+  }
+
+  updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
+    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name)
+    v.action = userPv.type;
+    return v;
+  });
+
+  return {
+    apiVersion: 'migration.openshift.io/v1alpha1',
+    kind: 'MigPlan',
+    metadata: migPlan.metadata,
+    spec: updatedSpec,
+  };
+}
+
+export function createMigPlanNoStorage(
+  name: string,
+  namespace: string,
+  sourceClusterObj: any,
+  destinationClusterObj: any,
+  namespaces: Array<string>,
+) {
+  return {
+    apiVersion: 'migration.openshift.io/v1alpha1',
+    kind: 'MigPlan',
+    metadata: {
+      name,
+      namespace,
+    },
+    spec: {
+      srcMigClusterRef: {
+        name: sourceClusterObj,
+        namespace,
+      },
+      destMigClusterRef: {
+        name: destinationClusterObj,
+        namespace,
+      },
+      namespaces,
+      //////////////////////////////////////////////////////////////////////////
+      // TODO: Need to rip this out once the controller allows for creation
+      // of a MigPlan without a storage ref.
+      migStorageRef: {
+        name: 'my-s2-bucket',
+        namespace,
+      }
+      //////////////////////////////////////////////////////////////////////////
+    },
+  };
+}
+
 export function createMigMigration(migID: string, planName: string, namespace: string) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -175,6 +232,8 @@ export function createMigMigration(migID: string, planName: string, namespace: s
         name: planName,
         namespace,
       },
+      quiescePods: true,
+      stage: false,
     },
   };
 }

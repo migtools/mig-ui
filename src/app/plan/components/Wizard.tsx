@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
+import { connect } from 'react-redux';
 
 import React from 'react';
 import { withFormik } from 'formik';
@@ -13,6 +14,11 @@ import ResultsStep from './ResultsStep';
 import ConfirmationStep from './ConfirmationStep';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
+import planOperations from '../duck/operations';
+
+const MigSourceStepId = 2;
+const PVDiscoveryStepId = 3;
+const HostClusterName = 'host';
 
 class WrappedWizard extends React.Component<any, any> {
   state = {
@@ -35,17 +41,21 @@ class WrappedWizard extends React.Component<any, any> {
     this.setState({
       step: curr.id,
     });
+
+    if (prev.prevId === MigSourceStepId) {
+      // We must create the plan here so that the controller can evaluate the
+      // requested namespaces and discover related PVs
+      this.props.addPlan({
+        planName: this.props.values.planName,
+        sourceCluster: this.props.values.sourceCluster,
+        targetCluster: HostClusterName,
+        namespaces: this.props.values.selectedNamespaces.map(ns => ns.metadata.name),
+      })
+    }
     if (curr.id === 5) {
       this.props.handleSubmit();
     }
   };
-  // handleAddPlan = () => {
-  //   this.props.handlesubmit();
-  //   // this.setState({
-  //   //   step: 1,
-  //   //   isOpen: false,
-  //   // });
-  // }
 
   render() {
     const {
@@ -54,13 +64,10 @@ class WrappedWizard extends React.Component<any, any> {
       errors,
       handleChange,
       handleBlur,
-      handleSubmit,
       setFieldTouched,
       setFieldValue,
       clusterList,
       storageList,
-      trigger,
-      resetForm,
     } = this.props;
 
     const steps = [
@@ -163,7 +170,7 @@ class WrappedWizard extends React.Component<any, any> {
     return (
       <React.Fragment>
         <Flex>
-          <form onSubmit={handleSubmit}>
+          <form>
             <PFWizard
               css={customStyle}
               isOpen={this.props.isOpen}
@@ -191,28 +198,7 @@ const Wizard: any = withFormik({
     targetCluster: null,
     selectedNamespaces: [],
     selectedStorage: '',
-    persistentVolumes: [
-      // {
-      //   name: 'pv007',
-      //   project: 'robot-shop',
-      //   storageClass: '',
-      //   size: '100 Gi',
-      //   claim: 'robot-shop/mongodata',
-      //   type: 'copy',
-      //   details: '',
-      //   id: 1,
-      // },
-      // {
-      //   name: 'pv097',
-      //   project: 'robot-shop',
-      //   storageClass: '',
-      //   size: '100 Gi',
-      //   claim: 'robot-shop/mysqldata',
-      //   type: 'copy',
-      //   details: '',
-      //   id: 2,
-      // },
-    ],
+    persistentVolumes: [],
   }),
 
   validate: values => {
@@ -245,4 +231,25 @@ const Wizard: any = withFormik({
   displayName: 'Page One Form',
 })(WrappedWizard);
 
-export default Wizard;
+
+const mapStateToProps = state => {
+  return {
+    connectionStatus: '',
+    planName: '',
+    sourceCluster: '',
+    targetCluster: null,
+    selectedNamespaces: [],
+    selectedStorage: '',
+    persistentVolumes: [],
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    addPlan: plan => dispatch(planOperations.addPlan(plan)),
+  }
+}
+
+export default connect(
+  mapStateToProps, mapDispatchToProps,
+)(Wizard)
