@@ -1,11 +1,7 @@
 /** @jsx jsx */
 import React from 'react';
-import { connect } from 'react-redux';
 import { Button, Modal } from '@patternfly/react-core';
 import { jsx } from '@emotion/core';
-import styled from '@emotion/styled';
-import theme from '../../../theme';
-import { useOpenModal } from '../duck/hooks';
 
 interface IProps {
   onHandleClose: (isConfirmed) => void;
@@ -14,15 +10,10 @@ interface IProps {
   isOpen: boolean;
 }
 
-const ConfirmModal: React.FunctionComponent<IProps> = ({
-  isOpen,
-  onHandleClose,
-  message,
-  id,
-  ...rest
-}) => {
+const ConfirmModal: React.FunctionComponent<IProps> = ({ isOpen, onHandleClose, message, id }) => {
   return (
     <Modal
+      id={id}
       isSmall
       title="Confirmation"
       isOpen={isOpen}
