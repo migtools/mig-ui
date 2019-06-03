@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import AddClusterModal from '../../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../../storage/components/AddStorageModal';
-import Wizard from '../../../plan/components/Wizard';
+import WizardContainer from '../../../plan/components/Wizard/WizardContainer';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../duck/hooks';
 
@@ -33,7 +33,7 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
           Add Plan
         </Button>
 
-        <Wizard
+        <WizardContainer
           clusterList={clusterList}
           storageList={storageList}
           isOpen={isOpen}

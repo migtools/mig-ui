@@ -7,7 +7,7 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
-import Wizard from '../plan/components/Wizard';
+import WizardContainer from '../plan/components/Wizard/WizardContainer';
 import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';

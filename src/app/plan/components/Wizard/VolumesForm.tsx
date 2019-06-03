@@ -29,7 +29,7 @@ class VolumesForm extends React.Component<any> {
   componentDidUpdate() {
     const { plans, values } = this.props;
 
-    if(plans.length === 0) {
+    if (plans.length === 0) {
       return;
     }
 
@@ -37,7 +37,7 @@ class VolumesForm extends React.Component<any> {
       return p.metadata.name === values.planName;
     });
 
-    if(!currentPlan.status) {
+    if (!currentPlan.status) {
       return;
     }
 
@@ -45,8 +45,8 @@ class VolumesForm extends React.Component<any> {
       return c.type === PvsDiscoveredType;
     });
 
-    if(pvsDiscovered) {
-      if(this.state.isLoading) {
+    if (pvsDiscovered) {
+      if (this.state.isLoading) {
         this.setState(() => ({ isLoading: false }));
         this.props.onWizardLoadingToggle(false);
       }
@@ -104,5 +104,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(
-  mapStateToProps, null,
+  mapStateToProps,
+  null
 )(VolumesForm);

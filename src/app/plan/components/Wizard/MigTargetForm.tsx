@@ -5,7 +5,7 @@ import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import TargetsTable from './TargetsTable';
 import { Box, Flex, Text } from '@rebass/emotion';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
 interface IProps {
