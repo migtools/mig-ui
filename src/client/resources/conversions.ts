@@ -228,6 +228,8 @@ export function createMigMigration(migID: string, planName: string, namespace: s
       namespace,
     },
     spec: {
+      stage: false,
+      quiescePods: false,
       migPlanRef: {
         name: planName,
         namespace,
