@@ -1,4 +1,3 @@
-import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -11,6 +10,7 @@ import {
 } from '../../../client/resources';
 
 import { createMigPlan, createMigMigration } from '../../../client/resources/conversions';
+import { commonOperations } from '../../common/duck';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -19,6 +19,7 @@ const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
+
 // const addPlanFailure = Creators.addPlanFailure;
 // const removePlanSuccess = Creators.removePlanSuccess;
 // const removePlanFailure = Creators.removePlanFailure;
@@ -80,7 +81,7 @@ const runMigration = plan => {
       //   dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
       // }, 1000);
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -120,7 +121,7 @@ const addPlan = migPlan => {
       }, {});
       dispatch(addPlanSuccess(plan));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -141,7 +142,7 @@ const fetchPlans = () => {
       const groupedPlans = groupPlans(migPlans);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -174,7 +175,7 @@ const fetchNamespacesForCluster = clusterName => {
       .then(res => {
         dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
       })
-      .catch(err => AlertCreators.alertError('Failed to load namespaces for cluster'));
+      .catch(err => commonOperations.alertErrorTimeout('Failed to load namespaces for cluster'));
   };
 };
 

@@ -1,4 +1,3 @@
-import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -12,6 +11,7 @@ import {
   createStorageSecret,
   createMigStorage,
 } from '../../../client/resources/conversions';
+import { commonOperations } from '../../common/duck';
 
 const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
@@ -60,8 +60,9 @@ const addStorage = storageValues => {
       }, {});
       storage.status = storageValues.connectionStatus;
       dispatch(addStorageSuccess(storage));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully added a repository!'));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -105,7 +106,7 @@ const fetchStorage = () => {
       const groupedStorages = groupStorages(migStorages, refs);
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
