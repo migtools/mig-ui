@@ -2,20 +2,6 @@ import { ALERT_CLEAR, ALERT_ERROR, ALERT_SUCCESS } from './actions';
 
 export const INITIAL_STATE = {};
 
-// export const success = (state = INITIAL_STATE, action) => {
-//   return {
-//     ...state,
-//     alertMessage: action.message,
-//   };
-// };
-
-// const failure = (state = INITIAL_STATE, action) => {
-//   return { ...state, alertMessage: action.message };
-// };
-// const clear = (state = INITIAL_STATE, action) => {
-//   return {};
-// };
-
 export default createReducer(
   { successText: null, errorText: null },
   {
