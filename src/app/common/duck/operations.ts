@@ -1,22 +1,23 @@
-import { Creators } from './actions';
-const alertSuccess = Creators.alertSuccess;
-const alertError = Creators.alertError;
-const alertClear = Creators.alertClear;
-
-const displayNotificationWithTimeout = (type, message) => {
+import { alertSuccess, alertError, alertClear } from './actions';
+const alertErrorTimeout = message => {
   return async (dispatch, getState) => {
     try {
-      if (type === 'Success') {
-        dispatch(alertSuccess(message));
-        setTimeout(() => {
-          dispatch(alertClear());
-        }, 5000);
-      } else {
-        dispatch(alertError(message));
-        setTimeout(() => {
-          dispatch(alertClear());
-        }, 5000);
-      }
+      dispatch(alertError(message));
+      setTimeout(() => {
+        dispatch(alertClear());
+      }, 5000);
+    } catch (err) {
+      dispatch(alertClear());
+    }
+  };
+};
+const alertSuccessTimeout = message => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(alertSuccess(message));
+      setTimeout(() => {
+        dispatch(alertClear());
+      }, 5000);
     } catch (err) {
       dispatch(alertClear());
     }
@@ -24,8 +25,7 @@ const displayNotificationWithTimeout = (type, message) => {
 };
 
 export default {
-  displayNotificationWithTimeout,
-  alertSuccess,
-  alertError,
+  alertSuccessTimeout,
+  alertErrorTimeout,
   alertClear,
 };

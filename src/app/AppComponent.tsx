@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React from 'react';
 import HomeComponent from './home/HomeComponent';
 import LoginComponent from './auth/LoginComponent';
@@ -11,21 +13,37 @@ import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
 import { Flex, Box } from '@rebass/emotion';
 import { Global, css } from '@emotion/core';
-import { AlertCard } from './common/components/AlertCard';
+import styled from '@emotion/styled';
+import { Alert } from '@patternfly/react-core';
 
 interface IProps {
   isLoggedIn?: boolean;
-  alertMessage: string;
+  errorMessage: any;
+  successMessage: any;
   alertType: string;
   onRedirect: () => void;
 }
-
-const AppComponent: React.SFC<IProps> = ({ alertMessage, alertType, isLoggedIn }) => (
+const NotificationContainer = styled(Box)`
+  position: absolute;
+  z-index: 9999999;
+  align-self: center;
+`;
+const AppComponent: React.SFC<IProps> = ({
+  errorMessage,
+  successMessage,
+  alertType,
+  isLoggedIn,
+}) => (
   <Flex flexDirection="column" width="100%">
-    {alertMessage && (
-      <Box alignSelf="center">
-        <AlertCard>{alertMessage}</AlertCard>
-      </Box>
+    {errorMessage && (
+      <NotificationContainer>
+        <Alert variant="danger" title={errorMessage} />
+      </NotificationContainer>
+    )}
+    {successMessage && (
+      <NotificationContainer>
+        <Alert variant="success" title={successMessage} />
+      </NotificationContainer>
     )}
 
     <Box>
@@ -67,8 +85,8 @@ const AppComponent: React.SFC<IProps> = ({ alertMessage, alertType, isLoggedIn }
 export default connect(
   state => ({
     isLoggedIn: !!state.auth.user,
-    alertMessage: state.common.alertMessage,
-    alertType: state.common.alertType,
+    errorMessage: state.common.errorText,
+    successMessage: state.common.successText,
   }),
   dispatch => ({
     clearAlerts: () => dispatch(commonOperations.alertClear()),

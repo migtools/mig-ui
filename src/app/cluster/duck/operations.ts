@@ -1,4 +1,3 @@
-import { Creators as AlertCreators } from '../../common/duck/actions';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -16,6 +15,7 @@ import {
   createMigCluster,
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
+import { commonOperations } from '../../common/duck';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
@@ -69,8 +69,9 @@ const addCluster = clusterValues => {
       }, {});
       cluster.status = clusterValues.connectionStatus;
       dispatch(addClusterSuccess(cluster));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully added cluster'));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -106,7 +107,7 @@ const fetchClusters = () => {
       const groupedClusters = groupClusters(migClusters, refs);
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
