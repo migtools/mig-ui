@@ -1,5 +1,5 @@
 import { alertSuccess, alertError, alertClear } from './actions';
-const alertErrorTimeout = message => {
+const alertErrorTimeout = (message: string) => {
   return async (dispatch, getState) => {
     try {
       dispatch(alertError(message));
@@ -11,7 +11,7 @@ const alertErrorTimeout = message => {
     }
   };
 };
-const alertSuccessTimeout = message => {
+const alertSuccessTimeout = (message: string) => {
   return async (dispatch, getState) => {
     try {
       dispatch(alertSuccess(message));

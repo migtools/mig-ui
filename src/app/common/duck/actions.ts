@@ -2,10 +2,10 @@ export const ALERT_SUCCESS = 'ALERT_SUCCESS';
 export const ALERT_ERROR = 'ALERT_ERROR';
 export const ALERT_CLEAR = 'ALERT_CLEAR';
 
-export function alertSuccess(text) {
+export function alertSuccess(text: string) {
   return { type: ALERT_SUCCESS, text };
 }
-export function alertError(text) {
+export function alertError(text: string) {
   return { type: ALERT_ERROR, text };
 }
 export function alertClear() {
