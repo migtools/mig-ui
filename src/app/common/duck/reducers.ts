@@ -1,41 +1,30 @@
-import { Types } from './actions';
-import { createReducer } from 'reduxsauce';
+import { ALERT_CLEAR, ALERT_ERROR, ALERT_SUCCESS } from './actions';
+
 export const INITIAL_STATE = {};
 
-export const success = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    alertType: 'alert-success',
-    alertMessage: action.message,
-  };
-};
-
-export const failure = (state = INITIAL_STATE, action) => {
-  const am = action.alertMessage;
-  let msg;
-
-  // TODO: We really shouldn't accept strings, and Errors. The action creator's
-  // interface should be improved to do compile time type checking and accept
-  // either/or. It's not simple however, because we're currently using reduxsauce.
-  // Need to investigate a way to improve this.
-  if (typeof am === 'string' || am instanceof String) {
-    msg = am;
-  } else if (am instanceof Error) {
-    msg = am.toString();
-  } else {
-    throw new Error('AlertError received an alert message that is not a string, or an Error!');
+export default createReducer(
+  { successText: null, errorText: null },
+  {
+    [ALERT_SUCCESS]: (state, action) => {
+      const text = action.text.trim();
+      return { ...state, successText: text };
+    },
+    [ALERT_ERROR]: (state, action) => {
+      const text = action.text.trim();
+      return { ...state, errorText: text };
+    },
+    [ALERT_CLEAR]: (state, action) => {
+      return { ...state, successText: null, errorText: null };
+    },
   }
+);
 
-  return { ...state, alertMessage: msg, alertType: 'error' };
-};
-export const clear = (state = INITIAL_STATE, action) => {
-  return {};
-};
-
-export const HANDLERS = {
-  [Types.ALERT_CLEAR]: clear,
-  [Types.ALERT_SUCCESS]: success,
-  [Types.ALERT_ERROR]: failure,
-};
-
-export default createReducer(INITIAL_STATE, HANDLERS);
+function createReducer(initialState, handlers) {
+  return function reducer(state = initialState, action) {
+    if (handlers.hasOwnProperty(action.type)) {
+      return handlers[action.type](state, action);
+    } else {
+      return state;
+    }
+  };
+}

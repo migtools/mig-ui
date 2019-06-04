@@ -1,13 +1,10 @@
 import axios from 'axios';
 import { Creators } from './actions';
-import { Creators as AlertCreators } from '../../common/duck/actions';
 import { push } from 'connected-react-router';
-
+import commonOperations from '../../common/duck/operations';
 const loginSuccess = Creators.loginSuccess;
 const loginFailure = Creators.loginFailure;
 const setOauthMeta = Creators.setOauthMeta;
-const alertSuccess = AlertCreators.alertSuccess;
-const alertError = AlertCreators.alertError;
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -20,7 +17,7 @@ const fetchOauthMeta = clusterApi => {
       dispatch(setOauthMeta(res.data));
     } catch (err) {
       dispatch(loginFailure());
-      dispatch(alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -35,7 +32,7 @@ const fetchToken = (oauthClient, codeRedirect) => {
       dispatch(push('/'));
     } catch (err) {
       dispatch(loginFailure());
-      dispatch(alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
