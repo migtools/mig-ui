@@ -9,6 +9,9 @@ import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import theme from './../../../theme';
+import { connect } from 'react-redux';
+
+const PvsDiscoveredType = 'PvsDiscovered';
 const StyledBox = styled(Box)`
   text-align: center;
 `;
@@ -21,17 +24,45 @@ class VolumesForm extends React.Component<any> {
 
   componentDidMount() {
     this.props.onWizardLoadingToggle(true);
-
-    setTimeout(() => {
-      this.setState(() => ({ isLoading: false }));
-      this.props.onWizardLoadingToggle(false);
-    }, 500);
   }
+
+  componentDidUpdate() {
+    const { plans, values } = this.props;
+
+    if(plans.length === 0) {
+      return;
+    }
+
+    const currentPlan = plans.find(p => {
+      return p.metadata.name === values.planName;
+    });
+
+    if(!currentPlan.status) {
+      return;
+    }
+
+    const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
+      return c.type === PvsDiscoveredType;
+    });
+
+    if(pvsDiscovered) {
+      if(this.state.isLoading) {
+        this.setState(() => ({ isLoading: false }));
+        this.props.onWizardLoadingToggle(false);
+      }
+    }
+  }
+
   render() {
-    const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
+    const { errors, touched, setFieldValue, setFieldTouched, values, plans } = this.props;
     const StyledTextContent = styled(TextContent)`
       margin: 1em 0 1em 0;
     `;
+
+    const currentPlan = plans.find(p => {
+      return p.metadata.name === values.planName;
+    });
+
     return (
       <React.Fragment>
         {this.state.isLoading ? (
@@ -58,7 +89,7 @@ class VolumesForm extends React.Component<any> {
                 </TextListItem>
               </TextList>
             </StyledTextContent>
-            <VolumesTable setFieldValue={setFieldValue} values={values} />
+            <VolumesTable setFieldValue={setFieldValue} values={values} currentPlan={currentPlan} />
           </Box>
         )}
       </React.Fragment>
@@ -66,4 +97,12 @@ class VolumesForm extends React.Component<any> {
   }
 }
 
-export default VolumesForm;
+const mapStateToProps = state => {
+  return {
+    plans: state.plan.migPlanList.map(p => p.MigPlan),
+  };
+};
+
+export default connect(
+  mapStateToProps, null,
+)(VolumesForm);

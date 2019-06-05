@@ -27,7 +27,11 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
       progress: 0,
     },
   };
-  const newPlan = { ...action.newPlan, planState: newPlanState };
+
+  const newPlan = {
+    MigPlan: action.newPlan,
+    planState: newPlanState,
+  };
 
   return {
     ...state,
@@ -55,6 +59,24 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+  };
+};
+
+export const updatePlan = (state = INITIAL_STATE, action) => {
+  const updatedPlanList = state.migPlanList.map(p => {
+    if(p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
+      return {
+        MigPlan: action.updatedPlan,
+        planState: p.planState,
+      };
+    } else {
+      return p;
+    }
+  });
+
+  return {
+    ...state,
+    migPlanList: updatedPlanList,
   };
 };
 
@@ -137,6 +159,7 @@ export const HANDLERS = {
   [Types.STAGING_SUCCESS]: stagingSuccess,
   [Types.INIT_MIGRATION]: initMigration,
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
+  [Types.UPDATE_PLAN]: updatePlan,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

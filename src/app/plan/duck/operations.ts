@@ -9,7 +9,12 @@ import {
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
 
-import { createMigPlan, createMigMigration } from '../../../client/resources/conversions';
+import {
+  createMigPlan,
+  createMigMigration,
+  createMigPlanNoStorage,
+  updateMigPlanFromValues,
+} from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 
 /* tslint:disable */
@@ -24,6 +29,9 @@ const addPlanSuccess = Creators.addPlanSuccess;
 // const removePlanSuccess = Creators.removePlanSuccess;
 // const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
+
+const PollingInterval = 3000;
+const PvsDiscoveredType = 'PvsDiscovered';
 
 const runStage = plan => {
   return (dispatch, getState) => {
@@ -92,34 +100,74 @@ const addPlan = migPlan => {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const migPlanObj = createMigPlan(
+      const migPlanObj = createMigPlanNoStorage(
         migPlan.planName,
         migMeta.namespace,
         migPlan.sourceCluster,
         migPlan.targetCluster,
-        migPlan.selectedStorage,
-        'temp asset name'
+        migPlan.namespaces,
       );
 
-      // const assetCollectionObj = createAssetCollectionObj(
-      //   clusterValues.name,
-      //   migMeta.namespace,
-      //   clusterValues.url,
-      // );
-      const secretResource = new CoreNamespacedResource(
-        CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace
+      const createRes = await client.create(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        migPlanObj,
       );
 
-      const migPlanResource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
+      dispatch(addPlanSuccess(createRes.data));
 
-      const arr = await Promise.all([client.create(migPlanResource, migPlanObj)]);
+      console.debug('Beginning PV polling');
 
-      const plan = arr.reduce((accum, res) => {
-        accum[res.data.kind] = res.data;
-        return accum;
-      }, {});
-      dispatch(addPlanSuccess(plan));
+      const interval = setInterval(async () => {
+        const planName = migPlan.planName;
+
+        const getRes = await client.get(
+          new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+          planName
+        );
+
+        const plan = getRes.data;
+        const pvsDiscovered = !!plan.status.conditions.find(c => {
+          return c.type === PvsDiscoveredType;
+        });
+
+        if(pvsDiscovered) {
+          console.debug('Discovered PVs, clearing interaval.');
+          clearInterval(interval);
+        }
+
+        dispatch(Creators.updatePlan(plan));
+      }, PollingInterval);
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err.toString()));
+    }
+  };
+};
+
+const putPlan = planValues => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const migMeta = state.migMeta;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      // When updating objects
+      const latestPlanRes  = await client.get(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        planValues.planName,
+      );
+      const latestPlan = latestPlanRes.data;
+
+      dispatch(Creators.updatePlan(latestPlan));
+      const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
+
+      const putRes = await client.put(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        latestPlan.metadata.name,
+        updatedMigPlan,
+      );
+      // TODO: Need some kind of retry logic here in case the resourceVersion
+      // gets ticked up in between us getting and putting the mutated object back
+      dispatch(Creators.updatePlan(putRes.data));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -182,6 +230,7 @@ const fetchNamespacesForCluster = clusterName => {
 export default {
   fetchPlans,
   addPlan,
+  putPlan,
   removePlan,
   fetchNamespacesForCluster,
   runStage,
