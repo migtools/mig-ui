@@ -58,7 +58,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             value={values.name}
             name="name"
             type="text"
-            id="name"
+            id="repoName"
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
