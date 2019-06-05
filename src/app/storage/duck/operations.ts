@@ -19,6 +19,7 @@ const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
 const migStorageFetchFailure = Creators.migStorageFetchFailure;
 const addStorageSuccess = Creators.addStorageSuccess;
+const updateStorageSuccess = Creators.updateStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
@@ -99,9 +100,10 @@ const updateStorage = storageValues => {
         client.patch(migStorageResource, storageValues.name, migStorage),
       ]);
 
+      dispatch(updateStorageSuccess());
       dispatch(fetchStorage());
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -134,9 +136,10 @@ const removeStorage = id => {
         client.delete(migStorageResource, id),
       ]);
 
+      dispatch(removeStorageSuccess);
       dispatch(fetchStorage());
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };

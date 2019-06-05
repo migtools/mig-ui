@@ -106,9 +106,10 @@ const updateCluster = clusterValues => {
         client.patch(clusterRegResource, clusterValues.name, clusterReg),
         client.patch(secretResource, clusterValues.name, tokenSecret),
       ]);
+      dispatch(updateClusterSuccess);
       dispatch(fetchClusters());
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
@@ -136,8 +137,10 @@ const removeCluster = id => {
         client.delete(migClusterResource, id),
       ]);
 
+      dispatch(removeClusterSuccess);
       dispatch(fetchClusters());
     } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
       dispatch(removeClusterFailure(err));
     }
   };
