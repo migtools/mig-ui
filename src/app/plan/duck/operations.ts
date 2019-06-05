@@ -74,6 +74,7 @@ const runMigration = plan => {
         return accum;
       }, {});
       dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
+      dispatch(fetchPlans());
 
       // const planNameToStage = plan.planName;
       // const interval = setInterval(() => {

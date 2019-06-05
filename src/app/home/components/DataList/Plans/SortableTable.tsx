@@ -15,6 +15,7 @@ import { migrationSuccess } from '../../../../plan/duck/reducers';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
+import moment from 'moment';
 export default class SortableTable extends React.Component<any, any> {
   constructor(props) {
     super(props);
@@ -32,6 +33,35 @@ export default class SortableTable extends React.Component<any, any> {
     };
     this.onSort = this.onSort.bind(this);
   }
+  componentDidMount() {
+    const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
+      const StyledBox = styled(Box)`
+        position: absolute;
+        left: 40px;
+      `;
+      const type = migration.spec.stage ? 'Stage' : 'Migration';
+      return [
+        {
+          title: (
+            <Flex>
+              <StyledBox>
+                <StatusIcon status="Ready" />
+              </StyledBox>
+              <Box>{type}</Box>
+            </Flex>
+          ),
+        },
+        { title: moment().format() },
+        { title: moment().format() },
+        { title: 0 },
+        { title: 0 },
+        { title: 'Complete' },
+      ];
+    });
+
+    this.setState({ rows: mappedRows });
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.migrations !== prevProps.migrations) {
       const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
@@ -39,6 +69,7 @@ export default class SortableTable extends React.Component<any, any> {
           position: absolute;
           left: 40px;
         `;
+        const type = migration.spec.stage ? 'Stage' : 'Migration';
         return [
           {
             title: (
@@ -46,15 +77,15 @@ export default class SortableTable extends React.Component<any, any> {
                 <StyledBox>
                   <StatusIcon status="Ready" />
                 </StyledBox>
-                <Box>{migration.type}</Box>
+                <Box>{type}</Box>
               </Flex>
             ),
           },
-          { title: migration.start },
-          { title: migration.end },
-          { title: migration.moved },
-          { title: migration.copied },
-          { title: migration.status },
+          { title: moment().format() },
+          { title: moment().format() },
+          { title: 0 },
+          { title: 0 },
+          { title: 'Complete' },
         ];
       });
 

@@ -36,6 +36,7 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
 
   const newPlan = {
     MigPlan: action.newPlan,
+    Migrations: [],
     planState: newPlanState,
   };
 
@@ -73,6 +74,7 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
     if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
       return {
         MigPlan: action.updatedPlan,
+        Migrations: [],
         planState: p.planState,
       };
     } else {

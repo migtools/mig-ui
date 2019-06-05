@@ -68,7 +68,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                       <MigrationsIcon />
                     </Box>
                     <Box m="auto 0 auto 0">
-                      <span>{plan.planState.migrations.length}</span>
+                      <span>{plan.Migrations.length || 0}</span>
                     </Box>
                   </Flex>
                 ),
@@ -115,7 +115,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: (
                   <SortableTable
                     type="Migrations"
-                    migrations={plan.planState.migrations}
+                    migrations={plan.Migrations}
                     id="migrations-table"
                   />
                 ),
