@@ -31,7 +31,7 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   const newPlan = {
     MigPlan: action.newPlan,
     planState: newPlanState,
-  }
+  };
 
   return {
     ...state,
@@ -68,7 +68,7 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
       return {
         MigPlan: action.updatedPlan,
         planState: p.planState,
-      }
+      };
     } else {
       return p;
     }

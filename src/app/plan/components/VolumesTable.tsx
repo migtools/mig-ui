@@ -67,8 +67,8 @@ class VolumesTable extends React.Component<any, any> {
         type: pvAction,
         details: '',
         supportedActions: planVolume.supportedActions,
-      }
-    })
+      };
+    });
   }
 
   componentDidMount() {
@@ -235,8 +235,8 @@ class VolumesTable extends React.Component<any, any> {
 const mapStateToProps = state => {
   return {
     plans: state.plan.migPlanList.map(p => p.MigPlan),
-  }
-}
+  };
+};
 
 export default connect(
   mapStateToProps, null,

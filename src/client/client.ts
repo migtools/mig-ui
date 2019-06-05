@@ -34,7 +34,7 @@ export class ClusterClient {
   public get(resource: KubeResource, name: string): AxiosPromise<any> {
     return this.requester.get(resource.namedPath(name));
   }
-  public put(resource: KubeResource, name: string, updatedObject: Object): AxiosPromise<any> {
+  public put(resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> {
     return this.requester.put(resource.namedPath(name), updatedObject);
   }
   public patch(resource: KubeResource, name: string, patch: object): AxiosPromise<any> {

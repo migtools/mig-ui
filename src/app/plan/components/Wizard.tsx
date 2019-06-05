@@ -50,7 +50,7 @@ class WrappedWizard extends React.Component<any, any> {
         sourceCluster: this.props.values.sourceCluster,
         targetCluster: HostClusterName,
         namespaces: this.props.values.selectedNamespaces.map(ns => ns.metadata.name),
-      })
+      });
     }
     if (curr.id === 5) {
       this.props.handleSubmit();
@@ -241,15 +241,15 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-  }
-}
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: plan => dispatch(planOperations.addPlan(plan)),
-  }
-}
+  };
+};
 
 export default connect(
   mapStateToProps, mapDispatchToProps,
-)(Wizard)
+)(Wizard);

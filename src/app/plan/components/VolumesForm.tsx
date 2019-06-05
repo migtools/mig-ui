@@ -29,7 +29,7 @@ class VolumesForm extends React.Component<any> {
   componentDidUpdate() {
     const { plans, values } = this.props;
 
-    if(plans.length == 0) {
+    if(plans.length === 0) {
       return;
     }
 
@@ -100,8 +100,8 @@ class VolumesForm extends React.Component<any> {
 const mapStateToProps = state => {
   return {
     plans: state.plan.migPlanList.map(p => p.MigPlan),
-  }
-}
+  };
+};
 
 export default connect(
   mapStateToProps, null,

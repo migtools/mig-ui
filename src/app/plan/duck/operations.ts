@@ -108,14 +108,14 @@ const addPlan = migPlan => {
         migPlan.namespaces,
       );
 
-      let createRes = await client.create(
+      const createRes = await client.create(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         migPlanObj,
-      )
+      );
 
       dispatch(addPlanSuccess(createRes.data));
 
-      console.debug('Beginning PV polling')
+      console.debug('Beginning PV polling');
 
       const interval = setInterval(async () => {
         const planName = migPlan.planName;
@@ -123,7 +123,7 @@ const addPlan = migPlan => {
         const getRes = await client.get(
           new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
           planName
-        )
+        );
 
         const plan = getRes.data;
         const pvsDiscovered = !!plan.status.conditions.find(c => {
@@ -131,14 +131,14 @@ const addPlan = migPlan => {
         });
 
         if(pvsDiscovered) {
-          console.debug('Discovered PVs, clearing interaval.')
+          console.debug('Discovered PVs, clearing interaval.');
           clearInterval(interval);
         }
 
-        dispatch(Creators.updatePlan(plan))
+        dispatch(Creators.updatePlan(plan));
       }, PollingInterval);
     } catch (err) {
-      dispatch(AlertCreators.alertError(err));
+      dispatch(commonOperations.alertErrorTimeout(err.toString()));
     }
   };
 };
@@ -157,17 +157,17 @@ const putPlan = planValues => {
       );
       const latestPlan = latestPlanRes.data;
 
-      dispatch(Creators.updatePlan(latestPlan))
+      dispatch(Creators.updatePlan(latestPlan));
       const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
 
-      let putRes = await client.put(
+      const putRes = await client.put(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         latestPlan.metadata.name,
         updatedMigPlan,
-      )
+      );
       // TODO: Need some kind of retry logic here in case the resourceVersion
       // gets ticked up in between us getting and putting the mutated object back
-      dispatch(Creators.updatePlan(putRes.data))
+      dispatch(Creators.updatePlan(putRes.data));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }

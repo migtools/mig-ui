@@ -167,10 +167,10 @@ export function updateMigPlanFromValues(
   updatedSpec.migStorageRef = {
     name: planValues.selectedStorage,
     namespace: migPlan.metadata.namespace,
-  }
+  };
 
   updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name)
+    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
     v.action = userPv.type;
     return v;
   });
@@ -188,7 +188,7 @@ export function createMigPlanNoStorage(
   namespace: string,
   sourceClusterObj: any,
   destinationClusterObj: any,
-  namespaces: Array<string>,
+  namespaces: string[],
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
