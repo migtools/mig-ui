@@ -22,6 +22,7 @@ const uuidv1 = require('uuid/v1');
 /* tslint:enable */
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
+const migPlanFetchFailure = Creators.migPlanFetchFailure;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 
@@ -105,12 +106,12 @@ const addPlan = migPlan => {
         migMeta.namespace,
         migPlan.sourceCluster,
         migPlan.targetCluster,
-        migPlan.namespaces,
+        migPlan.namespaces
       );
 
       const createRes = await client.create(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        migPlanObj,
+        migPlanObj
       );
 
       dispatch(addPlanSuccess(createRes.data));
@@ -130,7 +131,7 @@ const addPlan = migPlan => {
           return c.type === PvsDiscoveredType;
         });
 
-        if(pvsDiscovered) {
+        if (pvsDiscovered) {
           console.debug('Discovered PVs, clearing interaval.');
           clearInterval(interval);
         }
@@ -151,9 +152,9 @@ const putPlan = planValues => {
       const client: IClusterClient = ClientFactory.hostCluster(state);
 
       // When updating objects
-      const latestPlanRes  = await client.get(
+      const latestPlanRes = await client.get(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        planValues.planName,
+        planValues.planName
       );
       const latestPlan = latestPlanRes.data;
 
@@ -163,7 +164,7 @@ const putPlan = planValues => {
       const putRes = await client.put(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         latestPlan.metadata.name,
-        updatedMigPlan,
+        updatedMigPlan
       );
       // TODO: Need some kind of retry logic here in case the resourceVersion
       // gets ticked up in between us getting and putting the mutated object back
@@ -190,7 +191,10 @@ const fetchPlans = () => {
       const groupedPlans = groupPlans(migPlans);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(
+        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch plans')
+      );
+      dispatch(migPlanFetchFailure());
     }
   };
 };

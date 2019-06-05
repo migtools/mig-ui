@@ -15,6 +15,7 @@ import { commonOperations } from '../../common/duck';
 
 const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
+const migStorageFetchFailure = Creators.migStorageFetchFailure;
 const addStorageSuccess = Creators.addStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
@@ -62,7 +63,9 @@ const addStorage = storageValues => {
       dispatch(addStorageSuccess(storage));
       dispatch(commonOperations.alertSuccessTimeout('Successfully added a repository!'));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(
+        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch storage')
+      );
     }
   };
 };
@@ -107,6 +110,7 @@ const fetchStorage = () => {
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(migStorageFetchFailure());
     }
   };
 };

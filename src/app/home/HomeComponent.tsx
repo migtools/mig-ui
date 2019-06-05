@@ -48,6 +48,9 @@ interface IProps {
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
   isFetchingPlans: boolean;
+  isClusterError: boolean;
+  isStorageError: boolean;
+  isPlanError: boolean;
 }
 
 interface IState {
@@ -196,6 +199,9 @@ class HomeComponent extends React.Component<IProps, IState> {
       allStorage,
       allPlans,
       allClusters,
+      isClusterError,
+      isPlanError,
+      isStorageError,
     } = this.props;
     const StyledPageSection = styled(PageSection)`
       padding-top: '50px';
@@ -211,6 +217,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                   title="Clusters"
                   dataList={allClusters}
                   isFetching={isFetchingClusters}
+                  isError={isClusterError}
                 />
               </GridItem>
               <GridItem span={4}>
@@ -219,6 +226,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                   type="repositories"
                   dataList={allStorage}
                   isFetching={isFetchingStorage}
+                  isError={isStorageError}
                 />
               </GridItem>
               <GridItem span={4}>
@@ -227,6 +235,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                   title="Migration Plans"
                   dataList={allPlans}
                   isFetching={isFetchingPlans}
+                  isError={isPlanError}
                 />
               </GridItem>
             </Grid>
@@ -255,6 +264,9 @@ export default connect(
     isFetchingClusters: state.cluster.isFetching,
     isFetchingStorage: state.storage.isFetching,
     isFetchingPlans: state.plan.isFetching,
+    isClusterError: state.cluster.isError,
+    isStorageError: state.storage.isError,
+    isPlanError: state.plan.isError,
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),

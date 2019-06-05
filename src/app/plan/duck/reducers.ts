@@ -3,6 +3,7 @@ import { createReducer } from 'reduxsauce';
 import moment from 'moment';
 
 export const INITIAL_STATE = {
+  isError: false,
   isFetching: false,
   migPlanList: [],
   planStateMap: [],
@@ -18,6 +19,9 @@ export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
 
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, migPlanList: action.migPlanList, isFetching: false };
+};
+export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isError: true, isFetching: false };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
@@ -66,7 +70,7 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
 
 export const updatePlan = (state = INITIAL_STATE, action) => {
   const updatedPlanList = state.migPlanList.map(p => {
-    if(p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
+    if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
       return {
         MigPlan: action.updatedPlan,
         planState: p.planState,
@@ -161,6 +165,7 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
+  [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,

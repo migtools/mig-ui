@@ -132,7 +132,7 @@ export function createMigPlan(
   namespace: string,
   sourceClusterObj: any,
   destinationClusterObj: any,
-  storageObj: any,
+  storageObj: any
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -158,10 +158,7 @@ export function createMigPlan(
   };
 }
 
-export function updateMigPlanFromValues(
-  migPlan: any,
-  planValues: any,
-) {
+export function updateMigPlanFromValues(migPlan: any, planValues: any) {
   const updatedSpec = Object.assign({}, migPlan.spec);
 
   updatedSpec.migStorageRef = {
@@ -188,7 +185,7 @@ export function createMigPlanNoStorage(
   namespace: string,
   sourceClusterObj: any,
   destinationClusterObj: any,
-  namespaces: string[],
+  namespaces: string[]
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -213,7 +210,7 @@ export function createMigPlanNoStorage(
       migStorageRef: {
         name: 'my-s2-bucket',
         namespace,
-      }
+      },
       //////////////////////////////////////////////////////////////////////////
     },
   };
@@ -228,8 +225,6 @@ export function createMigMigration(migID: string, planName: string, namespace: s
       namespace,
     },
     spec: {
-      stage: false,
-      quiescePods: false,
       migPlanRef: {
         name: planName,
         namespace,

@@ -19,6 +19,7 @@ import { commonOperations } from '../../common/duck';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
+const clusterFetchFailure = Creators.clusterFetchFailure;
 const addClusterSuccess = Creators.addClusterSuccess;
 // const removeClusterSuccess = Creators.removeClusterSuccess;
 // const removeClusterFailure = Creators.removeClusterFailure;
@@ -107,7 +108,10 @@ const fetchClusters = () => {
       const groupedClusters = groupClusters(migClusters, refs);
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(
+        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch clusters')
+      );
+      dispatch(clusterFetchFailure());
     }
   };
 };
