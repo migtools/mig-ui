@@ -188,34 +188,66 @@ const fetchPlans = () => {
       const resource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
       const res = await client.list(resource);
       const migPlans = res.data.items || [];
-      const groupedPlans = groupPlans(migPlans);
+
+      const refs = await Promise.all(fetchMigMigrationsRefs(client, migMeta, migPlans));
+      const groupedPlans = groupPlans(migPlans, refs);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
-      dispatch(
-        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch plans')
-      );
+      dispatch(commonOperations.alertErrorTimeout('Failed to fetch plans'));
       dispatch(migPlanFetchFailure());
     }
   };
 };
+function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+  const refs: Array<Promise<any>> = [];
 
-function groupPlans(migPlans: any[]): any[] {
-  const newPlanState = {
-    migrations: [],
-    persistentVolumes: [],
-    status: {
-      state: 'Not Started',
-      progress: 0,
-    },
-  };
+  migPlans.forEach(plan => {
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+    refs.push(client.list(migMigrationResource));
+  });
 
+  return refs;
+}
+
+function groupPlans(migPlans: any[], refs: any[]): any[] {
   return migPlans.map(mp => {
     const fullPlan = {
       MigPlan: mp,
-      planState: newPlanState,
+    };
+    if (refs[0].data.items.length > 0) {
+      fullPlan['Migrations'] = refs[0].data.items.filter(
+        i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
+      );
+    } else {
+      fullPlan['Migrations'] = [];
+    }
+    fullPlan['planState'] = {
+      migrations: [],
+      persistentVolumes: [],
+      status: {
+        state: 'Not Started',
+        progress: 0,
+      },
     };
     return fullPlan;
   });
+
+  // const newPlanState = {
+  //   migrations: [],
+  //   persistentVolumes: [],
+  //   status: {
+  //     state: 'Not Started',
+  //     progress: 0,
+  //   },
+  // };
+
+  // return migPlans.map(mp => {
+  //   const fullPlan = {
+  //     MigPlan: mp,
+  //     planState: newPlanState,
+  //   };
+  //   return fullPlan;
+  // });
 }
 
 const fetchNamespacesForCluster = clusterName => {
