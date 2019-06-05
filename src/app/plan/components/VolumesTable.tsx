@@ -58,6 +58,8 @@ class VolumesTable extends React.Component<any, any> {
 
       // TODO: A number of these values will need to be further supported by the
       // controller. Today the data is not available.
+      // See the mig controller issue describing what data we need here:
+      // https://github.com/fusor/mig-controller/issues/134
       return {
         name: planVolume.name,
         project: '',
@@ -186,8 +188,8 @@ class VolumesTable extends React.Component<any, any> {
                   <Select
                     onChange={(val: any) => this.handleTypeChange(row, val)}
                     options={row.original.supportedActions.map(a => {
-                      // NOTE: Each PV may not support all actions, we need to
-                      // inspect the PV to determine this.
+                      // NOTE: Each PV may not support all actions (any at all even),
+                      // we need to inspect the PV to determine this
                       return {value: a, label: a};
                     })}
                     name="persistentVolumes"
