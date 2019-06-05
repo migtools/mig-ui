@@ -49,7 +49,14 @@ class VolumesTable extends React.Component<any, any> {
   getTableData() {
     // Builds table data from a combination of the formik values, and the
     // persistent volumes as seen on a MigPlan object.
-    return this.props.currentPlan.spec.persistentVolumes.map(planVolume => {
+    const discoveredPersistentVolumes = this.props.currentPlan.spec.persistentVolumes;
+
+    // No PVs discovered to be in use. This is normal for stateless cloud apps.
+    if(!discoveredPersistentVolumes) {
+      return [];
+    }
+
+    return discoveredPersistentVolumes.map(planVolume => {
       let pvAction = 'copy'; // Default to copy
       if(this.props.values.persistentVolumes.length !== 0) {
         const rowVal = this.props.values.persistentVolumes.find(v => v.name === planVolume.name);
