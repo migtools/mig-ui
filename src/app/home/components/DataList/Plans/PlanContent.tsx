@@ -44,7 +44,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
           color: ${() =>
             plan.planState.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
         `;
-        const parentIndex = planIndex === 0 ? 0 : planIndex + 1;
+        const parentIndex = planIndex === 0 ? 0 : planIndex * 2;
         const planName = plan.MigPlan.metadata.name;
         const planKey = `${planName}-${planIndex}`;
         return [

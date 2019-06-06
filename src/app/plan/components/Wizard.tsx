@@ -162,17 +162,19 @@ class WrappedWizard extends React.Component<any, any> {
       <React.Fragment>
         <Flex>
           <form>
-            <PFWizard
-              isOpen={this.props.isOpen}
-              title="Migration Plan Wizard"
-              description="Create a migration plan"
-              onNext={this.onMove}
-              onBack={this.onMove}
-              onClose={this.handleClose}
-              steps={steps}
-              isFullWidth
-              isCompactNav
-            />
+            {this.props.isOpen && (
+              <PFWizard
+                isOpen={this.props.isOpen}
+                title="Migration Plan Wizard"
+                description="Create a migration plan"
+                onNext={this.onMove}
+                onBack={this.onMove}
+                onClose={this.handleClose}
+                steps={steps}
+                isFullWidth
+                isCompactNav
+              />
+            )}
           </form>
         </Flex>
       </React.Fragment>
