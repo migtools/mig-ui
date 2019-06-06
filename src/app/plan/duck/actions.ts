@@ -3,6 +3,7 @@ import { createActions } from 'reduxsauce';
 const { Creators, Types } = createActions({
   migPlanFetchRequest: [],
   migPlanFetchSuccess: ['migPlanList'],
+  migPlanFetchFailure: [],
   addPlanSuccess: ['newPlan'],
   addPlanFailure: ['error'],
   removePlanSuccess: ['id'],
@@ -13,6 +14,7 @@ const { Creators, Types } = createActions({
   initMigration: ['planName'],
   migrationSuccess: ['planName'],
   updatePlan: ['updatedPlan'],
+  updatePlanMigrations: ['updatedPlan'],
 });
 
 export { Creators, Types };

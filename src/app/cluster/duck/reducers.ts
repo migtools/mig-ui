@@ -3,6 +3,7 @@ import { createReducer } from 'reduxsauce';
 import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
+  isError: false,
   isFetching: false,
   clusterList: [],
   searchTerm: '',
@@ -16,6 +17,9 @@ export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
     return cluster;
   });
   return { ...state, clusterList, isFetching: false };
+};
+export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isError: true, isFetching: false };
 };
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
@@ -40,6 +44,7 @@ export const updateSearchTerm = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
+  [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
