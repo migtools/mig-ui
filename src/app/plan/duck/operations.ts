@@ -73,23 +73,32 @@ const runMigration = plan => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
+      const groupPlan = ref => {
+        const fullPlan = {
+          MigPlan: plan.MigPlan,
+        };
+        if (ref.data.items.length > 0) {
+          fullPlan['Migrations'] = ref.data.items.filter(
+            i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
+          );
+        } else {
+          fullPlan['Migrations'] = [];
+        }
+        fullPlan['planState'] = {
+          migrations: [],
+          persistentVolumes: [],
+          status: {
+            state: 'Not Started',
+            progress: 0,
+          },
+        };
+        return fullPlan;
+      };
+      const ref = await client.list(migMigrationResource);
+      const groupedPlan = groupPlan(ref);
+
       dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
-      dispatch(fetchPlans());
-
-      // const planNameToStage = plan.planName;
-      // const interval = setInterval(() => {
-      //   const planList = getState().plan.migPlanList;
-
-      //   const planItem = planList.find(p => p.planName === planNameToStage);
-      //   if (planItem.status.progress === 100) {
-      //     dispatch(Creators.migrationSuccess(planItem.planName));
-      //     clearInterval(interval);
-      //     return;
-      //   }
-
-      //   const nextProgress = plan.status.progress + 20;
-      //   dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
-      // }, 1000);
+      dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -136,7 +145,6 @@ const addPlan = migPlan => {
           console.debug('Discovered PVs, clearing interaval.');
           clearInterval(interval);
         }
-
         dispatch(Creators.updatePlan(plan));
       }, PollingInterval);
     } catch (err) {
@@ -232,23 +240,6 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
     };
     return fullPlan;
   });
-
-  // const newPlanState = {
-  //   migrations: [],
-  //   persistentVolumes: [],
-  //   status: {
-  //     state: 'Not Started',
-  //     progress: 0,
-  //   },
-  // };
-
-  // return migPlans.map(mp => {
-  //   const fullPlan = {
-  //     MigPlan: mp,
-  //     planState: newPlanState,
-  //   };
-  //   return fullPlan;
-  // });
 }
 
 const fetchNamespacesForCluster = clusterName => {

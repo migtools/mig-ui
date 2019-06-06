@@ -14,6 +14,7 @@ const { Creators, Types } = createActions({
   initMigration: ['planName'],
   migrationSuccess: ['planName'],
   updatePlan: ['updatedPlan'],
+  updatePlanMigrations: ['updatedPlan'],
 });
 
 export { Creators, Types };

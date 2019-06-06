@@ -158,17 +158,11 @@ class WrappedWizard extends React.Component<any, any> {
         hideBackButton: true,
       },
     ];
-    const customStyle = css`
-      .pf-c-wizard__main {
-        flex: 1 1 auto;
-      }
-    `;
     return (
       <React.Fragment>
         <Flex>
           <form>
             <PFWizard
-              css={customStyle}
               isOpen={this.props.isOpen}
               title="Migration Plan Wizard"
               description="Create a migration plan"
@@ -227,7 +221,6 @@ const Wizard: any = withFormik({
   displayName: 'Page One Form',
 })(WrappedWizard);
 
-
 const mapStateToProps = state => {
   return {
     connectionStatus: '',
@@ -247,5 +240,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  mapStateToProps, mapDispatchToProps,
+  mapStateToProps,
+  mapDispatchToProps
 )(Wizard);
