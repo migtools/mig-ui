@@ -39,18 +39,20 @@ class VolumesForm extends React.Component<any> {
         return p.metadata.name === values.planName;
       });
 
-      if (!currentPlan.status) {
-        return;
-      }
+      if (currentPlan) {
+        if (!currentPlan.status) {
+          return;
+        }
 
-      const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
-        return c.type === PvsDiscoveredType;
-      });
+        const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
+          return c.type === PvsDiscoveredType;
+        });
 
-      if (pvsDiscovered) {
-        if (this.state.isLoading) {
-          this.setState(() => ({ isLoading: false }));
-          this.props.onWizardLoadingToggle(false);
+        if (pvsDiscovered) {
+          if (this.state.isLoading) {
+            this.setState(() => ({ isLoading: false }));
+            this.props.onWizardLoadingToggle(false);
+          }
         }
       }
     }
