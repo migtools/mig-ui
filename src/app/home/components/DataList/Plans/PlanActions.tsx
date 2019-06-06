@@ -1,23 +1,12 @@
 import React from 'react';
-import { Progress, ProgressSize } from '@patternfly/react-core';
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownSeparator,
-  KebabToggle,
-  Button,
-  DataListItemCells,
-  DataListAction,
-} from '@patternfly/react-core';
-import { useOpenDropdown, useOpenModal } from '../../../duck/hooks';
+import { Button } from '@patternfly/react-core';
+import { useOpenModal } from '../../../duck/hooks';
 import { Flex, Box } from '@rebass/emotion';
 import PlanStatus from './PlanStatus';
 import MigrateModal from '../../../../plan/components/MigrateModal';
-import MigrateAction from './MigrateAction';
 
 const PlanActions = ({ plan, isLoading, ...props }) => {
-  const [isOpen, toggleOpen] = useOpenDropdown(false);
-  const [isModalOpen, toggleModalOpen] = useOpenModal(false);
+  const [isOpen, toggleOpen] = useOpenModal(false);
 
   return (
     <Flex>

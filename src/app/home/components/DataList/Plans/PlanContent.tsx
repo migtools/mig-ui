@@ -3,10 +3,12 @@ import { flatten } from 'lodash';
 import { Flex, Box } from '@rebass/emotion';
 import { DataList, DataListContent, DataListItem, DataListItemRow } from '@patternfly/react-core';
 import { DataListAction } from '@patternfly/react-core';
-import PlanTableItem from './PlanTableItem';
 import PlanActions from './PlanActions';
 import DataListEmptyState from '../DataListEmptyState';
 import {
+  Table,
+  TableHeader,
+  TableBody,
   //@ts-ignore
   compoundExpand,
 } from '@patternfly/react-table';
@@ -43,6 +45,8 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
             plan.planState.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
         `;
         const parentIndex = planIndex === 0 ? 0 : planIndex + 1;
+        const planName = plan.MigPlan.metadata.name;
+        const planKey = `${planName}-${planIndex}`;
         return [
           {
             isOpen: false,
@@ -63,17 +67,22 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
               },
               {
                 title: (
-                  <Flex>
-                    <Box m="0 5px 0 0">
-                      <MigrationsIcon />
-                    </Box>
-                    <Box m="auto 0 auto 0">
-                      <span>{plan.Migrations.length || 0}</span>
-                    </Box>
-                  </Flex>
+                  <React.Fragment>
+                    <Flex>
+                      <Box m="0 5px 0 0" key={planKey + '-icon'}>
+                        <MigrationsIcon />
+                      </Box>
+                      <Box m="auto 0 auto 0" key={planKey + '-text'}>
+                        <span>{plan.Migrations.length || 0}</span>
+                      </Box>
+                    </Flex>
+                  </React.Fragment>
                 ),
 
-                props: { isOpen: false },
+                props: {
+                  isOpen: false,
+                  ariaControls: 'migrations-history-expansion-table',
+                },
               },
               {
                 title: <span>{plan.MigPlan.spec.srcMigClusterRef.name}</span>,
@@ -116,7 +125,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                   <SortableTable
                     type="Migrations"
                     migrations={plan.Migrations}
-                    id="migrations-table"
+                    id="migrations-history-expansion-table"
                   />
                 ),
                 props: { colSpan: 6, className: 'pf-m-no-padding' },
@@ -178,11 +187,16 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
           <DataList aria-label="plan-item-list">
             <DataListItem key="id" aria-labelledby="simple-item1">
               <DataListItemRow>
-                <PlanTableItem
-                  rows={this.state.rows}
+                <Table
+                  aria-label="migrations-history-table"
                   onExpand={this.onExpand}
-                  columns={this.columns}
-                />
+                  rows={this.state.rows}
+                  //@ts-ignore
+                  cells={this.columns}
+                >
+                  <TableHeader />
+                  <TableBody />
+                </Table>
               </DataListItemRow>
             </DataListItem>
           </DataList>

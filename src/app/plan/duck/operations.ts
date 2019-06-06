@@ -73,12 +73,12 @@ const runMigration = plan => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
-      const groupPlan = ref => {
+      const groupPlan = response => {
         const fullPlan = {
           MigPlan: plan.MigPlan,
         };
-        if (ref.data.items.length > 0) {
-          fullPlan['Migrations'] = ref.data.items.filter(
+        if (response.data.items.length > 0) {
+          fullPlan['Migrations'] = response.data.items.filter(
             i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
           );
         } else {
@@ -94,8 +94,8 @@ const runMigration = plan => {
         };
         return fullPlan;
       };
-      const ref = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(ref);
+      const migrationListResponse = await client.list(migMigrationResource);
+      const groupedPlan = groupPlan(migrationListResponse);
 
       dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));

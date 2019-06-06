@@ -1,38 +1,24 @@
 import React from 'react';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  sortable,
-  SortByDirection,
-  headerCol,
-  TableVariant,
-  expandable,
-  cellWidth,
-} from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, sortable, SortByDirection } from '@patternfly/react-table';
 import { EmptyState } from '@patternfly/react-core';
-import { migrationSuccess } from '../../../../plan/duck/reducers';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import moment from 'moment';
+
 export default class SortableTable extends React.Component<any, any> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      columns: [
-        { title: 'Type', transforms: [sortable] },
-        { title: 'Start Time' },
-        { title: 'End Time' },
-        'PVs Moved',
-        'PVs Copied',
-        'Status',
-      ],
-      rows: [],
-      sortBy: {},
-    };
-    this.onSort = this.onSort.bind(this);
-  }
+  state = {
+    columns: [
+      { title: 'Type', transforms: [sortable] },
+      { title: 'Start Time', transforms: [sortable] },
+      { title: 'End Time', transforms: [sortable] },
+      'PVs Moved',
+      'PVs Copied',
+      'Status',
+    ],
+    rows: [],
+    sortBy: {},
+  };
   componentDidMount() {
     const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
       const StyledBox = styled(Box)`
@@ -40,6 +26,7 @@ export default class SortableTable extends React.Component<any, any> {
         left: 40px;
       `;
       const type = migration.spec.stage ? 'Stage' : 'Migration';
+      const startTime = moment(migration.metadata.creationTimestamp);
       return [
         {
           title: (
@@ -51,8 +38,8 @@ export default class SortableTable extends React.Component<any, any> {
             </Flex>
           ),
         },
-        { title: moment().format() },
-        { title: moment().format() },
+        { title: startTime.format('LLL') },
+        { title: startTime.format('LLL') },
         { title: 0 },
         { title: 0 },
         { title: 'Complete' },
@@ -70,6 +57,7 @@ export default class SortableTable extends React.Component<any, any> {
           left: 40px;
         `;
         const type = migration.spec.stage ? 'Stage' : 'Migration';
+        const startTime = moment(migration.metadata.creationTimestamp);
         return [
           {
             title: (
@@ -81,8 +69,8 @@ export default class SortableTable extends React.Component<any, any> {
               </Flex>
             ),
           },
-          { title: moment().format() },
-          { title: moment().format() },
+          { title: startTime.format('LLL') },
+          { title: startTime.format('LLL') },
           { title: 0 },
           { title: 0 },
           { title: 'Complete' },
@@ -92,7 +80,7 @@ export default class SortableTable extends React.Component<any, any> {
       this.setState({ rows: mappedRows });
     }
   }
-  onSort(_event, index, direction) {
+  onSort = (_event, index, direction) => {
     const sortedRows = this.state.rows.sort((a, b) =>
       a[index] < b[index] ? -1 : a[index] > b[index] ? 1 : 0
     );
@@ -103,7 +91,7 @@ export default class SortableTable extends React.Component<any, any> {
       },
       rows: direction === SortByDirection.asc ? sortedRows : sortedRows.reverse(),
     });
-  }
+  };
 
   render() {
     const { columns, rows, sortBy } = this.state;
@@ -111,7 +99,14 @@ export default class SortableTable extends React.Component<any, any> {
     return (
       <React.Fragment>
         {migrations.length > 0 ? (
-          <Table sortBy={sortBy} onSort={this.onSort} cells={columns} rows={rows}>
+          <Table
+            aria-label="migrations-history-table"
+            sortBy={sortBy}
+            onSort={this.onSort}
+            //@ts-ignore
+            cells={columns}
+            rows={rows}
+          >
             <TableHeader />
             <TableBody />
           </Table>
