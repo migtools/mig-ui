@@ -4,6 +4,7 @@ const { Creators, Types } = createActions({
   migPlanFetchRequest: [],
   migPlanFetchSuccess: ['migPlanList'],
   migPlanFetchFailure: [],
+  pvFetchFailure: [],
   addPlanSuccess: ['newPlan'],
   addPlanFailure: ['error'],
   removePlanSuccess: ['id'],

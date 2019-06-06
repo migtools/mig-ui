@@ -23,6 +23,7 @@ const uuidv1 = require('uuid/v1');
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
+const pvFetchFailure = Creators.pvFetchFailure;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 
@@ -127,8 +128,15 @@ const addPlan = migPlan => {
       dispatch(addPlanSuccess(createRes.data));
 
       console.debug('Beginning PV polling');
-
+      let timesRun = 0;
       const interval = setInterval(async () => {
+        timesRun += 1;
+        if (timesRun === 3) {
+          clearInterval(interval);
+          dispatch(commonOperations.alertErrorTimeout('No PVs found'));
+          dispatch(pvFetchFailure());
+        }
+
         const planName = migPlan.planName;
 
         const getRes = await client.get(
@@ -137,14 +145,17 @@ const addPlan = migPlan => {
         );
 
         const plan = getRes.data;
-        const pvsDiscovered = !!plan.status.conditions.find(c => {
-          return c.type === PvsDiscoveredType;
-        });
+        if (plan.status) {
+          const pvsDiscovered = !!plan.status.conditions.find(c => {
+            return c.type === PvsDiscoveredType;
+          });
 
-        if (pvsDiscovered) {
-          console.debug('Discovered PVs, clearing interaval.');
-          clearInterval(interval);
+          if (pvsDiscovered) {
+            console.debug('Discovered PVs, clearing interaval.');
+            clearInterval(interval);
+          }
         }
+
         dispatch(Creators.updatePlan(plan));
       }, PollingInterval);
     } catch (err) {

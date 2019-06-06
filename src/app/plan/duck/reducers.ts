@@ -4,6 +4,7 @@ import moment from 'moment';
 
 export const INITIAL_STATE = {
   isError: false,
+  isPVError: false,
   isFetching: false,
   migPlanList: [],
   planStateMap: [],
@@ -22,6 +23,9 @@ export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
+};
+export const pvFetchFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isPVError: true, isFetching: false };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
@@ -193,6 +197,7 @@ export const HANDLERS = {
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
+  [Types.PV_FETCH_FAILURE]: pvFetchFailure,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

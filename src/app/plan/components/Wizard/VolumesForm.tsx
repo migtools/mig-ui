@@ -8,8 +8,9 @@ import VolumesTable from './VolumesTable';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
-import theme from './../../../theme';
+import theme from '../../../../theme';
 import { connect } from 'react-redux';
+import StatusIcon from '../../../common/components/StatusIcon';
 
 const PvsDiscoveredType = 'PvsDiscovered';
 const StyledBox = styled(Box)`
@@ -26,29 +27,31 @@ class VolumesForm extends React.Component<any> {
     this.props.onWizardLoadingToggle(true);
   }
 
-  componentDidUpdate() {
-    const { plans, values } = this.props;
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      const { plans, values } = this.props;
 
-    if (plans.length === 0) {
-      return;
-    }
+      if (plans.length === 0) {
+        return;
+      }
 
-    const currentPlan = plans.find(p => {
-      return p.metadata.name === values.planName;
-    });
+      const currentPlan = plans.find(p => {
+        return p.metadata.name === values.planName;
+      });
 
-    if (!currentPlan.status) {
-      return;
-    }
+      if (!currentPlan.status) {
+        return;
+      }
 
-    const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
-      return c.type === PvsDiscoveredType;
-    });
+      const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
+        return c.type === PvsDiscoveredType;
+      });
 
-    if (pvsDiscovered) {
-      if (this.state.isLoading) {
-        this.setState(() => ({ isLoading: false }));
-        this.props.onWizardLoadingToggle(false);
+      if (pvsDiscovered) {
+        if (this.state.isLoading) {
+          this.setState(() => ({ isLoading: false }));
+          this.props.onWizardLoadingToggle(false);
+        }
       }
     }
   }
@@ -62,7 +65,22 @@ class VolumesForm extends React.Component<any> {
     const currentPlan = plans.find(p => {
       return p.metadata.name === values.planName;
     });
-
+    if (this.props.isPVError) {
+      return (
+        <Box
+          css={css`
+            text-align: center;
+          `}
+        >
+          <StyledTextContent>
+            <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
+              <StatusIcon status="failed" />
+              Unable to find PVs
+            </Text>
+          </StyledTextContent>
+        </Box>
+      );
+    }
     return (
       <React.Fragment>
         {this.state.isLoading ? (
@@ -100,6 +118,7 @@ class VolumesForm extends React.Component<any> {
 const mapStateToProps = state => {
   return {
     plans: state.plan.migPlanList.map(p => p.MigPlan),
+    isPVError: state.plan.isPVError,
   };
 };
 

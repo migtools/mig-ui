@@ -1,30 +1,28 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React from 'react';
-import { css } from '@emotion/core';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
-import { useToggleLoading } from '../../duck/hooks';
+import { useToggleLoading, useToggleValidation } from '../../duck/hooks';
 
 const WizardComponent = props => {
+  const MigSourceStepId = 2;
+  const HostClusterName = 'host';
   const [isLoading, toggleLoading] = useToggleLoading(false);
+  const [isValid, toggleValid] = useToggleValidation(false);
+  const manualValidate = () => {};
   const {
     values,
     touched,
     errors,
     handleChange,
     handleBlur,
-    handleSubmit,
     setFieldTouched,
     setFieldValue,
     clusterList,
     storageList,
-    trigger,
-    resetForm,
   } = props;
   const steps = [
     {
@@ -73,9 +71,11 @@ const WizardComponent = props => {
           setFieldValue={setFieldValue}
           setFieldTouched={setFieldTouched}
           onWizardLoadingToggle={toggleLoading}
+          onManualValidate={toggleValid}
         />
       ),
-      enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
+      enableNext:
+        (!errors.sourceCluster && touched.sourceCluster === true && !isLoading) || isValid,
     },
     {
       id: 4,
@@ -115,9 +115,16 @@ const WizardComponent = props => {
   ];
 
   const onMove = (curr, prev) => {
-    this.setState({
-      step: curr.id,
-    });
+    if (prev.prevId === MigSourceStepId) {
+      // We must create the plan here so that the controller can evaluate the
+      // requested namespaces and discover related PVs
+      props.addPlan({
+        planName: props.values.planName,
+        sourceCluster: props.values.sourceCluster,
+        targetCluster: HostClusterName,
+        namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
+      });
+    }
     if (curr.id === 5) {
       this.props.handleSubmit();
     }
@@ -140,6 +147,8 @@ const WizardComponent = props => {
             handleClose();
           }}
           steps={steps}
+          isFullWidth
+          isCompactNav
         />
       )}
     </React.Fragment>
