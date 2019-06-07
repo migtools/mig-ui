@@ -100,8 +100,8 @@ const updateStorage = storageValues => {
         client.patch(migStorageResource, storageValues.name, migStorage),
       ]);
 
-      dispatch(updateStorageSuccess());
-      dispatch(fetchStorage());
+      dispatch(updateStorageSuccess(storageValues));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully updated a repository!'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -118,7 +118,7 @@ function checkConnection() {
   };
 }
 
-const removeStorage = id => {
+const removeStorage = (name) => {
   return async (dispatch, getState) => {
     try {
       const state = getState();
@@ -132,12 +132,12 @@ const removeStorage = id => {
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
       const arr = await Promise.all([
-        client.delete(secretResource, id),
-        client.delete(migStorageResource, id),
+        client.delete(secretResource, name),
+        client.delete(migStorageResource, name),
       ]);
 
-      dispatch(removeStorageSuccess);
-      dispatch(fetchStorage());
+      dispatch(removeStorageSuccess(name));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully removed a repository!'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }

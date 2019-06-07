@@ -39,10 +39,19 @@ export const addStorageSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state };
+  return {
+    ...state,
+    migStorageList: state.migStorageList.filter(item => item.MigStorage.metadata.name !== action.name),
+  };
 };
 export const updateSearchTerm = (state = INITIAL_STATE, action) => {
   return { ...state, searchTerm: action.searchTerm };
+};
+
+export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    migStorageList: [ ...state.migStorageList.filter(s => s !== action.updateStorage), { ...action.updatedStorage } ] };
 };
 
 export const HANDLERS = {

@@ -39,7 +39,7 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
 
   const handleRemoveStorage = isConfirmed => {
     if (isConfirmed) {
-      // removeStorage(clusterName);
+      removeStorage(name);
       toggleConfirmOpen();
     } else {
       toggleConfirmOpen();

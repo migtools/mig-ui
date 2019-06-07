@@ -106,15 +106,15 @@ const updateCluster = clusterValues => {
         client.patch(clusterRegResource, clusterValues.name, clusterReg),
         client.patch(secretResource, clusterValues.name, tokenSecret),
       ]);
-      dispatch(updateClusterSuccess);
-      dispatch(fetchClusters());
+      dispatch(updateClusterSuccess(clusterValues));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully updated cluster'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
 
-const removeCluster = id => {
+const removeCluster = name => {
   return async (dispatch, getState) => {
     try {
       const state = getState();
@@ -132,13 +132,13 @@ const removeCluster = id => {
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
 
       const arr = await Promise.all([
-        client.delete(clusterRegResource, id),
-        client.delete(secretResource, id),
-        client.delete(migClusterResource, id),
+        client.delete(clusterRegResource, name),
+        client.delete(secretResource, name),
+        client.delete(migClusterResource, name),
       ]);
 
-      dispatch(removeClusterSuccess);
-      dispatch(fetchClusters());
+      dispatch(removeClusterSuccess(name));
+      dispatch(commonOperations.alertSuccessTimeout('Successfully removed cluster'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
       dispatch(removeClusterFailure(err));

@@ -34,7 +34,15 @@ export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state };
+  return {
+    ...state,
+    clusterList: state.clusterList.filter(item => item.name !== action.name),
+  };
+};
+export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    clusterList: [ ...state.clusterList.filter(s => s !== action.updateCluster), { ...action.updatedCluster } ] };
 };
 
 export const updateSearchTerm = (state = INITIAL_STATE, action) => {
