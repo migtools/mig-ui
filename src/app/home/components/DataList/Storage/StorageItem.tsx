@@ -31,8 +31,8 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
   const secret =
     typeof storage.Secret === 'undefined'
       ? null
-      : storage.Secret.data['aws-secret-access-key-id']
-        ? atob(storage.Secret.data['aws-secret-access-key-id'])
+      : storage.Secret.data['aws-secret-access-key']
+        ? atob(storage.Secret.data['aws-secret-access-key'])
         : '';
 
   let storageStatus;

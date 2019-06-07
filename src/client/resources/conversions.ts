@@ -159,7 +159,7 @@ export function createStorageSecret(
     apiVersion: 'v1',
     data: {
       'aws-access-key-id': encodedAccessKey,
-      'aws-secret-access-key-id': encodedSecretKey,
+      'aws-secret-access-key': encodedSecretKey,
     },
     kind: 'Secret',
     metadata: {
@@ -180,7 +180,7 @@ export function updateStorageSecret(
   return {
     data: {
       'aws-access-key-id': encodedAccessKey,
-      'aws-secret-access-key-id': encodedSecretKey,
+      'aws-secret-access-key': encodedSecretKey,
     },
   };
 }
