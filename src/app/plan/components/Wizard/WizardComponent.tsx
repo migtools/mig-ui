@@ -5,7 +5,7 @@ import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
 import ResultsStep from './ResultsStep';
-import { useToggleLoading, useToggleValidation } from '../../duck/hooks';
+import { useToggleLoading } from '../../duck/hooks';
 
 const WizardComponent = props => {
   const MigSourceStepId = 2;
