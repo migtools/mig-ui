@@ -29,7 +29,7 @@ interface IProps {
   removeCluster: (id) => void;
   updateClusterSearchTerm: (searchTerm) => void;
   updateStorageSearchTerm: (searchTerm) => void;
-  addPlan: (plan) => void;
+  putPlan: (planValues) => void;
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
@@ -92,8 +92,8 @@ class DetailViewComponent extends Component<IProps, IState> {
       isWizardOpen: !isWizardOpen,
     }));
   };
-  handlePlanSubmit = plan => {
-    this.props.addPlan(plan);
+  handlePlanSubmit = planWizardValues => {
+    this.props.putPlan(planWizardValues);
   };
 
   handleStageTriggered = plan => {
@@ -199,7 +199,7 @@ const mapDispatchToProps = dispatch => {
     updateStorageSearchTerm: searchTerm => dispatch(storageOperations.updateSearchTerm(searchTerm)),
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    addPlan: plan => dispatch(planOperations.addPlan(plan)),
+    putPlan: planValues => dispatch(planOperations.putPlan(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),

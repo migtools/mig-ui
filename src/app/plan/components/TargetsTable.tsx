@@ -50,7 +50,7 @@ class TargetsTable extends React.Component<IProps, IState> {
           this.setState({ rows });
         }}
         dangerouslySetInnerHTML={{
-          __html: this.state.rows[cellInfo.index][cellInfo.column.id],
+          __html: this.state.rows[cellInfo.index].metadata.name,
         }}
       />
     );

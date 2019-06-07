@@ -1,6 +1,9 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
+import moment from 'moment';
+
 export const INITIAL_STATE = {
+  isError: false,
   isFetching: false,
   migPlanList: [],
   planStateMap: [],
@@ -17,6 +20,9 @@ export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, migPlanList: action.migPlanList, isFetching: false };
 };
+export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isError: true, isFetching: false };
+};
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   const newPlanState = {
@@ -27,7 +33,12 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
       progress: 0,
     },
   };
-  const newPlan = { ...action.newPlan, planState: newPlanState };
+
+  const newPlan = {
+    MigPlan: action.newPlan,
+    Migrations: [],
+    planState: newPlanState,
+  };
 
   return {
     ...state,
@@ -55,6 +66,40 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...filteredPlans, updatedPlan],
+  };
+};
+
+export const updatePlan = (state = INITIAL_STATE, action) => {
+  const updatedPlanList = state.migPlanList.map(p => {
+    if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
+      return {
+        MigPlan: action.updatedPlan,
+        Migrations: [],
+        planState: p.planState,
+      };
+    } else {
+      return p;
+    }
+  });
+
+  return {
+    ...state,
+    migPlanList: updatedPlanList,
+  };
+};
+
+export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
+  const updatedPlanList = state.migPlanList.map(p => {
+    if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
+      return action.updatedPlan;
+    } else {
+      return p;
+    }
+  });
+
+  return {
+    ...state,
+    migPlanList: updatedPlanList,
   };
 };
 
@@ -100,8 +145,16 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     state: 'Migrating',
     progress: 0,
   };
+  const newMigObject = {
+    type: 'Migrate',
+    start: moment().format(),
+    end: moment().format(),
+    moved: 0,
+    copied: 0,
+    status: 'Complete',
+  };
 
-  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, 'migration'];
+  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, newMigObject];
 
   return {
     ...state,
@@ -129,6 +182,7 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
+  [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
@@ -137,6 +191,8 @@ export const HANDLERS = {
   [Types.STAGING_SUCCESS]: stagingSuccess,
   [Types.INIT_MIGRATION]: initMigration,
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
+  [Types.UPDATE_PLAN]: updatePlan,
+  [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

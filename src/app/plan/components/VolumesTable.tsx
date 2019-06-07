@@ -5,8 +5,8 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
+import { connect } from 'react-redux';
 
-const options = [{ value: 'copy', label: 'copy' }, { value: 'move', label: 'move' }];
 interface IState {
   page: number;
   perPage: number;
@@ -17,21 +17,24 @@ interface IState {
 }
 interface IProps {
   values: any;
+  currentPlan: any;
 }
 
 class VolumesTable extends React.Component<any, any> {
   handleTypeChange = (row, val) => {
+    // On change of the pv's action (type), update the persistentVolumes value
+    // so the state is correct in formik
     const { persistentVolumes } = this.props.values;
-    const objIndex = persistentVolumes.findIndex(obj => obj.id === row.original.id);
+    const objIndex = persistentVolumes.findIndex(v => v.name === row.original.name);
 
-    const updatedObj = { ...persistentVolumes[objIndex], type: val.value };
+    const updatedPv = { ...persistentVolumes[objIndex], type: val.value };
 
-    const updatedData = [
+    const updatedPersistentVolumes = [
       ...persistentVolumes.slice(0, objIndex),
-      updatedObj,
+      updatedPv,
       ...persistentVolumes.slice(objIndex + 1),
     ];
-    this.props.setFieldValue('persistentVolumes', updatedData);
+    this.props.setFieldValue('persistentVolumes', updatedPersistentVolumes);
   };
   state = {
     page: 1,
@@ -43,9 +46,50 @@ class VolumesTable extends React.Component<any, any> {
     selectAll: false,
   };
 
+  getTableData() {
+    // Builds table data from a combination of the formik values, and the
+    // persistent volumes as seen on a MigPlan object.
+    const discoveredPersistentVolumes = this.props.currentPlan.spec.persistentVolumes;
+
+    // No PVs discovered to be in use. This is normal for stateless cloud apps.
+    if(!discoveredPersistentVolumes) {
+      return [];
+    }
+
+    return discoveredPersistentVolumes.map(planVolume => {
+      let pvAction = 'copy'; // Default to copy
+      if(this.props.values.persistentVolumes.length !== 0) {
+        const rowVal = this.props.values.persistentVolumes.find(v => v.name === planVolume.name);
+        pvAction = rowVal.type;
+      }
+
+      // TODO: A number of these values will need to be further supported by the
+      // controller. Today the data is not available.
+      // See the mig controller issue describing what data we need here:
+      // https://github.com/fusor/mig-controller/issues/134
+      return {
+        name: planVolume.name,
+        project: '',
+        storageClass: '',
+        size: '100 Gi',
+        claim: '',
+        type: pvAction,
+        details: '',
+        supportedActions: planVolume.supportedActions,
+      };
+    });
+  }
+
+  componentDidMount() {
+    // Initializes the table values in formik, since it defaults to an
+    // empty array.
+    this.props.setFieldValue('persistentVolumes', this.getTableData());
+  }
+
   render() {
-    const { values } = this.props;
+    const { values, currentPlan } = this.props;
     const { rows, selectedOption } = this.state;
+
     if (rows !== null) {
       return (
         <React.Fragment>
@@ -56,7 +100,7 @@ class VolumesTable extends React.Component<any, any> {
                 overflow: visible;
               }
             `}
-            data={values.persistentVolumes}
+            data={this.getTableData()}
             columns={[
               {
                 Header: () => (
@@ -150,7 +194,11 @@ class VolumesTable extends React.Component<any, any> {
                 Cell: row => (
                   <Select
                     onChange={(val: any) => this.handleTypeChange(row, val)}
-                    options={options}
+                    options={row.original.supportedActions.map(a => {
+                      // NOTE: Each PV may not support all actions (any at all even),
+                      // we need to inspect the PV to determine this
+                      return {value: a, label: a};
+                    })}
                     name="persistentVolumes"
                     value={{
                       label: row.original.type,
@@ -192,4 +240,13 @@ class VolumesTable extends React.Component<any, any> {
     }
   }
 }
-export default VolumesTable;
+
+const mapStateToProps = state => {
+  return {
+    plans: state.plan.migPlanList.map(p => p.MigPlan),
+  };
+};
+
+export default connect(
+  mapStateToProps, null,
+)(VolumesTable);

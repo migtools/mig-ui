@@ -4,6 +4,7 @@ import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
   isFetching: false,
+  isError: false,
   migStorageList: [],
   searchTerm: '',
   connectionState: ConnectionState.Pending,
@@ -16,6 +17,13 @@ export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: action.migStorageList,
+    isFetching: false,
+  };
+};
+export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isError: true,
     isFetching: false,
   };
 };
@@ -40,6 +48,7 @@ export const updateSearchTerm = (state = INITIAL_STATE, action) => {
 export const HANDLERS = {
   [Types.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
   [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
+  [Types.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,

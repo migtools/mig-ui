@@ -12,16 +12,12 @@ export const useExpandDataList = initialState => {
 };
 
 export const useOpenModal = initialState => {
-  const [isOpen, setOpen] = useState(initialState);
+  const [isModalOpen, setModalOpen] = useState(initialState);
 
-  const toggleOpen = () => {
-    const openState = !isOpen;
-    setOpen(openState);
+  const toggleModalOpen = () => {
+    const modalOpenState = !isModalOpen;
+    setModalOpen(modalOpenState);
   };
 
-  return [isOpen, toggleOpen];
+  return [isModalOpen, toggleModalOpen];
 };
-
-// export default {
-//     useExpandDataList,
-// };

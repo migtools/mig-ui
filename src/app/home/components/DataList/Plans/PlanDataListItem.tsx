@@ -20,6 +20,7 @@ const PlanDataListItem = ({
   isLoading,
   planList,
   plansDisabled,
+  onStageTriggered,
   ...props
 }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
@@ -63,6 +64,7 @@ const PlanDataListItem = ({
           storageList={storageList}
           isLoading={isLoading}
           isExpanded={isExpanded}
+          onStageTriggered={onStageTriggered}
           {...props}
         />
       </DataListItem>

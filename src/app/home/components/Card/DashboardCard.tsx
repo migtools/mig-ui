@@ -10,14 +10,17 @@ import FooterText from './FooterText';
 import HeaderText from './HeaderText';
 import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
+import StatusIcon from '../../../common/components/StatusIcon';
+
 interface IState {
   isOpen: boolean;
 }
 interface IProps {
   title: string;
   dataList: any[];
-  isFetching?: boolean;
+  isFetching: boolean;
   type?: string;
+  isError: boolean;
 }
 
 class DashboardCard extends Component<IProps, IState> {
@@ -37,8 +40,28 @@ class DashboardCard extends Component<IProps, IState> {
     });
   };
   render() {
-    const { dataList, title, isFetching, type } = this.props;
+    const { dataList, title, isFetching, type, isError } = this.props;
     const { isOpen } = this.state;
+    if (isError) {
+      return (
+        <Card style={{ minHeight: '100%', height: '16em' }}>
+          <Flex
+            css={css`
+              height: 100%;
+              text-align: center;
+              margin: auto;
+            `}
+          >
+            <Box flex="1" m="auto">
+              <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
+                <StatusIcon status="failed" />
+                Failed to fetch
+              </Text>
+            </Box>
+          </Flex>
+        </Card>
+      );
+    }
     return (
       <Card style={{ minHeight: '100%', height: '16em' }}>
         {dataList && !isFetching ? (
