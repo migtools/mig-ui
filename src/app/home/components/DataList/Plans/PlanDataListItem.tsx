@@ -65,7 +65,6 @@ const PlanDataListItem = ({
           isLoading={isLoading}
           isExpanded={isExpanded}
           onStageTriggered={onStageTriggered}
-          {...props}
         />
       </DataListItem>
     );

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import AddClusterModal from '../../../cluster/components/AddClusterModal';
 import AddStorageModal from '../../../storage/components/AddStorageModal';
@@ -22,17 +22,16 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
   onPlanSubmit,
   ...props
 }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+  const [isOpen, toggleOpen] = useState(false);
 
   const { plansDisabled } = props;
   const renderPlanAdd = () => {
     return (
       <React.Fragment>
         <Title size="lg">Add a migration plan</Title>
-        <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
+        <Button isDisabled={plansDisabled} onClick={() => toggleOpen(!isOpen)} variant="primary">
           Add Plan
         </Button>
-
         <WizardContainer
           clusterList={clusterList}
           storageList={storageList}
@@ -48,7 +47,7 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
     return (
       <React.Fragment>
         <Title size="lg">Add replication repositories for the migration</Title>
-        <Button onClick={toggleOpen} variant="primary">
+        <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
           Add Repository
         </Button>
         <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
@@ -59,7 +58,7 @@ const DataListEmptyState: React.FunctionComponent<IEmptyStateProps> = ({
     return (
       <React.Fragment>
         <Title size="lg">Add source and target clusters for the migration</Title>
-        <Button onClick={toggleOpen} variant="primary">
+        <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
           Add Cluster
         </Button>
         <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
