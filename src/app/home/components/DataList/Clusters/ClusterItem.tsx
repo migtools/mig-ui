@@ -11,7 +11,7 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 import AddClusterModal from '../../../../cluster/components/AddClusterModal';
-import ConfirmModal from '../../../../common/components/ConfimModal';
+import ConfirmModal from '../../../../common/components/ConfirmModal';
 
 const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;

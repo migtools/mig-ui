@@ -11,7 +11,7 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import AddStorageModal from '../../../../storage/components/AddStorageModal';
 import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
-import ConfirmModal from '../../../../common/components/ConfimModal';
+import ConfirmModal from '../../../../common/components/ConfirmModal';
 
 const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props }) => {
   const associatedPlanCount = props.associatedPlans[storage.MigStorage.metadata.name];
