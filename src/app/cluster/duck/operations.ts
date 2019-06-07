@@ -116,7 +116,7 @@ const updateCluster = clusterValues => {
       cluster.status = clusterValues.connectionStatus;
 
       dispatch(updateClusterSuccess(cluster));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully updated cluster'));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -147,7 +147,7 @@ const removeCluster = name => {
       ]);
 
       dispatch(removeClusterSuccess(name));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully removed cluster'));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
       dispatch(removeClusterFailure(err));

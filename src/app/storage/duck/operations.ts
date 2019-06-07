@@ -107,7 +107,7 @@ const updateStorage = storageValues => {
       storage.status = storageValues.connectionStatus;
 
       dispatch(updateStorageSuccess(storage));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully updated a repository!'));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated repository "${storageValues.name}"!`));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -143,7 +143,7 @@ const removeStorage = (name) => {
       ]);
 
       dispatch(removeStorageSuccess(name));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully removed a repository!'));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed repository "${name}"!`));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
