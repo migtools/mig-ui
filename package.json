@@ -20,7 +20,8 @@
     "copy-config": "cp ./config/config.dev.json.example ./config/config.dev.json && ",
     "test:unit": "jest --rootDir=. --config=config/jest.config.js",
     "test:integration": "./scripts/test-integration.sh",
-    "test": "yarn test:unit && yarn test:integration"
+    "test": "yarn test:unit && yarn test:integration",
+    "ci": "yarn lint && yarn test && yarn build"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",
