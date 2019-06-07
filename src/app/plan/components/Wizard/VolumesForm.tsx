@@ -38,6 +38,8 @@ class VolumesForm extends React.Component<any> {
       const currentPlan = plans.find(p => {
         return p.metadata.name === values.planName;
       });
+      //TODO: This was done to allow the code to run in local development mode.
+      // We need a way to mock out the status in local dev mode
 
       if (currentPlan) {
         if (!currentPlan.status) {
@@ -67,6 +69,12 @@ class VolumesForm extends React.Component<any> {
     const currentPlan = plans.find(p => {
       return p.metadata.name === values.planName;
     });
+    //TODO: added this component level error state to handle the case of no PVs
+    // showing up after 3 checks of the interval. When the isPVError flag is checked,
+    // the volumes form will show this error. Need to add redux actions & state to encapsulate
+    // validation so that this error state enables the user to go to next page( that possibly
+    // shows a different set of forms catered to stateless apps)
+
     if (this.props.isPVError) {
       return (
         <Box

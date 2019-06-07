@@ -127,7 +127,6 @@ const addPlan = migPlan => {
 
       dispatch(addPlanSuccess(createRes.data));
 
-      console.debug('Beginning PV polling');
       let timesRun = 0;
       const interval = setInterval(async () => {
         timesRun += 1;
@@ -135,6 +134,8 @@ const addPlan = migPlan => {
           clearInterval(interval);
           dispatch(commonOperations.alertErrorTimeout('No PVs found'));
           dispatch(pvFetchFailure());
+          // TODO: this is where we would trigger a validation check for this wizard step
+          // & update the wizard next enable value.
         }
 
         const planName = migPlan.planName;
