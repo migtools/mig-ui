@@ -130,6 +130,7 @@ const addPlan = migPlan => {
       let timesRun = 0;
       const interval = setInterval(async () => {
         timesRun += 1;
+        // TODO: replace timesRun with poller class
         if (timesRun === 3) {
           clearInterval(interval);
           dispatch(commonOperations.alertErrorTimeout('No PVs found'));
