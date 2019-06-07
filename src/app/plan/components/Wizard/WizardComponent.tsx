@@ -11,13 +11,12 @@ const WizardComponent = props => {
   const MigSourceStepId = 2;
   const HostClusterName = 'host';
   const [isLoading, toggleLoading] = useToggleLoading(false);
-  const [isValid, toggleValid] = useToggleValidation(false);
-  const manualValidate = () => {};
   const {
     values,
     touched,
     errors,
     handleChange,
+    handleSubmit,
     handleBlur,
     setFieldTouched,
     setFieldValue,
@@ -71,11 +70,9 @@ const WizardComponent = props => {
           setFieldValue={setFieldValue}
           setFieldTouched={setFieldTouched}
           onWizardLoadingToggle={toggleLoading}
-          onManualValidate={toggleValid}
         />
       ),
-      enableNext:
-        (!errors.sourceCluster && touched.sourceCluster === true && !isLoading) || isValid,
+      enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
     },
     {
       id: 4,
@@ -126,14 +123,13 @@ const WizardComponent = props => {
       });
     }
     if (curr.id === 5) {
-      this.props.handleSubmit();
+      props.handleSubmit();
     }
   };
   const handleClose = () => {
     props.onHandleClose();
     props.resetForm();
   };
-  console.log('props.isOpen', props.isOpen);
   return (
     <React.Fragment>
       {props.isOpen && (
