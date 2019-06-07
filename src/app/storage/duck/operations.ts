@@ -100,7 +100,13 @@ const updateStorage = storageValues => {
         client.patch(migStorageResource, storageValues.name, migStorage),
       ]);
 
-      dispatch(updateStorageSuccess(storageValues));
+      const storage = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      storage.status = storageValues.connectionStatus;
+
+      dispatch(updateStorageSuccess(storage));
       dispatch(commonOperations.alertSuccessTimeout('Successfully updated a repository!'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));

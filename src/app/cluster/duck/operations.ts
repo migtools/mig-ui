@@ -102,11 +102,20 @@ const updateCluster = clusterValues => {
         migMeta.configNamespace
       );
 
+      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+
       const arr = await Promise.all([
         client.patch(clusterRegResource, clusterValues.name, clusterReg),
         client.patch(secretResource, clusterValues.name, tokenSecret),
+        client.get(migClusterResource, clusterValues.name)
       ]);
-      dispatch(updateClusterSuccess(clusterValues));
+      const cluster = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      cluster.status = clusterValues.connectionStatus;
+
+      dispatch(updateClusterSuccess(cluster));
       dispatch(commonOperations.alertSuccessTimeout('Successfully updated cluster'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));

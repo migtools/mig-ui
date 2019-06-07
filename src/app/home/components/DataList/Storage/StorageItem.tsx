@@ -23,11 +23,17 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
   const bucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
 
   const accessKey =
-    typeof storage.Secret === 'undefined' ? null : atob(storage.Secret.data['aws-access-key-id']);
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['aws-access-key-id']
+        ? atob(storage.Secret.data['aws-access-key-id'])
+        : '';
   const secret =
     typeof storage.Secret === 'undefined'
       ? null
-      : atob(storage.Secret.data['aws-secret-access-key-id']);
+      : storage.Secret.data['aws-secret-access-key-id']
+        ? atob(storage.Secret.data['aws-secret-access-key-id'])
+        : '';
 
   let storageStatus;
   if (typeof storage.MigStorage.status === 'undefined' || storage.MigStorage.status === null) {
