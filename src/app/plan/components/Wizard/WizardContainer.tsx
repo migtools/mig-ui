@@ -42,10 +42,24 @@ const WizardContainer: any = withFormik({
   validateOnBlur: false,
 })(WizardComponent);
 
+const mapStateToProps = state => {
+  return {
+    connectionStatus: '',
+    planName: '',
+    sourceCluster: null,
+    targetCluster: null,
+    selectedNamespaces: [],
+    selectedStorage: '',
+    persistentVolumes: [],
+  };
+};
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: plan => dispatch(planOperations.addPlan(plan)),
   };
 };
 
-export default connect(mapDispatchToProps)(WizardContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WizardContainer);

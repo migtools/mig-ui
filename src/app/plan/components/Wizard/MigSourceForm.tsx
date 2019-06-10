@@ -12,7 +12,6 @@ import { css } from '@emotion/core';
 class MigSourceForm extends React.Component<any> {
   state = {
     options: [],
-    sourceCluster: null,
     isLoading: false,
     selectedOption: null,
   };
@@ -37,17 +36,12 @@ class MigSourceForm extends React.Component<any> {
         );
 
         this.setState({
-          sourceCluster: matchingCluster[0].MigCluster,
           selectedOption: {
             label: matchingCluster[0].MigCluster.metadata.name,
             value: matchingCluster[0].MigCluster.metadata.name,
           },
         });
 
-        // this.props.setFieldValue('sourceCluster', this.props.values.sourceCluster);
-        // this.setState({
-        //   selectedValue: this.props.values.sourceCluster,
-        // });
         this.setState({ isLoading: true });
         this.props.onWizardLoadingToggle(true);
         setTimeout(() => {
@@ -71,7 +65,6 @@ class MigSourceForm extends React.Component<any> {
     );
 
     this.setState({
-      sourceCluster: matchingCluster[0].MigCluster,
       selectedOption: {
         label: matchingCluster[0].MigCluster.metadata.name,
         value: matchingCluster[0].MigCluster.metadata.name,
@@ -87,7 +80,7 @@ class MigSourceForm extends React.Component<any> {
   };
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
-    const { selectedOption, options, sourceCluster } = this.state;
+    const { selectedOption, options } = this.state;
     return (
       <Box>
         <TextContent>
@@ -122,7 +115,7 @@ class MigSourceForm extends React.Component<any> {
         ) : (
           <NamespaceTable
             setFieldValue={setFieldValue}
-            sourceCluster={sourceCluster}
+            sourceCluster={this.props.values.sourceCluster}
             values={values}
           />
         )}

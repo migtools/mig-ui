@@ -112,7 +112,7 @@ const WizardComponent = props => {
   ];
 
   const onMove = (curr, prev) => {
-    if (prev.prevId === MigSourceStepId) {
+    if (prev.prevId === MigSourceStepId && curr.id !== 1) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
       props.addPlan({

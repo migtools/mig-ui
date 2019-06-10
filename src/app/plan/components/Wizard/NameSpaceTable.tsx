@@ -21,6 +21,7 @@ interface IProps {
   sourceClusterNamespaces: any;
   fetchNamespacesForCluster: any;
   setFieldValue: (fieldName, fieldValue) => void;
+  values: any;
 }
 
 class NamespaceTable extends React.Component<IProps, IState> {
@@ -34,8 +35,14 @@ class NamespaceTable extends React.Component<IProps, IState> {
   };
 
   componentDidMount() {
-    if (this.props.sourceCluster) {
-      this.props.fetchNamespacesForCluster(this.props.sourceCluster.metadata.name);
+    const { fetchNamespacesForCluster, sourceCluster, values } = this.props;
+    if (sourceCluster) {
+      fetchNamespacesForCluster(this.props.sourceCluster);
+    }
+
+    if (values.selectedNamespaces.length > 0) {
+      console.log('hi', values.selectedNamespaces);
+      this.setState({ checked: values.selectedNamespaces });
     }
   }
 
@@ -53,8 +60,8 @@ class NamespaceTable extends React.Component<IProps, IState> {
     this.setState({
       checked: checkedCopy,
     });
-    const itemList = this.state.rows;
-    const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
+    const { rows } = this.state;
+    const formValuesForNamespaces = rows.filter((item, itemIndex) => {
       for (let i = 0; checkedCopy.length > i; i++) {
         if (itemIndex === i) {
           if (checkedCopy[i]) {
