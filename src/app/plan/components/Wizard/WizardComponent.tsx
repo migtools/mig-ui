@@ -72,7 +72,7 @@ const WizardComponent = props => {
           onWizardLoadingToggle={toggleLoading}
         />
       ),
-      enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
+      enableNext: !isLoading,
     },
     {
       id: 4,
@@ -130,6 +130,7 @@ const WizardComponent = props => {
     props.onHandleClose();
     props.resetForm();
   };
+  console.log('isLoading', isLoading);
   return (
     <React.Fragment>
       {props.isOpen && (

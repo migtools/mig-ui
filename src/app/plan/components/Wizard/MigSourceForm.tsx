@@ -14,6 +14,7 @@ class MigSourceForm extends React.Component<any> {
     options: [],
     sourceCluster: null,
     isLoading: false,
+    selectedOption: null,
   };
 
   componentDidMount() {
@@ -28,6 +29,32 @@ class MigSourceForm extends React.Component<any> {
         });
       }
       this.setState({ options: myOptions });
+      //check existing data
+
+      if (this.props.values.sourceCluster !== null) {
+        const matchingCluster = this.props.clusterList.filter(
+          c => c.MigCluster.metadata.name === this.props.values.sourceCluster
+        );
+
+        this.setState({
+          sourceCluster: matchingCluster[0].MigCluster,
+          selectedOption: {
+            label: matchingCluster[0].MigCluster.metadata.name,
+            value: matchingCluster[0].MigCluster.metadata.name,
+          },
+        });
+
+        // this.props.setFieldValue('sourceCluster', this.props.values.sourceCluster);
+        // this.setState({
+        //   selectedValue: this.props.values.sourceCluster,
+        // });
+        this.setState({ isLoading: true });
+        this.props.onWizardLoadingToggle(true);
+        setTimeout(() => {
+          this.setState(() => ({ isLoading: false }));
+          this.props.onWizardLoadingToggle(false);
+        }, 500);
+      }
     } else {
       const myOptions: any = [];
       myOptions.push({
@@ -37,9 +64,30 @@ class MigSourceForm extends React.Component<any> {
       this.setState({ options: myOptions });
     }
   }
+  handleSourceChange = option => {
+    this.props.setFieldValue('sourceCluster', option.value);
+    const matchingCluster = this.props.clusterList.filter(
+      c => c.MigCluster.metadata.name === option.value
+    );
+
+    this.setState({
+      sourceCluster: matchingCluster[0].MigCluster,
+      selectedOption: {
+        label: matchingCluster[0].MigCluster.metadata.name,
+        value: matchingCluster[0].MigCluster.metadata.name,
+      },
+    });
+    this.props.setFieldTouched('sourceCluster');
+    this.setState({ isLoading: true });
+    this.props.onWizardLoadingToggle(true);
+    setTimeout(() => {
+      this.setState(() => ({ isLoading: false }));
+      this.props.onWizardLoadingToggle(false);
+    }, 500);
+  };
   render() {
     const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
-    const { options, sourceCluster } = this.state;
+    const { selectedOption, options, sourceCluster } = this.state;
     return (
       <Box>
         <TextContent>
@@ -50,26 +98,10 @@ class MigSourceForm extends React.Component<any> {
                 width: 20em;
               `}
               name="sourceCluster"
-              onChange={option => {
-                setFieldValue('sourceCluster', option.value);
-                const matchingCluster = this.props.clusterList.filter(
-                  c => c.MigCluster.metadata.name === option.value
-                );
-
-                this.setState({
-                  sourceCluster: matchingCluster[0].MigCluster,
-                });
-                setFieldTouched('sourceCluster');
-                this.setState({ isLoading: true });
-                this.props.onWizardLoadingToggle(true);
-                setTimeout(() => {
-                  this.setState(() => ({ isLoading: false }));
-                  this.props.onWizardLoadingToggle(false);
-                }, 500);
-              }}
+              onChange={this.handleSourceChange}
               options={options}
+              value={selectedOption}
             />
-
             {errors.sourceCluster && touched.sourceCluster && (
               <div id="feedback">{errors.sourceCluster}</div>
             )}
