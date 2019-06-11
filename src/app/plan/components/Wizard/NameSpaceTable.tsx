@@ -51,7 +51,6 @@ class NamespaceTable extends React.Component<IProps, IState> {
           values.selectedNamespaces.filter((item, itemIndex) => {
             for (let i = 0; rows.length > i; i++) {
               if (item.metadata.name === rows[i].metadata.name) {
-                console.log('checkedRow', item.metadata.name);
                 checkedCopy[i] = true;
               }
             }
@@ -64,8 +63,6 @@ class NamespaceTable extends React.Component<IProps, IState> {
     }
   }
 
-  // const checkedCopy = this.state.checked;
-  // checkedCopy[index] = !this.state.checked[index];
   selectRow = row => {
     const index = row.index;
     const checkedCopy = this.state.checked;

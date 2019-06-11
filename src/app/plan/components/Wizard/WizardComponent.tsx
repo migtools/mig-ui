@@ -130,7 +130,6 @@ const WizardComponent = props => {
     props.onHandleClose();
     props.resetForm();
   };
-  console.log('isLoading', isLoading);
   return (
     <React.Fragment>
       {props.isOpen && (

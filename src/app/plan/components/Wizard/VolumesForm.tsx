@@ -23,9 +23,7 @@ class VolumesForm extends React.Component<any> {
     isLoading: true,
   };
 
-  componentDidMount() {
-    this.props.onWizardLoadingToggle(true);
-  }
+  componentDidMount() {}
 
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
@@ -45,17 +43,10 @@ class VolumesForm extends React.Component<any> {
         if (!currentPlan.status) {
           return;
         }
-
+        //TODO: PV interval loading logic needs to set a boolean value on the redux state
         const pvsDiscovered = !!currentPlan.status.conditions.find(c => {
           return c.type === PvsDiscoveredType;
         });
-
-        // if (pvsDiscovered) {
-        // if (this.state.isLoading) {
-        this.setState(() => ({ isLoading: false }));
-        this.props.onWizardLoadingToggle(false);
-        //   }
-        // }
       }
     }
   }
