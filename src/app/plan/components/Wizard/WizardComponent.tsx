@@ -22,6 +22,7 @@ const WizardComponent = props => {
     setFieldValue,
     clusterList,
     storageList,
+    isFetchingPVList,
   } = props;
   const steps = [
     {
@@ -74,7 +75,7 @@ const WizardComponent = props => {
           isWizardLoading={isLoading}
         />
       ),
-      enableNext: !isLoading,
+      enableNext: !isLoading && !isFetchingPVList,
     },
     {
       id: 4,

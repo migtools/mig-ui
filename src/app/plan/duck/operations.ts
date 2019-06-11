@@ -34,7 +34,7 @@ const addPlanSuccess = Creators.addPlanSuccess;
 // const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
-const PollingInterval = 3000;
+const PollingInterval = 5000;
 const PvsDiscoveredType = 'PvsDiscovered';
 
 const runStage = plan => {
@@ -111,6 +111,7 @@ const runMigration = plan => {
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
+      dispatch(pvFetchRequest());
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
@@ -131,10 +132,9 @@ const addPlan = migPlan => {
 
       let timesRun = 0;
       const interval = setInterval(async () => {
-        dispatch(pvFetchRequest());
         timesRun += 1;
         // TODO: replace timesRun with poller class
-        if (timesRun === 3) {
+        if (timesRun === 12) {
           clearInterval(interval);
           dispatch(commonOperations.alertErrorTimeout('No PVs found'));
           dispatch(pvFetchFailure());
