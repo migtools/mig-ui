@@ -39,19 +39,33 @@ class NamespaceTable extends React.Component<IProps, IState> {
     if (sourceCluster) {
       fetchNamespacesForCluster(this.props.sourceCluster);
     }
-
-    if (values.selectedNamespaces.length > 0) {
-      console.log('hi', values.selectedNamespaces);
-      this.setState({ checked: values.selectedNamespaces });
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { fetchNamespacesForCluster, sourceCluster, values } = this.props;
     if (prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces) {
-      this.setState({ rows: this.props.sourceClusterNamespaces });
+      this.setState({ rows: this.props.sourceClusterNamespaces }, () => {
+        if (values.selectedNamespaces.length > 0) {
+          const { rows } = this.state;
+          const checkedCopy = [];
+          values.selectedNamespaces.filter((item, itemIndex) => {
+            for (let i = 0; rows.length > i; i++) {
+              if (item.metadata.name === rows[i].metadata.name) {
+                console.log('checkedRow', item.metadata.name);
+                checkedCopy[i] = true;
+              }
+            }
+          });
+          this.setState({
+            checked: checkedCopy,
+          });
+        }
+      });
     }
   }
 
+  // const checkedCopy = this.state.checked;
+  // checkedCopy[index] = !this.state.checked[index];
   selectRow = row => {
     const index = row.index;
     const checkedCopy = this.state.checked;

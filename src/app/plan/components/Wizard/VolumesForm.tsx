@@ -50,12 +50,12 @@ class VolumesForm extends React.Component<any> {
           return c.type === PvsDiscoveredType;
         });
 
-        if (pvsDiscovered) {
-          if (this.state.isLoading) {
-            this.setState(() => ({ isLoading: false }));
-            this.props.onWizardLoadingToggle(false);
-          }
-        }
+        // if (pvsDiscovered) {
+        // if (this.state.isLoading) {
+        this.setState(() => ({ isLoading: false }));
+        this.props.onWizardLoadingToggle(false);
+        //   }
+        // }
       }
     }
   }
