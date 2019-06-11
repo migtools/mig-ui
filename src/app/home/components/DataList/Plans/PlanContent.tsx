@@ -4,8 +4,6 @@ import { Flex, Box } from '@rebass/emotion';
 import { DataList, DataListContent, DataListItem, DataListItemRow } from '@patternfly/react-core';
 import { DataListAction } from '@patternfly/react-core';
 import PlanActions from './PlanActions';
-import { AddCircleOIcon } from '@patternfly/react-icons';
-import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import {
   Table,
   TableHeader,
@@ -17,9 +15,8 @@ import SortableTable from './SortableTable';
 import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import styled from '@emotion/styled';
 import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
-import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import theme from '../../../../../theme';
-
+import PlanEmptyState from './PlanEmptyState';
 interface IPlanContentProps {
   planList: any;
   onPlanSubmit: () => void;
@@ -33,7 +30,6 @@ interface IPlanContentProps {
 
 class PlanContent extends React.Component<IPlanContentProps, any> {
   state = {
-    isOpen: false,
     rows: [],
   };
   componentDidUpdate(prevProps) {
@@ -180,12 +176,6 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
     this.setState({ rows });
   };
 
-  toggleOpen = () => {
-    this.setState(() => ({
-      isOpen: !this.state.isOpen,
-    }));
-  };
-
   render() {
     return (
       <DataListContent
@@ -211,29 +201,13 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
             </DataListItem>
           </DataList>
         ) : (
-          <Flex alignItems="center" justifyContent="center">
-            <Box>
-              <EmptyState variant="large">
-                <EmptyStateIcon icon={AddCircleOIcon} />
-                <Title size="lg">Add a migration plan</Title>
-                <Button
-                  isDisabled={this.props.plansDisabled}
-                  onClick={this.toggleOpen}
-                  variant="primary"
-                >
-                  Add Plan
-                </Button>
-                <WizardContainer
-                  clusterList={this.props.clusterList}
-                  storageList={this.props.storageList}
-                  isOpen={this.state.isOpen}
-                  onHandleClose={this.toggleOpen}
-                  isLoading={this.props.isLoading}
-                  onPlanSubmit={this.props.onPlanSubmit}
-                />
-              </EmptyState>
-            </Box>
-          </Flex>
+          <PlanEmptyState
+            clusterList={this.props.clusterList}
+            storageList={this.props.storageList}
+            isLoading={this.props.isLoading}
+            onPlanSubmit={this.props.onPlanSubmit}
+            plansDisabled={this.props.plansDisabled}
+          />
         )}
       </DataListContent>
     );

@@ -94,7 +94,7 @@ class VolumesTable extends React.Component<any, any> {
         });
       } else {
         const mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          let pvAction = 'copy'; // Default to copy
+          const pvAction = 'copy'; // Default to copy
           // TODO: A number of these values will need to be further supported by the
           // controller. Today the data is not available.
           // See the mig controller issue describing what data we need here:
@@ -119,7 +119,6 @@ class VolumesTable extends React.Component<any, any> {
   componentDidMount() {
     // Initializes the table values in formik, since it defaults to an
     // empty array.
-    console.log('initial');
     const newRows = this.getTableData();
     this.setState({ rows: newRows });
   }
