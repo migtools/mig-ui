@@ -13,6 +13,8 @@ import {
   createClusterRegistryObj,
   createTokenSecret,
   createMigCluster,
+  updateClusterRegistryObj,
+  updateTokenSecret,
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { commonOperations } from '../../common/duck';
@@ -21,8 +23,9 @@ const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const clusterFetchFailure = Creators.clusterFetchFailure;
 const addClusterSuccess = Creators.addClusterSuccess;
-// const removeClusterSuccess = Creators.removeClusterSuccess;
-// const removeClusterFailure = Creators.removeClusterFailure;
+const updateClusterSuccess = Creators.updateClusterSuccess;
+const removeClusterSuccess = Creators.removeClusterSuccess;
+const removeClusterFailure = Creators.removeClusterFailure;
 const updateSearchTerm = Creators.updateSearchTerm;
 
 const addCluster = clusterValues => {
@@ -77,19 +80,79 @@ const addCluster = clusterValues => {
   };
 };
 
-const removeCluster = id => {
-  throw new Error('NOT IMPLEMENTED');
-  // return dispatch => {
-  //   removeClusterRequest(id).then(
-  //     response => {
-  //       dispatch(removeClusterSuccess(id));
-  //       dispatch(fetchClusters());
-  //     },
-  //     error => {
-  //       dispatch(removeClusterFailure(error));
-  //     },
-  //   );
-  // };
+const updateCluster = clusterValues => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const clusterReg = updateClusterRegistryObj(
+        clusterValues.url
+      );
+      const tokenSecret = updateTokenSecret(
+        clusterValues.token
+      );
+      const clusterRegResource = new ClusterRegistryResource(
+        ClusterRegistryResourceKind.Cluster,
+        migMeta.namespace
+      );
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.configNamespace
+      );
+
+      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.patch(clusterRegResource, clusterValues.name, clusterReg),
+        client.patch(secretResource, clusterValues.name, tokenSecret),
+        client.get(migClusterResource, clusterValues.name)
+      ]);
+      const cluster = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      cluster.status = clusterValues.connectionStatus;
+
+      dispatch(updateClusterSuccess(cluster));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
+  };
+};
+
+const removeCluster = name => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const clusterRegResource = new ClusterRegistryResource(
+        ClusterRegistryResourceKind.Cluster,
+        migMeta.namespace
+      );
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.configNamespace
+      );
+      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.delete(clusterRegResource, name),
+        client.delete(secretResource, name),
+        client.delete(migClusterResource, name),
+      ]);
+
+      dispatch(removeClusterSuccess(name));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(removeClusterFailure(err));
+    }
+  };
 };
 
 const fetchClusters = () => {
@@ -168,6 +231,7 @@ export default {
   fetchClusters,
   addCluster,
   removeCluster,
+  updateCluster,
   updateSearchTerm,
   checkConnection,
 };

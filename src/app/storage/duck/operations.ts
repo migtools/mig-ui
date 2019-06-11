@@ -10,6 +10,8 @@ import {
   createClusterRegistryObj,
   createStorageSecret,
   createMigStorage,
+  updateMigStorage,
+  updateStorageSecret,
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 
@@ -17,6 +19,7 @@ const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
 const migStorageFetchFailure = Creators.migStorageFetchFailure;
 const addStorageSuccess = Creators.addStorageSuccess;
+const updateStorageSuccess = Creators.updateStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
@@ -46,10 +49,9 @@ const addStorage = storageValues => {
 
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace
+        migMeta.namespace
       );
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
-
       const arr = await Promise.all([
         client.create(secretResource, tokenSecret),
         client.create(migStorageResource, migStorage),
@@ -70,6 +72,49 @@ const addStorage = storageValues => {
   };
 };
 
+const updateStorage = storageValues => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+
+      const tokenSecret = updateStorageSecret(
+        storageValues.secret,
+        storageValues.accessKey
+      );
+
+      const migStorage = updateMigStorage(
+        storageValues.bucketName,
+        storageValues.bucketRegion,
+      );
+
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.namespace
+      );
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.patch(secretResource, storageValues.name, tokenSecret),
+        client.patch(migStorageResource, storageValues.name, migStorage),
+      ]);
+
+      const storage = arr.reduce((accum, res) => {
+        accum[res.data.kind] = res.data;
+        return accum;
+      }, {});
+      storage.status = storageValues.connectionStatus;
+
+      dispatch(updateStorageSuccess(storage));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated repository "${storageValues.name}"!`));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
+  };
+};
+
+
 function checkConnection() {
   return (dispatch, getState) => {
     dispatch(Creators.setConnectionState(ConnectionState.Checking));
@@ -79,19 +124,30 @@ function checkConnection() {
   };
 }
 
-const removeStorage = id => {
-  throw new Error('NOT IMPLEMENTED');
-  // return dispatch => {
-  //   removeStorageRequest(id).then(
-  //     response => {
-  //       dispatch(removeStorageSuccess(id));
-  //       dispatch(fetchStorage());
-  //     },
-  //     error => {
-  //       dispatch(removeStorageFailure(error));
-  //     },
-  //   );
-  // };
+const removeStorage = (name) => {
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const secretResource = new CoreNamespacedResource(
+        CoreNamespacedResourceKind.Secret,
+        migMeta.namespace
+      );
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.delete(secretResource, name),
+        client.delete(migStorageResource, name),
+      ]);
+
+      dispatch(removeStorageSuccess(name));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed repository "${name}"!`));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
+  };
 };
 
 const fetchStorage = () => {
@@ -145,6 +201,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 export default {
   fetchStorage,
   addStorage,
+  updateStorage,
   removeStorage,
   updateSearchTerm,
   checkConnection,

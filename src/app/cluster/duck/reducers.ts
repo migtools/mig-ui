@@ -11,7 +11,7 @@ export const INITIAL_STATE = {
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  // TODO: Obviously thsi needs to be removed when connected is actually implemented!
+  // TODO: Obviously this needs to be removed when connected is actually implemented!
   const clusterList = action.clusterList.map(cluster => {
     cluster.status = 'success';
     return cluster;
@@ -34,7 +34,17 @@ export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state };
+  return {
+    ...state,
+    clusterList: state.clusterList.filter(item => item.MigCluster.metadata.name !== action.name),
+  };
+};
+export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    clusterList: [ ...state.clusterList.filter(
+      s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name),
+      { ...action.updatedCluster } ] };
 };
 
 export const updateSearchTerm = (state = INITIAL_STATE, action) => {
@@ -46,6 +56,7 @@ export const HANDLERS = {
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
   [Types.SET_CONNECTION_STATE]: setConnectionState,

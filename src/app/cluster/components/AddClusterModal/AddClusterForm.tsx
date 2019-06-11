@@ -43,6 +43,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       setFieldValue,
       checkConnection,
       onHandleModalToggle,
+      mode
     } = this.props;
     const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
     const customCss = css`
@@ -61,6 +62,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             name="name"
             type="text"
             id="cluster-name-input"
+            isDisabled = { (mode === 'update') ? true : false }
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -98,10 +100,11 @@ class WrappedAddClusterForm extends React.Component<any, any> {
         </FormGroup>
         <CheckConnection
           errors={errors}
-          touched={touched}
+          touched={ (mode === 'update') ? true : touched }
           connectionState={connectionState}
           checkConnection={checkConnection}
           onHandleModalToggle={onHandleModalToggle}
+          mode={mode}
         />
       </Form>
     );
@@ -109,14 +112,14 @@ class WrappedAddClusterForm extends React.Component<any, any> {
 }
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: () => ({
-    name: '',
-    url: '',
-    token: '',
+  mapPropsToValues: ({name, url, token}) => ({
+    name: name || '',
+    url: url || '',
+    token: token || '',
     connectionStatus: '',
   }),
 
-  validate: values => {
+  validate: (values: any) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -137,10 +140,10 @@ const AddClusterForm: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit(values);
+    formikBag.props.onItemSubmit(values);
   },
 
-  displayName: 'Add Cluster Form',
+  displayName: 'Cluster Form',
 })(WrappedAddClusterForm);
 
 export default AddClusterForm;

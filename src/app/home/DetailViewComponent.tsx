@@ -125,12 +125,14 @@ class DetailViewComponent extends Component<IProps, IState> {
             associatedPlans={clusterAssociatedPlans}
             isLoading={this.props.isMigrating || this.props.isStaging}
             migMeta={this.props.migMeta}
+            removeCluster={this.props.removeCluster}
           />
           <StorageDataListItem
             dataList={allStorage}
             id="storageList"
             associatedPlans={storageAssociatedPlans}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            removeStorage={this.props.removeStorage}
           />
           <PlanDataListItem
             planList={allPlans}

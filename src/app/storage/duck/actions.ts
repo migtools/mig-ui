@@ -7,7 +7,8 @@ const { Creators, Types } = createActions({
   updateStorageSearchText: ['StorageSearchText'],
   addStorageSuccess: ['newStorage'],
   addStorageFailure: ['error'],
-  removeStorageSuccess: ['id'],
+  removeStorageSuccess: ['name'],
+  updateStorageSuccess: ['updatedStorage'],
   updateSearchTerm: ['searchTerm'],
   setConnectionState: ['connectionState'],
 });

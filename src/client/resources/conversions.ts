@@ -15,6 +15,16 @@ export function createTokenSecret(name: string, namespace: string, rawToken: str
   };
 }
 
+export function updateTokenSecret(rawToken: string) {
+  // btoa => to base64, atob => from base64
+  const encodedToken = btoa(rawToken);
+  return {
+    data: {
+      saToken: encodedToken,
+    },
+  };
+}
+
 export function tokenFromSecret(secret: any) {
   return atob(secret.data.token);
 }
@@ -37,6 +47,21 @@ export function createClusterRegistryObj(name: string, namespace: string, server
         ],
       },
     },
+  };
+}
+
+export function updateClusterRegistryObj(serverAddress: string) {
+  return {
+      spec: {
+        kubernetesApiEndpoints: {
+          serverEndpoints: [
+            {
+              clientCIDR: '0.0.0.0',
+              serverAddress,
+            },
+          ],
+        },
+      }
   };
 }
 
@@ -103,6 +128,24 @@ export function createMigStorage(
   };
 }
 
+export function updateMigStorage(
+  bucketName: string,
+  bucketRegion: string,
+) {
+  return {
+    spec: {
+      backupStorageConfig: {
+        awsBucketName: bucketName,
+        awsRegion: bucketRegion,
+      },
+      volumeSnapshotConfig: {
+        awsRegion: bucketRegion,
+      },
+    },
+  };
+}
+
+
 export function createStorageSecret(
   name: string,
   namespace: string,
@@ -124,6 +167,21 @@ export function createStorageSecret(
       namespace,
     },
     type: 'Opaque',
+  };
+}
+
+export function updateStorageSecret(
+  secretKey: any,
+  accessKey: string
+) {
+  // btoa => to base64, atob => from base64
+  const encodedAccessKey = btoa(accessKey);
+  const encodedSecretKey = btoa(secretKey);
+  return {
+    data: {
+      'aws-access-key-id': encodedAccessKey,
+      'aws-secret-access-key': encodedSecretKey,
+    },
   };
 }
 

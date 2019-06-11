@@ -47,6 +47,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       setFieldTouched,
       connectionState,
       checkConnection,
+      mode,
     } = this.props;
     return (
       <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -59,6 +60,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             name="name"
             type="text"
             id="repoName"
+            isDisabled = { (mode === 'update') ? true : false }
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -140,6 +142,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           connectionState={connectionState}
           checkConnection={checkConnection}
           onHandleModalToggle={this.props.onHandleModalToggle}
+          mode={mode}
         />
       </Form>
     );
@@ -147,16 +150,16 @@ class WrappedAddStorageForm extends React.Component<any, any> {
 }
 
 const AddStorageForm: any = withFormik({
-  mapPropsToValues: () => ({
-    name: '',
-    bucketName: '',
-    bucketRegion: '',
-    accessKey: '',
-    secret: '',
+  mapPropsToValues: ({name, bucketName, bucketRegion, accessKey, secret}) => ({
+    name: name || '',
+    bucketName: bucketName || '',
+    bucketRegion: bucketRegion || '',
+    accessKey: accessKey || '',
+    secret: secret || '',
     connectionStatus: '',
   }),
 
-  validate: values => {
+  validate: (values: any)  => {
     const errors: any = {};
 
     if (!values.name) {
@@ -181,7 +184,7 @@ const AddStorageForm: any = withFormik({
   handleSubmit: (values, formikBag: any) => {
     formikBag.setSubmitting(false);
     formikBag.props.onHandleModalToggle();
-    formikBag.props.onAddItemSubmit(values);
+    formikBag.props.onItemSubmit(values);
   },
 
   displayName: 'Add Respository Form',
