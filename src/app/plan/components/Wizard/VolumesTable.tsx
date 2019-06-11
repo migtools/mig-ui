@@ -27,48 +27,49 @@ interface IProps {
 }
 
 class VolumesTable extends React.Component<any, any> {
-  handleTypeChange = (row, val) => {
-    // On change of the pv's action (type), update the persistentVolumes value
-    // so the state is correct in formik
-    const { persistentVolumes } = this.props.values;
-    const objIndex = persistentVolumes.findIndex(v => v.name === row.original.name);
-
-    const updatedPv = { ...persistentVolumes[objIndex], type: val.value };
-
-    const updatedPersistentVolumes = [
-      ...persistentVolumes.slice(0, objIndex),
-      updatedPv,
-      ...persistentVolumes.slice(objIndex + 1),
-    ];
-    this.setState({ rows: updatedPersistentVolumes });
-
-    this.props.setFieldValue('persistentVolumes', updatedPersistentVolumes);
-  };
   state = {
-    page: 1,
+    options: [{ label: 'copy', value: 'copy' }, { label: 'move', value: 'move' }],
     selectedOption: null,
-    perPage: 20,
-    pageOfItems: [],
     rows: [],
-    checked: [],
-    selectAll: false,
   };
+  handleTypeChange = (row, option) => {
+    this.updateTableData(row.index, option.value);
+  };
+  getCurrentPlan = (): any =>
+    this.props.plans.find(p => p.metadata.name === this.props.values.planName);
 
+  updateTableData = (rowIndex, updatedValue) => {
+    const currentPlan = this.getCurrentPlan();
+    const { values } = this.props;
+    const { rows } = this.state;
+    const rowsCopy = [...rows];
+    if (currentPlan !== null && values.persistentVolumes) {
+      const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
+
+      rowsCopy[rowIndex] = updatedRow;
+
+      // TODO: A number of these values will need to be further supported by the
+      // controller. Today the data is not available.
+      // See the mig controller issue describing what data we need here:
+      // https://github.com/fusor/mig-controller/issues/134
+    }
+    this.setState({ rows: rowsCopy });
+    this.props.setFieldValue('persistentVolumes', rowsCopy);
+  };
   getTableData() {
+    const currentPlan = this.getCurrentPlan();
     // Builds table data from a combination of the formik values, and the
     // persistent volumes as seen on a MigPlan object.
-    const currentPlan = this.props.plans.find(p => {
-      return p.metadata.name === this.props.values.planName;
-    });
-    if (currentPlan && currentPlan.spec.persistentVolumes) {
-      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes;
+    if (currentPlan) {
+      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || null;
 
       // No PVs discovered to be in use. This is normal for stateless cloud apps.
       if (!discoveredPersistentVolumes) {
         return [];
       }
-      if (this.props.values.prersistentVolumes) {
-        return discoveredPersistentVolumes.map(planVolume => {
+      let mappedPVs;
+      if (this.props.values.persistentVolumes) {
+        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
           let pvAction = 'copy'; // Default to copy
           if (this.props.values.persistentVolumes.length !== 0) {
             const rowVal = this.props.values.persistentVolumes.find(
@@ -93,7 +94,7 @@ class VolumesTable extends React.Component<any, any> {
           };
         });
       } else {
-        const mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
           const pvAction = 'copy'; // Default to copy
           // TODO: A number of these values will need to be further supported by the
           // controller. Today the data is not available.
@@ -110,22 +111,20 @@ class VolumesTable extends React.Component<any, any> {
             supportedActions: planVolume.supportedActions,
           };
         });
-        this.props.setFieldValue('persistentVolumes', mappedPVs);
-        return mappedPVs;
       }
+      this.props.setFieldValue('persistentVolumes', mappedPVs);
+      this.setState({ rows: mappedPVs });
     }
   }
 
   componentDidMount() {
     // Initializes the table values in formik, since it defaults to an
     // empty array.
-    const newRows = this.getTableData();
-    this.setState({ rows: newRows });
+    this.getTableData();
   }
   componentDidUpdate(prevProps) {
     if (prevProps.isFetching !== this.props.isFetching) {
-      const newRows = this.getTableData();
-      this.setState({ rows: newRows });
+      this.getTableData();
     }
   }
 
@@ -279,7 +278,7 @@ class VolumesTable extends React.Component<any, any> {
                 resizable: false,
                 Cell: row => (
                   <Select
-                    onChange={(val: any) => this.handleTypeChange(row, val)}
+                    onChange={(option: any) => this.handleTypeChange(row, option)}
                     options={row.original.supportedActions.map(a => {
                       // NOTE: Each PV may not support all actions (any at all even),
                       // we need to inspect the PV to determine this
