@@ -12,7 +12,6 @@ import { css } from '@emotion/core';
 class MigSourceForm extends React.Component<any> {
   state = {
     options: [],
-    isLoading: false,
     selectedOption: null,
   };
 
@@ -42,10 +41,8 @@ class MigSourceForm extends React.Component<any> {
           },
         });
 
-        this.setState({ isLoading: true });
         this.props.onWizardLoadingToggle(true);
         setTimeout(() => {
-          this.setState(() => ({ isLoading: false }));
           this.props.onWizardLoadingToggle(false);
         }, 500);
       }
@@ -71,10 +68,8 @@ class MigSourceForm extends React.Component<any> {
       },
     });
     this.props.setFieldTouched('sourceCluster');
-    this.setState({ isLoading: true });
     this.props.onWizardLoadingToggle(true);
     setTimeout(() => {
-      this.setState(() => ({ isLoading: false }));
       this.props.onWizardLoadingToggle(false);
     }, 500);
   };
@@ -100,7 +95,7 @@ class MigSourceForm extends React.Component<any> {
             )}
           </TextList>
         </TextContent>
-        {this.state.isLoading ? (
+        {this.props.isWizardLoading ? (
           <Flex
             css={css`
               height: 100%;

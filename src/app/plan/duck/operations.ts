@@ -23,7 +23,9 @@ const uuidv1 = require('uuid/v1');
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
+const pvFetchRequest = Creators.pvFetchRequest;
 const pvFetchFailure = Creators.pvFetchFailure;
+const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 
@@ -129,6 +131,7 @@ const addPlan = migPlan => {
 
       let timesRun = 0;
       const interval = setInterval(async () => {
+        dispatch(pvFetchRequest());
         timesRun += 1;
         // TODO: replace timesRun with poller class
         if (timesRun === 3) {
@@ -153,12 +156,13 @@ const addPlan = migPlan => {
           });
 
           if (pvsDiscovered) {
+            dispatch(Creators.updatePlan(plan));
+            dispatch(pvFetchSuccess());
+            dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
             console.debug('Discovered PVs, clearing interaval.');
             clearInterval(interval);
           }
         }
-
-        dispatch(Creators.updatePlan(plan));
       }, PollingInterval);
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err.toString()));

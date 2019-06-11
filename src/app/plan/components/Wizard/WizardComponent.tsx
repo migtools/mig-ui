@@ -53,6 +53,7 @@ const WizardComponent = props => {
           setFieldTouched={setFieldTouched}
           clusterList={clusterList}
           onWizardLoadingToggle={toggleLoading}
+          isWizardLoading={isLoading}
         />
       ),
       enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
@@ -70,6 +71,7 @@ const WizardComponent = props => {
           setFieldValue={setFieldValue}
           setFieldTouched={setFieldTouched}
           onWizardLoadingToggle={toggleLoading}
+          isWizardLoading={isLoading}
         />
       ),
       enableNext: !isLoading,
