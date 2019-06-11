@@ -117,12 +117,18 @@ const WizardComponent = props => {
     if (prev.prevId === MigSourceStepId && curr.id !== 1) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
-      props.addPlan({
-        planName: props.values.planName,
-        sourceCluster: props.values.sourceCluster,
-        targetCluster: HostClusterName,
-        namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
+      const currentPlan = props.plans.find(p => {
+        return p.metadata.name === props.values.planName;
       });
+
+      if (!currentPlan) {
+        props.addPlan({
+          planName: props.values.planName,
+          sourceCluster: props.values.sourceCluster,
+          targetCluster: HostClusterName,
+          namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
+        });
+      }
     }
     if (curr.id === 5) {
       props.handleSubmit();

@@ -12,6 +12,7 @@ import StatusIcon from '../../../common/components/StatusIcon';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
+import planOperations from '../../duck/operations';
 
 interface IState {
   page: number;
@@ -39,7 +40,7 @@ class VolumesTable extends React.Component<any, any> {
       updatedPv,
       ...persistentVolumes.slice(objIndex + 1),
     ];
-    this.setState({ rows: updatedPersistentVolumes }, () => console.log('this.state', this.state));
+    this.setState({ rows: updatedPersistentVolumes });
 
     this.props.setFieldValue('persistentVolumes', updatedPersistentVolumes);
   };
@@ -118,6 +119,9 @@ class VolumesTable extends React.Component<any, any> {
   componentDidMount() {
     // Initializes the table values in formik, since it defaults to an
     // empty array.
+    console.log('initial');
+    const newRows = this.getTableData();
+    this.setState({ rows: newRows });
   }
   componentDidUpdate(prevProps) {
     if (prevProps.isFetching !== this.props.isFetching) {
@@ -331,8 +335,13 @@ const mapStateToProps = state => {
     isFetching: state.plan.isFetchingPVList,
   };
 };
+const mapDispatchToProps = dispatch => {
+  return {
+    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
+  };
+};
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(VolumesTable);

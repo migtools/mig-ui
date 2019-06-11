@@ -1,14 +1,10 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
-import Select from 'react-select';
 import VolumesTable from './VolumesTable';
-import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
-import { css } from '@emotion/core';
-import theme from '../../../../theme';
 const VolumesForm = props => {
   const { setFieldValue, values } = props;
   const StyledTextContent = styled(TextContent)`
@@ -24,7 +20,6 @@ const VolumesForm = props => {
         </StyledTextContent>
         <VolumesTable setFieldValue={setFieldValue} values={values} />
       </Box>
-      )}
     </React.Fragment>
   );
 };

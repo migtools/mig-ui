@@ -273,6 +273,7 @@ const fetchNamespacesForCluster = clusterName => {
 };
 
 export default {
+  pvFetchRequest,
   fetchPlans,
   addPlan,
   putPlan,
