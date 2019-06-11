@@ -138,8 +138,6 @@ const addPlan = migPlan => {
           clearInterval(interval);
           dispatch(commonOperations.alertErrorTimeout('No PVs found'));
           dispatch(pvFetchFailure());
-          // TODO: this is where we would trigger a validation check for this wizard step
-          // & update the wizard next enable value.
         }
 
         const planName = migPlan.planName;
