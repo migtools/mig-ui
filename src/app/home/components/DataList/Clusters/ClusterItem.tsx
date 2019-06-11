@@ -25,7 +25,9 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
     ? migMeta.clusterApi
     : cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
 
-  const clusterSvcToken = cluster.Secret.data.saToken ? atob(cluster.Secret.data.saToken) : null;
+  const clusterSvcToken =
+    !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.satoken ?
+    atob(cluster.Secret.data.saToken) : null;
 
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
