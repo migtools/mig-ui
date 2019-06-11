@@ -10,8 +10,8 @@ import {
   TextArea,
 } from '@patternfly/react-core';
 import styled from '@emotion/styled';
-import theme from './../../../theme';
-import FormErrorDiv from './../../common/components/FormErrorDiv';
+import theme from '../../../../theme';
+import FormErrorDiv from '../../../common/components/FormErrorDiv';
 interface IProps {
   component: React.ReactNode;
 }

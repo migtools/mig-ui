@@ -3,6 +3,8 @@ import { createReducer } from 'reduxsauce';
 import moment from 'moment';
 
 export const INITIAL_STATE = {
+  isPVError: false,
+  isFetchingPVList: false,
   isError: false,
   isFetching: false,
   migPlanList: [],
@@ -22,6 +24,15 @@ export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
+};
+export const pvFetchRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isPVError: false, isFetchingPVList: true };
+};
+export const pvFetchFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isPVError: true, isFetchingPVList: false };
+};
+export const pvFetchSuccess = (state = INITIAL_STATE, action) => {
+  return { ...state, isPVError: false, isFetchingPVList: false };
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
@@ -193,6 +204,9 @@ export const HANDLERS = {
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
+  [Types.PV_FETCH_SUCCESS]: pvFetchSuccess,
+  [Types.PV_FETCH_FAILURE]: pvFetchFailure,
+  [Types.PV_FETCH_REQUEST]: pvFetchRequest,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

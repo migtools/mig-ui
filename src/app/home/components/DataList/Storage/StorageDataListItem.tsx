@@ -8,8 +8,6 @@ import {
   DataListItemCells,
   DataListAction,
 } from '@patternfly/react-core';
-import { Flex, Box } from '@rebass/emotion';
-import DataListEmptyState from '../DataListEmptyState';
 import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddStorageModal from '../../../../storage/components/AddStorageModal';

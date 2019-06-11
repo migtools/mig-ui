@@ -4,9 +4,9 @@ import React from 'react';
 import { css } from '@emotion/core';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
-import theme from './../../../theme';
+import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
-import StatusIcon from '../../common/components/StatusIcon';
+import StatusIcon from '../../../common/components/StatusIcon';
 const StyledSpan = styled.span`
   font-weight: 600;
 `;

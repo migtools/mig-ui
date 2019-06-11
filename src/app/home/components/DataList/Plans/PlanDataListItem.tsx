@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import Wizard from '../../../../plan/components/Wizard';
+import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 
 const PlanDataListItem = ({
@@ -46,7 +46,7 @@ const PlanDataListItem = ({
             <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="link">
               <PlusCircleIcon /> Add Plan
             </Button>
-            <Wizard
+            <WizardContainer
               clusterList={clusterList}
               storageList={storageList}
               isOpen={isOpen}
@@ -65,7 +65,6 @@ const PlanDataListItem = ({
           isLoading={isLoading}
           isExpanded={isExpanded}
           onStageTriggered={onStageTriggered}
-          {...props}
         />
       </DataListItem>
     );

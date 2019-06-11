@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import theme from '../../../../../theme';
 import { DataList, DataListContent } from '@patternfly/react-core';
 import ClusterItem from './ClusterItem';
-import DataListEmptyState from '../DataListEmptyState';
+import { AddCircleOIcon } from '@patternfly/react-icons';
+import AddClusterModal from '../../../../cluster/components/AddClusterModal';
+import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 
 const ClusterContent = ({
   dataList,
@@ -14,6 +16,7 @@ const ClusterContent = ({
   removeCluster,
   ...props
 }) => {
+  const [isOpen, toggleOpen] = useState(false);
   return (
     <DataListContent noPadding aria-label="cluster-items-content-container" isHidden={!isExpanded}>
       {dataList.length > 0 ? (
@@ -35,7 +38,14 @@ const ClusterContent = ({
       ) : (
         <Flex alignItems="center" justifyContent="center">
           <Box>
-            <DataListEmptyState type="cluster" />
+            <EmptyState variant="large">
+              <EmptyStateIcon icon={AddCircleOIcon} />
+              <Title size="lg">Add source and target clusters for the migration</Title>
+              <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
+                Add Cluster
+              </Button>
+              <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
+            </EmptyState>
           </Box>
         </Flex>
       )}

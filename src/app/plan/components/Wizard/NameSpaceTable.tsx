@@ -4,7 +4,7 @@ import React from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import { connect } from 'react-redux';
-import planOperations from '../../plan/duck/operations';
+import planOperations from '../../duck/operations';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
@@ -21,6 +21,7 @@ interface IProps {
   sourceClusterNamespaces: any;
   fetchNamespacesForCluster: any;
   setFieldValue: (fieldName, fieldValue) => void;
+  values: any;
 }
 
 class NamespaceTable extends React.Component<IProps, IState> {
@@ -34,14 +35,31 @@ class NamespaceTable extends React.Component<IProps, IState> {
   };
 
   componentDidMount() {
-    if (this.props.sourceCluster) {
-      this.props.fetchNamespacesForCluster(this.props.sourceCluster.metadata.name);
+    const { fetchNamespacesForCluster, sourceCluster, values } = this.props;
+    if (sourceCluster) {
+      fetchNamespacesForCluster(this.props.sourceCluster);
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { fetchNamespacesForCluster, sourceCluster, values } = this.props;
     if (prevProps.sourceClusterNamespaces !== this.props.sourceClusterNamespaces) {
-      this.setState({ rows: this.props.sourceClusterNamespaces });
+      this.setState({ rows: this.props.sourceClusterNamespaces }, () => {
+        if (values.selectedNamespaces.length > 0) {
+          const { rows } = this.state;
+          const checkedCopy = [];
+          values.selectedNamespaces.filter((item, itemIndex) => {
+            for (let i = 0; rows.length > i; i++) {
+              if (item.metadata.name === rows[i].metadata.name) {
+                checkedCopy[i] = true;
+              }
+            }
+          });
+          this.setState({
+            checked: checkedCopy,
+          });
+        }
+      });
     }
   }
 
@@ -53,8 +71,8 @@ class NamespaceTable extends React.Component<IProps, IState> {
     this.setState({
       checked: checkedCopy,
     });
-    const itemList = this.state.rows;
-    const formValuesForNamespaces = itemList.filter((item, itemIndex) => {
+    const { rows } = this.state;
+    const formValuesForNamespaces = rows.filter((item, itemIndex) => {
       for (let i = 0; checkedCopy.length > i; i++) {
         if (itemIndex === i) {
           if (checkedCopy[i]) {

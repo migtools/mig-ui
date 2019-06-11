@@ -23,6 +23,9 @@ const uuidv1 = require('uuid/v1');
 const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
+const pvFetchRequest = Creators.pvFetchRequest;
+const pvFetchFailure = Creators.pvFetchFailure;
+const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
 
@@ -31,7 +34,7 @@ const addPlanSuccess = Creators.addPlanSuccess;
 // const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
-const PollingInterval = 3000;
+const PollingInterval = 5000;
 const PvsDiscoveredType = 'PvsDiscovered';
 
 const runStage = plan => {
@@ -108,6 +111,7 @@ const runMigration = plan => {
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
+      dispatch(pvFetchRequest());
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
@@ -126,9 +130,16 @@ const addPlan = migPlan => {
 
       dispatch(addPlanSuccess(createRes.data));
 
-      console.debug('Beginning PV polling');
-
+      let timesRun = 0;
       const interval = setInterval(async () => {
+        timesRun += 1;
+        // TODO: replace timesRun with poller class
+        if (timesRun === 12) {
+          clearInterval(interval);
+          dispatch(commonOperations.alertErrorTimeout('No PVs found'));
+          dispatch(pvFetchFailure());
+        }
+
         const planName = migPlan.planName;
 
         const getRes = await client.get(
@@ -137,15 +148,19 @@ const addPlan = migPlan => {
         );
 
         const plan = getRes.data;
-        const pvsDiscovered = !!plan.status.conditions.find(c => {
-          return c.type === PvsDiscoveredType;
-        });
+        if (plan.status) {
+          const pvsDiscovered = !!plan.status.conditions.find(c => {
+            return c.type === PvsDiscoveredType;
+          });
 
-        if (pvsDiscovered) {
-          console.debug('Discovered PVs, clearing interaval.');
-          clearInterval(interval);
+          if (pvsDiscovered) {
+            dispatch(Creators.updatePlan(plan));
+            dispatch(pvFetchSuccess());
+            dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
+            console.debug('Discovered PVs, clearing interaval.');
+            clearInterval(interval);
+          }
         }
-        dispatch(Creators.updatePlan(plan));
       }, PollingInterval);
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err.toString()));
@@ -256,6 +271,7 @@ const fetchNamespacesForCluster = clusterName => {
 };
 
 export default {
+  pvFetchRequest,
   fetchPlans,
   addPlan,
   putPlan,

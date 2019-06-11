@@ -4,7 +4,6 @@ import { Flex, Box } from '@rebass/emotion';
 import { DataList, DataListContent, DataListItem, DataListItemRow } from '@patternfly/react-core';
 import { DataListAction } from '@patternfly/react-core';
 import PlanActions from './PlanActions';
-import DataListEmptyState from '../DataListEmptyState';
 import {
   Table,
   TableHeader,
@@ -17,7 +16,7 @@ import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import styled from '@emotion/styled';
 import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
 import theme from '../../../../../theme';
-
+import PlanEmptyState from './PlanEmptyState';
 interface IPlanContentProps {
   planList: any;
   onPlanSubmit: () => void;
@@ -176,6 +175,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
     }
     this.setState({ rows });
   };
+
   render() {
     return (
       <DataListContent
@@ -201,18 +201,13 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
             </DataListItem>
           </DataList>
         ) : (
-          <Flex alignItems="center" justifyContent="center">
-            <Box>
-              <DataListEmptyState
-                type="plan"
-                clusterList={this.props.clusterList}
-                storageList={this.props.storageList}
-                onPlanSubmit={this.props.onPlanSubmit}
-                isLoading={this.props.isLoading}
-                {...this.props}
-              />
-            </Box>
-          </Flex>
+          <PlanEmptyState
+            clusterList={this.props.clusterList}
+            storageList={this.props.storageList}
+            isLoading={this.props.isLoading}
+            onPlanSubmit={this.props.onPlanSubmit}
+            plansDisabled={this.props.plansDisabled}
+          />
         )}
       </DataListContent>
     );
