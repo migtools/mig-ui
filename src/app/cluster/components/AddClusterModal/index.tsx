@@ -27,7 +27,7 @@ class AddClusterModal extends React.Component<any, any> {
     const { checkConnection, connectionState, name, url, token, mode } = this.props;
 
     return (
-      <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Add Cluster">
+      <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Cluster">
         <AddClusterForm
           connectionState={connectionState}
           onHandleModalToggle={this.handleClose}
