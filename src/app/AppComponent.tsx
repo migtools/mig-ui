@@ -24,10 +24,11 @@ interface IProps {
   onRedirect: () => void;
 }
 const NotificationContainer = styled(Box)`
-  position: absolute;
+  position: fixed;
   z-index: 9999999;
   align-self: center;
 `;
+
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
   successMessage,

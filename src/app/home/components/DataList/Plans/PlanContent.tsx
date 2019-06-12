@@ -11,7 +11,7 @@ import {
   //@ts-ignore
   compoundExpand,
 } from '@patternfly/react-table';
-import SortableTable from './SortableTable';
+import MigrationsTable from './MigrationsTable';
 import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import styled from '@emotion/styled';
 import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
@@ -121,7 +121,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
             cells: [
               {
                 title: (
-                  <SortableTable
+                  <MigrationsTable
                     type="Migrations"
                     migrations={plan.Migrations}
                     id="migrations-history-expansion-table"
