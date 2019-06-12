@@ -47,15 +47,11 @@ class VolumesTable extends React.Component<any, any> {
       const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
 
       rowsCopy[rowIndex] = updatedRow;
-
-      // TODO: A number of these values will need to be further supported by the
-      // controller. Today the data is not available.
-      // See the mig controller issue describing what data we need here:
-      // https://github.com/fusor/mig-controller/issues/134
     }
     this.setState({ rows: rowsCopy });
     this.props.setFieldValue('persistentVolumes', rowsCopy);
   };
+
   getTableData() {
     const currentPlan = this.getCurrentPlan();
     // Builds table data from a combination of the formik values, and the
