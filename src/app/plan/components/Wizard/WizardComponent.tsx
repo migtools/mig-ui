@@ -12,13 +12,6 @@ const WizardComponent = props => {
   const HostClusterName = 'host';
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
-  const onNext = ({ id }) => {
-    if (stepIdReached < id) {
-      setStepIdReached(id);
-    } else {
-      setStepIdReached(stepIdReached);
-    }
-  };
 
   const {
     values,
