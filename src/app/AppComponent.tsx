@@ -14,14 +14,14 @@ import theme from '../theme';
 import { Flex, Box } from '@rebass/emotion';
 import { Global, css } from '@emotion/core';
 import styled from '@emotion/styled';
-import { Alert } from '@patternfly/react-core';
+import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
 
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
   successMessage: any;
   alertType: string;
-  onRedirect: () => void;
+  clearAlerts: () => void;
 }
 const NotificationContainer = styled(Box)`
   position: fixed;
@@ -34,16 +34,25 @@ const AppComponent: React.SFC<IProps> = ({
   successMessage,
   alertType,
   isLoggedIn,
+  clearAlerts,
 }) => (
   <Flex flexDirection="column" width="100%">
     {errorMessage && (
       <NotificationContainer>
-        <Alert variant="danger" title={errorMessage} />
+        <Alert
+          variant="danger"
+          title={errorMessage}
+          action={<AlertActionCloseButton onClose={clearAlerts} />}
+        />
       </NotificationContainer>
     )}
     {successMessage && (
       <NotificationContainer>
-        <Alert variant="success" title={successMessage} />
+        <Alert
+          variant="success"
+          title={successMessage}
+          action={<AlertActionCloseButton onClose={clearAlerts} />}
+        />
       </NotificationContainer>
     )}
 
