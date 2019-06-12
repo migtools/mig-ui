@@ -66,7 +66,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
           )}
         </FormGroup>
-        <FormGroup label="AWS S3 Bucket Name" isRequired fieldId="bucketName">
+        <FormGroup label="S3 Bucket Name" isRequired fieldId="bucketName">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('bucketName', true, true)}
@@ -82,7 +82,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
           )}
         </FormGroup>
 
-        <FormGroup label="AWS S3 Bucket Region" isRequired fieldId="bucketRegion">
+        <FormGroup label="S3 Bucket Region" isRequired fieldId="bucketRegion">
           <TextInput
             onChange={(val, e) => this.onHandleChange(val, e)}
             onInput={() => setFieldTouched('bucketRegion', true, true)}

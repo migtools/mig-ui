@@ -27,7 +27,7 @@ class AddStorageModal extends React.Component<any, any> {
     const { connectionState, checkConnection, name, bucketName, bucketRegion, accessKey, secret, mode } = this.props;
 
     return (
-      <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Add Repository">
+      <Modal isSmall isOpen={this.props.isOpen} onClose={this.handleClose} title="Repository">
         <AddStorageForm
           connectionState={connectionState}
           onHandleModalToggle={this.handleClose}
