@@ -6,7 +6,7 @@ import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import moment from 'moment';
 
-export default class SortableTable extends React.Component<any, any> {
+export default class MigrationsTable extends React.Component<any, any> {
   state = {
     columns: [
       { title: 'Type', transforms: [sortable] },

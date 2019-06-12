@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
@@ -11,6 +11,8 @@ const WizardComponent = props => {
   const MigSourceStepId = 2;
   const HostClusterName = 'host';
   const [isLoading, toggleLoading] = useToggleLoading(false);
+  const [stepIdReached, setStepIdReached] = useState(1);
+
   const {
     values,
     touched,
@@ -58,6 +60,7 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
+      canJumpTo: stepIdReached >= 2,
     },
     {
       id: 3,
@@ -76,6 +79,7 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !isLoading && !isFetchingPVList,
+      canJumpTo: stepIdReached >= 3,
     },
     {
       id: 4,
@@ -95,6 +99,7 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !errors.targetCluster && touched.targetCluster === true && !isLoading,
+      canJumpTo: stepIdReached >= 4,
     },
     {
       id: 5,
@@ -111,10 +116,17 @@ const WizardComponent = props => {
       nextButtonText: 'Close',
       hideCancelButton: true,
       hideBackButton: true,
+      canJumpTo: stepIdReached >= 5,
     },
   ];
 
   const onMove = (curr, prev) => {
+    if (stepIdReached < curr.id) {
+      setStepIdReached(curr.id);
+    } else {
+      setStepIdReached(stepIdReached);
+    }
+
     if (prev.prevId === MigSourceStepId && curr.id !== 1) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
