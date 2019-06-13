@@ -87,12 +87,8 @@ const updateCluster = clusterValues => {
       const { migMeta } = state;
       const client: IClusterClient = ClientFactory.hostCluster(state);
 
-      const clusterReg = updateClusterRegistryObj(
-        clusterValues.url
-      );
-      const tokenSecret = updateTokenSecret(
-        clusterValues.token
-      );
+      const clusterReg = updateClusterRegistryObj(clusterValues.url);
+      const tokenSecret = updateTokenSecret(clusterValues.token);
       const clusterRegResource = new ClusterRegistryResource(
         ClusterRegistryResourceKind.Cluster,
         migMeta.namespace
@@ -107,7 +103,7 @@ const updateCluster = clusterValues => {
       const arr = await Promise.all([
         client.patch(clusterRegResource, clusterValues.name, clusterReg),
         client.patch(secretResource, clusterValues.name, tokenSecret),
-        client.get(migClusterResource, clusterValues.name)
+        client.get(migClusterResource, clusterValues.name),
       ]);
       const cluster = arr.reduce((accum, res) => {
         accum[res.data.kind] = res.data;
@@ -116,7 +112,11 @@ const updateCluster = clusterValues => {
       cluster.status = clusterValues.connectionStatus;
 
       dispatch(updateClusterSuccess(cluster));
-      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
+      dispatch(
+        commonOperations.alertSuccessTimeout(
+          `Successfully updated cluster "${clusterValues.name}"!`
+        )
+      );
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -171,9 +171,15 @@ const fetchClusters = () => {
       const groupedClusters = groupClusters(migClusters, refs);
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
-      dispatch(
-        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch clusters')
-      );
+      if (err.response) {
+        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+      } else if (err.message) {
+        dispatch(commonOperations.alertErrorTimeout(err.message));
+      } else {
+        dispatch(
+          commonOperations.alertErrorTimeout('Failed to fetch clusters: An unknown error occurred')
+        );
+      }
       dispatch(clusterFetchFailure());
     }
   };

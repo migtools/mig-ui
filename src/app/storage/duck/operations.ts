@@ -79,15 +79,9 @@ const updateStorage = storageValues => {
       const { migMeta } = state;
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const tokenSecret = updateStorageSecret(
-        storageValues.secret,
-        storageValues.accessKey
-      );
+      const tokenSecret = updateStorageSecret(storageValues.secret, storageValues.accessKey);
 
-      const migStorage = updateMigStorage(
-        storageValues.bucketName,
-        storageValues.bucketRegion,
-      );
+      const migStorage = updateMigStorage(storageValues.bucketName, storageValues.bucketRegion);
 
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
@@ -107,13 +101,16 @@ const updateStorage = storageValues => {
       storage.status = storageValues.connectionStatus;
 
       dispatch(updateStorageSuccess(storage));
-      dispatch(commonOperations.alertSuccessTimeout(`Successfully updated repository "${storageValues.name}"!`));
+      dispatch(
+        commonOperations.alertSuccessTimeout(
+          `Successfully updated repository "${storageValues.name}"!`
+        )
+      );
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
   };
 };
-
 
 function checkConnection() {
   return (dispatch, getState) => {
@@ -124,7 +121,7 @@ function checkConnection() {
   };
 }
 
-const removeStorage = (name) => {
+const removeStorage = name => {
   return async (dispatch, getState) => {
     try {
       const state = getState();
@@ -165,7 +162,15 @@ const fetchStorage = () => {
       const groupedStorages = groupStorages(migStorages, refs);
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      if (err.response) {
+        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+      } else if (err.message) {
+        dispatch(commonOperations.alertErrorTimeout(err.message));
+      } else {
+        dispatch(
+          commonOperations.alertErrorTimeout('Failed to fetch storage: An unknown error occurred')
+        );
+      }
       dispatch(migStorageFetchFailure());
     }
   };

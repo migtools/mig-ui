@@ -217,7 +217,15 @@ const fetchPlans = () => {
       const groupedPlans = groupPlans(migPlans, refs);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout('Failed to fetch plans'));
+      if (err.response) {
+        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+      } else if (err.message) {
+        dispatch(commonOperations.alertErrorTimeout(err.message));
+      } else {
+        dispatch(
+          commonOperations.alertErrorTimeout('Failed to fetch plans: An unknown error occurred')
+        );
+      }
       dispatch(migPlanFetchFailure());
     }
   };
