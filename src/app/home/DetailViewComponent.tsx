@@ -7,17 +7,12 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
-import WizardContainer from '../plan/components/Wizard/WizardContainer';
-import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
-import { Button, ButtonVariant, DataList, InputGroup, TextInput } from '@patternfly/react-core';
+import { DataList } from '@patternfly/react-core';
 
 interface IProps {
-  filteredClusterList: any[];
-  filteredStorageList: any[];
-  // filteredPlanList: any[];
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
@@ -27,8 +22,6 @@ interface IProps {
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
-  updateClusterSearchTerm: (searchTerm) => void;
-  updateStorageSearchTerm: (searchTerm) => void;
   putPlan: (planValues) => void;
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
@@ -60,8 +53,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     if (allClusters.length > 1 && allStorage.length > 0) {
       this.setState({ plansDisabled: false });
     }
-    this.props.updateClusterSearchTerm('');
-    this.props.updateStorageSearchTerm('');
   }
   componentDidUpdate(prevProps, prevState) {
     if (
@@ -102,12 +93,9 @@ class DetailViewComponent extends Component<IProps, IState> {
 
   render() {
     const {
-      filteredClusterList,
-      filteredStorageList,
       allStorage,
       allClusters,
       migStorageList,
-      // filteredPlanList,
       allPlans,
       clusterAssociatedPlans,
       storageAssociatedPlans,
@@ -151,30 +139,11 @@ class DetailViewComponent extends Component<IProps, IState> {
 }
 
 function mapStateToProps(state) {
-  const filteredClusterList = clusterSelectors.getVisibleClusters(state);
   const allClusters = clusterSelectors.getAllClusters(state);
-  const filteredStorageList = storageSelectors.getVisibleStorage(state);
   const allStorage = storageSelectors.getAllStorage(state);
-  // const filteredPlanList = planSelectors.getVisiblePlans(state);
   const allPlans = planSelectors.getAllPlans(state);
-
-  const clusterAssociatedPlans = allClusters.reduce((associatedPlans, cluster) => {
-    const clusterName = cluster.MigCluster.metadata.name;
-    associatedPlans[clusterName] = allPlans.reduce((count, plan) => {
-      const isAssociated = plan.sourceCluster === clusterName || plan.targetCluster === clusterName;
-      return isAssociated ? count + 1 : count;
-    }, 0);
-    return associatedPlans;
-  }, {});
-
-  const storageAssociatedPlans = allStorage.reduce((associatedPlans, storage) => {
-    const storageName = storage.MigStorage.metadata.name;
-    associatedPlans[storageName] = allPlans.reduce((count, plan) => {
-      const isAssociated = plan.selectedStorage === storageName;
-      return isAssociated ? count + 1 : count;
-    }, 0);
-    return associatedPlans;
-  }, {});
+  const clusterAssociatedPlans = clusterSelectors.getAssociatedPlans(state);
+  const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
   const { isMigrating, isStaging } = state.plan;
@@ -182,11 +151,8 @@ function mapStateToProps(state) {
 
   return {
     allClusters,
-    filteredClusterList,
     allStorage,
-    filteredStorageList,
     migStorageList,
-    // filteredPlanList,
     allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,
@@ -197,8 +163,6 @@ function mapStateToProps(state) {
 }
 const mapDispatchToProps = dispatch => {
   return {
-    updateClusterSearchTerm: searchTerm => dispatch(clusterOperations.updateSearchTerm(searchTerm)),
-    updateStorageSearchTerm: searchTerm => dispatch(storageOperations.updateSearchTerm(searchTerm)),
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     putPlan: planValues => dispatch(planOperations.putPlan(planValues)),
