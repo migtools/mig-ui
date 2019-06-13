@@ -1,0 +1,37 @@
+---
+
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ mig_ui_name }}
+  namespace: {{ mig_ui_namespace }}
+  labels:
+    app: {{ mig_ui_name }}
+    service: {{ mig_ui_name }}
+spec:
+  replicas: 1
+  selector:
+    app: {{ mig_ui_name }}
+    service: {{ mig_ui_name }}
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: {{ mig_ui_name }}
+        service: {{ mig_ui_name }}
+    spec:
+      containers:
+        - name: mig-ui
+          image: {{ mig_ui_image }}
+          imagePullPolicy: {{ mig_ui_image_pull_policy }}
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+            - name: {{ mig_ui_migmeta_configmap_name }}
+              mountPath: /etc/mig-ui
+      volumes:
+        - name: {{ mig_ui_migmeta_configmap_name }}
+          configMap:
+            name: {{ mig_ui_migmeta_configmap_name }}

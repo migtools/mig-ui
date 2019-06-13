@@ -1,0 +1,8 @@
+---
+clusterApi: "https://mysupercluster.com:8443"
+namespace: "mig"
+configNamespace: "mig"
+oauth:
+  clientId: mig-ui-remote-dev
+  redirectUrl: "http://localhost:9000/login/callback"
+  userScope: "user:full"

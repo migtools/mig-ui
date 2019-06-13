@@ -1,0 +1,11 @@
+---
+
+mig_ui_migmeta_config:
+  clusterApi: "{{ mig_ui_cluster_api_endpoint }}"
+  namespace: "{{ mig_ui_namespace }}"
+  configNamespace: "{{ mig_ui_secrets_namespace }}"
+  oauth:
+    clientId: "{{ mig_ui_oauth_client_id }}"
+    redirectUrl: "{{ mig_ui_oauth_redirect_url }}"
+    userScope: "{{ mig_ui_oauth_user_scope }}"
+    clientSecret: "{{ mig_ui_oauth_secret }}"

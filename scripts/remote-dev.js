@@ -3,23 +3,19 @@ const fs = require('fs');
 const crypto = require('crypto');
 const execSync = require('child_process').execSync;
 
+// Init some consts
 const configDir = path.join(__dirname, '..', 'config');
 const oauthclientFile = path.join(configDir, 'remote.oauthclient.templ.yaml');
 const remoteConfigFile = path.join(configDir, 'config.dev.json');
 const oauthClientTemplateFile = path.join(configDir, 'remote.oauthclient.templ.yaml')
 
-const oauthClientName = 'mig-ui-remote-dev'
-
+// Validations
 if(!fs.existsSync(remoteConfigFile)) {
   console.error(`ERROR: Remote config file ${remoteConfigFile} is missing`)
   console.error(`You could should copy the example to that location and edit with desired config`)
   process.exit(1)
 }
 
-const remoteConfig = JSON.parse(fs.readFileSync(remoteConfigFile))
-const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/login/callback`
-
-// Validate Prereqs
 try{
   execSync('hash oc')
 } catch (error) {
@@ -35,28 +31,34 @@ try{
   process.exit(1)
 }
 
-// Configure OAuthClient in remote cluster
-let oauthClient = {};
-try{
-  console.log('Checking to see if mig-ui oauthclient exists in cluster...')
-  const output = execSync(`oc get oauthclient ${oauthClientName} -o json`)
-  console.log('Found existing OAuthClient object in cluster')
-  oauthClient = JSON.parse(output);
-} catch (error) {
-  // Some error other than the client not existing occurred
-  if(!error.stderr.toString().includes('not found')) {
-    console.error("ERROR: Something went wrong while trying to get the remote-dev oauthclient:")
-    console.error(error.stdout.toString())
-    process.exit(1)
+// Helpers
+
+function setupOAuthClient() {
+  const remoteConfig = JSON.parse(fs.readFileSync(remoteConfigFile))
+  const oauthRedirectUri = `http://localhost:${remoteConfig.devServerPort}/login/callback`
+
+  const oauthClientName = 'mig-ui';
+  const remoteDevSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
+
+  try{
+    console.log('Checking to see if mig-ui oauthclient exists in cluster...')
+    execSync(`oc get oauthclient ${oauthClientName} -o json`)
+    console.log('Found existing OAuthClient object in cluster')
+    console.log('Deleting existing OAuthClient so it can be reset')
+    execSync(`oc delete oauthclient ${oauthClientName}`)
+  } catch (error) {
+    // Some error other than the client not existing occurred
+    if(!error.stderr.toString().includes('not found')) {
+      console.error("ERROR: Something went wrong while trying to get the remote-dev oauthclient:")
+      console.error(error.stdout.toString())
+      process.exit(1)
+    }
   }
 
   console.log('Attempting to create oauthclient for mig-ui...')
-
-  // Client doesn't exist yet, need to create it for our UI
-  // as a distinct public client
   // NOTE: Not providing a secret since we are a public client, defined
   // as one *without* a secret. Will implement PKCE.
-  oauthClient = {
+  const oauthClient = {
     apiVersion: "oauth.openshift.io/v1",
     kind: "OAuthClient",
     metadata: {
@@ -64,50 +66,50 @@ try{
     },
     grantMethod: 'auto', // consider 'prompt'?
     redirectURIs: [oauthRedirectUri],
-    secret: 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K',
+    secret: remoteDevSecret,
   };
 
+  // Configure OAuthClient in remote cluster
   try {
     execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`)
-  } catch(_error) {
+  } catch(error) {
     console.error("ERROR: Something went wrong trying to create a new OAuthClient:");
     console.error(error.stdout.toString());
     process.exit(1);
   }
 }
 
-// HACK: Need to patch in CORS support to the authentication server
-// until this is enabled by default on OCP4.
-if(!process.env.ORIGIN3_HOST) {
-  try{
-    console.log('Patching in CORS support to the auth server')
-    const patch = {
-      spec: {
-        unsupportedConfigOverrides: {
-          corsAllowedOrigins: [
-            '//127\.0\.0\.1(:|$)',
-            '//localhost(:|$)',
-          ]
+function setupCors() {
+  if(!process.env.ORIGIN3_HOST) {
+    try{
+      console.log('Patching in CORS support to the auth server')
+      const patch = {
+        spec: {
+          unsupportedConfigOverrides: {
+            corsAllowedOrigins: [
+              '//127\.0\.0\.1(:|$)',
+              '//localhost(:|$)',
+            ]
+          }
         }
-      }
-    };
+      };
 
-    execSync(`oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`);
-  } catch (error) {
-    console.error("ERROR: Something went wrong while trying to patch in CORS support to the auth server");
-    console.error(error.stdout.toString());
-    process.exit(1);
+      execSync(`oc patch authentication.operator cluster -p '${JSON.stringify(patch)}' --type=merge`);
+    } catch (error) {
+      console.error("ERROR: Something went wrong while trying to patch in CORS support to the auth server");
+      console.error(error.stdout.toString());
+      process.exit(1);
+    }
+  } else {
+    console.log('Detected an origin3 host, skipping CORS config')
   }
-} else {
-  console.log('Detected an origin3 host, skipping CORS config')
 }
 
-console.log('Successfully created oauthclient for mig-ui');
-console.log('Writing details to config for injection into migMeta:');
-console.log(`oauthClientId: ${oauthClientName}`);
-console.log(`oauthRedirectUri: ${oauthRedirectUri}`);
+// Main
 
-// Write oauth details to config file so it can be injected into migMeta
-remoteConfig.oauthClientId = oauthClientName;
-remoteConfig.redirectUri = oauthRedirectUri;
-fs.writeFileSync(remoteConfigFile, JSON.stringify(remoteConfig, null, 2));
+function main() {
+  setupOAuthClient();
+  setupCors();
+}
+
+main();

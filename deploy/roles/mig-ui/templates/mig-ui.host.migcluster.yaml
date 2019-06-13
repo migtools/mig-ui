@@ -1,0 +1,7 @@
+apiVersion: migration.openshift.io/v1alpha1
+kind: MigCluster
+metadata:
+  name: {{ mig_ui_host_cluster_name }}
+  namespace: {{ mig_ui_namespace}}
+spec:
+  isHostCluster: true

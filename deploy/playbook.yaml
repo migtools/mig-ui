@@ -1,0 +1,12 @@
+---
+- name: mig-ui
+  hosts: localhost
+  become: false
+  gather_facts: false
+  connection: local
+  vars:
+    state: present
+  tasks:
+    - name: Run mig-ui role
+      include_role:
+        name: mig-ui

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ mig_ui_migmeta_configmap_name }}
+  namespace: {{ mig_ui_namespace }}
+data:
+  migmeta.json: '{{ mig_ui_migmeta_config | to_json }}'

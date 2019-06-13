@@ -1,0 +1,81 @@
+---
+
+# TODO: Really want to improve this so that the user doesn't have to
+# explicitly set this.
+- name: Verify the cluster API has been provided
+  assert:
+    that:
+      - 'mig_ui_cluster_api_endpoint is defined'
+    msg: The host cluster api endpoint must be provided
+
+- name: 'Set mig-ui namespace state={{ state }}'
+  k8s:
+    state: '{{ state }}'
+    definition: "{{ lookup('template', 'mig-ui.namespace.yaml') | from_yaml }}"
+  when: mig_ui_create_namespace
+
+- name: Verify mig-ui namespace exists
+  assert:
+    that:
+      - 'lookup("k8s", kind="Namespace", resource_name=mig_ui_namespace) is defined'
+    msg: The broker namespace must exist
+  when: state == 'present'
+
+# NOTE: We need to create this up front so we can get the route that OpenShift
+# resolves to, since we'll need to build an OAuthClient with a redirect route
+# that points back at our route.
+- name: Create mig-ui route
+  k8s:
+    state: '{{ state }}'
+    definition: "{{ lookup('template', 'mig-ui.route.yaml') | from_yaml }}"
+
+- name: Set resolved UI route
+  set_fact:
+    resolved_mig_ui_route: "https://{{ lookup('k8s', api_version='route.openshift.io/v1', kind='Route', namespace=mig_ui_namespace, resource_name=mig_ui_name) | json_query('spec.host') }}"
+
+- name: Output resolved mig-ui route
+  debug:
+    msg: "{{ resolved_mig_ui_route }}"
+
+- name: Set mig_ui_oauth_redirect_url
+  set_fact:
+    mig_ui_oauth_redirect_url: "{{ resolved_mig_ui_route }}/login/callback"
+
+- name: Output resolved redirect route
+  debug:
+    msg: "{{ mig_ui_oauth_redirect_url }}"
+
+- name: Generate random secret value for oauth client
+  set_fact:
+    mig_ui_oauth_secret: "{{ 99999999 | random | to_uuid | b64encode }}"
+
+- name: Include variables from migmeta.yml
+  include_vars: migmeta.yaml
+  delegate_to: localhost
+
+- name: Check if any MigClusters are present (looking for host MigCluster)
+  set_fact:
+    host_cluster_not_present: "{{ lookup('k8s', kind='MigCluster', namespace=mig_ui_namespace, api_version='migration.openshift.io/v1alpha1') | length == 0 }} "
+
+- name: Create host cluster if its missing
+  k8s:
+    state: '{{ state }}'
+    definition: "{{ lookup('template', 'mig-ui.host.migcluster.yaml') | from_yaml }}"
+  when: host_cluster_not_present
+
+- name: Ensure no existing OAuthClients are present
+  k8s:
+    state: 'absent'
+    api_version: 'oauth.openshift.io/v1'
+    kind: OAuthClient
+    name: "{{ mig_ui_oauth_client_id }}"
+
+- name: 'Set mig-ui object state={{ state }}'
+  k8s:
+    state: '{{ state }}'
+    definition: "{{ lookup('template', item.name) | from_yaml }}"
+  loop:
+    - name: mig-ui.oauthclient.yaml
+    - name: mig-ui.configmap.yaml
+    - name: mig-ui.service.yaml
+    - name: mig-ui.deploymentconfig.yaml

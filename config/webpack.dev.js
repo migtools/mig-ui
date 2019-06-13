@@ -19,20 +19,21 @@ if (devMode !== 'local' && devMode !== 'remote') {
 }
 
 const htmlWebpackPluginOpt = {
-  template: `public/index.html`,
+  template: `public/index.dev.html`,
   title: 'MIG UI',
   inject: 'body',
-  favicon: "public/favicon.ico"
+  favicon: 'public/favicon.ico',
 };
 
 const configPath = path.join(__dirname, localConfigFileName);
 if (!fs.existsSync(configPath)) {
-  console.error('ERROR: config/config.dev.json is missing')
+  console.error('ERROR: config/config.dev.json is missing');
   console.error(
     'Copy config/config.dev.json.example to config/config.dev.json' +
-    ' and optionally configure your dev settings. A valid clusterUrl is ' +
-    ' required for start:remote.')
-  process.exit(1)
+      ' and optionally configure your dev settings. A valid clusterUrl is ' +
+      ' required for start:remote.'
+  );
+  process.exit(1);
 }
 
 const localConfig = require(configPath);
@@ -41,12 +42,13 @@ migMeta.oauth = {
   clientId: localConfig.oauthClientId,
   redirectUri: localConfig.redirectUri,
   userScope: localConfig.userScope,
-}
+  clientSecret: localConfig.oauthClientSecret,
+};
 migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
 
-htmlWebpackPluginOpt.migMeta = migMeta
-const PORT = process.env.PORT || localConfig.devServerPort
+htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
+const PORT = process.env.PORT || localConfig.devServerPort;
 
 const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
@@ -54,25 +56,23 @@ const plugins = [
   new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
   new ExtractTextPlugin({
-    filename: "[name].[contenthash].css"
-  })
-]
+    filename: '[name].[contenthash].css',
+  }),
+];
 
 // Replace the normal OAuth login component with a mocked out login for local dev
 if (devMode === 'local') {
-  plugins.push(new webpack.NormalModuleReplacementPlugin(
-    /LoginComponent.tsx/,
-    'MockLoginComponent.tsx'
-  ));
-  plugins.push(new webpack.NormalModuleReplacementPlugin(
-    /client_factory.ts/,
-    'client_factory.mock.ts'
-  ));
+  plugins.push(
+    new webpack.NormalModuleReplacementPlugin(/LoginComponent.tsx/, 'MockLoginComponent.tsx')
+  );
+  plugins.push(
+    new webpack.NormalModuleReplacementPlugin(/client_factory.ts/, 'client_factory.mock.ts')
+  );
 }
 
 const webpackConfig = {
   entry: {
-    app: './src/index.tsx'
+    app: './src/index.tsx',
   },
   node: {
     fs: 'empty',
@@ -80,10 +80,10 @@ const webpackConfig = {
   output: {
     path: __dirname + '../dist',
     filename: '[name].bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   devtool: 'eval-cheap-module-source-map',
   module: {
@@ -91,16 +91,16 @@ const webpackConfig = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: 'ts-loader'
+        use: 'ts-loader',
       },
       {
         test: /\.js$/,
         use: ['source-map-loader'],
-        enforce: 'pre'
+        enforce: 'pre',
       },
       {
         test: /\.css$/,
-        loaders: ['style-loader', 'css-loader']
+        loaders: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
@@ -109,11 +109,11 @@ const webpackConfig = {
           options: {
             name: 'fonts/[name].[ext]',
             // Limit at 50k. larger files emited into separate files
-            limit: 5000
-          }
-        }
-      }
-    ]
+            limit: 5000,
+          },
+        },
+      },
+    ],
   },
   devServer: {
     host: HOST,
