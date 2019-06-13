@@ -1,0 +1,21 @@
+{
+  "apiVersion": "clusterregistry.k8s.io/v1alpha1",
+  "kind": "MigCluster",
+  "metadata": {
+    "creationTimestamp": "2019-06-05 13:53:08 UTC",
+    "generation": 1,
+    "name": "m1",
+    "namespace": "mig",
+  },
+  "spec": {
+    "isHostCluster": false,
+    "clusterRef": {
+      "name": "c1",
+      "namespace": "mig"
+    },
+    "serviceAccountSecretRef": {
+      "name": "c1",
+      "namespace": "mig"
+    }
+  }
+}
