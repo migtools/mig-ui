@@ -6,6 +6,8 @@ import rootReducer from './reducers';
 import { routerMiddleware } from 'connected-react-router';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import createSagaMiddleware from 'redux-saga';
+import rootSaga from './sagas';
 declare global {
   /* tslint:disable */
   interface Window {
@@ -25,8 +27,10 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+const sagaMiddleware = createSagaMiddleware();
+
 const enhancers = [];
-const middleware = [thunk, logger, routerMiddleware(history)];
+const middleware = [thunk, logger, sagaMiddleware, routerMiddleware(history)];
 
 if (devMode === 'local') {
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -42,5 +46,6 @@ const composedEnhancers = compose(
 
 export default () => {
   const store = createStore(persistedReducer, composedEnhancers);
+  sagaMiddleware.run(rootSaga);
   return { store, persistor: persistStore(store) };
 };
