@@ -6,6 +6,7 @@ import planOperations from '../plan/duck/operations';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
+import planSagas from '../plan/duck/sagas';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
@@ -29,6 +30,8 @@ interface IProps {
   isStaging?: boolean;
   isMigrating?: boolean;
   migMeta: string;
+  startPolling: () => void;
+  stopPolling: () => void;
 }
 
 interface IState {
@@ -131,6 +134,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             plansDisabled={isAddPlanDisabled}
             onStageTriggered={this.handleStageTriggered}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            onStartPolling={this.props.startPolling}
+            onStopPolling={this.props.stopPolling}
           />
         </DataList>
       </React.Fragment>
@@ -170,6 +175,8 @@ const mapDispatchToProps = dispatch => {
     updateStageProgress: (plan, progress) =>
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
+    startPolling: () => dispatch(PlanCreators.startPolling()),
+    stopPolling: () => dispatch(PlanCreators.stopPolling()),
   };
 };
 

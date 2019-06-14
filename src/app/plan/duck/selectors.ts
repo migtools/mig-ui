@@ -4,6 +4,8 @@ const planSelector = state => state.plan.migPlanList.map(p => p);
 
 const planStateSelector = state => state.plan.planStateMap.map(p => p);
 
+const getMigMeta = state => state.migMeta;
+
 const searchTermSelector = state => state.plan.searchTerm;
 
 const newPlanState = {
@@ -61,20 +63,6 @@ const getMigratingList = createSelector(
   }
 );
 
-function add(accumulator, a) {
-  return accumulator + a;
-}
-
-// const getInProgressLength = createSelector(
-//     [planSelector],
-//     (plans) => {
-//         plans.filter((item) => item.status.state === 'Not Started');
-//         [migratingList.length, stagingList.length].reduce(add);
-//     },
-// )
-
-// const getNotStartedLength = 0;
-
 const getVisiblePlans = createSelector(
   [planSelector, searchTermSelector],
   (plans, searchTerm) => {
@@ -92,4 +80,5 @@ export default {
   getMigSuccessList,
   getStagingList,
   getMigratingList,
+  getMigMeta,
 };

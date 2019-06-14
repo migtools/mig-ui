@@ -1,6 +1,6 @@
 import { all } from 'redux-saga/effects';
-import { helloSaga, watchIncrementAsync } from './app/plan/duck/sagas';
+import planSagas from './app/plan/duck/sagas';
 
 export default function* rootSaga() {
-  yield all([helloSaga(), watchIncrementAsync()]);
+  yield all([planSagas.watchPollingTasks()]);
 }

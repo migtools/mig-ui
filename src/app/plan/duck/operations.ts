@@ -287,4 +287,6 @@ export default {
   fetchNamespacesForCluster,
   runStage,
   runMigration,
+  fetchMigMigrationsRefs,
+  groupPlans,
 };
