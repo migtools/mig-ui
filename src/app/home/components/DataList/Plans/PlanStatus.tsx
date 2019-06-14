@@ -10,11 +10,11 @@ const PlanStatus = ({ plan, ...props }) => {
   const printStateAndProgress =
     plan.status.state === 'Staging' || plan.status.state === 'Migrating';
   if (printState) {
-    return <span>{plan.status.state}</span>;
+    return <span>{plan.status.status}</span>;
   } else if (printStateAndProgress) {
     return (
       <div>
-        <div>{plan.status.state}</div>
+        <div>{plan.status.status}</div>
         <Progress value={plan.status.progress} title="" size={ProgressSize.sm} />
       </div>
     );

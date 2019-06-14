@@ -246,13 +246,6 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
     const fullPlan = {
       MigPlan: mp,
     };
-    if (refs[0].data.items.length > 0) {
-      fullPlan['Migrations'] = refs[0].data.items.filter(
-        i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
-      );
-    } else {
-      fullPlan['Migrations'] = [];
-    }
     fullPlan['planState'] = {
       migrations: [],
       persistentVolumes: [],
@@ -261,6 +254,31 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
         progress: 0,
       },
     };
+    if (refs[0].data.items.length > 0) {
+      const matchingMigrations = refs[0].data.items.filter(
+        i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
+      );
+      const getStatus = () => {
+        if (matchingMigrations.length > 0) {
+          return matchingMigrations[0].status.conditions[0].message;
+        } else {
+          return 'Not Started';
+        }
+      };
+      fullPlan['planState'] = {
+        migrations: [],
+        persistentVolumes: [],
+        status: {
+          state: 'Not Started',
+          status: getStatus(),
+          progress: 0,
+        },
+      };
+
+      fullPlan['Migrations'] = matchingMigrations;
+    } else {
+      fullPlan['Migrations'] = [];
+    }
     return fullPlan;
   });
 }
