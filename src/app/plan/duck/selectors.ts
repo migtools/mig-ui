@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
-const planStateSelector = state => state.plan.planStateMap.map(p => p);
+// const planStateSelector = state => state.plan.planStateMap.map(p => p);
 
 const getMigMeta = state => state.migMeta;
 

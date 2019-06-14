@@ -1,6 +1,6 @@
 import { Creators } from './actions';
 import { race, call, delay, put, take, takeEvery, all, select } from 'redux-saga/effects';
-import planSelectors from './selectors';
+// import planSelectors from './selectors';
 import planOperations from './operations';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -16,9 +16,9 @@ function* helloSaga() {
 
 // function* fetchPlansSaga() {
 //   // dispatch(migPlanFetchRequest());
-//   yield put({ type: 'MIG_PLAN_FETCH_POLLING_REQUEST' });
+//   //   yield put({ type: 'MIG_PLAN_FETCH_POLLING_REQUEST' });
 //   //   const { migMeta } = getState();
-//   const migMeta = yield select(planSelectors.getMigMeta);
+// //   const migMeta = yield select(planSelectors.getMigMeta);
 //   const state = yield select();
 //   const client: IClusterClient = ClientFactory.hostCluster(state);
 
@@ -48,12 +48,34 @@ function* poll(action) {
     retries: null,
     lastResponseStatus: null,
   };
+  //   const migMeta = yield select(planSelectors.getMigMeta);
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
 
   while (true) {
-    yield put({ type: 'MIG_PLAN_FETCH_POLLING_REQUEST' });
-    const response = yield call(planOperations.fetchPlans);
+    stats.inProgress = true;
+    try {
+      let planList = yield client.list(resource);
+      planList = yield planList.data.items;
+      //   const refs = await Promise.all(fetchMigMigrationsRefs(client, migMeta, migPlans));
+      const refs = yield Promise.all(
+        planOperations.fetchMigMigrationsRefs(client, state.migMeta, planList)
+      );
+      const groupedPlans = yield planOperations.groupPlans(planList, refs);
+      console.log('groupedPlans', groupedPlans);
+      //   dispatch(migPlanFetchSuccess(groupedPlans));
+      yield put({ type: 'MIG_PLAN_POLL_SUCCESS', groupedPlans });
+    } catch (e) {
+      console.log('error polling', e);
+    }
+    // yield put({ type: 'MIG_PLAN_FETCH_POLLING_REQUEST' });
+    // yield put({ type: 'MIG_PLAN_FETCH_REQUEST' });
+    // dispatch(planOperations.fetchPlans())
+    // const response = yield takeEvery('MIG_PLAN_FETCH_POLLING_REQUEST', fetchPlansSaga);
     // const pollingStatus = pollingAction.payload.response.status;
-    console.log('pollingAction', response);
+    // console.log('pollingAction', response);
     // const pollingStatus = pollingAction;
     // switch (pollingStatus) {
     //   case POLLING_STATUS.SUCCEEDED:
@@ -68,7 +90,7 @@ function* poll(action) {
     //     break;
     // }
     // delay the next polling request in 1 second
-    yield delay(1000);
+    yield delay(5000);
   }
 }
 function* watchPollingTasks() {
