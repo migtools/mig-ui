@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { NamespacedResource, ClusterResource, KubeResource } from './resources';
+import { NamespacedResource, ClusterResource, KubeResource } from '../resources';
 
 export default class KubeStore {
   private static instance: KubeStore;
