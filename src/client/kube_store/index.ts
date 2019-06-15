@@ -1,12 +1,21 @@
 import _ from 'lodash';
-import { NamespacedResource, ClusterResource, KubeResource } from '../resources';
+import { NamespacedResource, ClusterResource, KubeResource,
+  CoreNamespacedResource, CoreClusterResource, } from '../resources';
+
+import mocked_data from './mocked_data.json';
+
+const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
 export default class KubeStore {
   private static instance: KubeStore;
+  private clusterName: string;
+
   public db: any = {
     namespace: {},
     cluster: {},
   };
+
+
   // public db: any =
   //   {
   //     namespace: {
@@ -192,8 +201,36 @@ export default class KubeStore {
   //     }
   //   }
 
-  public static get Instance() {
-    return this.instance || (this.instance = new this());
+  public constructor(clusterName) {
+    this.clusterName = clusterName;
+    this.ensureDataLoaded();
+  }
+
+  private data() {
+    // Returns the chunk of data relevant for mocking data from this k8s cluster
+    // All subsequent calls will use this data to lookup their responses
+    const d = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+    if (! ('clusters' in d)) {
+      alert('Unable to find expected mocked data for "clusters"');
+      return {};
+    }
+    if (! (this.clusterName in d['clusters'])) {
+      alert('Unable to find expected mocked data for clusterName "' + this.clusterName + '"');
+      return {};
+    }
+    return d['clusters'][this.clusterName];
+  }
+
+  private ensureDataLoaded() {
+    let localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+    if ((!localData) || (!localData.TIME_STAMP) || (localData.TIME_STAMP < mocked_data.TIME_STAMP)) {
+      localStorage.setItem(localStorageMockedDataKey, JSON.stringify(mocked_data));
+    }
+    localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+  }
+
+  public static Instance() {
+    return this.instance || (this.instance = new this(''));
   }
 
   public setResource(resource: KubeResource, name: string, newObject: object): object {
@@ -225,32 +262,64 @@ export default class KubeStore {
   }
 
   public getResource(resource: KubeResource, name: string): object {
-    const gvk = `${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
+    let result: object = {};
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
-      // return this.db.namespace[namespacedResource.namespace][gvk][name];
-      return this.db.namespace[namespacedResource.namespace][gvk][name];
+      if (resource instanceof CoreNamespacedResource) {
+        // Core Namespaced
+        result = this.data()['api'][resource.gvk().version]['namespaces']
+          [namespacedResource.namespace][resource.gvk().kindPlural][name];
+      } else {
+        // Extension Namespaced
+        result = this.data()['apis'][resource.gvk().group][resource.gvk().version]['namespaces']
+          [namespacedResource.namespace][resource.gvk().kindPlural][name];
+      }
     } else {
-      return this.db.cluster[gvk][name];
+      if (resource instanceof CoreClusterResource) {
+        // Core ClusterResource
+        result = this.data()['api'][resource.gvk().version]['namespaces'][resource.gvk().kindPlural][name];
+      } else {
+        // Extension ClusterResource
+        result = this.data()['apis'][resource.gvk().group][resource.gvk().version][resource.gvk().kindPlural][name];
+      }
     }
+    return result;
   }
 
   public listResource(resource: KubeResource): object {
-    const gvk = `${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
-    let resources;
+    // 2 Main Types of Resources
+    //   - NamespacedResource
+    //   - ClusterResource
+    //  Next 2 distinctions,  'Core' or Extension.
+    //   Core - are the main types built in k8s
+    //     If it's an instance of CoreNamespacedResource or CoreClusterResource
+    //   Extensions are everything else.
+
+    let result: object = {};
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
-      if (!(namespacedResource.namespace in this.db.namespace)) {
-        return [];
+      if (resource instanceof CoreNamespacedResource) {
+      // Core Namespaced
+      result = this.data()['api'][resource.gvk().version]['namespaces']
+        [namespacedResource.namespace][resource.gvk().kindPlural];
+      } else {
+      // Extension Namespaced
+      result = this.data()['apis'][resource.gvk().group][resource.gvk().version]['namespaces']
+        [namespacedResource.namespace][resource.gvk().kindPlural];
       }
-      if (!(gvk in this.db.namespace[namespacedResource.namespace])) {
-        return this.db.namespace[namespacedResource.namespace][gvk];
-      }
-      resources = this.db.namespace[namespacedResource.namespace][gvk];
     } else {
-      this.db.cluster = { '/v1/namespaces': {} };
-      resources = this.db.cluster[gvk];
+      if (resource instanceof CoreClusterResource) {
+        // Core ClusterResource
+        result = this.data()['api'][resource.gvk().version]['namespaces'][resource.gvk().kindPlural];
+      } else {
+        // Extension ClusterResource
+        result = this.data()['apis'][resource.gvk().group][resource.gvk().version][resource.gvk().kindPlural];
+      }
     }
-    return Object.keys(resources).map(k => resources[k]);
+    if (result) {
+      return Object.keys(result).map(k => result[k]);
+    } else {
+      return [];
+    }
   }
 }

@@ -39,7 +39,7 @@ const expectedGvk = 'migration.openshift.io/v1alpha1/migplans';
 
 test('Test NamespacedResource setResource', () => {
   const migResource = new MigResource(MigResourceKind.MigPlan, testNs);
-  const store = new KubeStore();
+  const store = new KubeStore('_host');
   const expected = {
     namespace: {
       [testNs]: {

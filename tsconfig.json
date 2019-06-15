@@ -62,6 +62,7 @@
     "removeComments": true,
     "strictNullChecks": false,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "lib": [
       "es6",
       "es7",
