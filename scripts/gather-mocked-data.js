@@ -2,6 +2,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
+const path = require('path');
 
 //
 //  We need to:
@@ -19,6 +20,7 @@ const MIG_GROUPS = [
   { group: 'migration.openshift.io', version: 'v1alpha1', kind: 'migstorages' },
 ];
 const MIG_NAMESPACE = 'mig';
+const TIME_STAMP = Math.round(+new Date() / 1000);
 
 function getKubeServerInfo() {
   const kubeconfig = process.env.KUBECONFIG ? process.env.KUBECONFIG : '~/.kube/config';
@@ -41,6 +43,42 @@ function getKubeServerInfo() {
   return { serverAddr, clientcert, clientkey, cacert };
 }
 
+function writeData(data) {
+  let indexLocation = path.resolve(__dirname, '../src/client/kube_store/mocked_data/index.ts');
+  let jsonLocation = path.resolve(
+    __dirname,
+    `../src/client/kube_store/mocked_data/${TIME_STAMP}.json`
+  );
+
+  const indexText = `import data from './${TIME_STAMP}.json';\nexport default data;`;
+  fs.writeFile(indexLocation, indexText, function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('JSON saved to ' + indexLocation);
+    }
+  });
+
+  fs.writeFile(jsonLocation, JSON.stringify(data, null, 4), function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('JSON saved to ' + jsonLocation);
+    }
+  });
+}
+
+//function generateEntry(data, keys) {
+// let entry = keys.reduce( (acc, current) => {
+//   acc[current] = {};
+//   return acc;
+// }, {});
+
+//  forEach (key of keys) {
+
+//  }
+//}
+
 function gatherMockedData(client, serverAddr) {
   const namespace = MIG_NAMESPACE;
   const all = MIG_GROUPS.map(v => {
@@ -49,6 +87,8 @@ function gatherMockedData(client, serverAddr) {
     return client
       .get(fullUrl)
       .then(response => {
+        // let entry = generateEntry(response.data, ['apis', v.group, v.version, namespaces, namespace, v.kind])
+
         return { ...v, data: response.data, url: url, serverAddr: serverAddr };
       })
       .catch(error => {
@@ -59,27 +99,76 @@ function gatherMockedData(client, serverAddr) {
   //  Reducing to a single promise that has collected all of the results.
   //  Transform from array to a dict that matches the layout of how we want to store the data
   return all.reduce((promiseChain, currentTask) => {
-    return promiseChain.then(chainResults =>
-      currentTask.then(currentResult => [...chainResults, currentResult])
-    );
-  }, Promise.resolve([]));
+    return promiseChain.then(chainResults => {
+      return currentTask.then(currentResult => {
+        chainResults[currentResult.url] = currentResult;
+        return chainResults;
+      });
+    });
+  }, Promise.resolve({}));
 }
 
-function gatherSecretRefs(axInst, serverAddr, data) {
-  // At this point we have the data from fetching each apigroup in a single promise.
-  // As that single promise resolves we will have a dict of all data
-  // We need to parse the data to find the secretRefs to fetch.
+function collectAndReformat(data) {
+  // Reformatting data into format of
+  //  { 'url':  response_data }
   return data.then(results => {
-    console.log(results);
-    console.log('Doing reduce');
-    return results.reduce((acc, current) => {
-      console.log('Acc is ');
-      console.log(acc);
-      console.log('current is ');
-      console.log(current);
-      return acc ? [...acc, current] : [current];
-    }, []);
+    return Object.keys(results).reduce(function(acc, key) {
+      let entry = results[key].data.items.reduce((acc, current) => {
+        // Example of 'current'
+        //  {apiVersion: 'migration.openshift.io/v1alpha1',
+        //  kind: 'MigStorage',
+        //  metadata: [Object],
+        //  spec: [Object]}
+        acc[current.metadata.name] = current;
+        return acc;
+      }, {});
+      acc[key] = entry;
+      return acc;
+    }, {});
   });
+}
+
+function gatherSecretRefs(client, serverAddr, data) {
+  let migstorages = data['apis/migration.openshift.io/v1alpha1/namespaces/mig/migstorages'];
+  let storageKeys = Object.keys(migstorages);
+  let storageSecretRefs = storageKeys.reduce((acc, currentKey) => {
+    return acc
+      .concat(migstorages[currentKey].spec.backupStorageConfig.credsSecretRef)
+      .concat(migstorages[currentKey].spec.volumeSnapshotConfig.credsSecretRef);
+  }, []);
+
+  let migclusters = data['apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters'];
+  let clusterKeys = Object.keys(migclusters);
+  let clusterSecretRefs = clusterKeys.reduce((acc, currentKey) => {
+    return acc.concat(migclusters[currentKey].spec.serviceAccountSecretRef);
+  }, []);
+  let secretRefs = [].concat(storageSecretRefs).concat(clusterSecretRefs);
+
+  let all = secretRefs.map(s => {
+    let key = `api/v1/namespaces/${s.namespace}/secrets`;
+    let fullUrl = `${serverAddr}/${key}/${s.name}`;
+    return client
+      .get(fullUrl)
+      .then(response => {
+        return { ...s, key: key, data: response.data, serverAddr: serverAddr };
+      })
+      .catch(error => {
+        console.log(error);
+        process.exit(1);
+      });
+  });
+
+  return all.reduce((promiseChain, currentTask) => {
+    return promiseChain.then(chainResults => {
+      return currentTask.then(currentResult => {
+        if (!chainResults[currentResult.key]) {
+          chainResults[currentResult.key] = {};
+        }
+        chainResults[currentResult.key][currentResult.name] = currentResult.data;
+        return chainResults;
+      });
+    });
+  }, Promise.resolve(data));
 }
 
 function main() {
@@ -94,8 +183,16 @@ function main() {
   });
   const axInst = axios.create({ httpsAgent });
   let p = gatherMockedData(axInst, serverAddr);
-  gatherSecretRefs(axInst, serverAddr, p).then(results => {
-    console.log(results);
+  collectAndReformat(p).then(reformatted => {
+    gatherSecretRefs(axInst, serverAddr, reformatted).then(results => {
+      data = {};
+      data['TIME_STAMP'] = TIME_STAMP;
+      data['clusters'] = {};
+      data['clusters']['_host'] = results;
+      console.log('Writing....');
+      console.log(data);
+      writeData(data);
+    });
   });
 }
 

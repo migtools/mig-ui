@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { NamespacedResource, ClusterResource, KubeResource,
   CoreNamespacedResource, CoreClusterResource, } from '../resources';
 
-import mocked_data from './mocked_data.json';
+import mocked_data from './mocked_data';
 
 const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
@@ -263,24 +263,36 @@ export default class KubeStore {
 
   public getResource(resource: KubeResource, name: string): object {
     let result: object = {};
+    let key = '';
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
       if (resource instanceof CoreNamespacedResource) {
         // Core Namespaced
-        result = this.data()['api'][resource.gvk().version]['namespaces']
-          [namespacedResource.namespace][resource.gvk().kindPlural][name];
+        key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
+        if (this.data()[key]) {
+          result = this.data()[key][name];
+        }
       } else {
         // Extension Namespaced
-        result = this.data()['apis'][resource.gvk().group][resource.gvk().version]['namespaces']
-          [namespacedResource.namespace][resource.gvk().kindPlural][name];
+        key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
+          `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
+        if (this.data()[key]) {
+          result = this.data()[key][name];
+        }
       }
     } else {
       if (resource instanceof CoreClusterResource) {
         // Core ClusterResource
-        result = this.data()['api'][resource.gvk().version]['namespaces'][resource.gvk().kindPlural][name];
+        key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
+        if (this.data()[key]) {
+          result = this.data()[key][name];
+        }
       } else {
         // Extension ClusterResource
-        result = this.data()['apis'][resource.gvk().group][resource.gvk().version][resource.gvk().kindPlural][name];
+        key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
+        if (this.data()[key]) {
+          result = this.data()[key][name];
+        }
       }
     }
     return result;
@@ -296,24 +308,28 @@ export default class KubeStore {
     //   Extensions are everything else.
 
     let result: object = {};
+    let key = '';
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
       if (resource instanceof CoreNamespacedResource) {
       // Core Namespaced
-      result = this.data()['api'][resource.gvk().version]['namespaces']
-        [namespacedResource.namespace][resource.gvk().kindPlural];
+      key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
+      result = this.data()[key];
       } else {
       // Extension Namespaced
-      result = this.data()['apis'][resource.gvk().group][resource.gvk().version]['namespaces']
-        [namespacedResource.namespace][resource.gvk().kindPlural];
+      key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
+      `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
+      result = this.data()[key];
       }
     } else {
       if (resource instanceof CoreClusterResource) {
         // Core ClusterResource
-        result = this.data()['api'][resource.gvk().version]['namespaces'][resource.gvk().kindPlural];
+        key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
+        result = this.data()[key];
       } else {
         // Extension ClusterResource
-        result = this.data()['apis'][resource.gvk().group][resource.gvk().version][resource.gvk().kindPlural];
+        key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
+        result = this.data()[key];
       }
     }
     if (result) {
