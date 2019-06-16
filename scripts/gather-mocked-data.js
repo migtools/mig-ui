@@ -68,17 +68,6 @@ function writeData(data) {
   });
 }
 
-//function generateEntry(data, keys) {
-// let entry = keys.reduce( (acc, current) => {
-//   acc[current] = {};
-//   return acc;
-// }, {});
-
-//  forEach (key of keys) {
-
-//  }
-//}
-
 function gatherMockedData(client, serverAddr) {
   const namespace = MIG_NAMESPACE;
   const all = MIG_GROUPS.map(v => {
@@ -87,8 +76,6 @@ function gatherMockedData(client, serverAddr) {
     return client
       .get(fullUrl)
       .then(response => {
-        // let entry = generateEntry(response.data, ['apis', v.group, v.version, namespaces, namespace, v.kind])
-
         return { ...v, data: response.data, url: url, serverAddr: serverAddr };
       })
       .catch(error => {
