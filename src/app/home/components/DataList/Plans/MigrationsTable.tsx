@@ -39,8 +39,8 @@ export default class MigrationsTable extends React.Component<any, any> {
             </Flex>
           ),
         },
-        { title: status.start.format('LLL') },
-        { title: status.end.format('LLL') },
+        { title: status.start },
+        { title: status.end },
         { title: status.copied },
         { title: status.moved },
         { title: status.phase },
@@ -53,8 +53,8 @@ export default class MigrationsTable extends React.Component<any, any> {
     let status = { start: null, end: null, moved: 0, copied: 0, phase: 'Not started' };
 
     if (migration.status) {
-      status.start = moment(migration.status.startTimestamp);
-      status.end = moment(migration.status.completionTimestamp);
+      status.start = moment(migration.status.startTimestamp).format('LLL');
+      status.end = moment(migration.status.completionTimestamp).format('LLL');
       const serverStatusMessage = migration.status.conditions[0].message || null;
       const serverErrorMessage = migration.status.errors || null;
       if (serverStatusMessage.length > 0 && !serverErrorMessage) {
@@ -98,8 +98,8 @@ export default class MigrationsTable extends React.Component<any, any> {
               </Flex>
             ),
           },
-          { title: status.start.format('LLL') },
-          { title: status.end.format('LLL') },
+          { title: status.start },
+          { title: status.end },
           { title: status.copied },
           { title: status.moved },
           { title: status.phase },

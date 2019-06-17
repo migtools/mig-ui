@@ -51,7 +51,9 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
         let isOpenPrev = null;
         if (prevState.rows.length > 0) {
           const matchingIndex = prevState.rows.filter((row, i) => i === parentIndex);
-          isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
+          if (matchingIndex[0] && matchingIndex[0].cells.length > 0) {
+            isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
+          }
         }
 
         return [
