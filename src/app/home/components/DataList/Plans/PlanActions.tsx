@@ -10,7 +10,7 @@ const PlanActions = ({ plan, isLoading, ...props }) => {
 
   return (
     <Flex>
-      <Box m="auto 70px auto 0">
+      <Box m="auto auto auto 0">
         <PlanStatus plan={plan.planState} {...this.props} />
       </Box>
       <Box mx={1}>
