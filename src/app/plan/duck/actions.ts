@@ -3,7 +3,7 @@ import { createActions } from 'reduxsauce';
 const { Creators, Types } = createActions({
   startPolling: ['params'],
   stopPolling: [],
-  migPlanPollSuccess: ['migPlanList'],
+  updatePlans: ['updatedPlans'],
   migPlanFetchRequest: [],
   migPlanFetchSuccess: ['migPlanList'],
   migPlanFetchFailure: [],

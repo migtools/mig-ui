@@ -1,3 +1,4 @@
+import { select } from 'redux-saga/effects';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -296,6 +297,22 @@ const fetchNamespacesForCluster = clusterName => {
   };
 };
 
+function* fetchPlansGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  try {
+    let planList = yield client.list(resource);
+    planList = yield planList.data.items;
+    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
+    const groupedPlans = yield groupPlans(planList, refs);
+    return { updatedPlans: groupedPlans, isSuccessful: true };
+  } catch (e) {
+    console.log('error polling', e);
+    return { e, isSuccessful: false };
+  }
+}
+
 export default {
   pvFetchRequest,
   fetchPlans,
@@ -306,5 +323,5 @@ export default {
   runStage,
   runMigration,
   fetchMigMigrationsRefs,
-  groupPlans,
+  fetchPlansGenerator,
 };

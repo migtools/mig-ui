@@ -1,5 +1,4 @@
 import planReducer from './reducers';
-export { default as planSagas } from './sagas';
 export default planReducer;
 export { default as planOperations } from './operations';
 export { Types as planTypes } from './actions';

@@ -19,10 +19,6 @@ export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
-export const migPlanPollSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migPlanList: action.groupedPlans, isFetching: false };
-};
-
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, migPlanList: action.migPlanList, isFetching: false };
 };
@@ -118,6 +114,13 @@ export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const updatePlans = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    migPlanList: action.updatedPlans,
+  };
+};
+
 export const initStage = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
@@ -195,7 +198,6 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIG_PLAN_POLL_SUCCESS]: migPlanPollSuccess,
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
@@ -209,6 +211,7 @@ export const HANDLERS = {
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
+  [Types.UPDATE_PLANS]: updatePlans,
   [Types.PV_FETCH_SUCCESS]: pvFetchSuccess,
   [Types.PV_FETCH_FAILURE]: pvFetchFailure,
   [Types.PV_FETCH_REQUEST]: pvFetchRequest,
