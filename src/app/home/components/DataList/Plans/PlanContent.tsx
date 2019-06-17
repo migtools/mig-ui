@@ -32,7 +32,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
   state = {
     rows: [],
   };
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.planList !== prevProps.planList) {
       const mappedRows = this.props.planList.map((plan, planIndex) => {
         const MigrationsIcon = styled(ServiceIcon)`
@@ -43,12 +43,23 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
           color: ${() =>
             plan.planState.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
         `;
-        const parentIndex = planIndex === 0 ? 0 : planIndex * 2;
+        const parentIndex = planIndex * 2;
         const planName = plan.MigPlan.metadata.name;
         const planKey = `${planName}-${planIndex}`;
+
+        //check previous expanded value
+        let isOpenPrev = null;
+        if (prevState.rows.length > 0) {
+          console.log('prevState.rows', prevState.rows);
+          const matchingIndex = prevState.rows.filter((row, i) => i === parentIndex);
+          isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
+          // if (matchingIndex) {
+          //   const isOpen = matchingIndex.cells[1].props.isOpen;
+          // }
+        }
+
         return [
           {
-            isOpen: false,
             cells: [
               {
                 title: (
@@ -79,7 +90,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 ),
 
                 props: {
-                  isOpen: false,
+                  isOpen: isOpenPrev || false,
                   ariaControls: 'migrations-history-expansion-table',
                 },
               },

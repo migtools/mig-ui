@@ -1,9 +1,4 @@
-// import { Creators } from './actions';
 import { race, call, delay, put, take, takeEvery, all, select } from 'redux-saga/effects';
-// import planOperations from './operations';
-// import { ClientFactory } from '../../../client/client_factory';
-// import { IClusterClient } from '../../../client/client';
-// import { MigResource, MigResourceKind } from '../../../client/resources';
 
 import { startPolling, stopPolling } from './actions';
 
@@ -38,14 +33,6 @@ function* poll(action) {
         params.onStatsChange(stats);
         throw new Error('Error while fetching data.');
       }
-
-      // let planList = yield client.list(resource);
-      // planList = yield planList.data.items;
-      // const refs = yield Promise.all(
-      //   planOperations.fetchMigMigrationsRefs(client, state.migMeta, planList)
-      // );
-      // const groupedPlans = yield planOperations.groupPlans(planList, refs);
-      // yield put({ type: 'MIG_PLAN_POLL_SUCCESS', groupedPlans });
     } catch (e) {
       console.log('error polling', e);
     }
