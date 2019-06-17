@@ -209,7 +209,7 @@ const mapDispatchToProps = dispatch => {
     updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
     updatePollingStats: stats => dispatch(updatePollingStats(stats)),
     startPolling: params => dispatch(startPolling(params)),
-    stopPolling: () => dispatch(PlanCreators.stopPolling()),
+    stopPolling: () => dispatch(stopPolling()),
   };
 };
 
