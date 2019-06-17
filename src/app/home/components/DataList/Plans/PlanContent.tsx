@@ -50,12 +50,8 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
         //check previous expanded value
         let isOpenPrev = null;
         if (prevState.rows.length > 0) {
-          console.log('prevState.rows', prevState.rows);
           const matchingIndex = prevState.rows.filter((row, i) => i === parentIndex);
           isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
-          // if (matchingIndex) {
-          //   const isOpen = matchingIndex.cells[1].props.isOpen;
-          // }
         }
 
         return [

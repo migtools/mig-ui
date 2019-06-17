@@ -14,13 +14,20 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
 };
+const sortPlans = planList =>
+  planList.sort(function(left, right) {
+    return moment
+      .utc(right.MigPlan.metadata.creationTimestamp)
+      .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
+  });
 
 export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migPlanList: action.migPlanList, isFetching: false };
+  const sortedList = sortPlans(action.migPlanList);
+  return { ...state, migPlanList: sortedList, isFetching: false };
 };
 export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
@@ -92,10 +99,11 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
       return p;
     }
   });
+  const sortedList = sortPlans(updatedPlanList);
 
   return {
     ...state,
-    migPlanList: updatedPlanList,
+    migPlanList: sortedList,
   };
 };
 
@@ -108,16 +116,20 @@ export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
     }
   });
 
+  const sortedList = sortPlans(updatedPlanList);
+
   return {
     ...state,
-    migPlanList: updatedPlanList,
+    migPlanList: sortedList,
   };
 };
 
 export const updatePlans = (state = INITIAL_STATE, action) => {
+  const sortedList = sortPlans(action.updatedPlans);
+
   return {
     ...state,
-    migPlanList: action.updatedPlans,
+    migPlanList: sortedList,
   };
 };
 
