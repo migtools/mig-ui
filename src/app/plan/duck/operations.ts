@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { select } from 'redux-saga/effects';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
@@ -82,9 +83,18 @@ const runMigration = plan => {
           MigPlan: plan.MigPlan,
         };
         if (response.data.items.length > 0) {
-          fullPlan['Migrations'] = response.data.items.filter(
+          const sortMigrations = migrationList =>
+            migrationList.sort(function(left, right) {
+              return moment
+                .utc(right.metadata.creationTimestamp)
+                .diff(moment.utc(left.metadata.creationTimestamp));
+            });
+
+          const matchingMigrations = response.data.items.filter(
             i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
           );
+
+          fullPlan['Migrations'] = sortMigrations(matchingMigrations);
         } else {
           fullPlan['Migrations'] = [];
         }

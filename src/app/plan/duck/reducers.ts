@@ -20,6 +20,12 @@ const sortPlans = planList =>
       .utc(right.MigPlan.metadata.creationTimestamp)
       .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
   });
+const sortMigrations = migList =>
+  migList.sort(function(left, right) {
+    return moment
+      .utc(right.metadata.creationTimestamp)
+      .diff(moment.utc(left.metadata.creationTimestamp));
+  });
 
 export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
@@ -80,10 +86,12 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
   const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
 
   updatedPlan.status.progress = action.progress;
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
   };
 };
 
@@ -110,6 +118,8 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
 export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
+      //filter migrations
+      action.updatedPlan.Migrations = sortMigrations(action.updatedPlan.Migrations);
       return action.updatedPlan;
     } else {
       return p;
@@ -125,7 +135,13 @@ export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
 };
 
 export const updatePlans = (state = INITIAL_STATE, action) => {
-  const sortedList = sortPlans(action.updatedPlans);
+  const updatedPlanList = action.updatedPlans.map(p => {
+    //filter migrations
+    p.Migrations = sortMigrations(p.Migrations);
+    return p;
+  });
+
+  const sortedList = sortPlans(updatedPlanList);
 
   return {
     ...state,
@@ -144,9 +160,12 @@ export const initStage = (state = INITIAL_STATE, action) => {
 
   updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
 
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
+
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isStaging: true,
   };
 };
@@ -159,10 +178,12 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
     state: 'Staged Successfully',
     progress: 0,
   };
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isStaging: false,
   };
 };
@@ -183,12 +204,16 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     copied: 0,
     status: 'Complete',
   };
+  const updatedMigrationsList = [...updatedPlan.planState.migrations, newMigObject];
+  const updatedMigrations = sortMigrations(updatedMigrationsList);
+  updatedPlan.planState.migrations = updatedMigrations;
 
-  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, newMigObject];
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isMigrating: true,
   };
 };
@@ -201,10 +226,12 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
     state: 'Migrated Successfully',
     progress: 0,
   };
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isMigrating: false,
   };
 };
