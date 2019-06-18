@@ -50,17 +50,27 @@ export default class MigrationsTable extends React.Component<any, any> {
     this.setState({ rows: mappedRows });
   }
   getStatus = migration => {
-    let status = { start: null, end: null, moved: 0, copied: 0, phase: 'Not started' };
+    const status = { start: null, end: null, moved: 0, copied: 0, phase: 'Not started' };
 
     if (migration.status) {
       status.start = moment(migration.status.startTimestamp).format('LLL');
       status.end = moment(migration.status.completionTimestamp).format('LLL');
       const serverStatusMessage = migration.status.conditions[0].message || null;
+      const migPhase = migration.status.phase || null;
       const serverErrorMessage = migration.status.errors || null;
       if (serverStatusMessage.length > 0 && !serverErrorMessage) {
-        switch (serverStatusMessage) {
-          case 'The migration is ready.':
-            status.phase = 'Ready';
+        switch (migPhase) {
+          case 'Completed':
+            status.phase = 'Completed';
+            break;
+          case 'BackupStarted':
+            status.phase = 'Backup Started';
+            break;
+          case 'WaitOnBackupReplication':
+            status.phase = 'Waiting';
+            break;
+          case 'RestoreStarted':
+            status.phase = 'Restore Started';
             break;
           default:
             status.phase = 'Unknown status';

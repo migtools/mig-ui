@@ -7,15 +7,31 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 
 const PlanActions = ({ plan, isLoading, ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
-
+  const checkDisabled = () => {
+    if (plan.Migrations && plan.MigPlan.status && plan.Migrations.length > 0) {
+      const planMigStatus = plan.Migrations[0].status.phase;
+      // const disableMigrations = isMigrationRunning || plan.Closed || finalMigrationRunWithSuccess
+      return planMigStatus !== 'Not Started';
+    } else if (plan.MigPlan.status) {
+      const criticalConditions = plan.MigPlan.status.conditions.filter(
+        (condition, i) => condition.category === 'Critical'
+      );
+      if (criticalConditions.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  };
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan.planState} {...this.props} />
+        <PlanStatus plan={plan} {...this.props} />
       </Box>
       <Box mx={1}>
         <Button
-          isDisabled={isLoading}
+          isDisabled={checkDisabled()}
           variant="primary"
           onClick={() => this.props.onStageTriggered(plan)}
         >
@@ -23,7 +39,7 @@ const PlanActions = ({ plan, isLoading, ...props }) => {
         </Button>
       </Box>
       <Box mx={1}>
-        <Button isDisabled={isLoading} variant="primary" onClick={toggleOpen}>
+        <Button isDisabled={checkDisabled()} variant="primary" onClick={toggleOpen}>
           Migrate
         </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
