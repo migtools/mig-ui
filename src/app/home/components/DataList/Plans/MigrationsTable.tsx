@@ -6,6 +6,7 @@ import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import moment from 'moment';
 import { MigrationIcon } from '@patternfly/react-icons';
+import { Progress, ProgressSize } from '@patternfly/react-core';
 
 export default class MigrationsTable extends React.Component<any, any> {
   state = {
@@ -43,14 +44,30 @@ export default class MigrationsTable extends React.Component<any, any> {
         { title: status.end },
         { title: status.copied },
         { title: status.moved },
-        { title: status.phase },
+        {
+          title: (
+            <div>
+              <div>{status.phase}</div>
+              {status.progress && (
+                <Progress value={status.progress} title="" size={ProgressSize.sm} />
+              )}
+            </div>
+          ),
+        },
       ];
     });
 
     this.setState({ rows: mappedRows });
   }
   getStatus = migration => {
-    const status = { start: null, end: null, moved: 0, copied: 0, phase: 'Not started' };
+    const status = {
+      progress: null,
+      start: null,
+      end: null,
+      moved: 0,
+      copied: 0,
+      phase: 'Not started',
+    };
 
     if (migration.status) {
       status.start = moment(migration.status.startTimestamp).format('LLL');
@@ -60,20 +77,30 @@ export default class MigrationsTable extends React.Component<any, any> {
       const serverErrorMessage = migration.status.errors || null;
       if (serverStatusMessage.length > 0 && !serverErrorMessage) {
         switch (migPhase) {
-          case 'Completed':
-            status.phase = 'Completed';
+          case 'WaitOnResticRestart':
+            status.phase = 'Waiting';
+            status.progress = 0;
             break;
           case 'BackupStarted':
-            status.phase = 'Backup Started';
+            status.phase = 'Backup started';
+            status.progress = 40;
             break;
+
           case 'WaitOnBackupReplication':
             status.phase = 'Waiting';
+            status.progress = 50;
             break;
           case 'RestoreStarted':
-            status.phase = 'Restore Started';
+            status.phase = 'Restoring....';
+            status.progress = 60;
+            break;
+          case 'Completed':
+            status.phase = 'Completed';
+            status.progress = null;
             break;
           default:
-            status.phase = 'Unknown status';
+            status.phase = 'Something went wrong...';
+            status.progress = null;
             break;
         }
         return status;
@@ -112,7 +139,16 @@ export default class MigrationsTable extends React.Component<any, any> {
           { title: status.end },
           { title: status.copied },
           { title: status.moved },
-          { title: status.phase },
+          {
+            title: (
+              <div>
+                <div>{status.phase}</div>
+                {status.progress && (
+                  <Progress value={status.progress} title="" size={ProgressSize.sm} />
+                )}
+              </div>
+            ),
+          },
         ];
       });
 
@@ -148,7 +184,7 @@ export default class MigrationsTable extends React.Component<any, any> {
             <TableBody />
           </Table>
         ) : (
-          <EmptyState variant="large">Nothing to see here</EmptyState>
+          <EmptyState variant="large">No migrations started</EmptyState>
         )}
       </React.Fragment>
     );

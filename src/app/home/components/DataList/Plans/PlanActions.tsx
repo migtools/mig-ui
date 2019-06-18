@@ -8,10 +8,12 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 const PlanActions = ({ plan, isLoading, ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const checkDisabled = () => {
+    // const disableMigrations = isMigrationRunning || plan.Closed || finalMigrationRunWithSuccess
     if (plan.Migrations && plan.MigPlan.status && plan.Migrations.length > 0) {
-      const planMigStatus = plan.Migrations[0].status.phase;
-      // const disableMigrations = isMigrationRunning || plan.Closed || finalMigrationRunWithSuccess
-      return planMigStatus !== 'Not Started';
+      if (plan.Migrations[0].status && plan.Migrations[0].status.phase) {
+        const planMigStatus = plan.Migrations[0].status.phase;
+        return planMigStatus !== 'Not Started';
+      }
     } else if (plan.MigPlan.status) {
       const criticalConditions = plan.MigPlan.status.conditions.filter(
         (condition, i) => condition.category === 'Critical'

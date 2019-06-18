@@ -270,7 +270,7 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
         i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
       const getStatus = () => {
-        if (matchingMigrations.length > 0) {
+        if (matchingMigrations.length > 0 && matchingMigrations[0].status) {
           return matchingMigrations[0].status.conditions[0].message;
         } else {
           return 'Not Started';
