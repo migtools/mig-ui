@@ -79,7 +79,7 @@ export default class MigrationsTable extends React.Component<any, any> {
         switch (migPhase) {
           case 'WaitOnResticRestart':
             status.phase = 'Waiting';
-            status.progress = 0;
+            status.progress = 10;
             break;
           case 'BackupStarted':
             status.phase = 'Backup started';

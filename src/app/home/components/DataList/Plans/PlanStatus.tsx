@@ -12,7 +12,7 @@ const PlanStatus = ({ plan, ...props }) => {
         switch (migPhase) {
           case 'WaitOnResticRestart':
             status.text = 'Waiting';
-            status.progress = 0;
+            status.progress = 10;
             break;
           case 'BackupStarted':
             status.text = 'Backup started';

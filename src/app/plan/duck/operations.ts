@@ -73,12 +73,10 @@ const runMigration = plan => {
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-      const arr = await Promise.all([client.create(migMigrationResource, migMigrationObj)]);
-      const migration = arr.reduce((accum, res) => {
-        accum[res.data.kind] = res.data;
-        return accum;
-      }, {});
-      const groupPlan = response => {
+      //created migration response object
+      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
+
+      const groupPlan: any = response => {
         const fullPlan = {
           MigPlan: plan.MigPlan,
         };
@@ -111,7 +109,15 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(migrationListResponse);
 
-      dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
+      // create a record of PVs copied/moved before they are removed from the plan
+      if (
+        groupedPlan.MigPlan.spec.persistentVolumes &&
+        groupedPlan.MigPlan.spec.persistentVolumes.length > 0
+      ) {
+        groupedPlan.planState.persistentVolumes = groupedPlan.MigPlan.spec.persistentVolumes;
+      }
+
+      dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
