@@ -158,6 +158,20 @@ function gatherSecretRefs(client, serverAddr, data) {
   }, Promise.resolve(data));
 }
 
+function obfuscateKeys(data) {
+  // replace secret keys with dummy data
+  // to avoid commiting real cluster data
+  mockedData = Buffer.from('mocked-data').toString('base64')
+  let i = data.clusters._host['api/v1/namespaces/mig/secrets']
+  let secrets = Object.values(i)
+  secrets.map(value => {
+    value.data['aws-access-key-id'] = mockedData;
+    value.data['aws-secret-access-key'] = mockedData;
+    value.data['aws-secret-access-key-id'] = mockedData;
+    return value
+  });
+}
+
 function main() {
   const { serverAddr, clientcert, clientkey, cacert } = getKubeServerInfo();
   console.log('Connecting to ', serverAddr);
@@ -176,8 +190,9 @@ function main() {
       data['TIME_STAMP'] = TIME_STAMP;
       data['clusters'] = {};
       data['clusters']['_host'] = results;
+      obfuscateKeys(data);
       console.log('Writing....');
-      console.log(data);
+      console.log(data)
       writeData(data);
     });
   });
