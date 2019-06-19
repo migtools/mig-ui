@@ -1,5 +1,5 @@
 {
-    "TIME_STAMP": 1560705166,
+    "TIME_STAMP": 1560969303,
     "clusters": {
         "_host": {
             "apis/clusterregistry.k8s.io/v1alpha1/namespaces/mig/clusters": {
@@ -253,8 +253,8 @@
                         "creationTimestamp": "2019-06-07T21:04:35Z"
                     },
                     "data": {
-                        "aws-access-key-id": "am9objE=",
-                        "aws-secret-access-key": "am9objE="
+                        "aws-access-key-id": "bW9ja2VkLWRhdGE=",
+                        "aws-secret-access-key": "bW9ja2VkLWRhdGE="
                     },
                     "type": "Opaque"
                 },
@@ -270,7 +270,7 @@
                         "creationTimestamp": "2019-06-02T18:23:08Z"
                     },
                     "data": {
-                        "aws-access-key-id": "YWNjZXNzMQ==",
+                        "aws-access-key-id": "bW9ja2VkLWRhdGE=",
                         "aws-secret-access-key-id": "c2VjcmV0Mg=="
                     },
                     "type": "Opaque"
@@ -287,8 +287,8 @@
                         "creationTimestamp": "2019-06-07T17:18:33Z"
                     },
                     "data": {
-                        "aws-access-key-id": "NDQ=",
-                        "aws-secret-access-key": "NDQ=",
+                        "aws-access-key-id": "bW9ja2VkLWRhdGE=",
+                        "aws-secret-access-key": "bW9ja2VkLWRhdGE=",
                         "aws-secret-access-key-id": "NTA5OTAwMTEyMjMzZGRlZWZmZ2doaGlp"
                     },
                     "type": "Opaque"
@@ -305,8 +305,8 @@
                         "creationTimestamp": "2019-06-07T23:49:42Z"
                     },
                     "data": {
-                        "aws-access-key-id": "NQ==",
-                        "aws-secret-access-key": "NTEyMzQ="
+                        "aws-access-key-id": "bW9ja2VkLWRhdGE=",
+                        "aws-secret-access-key": "bW9ja2VkLWRhdGE="
                     },
                     "type": "Opaque"
                 }
