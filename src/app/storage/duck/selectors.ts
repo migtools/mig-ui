@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 
 const storageSelector = state => state.storage.migStorageList.map(c => c);
 
-const searchTermSelector = state => state.storage.searchTerm;
+const planSelector = state => state.plan.migPlanList.map(p => p);
 
 const getAllStorage = createSelector(
   [storageSelector],
@@ -11,15 +11,24 @@ const getAllStorage = createSelector(
   }
 );
 
-const getVisibleStorage = createSelector(
-  [storageSelector, searchTermSelector],
-  (storage, searchTerm) => {
-    return storage.filter(storageItem =>
-      storageItem.MigStorage.metadata.name.match(new RegExp(searchTerm, 'i'))
-    );
+const getAssociatedPlans = createSelector(
+  [storageSelector, planSelector],
+  (storageList, plans) => {
+    return storageList.reduce((associatedPlans, storage) => {
+      const storageName = storage.MigStorage.metadata.name;
+      associatedPlans[storageName] = plans.reduce((count, plan) => {
+        const isAssociated =
+          plan.MigPlan.spec.migStorageRef.name === storageName ||
+          plan.MigPlan.spec.migStorageRef.name === storageName;
+
+        return isAssociated ? count + 1 : count;
+      }, 0);
+      return associatedPlans;
+    }, {});
   }
 );
+
 export default {
   getAllStorage,
-  getVisibleStorage,
+  getAssociatedPlans,
 };
