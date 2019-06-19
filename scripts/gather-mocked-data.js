@@ -3,6 +3,7 @@ const fs = require('fs');
 const axios = require('axios');
 const https = require('https');
 const path = require('path');
+const { execSync } = require('child_process');
 
 //
 //  We need to:
@@ -21,6 +22,40 @@ const MIG_GROUPS = [
 ];
 const MIG_NAMESPACE = 'mig';
 const TIME_STAMP = Math.round(+new Date() / 1000);
+
+const MOCKED_DATA_DIR = path.resolve(__dirname, '../src/client/kube_store/mocked_data');
+const INDEX_LOCATION = path.resolve(MOCKED_DATA_DIR, 'index.ts');
+const JSON_LOCATION = path.resolve(MOCKED_DATA_DIR, `${TIME_STAMP}.json`);
+
+function pruneOlderMocks() {
+  const files = fs.readdirSync(MOCKED_DATA_DIR);
+  const jsonFiles = files.filter(name => {
+    return path.extname(name) === '.json';
+  });
+
+  // Parse index and run regex to extract the filename
+  const indexData = fs.readFileSync(INDEX_LOCATION, 'utf-8');
+  const matches = indexData.match(".*import data from '(.*)?';");
+  if (!matches) {
+    console.log('Unable to find current mocked json data from "' + INDEX_LOCATION + '"');
+    process.exit(1);
+  }
+  let refJsonFile = matches[1];
+  if (refJsonFile.startsWith('./')) {
+    refJsonFile = refJsonFile.substring(2);
+  }
+  console.log('We want to keep the current mocked json data which is "' + refJsonFile + '"');
+  const filesToRemove = jsonFiles.filter(name => {
+    return name !== refJsonFile;
+  });
+  filesToRemove.forEach(name => {
+    try {
+      execSync(`git rm ${MOCKED_DATA_DIR}/${name} &> /dev/null`, { stdio: 'inherit' });
+    } catch {
+      execSync(`rm ${MOCKED_DATA_DIR}/${name}`, { stdio: 'inherit' });
+    }
+  });
+}
 
 function getKubeServerInfo() {
   const kubeconfig = process.env.KUBECONFIG ? process.env.KUBECONFIG : '~/.kube/config';
@@ -44,26 +79,20 @@ function getKubeServerInfo() {
 }
 
 function writeData(data) {
-  let indexLocation = path.resolve(__dirname, '../src/client/kube_store/mocked_data/index.ts');
-  let jsonLocation = path.resolve(
-    __dirname,
-    `../src/client/kube_store/mocked_data/${TIME_STAMP}.json`
-  );
-
   const indexText = `import data from './${TIME_STAMP}.json';\nexport default data;`;
-  fs.writeFile(indexLocation, indexText, function(err) {
+  fs.writeFile(INDEX_LOCATION, indexText, function(err) {
     if (err) {
       console.log(err);
     } else {
-      console.log('JSON saved to ' + indexLocation);
+      console.log('JSON saved to ' + INDEX_LOCATION);
     }
   });
 
-  fs.writeFile(jsonLocation, JSON.stringify(data, null, 4), function(err) {
+  fs.writeFile(JSON_LOCATION, JSON.stringify(data, null, 4), function(err) {
     if (err) {
       console.log(err);
     } else {
-      console.log('JSON saved to ' + jsonLocation);
+      console.log('JSON saved to ' + JSON_LOCATION);
     }
   });
 }
@@ -202,6 +231,17 @@ function main() {
       writeData(data);
     });
   });
+}
+
+var myArgs = process.argv.slice(2);
+switch (myArgs[0]) {
+  case 'prune':
+    console.log('Will prune older mocked data');
+    pruneOlderMocks();
+    process.exit(0);
+    break;
+  default:
+    console.log('Will gather mocked data');
 }
 
 main();

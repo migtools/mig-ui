@@ -1,5 +1,5 @@
 {
-    "TIME_STAMP": 1560969303,
+    "TIME_STAMP": 1560984594,
     "clusters": {
         "_host": {
             "apis/clusterregistry.k8s.io/v1alpha1/namespaces/mig/clusters": {
