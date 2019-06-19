@@ -15,13 +15,13 @@ export const INITIAL_STATE = {
   isMigrating: false,
 };
 const sortPlans = planList =>
-  planList.sort(function(left, right) {
+  planList.sort((left, right) => {
     return moment
       .utc(right.MigPlan.metadata.creationTimestamp)
       .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
   });
 const sortMigrations = migList =>
-  migList.sort(function(left, right) {
+  migList.sort((left, right) => {
     return moment
       .utc(right.metadata.creationTimestamp)
       .diff(moment.utc(left.metadata.creationTimestamp));

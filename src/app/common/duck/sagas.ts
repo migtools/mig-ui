@@ -34,7 +34,7 @@ function* poll(action) {
         throw new Error('Error while fetching data.');
       }
     } catch (e) {
-      console.log('error polling', e);
+      throw new Error(e);
     }
     yield delay(5000);
   }

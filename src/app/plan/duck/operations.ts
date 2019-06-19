@@ -82,7 +82,7 @@ const runMigration = plan => {
         };
         if (response.data.items.length > 0) {
           const sortMigrations = migrationList =>
-            migrationList.sort(function(left, right) {
+            migrationList.sort((left, right) => {
               return moment
                 .utc(right.metadata.creationTimestamp)
                 .diff(moment.utc(left.metadata.creationTimestamp));
@@ -324,7 +324,6 @@ function* fetchPlansGenerator() {
     const groupedPlans = yield groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
   } catch (e) {
-    console.log('error polling', e);
     return { e, isSuccessful: false };
   }
 }

@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Progress, ProgressSize } from '@patternfly/react-core';
 
 const PlanStatus = ({ plan, ...props }) => {
   const getStatus = () => {
-    let status = { text: 'Waiting for status...', progress: null };
+    const status = { text: 'Waiting for status...', progress: null };
     if (plan.Migrations.length > 0) {
-      //latest mig status logic
       if (plan.Migrations[0].status) {
         const migPhase = plan.Migrations[0].status.phase;
-        console.log('migPhase', migPhase);
         switch (migPhase) {
           case 'WaitOnResticRestart':
             status.text = 'Waiting';
@@ -45,7 +43,9 @@ const PlanStatus = ({ plan, ...props }) => {
         );
         if (criticalConditions.length > 0) {
           status.text = criticalConditions[0].message;
-        } else status.text = 'Ready';
+        } else {
+          status.text = 'Ready';
+        }
       }
     }
     return status;
