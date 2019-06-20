@@ -69,7 +69,7 @@ export default class MigrationsTable extends React.Component<any, any> {
       phase: 'Not started',
     };
 
-    if (migration.status) {
+    if (migration.status && migration.status.conditions.length > 0) {
       status.start = moment(migration.status.startTimestamp).format('LLL');
       status.end = moment(migration.status.completionTimestamp).format('LLL');
       const serverStatusMessage = migration.status.conditions[0].message || null;
