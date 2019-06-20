@@ -4,9 +4,9 @@ import React from 'react';
 import { Flex, Box } from '@rebass/emotion';
 
 const MigrationStatus = ({ dataList, ...props }) => {
-  let notStartedList = [];
-  let inProgressList = [];
-  let completedList = [];
+  const notStartedList = [];
+  const inProgressList = [];
+  const completedList = [];
   dataList.filter(migPlan => {
     if (migPlan.Migrations.length > 0 && migPlan.Migrations[0].status) {
       switch (migPlan.Migrations[0].status.phase) {
