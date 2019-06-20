@@ -36,12 +36,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
     if (this.props.planList !== prevProps.planList) {
       const mappedRows = this.props.planList.map((plan, planIndex) => {
         const MigrationsIcon = styled(ServiceIcon)`
-          color: ${() =>
-            plan.planState.migrations.length > 0 ? theme.colors.blue : theme.colors.black};
-        `;
-        const PVIcon = styled(DatabaseIcon)`
-          color: ${() =>
-            plan.planState.persistentVolumes.length > 0 ? theme.colors.blue : theme.colors.black};
+          color: ${() => (plan.Migrations.length > 0 ? theme.colors.blue : theme.colors.black)};
         `;
         const parentIndex = planIndex * 2;
         const planName = plan.MigPlan.metadata.name;
@@ -63,7 +58,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: (
                   <Flex>
                     <Box m="0 5px 0 0">
-                      <PlanStatusIcon status={plan.planState.status.state || 'N/A'} />
+                      <PlanStatusIcon plan={plan} />
                     </Box>
                     <Box m="auto 0 auto 0">
                       <span>{plan.MigPlan.metadata.name}</span>
@@ -105,10 +100,10 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: (
                   <Flex>
                     <Box m="0 5px 0 0">
-                      <PVIcon />
+                      <DatabaseIcon />
                     </Box>
                     <Box m="auto 0 auto 0">
-                      <span>{plan.planState.persistentVolumes.length}</span>
+                      <span>0</span>
                     </Box>
                   </Flex>
                 ),

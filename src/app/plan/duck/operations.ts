@@ -96,26 +96,10 @@ const runMigration = plan => {
         } else {
           fullPlan['Migrations'] = [];
         }
-        fullPlan['planState'] = {
-          migrations: [],
-          persistentVolumes: [],
-          status: {
-            state: 'Not Started',
-            progress: 0,
-          },
-        };
         return fullPlan;
       };
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(migrationListResponse);
-
-      // create a record of PVs copied/moved before they are removed from the plan
-      if (
-        groupedPlan.MigPlan.spec.persistentVolumes &&
-        groupedPlan.MigPlan.spec.persistentVolumes.length > 0
-      ) {
-        groupedPlan.planState.persistentVolumes = groupedPlan.MigPlan.spec.persistentVolumes;
-      }
 
       dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
@@ -263,35 +247,10 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
     const fullPlan = {
       MigPlan: mp,
     };
-    fullPlan['planState'] = {
-      migrations: [],
-      persistentVolumes: [],
-      status: {
-        state: 'Not Started',
-        progress: 0,
-      },
-    };
     if (refs[0].data.items.length > 0) {
       const matchingMigrations = refs[0].data.items.filter(
         i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
-      const getStatus = () => {
-        if (matchingMigrations.length > 0 && matchingMigrations[0].status) {
-          return matchingMigrations[0].status.conditions[0].message;
-        } else {
-          return 'Not Started';
-        }
-      };
-      fullPlan['planState'] = {
-        migrations: [],
-        persistentVolumes: [],
-        status: {
-          state: 'Not Started',
-          status: getStatus(),
-          progress: 0,
-        },
-      };
-
       fullPlan['Migrations'] = matchingMigrations;
     } else {
       fullPlan['Migrations'] = [];

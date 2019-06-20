@@ -8,7 +8,6 @@ export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
   migPlanList: [],
-  planStateMap: [],
   planSearchText: '',
   sourceClusterNamespaces: [],
   isStaging: false,
@@ -49,19 +48,9 @@ export const pvFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
-  const newPlanState = {
-    migrations: [],
-    persistentVolumes: [],
-    status: {
-      state: 'Not Started',
-      progress: 0,
-    },
-  };
-
   const newPlan = {
     MigPlan: action.newPlan,
     Migrations: [],
-    planState: newPlanState,
   };
 
   return {
@@ -101,7 +90,6 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
       return {
         MigPlan: action.updatedPlan,
         Migrations: [],
-        planState: p.planState,
       };
     } else {
       return p;
@@ -192,10 +180,6 @@ export const initMigration = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.planState.status = {
-    state: 'Migrating',
-    progress: 0,
-  };
   const newMigObject = {
     type: 'Migrate',
     start: moment().format(),
@@ -204,9 +188,6 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     copied: 0,
     status: 'Complete',
   };
-  const updatedMigrationsList = [...updatedPlan.planState.migrations, newMigObject];
-  const updatedMigrations = sortMigrations(updatedMigrationsList);
-  updatedPlan.planState.migrations = updatedMigrations;
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
@@ -222,10 +203,6 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.planState.status = {
-    state: 'Migrated Successfully',
-    progress: 0,
-  };
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
 
