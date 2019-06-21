@@ -29,21 +29,9 @@ class LoginComponent extends React.Component<IProps> {
 
     const freshOauthMeta = !prevProps.auth.oauthMeta && !!oauthMeta;
     if (freshOauthMeta) {
-      ////////////////////////////////////////////////////////////
-      // TODO: Currently using an empty secret value here since we
-      // are strictly a public client
-      // The correct thing to do here is to implement PKCE, which is
-      // what oc uses and what is specfically implemented for public
-      // clients: https://tools.ietf.org/html/rfc7636
-      // For now, using a temporarily hardcoded secret until PKCE can be
-      // implemented. (migrations.openshift.io | base64)
-      //
-      const loginSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
-      ////////////////////////////////////////////////////////////
-
       const clusterAuth = new ClientOAuth2({
         clientId: migMeta.oauth.clientId,
-        clientSecret: loginSecret, // See note above
+        clientSecret: migMeta.oauth.clientSecret,
         accessTokenUri: oauthMeta.token_endpoint,
         authorizationUri: oauthMeta.authorization_endpoint,
         redirectUri: migMeta.oauth.redirectUri,

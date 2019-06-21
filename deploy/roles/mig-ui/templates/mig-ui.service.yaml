@@ -1,0 +1,19 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ mig_ui_name }}
+  namespace: {{ mig_ui_namespace }}
+  labels:
+    app: {{ mig_ui_name }}
+    service: {{ mig_ui_name }}
+spec:
+  ports:
+    - name: port-9000
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    app: {{ mig_ui_name }}
+    service: {{ mig_ui_name }}
