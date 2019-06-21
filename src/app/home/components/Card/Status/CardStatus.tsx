@@ -8,17 +8,21 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
   const failureList = [];
   if (type === 'repositories') {
+    // hasReadyCondition = plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length > 0;
+    // hasErrorCondition =
+    //   plan.MigPlan.status.conditions.filter(c => c.category === 'Critical').length > 0;
+
     successList = dataList.filter(item => {
-      if (item.MigStorage.status && item.MigStorage.status.conditions[0].status === 'True') {
-        return item.MigStorage.status.conditions[0].status === 'True';
+      if (item.MigStorage.status) {
+        return item.MigStorage.status.conditions.filter(c => c.type === 'Ready');
       } else {
         failureList.push(item);
       }
     });
   } else if (type === 'clusters') {
     successList = dataList.filter(item => {
-      if (item.MigCluster.status && item.MigCluster.status.conditions[0].status === 'True') {
-        return item.MigCluster.status.conditions[0].status === 'True';
+      if (item.MigCluster.status) {
+        return item.MigCluster.status.conditions.filter(c => c.type === 'Ready');
       } else {
         failureList.push(item);
       }
@@ -28,7 +32,7 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
     <React.Fragment>
       <Grid>
         <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
-          <StatusIcon status="Ready" />
+          <StatusIcon isReady={true} />
         </GridItem>
         <GridItem span={1} style={{ fontSize: '28px' }}>
           {successList.length}
@@ -39,7 +43,7 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
       </Grid>
       <Grid>
         <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
-          <StatusIcon status="failed" />
+          <StatusIcon isReady={false} />
         </GridItem>
         <GridItem span={1} style={{ fontSize: '28px' }}>
           {failureList.length}

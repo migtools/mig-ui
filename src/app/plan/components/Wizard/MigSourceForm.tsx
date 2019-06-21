@@ -21,10 +21,12 @@ class MigSourceForm extends React.Component<any> {
       const myOptions: any = [];
       const len = this.props.clusterList.length;
       for (let i = 0; i < len; i++) {
-        myOptions.push({
-          label: this.props.clusterList[i].MigCluster.metadata.name,
-          value: this.props.clusterList[i].MigCluster.metadata.name,
-        });
+        if (this.props.clusterList[i].MigCluster.metadata.name !== 'host') {
+          myOptions.push({
+            label: this.props.clusterList[i].MigCluster.metadata.name,
+            value: this.props.clusterList[i].MigCluster.metadata.name,
+          });
+        }
       }
       this.setState({ options: myOptions });
       //check existing data

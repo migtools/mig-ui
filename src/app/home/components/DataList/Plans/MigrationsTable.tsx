@@ -5,49 +5,118 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import moment from 'moment';
+import { MigrationIcon } from '@patternfly/react-icons';
+import { Progress, ProgressSize } from '@patternfly/react-core';
 
 export default class MigrationsTable extends React.Component<any, any> {
   state = {
     columns: [
-      { title: 'Type', transforms: [sortable] },
-      { title: 'Start Time', transforms: [sortable] },
-      { title: 'End Time', transforms: [sortable] },
+      { title: 'Type' },
+      { title: 'Start Time' },
+      { title: 'End Time' },
       'PVs Moved',
       'PVs Copied',
       'Status',
     ],
     rows: [],
-    sortBy: {},
   };
   componentDidMount() {
     const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
+      const status = this.getStatus(migration);
+
       const StyledBox = styled(Box)`
         position: absolute;
         left: 40px;
       `;
       const type = migration.spec.stage ? 'Stage' : 'Migration';
-      const startTime = moment(migration.metadata.creationTimestamp);
       return [
         {
           title: (
             <Flex>
               <StyledBox>
-                <StatusIcon status="Ready" />
+                <StatusIcon isReady={true} />
               </StyledBox>
               <Box>{type}</Box>
             </Flex>
           ),
         },
-        { title: startTime.format('LLL') },
-        { title: startTime.format('LLL') },
-        { title: 0 },
-        { title: 0 },
-        { title: 'Complete' },
+        { title: status.start },
+        { title: status.end },
+        { title: status.copied },
+        { title: status.moved },
+        {
+          title: (
+            <div>
+              <div>{status.phase}</div>
+              {status.progress && (
+                <Progress value={status.progress} title="" size={ProgressSize.sm} />
+              )}
+            </div>
+          ),
+        },
       ];
     });
 
     this.setState({ rows: mappedRows });
   }
+  getStatus = migration => {
+    const status = {
+      progress: null,
+      start: null,
+      end: null,
+      moved: 0,
+      copied: 0,
+      phase: 'Not started',
+    };
+
+    if (migration.status) {
+      if (migration.status.startTimestamp) {
+        status.start = moment(migration.status.startTimestamp).format('LLL');
+      }
+      if (migration.status.completionTimestamp) {
+        status.end = moment(migration.status.completionTimestamp).format('LLL');
+      }
+
+      const migPhase = migration.status.phase;
+      const serverErrorMessage = migration.status.errors;
+      if (serverErrorMessage) {
+        status.phase = 'An error occurred';
+        status.progress = null;
+        return status;
+      } else {
+        switch (migPhase) {
+          case 'WaitOnResticRestart':
+            status.phase = 'Waiting';
+            status.progress = 10;
+            break;
+          case 'BackupStarted':
+            status.phase = 'Backup started';
+            status.progress = 40;
+            break;
+
+          case 'WaitOnBackupReplication':
+            status.phase = 'Waiting';
+            status.progress = 50;
+            break;
+          case 'RestoreStarted':
+            status.phase = 'Restoring....';
+            status.progress = 60;
+            break;
+          case 'Completed':
+            status.phase = 'Completed';
+            status.progress = null;
+            break;
+          default:
+            status.phase = 'Something went wrong...';
+            status.progress = null;
+            break;
+        }
+        return status;
+      }
+    } else {
+      return status;
+    }
+  };
 
   componentDidUpdate(prevProps) {
     if (this.props.migrations !== prevProps.migrations) {
@@ -57,23 +126,32 @@ export default class MigrationsTable extends React.Component<any, any> {
           left: 40px;
         `;
         const type = migration.spec.stage ? 'Stage' : 'Migration';
-        const startTime = moment(migration.metadata.creationTimestamp);
+        const status = this.getStatus(migration);
         return [
           {
             title: (
               <Flex>
                 <StyledBox>
-                  <StatusIcon status="Ready" />
+                  <StatusIcon isReady={true} />
                 </StyledBox>
                 <Box>{type}</Box>
               </Flex>
             ),
           },
-          { title: startTime.format('LLL') },
-          { title: startTime.format('LLL') },
-          { title: 0 },
-          { title: 0 },
-          { title: 'Complete' },
+          { title: status.start },
+          { title: status.end },
+          { title: status.copied },
+          { title: status.moved },
+          {
+            title: (
+              <div>
+                <div>{status.phase}</div>
+                {status.progress && (
+                  <Progress value={status.progress} title="" size={ProgressSize.sm} />
+                )}
+              </div>
+            ),
+          },
         ];
       });
 
@@ -94,15 +172,13 @@ export default class MigrationsTable extends React.Component<any, any> {
   };
 
   render() {
-    const { columns, rows, sortBy } = this.state;
+    const { columns, rows } = this.state;
     const { type, migrations } = this.props;
     return (
       <React.Fragment>
         {migrations.length > 0 ? (
           <Table
             aria-label="migrations-history-table"
-            sortBy={sortBy}
-            onSort={this.onSort}
             //@ts-ignore
             cells={columns}
             rows={rows}
@@ -111,7 +187,7 @@ export default class MigrationsTable extends React.Component<any, any> {
             <TableBody />
           </Table>
         ) : (
-          <EmptyState variant="large">Nothing to see here</EmptyState>
+          <EmptyState variant="large">No migrations started</EmptyState>
         )}
       </React.Fragment>
     );

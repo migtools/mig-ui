@@ -1,27 +1,26 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import theme from '../../../../../theme';
-import PlanStatusIcon from './PlanStatusIcon';
-import { css } from '@emotion/core';
-import { Grid, GridItem } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
 
 const MigrationStatus = ({ dataList, ...props }) => {
-  const notStartedList = dataList.filter(item => item.planState.status.state === 'Not Started');
-  const stagedSuccessList = dataList.filter(
-    item => item.planState.status.state === 'Staged Successfully'
-  );
-  const migSuccessList = dataList.filter(
-    item => item.planState.status.state === 'Migrated Successfully'
-  );
-  const stagingList = dataList.filter(item => item.planState.status.state === 'Staging');
-  const migratingList = dataList.filter(item => item.planState.status.state === 'Migrating');
-  const inProgressLength = [migratingList.length, stagingList.length].reduce(add);
-
-  function add(accumulator, a) {
-    return accumulator + a;
-  }
+  const notStartedList = [];
+  const inProgressList = [];
+  const completedList = [];
+  dataList.filter(migPlan => {
+    if (migPlan.Migrations.length > 0 && migPlan.Migrations[0].status) {
+      switch (migPlan.Migrations[0].status.phase) {
+        case 'Completed':
+          completedList.push(migPlan);
+          break;
+        default:
+          inProgressList.push(migPlan);
+          break;
+      }
+    } else {
+      notStartedList.push(migPlan);
+    }
+  });
 
   return (
     <React.Fragment>
@@ -33,7 +32,7 @@ const MigrationStatus = ({ dataList, ...props }) => {
       </Flex>
       <Flex>
         <Box m="0 .5em 0 0" style={{ fontSize: '28px' }}>
-          <div style={{ marginLeft: '1em' }}>{inProgressLength}</div>
+          <div style={{ marginLeft: '1em' }}>{inProgressList.length}</div>
         </Box>
         <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
           In progress
@@ -41,7 +40,7 @@ const MigrationStatus = ({ dataList, ...props }) => {
       </Flex>
       <Flex>
         <Box m="0 .5em 0 0" style={{ fontSize: '28px' }}>
-          <div style={{ marginLeft: '1em' }}>{migSuccessList.length}</div>
+          <div style={{ marginLeft: '1em' }}>{completedList.length}</div>
         </Box>
         <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
           Complete

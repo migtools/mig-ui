@@ -12,18 +12,7 @@ const PlanEmptyState = ({ clusterList, storageList, onPlanSubmit, isLoading, pla
       <Box>
         <EmptyState variant="large">
           <EmptyStateIcon icon={AddCircleOIcon} />
-          <Title size="lg">Add a migration plan</Title>
-          <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
-            Add Plan
-          </Button>
-          <WizardContainer
-            clusterList={clusterList}
-            storageList={storageList}
-            isOpen={isOpen}
-            onHandleClose={toggleOpen}
-            isLoading={isLoading}
-            onPlanSubmit={onPlanSubmit}
-          />
+          <Title size="lg">No currently started plans</Title>
         </EmptyState>
       </Box>
     </Flex>

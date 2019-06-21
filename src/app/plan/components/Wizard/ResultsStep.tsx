@@ -66,7 +66,7 @@ class ResultsStep extends React.Component<any, any> {
           >
             <Box flex="1" m="auto">
               <Text fontSize={[2, 3, 4]}>
-                <StatusIcon status="success" />
+                <StatusIcon isReady={true} />
                 <StyledSpan>{this.props.values.planName} </StyledSpan>
                 has been validated.
               </Text>

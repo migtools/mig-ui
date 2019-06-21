@@ -1,6 +1,6 @@
-import { ALERT_CLEAR, ALERT_ERROR, ALERT_SUCCESS } from './actions';
+import { ALERT_CLEAR, ALERT_ERROR, ALERT_SUCCESS, UPDATE_POLLING_STATS } from './actions';
 
-export const INITIAL_STATE = {};
+export const INITIAL_STATE = { pollingStats: {} };
 
 export default createReducer(
   { successText: null, errorText: null },
@@ -15,6 +15,9 @@ export default createReducer(
     },
     [ALERT_CLEAR]: (state, action) => {
       return { ...state, successText: null, errorText: null };
+    },
+    [UPDATE_POLLING_STATS]: (state, action) => {
+      return { ...state, pollingStats: action.stats };
     },
   }
 );

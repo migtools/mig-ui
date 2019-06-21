@@ -21,17 +21,25 @@ const PlanDataListItem = ({
   planList,
   plansDisabled,
   onStageTriggered,
+  onStartPolling,
+  onStopPolling,
   ...props
 }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
-
   if (planList) {
     return (
       <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
         <DataListItemRow>
           <DataListToggle
-            onClick={() => toggleExpanded()}
+            onClick={() => {
+              if (isExpanded) {
+                onStopPolling();
+              } else {
+                onStartPolling();
+              }
+              toggleExpanded();
+            }}
             isExpanded={isExpanded}
             id="cluster-toggle"
           />

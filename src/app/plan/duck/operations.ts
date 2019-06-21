@@ -1,3 +1,5 @@
+import moment from 'moment';
+import { select } from 'redux-saga/effects';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -71,36 +73,35 @@ const runMigration = plan => {
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-      const arr = await Promise.all([client.create(migMigrationResource, migMigrationObj)]);
-      const migration = arr.reduce((accum, res) => {
-        accum[res.data.kind] = res.data;
-        return accum;
-      }, {});
-      const groupPlan = response => {
+      //created migration response object
+      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
+
+      const groupPlan: any = response => {
         const fullPlan = {
           MigPlan: plan.MigPlan,
         };
         if (response.data.items.length > 0) {
-          fullPlan['Migrations'] = response.data.items.filter(
+          const sortMigrations = migrationList =>
+            migrationList.sort((left, right) => {
+              return moment
+                .utc(right.metadata.creationTimestamp)
+                .diff(moment.utc(left.metadata.creationTimestamp));
+            });
+
+          const matchingMigrations = response.data.items.filter(
             i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
           );
+
+          fullPlan['Migrations'] = sortMigrations(matchingMigrations);
         } else {
           fullPlan['Migrations'] = [];
         }
-        fullPlan['planState'] = {
-          migrations: [],
-          persistentVolumes: [],
-          status: {
-            state: 'Not Started',
-            progress: 0,
-          },
-        };
         return fullPlan;
       };
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(migrationListResponse);
 
-      dispatch(migrationSuccess(migration.MigMigration.spec.migPlanRef.name));
+      dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -247,20 +248,13 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
       MigPlan: mp,
     };
     if (refs[0].data.items.length > 0) {
-      fullPlan['Migrations'] = refs[0].data.items.filter(
+      const matchingMigrations = refs[0].data.items.filter(
         i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
+      fullPlan['Migrations'] = matchingMigrations;
     } else {
       fullPlan['Migrations'] = [];
     }
-    fullPlan['planState'] = {
-      migrations: [],
-      persistentVolumes: [],
-      status: {
-        state: 'Not Started',
-        progress: 0,
-      },
-    };
     return fullPlan;
   });
 }
@@ -278,6 +272,21 @@ const fetchNamespacesForCluster = clusterName => {
   };
 };
 
+function* fetchPlansGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  try {
+    let planList = yield client.list(resource);
+    planList = yield planList.data.items;
+    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
+    const groupedPlans = yield groupPlans(planList, refs);
+    return { updatedPlans: groupedPlans, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
 export default {
   pvFetchRequest,
   fetchPlans,
@@ -287,4 +296,6 @@ export default {
   fetchNamespacesForCluster,
   runStage,
   runMigration,
+  fetchMigMigrationsRefs,
+  fetchPlansGenerator,
 };

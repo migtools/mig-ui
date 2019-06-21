@@ -26,20 +26,18 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
     typeof storage.Secret === 'undefined'
       ? null
       : storage.Secret.data['aws-access-key-id']
-        ? atob(storage.Secret.data['aws-access-key-id'])
-        : '';
+      ? atob(storage.Secret.data['aws-access-key-id'])
+      : '';
   const secret =
     typeof storage.Secret === 'undefined'
       ? null
       : storage.Secret.data['aws-secret-access-key']
-        ? atob(storage.Secret.data['aws-secret-access-key'])
-        : '';
+      ? atob(storage.Secret.data['aws-secret-access-key'])
+      : '';
 
-  let storageStatus;
-  if (typeof storage.MigStorage.status === 'undefined' || storage.MigStorage.status === null) {
-    storageStatus = null;
-  } else {
-    storageStatus = storage.MigStorage.status.conditions[0].type;
+  let storageStatus = null;
+  if (storage.MigStorage.status) {
+    storageStatus = storage.MigStorage.status.conditions.filter(c => c.type === 'Ready').length > 0;
   }
   const removeMessage = `Are you sure you want to remove "${name}"`;
 
@@ -58,7 +56,7 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
         <DataListItemCells
           dataListCells={[
             <DataListCell key={name} width={1}>
-              <StatusIcon status={storageStatus} />
+              <StatusIcon isReady={storageStatus} />
               <span id="simple-item1">{name}</span>
             </DataListCell>,
             <DataListCell key="url" width={2}>

@@ -15,19 +15,18 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 
 const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
-  let clusterStatus;
-  if (typeof cluster.MigCluster.status === 'undefined' || cluster.MigCluster.status === null) {
-    clusterStatus = null;
-  } else {
-    clusterStatus = cluster.MigCluster.status.conditions[0].type;
+  let clusterStatus = null;
+  if (cluster.MigCluster.status) {
+    clusterStatus = cluster.MigCluster.status.conditions.filter(c => c.type === 'Ready').length > 0;
   }
   const clusterUrl = cluster.MigCluster.spec.isHostCluster
     ? migMeta.clusterApi
     : cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
 
   const clusterSvcToken =
-    !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.satoken ?
-    atob(cluster.Secret.data.saToken) : null;
+    !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.satoken
+      ? atob(cluster.Secret.data.saToken)
+      : null;
 
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
@@ -52,7 +51,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
         <DataListItemCells
           dataListCells={[
             <DataListCell key="name" width={1}>
-              <StatusIcon status={clusterStatus} />
+              <StatusIcon isReady={clusterStatus} />
               <span id="cluster-name">{clusterName}</span>
             </DataListCell>,
             <DataListCell key="url" width={2}>

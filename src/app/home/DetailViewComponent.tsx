@@ -7,6 +7,10 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
+import { startPolling, stopPolling, updatePollingStats } from '../common/duck/actions';
+
+import WizardContainer from '../plan/components/Wizard/WizardContainer';
+import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
@@ -29,6 +33,10 @@ interface IProps {
   isStaging?: boolean;
   isMigrating?: boolean;
   migMeta: string;
+  updatePlans: (updatedPlans) => void;
+  updatePollingStats: (stats) => void;
+  startPolling: (params) => void;
+  stopPolling: () => void;
 }
 
 interface IState {
@@ -91,6 +99,31 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.runStage(plan);
   };
 
+  handleStatsChange = stats => {
+    this.props.updatePollingStats(stats);
+  };
+  handlePlanPoll = response => {
+    if (response && response.isSuccessful === true) {
+      this.props.updatePlans(response.updatedPlans);
+      return true;
+    }
+
+    return false;
+  };
+
+  handleStartPolling = () => {
+    const params = {
+      asyncFetch: planOperations.fetchPlansGenerator,
+      callback: this.handlePlanPoll,
+      onStatsChange: this.handleStatsChange,
+      delay: 6000,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    this.props.startPolling(params);
+  };
+
   render() {
     const {
       allStorage,
@@ -131,6 +164,8 @@ class DetailViewComponent extends Component<IProps, IState> {
             plansDisabled={isAddPlanDisabled}
             onStageTriggered={this.handleStageTriggered}
             isLoading={this.props.isMigrating || this.props.isStaging}
+            onStartPolling={this.handleStartPolling}
+            onStopPolling={this.props.stopPolling}
           />
         </DataList>
       </React.Fragment>
@@ -148,7 +183,7 @@ function mapStateToProps(state) {
   const { migStorageList } = state.storage;
   const { isMigrating, isStaging } = state.plan;
   const migMeta = state.migMeta;
-
+  const pollingStats = state.common.pollingStats;
   return {
     allClusters,
     allStorage,
@@ -159,6 +194,7 @@ function mapStateToProps(state) {
     isMigrating,
     isStaging,
     migMeta,
+    ...pollingStats,
   };
 }
 const mapDispatchToProps = dispatch => {
@@ -170,6 +206,10 @@ const mapDispatchToProps = dispatch => {
     updateStageProgress: (plan, progress) =>
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
+    updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
+    updatePollingStats: stats => dispatch(updatePollingStats(stats)),
+    startPolling: params => dispatch(startPolling(params)),
+    stopPolling: () => dispatch(stopPolling()),
   };
 };
 

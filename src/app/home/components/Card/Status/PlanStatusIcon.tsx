@@ -8,10 +8,10 @@ import { InProgressIcon, OutlinedCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
 interface IProps {
-  status: string;
+  plan: any;
 }
 
-const PlanStatusIcon: React.FunctionComponent<IProps> = ({ status, ...rest }) => {
+const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, ...rest }) => {
   const InProgress = styled(InProgressIcon)`
     color: ${theme.colors.medGray3};
   `;
@@ -22,37 +22,23 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ status, ...rest }) =>
   const Complete = styled(OutlinedCircleIcon)`
     color: ${theme.colors.statusGreen};
   `;
-  if (status === 'Not Started') {
+  if (plan.Migrations.length > 0 && plan.Migrations[0].status) {
+    switch (plan.Migrations[0].status.phase) {
+      case 'Completed':
+        return <Complete />;
+      default:
+        return (
+          <Loader
+            type="RevolvingDot"
+            color={theme.colors.medGray3}
+            height="1em"
+            width="1em"
+            style={{ display: 'inline' }}
+          />
+        );
+    }
+  } else {
     return <NotStarted />;
-  }
-
-  if (status === 'Staged Successfully') {
-    return <Complete />;
-  }
-  if (status === 'Migrated Successfully') {
-    return <Complete />;
-  }
-  if (status === 'Staging') {
-    return (
-      <Loader
-        type="RevolvingDot"
-        color={theme.colors.medGray3}
-        height="1em"
-        width="1em"
-        style={{ display: 'inline' }}
-      />
-    );
-  }
-  if (status === 'Migrating') {
-    return (
-      <Loader
-        type="RevolvingDot"
-        color={theme.colors.medGray3}
-        height="1em"
-        width="1em"
-        style={{ display: 'inline' }}
-      />
-    );
   }
 };
 

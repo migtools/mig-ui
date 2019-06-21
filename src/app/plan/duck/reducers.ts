@@ -8,19 +8,31 @@ export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
   migPlanList: [],
-  planStateMap: [],
   planSearchText: '',
   sourceClusterNamespaces: [],
   isStaging: false,
   isMigrating: false,
 };
+const sortPlans = planList =>
+  planList.sort((left, right) => {
+    return moment
+      .utc(right.MigPlan.metadata.creationTimestamp)
+      .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
+  });
+const sortMigrations = migList =>
+  migList.sort((left, right) => {
+    return moment
+      .utc(right.metadata.creationTimestamp)
+      .diff(moment.utc(left.metadata.creationTimestamp));
+  });
 
 export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
 export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
-  return { ...state, migPlanList: action.migPlanList, isFetching: false };
+  const sortedList = sortPlans(action.migPlanList);
+  return { ...state, migPlanList: sortedList, isFetching: false };
 };
 export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
@@ -36,19 +48,9 @@ export const pvFetchSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
-  const newPlanState = {
-    migrations: [],
-    persistentVolumes: [],
-    status: {
-      state: 'Not Started',
-      progress: 0,
-    },
-  };
-
   const newPlan = {
     MigPlan: action.newPlan,
     Migrations: [],
-    planState: newPlanState,
   };
 
   return {
@@ -73,10 +75,12 @@ export const updatePlanProgress = (state = INITIAL_STATE, action) => {
   const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
 
   updatedPlan.status.progress = action.progress;
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
   };
 };
 
@@ -86,31 +90,50 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
       return {
         MigPlan: action.updatedPlan,
         Migrations: [],
-        planState: p.planState,
       };
     } else {
       return p;
     }
   });
+  const sortedList = sortPlans(updatedPlanList);
 
   return {
     ...state,
-    migPlanList: updatedPlanList,
+    migPlanList: sortedList,
   };
 };
 
 export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
+      //filter migrations
+      action.updatedPlan.Migrations = sortMigrations(action.updatedPlan.Migrations);
       return action.updatedPlan;
     } else {
       return p;
     }
   });
 
+  const sortedList = sortPlans(updatedPlanList);
+
   return {
     ...state,
-    migPlanList: updatedPlanList,
+    migPlanList: sortedList,
+  };
+};
+
+export const updatePlans = (state = INITIAL_STATE, action) => {
+  const updatedPlanList = action.updatedPlans.map(p => {
+    //filter migrations
+    p.Migrations = sortMigrations(p.Migrations);
+    return p;
+  });
+
+  const sortedList = sortPlans(updatedPlanList);
+
+  return {
+    ...state,
+    migPlanList: sortedList,
   };
 };
 
@@ -125,9 +148,12 @@ export const initStage = (state = INITIAL_STATE, action) => {
 
   updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
 
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
+
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isStaging: true,
   };
 };
@@ -140,10 +166,12 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
     state: 'Staged Successfully',
     progress: 0,
   };
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isStaging: false,
   };
 };
@@ -152,10 +180,6 @@ export const initMigration = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.planState.status = {
-    state: 'Migrating',
-    progress: 0,
-  };
   const newMigObject = {
     type: 'Migrate',
     start: moment().format(),
@@ -165,11 +189,12 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     status: 'Complete',
   };
 
-  updatedPlan.planState.migrations = [...updatedPlan.planState.migrations, newMigObject];
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isMigrating: true,
   };
 };
@@ -178,14 +203,12 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
-  updatedPlan.planState.status = {
-    state: 'Migrated Successfully',
-    progress: 0,
-  };
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
 
   return {
     ...state,
-    migPlanList: [...filteredPlans, updatedPlan],
+    migPlanList: sortedPlans,
     isMigrating: false,
   };
 };
@@ -204,6 +227,7 @@ export const HANDLERS = {
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
+  [Types.UPDATE_PLANS]: updatePlans,
   [Types.PV_FETCH_SUCCESS]: pvFetchSuccess,
   [Types.PV_FETCH_FAILURE]: pvFetchFailure,
   [Types.PV_FETCH_REQUEST]: pvFetchRequest,
