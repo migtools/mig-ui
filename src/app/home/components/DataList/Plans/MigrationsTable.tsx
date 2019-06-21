@@ -69,13 +69,21 @@ export default class MigrationsTable extends React.Component<any, any> {
       phase: 'Not started',
     };
 
-    if (migration.status && migration.status.conditions.length > 0) {
-      status.start = moment(migration.status.startTimestamp).format('LLL');
-      status.end = moment(migration.status.completionTimestamp).format('LLL');
-      const serverStatusMessage = migration.status.conditions[0].message || null;
-      const migPhase = migration.status.phase || null;
-      const serverErrorMessage = migration.status.errors || null;
-      if (serverStatusMessage.length > 0 && !serverErrorMessage) {
+    if (migration.status) {
+      if (migration.status.startTimestamp) {
+        status.start = moment(migration.status.startTimestamp).format('LLL');
+      }
+      if (migration.status.completionTimestamp) {
+        status.end = moment(migration.status.completionTimestamp).format('LLL');
+      }
+
+      const migPhase = migration.status.phase;
+      const serverErrorMessage = migration.status.errors;
+      if (serverErrorMessage) {
+        status.phase = 'An error occurred';
+        status.progress = null;
+        return status;
+      } else {
         switch (migPhase) {
           case 'WaitOnResticRestart':
             status.phase = 'Waiting';
@@ -103,11 +111,6 @@ export default class MigrationsTable extends React.Component<any, any> {
             status.progress = null;
             break;
         }
-        return status;
-      } else if (serverErrorMessage.length > 0) {
-        status.phase = serverErrorMessage[0];
-        return status;
-      } else {
         return status;
       }
     } else {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import { Flex, Box } from '@rebass/emotion';
@@ -7,24 +7,38 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 
 const PlanActions = ({ plan, isLoading, ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
-  const checkDisabled = () => {
-    // const disableMigrations = isMigrationRunning || plan.Closed || finalMigrationRunWithSuccess
-    if (plan.Migrations && plan.MigPlan.status && plan.Migrations.length > 0) {
-      if (plan.Migrations[0].status && plan.Migrations[0].status.phase) {
-        const planMigStatus = plan.Migrations[0].status.phase;
-        return planMigStatus !== 'Not Started';
+  // const [is, toggleDisabled] = useOpenModal(false);
+  const isDisabled = () => {
+    let hasReadyCondition = null;
+    let hasErrorCondition = null;
+    let hasRunningCondition = null;
+    let finalMigrationComplete = null;
+    if (plan.MigPlan.status) {
+      hasReadyCondition = plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length > 0;
+      hasErrorCondition =
+        plan.MigPlan.status.conditions.filter(c => c.category === 'Critical').length > 0;
+
+      if (plan.Migrations.length > 0) {
+        hasRunningCondition =
+          plan.Migrations.filter(m => {
+            if (m.status) {
+              return m.status.migrationStarted === true;
+            }
+          }).length > 0;
+        finalMigrationComplete =
+          plan.Migrations.filter(m => {
+            if (m.status) {
+              return m.spec.stage === false && m.status.migrationCompleted === true;
+            }
+          }).length > 0;
       }
-    } else if (plan.MigPlan.status) {
-      const criticalConditions = plan.MigPlan.status.conditions.filter(
-        (condition, i) => condition.category === 'Critical'
+
+      return (
+        !hasReadyCondition || hasErrorCondition || hasRunningCondition || finalMigrationComplete
       );
-      if (criticalConditions.length > 0) {
-        return true;
-      } else {
-        return false;
-      }
+    } else {
+      return true;
     }
-    return false;
   };
   return (
     <Flex>
@@ -33,7 +47,7 @@ const PlanActions = ({ plan, isLoading, ...props }) => {
       </Box>
       <Box mx={1}>
         <Button
-          isDisabled={checkDisabled()}
+          isDisabled={isDisabled() || isLoading}
           variant="primary"
           onClick={() => this.props.onStageTriggered(plan)}
         >
@@ -41,7 +55,7 @@ const PlanActions = ({ plan, isLoading, ...props }) => {
         </Button>
       </Box>
       <Box mx={1}>
-        <Button isDisabled={checkDisabled()} variant="primary" onClick={toggleOpen}>
+        <Button isDisabled={isDisabled() || isLoading} variant="primary" onClick={toggleOpen}>
           Migrate
         </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
