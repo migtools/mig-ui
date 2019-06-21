@@ -26,7 +26,8 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
 }) => {
   const errorsObj = Object.entries(errors).length === 0 && errors.constructor === Object;
   const touchedObj = Object.entries(touched).length === 0 && touched.constructor === Object;
-  const displayMode = (typeof mode === 'undefined' ) ? 'Add' : (mode.charAt(0).toUpperCase() + mode.substring(1));
+  const displayMode =
+    typeof mode === 'undefined' ? 'Add' : mode.charAt(0).toUpperCase() + mode.substring(1);
 
   return (
     <FormGroup fieldId="check-connection" id="check-connection">
@@ -75,22 +76,22 @@ function renderConnectionState(connectionState: ConnectionState) {
   switch (connectionState) {
     case ConnectionState.Checking:
       cxStateContents = 'Checking...';
-      iconStatus = 'checking';
+      iconStatus = false;
       break;
     case ConnectionState.Success:
       cxStateContents = 'Success!';
-      iconStatus = 'success';
+      iconStatus = true;
       break;
     case ConnectionState.Failed:
       cxStateContents = 'Failed!';
-      iconStatus = 'failed';
+      iconStatus = false;
       break;
   }
 
   return (
     <Flex m="10px 10px 10px 0">
       <Box>
-        {cxStateContents} <StatusIcon status={iconStatus} />
+        {cxStateContents} <StatusIcon isReady={iconStatus} />
       </Box>
     </Flex>
   );

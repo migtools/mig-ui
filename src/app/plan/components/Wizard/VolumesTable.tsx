@@ -145,7 +145,7 @@ class VolumesTable extends React.Component<any, any> {
         >
           <StyledTextContent>
             <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
-              <StatusIcon status="failed" />
+              <StatusIcon isReady={false} />
               Unable to find PVs
             </Text>
           </StyledTextContent>

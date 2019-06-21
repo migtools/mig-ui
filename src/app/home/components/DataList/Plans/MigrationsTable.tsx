@@ -34,7 +34,7 @@ export default class MigrationsTable extends React.Component<any, any> {
           title: (
             <Flex>
               <StyledBox>
-                <StatusIcon status="Ready" />
+                <StatusIcon isReady={true} />
               </StyledBox>
               <Box>{type}</Box>
             </Flex>
@@ -132,7 +132,7 @@ export default class MigrationsTable extends React.Component<any, any> {
             title: (
               <Flex>
                 <StyledBox>
-                  <StatusIcon status="Ready" />
+                  <StatusIcon isReady={true} />
                 </StyledBox>
                 <Box>{type}</Box>
               </Flex>

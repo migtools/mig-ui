@@ -6,10 +6,10 @@ import theme from '../../../theme';
 import * as React from 'react';
 
 interface IProps {
-  status: string;
+  isReady: boolean;
 }
 
-const StatusIcon: React.FunctionComponent<IProps> = ({ status, ...rest }) => {
+const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, ...rest }) => {
   const SuccessIcon = styled(CheckCircleIcon)`
     color: ${theme.colors.statusGreen};
     margin-right: 0.75rem;
@@ -18,21 +18,19 @@ const StatusIcon: React.FunctionComponent<IProps> = ({ status, ...rest }) => {
     color: ${theme.colors.statusRed};
     margin-right: 0.75rem;
   `;
-  if (status === 'Ready') {
+  if (isReady) {
     return (
       <React.Fragment>
         <SuccessIcon />
       </React.Fragment>
     );
-  }
-  if (status === 'failed' || status === null) {
+  } else {
     return (
       <React.Fragment>
         <FailureIcon />
       </React.Fragment>
     );
   }
-  return null;
 };
 
 export default StatusIcon;

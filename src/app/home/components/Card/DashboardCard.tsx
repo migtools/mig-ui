@@ -54,7 +54,7 @@ class DashboardCard extends Component<IProps, IState> {
           >
             <Box flex="1" m="auto">
               <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
-                <StatusIcon status="failed" />
+                <StatusIcon isReady={false} />
                 Failed to fetch
               </Text>
             </Box>
