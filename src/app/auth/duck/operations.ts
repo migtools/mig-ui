@@ -21,8 +21,8 @@ const fetchOauthMeta = clusterApi => {
       dispatch(setOauthMeta(res.data));
     } catch (err) {
       if(isSelfSignedCertError(err)) {
-        handleSelfSignedCertError(oauthMetaUrl, dispatch)
-        return
+        handleSelfSignedCertError(oauthMetaUrl, dispatch);
+        return;
       }
       dispatch(loginFailure());
       dispatch(commonOperations.alertErrorTimeout(err));

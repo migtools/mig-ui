@@ -14,14 +14,16 @@ class CertErrorComponent extends React.Component<any> {
       <div>
         {this.props.certError ?
           <div>
-            A certificate error has occurred, please visit and accept the cert, or correctly install your self-signed CA: 
-            <a href={this.props.certError.failedUrl}> {this.props.certError.failedUrl}</a>
+            A certificate error has occurred, please visit and accept the cert, 
+            or correctly install your self-signed CA:
+            <a href={this.props.certError.failedUrl}>  {this.props.certError.failedUrl}</a>
             <div />
-            NOTE: The contents of the resulting page may report "unauthorized". This is expected. After accepting the certificate, please reload the app.
+            NOTE: The contents of the resulting page may report "unauthorized". 
+            This is expected. After accepting the certificate, please reload the app.
           </div> : <div />
         }
       </div>
-    )
+    );
   }
 }
 
