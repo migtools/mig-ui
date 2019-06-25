@@ -15,6 +15,7 @@ import { Flex, Box } from '@rebass/emotion';
 import { Global, css } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
+import CertErrorComponent from './auth/CertErrorComponent';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -62,6 +63,7 @@ const AppComponent: React.SFC<IProps> = ({
           <Switch>
             <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
             <Route path="/login" component={LoginComponent} />
+            <Route path="/cert-error" component={CertErrorComponent} />
           </Switch>
         </ConnectedRouter>
       </ThemeProvider>

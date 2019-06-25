@@ -8,11 +8,12 @@ export interface IClusterClient {
   patch(resource: KubeResource, name: string, patch: object): Promise<any>;
   create(resource: KubeResource, newObject: object): Promise<any>;
   delete(resource: KubeResource, name: string): Promise<any>;
+  apiRoot: string;
 }
 
 export class ClusterClient {
   private token: string;
-  private apiRoot: string;
+  public apiRoot: string;
   private requester: AxiosInstance;
   private patchRequester: AxiosInstance;
 
