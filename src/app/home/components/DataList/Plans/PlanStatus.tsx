@@ -4,48 +4,46 @@ import { Progress, ProgressSize } from '@patternfly/react-core';
 const PlanStatus = ({ plan, ...props }) => {
   const getStatus = () => {
     const status = { text: 'Waiting for status...', progress: null };
-    if (plan.Migrations.length > 0) {
-      if (plan.Migrations[0].status) {
-        const migPhase = plan.Migrations[0].status.phase;
-        switch (migPhase) {
-          case 'WaitOnResticRestart':
-            status.text = 'Waiting';
-            status.progress = 10;
-            break;
-          case 'BackupStarted':
-            status.text = 'Backup started';
-            status.progress = 40;
-            break;
+    let hasReadyCondition = null;
+    let hasErrorCondition = null;
+    let hasRunningMigrations = null;
+    let hasSucceededMigration = null;
+    let hasPrevMigrations = null;
+    let hasClosedCondition = null;
+    if (plan.MigPlan.status) {
+      hasClosedCondition = !!plan.MigPlan.spec.closed;
+      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
+      hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
+        .length;
+      if (plan.Migrations.length > 0) {
+        hasPrevMigrations = !!plan.Migrations.length;
+        hasRunningMigrations = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Running');
+          }
+        }).length;
 
-          case 'WaitOnBackupReplication':
-            status.text = 'Waiting';
-            status.progress = 50;
-            break;
-          case 'RestoreStarted':
-            status.text = 'Restoring....';
-            status.progress = 60;
-            break;
-          case 'Completed':
-            status.text = 'Completed';
-            status.progress = null;
-            break;
-          default:
-            status.text = 'Something went wrong...';
-            status.progress = null;
-            break;
-        }
+        hasSucceededMigration = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
       }
-    } else {
-      //plan status logic
-      if (plan.MigPlan.status) {
-        const criticalConditions = plan.MigPlan.status.conditions.filter(
-          (condition, i) => condition.category === 'Critical'
-        );
-        if (criticalConditions.length > 0) {
-          status.text = criticalConditions[0].message;
-        } else {
-          status.text = 'Ready';
-        }
+
+      if (hasErrorCondition || !hasReadyCondition) {
+        status.text = 'Not Ready';
+      }
+      if (hasReadyCondition || !hasPrevMigrations) {
+        status.text = 'Ready';
+      }
+      if (hasRunningMigrations) {
+        status.text = 'Running';
+      }
+      if (hasSucceededMigration) {
+        status.text = 'Succeeded';
+      }
+      if (hasClosedCondition) {
+        status.text = 'Closed';
       }
     }
     return status;
