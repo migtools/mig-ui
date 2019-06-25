@@ -8,18 +8,18 @@ const MigrationStatus = ({ dataList, ...props }) => {
   const inProgressList = [];
   const completedList = [];
   dataList.filter(migPlan => {
-    if (migPlan.Migrations.length > 0 && migPlan.Migrations[0].status) {
-      switch (migPlan.Migrations[0].status.phase) {
-        case 'Completed':
-          completedList.push(migPlan);
-          break;
-        default:
-          inProgressList.push(migPlan);
-          break;
-      }
-    } else {
-      notStartedList.push(migPlan);
-    }
+    // if (migPlan.Migrations.length > 0) {
+    //   switch (migPlan.Migrations[0].status.phase) {
+    //     case 'Completed':
+    //       completedList.push(migPlan);
+    //       break;
+    //     default:
+    //       inProgressList.push(migPlan);
+    //       break;
+    //   }
+    // } else {
+    //   notStartedList.push(migPlan);
+    // }
   });
 
   return (

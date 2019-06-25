@@ -30,33 +30,59 @@ const pvFetchRequest = Creators.pvFetchRequest;
 const pvFetchFailure = Creators.pvFetchFailure;
 const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
+const stagingSuccess = Creators.stagingSuccess;
 const addPlanSuccess = Creators.addPlanSuccess;
-
-// const addPlanFailure = Creators.addPlanFailure;
-// const removePlanSuccess = Creators.removePlanSuccess;
-// const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
 const PollingInterval = 5000;
 const PvsDiscoveredType = 'PvsDiscovered';
 
+const groupPlan: any = (plan, response) => {
+  const fullPlan = {
+    MigPlan: plan.MigPlan,
+  };
+  if (response.data.items.length > 0) {
+    const sortMigrations = migrationList =>
+      migrationList.sort((left, right) => {
+        return moment
+          .utc(right.metadata.creationTimestamp)
+          .diff(moment.utc(left.metadata.creationTimestamp));
+      });
+
+    const matchingMigrations = response.data.items.filter(
+      i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
+    );
+
+    fullPlan['Migrations'] = sortMigrations(matchingMigrations);
+  } else {
+    fullPlan['Migrations'] = [];
+  }
+  return fullPlan;
+};
+
 const runStage = plan => {
-  return (dispatch, getState) => {
-    dispatch(Creators.initStage(plan.planName));
-    const planNameToStage = plan.planName;
-    const interval = setInterval(() => {
-      const planList = getState().plan.migPlanList;
+  return async (dispatch, getState) => {
+    try {
+      dispatch(Creators.initStage(plan.MigPlan.metadata.name));
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const migMigrationObj = createMigMigration(
+        uuidv1(),
+        plan.MigPlan.metadata.name,
+        migMeta.namespace,
+        true
+      );
+      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+      //created migration response object
+      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
+      const migrationListResponse = await client.list(migMigrationResource);
+      const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const planItem = planList.find(p => p.planName === planNameToStage);
-      if (planItem.status.progress === 100) {
-        dispatch(Creators.stagingSuccess(planItem.planName));
-        clearInterval(interval);
-        return;
-      }
-
-      const nextProgress = plan.status.progress + 10;
-      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
-    }, 1000);
+      dispatch(stagingSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
+      dispatch(Creators.updatePlanMigrations(groupedPlan));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
   };
 };
 
@@ -70,37 +96,16 @@ const runMigration = plan => {
       const migMigrationObj = createMigMigration(
         uuidv1(),
         plan.MigPlan.metadata.name,
-        migMeta.namespace
+        migMeta.namespace,
+        false
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
       //created migration response object
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
 
-      const groupPlan: any = response => {
-        const fullPlan = {
-          MigPlan: plan.MigPlan,
-        };
-        if (response.data.items.length > 0) {
-          const sortMigrations = migrationList =>
-            migrationList.sort((left, right) => {
-              return moment
-                .utc(right.metadata.creationTimestamp)
-                .diff(moment.utc(left.metadata.creationTimestamp));
-            });
-
-          const matchingMigrations = response.data.items.filter(
-            i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
-          );
-
-          fullPlan['Migrations'] = sortMigrations(matchingMigrations);
-        } else {
-          fullPlan['Migrations'] = [];
-        }
-        return fullPlan;
-      };
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(migrationListResponse);
+      const groupedPlan = groupPlan(plan, migrationListResponse);
 
       dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));

@@ -8,14 +8,11 @@ import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
 import { startPolling, stopPolling, updatePollingStats } from '../common/duck/actions';
-
-import WizardContainer from '../plan/components/Wizard/WizardContainer';
-import { css } from '@emotion/core';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import { DataList } from '@patternfly/react-core';
-
+import { PlanContext } from './duck/context';
 interface IProps {
   allClusters: any[];
   allStorage: any[];
@@ -136,7 +133,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     const { isWizardOpen } = this.state;
 
     const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
-
+    const { handleStageTriggered } = this;
     return (
       <React.Fragment>
         <DataList aria-label="data-list-main-container">
@@ -155,18 +152,18 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanDataListItem
-            planList={allPlans}
-            id="plansList"
-            clusterList={allClusters}
-            storageList={allStorage}
-            onPlanSubmit={this.handlePlanSubmit}
-            plansDisabled={isAddPlanDisabled}
-            onStageTriggered={this.handleStageTriggered}
-            isLoading={this.props.isMigrating || this.props.isStaging}
-            onStartPolling={this.handleStartPolling}
-            onStopPolling={this.props.stopPolling}
-          />
+          <PlanContext.Provider value={{ handleStageTriggered }}>
+            <PlanDataListItem
+              planList={allPlans}
+              clusterList={allClusters}
+              storageList={allStorage}
+              onPlanSubmit={this.handlePlanSubmit}
+              plansDisabled={isAddPlanDisabled}
+              isLoading={this.props.isMigrating || this.props.isStaging}
+              onStartPolling={this.handleStartPolling}
+              onStopPolling={this.props.stopPolling}
+            />
+          </PlanContext.Provider>
         </DataList>
       </React.Fragment>
     );

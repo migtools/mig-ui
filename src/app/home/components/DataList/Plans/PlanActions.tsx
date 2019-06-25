@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { PlanContext } from '../../../duck/context';
 import { Button } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import { Flex, Box } from '@rebass/emotion';
 import PlanStatus from './PlanStatus';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 
-const PlanActions = ({ plan, isLoading, ...props }) => {
+const PlanActions = ({ plan, isLoading }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
-
+  const stage = useContext(PlanContext);
   // const [is, toggleDisabled] = useOpenModal(false);
   const isDisabled = () => {
     let hasReadyCondition = null;
@@ -57,13 +58,13 @@ const PlanActions = ({ plan, isLoading, ...props }) => {
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} {...this.props} />
+        <PlanStatus plan={plan} />
       </Box>
       <Box mx={1}>
         <Button
           isDisabled={isDisabled() || isLoading}
           variant="primary"
-          onClick={() => this.props.onStageTriggered(plan)}
+          onClick={() => stage.handleStageTriggered(plan)}
         >
           Stage
         </Button>

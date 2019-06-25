@@ -52,16 +52,16 @@ export function createClusterRegistryObj(name: string, namespace: string, server
 
 export function updateClusterRegistryObj(serverAddress: string) {
   return {
-      spec: {
-        kubernetesApiEndpoints: {
-          serverEndpoints: [
-            {
-              clientCIDR: '0.0.0.0',
-              serverAddress,
-            },
-          ],
-        },
-      }
+    spec: {
+      kubernetesApiEndpoints: {
+        serverEndpoints: [
+          {
+            clientCIDR: '0.0.0.0',
+            serverAddress,
+          },
+        ],
+      },
+    },
   };
 }
 
@@ -128,10 +128,7 @@ export function createMigStorage(
   };
 }
 
-export function updateMigStorage(
-  bucketName: string,
-  bucketRegion: string,
-) {
+export function updateMigStorage(bucketName: string, bucketRegion: string) {
   return {
     spec: {
       backupStorageConfig: {
@@ -144,7 +141,6 @@ export function updateMigStorage(
     },
   };
 }
-
 
 export function createStorageSecret(
   name: string,
@@ -170,10 +166,7 @@ export function createStorageSecret(
   };
 }
 
-export function updateStorageSecret(
-  secretKey: any,
-  accessKey: string
-) {
+export function updateStorageSecret(secretKey: any, accessKey: string) {
   // btoa => to base64, atob => from base64
   const encodedAccessKey = btoa(accessKey);
   const encodedSecretKey = btoa(secretKey);
@@ -274,7 +267,12 @@ export function createMigPlanNoStorage(
   };
 }
 
-export function createMigMigration(migID: string, planName: string, namespace: string) {
+export function createMigMigration(
+  migID: string,
+  planName: string,
+  namespace: string,
+  isStage: boolean
+) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
@@ -291,7 +289,7 @@ export function createMigMigration(migID: string, planName: string, namespace: s
       // and we've more thouroughly tested quiesce/stage combos in conjunction
       // with the controller and velero.
       quiescePods: true,
-      stage: false,
+      stage: isStage,
     },
   };
 }

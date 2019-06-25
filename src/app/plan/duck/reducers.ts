@@ -141,12 +141,12 @@ export const initStage = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
 
-  updatedPlan.status = {
-    state: 'Staging',
-    progress: 0,
-  };
+  // updatedPlan.status = {
+  //   state: 'Staging',
+  //   progress: 0,
+  // };
 
-  updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
+  // updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
@@ -158,36 +158,9 @@ export const initStage = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const stagingSuccess = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  updatedPlan.status = {
-    state: 'Staged Successfully',
-    progress: 0,
-  };
-  const updatedPlansList = [...filteredPlans, updatedPlan];
-  const sortedPlans = sortPlans(updatedPlansList);
-
-  return {
-    ...state,
-    migPlanList: sortedPlans,
-    isStaging: false,
-  };
-};
-
 export const initMigration = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
-
-  const newMigObject = {
-    type: 'Migrate',
-    start: moment().format(),
-    end: moment().format(),
-    moved: 0,
-    copied: 0,
-    status: 'Complete',
-  };
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
@@ -196,6 +169,19 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     ...state,
     migPlanList: sortedPlans,
     isMigrating: true,
+  };
+};
+export const stagingSuccess = (state = INITIAL_STATE, action) => {
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
+
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
+
+  return {
+    ...state,
+    migPlanList: sortedPlans,
+    isStaging: false,
   };
 };
 
