@@ -2,7 +2,7 @@
   "clusterApi": "https://api.supercluster.example.com:6443",
   "devServerPort": 9000,
   "userScope": "user:full",
-  "oauthClientId": "mig-ui-remote-dev",
+  "oauthClientId": "mig-ui",
   "redirectUri": "http://localhost:9000/login/callback",
   "namespace": "mig",
   "configNamespace": "openshift-config",

@@ -73,9 +73,12 @@ export default class MigrationsTable extends React.Component<any, any> {
       if (migration.status.startTimestamp) {
         status.start = moment(migration.status.startTimestamp).format('LLL');
       }
-      if (migration.status.completionTimestamp) {
-        status.end = moment(migration.status.completionTimestamp).format('LLL');
-      }
+      let endTime;
+      endTime = migration.status.conditions
+        .filter(c => c.type === 'Succeeded')
+        .map(c => c.lastTransitionTime)
+        .toString();
+      status.end = endTime && moment(endTime).format('LLL');
 
       const migPhase = migration.status.phase;
       const serverErrorMessage = migration.status.errors;
@@ -103,7 +106,7 @@ export default class MigrationsTable extends React.Component<any, any> {
             status.progress = 60;
             break;
           case 'Completed':
-            status.phase = 'Completed';
+            status.phase = 'Succeeded';
             status.progress = null;
             break;
           default:

@@ -11,4 +11,4 @@ mig_ui_oauth_client_id: "{{ mig_ui_name }}"
 mig_ui_host_cluster_name: "host"
 
 # Optional switches
-mig_ui_create_namespace: false
+mig_ui_create_namespace: true

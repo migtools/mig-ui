@@ -7,34 +7,48 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 
 const PlanActions = ({ plan, isLoading, ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
+
   // const [is, toggleDisabled] = useOpenModal(false);
   const isDisabled = () => {
     let hasReadyCondition = null;
     let hasErrorCondition = null;
-    let hasRunningCondition = null;
+    let hasRunningMigrations = null;
     let finalMigrationComplete = null;
-    if (plan.MigPlan.status) {
-      hasReadyCondition = plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length > 0;
-      hasErrorCondition =
-        plan.MigPlan.status.conditions.filter(c => c.category === 'Critical').length > 0;
+    let hasSucceededMigration = null;
+    let hasClosedCondition = null;
 
-      if (plan.Migrations.length > 0) {
-        hasRunningCondition =
-          plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.status.migrationStarted === true;
-            }
-          }).length > 0;
-        finalMigrationComplete =
-          plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.spec.stage === false && m.status.migrationCompleted === true;
-            }
-          }).length > 0;
+    if (plan.MigPlan.status) {
+      hasClosedCondition = plan.MigPlan.spec.closed;
+      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
+      hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
+        .length;
+
+      if (plan.Migrations.length) {
+        hasRunningMigrations = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Running');
+          }
+        }).length;
+
+        hasSucceededMigration = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
+
+        finalMigrationComplete = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.spec.stage === false && hasSucceededMigration;
+          }
+        }).length;
       }
 
       return (
-        !hasReadyCondition || hasErrorCondition || hasRunningCondition || finalMigrationComplete
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete
       );
     } else {
       return true;
