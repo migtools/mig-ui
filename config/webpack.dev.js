@@ -37,12 +37,13 @@ if (!fs.existsSync(configPath)) {
 }
 
 const localConfig = require(configPath);
+const startRemoteClientSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
 const migMeta = require('./mig_meta')(localConfig.clusterApi);
 migMeta.oauth = {
   clientId: localConfig.oauthClientId,
   redirectUri: localConfig.redirectUri,
   userScope: localConfig.userScope,
-  clientSecret: localConfig.oauthClientSecret,
+  clientSecret: startRemoteClientSecret,
 };
 migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
