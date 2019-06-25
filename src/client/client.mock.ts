@@ -6,11 +6,13 @@ export class MockClusterClient {
   private state: object;
   private kube_store: KubeStore;
   private reqTime = 500;
+  public apiRoot: string;
 
   constructor(name: string, state: object) {
     this.name = name;
     this.kube_store = new KubeStore(name);
     this.state = state;
+    this.apiRoot = 'http://mock-api.biz';
   }
 
   public list(resource: KubeResource): Promise<any> {

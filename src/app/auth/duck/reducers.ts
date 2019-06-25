@@ -4,6 +4,7 @@ import { Types } from './actions';
 const initialState = {
   user: null,
   oauthMeta: null,
+  certError: null,
 };
 
 export default createReducer(initialState, {
@@ -15,5 +16,8 @@ export default createReducer(initialState, {
   },
   [Types.SET_OAUTH_META]: (state = initialState, action) => {
     return { ...state, oauthMeta: action.oauthMeta };
+  },
+  [Types.CERT_ERROR_OCCURRED]: (state, action) => {
+    return { ...state, certError: { failedUrl: action.failedUrl } };
   },
 });

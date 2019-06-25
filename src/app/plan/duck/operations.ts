@@ -18,6 +18,7 @@ import {
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
+import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -260,15 +261,20 @@ function groupPlans(migPlans: any[], refs: any[]): any[] {
 }
 
 const fetchNamespacesForCluster = clusterName => {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
     const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
-    client
-      .list(nsResource)
-      .then(res => {
-        dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
-      })
-      .catch(err => commonOperations.alertErrorTimeout('Failed to load namespaces for cluster'));
+    try {
+      const res = await client.list(nsResource);
+      dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
+    } catch(err) {
+      if(isSelfSignedCertError(err)) {
+        const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
+        handleSelfSignedCertError(failedUrl, dispatch);
+        return;
+      }
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
   };
 };
 
