@@ -51,6 +51,7 @@ interface IProps {
   isClusterError: boolean;
   isStorageError: boolean;
   isPlanError: boolean;
+  planStatusCounts: any;
 }
 
 interface IState {
@@ -191,7 +192,6 @@ class HomeComponent extends React.Component<IProps, IState> {
         toolbar={PageToolbar}
       />
     );
-    const Sidebar = <PageSidebar nav={PageNav} isNavOpen={isNavOpen} />;
     const {
       isFetchingStorage,
       isFetchingClusters,
@@ -202,6 +202,7 @@ class HomeComponent extends React.Component<IProps, IState> {
       isClusterError,
       isPlanError,
       isStorageError,
+      planStatusCounts,
     } = this.props;
     const StyledPageSection = styled(PageSection)`
       padding-top: '50px';
@@ -233,6 +234,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 <DashboardCard
                   type="plans"
                   title="Migration Plans"
+                  planStatusCounts={planStatusCounts}
                   dataList={allPlans}
                   isFetching={isFetchingPlans}
                   isError={isPlanError}
@@ -255,6 +257,7 @@ class HomeComponent extends React.Component<IProps, IState> {
 
 export default connect(
   state => ({
+    planStatusCounts: planSelectors.getCounts(state),
     allClusters: clusterSelectors.getAllClusters(state),
     allStorage: storageSelectors.getAllStorage(state),
     allPlans: planSelectors.getAllPlans(state),

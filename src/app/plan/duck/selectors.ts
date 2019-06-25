@@ -10,8 +10,21 @@ const getAllPlans = createSelector(
     return plans;
   }
 );
+const getCounts = createSelector(
+  [planSelector],
+  plans => {
+    const counts = {
+      notStarted: [],
+      inProgress: [],
+      completed: [],
+    };
+    // counts.notStarted = plans.filter(p => p.MigPlan);
+    return counts;
+  }
+);
 
 export default {
   getAllPlans,
   getMigMeta,
+  getCounts,
 };

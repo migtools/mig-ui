@@ -21,6 +21,7 @@ interface IProps {
   isFetching: boolean;
   type?: string;
   isError: boolean;
+  planStatusCounts?: any;
 }
 
 class DashboardCard extends Component<IProps, IState> {
@@ -40,7 +41,7 @@ class DashboardCard extends Component<IProps, IState> {
     });
   };
   render() {
-    const { dataList, title, isFetching, type, isError } = this.props;
+    const { dataList, title, isFetching, type, isError, planStatusCounts } = this.props;
     const { isOpen } = this.state;
     if (isError) {
       return (
@@ -73,7 +74,7 @@ class DashboardCard extends Component<IProps, IState> {
             </CardHeader>
             <CardBody>
               {type === 'plans' ? (
-                <MigrationStatus dataList={dataList} />
+                <MigrationStatus planStatusCounts={planStatusCounts} />
               ) : (
                 <CardStatus dataList={dataList} type={type} />
               )}
