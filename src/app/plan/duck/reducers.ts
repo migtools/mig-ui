@@ -70,20 +70,6 @@ export const sourceClusterNamespacesFetchSuccess = (state = INITIAL_STATE, actio
   };
 };
 
-export const updatePlanProgress = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  updatedPlan.status.progress = action.progress;
-  const updatedPlansList = [...filteredPlans, updatedPlan];
-  const sortedPlans = sortPlans(updatedPlansList);
-
-  return {
-    ...state,
-    migPlanList: sortedPlans,
-  };
-};
-
 export const updatePlan = (state = INITIAL_STATE, action) => {
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
@@ -177,6 +163,9 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
     isStaging: false,
   };
 };
+export const stagingFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isStaging: false };
+};
 
 export const migrationSuccess = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
@@ -191,6 +180,9 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
     isMigrating: false,
   };
 };
+export const migrationFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isMigrating: false };
+};
 
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
@@ -199,11 +191,12 @@ export const HANDLERS = {
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
-  [Types.UPDATE_PLAN_PROGRESS]: updatePlanProgress,
   [Types.INIT_STAGE]: initStage,
   [Types.STAGING_SUCCESS]: stagingSuccess,
+  [Types.STAGING_FAILURE]: stagingFailure,
   [Types.INIT_MIGRATION]: initMigration,
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
+  [Types.MIGRATION_FAILURE]: migrationFailure,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
   [Types.UPDATE_PLANS]: updatePlans,

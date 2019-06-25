@@ -1,21 +1,23 @@
 import React from 'react';
-import { Progress, ProgressSize } from '@patternfly/react-core';
 
 const PlanStatus = ({ plan, ...props }) => {
   const getStatus = () => {
-    const status = { text: 'Waiting for status...', progress: null };
+    const status = { text: 'Waiting for status...' };
     let hasReadyCondition = null;
     let hasErrorCondition = null;
     let hasRunningMigrations = null;
     let hasSucceededMigration = null;
+    let hasSucceededStage = null;
     let hasPrevMigrations = null;
     let hasClosedCondition = null;
+    let latestType = null;
     if (plan.MigPlan.status) {
       hasClosedCondition = !!plan.MigPlan.spec.closed;
       hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
       hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
         .length;
       if (plan.Migrations.length > 0) {
+        latestType = plan.Migrations[0].spec.stage ? 'Stage' : 'Migration';
         hasPrevMigrations = !!plan.Migrations.length;
         hasRunningMigrations = !!plan.Migrations.filter(m => {
           if (m.status) {
@@ -24,12 +26,16 @@ const PlanStatus = ({ plan, ...props }) => {
         }).length;
 
         hasSucceededMigration = !!plan.Migrations.filter(m => {
-          if (m.status) {
+          if (m.status && !m.spec.stage) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
+        hasSucceededStage = !!plan.Migrations.filter(m => {
+          if (m.status && m.spec.stage) {
             return m.status.conditions.some(c => c.type === 'Succeeded');
           }
         }).length;
       }
-
       if (hasErrorCondition || !hasReadyCondition) {
         status.text = 'Not Ready';
       }
@@ -37,10 +43,13 @@ const PlanStatus = ({ plan, ...props }) => {
         status.text = 'Ready';
       }
       if (hasRunningMigrations) {
-        status.text = 'Running';
+        status.text = `${latestType} Running`;
+      }
+      if (hasSucceededStage) {
+        status.text = `Stage Succeeded`;
       }
       if (hasSucceededMigration) {
-        status.text = 'Succeeded';
+        status.text = `Migration Succeeded`;
       }
       if (hasClosedCondition) {
         status.text = 'Closed';
@@ -51,9 +60,6 @@ const PlanStatus = ({ plan, ...props }) => {
   return (
     <div>
       <div>{getStatus().text}</div>
-      {getStatus().progress && (
-        <Progress value={getStatus().progress} title="" size={ProgressSize.sm} />
-      )}
     </div>
   );
 };

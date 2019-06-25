@@ -31,6 +31,8 @@ const pvFetchFailure = Creators.pvFetchFailure;
 const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
 const stagingSuccess = Creators.stagingSuccess;
+const migrationFailure = Creators.migrationFailure;
+const stagingFailure = Creators.stagingFailure;
 const addPlanSuccess = Creators.addPlanSuccess;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
@@ -78,10 +80,11 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      dispatch(stagingSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
+      dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(stagingFailure(err));
     }
   };
 };
@@ -107,10 +110,11 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
+      dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(migrationFailure(err));
     }
   };
 };
