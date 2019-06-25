@@ -4,10 +4,12 @@ import KubeStore from './kube_store';
 export class MockClusterClient {
   private name: string;
   private state: object;
+  private kube_store: KubeStore;
   private reqTime = 500;
 
   constructor(name: string, state: object) {
     this.name = name;
+    this.kube_store = new KubeStore(name);
     this.state = state;
   }
 
@@ -16,7 +18,7 @@ export class MockClusterClient {
       setTimeout(() => {
         res({
           data: {
-            items: KubeStore.Instance.listResource(resource),
+            items: this.kube_store.listResource(resource),
           },
         });
       }, this.reqTime);
@@ -27,7 +29,7 @@ export class MockClusterClient {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
         res({
-          data: KubeStore.Instance.getResource(resource, name),
+          data: this.kube_store.getResource(resource, name),
         });
       }, this.reqTime);
     });
@@ -43,7 +45,7 @@ export class MockClusterClient {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
         res({
-          data: KubeStore.Instance.setResource(resource, newObject.metadata.name, newObject),
+          data: this.kube_store.setResource(resource, newObject.metadata.name, newObject),
         });
       }, this.reqTime);
     });
