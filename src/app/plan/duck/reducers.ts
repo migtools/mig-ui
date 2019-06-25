@@ -138,15 +138,8 @@ export const updatePlans = (state = INITIAL_STATE, action) => {
 };
 
 export const initStage = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  // updatedPlan.status = {
-  //   state: 'Staging',
-  //   progress: 0,
-  // };
-
-  // updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
