@@ -108,7 +108,7 @@ const runStage = plan => {
         retryAfter: 5,
         stopAfterRetries: 2,
       };
-      dispatch(startStatusPolling(params));
+      // dispatch(startStatusPolling(params));
 
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {

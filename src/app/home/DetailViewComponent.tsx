@@ -179,7 +179,6 @@ class DetailViewComponent extends Component<IProps, IState> {
 function mapStateToProps(state) {
   const allClusters = clusterSelectors.getAllClusters(state);
   const allStorage = storageSelectors.getAllStorage(state);
-  // const allPlans = planSelectors.getAllPlans(state);
   const plansWithStatus = planSelectors.getPlansWithStatus(state);
   const clusterAssociatedPlans = clusterSelectors.getAssociatedPlans(state);
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
@@ -193,7 +192,6 @@ function mapStateToProps(state) {
     allStorage,
     migStorageList,
     plansWithStatus,
-    // allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,
     isMigrating,
