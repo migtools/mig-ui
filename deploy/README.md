@@ -117,3 +117,16 @@ is to read the data mounted into the pod from the installation's `ConfigMap`
 and delivering these dynamic values to the JS by encoding and injecting them
 into the HTML file that loads the JS bundle. The react app is then able to
 retrieve these values on the client-side, and build its clients accordingly.
+
+
+### Removing Mig UI
+
+To remove mig ui, run the following script. Make sure you set the `HOSTAPI` environment variable.
+
+`HOSTAPI=<api_server_address> ./destroy.sh`
+
+By default, it will not remove the namespace in which the ui was deployed. 
+
+To remove the namespace, run the script with `CLEANUP` environment variable set to `true`.
+
+`CLEANUP=true HOSTAPI=<api_server_address> ./destroy.sh`

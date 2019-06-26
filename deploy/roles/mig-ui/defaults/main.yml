@@ -11,4 +11,5 @@ mig_ui_oauth_client_id: "{{ mig_ui_name }}"
 mig_ui_host_cluster_name: "host"
 
 # Optional switches
-mig_ui_create_namespace: true
+# determine whether to delete the napespace after ui is destroyed
+mig_ui_remove_namespace: false
