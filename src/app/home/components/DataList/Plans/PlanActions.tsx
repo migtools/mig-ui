@@ -30,7 +30,6 @@ const PlanActions = ({ plan, isLoading }) => {
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            hasSucceededMigration ||
             finalMigrationComplete ||
             isLoading
           }
@@ -49,7 +48,6 @@ const PlanActions = ({ plan, isLoading }) => {
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            hasSucceededMigration ||
             finalMigrationComplete ||
             isLoading
           }

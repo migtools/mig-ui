@@ -7,7 +7,11 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
-import { startPolling, stopPolling, updatePollingStats } from '../common/duck/actions';
+import {
+  startDataListPolling,
+  stopDataListPolling,
+  updateDataListPollingStats,
+} from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
@@ -31,9 +35,9 @@ interface IProps {
   isMigrating?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
-  updatePollingStats: (stats) => void;
-  startPolling: (params) => void;
-  stopPolling: () => void;
+  updateDataListPollingStats: (stats) => void;
+  startDataListPolling: (params) => void;
+  stopDataListPolling: () => void;
 }
 
 interface IState {
@@ -97,7 +101,7 @@ class DetailViewComponent extends Component<IProps, IState> {
   };
 
   handleStatsChange = stats => {
-    this.props.updatePollingStats(stats);
+    this.props.updateDataListPollingStats(stats);
   };
   handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
@@ -118,7 +122,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       retryAfter: 5,
       stopAfterRetries: 2,
     };
-    this.props.startPolling(params);
+    this.props.startDataListPolling(params);
   };
 
   render() {
@@ -152,7 +156,9 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanContext.Provider value={{ handleStageTriggered, startPolling, stopPolling }}>
+          <PlanContext.Provider
+            value={{ handleStageTriggered, startDataListPolling, stopDataListPolling }}
+          >
             <PlanDataListItem
               planList={plansWithStatus}
               clusterList={allClusters}
@@ -161,7 +167,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               plansDisabled={isAddPlanDisabled}
               isLoading={this.props.isMigrating || this.props.isStaging}
               onStartPolling={this.handleStartPolling}
-              onStopPolling={this.props.stopPolling}
+              onStopPolling={this.props.stopDataListPolling}
             />
           </PlanContext.Provider>
         </DataList>
@@ -206,9 +212,9 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
-    updatePollingStats: stats => dispatch(updatePollingStats(stats)),
-    startPolling: params => dispatch(startPolling(params)),
-    stopPolling: () => dispatch(stopPolling()),
+    updateDataListPollingStats: stats => dispatch(updateDataListPollingStats(stats)),
+    startDataListPolling: params => dispatch(startDataListPolling(params)),
+    stopDataListPolling: () => dispatch(stopDataListPolling()),
   };
 };
 

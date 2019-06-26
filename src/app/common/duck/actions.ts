@@ -15,15 +15,16 @@ export function alertClear() {
   return { type: ALERT_CLEAR };
 }
 
-export const updatePollingStats = stats => ({
-  type: UPDATE_POLLING_STATS,
+export const updateDataListPollingStats = stats => ({
+  type: 'UPDATE_DATA_LIST_POLLING_STATS',
+  stats,
 });
 
-export const startPolling = (params?: any) => ({
-  type: POLL_START,
+export const startDataListPolling = (params?: any) => ({
+  type: 'DATA_LIST_POLL_START',
   params,
 });
 
-export const stopPolling = () => ({
-  type: POLL_STOP,
+export const stopDataListPolling = () => ({
+  type: 'DATA_LIST_POLL_STOP',
 });
