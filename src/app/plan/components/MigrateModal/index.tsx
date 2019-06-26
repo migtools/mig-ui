@@ -4,29 +4,20 @@ import { Modal } from '@patternfly/react-core';
 import MigrateModalForm from './MigrateModalForm';
 import planOperations from '../../duck/operations';
 
-class MigrateModal extends React.Component<any, any> {
-  handleSubmit = () => {
-    this.props.runMigration(this.props.plan);
+const MigrateModal = ({ runMigration, onHandleClose, isOpen, plan }) => {
+  const handleSubmit = () => {
+    runMigration(plan);
   };
-  handleClose = () => {
-    this.props.onHandleClose();
+  const handleClose = () => {
+    onHandleClose();
   };
 
-  render() {
-    const { plan } = this.props;
-
-    return (
-      <Modal
-        isSmall
-        isOpen={this.props.isOpen}
-        onClose={this.handleClose}
-        title={`Migrate ${plan.planName}`}
-      >
-        <MigrateModalForm onHandleModalToggle={this.handleClose} handleSubmit={this.handleSubmit} />
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal isSmall isOpen={isOpen} onClose={handleClose} title={`Migrate ${plan.planName}`}>
+      <MigrateModalForm onHandleModalToggle={handleClose} handleSubmit={handleSubmit} />
+    </Modal>
+  );
+};
 
 const mapDispatchToProps = dispatch => {
   return {

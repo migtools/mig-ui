@@ -36,10 +36,10 @@ function* poll(action) {
     } catch (e) {
       throw new Error(e);
     }
-    yield delay(5000);
+    yield delay(params.delay);
   }
 }
-function* watchPollingTasks() {
+function* watchDataListPolling() {
   while (true) {
     const action = yield take(startPolling().type);
     yield race([call(poll, action), take(stopPolling().type)]);
@@ -47,5 +47,5 @@ function* watchPollingTasks() {
 }
 
 export default {
-  watchPollingTasks,
+  watchDataListPolling,
 };

@@ -8,53 +8,16 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 
 const PlanActions = ({ plan, isLoading }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
-  const stage = useContext(PlanContext);
-  // const [is, toggleDisabled] = useOpenModal(false);
-  const isDisabled = () => {
-    let hasReadyCondition = null;
-    let hasErrorCondition = null;
-    let hasRunningMigrations = null;
-    let finalMigrationComplete = null;
-    let hasSucceededMigration = null;
-    let hasClosedCondition = null;
+  const planContext = useContext(PlanContext);
+  const {
+    hasClosedCondition,
+    hasReadyCondition,
+    hasErrorCondition,
+    hasRunningMigrations,
+    hasSucceededMigration,
+    finalMigrationComplete,
+  } = plan.PlanStatus;
 
-    if (plan.MigPlan.status) {
-      hasClosedCondition = plan.MigPlan.spec.closed;
-      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
-      hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
-        .length;
-
-      if (plan.Migrations.length) {
-        hasRunningMigrations = !!plan.Migrations.filter(m => {
-          if (m.status) {
-            return m.status.conditions.some(c => c.type === 'Running');
-          }
-        }).length;
-
-        hasSucceededMigration = !!plan.Migrations.filter(m => {
-          if (m.status) {
-            return m.status.conditions.some(c => c.type === 'Succeeded');
-          }
-        }).length;
-
-        finalMigrationComplete = !!plan.Migrations.filter(m => {
-          if (m.status) {
-            return m.spec.stage === false && hasSucceededMigration;
-          }
-        }).length;
-      }
-
-      return (
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete
-      );
-    } else {
-      return true;
-    }
-  };
   return (
     <Flex>
       <Box m="auto auto auto 0">
@@ -62,15 +25,37 @@ const PlanActions = ({ plan, isLoading }) => {
       </Box>
       <Box mx={1}>
         <Button
-          isDisabled={isDisabled() || isLoading}
+          isDisabled={
+            hasClosedCondition ||
+            !hasReadyCondition ||
+            hasErrorCondition ||
+            hasRunningMigrations ||
+            hasSucceededMigration ||
+            finalMigrationComplete ||
+            isLoading
+          }
           variant="primary"
-          onClick={() => stage.handleStageTriggered(plan)}
+          onClick={() => {
+            planContext.handleStageTriggered(plan);
+          }}
         >
           Stage
         </Button>
       </Box>
       <Box mx={1}>
-        <Button isDisabled={isDisabled() || isLoading} variant="primary" onClick={toggleOpen}>
+        <Button
+          isDisabled={
+            hasClosedCondition ||
+            !hasReadyCondition ||
+            hasErrorCondition ||
+            hasRunningMigrations ||
+            hasSucceededMigration ||
+            finalMigrationComplete ||
+            isLoading
+          }
+          variant="primary"
+          onClick={toggleOpen}
+        >
           Migrate
         </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />

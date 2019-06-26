@@ -16,7 +16,7 @@ import { PlanContext } from './duck/context';
 interface IProps {
   allClusters: any[];
   allStorage: any[];
-  allPlans: any[];
+  plansWithStatus: any[];
   clusterAssociatedPlans: any;
   storageAssociatedPlans: any;
   migStorageList: any[];
@@ -113,7 +113,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       asyncFetch: planOperations.fetchPlansGenerator,
       callback: this.handlePlanPoll,
       onStatsChange: this.handleStatsChange,
-      delay: 6000,
+      delay: 1000,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
@@ -126,7 +126,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       allStorage,
       allClusters,
       migStorageList,
-      allPlans,
+      plansWithStatus,
       clusterAssociatedPlans,
       storageAssociatedPlans,
     } = this.props;
@@ -152,9 +152,9 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanContext.Provider value={{ handleStageTriggered }}>
+          <PlanContext.Provider value={{ handleStageTriggered, startPolling, stopPolling }}>
             <PlanDataListItem
-              planList={allPlans}
+              planList={plansWithStatus}
               clusterList={allClusters}
               storageList={allStorage}
               onPlanSubmit={this.handlePlanSubmit}
@@ -173,7 +173,8 @@ class DetailViewComponent extends Component<IProps, IState> {
 function mapStateToProps(state) {
   const allClusters = clusterSelectors.getAllClusters(state);
   const allStorage = storageSelectors.getAllStorage(state);
-  const allPlans = planSelectors.getAllPlans(state);
+  // const allPlans = planSelectors.getAllPlans(state);
+  const plansWithStatus = planSelectors.getPlansWithStatus(state);
   const clusterAssociatedPlans = clusterSelectors.getAssociatedPlans(state);
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
@@ -185,7 +186,8 @@ function mapStateToProps(state) {
     allClusters,
     allStorage,
     migStorageList,
-    allPlans,
+    plansWithStatus,
+    // allPlans,
     clusterAssociatedPlans,
     storageAssociatedPlans,
     isMigrating,
