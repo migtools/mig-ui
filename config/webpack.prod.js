@@ -1,7 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
 const config = {
   entry: './src/index.tsx',
   output: {
@@ -25,10 +28,6 @@ const config = {
         enforce: 'pre',
       },
       {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader'],
-      },
-      {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
         use: {
           loader: 'file-loader',
@@ -39,13 +38,23 @@ const config = {
           },
         },
       },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
     ],
+  },
+  optimization: {
+    minimizer: [
+      new OptimizeCSSAssetsPlugin({})
+    ]
   },
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
-    new ExtractTextPlugin({
-      filename: 'style.css',
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css'
     }),
   ],
 };
