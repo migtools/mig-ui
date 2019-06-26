@@ -42,10 +42,11 @@ this as part of the install process.
 By now you should have the UI and it's various components installed in your
 cluster.
 
-As of OCP 4.1, CORS support remains an unsupported configuration option that
+**DISCLAIMER:** As of OCP 4.1, CORS support remains an unsupported configuration option that
 must be manually configured in the OCP4 cluster to allow the CAM UI's requests
 to succeed. [See the doc describing OAuth and CORS for more information](../docs/oauth_cors.md).
 
+#### OCP4 CORS configuration
 To configure your OCP4 cluster to accept your UI's requests, first retrieve your
 UI's route by running the following command, (namespace here by default is `mig`):
 
@@ -80,7 +81,7 @@ Example:
 ```
 unsupportedConfigOverrides:
   corsAllowedOrigins:
-  - '//mig-ui-mig.apps.examplecluster.com
+  - '//mig-ui-mig.apps.examplecluster.com'
 ```
 
 Similarly, we need to configure the same value in the OAuth server. Edit the
@@ -101,8 +102,20 @@ Example:
 spec:
   unsupportedConfigOverrides:
     corsAllowedOrigins:
-    - '//mig-ui-mig.apps.examplecluster.com
+    - '//mig-ui-mig.apps.examplecluster.com'
 ```
+
+#### OCP3 CORS configuration
+
+OCP3 clusters intended to be registered with the CAM UI also need their CORS
+configured to whitelist the UI's origin. This is configured with the same value
+as seen above, but the `corsAllowedOrigins` array is found as part of the Asset
+Configuration section in the `master-config.yaml`. After updating the config,
+be sure to restart your master to reload the configuration.
+
+For more specific information, see the official 3.x documentation:
+* [Master Config API Spec](https://docs.openshift.com/container-platform/3.11/install_config/master_node_configuration.html#master-config-asset-config)
+* [Example and more explanation in the Console docs](https://docs.openshift.com/container-platform/3.11/architecture/infrastructure_components/web_console.html#corsAllowedOrigins)
 
 ### (3)Cert configuration
 
