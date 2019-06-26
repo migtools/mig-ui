@@ -1,6 +1,11 @@
 import { race, call, delay, put, take, takeEvery, all, select } from 'redux-saga/effects';
 
-import { startDataListPolling, stopDataListPolling } from './actions';
+import {
+  startDataListPolling,
+  stopDataListPolling,
+  startStatusPolling,
+  stopStatusPolling,
+} from './actions';
 
 function* poll(action) {
   const params = { ...action.params };
@@ -46,6 +51,14 @@ function* watchDataListPolling() {
   }
 }
 
+function* watchStatusPolling() {
+  while (true) {
+    const action = yield take(startStatusPolling().type);
+    yield race([call(poll, action), take(stopStatusPolling().type)]);
+  }
+}
+
 export default {
   watchDataListPolling,
+  watchStatusPolling,
 };

@@ -20,6 +20,11 @@ import {
 import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 
+import {
+  startStatusPolling,
+  stopStatusPolling,
+  updateStatusPollingStats,
+} from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -75,12 +80,36 @@ const runStage = plan => {
         true
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
       //created migration response object
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+      const params = {
+        asyncFetch: fetchPlanStatusGenerator(plan),
+        callback: response => {
+          if (response && response.isSuccessful === true) {
+            console.log('res', response);
+            //if status is done, success
+
+            // dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+            return true;
+          }
+
+          return false;
+        },
+
+        onStatsChange: stats => {
+          dispatch(updateStatusPollingStats(stats));
+        },
+        delay: 1000,
+        retryOnFailure: true,
+        retryAfter: 5,
+        stopAfterRetries: 2,
+      };
+      dispatch(startStatusPolling(params));
+
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -276,8 +305,8 @@ const fetchNamespacesForCluster = clusterName => {
     try {
       const res = await client.list(nsResource);
       dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
-    } catch(err) {
-      if(isSelfSignedCertError(err)) {
+    } catch (err) {
+      if (isSelfSignedCertError(err)) {
         const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
         handleSelfSignedCertError(failedUrl, dispatch);
         return;
@@ -297,6 +326,27 @@ function* fetchPlansGenerator() {
     const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
     const groupedPlans = yield groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
+function* fetchPlanStatusGenerator(plan) {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  try {
+    const planRes = yield client.get(
+      new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace),
+      plan.MigPlan.metadata.name
+    );
+    const migMigrationResource = new MigResource(
+      MigResourceKind.MigMigration,
+      state.migMeta.namespace
+    );
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = yield groupPlan(plan, migrationListResponse);
+    return { updatedPlan: groupedPlan, isSuccessful: true };
   } catch (e) {
     return { e, isSuccessful: false };
   }

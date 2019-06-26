@@ -1,6 +1,12 @@
-import { ALERT_CLEAR, ALERT_ERROR, ALERT_SUCCESS, UPDATE_POLLING_STATS } from './actions';
+import {
+  ALERT_CLEAR,
+  ALERT_ERROR,
+  ALERT_SUCCESS,
+  UPDATE_STATUS_POLLING_STATS,
+  UPDATE_DATA_LIST_POLLING_STATS,
+} from './actions';
 
-export const INITIAL_STATE = { dataListPollingStats: {} };
+export const INITIAL_STATE = { dataListPollingStats: {}, statusPollingStats: {} };
 
 export default createReducer(
   { successText: null, errorText: null },
@@ -16,8 +22,11 @@ export default createReducer(
     [ALERT_CLEAR]: (state, action) => {
       return { ...state, successText: null, errorText: null };
     },
-    [UPDATE_POLLING_STATS]: (state, action) => {
+    [UPDATE_DATA_LIST_POLLING_STATS]: (state, action) => {
       return { ...state, dataListPollingStats: action.stats };
+    },
+    [UPDATE_STATUS_POLLING_STATS]: (state, action) => {
+      return { ...state, statusPollingStats: action.stats };
     },
   }
 );
