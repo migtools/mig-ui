@@ -1,23 +1,17 @@
 import React from 'react';
-import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { RouteComponentProps } from 'react-router-dom';
+import { Box, Text } from '@rebass/emotion';
 import {
-  Button,
   TextInput,
   TextContent,
   TextList,
   TextListItem,
   TextArea,
 } from '@patternfly/react-core';
-import styled from '@emotion/styled';
-import theme from '../../../../theme';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 interface IProps {
   component: React.ReactNode;
 }
-const PlanNameInput = styled(TextInput)`
-  width: 20em !important;
-`;
 
 const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   handleChange,
@@ -38,7 +32,8 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
         <TextContent>
           <TextList component="dl">
             <TextListItem component="dt">Plan Name</TextListItem>
-            <PlanNameInput
+            <TextInput
+              style={{width: '20em'}}
               onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}
               onBlur={handleBlur}
