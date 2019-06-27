@@ -52,7 +52,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     /* Advanced Options */
     // "declarationDir": "lib"                /* Output directory for generated declaration files. */
-    "sourceMap": false,
+    "sourceMap": true,
     "jsx": "react",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
@@ -63,6 +63,10 @@
     "strictNullChecks": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "lib": ["es6", "es7", "dom"]
-  }
+    "lib": [
+      "es6",
+      "es7",
+      "dom"
+    ]
+  },
 }

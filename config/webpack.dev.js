@@ -95,6 +95,11 @@ const webpackConfig = {
         use: 'ts-loader',
       },
       {
+        test: /\.js$/,
+        use: ['source-map-loader'],
+        enforce: 'pre',
+      },
+      {
         test: /\.css$/,
         loaders: ['style-loader', 'css-loader'],
       },
