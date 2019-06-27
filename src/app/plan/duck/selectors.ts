@@ -42,14 +42,8 @@ const getPlansWithStatus = createSelector(
             }
           }).length;
 
-          hasRunningMigrations = !!plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.status.conditions.some(c => c.type === 'Running');
-            }
-          }).length;
-
           hasSucceededMigration = !!plan.Migrations.filter(m => {
-            if (m.status) {
+            if (m.status && !m.spec.stage) {
               return m.status.conditions.some(c => c.type === 'Succeeded');
             }
           }).length;
@@ -65,6 +59,12 @@ const getPlansWithStatus = createSelector(
               return m.spec.stage === false && hasSucceededMigration;
             }
           }).length;
+
+          hasRunningMigrations = !!plan.Migrations.filter(m => {
+            if (m.status) {
+              return m.status.conditions.some(c => c.type === 'Running');
+            }
+          }).length;
         }
       }
       const statusObject = {
@@ -77,6 +77,7 @@ const getPlansWithStatus = createSelector(
         hasSucceededMigration: hasSucceededMigration,
         finalMigrationComplete: finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
+        latestType: latestType,
       };
       return { ...plan, PlanStatus: statusObject };
     });

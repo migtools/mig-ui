@@ -25,9 +25,6 @@ const PlanStatus = ({ plan, ...props }) => {
     if (hasNotReadyCondition || !hasReadyCondition) {
       status.text = 'Not Ready';
     }
-    if (hasRunningMigrations) {
-      status.text = `${latestType} Running`;
-    }
     if (hasSucceededStage) {
       status.text = `Stage Succeeded`;
     }
@@ -36,6 +33,9 @@ const PlanStatus = ({ plan, ...props }) => {
     }
     if (hasClosedCondition) {
       status.text = 'Closed';
+    }
+    if (hasRunningMigrations) {
+      status.text = `${latestType} Running`;
     }
     return status;
   };
