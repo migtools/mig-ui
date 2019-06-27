@@ -83,7 +83,8 @@ export default class MigrationsTable extends React.Component<any, any> {
       const migPhase = migration.status.phase;
       const serverErrorMessage = migration.status.errors;
       if (serverErrorMessage) {
-        status.phase = 'An error occurred';
+        // status.phase = 'An error occurred';
+        status.phase = serverErrorMessage.pop();
         status.progress = null;
         return status;
       } else {
@@ -107,6 +108,10 @@ export default class MigrationsTable extends React.Component<any, any> {
             break;
           case 'Completed':
             status.phase = 'Succeeded';
+            status.progress = null;
+            break;
+          case 'BackupFailed':
+            status.phase = 'Backup Failed';
             status.progress = null;
             break;
           default:

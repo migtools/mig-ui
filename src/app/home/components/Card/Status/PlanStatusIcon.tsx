@@ -18,25 +18,34 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, ...rest }) => {
   const NotStarted = styled(OutlinedCircleIcon)`
     color: ${theme.colors.blue};
   `;
+  const Error = styled(OutlinedCircleIcon)`
+    color: ${theme.colors.statusRed};
+  `;
 
   const Complete = styled(OutlinedCircleIcon)`
     color: ${theme.colors.statusGreen};
   `;
-  if (plan.Migrations.length > 0 && plan.Migrations[0].status) {
-    switch (plan.Migrations[0].status.phase) {
-      case 'Completed':
-        return <Complete />;
-      default:
-        return (
-          <Loader
-            type="RevolvingDot"
-            color={theme.colors.medGray3}
-            height="1em"
-            width="1em"
-            style={{ display: 'inline' }}
-          />
-        );
-    }
+  const {
+    hasFailedCondition,
+    hasRunningMigrations,
+    hasNotReadyCondition,
+    hasSucceededStage,
+    hasSucceededMigration,
+  } = plan.PlanStatus;
+  if (hasFailedCondition || hasNotReadyCondition) {
+    return <Error />;
+  } else if (hasRunningMigrations) {
+    return (
+      <Loader
+        type="RevolvingDot"
+        color={theme.colors.medGray3}
+        height="1em"
+        width="1em"
+        style={{ display: 'inline' }}
+      />
+    );
+  } else if (hasSucceededMigration || hasSucceededStage) {
+    return <Complete />;
   } else {
     return <NotStarted />;
   }

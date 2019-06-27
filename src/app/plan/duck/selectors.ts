@@ -15,20 +15,33 @@ const getPlansWithStatus = createSelector(
   [planSelector],
   plans => {
     let hasReadyCondition = null;
-    let hasErrorCondition = null;
+    let hasPlanError = null;
+    let hasMigrationError = null;
+    let hasPrevMigrations = null;
     let hasRunningMigrations = null;
     let finalMigrationComplete = null;
     let hasSucceededMigration = null;
+    let hasSucceededStage = null;
     let hasClosedCondition = null;
+    let latestType = null;
 
     const plansWithStatus = plans.map(plan => {
       if (plan.MigPlan.status) {
         hasClosedCondition = plan.MigPlan.spec.closed;
         hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
-        hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
+        hasPlanError = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
           .length;
 
         if (plan.Migrations.length) {
+          hasPrevMigrations = !!plan.Migrations.length;
+          latestType = plan.Migrations[0].spec.stage ? 'Stage' : 'Migration';
+
+          hasSucceededStage = !!plan.Migrations.filter(m => {
+            if (m.status && m.spec.stage) {
+              return m.status.conditions.some(c => c.type === 'Succeeded');
+            }
+          }).length;
+
           hasRunningMigrations = !!plan.Migrations.filter(m => {
             if (m.status) {
               return m.status.conditions.some(c => c.type === 'Running');
@@ -41,6 +54,12 @@ const getPlansWithStatus = createSelector(
             }
           }).length;
 
+          hasMigrationError = !!plan.Migrations.filter(m => {
+            if (m.status) {
+              return m.status.conditions.some(c => c.type === 'Failed');
+            }
+          }).length;
+
           finalMigrationComplete = !!plan.Migrations.filter(m => {
             if (m.status) {
               return m.spec.stage === false && hasSucceededMigration;
@@ -49,12 +68,15 @@ const getPlansWithStatus = createSelector(
         }
       }
       const statusObject = {
+        hasSucceededStage: hasSucceededStage,
+        hasPrevMigrations: hasPrevMigrations,
         hasClosedCondition: hasClosedCondition,
         hasReadyCondition: hasReadyCondition,
-        hasErrorCondition: hasErrorCondition,
+        hasNotReadyCondition: hasPlanError,
         hasRunningMigrations: hasRunningMigrations,
         hasSucceededMigration: hasSucceededMigration,
         finalMigrationComplete: finalMigrationComplete,
+        hasFailedCondition: hasMigrationError,
       };
       return { ...plan, PlanStatus: statusObject };
     });
