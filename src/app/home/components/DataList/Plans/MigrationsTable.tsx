@@ -62,8 +62,8 @@ export default class MigrationsTable extends React.Component<any, any> {
   getStatus = migration => {
     const status = {
       progress: null,
-      start: null,
-      end: null,
+      start: 'TBD',
+      end: 'TBD',
       moved: 0,
       copied: 0,
       phase: 'Not started',
@@ -78,7 +78,7 @@ export default class MigrationsTable extends React.Component<any, any> {
         .filter(c => c.type === 'Succeeded')
         .map(c => c.lastTransitionTime)
         .toString();
-      status.end = endTime && moment(endTime).format('LLL');
+      status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
 
       const migPhase = migration.status.phase;
       const serverErrorMessage = migration.status.errors;
