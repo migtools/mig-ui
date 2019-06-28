@@ -13,7 +13,12 @@ const MigrateModal = ({ runMigration, onHandleClose, isOpen, plan }) => {
   };
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={handleClose} title={`Migrate ${plan.planName}`}>
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={`Migrate ${plan.MigPlan.metadata.name}`}
+    >
       <MigrateModalForm onHandleModalToggle={handleClose} handleSubmit={handleSubmit} />
     </Modal>
   );
