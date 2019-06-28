@@ -21,6 +21,7 @@ interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
   successMessage: any;
+  progressMessage: any;
   alertType: string;
   clearAlerts: () => void;
 }
@@ -33,11 +34,21 @@ const NotificationContainer = styled(Box)`
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
   successMessage,
+  progressMessage,
   alertType,
   isLoggedIn,
   clearAlerts,
 }) => (
   <Flex flexDirection="column" width="100%">
+    {progressMessage && (
+      <NotificationContainer>
+        <Alert
+          variant="info"
+          title={progressMessage}
+          action={<AlertActionCloseButton onClose={clearAlerts} />}
+        />
+      </NotificationContainer>
+    )}
     {errorMessage && (
       <NotificationContainer>
         <Alert
@@ -99,6 +110,7 @@ export default connect(
     isLoggedIn: !!state.auth.user,
     errorMessage: state.common.errorText,
     successMessage: state.common.successText,
+    progressMessage: state.common.progressText,
   }),
   dispatch => ({
     clearAlerts: () => dispatch(commonOperations.alertClear()),

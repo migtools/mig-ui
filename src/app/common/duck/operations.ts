@@ -1,4 +1,4 @@
-import { alertSuccess, alertError, alertClear } from './actions';
+import { alertSuccess, alertError, alertProgress, alertClear } from './actions';
 const alertErrorTimeout = (message: string) => {
   return async (dispatch, getState) => {
     try {
@@ -23,9 +23,22 @@ const alertSuccessTimeout = (message: string) => {
     }
   };
 };
+const alertProgressTimeout = (message: string) => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(alertProgress(message));
+      setTimeout(() => {
+        dispatch(alertClear());
+      }, 5000);
+    } catch (err) {
+      dispatch(alertClear());
+    }
+  };
+};
 
 export default {
   alertSuccessTimeout,
   alertErrorTimeout,
+  alertProgressTimeout,
   alertClear,
 };

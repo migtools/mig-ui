@@ -1,5 +1,6 @@
 export const ALERT_SUCCESS = 'ALERT_SUCCESS';
 export const ALERT_ERROR = 'ALERT_ERROR';
+export const ALERT_PROGRESS = 'ALERT_PROGRESS';
 export const ALERT_CLEAR = 'ALERT_CLEAR';
 export const UPDATE_DATA_LIST_POLLING_STATS = 'UPDATE_DATA_LIST_POLLING_STATS';
 
@@ -8,6 +9,9 @@ export function alertSuccess(text: string) {
 }
 export function alertError(text: string) {
   return { type: ALERT_ERROR, text };
+}
+export function alertProgress(text: string) {
+  return { type: ALERT_PROGRESS, text };
 }
 export function alertClear() {
   return { type: ALERT_CLEAR };

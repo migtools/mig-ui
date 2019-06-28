@@ -65,6 +65,7 @@ const runStage = plan => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initStage(plan.MigPlan.metadata.name));
+      dispatch(commonOperations.alertProgressTimeout('Staging Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const migMigrationObj = createMigMigration(
@@ -132,6 +133,7 @@ const runMigration = plan => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
+      dispatch(commonOperations.alertProgressTimeout('Migration Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
