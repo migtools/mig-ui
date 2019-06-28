@@ -96,15 +96,11 @@ const getCounts = createSelector(
     };
 
     plans.filter(plan => {
-      const hasReadyCondition = null;
       let hasErrorCondition = null;
       let hasRunningMigrations = null;
       let hasSucceededMigration = null;
-      const hasClosedCondition = null;
 
       if (plan.MigPlan.status) {
-        // hasClosedCondition = plan.MigPlan.spec.closed;
-        // hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
         hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
           .length;
 

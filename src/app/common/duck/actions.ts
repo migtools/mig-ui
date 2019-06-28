@@ -32,12 +32,3 @@ export const updateStatusPollingStats = stats => ({
   type: 'UPDATE_STATUS_POLLING_STATS',
   stats,
 });
-
-// export const startStatusPolling = (params?: any) => ({
-//   type: 'STATUS_POLL_START',
-//   params,
-// });
-
-// export const stopStatusPolling = () => ({
-//   type: 'STATUS_POLL_STOP',
-// });

@@ -2,20 +2,20 @@ import { race, call, delay, put, take } from 'redux-saga/effects';
 
 import { Creators } from './actions';
 
-function* checkJobStatus(action) {
+function* checkMigrationStatus(action) {
   const params = { ...action.params };
-  let jobSucceeded = false;
-  while (!jobSucceeded) {
+  let migrationCompleted = false;
+  while (!migrationCompleted) {
     const plansRes = yield call(params.asyncFetch);
     const pollingStatus = params.callback(plansRes);
 
     switch (pollingStatus) {
       case 'SUCCESS':
-        jobSucceeded = true;
+        migrationCompleted = true;
         yield put({ type: 'STOP_STATUS_POLLING' });
         break;
       case 'FAILURE':
-        jobSucceeded = true;
+        migrationCompleted = true;
         Creators.stopStatusPolling();
         yield put({ type: 'STOP_STATUS_POLLING' });
         break;
@@ -28,7 +28,7 @@ function* checkJobStatus(action) {
 function* watchStatusPolling() {
   while (true) {
     const data = yield take(Creators.startStatusPolling().type);
-    yield race([call(checkJobStatus, data), take('STOP_STATUS_POLLING')]);
+    yield race([call(checkMigrationStatus, data), take('STOP_STATUS_POLLING')]);
   }
 }
 
