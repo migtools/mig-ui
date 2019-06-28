@@ -20,7 +20,6 @@ import PlanEmptyState from './PlanEmptyState';
 interface IPlanContentProps {
   planList: any;
   onPlanSubmit: () => void;
-  onStageTriggered: (plan) => void;
   clusterList: any;
   storageList: any;
   isLoading: boolean;
@@ -109,13 +108,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 ),
               },
               {
-                title: (
-                  <PlanActions
-                    plan={plan}
-                    isLoading={this.props.isLoading}
-                    onStageTriggered={this.props.onStageTriggered}
-                  />
-                ),
+                title: <PlanActions plan={plan} isLoading={this.props.isLoading} />,
               },
             ],
           },

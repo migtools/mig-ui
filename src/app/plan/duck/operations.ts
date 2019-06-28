@@ -30,33 +30,76 @@ const pvFetchRequest = Creators.pvFetchRequest;
 const pvFetchFailure = Creators.pvFetchFailure;
 const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationSuccess = Creators.migrationSuccess;
+const stagingSuccess = Creators.stagingSuccess;
+const migrationFailure = Creators.migrationFailure;
+const stagingFailure = Creators.stagingFailure;
 const addPlanSuccess = Creators.addPlanSuccess;
-
-// const addPlanFailure = Creators.addPlanFailure;
-// const removePlanSuccess = Creators.removePlanSuccess;
-// const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
 const PollingInterval = 5000;
 const PvsDiscoveredType = 'PvsDiscovered';
 
+const groupPlan: any = (plan, response) => {
+  const fullPlan = {
+    MigPlan: plan.MigPlan,
+  };
+  if (response.data.items.length > 0) {
+    const sortMigrations = migrationList =>
+      migrationList.sort((left, right) => {
+        return moment
+          .utc(right.metadata.creationTimestamp)
+          .diff(moment.utc(left.metadata.creationTimestamp));
+      });
+
+    const matchingMigrations = response.data.items.filter(
+      i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
+    );
+
+    fullPlan['Migrations'] = sortMigrations(matchingMigrations);
+  } else {
+    fullPlan['Migrations'] = [];
+  }
+  return fullPlan;
+};
 const runStage = plan => {
-  return (dispatch, getState) => {
-    dispatch(Creators.initStage(plan.planName));
-    const planNameToStage = plan.planName;
-    const interval = setInterval(() => {
-      const planList = getState().plan.migPlanList;
+  return async (dispatch, getState) => {
+    try {
+      dispatch(Creators.initStage(plan.MigPlan.metadata.name));
+      dispatch(commonOperations.alertProgressTimeout('Staging Started'));
+      const { migMeta } = getState();
+      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const migMigrationObj = createMigMigration(
+        uuidv1(),
+        plan.MigPlan.metadata.name,
+        migMeta.namespace,
+        true
+      );
+      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-      const planItem = planList.find(p => p.planName === planNameToStage);
-      if (planItem.status.progress === 100) {
-        dispatch(Creators.stagingSuccess(planItem.planName));
-        clearInterval(interval);
-        return;
-      }
+      //created migration response object
+      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
+      const migrationListResponse = await client.list(migMigrationResource);
+      const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const nextProgress = plan.status.progress + 10;
-      dispatch(Creators.updatePlanProgress(plan.planName, nextProgress));
-    }, 1000);
+      const statusPollingCallback = response => {
+        if (response && response.isSuccessful === true) {
+          const isStage = true;
+          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
+        }
+      };
+
+      const params = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: statusPollingCallback,
+      };
+
+      dispatch(Creators.startStatusPolling(params));
+      dispatch(Creators.updatePlanMigrations(groupedPlan));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(stagingFailure(err));
+    }
   };
 };
 
@@ -64,50 +107,90 @@ const runMigration = plan => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
+      dispatch(commonOperations.alertProgressTimeout('Migration Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
       const migMigrationObj = createMigMigration(
         uuidv1(),
         plan.MigPlan.metadata.name,
-        migMeta.namespace
+        migMeta.namespace,
+        false
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
       //created migration response object
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
 
-      const groupPlan: any = response => {
-        const fullPlan = {
-          MigPlan: plan.MigPlan,
-        };
-        if (response.data.items.length > 0) {
-          const sortMigrations = migrationList =>
-            migrationList.sort((left, right) => {
-              return moment
-                .utc(right.metadata.creationTimestamp)
-                .diff(moment.utc(left.metadata.creationTimestamp));
-            });
-
-          const matchingMigrations = response.data.items.filter(
-            i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
-          );
-
-          fullPlan['Migrations'] = sortMigrations(matchingMigrations);
-        } else {
-          fullPlan['Migrations'] = [];
-        }
-        return fullPlan;
-      };
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(migrationListResponse);
+      const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      dispatch(migrationSuccess(createMigRes.MigMigration.spec.migPlanRef.name));
+      const statusPollingCallback = response => {
+        if (response && response.isSuccessful === true) {
+          const isStage = false;
+          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
+        }
+      };
+
+      const params = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: statusPollingCallback,
+      };
+
+      dispatch(Creators.startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(migrationFailure(err));
     }
   };
+};
+const checkMigrationStatus = (dispatch, response, createMigRes, isStage) => {
+  const matchingPlan = response.updatedPlans
+    .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
+    .pop();
+
+  if (matchingPlan) {
+    const matchingMigration = matchingPlan.Migrations.filter(
+      s => s.metadata.name === createMigRes.data.metadata.name
+    ).pop();
+    if (matchingMigration && matchingMigration.status) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Succeeded'
+      );
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Failed'
+      );
+      switch (isStage) {
+        case true: {
+          if (hasSucceededCondition) {
+            dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+            dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
+            return 'SUCCESS';
+          } else if (hasErrorCondition) {
+            dispatch(stagingFailure());
+            dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
+            return 'FAILURE';
+          }
+          break;
+        }
+
+        case false:
+          if (hasSucceededCondition) {
+            dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
+            dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
+            return 'SUCCESS';
+          } else if (hasErrorCondition) {
+            dispatch(migrationFailure());
+            dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
+            return 'FAILURE';
+          }
+          break;
+      }
+      return;
+    }
+  }
 };
 
 const addPlan = migPlan => {
@@ -267,8 +350,8 @@ const fetchNamespacesForCluster = clusterName => {
     try {
       const res = await client.list(nsResource);
       dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
-    } catch(err) {
-      if(isSelfSignedCertError(err)) {
+    } catch (err) {
+      if (isSelfSignedCertError(err)) {
         const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
         handleSelfSignedCertError(failedUrl, dispatch);
         return;

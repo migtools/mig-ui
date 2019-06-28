@@ -1,6 +1,6 @@
-import { race, call, delay, put, take, takeEvery, all, select } from 'redux-saga/effects';
+import { race, call, delay, take } from 'redux-saga/effects';
 
-import { startPolling, stopPolling } from './actions';
+import { startDataListPolling, stopDataListPolling } from './actions';
 
 function* poll(action) {
   const params = { ...action.params };
@@ -36,16 +36,16 @@ function* poll(action) {
     } catch (e) {
       throw new Error(e);
     }
-    yield delay(5000);
+    yield delay(params.delay);
   }
 }
-function* watchPollingTasks() {
+function* watchDataListPolling() {
   while (true) {
-    const action = yield take(startPolling().type);
-    yield race([call(poll, action), take(stopPolling().type)]);
+    const action = yield take(startDataListPolling().type);
+    yield race([call(poll, action), take(stopDataListPolling().type)]);
   }
 }
 
 export default {
-  watchPollingTasks,
+  watchDataListPolling,
 };

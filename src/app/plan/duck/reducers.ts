@@ -70,20 +70,6 @@ export const sourceClusterNamespacesFetchSuccess = (state = INITIAL_STATE, actio
   };
 };
 
-export const updatePlanProgress = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  updatedPlan.status.progress = action.progress;
-  const updatedPlansList = [...filteredPlans, updatedPlan];
-  const sortedPlans = sortPlans(updatedPlansList);
-
-  return {
-    ...state,
-    migPlanList: sortedPlans,
-  };
-};
-
 export const updatePlan = (state = INITIAL_STATE, action) => {
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
@@ -138,15 +124,8 @@ export const updatePlans = (state = INITIAL_STATE, action) => {
 };
 
 export const initStage = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  updatedPlan.status = {
-    state: 'Staging',
-    progress: 0,
-  };
-
-  updatedPlan.migrations = [...updatedPlan.migrations, 'stage'];
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
@@ -158,36 +137,9 @@ export const initStage = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const stagingSuccess = (state = INITIAL_STATE, action) => {
-  const updatedPlan = state.migPlanList.find(p => p.planName === action.planName);
-  const filteredPlans = state.migPlanList.filter(p => p.planName !== action.planName);
-
-  updatedPlan.status = {
-    state: 'Staged Successfully',
-    progress: 0,
-  };
-  const updatedPlansList = [...filteredPlans, updatedPlan];
-  const sortedPlans = sortPlans(updatedPlansList);
-
-  return {
-    ...state,
-    migPlanList: sortedPlans,
-    isStaging: false,
-  };
-};
-
 export const initMigration = (state = INITIAL_STATE, action) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
-
-  const newMigObject = {
-    type: 'Migrate',
-    start: moment().format(),
-    end: moment().format(),
-    moved: 0,
-    copied: 0,
-    status: 'Complete',
-  };
 
   const updatedPlansList = [...filteredPlans, updatedPlan];
   const sortedPlans = sortPlans(updatedPlansList);
@@ -197,6 +149,22 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     migPlanList: sortedPlans,
     isMigrating: true,
   };
+};
+export const stagingSuccess = (state = INITIAL_STATE, action) => {
+  const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
+
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
+
+  return {
+    ...state,
+    migPlanList: sortedPlans,
+    isStaging: false,
+  };
+};
+export const stagingFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isStaging: false };
 };
 
 export const migrationSuccess = (state = INITIAL_STATE, action) => {
@@ -212,6 +180,9 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
     isMigrating: false,
   };
 };
+export const migrationFailure = (state = INITIAL_STATE, action) => {
+  return { ...state, isMigrating: false };
+};
 
 export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
@@ -220,11 +191,12 @@ export const HANDLERS = {
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
-  [Types.UPDATE_PLAN_PROGRESS]: updatePlanProgress,
   [Types.INIT_STAGE]: initStage,
   [Types.STAGING_SUCCESS]: stagingSuccess,
+  [Types.STAGING_FAILURE]: stagingFailure,
   [Types.INIT_MIGRATION]: initMigration,
   [Types.MIGRATION_SUCCESS]: migrationSuccess,
+  [Types.MIGRATION_FAILURE]: migrationFailure,
   [Types.UPDATE_PLAN]: updatePlan,
   [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
   [Types.UPDATE_PLANS]: updatePlans,

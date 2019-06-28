@@ -20,10 +20,8 @@ const PlanDataListItem = ({
   isLoading,
   planList,
   plansDisabled,
-  onStageTriggered,
   onStartPolling,
   onStopPolling,
-  ...props
 }) => {
   const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
@@ -72,7 +70,6 @@ const PlanDataListItem = ({
           storageList={storageList}
           isLoading={isLoading}
           isExpanded={isExpanded}
-          onStageTriggered={onStageTriggered}
         />
       </DataListItem>
     );
