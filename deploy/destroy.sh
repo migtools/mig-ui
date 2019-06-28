@@ -7,9 +7,9 @@ if [[ "$HOSTAPI" == "" ]]; then
 fi
 
 if [[ "$CLEANUP" == "" ]]; then
-  CLEANUP="false"
+  CLEANUP=false
 fi
 
 pushd $_dir/deploy
-ansible-playbook -e mig_ui_cluster_api_endpoint="$HOSTAPI" -e state=absent playbook.yaml --extra-vars='{"mig_ui_remove_namespace": '$CLEANUP'}' 
+ansible-playbook -e mig_ui_remove_namespace="$CLEANUP" -e mig_ui_cluster_api_endpoint="$HOSTAPI" -e state=absent playbook.yaml 
 popd

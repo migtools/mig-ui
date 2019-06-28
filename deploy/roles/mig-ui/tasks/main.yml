@@ -12,7 +12,7 @@
   k8s:
     state: '{{ state }}'
     definition: "{{ lookup('template', 'mig-ui.namespace.yaml') | from_yaml }}"
-  when: mig_ui_remove_namespace or state == 'present'
+  when: (mig_ui_remove_namespace | bool and state == 'absent') or state == 'present'
 
 - name: Verify mig-ui namespace exists
   assert:
