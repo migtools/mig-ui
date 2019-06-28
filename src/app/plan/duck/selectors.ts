@@ -68,16 +68,16 @@ const getPlansWithStatus = createSelector(
         }
       }
       const statusObject = {
-        hasSucceededStage: hasSucceededStage,
-        hasPrevMigrations: hasPrevMigrations,
-        hasClosedCondition: hasClosedCondition,
-        hasReadyCondition: hasReadyCondition,
+        hasSucceededStage,
+        hasPrevMigrations,
+        hasClosedCondition,
+        hasReadyCondition,
         hasNotReadyCondition: hasPlanError,
-        hasRunningMigrations: hasRunningMigrations,
-        hasSucceededMigration: hasSucceededMigration,
-        finalMigrationComplete: finalMigrationComplete,
+        hasRunningMigrations,
+        hasSucceededMigration,
+        finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
-        latestType: latestType,
+        latestType,
       };
       return { ...plan, PlanStatus: statusObject };
     });
@@ -96,11 +96,11 @@ const getCounts = createSelector(
     };
 
     plans.filter(plan => {
-      let hasReadyCondition = null;
+      const hasReadyCondition = null;
       let hasErrorCondition = null;
       let hasRunningMigrations = null;
       let hasSucceededMigration = null;
-      let hasClosedCondition = null;
+      const hasClosedCondition = null;
 
       if (plan.MigPlan.status) {
         // hasClosedCondition = plan.MigPlan.spec.closed;

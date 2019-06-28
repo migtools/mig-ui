@@ -91,10 +91,10 @@ const runStage = plan => {
               s => s.metadata.name === createMigRes.data.metadata.name
             ).pop();
             if (matchingStage && matchingStage.status) {
-              let hasSucceededCondition = !!matchingStage.status.conditions.some(
+              const hasSucceededCondition = !!matchingStage.status.conditions.some(
                 c => c.type === 'Succeeded'
               );
-              let hasErrorCondition = !!matchingStage.status.conditions.some(
+              const hasErrorCondition = !!matchingStage.status.conditions.some(
                 c => c.type === 'Failed'
               );
               //if status is done, success
@@ -158,10 +158,10 @@ const runMigration = plan => {
               s => s.metadata.name === createMigRes.data.metadata.name
             ).pop();
             if (matchingMigration && matchingMigration.status) {
-              let hasSucceededCondition = !!matchingMigration.status.conditions.some(
+              const hasSucceededCondition = !!matchingMigration.status.conditions.some(
                 c => c.type === 'Succeeded'
               );
-              let hasErrorCondition = !!matchingMigration.status.conditions.some(
+              const hasErrorCondition = !!matchingMigration.status.conditions.some(
                 c => c.type === 'Failed'
               );
               if (hasSucceededCondition) {
