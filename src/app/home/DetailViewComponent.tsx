@@ -156,9 +156,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanContext.Provider
-            value={{ handleStageTriggered, startDataListPolling, stopDataListPolling }}
-          >
+          <PlanContext.Provider value={{ handleStageTriggered }}>
             <PlanDataListItem
               planList={plansWithStatus}
               clusterList={allClusters}
