@@ -20,11 +20,6 @@ import {
 import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 
-import {
-  startStatusPolling,
-  stopStatusPolling,
-  updateStatusPollingStats,
-} from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -66,7 +61,6 @@ const groupPlan: any = (plan, response) => {
   }
   return fullPlan;
 };
-
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
@@ -86,30 +80,44 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const params = {
-        asyncFetch: fetchPlanStatusGenerator(plan),
-        callback: response => {
-          if (response && response.isSuccessful === true) {
-            console.log('res', response);
-            //if status is done, success
+      const callbackFunction = response => {
+        if (response && response.isSuccessful === true) {
+          const matchingPlan = response.updatedPlans
+            .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
+            .pop();
 
-            // dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
-            return true;
+          if (matchingPlan) {
+            const matchingStage = matchingPlan.Migrations.filter(
+              s => s.metadata.name === createMigRes.data.metadata.name
+            ).pop();
+            if (matchingStage && matchingStage.status) {
+              let hasSucceededCondition = !!matchingStage.status.conditions.some(
+                c => c.type === 'Succeeded'
+              );
+              let hasErrorCondition = !!matchingStage.status.conditions.some(
+                c => c.type === 'Failed'
+              );
+              //if status is done, success
+              if (hasSucceededCondition) {
+                dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+                return 'SUCCESS';
+              } else if (hasErrorCondition) {
+                dispatch(stagingFailure());
+                return 'FAILURE';
+              }
+            }
           }
-
-          return false;
-        },
-
-        onStatsChange: stats => {
-          dispatch(updateStatusPollingStats(stats));
-        },
-        delay: 1000,
-        retryOnFailure: true,
-        retryAfter: 5,
-        stopAfterRetries: 2,
+        }
+        return;
       };
-      // dispatch(startStatusPolling(params));
 
+      const params = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: callbackFunction,
+      };
+
+      dispatch(Creators.startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -139,7 +147,43 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
+      const callbackFunction = response => {
+        if (response && response.isSuccessful === true) {
+          const matchingPlan = response.updatedPlans
+            .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
+            .pop();
+
+          if (matchingPlan) {
+            const matchingMigration = matchingPlan.Migrations.filter(
+              s => s.metadata.name === createMigRes.data.metadata.name
+            ).pop();
+            if (matchingMigration && matchingMigration.status) {
+              let hasSucceededCondition = !!matchingMigration.status.conditions.some(
+                c => c.type === 'Succeeded'
+              );
+              let hasErrorCondition = !!matchingMigration.status.conditions.some(
+                c => c.type === 'Failed'
+              );
+              if (hasSucceededCondition) {
+                dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
+                return 'SUCCESS';
+              } else if (hasErrorCondition) {
+                dispatch(migrationFailure());
+                return 'FAILURE';
+              }
+            }
+          }
+        }
+        return;
+      };
+
+      const params = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: callbackFunction,
+      };
+
+      dispatch(Creators.startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -326,27 +370,6 @@ function* fetchPlansGenerator() {
     const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
     const groupedPlans = yield groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
-  } catch (e) {
-    return { e, isSuccessful: false };
-  }
-}
-
-function* fetchPlanStatusGenerator(plan) {
-  const state = yield select();
-  const client: IClusterClient = ClientFactory.hostCluster(state);
-  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
-  try {
-    const planRes = yield client.get(
-      new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace),
-      plan.MigPlan.metadata.name
-    );
-    const migMigrationResource = new MigResource(
-      MigResourceKind.MigMigration,
-      state.migMeta.namespace
-    );
-    const migrationListResponse = yield client.list(migMigrationResource);
-    const groupedPlan = yield groupPlan(plan, migrationListResponse);
-    return { updatedPlan: groupedPlan, isSuccessful: true };
   } catch (e) {
     return { e, isSuccessful: false };
   }

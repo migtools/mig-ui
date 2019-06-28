@@ -33,10 +33,11 @@ export const updateStatusPollingStats = stats => ({
   stats,
 });
 
-export const startStatusPolling = (params?: any) => ({
-  type: 'STATUS_POLL_START',
-  params,
-});
-export const stopStatusPolling = () => ({
-  type: 'STATUS_POLL_STOP',
-});
+// export const startStatusPolling = (params?: any) => ({
+//   type: 'STATUS_POLL_START',
+//   params,
+// });
+
+// export const stopStatusPolling = () => ({
+//   type: 'STATUS_POLL_STOP',
+// });

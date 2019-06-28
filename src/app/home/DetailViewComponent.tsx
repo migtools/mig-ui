@@ -117,7 +117,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       asyncFetch: planOperations.fetchPlansGenerator,
       callback: this.handlePlanPoll,
       onStatsChange: this.handleStatsChange,
-      delay: 1000,
+      delay: 5000,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,

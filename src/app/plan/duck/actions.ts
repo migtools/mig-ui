@@ -1,8 +1,8 @@
 import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  startPolling: ['params'],
-  stopPolling: [],
+  startStatusPolling: ['params'],
+  stopStatusPolling: [],
   updatePlans: ['updatedPlans'],
   migPlanFetchRequest: [],
   migPlanFetchSuccess: ['migPlanList'],

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PlanStatus = ({ plan, ...props }) => {
+const PlanStatus = ({ plan }) => {
   const {
     hasClosedCondition,
     hasReadyCondition,

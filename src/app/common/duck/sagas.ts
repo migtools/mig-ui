@@ -1,11 +1,6 @@
-import { race, call, delay, put, take, takeEvery, all, select } from 'redux-saga/effects';
+import { race, call, delay, take } from 'redux-saga/effects';
 
-import {
-  startDataListPolling,
-  stopDataListPolling,
-  startStatusPolling,
-  stopStatusPolling,
-} from './actions';
+import { startDataListPolling, stopDataListPolling } from './actions';
 
 function* poll(action) {
   const params = { ...action.params };
@@ -24,7 +19,7 @@ function* poll(action) {
       // Make the API call
       stats.fetching = true;
       params.onStatsChange(stats);
-      const response = yield call(params.asyncFetch);
+      const response = yield call(params.asyncFetch, null);
       // API call was successful
       stats.fetching = false;
       stats.nextPollEta = params.delay;
@@ -51,14 +46,6 @@ function* watchDataListPolling() {
   }
 }
 
-function* watchStatusPolling() {
-  while (true) {
-    const action = yield take(startStatusPolling().type);
-    yield race([call(poll, action), take(stopStatusPolling().type)]);
-  }
-}
-
 export default {
   watchDataListPolling,
-  watchStatusPolling,
 };
