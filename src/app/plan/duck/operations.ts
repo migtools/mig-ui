@@ -81,43 +81,17 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const callbackFunction = response => {
+      const statusPollingCallback = response => {
         if (response && response.isSuccessful === true) {
-          const matchingPlan = response.updatedPlans
-            .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
-            .pop();
-
-          if (matchingPlan) {
-            const matchingStage = matchingPlan.Migrations.filter(
-              s => s.metadata.name === createMigRes.data.metadata.name
-            ).pop();
-            if (matchingStage && matchingStage.status) {
-              const hasSucceededCondition = !!matchingStage.status.conditions.some(
-                c => c.type === 'Succeeded'
-              );
-              const hasErrorCondition = !!matchingStage.status.conditions.some(
-                c => c.type === 'Failed'
-              );
-              //if status is done, success
-              if (hasSucceededCondition) {
-                dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
-                dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
-                return 'SUCCESS';
-              } else if (hasErrorCondition) {
-                dispatch(stagingFailure());
-                dispatch(commonOperations.alertErrorTimeout('Failed Staging'));
-                return 'FAILURE';
-              }
-            }
-          }
+          const isStage = true;
+          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
         }
-        return;
       };
 
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: callbackFunction,
+        callback: statusPollingCallback,
       };
 
       dispatch(Creators.startStatusPolling(params));
@@ -151,42 +125,17 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const callbackFunction = response => {
+      const statusPollingCallback = response => {
         if (response && response.isSuccessful === true) {
-          const matchingPlan = response.updatedPlans
-            .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
-            .pop();
-
-          if (matchingPlan) {
-            const matchingMigration = matchingPlan.Migrations.filter(
-              s => s.metadata.name === createMigRes.data.metadata.name
-            ).pop();
-            if (matchingMigration && matchingMigration.status) {
-              const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-                c => c.type === 'Succeeded'
-              );
-              const hasErrorCondition = !!matchingMigration.status.conditions.some(
-                c => c.type === 'Failed'
-              );
-              if (hasSucceededCondition) {
-                dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
-                dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
-                return 'SUCCESS';
-              } else if (hasErrorCondition) {
-                dispatch(migrationFailure());
-                dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
-                return 'FAILURE';
-              }
-            }
-          }
+          const isStage = false;
+          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
         }
-        return;
       };
 
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: callbackFunction,
+        callback: statusPollingCallback,
       };
 
       dispatch(Creators.startStatusPolling(params));
@@ -196,6 +145,52 @@ const runMigration = plan => {
       dispatch(migrationFailure(err));
     }
   };
+};
+const checkMigrationStatus = (dispatch, response, createMigRes, isStage) => {
+  const matchingPlan = response.updatedPlans
+    .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
+    .pop();
+
+  if (matchingPlan) {
+    const matchingMigration = matchingPlan.Migrations.filter(
+      s => s.metadata.name === createMigRes.data.metadata.name
+    ).pop();
+    if (matchingMigration && matchingMigration.status) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Succeeded'
+      );
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Failed'
+      );
+      switch (isStage) {
+        case true: {
+          if (hasSucceededCondition) {
+            dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+            dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
+            return 'SUCCESS';
+          } else if (hasErrorCondition) {
+            dispatch(stagingFailure());
+            dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
+            return 'FAILURE';
+          }
+          break;
+        }
+
+        case false:
+          if (hasSucceededCondition) {
+            dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
+            dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
+            return 'SUCCESS';
+          } else if (hasErrorCondition) {
+            dispatch(migrationFailure());
+            dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
+            return 'FAILURE';
+          }
+          break;
+      }
+      return;
+    }
+  }
 };
 
 const addPlan = migPlan => {

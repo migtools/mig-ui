@@ -19,7 +19,7 @@ function* poll(action) {
       // Make the API call
       stats.fetching = true;
       params.onStatsChange(stats);
-      const response = yield call(params.asyncFetch, null);
+      const response = yield call(params.asyncFetch);
       // API call was successful
       stats.fetching = false;
       stats.nextPollEta = params.delay;
