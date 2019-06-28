@@ -2,7 +2,6 @@ export const ALERT_SUCCESS = 'ALERT_SUCCESS';
 export const ALERT_ERROR = 'ALERT_ERROR';
 export const ALERT_CLEAR = 'ALERT_CLEAR';
 export const UPDATE_DATA_LIST_POLLING_STATS = 'UPDATE_DATA_LIST_POLLING_STATS';
-export const UPDATE_STATUS_POLLING_STATS = 'UPDATE_STATUS_POLLING_STATS';
 
 export function alertSuccess(text: string) {
   return { type: ALERT_SUCCESS, text };
@@ -26,9 +25,4 @@ export const startDataListPolling = (params?: any) => ({
 
 export const stopDataListPolling = () => ({
   type: 'DATA_LIST_POLL_STOP',
-});
-
-export const updateStatusPollingStats = stats => ({
-  type: 'UPDATE_STATUS_POLLING_STATS',
-  stats,
 });

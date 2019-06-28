@@ -100,9 +100,11 @@ const runStage = plan => {
               //if status is done, success
               if (hasSucceededCondition) {
                 dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
+                dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
                 return 'SUCCESS';
               } else if (hasErrorCondition) {
                 dispatch(stagingFailure());
+                dispatch(commonOperations.alertErrorTimeout('Failed Staging'));
                 return 'FAILURE';
               }
             }
@@ -166,9 +168,11 @@ const runMigration = plan => {
               );
               if (hasSucceededCondition) {
                 dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
+                dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
                 return 'SUCCESS';
               } else if (hasErrorCondition) {
                 dispatch(migrationFailure());
+                dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
                 return 'FAILURE';
               }
             }
