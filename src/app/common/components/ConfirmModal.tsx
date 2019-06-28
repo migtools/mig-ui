@@ -17,7 +17,7 @@ const ConfirmModal: React.FunctionComponent<IProps> = ({ isOpen, onHandleClose, 
       isSmall
       title="Confirmation"
       isOpen={isOpen}
-      onClose={onHandleClose}
+      onClose={() => onHandleClose(false)}
       actions={[
         <Button key="cancel" variant="secondary" onClick={() => onHandleClose(false)}>
           Cancel
