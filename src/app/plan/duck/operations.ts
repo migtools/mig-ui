@@ -1,5 +1,3 @@
-import moment from 'moment';
-import { select } from 'redux-saga/effects';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
@@ -19,6 +17,9 @@ import {
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
+import { groupPlan, groupPlans, getMigrationStatus, getPlanStatus, getPlanPVs } from './utils';
+import { select } from 'redux-saga/effects';
+import { updateDataListPollingStats } from '../../common/duck/actions';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -34,33 +35,9 @@ const stagingSuccess = Creators.stagingSuccess;
 const migrationFailure = Creators.migrationFailure;
 const stagingFailure = Creators.stagingFailure;
 const addPlanSuccess = Creators.addPlanSuccess;
+const addPlanFailure = Creators.addPlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
-const PollingInterval = 5000;
-const PvsDiscoveredType = 'PvsDiscovered';
-
-const groupPlan: any = (plan, response) => {
-  const fullPlan = {
-    MigPlan: plan.MigPlan,
-  };
-  if (response.data.items.length > 0) {
-    const sortMigrations = migrationList =>
-      migrationList.sort((left, right) => {
-        return moment
-          .utc(right.metadata.creationTimestamp)
-          .diff(moment.utc(left.metadata.creationTimestamp));
-      });
-
-    const matchingMigrations = response.data.items.filter(
-      i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
-    );
-
-    fullPlan['Migrations'] = sortMigrations(matchingMigrations);
-  } else {
-    fullPlan['Migrations'] = [];
-  }
-  return fullPlan;
-};
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
@@ -81,10 +58,10 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const statusPollingCallback = response => {
-        if (response && response.isSuccessful === true) {
-          const isStage = true;
-          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
+      const statusPollingCallback = updatedPlansPollingResponse => {
+        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+          const type = 'STAGE';
+          return getStatusCondition(dispatch, updatedPlansPollingResponse, createMigRes, type);
         }
       };
 
@@ -125,10 +102,10 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const statusPollingCallback = response => {
-        if (response && response.isSuccessful === true) {
-          const isStage = false;
-          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
+      const statusPollingCallback = updatedPlansPollingResponse => {
+        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+          const type = 'MIGRATION';
+          return getStatusCondition(dispatch, updatedPlansPollingResponse, createMigRes, type);
         }
       };
 
@@ -146,57 +123,10 @@ const runMigration = plan => {
     }
   };
 };
-const checkMigrationStatus = (dispatch, response, createMigRes, isStage) => {
-  const matchingPlan = response.updatedPlans
-    .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
-    .pop();
-
-  if (matchingPlan) {
-    const matchingMigration = matchingPlan.Migrations.filter(
-      s => s.metadata.name === createMigRes.data.metadata.name
-    ).pop();
-    if (matchingMigration && matchingMigration.status) {
-      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Succeeded'
-      );
-      const hasErrorCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Failed'
-      );
-      switch (isStage) {
-        case true: {
-          if (hasSucceededCondition) {
-            dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
-            dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
-            return 'SUCCESS';
-          } else if (hasErrorCondition) {
-            dispatch(stagingFailure());
-            dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
-            return 'FAILURE';
-          }
-          break;
-        }
-
-        case false:
-          if (hasSucceededCondition) {
-            dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
-            dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
-            return 'SUCCESS';
-          } else if (hasErrorCondition) {
-            dispatch(migrationFailure());
-            dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
-            return 'FAILURE';
-          }
-          break;
-      }
-      return;
-    }
-  }
-};
 
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
-      dispatch(pvFetchRequest());
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
@@ -208,46 +138,43 @@ const addPlan = migPlan => {
         migPlan.namespaces
       );
 
-      const createRes = await client.create(
+      const createPlanRes = await client.create(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         migPlanObj
       );
 
-      dispatch(addPlanSuccess(createRes.data));
+      // const statusPollingCallback = updatedPlansPollingResponse => {
+      //   if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+      //     const type = 'PLAN';
+      //     return getStatusCondition(dispatch, updatedPlansPollingResponse, createPlanRes, type);
+      //   }
+      // };
 
-      let timesRun = 0;
-      const interval = setInterval(async () => {
-        timesRun += 1;
-        // TODO: replace timesRun with poller class
-        if (timesRun === 12) {
-          clearInterval(interval);
-          dispatch(commonOperations.alertErrorTimeout('No PVs found'));
-          dispatch(pvFetchFailure());
+      const pvPollingCallback = updatedPlansPollingResponse => {
+        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+          return getPVs(dispatch, updatedPlansPollingResponse, createPlanRes);
         }
+      };
 
-        const planName = migPlan.planName;
+      // const statusParams = {
+      //   asyncFetch: fetchPlansGenerator,
+      //   delay: 500,
+      //   callback: statusPollingCallback,
+      // };
 
-        const getRes = await client.get(
-          new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-          planName
-        );
+      const pvParams = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: pvPollingCallback,
+      };
 
-        const plan = getRes.data;
-        if (plan.status) {
-          const pvsDiscovered = !!plan.status.conditions.find(c => {
-            return c.type === PvsDiscoveredType;
-          });
+      // dispatch(Creators.startStatusPolling(statusParams));
+      dispatch(Creators.pvFetchRequest());
 
-          if (pvsDiscovered) {
-            dispatch(Creators.updatePlan(plan));
-            dispatch(pvFetchSuccess());
-            dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
-            console.debug('Discovered PVs, clearing interaval.');
-            clearInterval(interval);
-          }
-        }
-      }, PollingInterval);
+      dispatch(Creators.startPVPolling(pvParams));
+      dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {
+      dispatch(addPlanFailure());
       dispatch(commonOperations.alertErrorTimeout(err.toString()));
     }
   };
@@ -326,23 +253,6 @@ function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Arra
   return refs;
 }
 
-function groupPlans(migPlans: any[], refs: any[]): any[] {
-  return migPlans.map(mp => {
-    const fullPlan = {
-      MigPlan: mp,
-    };
-    if (refs[0].data.items.length > 0) {
-      const matchingMigrations = refs[0].data.items.filter(
-        i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
-      );
-      fullPlan['Migrations'] = matchingMigrations;
-    } else {
-      fullPlan['Migrations'] = [];
-    }
-    return fullPlan;
-  });
-}
-
 const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
     const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
@@ -375,6 +285,74 @@ function* fetchPlansGenerator() {
     return { e, isSuccessful: false };
   }
 }
+const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
+  const matchingPlan = updatedPlansPollingResponse.updatedPlans
+    .filter(p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name)
+    .pop();
+
+  const pvSearchStatus = matchingPlan ? getPlanPVs(matchingPlan) : null;
+  if (pvSearchStatus.success) {
+    dispatch(Creators.updatePlan(matchingPlan.MigPlan));
+    dispatch(pvFetchSuccess());
+    dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
+
+    return 'SUCCESS';
+  } else if (pvSearchStatus.error) {
+    return 'FAILURE';
+  }
+};
+const getStatusCondition = (dispatch, updatedPlansPollingResponse, newObjectRes, type) => {
+  switch (type) {
+    case 'STAGE': {
+      const matchingPlan = updatedPlansPollingResponse.updatedPlans
+        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name)
+        .pop();
+
+      const migStatus = matchingPlan ? getMigrationStatus(matchingPlan, newObjectRes) : null;
+      if (migStatus.success) {
+        dispatch(stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
+        dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
+        return 'SUCCESS';
+      } else if (migStatus.error) {
+        dispatch(stagingFailure());
+        dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
+        return 'FAILURE';
+      }
+      break;
+    }
+
+    case 'MIGRATION': {
+      const matchingPlan = updatedPlansPollingResponse.updatedPlans
+        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name)
+        .pop();
+      const migStatus = matchingPlan ? getMigrationStatus(matchingPlan, newObjectRes) : null;
+      if (migStatus.success) {
+        dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+        dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
+        return 'SUCCESS';
+      } else if (migStatus.error) {
+        dispatch(migrationFailure());
+        dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
+        return 'FAILURE';
+      }
+      break;
+    }
+    case 'PLAN': {
+      const matchingPlan = updatedPlansPollingResponse.updatedPlans
+        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name)
+        .pop();
+
+      const planStatus = matchingPlan ? getPlanStatus(matchingPlan) : null;
+      if (planStatus.success) {
+        return 'SUCCESS';
+      } else if (planStatus.error) {
+        return 'FAILURE';
+      }
+      break;
+    }
+  }
+  return;
+};
 
 export default {
   pvFetchRequest,

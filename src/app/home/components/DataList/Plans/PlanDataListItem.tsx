@@ -53,6 +53,7 @@ const PlanDataListItem = ({
               <PlusCircleIcon /> Add Plan
             </Button>
             <WizardContainer
+              planList={planList}
               clusterList={clusterList}
               storageList={storageList}
               isOpen={isOpen}
