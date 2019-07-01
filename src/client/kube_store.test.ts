@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import KubeStore from './kube_store';
 import { MigResource, MigResourceKind } from './resources';
+import mocked_data from './kube_store/mocked_data/';
 
 const examplePlan = {
   apiVersion: 'migration.openshift.io/v1alpha1',
@@ -36,6 +37,7 @@ const examplePlan = {
 const testNs = 'test-ns';
 const planName = 'my-plan';
 const expectedGvk = 'migration.openshift.io/v1alpha1/migplans';
+const clusterName = 'my-cluster'
 
 test('Test NamespacedResource setResource', () => {
   const migResource = new MigResource(MigResourceKind.MigPlan, testNs);
@@ -53,4 +55,25 @@ test('Test NamespacedResource setResource', () => {
 
   store.setResource(migResource, planName, examplePlan);
   expect(_.isEqual(expected, store.db)).toBe(true);
+});
+
+test('Test NamespacedResource patchResource', () => {
+  const migResource = new MigResource(MigResourceKind.MigCluster, testNs);
+  const store = new KubeStore('_host');
+  const patch = {'test':'foo'};
+
+  const expected = {
+
+      namespace: testNs,
+        _gvk:
+          { group: 'migration.openshift.io',
+            version: 'v1alpha1',
+            kindPlural: 'migclusters' },
+          test: 'foo',
+    };
+
+  const patchedObject = store.patchResource(migResource, clusterName, patch);
+  localStorage.clear();
+  localStorage.setItem('test', JSON.stringify(patchedObject))
+  expect(patchedObject).toEqual(expected);
 });
