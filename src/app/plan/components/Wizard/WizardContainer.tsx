@@ -51,7 +51,6 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-    plans: state.plan.migPlanList.map(p => p.MigPlan),
     isFetchingPVList: state.plan.isFetchingPVList,
   };
 };
