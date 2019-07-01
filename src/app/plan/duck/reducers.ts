@@ -58,6 +58,11 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
     migPlanList: [...state.migPlanList, newPlan],
   };
 };
+export const addPlanFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+  };
+};
 
 export const removePlanSuccess = (state = INITIAL_STATE, action) => {
   return { ...state };
@@ -189,6 +194,7 @@ export const HANDLERS = {
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
+  [Types.ADD_PLAN_FAILURE]: addPlanFailure,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
   [Types.INIT_STAGE]: initStage,
