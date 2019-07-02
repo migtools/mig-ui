@@ -37,6 +37,7 @@ function* checkPVs(action) {
 
   while (!pvsFound) {
     if (tries < 12) {
+      tries += 1;
       const plansRes = yield call(params.asyncFetch);
       const pollingStatus = params.callback(plansRes);
       switch (pollingStatus) {

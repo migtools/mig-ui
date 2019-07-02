@@ -143,12 +143,20 @@ const addPlan = migPlan => {
         migPlanObj
       );
 
-      // const statusPollingCallback = updatedPlansPollingResponse => {
-      //   if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-      //     const type = 'PLAN';
-      //     return getStatusCondition(dispatch, updatedPlansPollingResponse, createPlanRes, type);
-      //   }
-      // };
+      const statusPollingCallback = updatedPlansPollingResponse => {
+        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+          const type = 'PLAN';
+          return getStatusCondition(dispatch, updatedPlansPollingResponse, createPlanRes, type);
+        }
+      };
+
+      const statusParams = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: statusPollingCallback,
+      };
+
+      dispatch(Creators.startStatusPolling(statusParams));
 
       const pvPollingCallback = updatedPlansPollingResponse => {
         if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
@@ -156,21 +164,13 @@ const addPlan = migPlan => {
         }
       };
 
-      // const statusParams = {
-      //   asyncFetch: fetchPlansGenerator,
-      //   delay: 500,
-      //   callback: statusPollingCallback,
-      // };
-
       const pvParams = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
         callback: pvPollingCallback,
       };
 
-      // dispatch(Creators.startStatusPolling(statusParams));
       dispatch(Creators.pvFetchRequest());
-
       dispatch(Creators.startPVPolling(pvParams));
       dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {

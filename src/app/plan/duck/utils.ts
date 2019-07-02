@@ -17,7 +17,12 @@ export const getPlanPVs = plan => {
 };
 export const getPlanStatus = plan => {
   const statusObj = { success: null, error: null };
-  console.log('plan', plan);
+  if (plan.MigPlan.status) {
+    const hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
+    if (hasReadyCondition) {
+      statusObj.success = hasReadyCondition;
+    }
+  }
   return statusObj;
 };
 
