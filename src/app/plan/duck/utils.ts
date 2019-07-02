@@ -4,7 +4,6 @@ export const getPlanPVs = plan => {
   const statusObj = { success: null, error: null };
   const PvsDiscoveredType = 'PvsDiscovered';
 
-  console.log('plan', plan);
   if (plan.MigPlan.status) {
     const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
 
