@@ -33,7 +33,7 @@ const ResultsStep = props => {
           ) : (
             <StatusIcon isReady={false} />
           )}
-          <StyledSpan>{values.planName} -- </StyledSpan>
+          <StyledSpan>{values.planName} </StyledSpan>
           <PlanStatus plan={matchingPlan} />
         </Text>
       </Box>
