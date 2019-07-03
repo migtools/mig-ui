@@ -4,6 +4,7 @@ import { NamespacedResource, ClusterResource, KubeResource,
 
 import mocked_data from './mocked_data';
 import JsonMergePatch from 'json-merge-patch';
+import { updateClusterRegistryObj } from '../resources/conversions';
 const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
 export default class KubeStore {
@@ -20,7 +21,7 @@ export default class KubeStore {
     this.ensureDataLoaded();
   }
 
-  private data() {
+  private _data() {
     // Returns the chunk of data relevant for mocking data from this k8s cluster
     // All subsequent calls will use this data to lookup their responses
     const d = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
@@ -32,6 +33,11 @@ export default class KubeStore {
       alert('Unable to find expected mocked data for clusterName "' + this.clusterName + '"');
       return {};
     }
+    
+  }
+
+  private data() {
+    const d = this._data();
     return d['clusters'][this.clusterName];
   }
 
@@ -41,6 +47,12 @@ export default class KubeStore {
       localStorage.setItem(localStorageMockedDataKey, JSON.stringify(mocked_data));
     }
     localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+  }
+
+  private updateMockedData(key, name, updatedObject) {
+    const d = this._data();
+    d['clusters'][this.clusterName][key][name] = updatedObject;
+    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(d)); 
   }
 
   public static Instance() {
@@ -83,10 +95,15 @@ export default class KubeStore {
       }
     }
 
-    const patchedObject = JsonMergePatch.apply(resource, patch);
-    localStorage[key] = patchedObject;
-// console.log(patchedObject)
-    return resource;
+    //console.log('Result is ');
+    //console.log(result);
+
+    const patchedObject = JsonMergePatch.apply(result, patch);
+    this.updateMockedData(key, name, patchedObject);
+
+    //localStorage[key] = patchedObject;
+    // console.log(patchedObject)
+    return patchedObject;
   }
 
   public setResource(resource: KubeResource, name: string, newObject: object): object {
