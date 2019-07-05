@@ -9,10 +9,13 @@ configure your local development settings.
 
 `cp config/config.dev.json.example config/config.dev.json`
 
+Also ensure you have yarn installed by following recommended install instructions:
+
+https://yarnpkg.com/en/docs/install#centos-stable
+
 ### UI development server
 
 ```bash
-npm install yarn -g # ensure you have yarn on your machine globally
 git clone https://github.com/fusor/mig-ui # clone the project
 cd mig-ui # navigate into the project directory
 yarn # install  dependencies
