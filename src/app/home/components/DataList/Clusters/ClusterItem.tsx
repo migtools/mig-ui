@@ -24,7 +24,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
     : cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
 
   const clusterSvcToken =
-    !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.satoken
+    !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.saToken
       ? atob(cluster.Secret.data.saToken)
       : null;
 
