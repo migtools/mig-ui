@@ -160,7 +160,9 @@ function gatherSecretRefs(client, serverAddr, data) {
   }, []);
   let secretRefs = [].concat(storageSecretRefs).concat(clusterSecretRefs);
 
-  let all = secretRefs.map(s => {
+  // We are filtering the secretRefs as entries such as 
+  // our host cluster entry will lack a clusterRef
+  let all = secretRefs.filter(Boolean).map(s => {
     let key = `api/v1/namespaces/${s.namespace}/secrets`;
     let fullUrl = `${serverAddr}/${key}/${s.name}`;
     return client
@@ -208,6 +210,25 @@ function sanitizeSecretData(data) {
   };
 }
 
+function getHostMigClusterName(results) {
+  //
+  // We want to find the MigCluster entry that has 'isHostCluster' set to true
+  // It represents the cluster running the UI
+  //
+  const migClusterKey = 'apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters';
+  const migClusters = results[migClusterKey];
+  const potentialHostClusterNames = Object.keys(migClusters).filter(clusterName => {
+    return migClusters[clusterName]['spec']['isHostCluster'];
+  })
+
+  if (potentialHostClusterNames.length > 0) {
+    return potentialHostClusterNames[0];
+  }
+  throw new Error('Couldn\'t find a MigCluster object with isHostCluster ' + 
+    'set to true, unable to proceed with mocked data'); 
+}
+
+
 function main() {
   const { serverAddr, clientcert, clientkey, cacert } = getKubeServerInfo();
   console.log('Connecting to ', serverAddr);
@@ -222,10 +243,12 @@ function main() {
   let p = gatherMockedData(axInst, serverAddr);
   collectAndReformat(p).then(reformatted => {
     gatherSecretRefs(axInst, serverAddr, reformatted).then(results => {
+      const hostMigClusterName = getHostMigClusterName(results);
       data = {};
       data['TIME_STAMP'] = TIME_STAMP;
+      data['hostMigClusterName'] = hostMigClusterName
       data['clusters'] = {};
-      data['clusters']['_host'] = results;
+      data['clusters'][hostMigClusterName] = results;
       console.log('Writing....');
       console.log(data);
       writeData(data);
