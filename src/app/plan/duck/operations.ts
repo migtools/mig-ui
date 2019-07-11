@@ -19,8 +19,11 @@ import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { groupPlan, groupPlans, getMigrationStatus, getPlanStatus, getPlanPVs } from './utils';
 import { select } from 'redux-saga/effects';
-import { updateDataListPollingStats } from '../../common/duck/actions';
-
+import {
+  updateDataListPollingStats,
+  startStatusPolling,
+  stopStatusPolling,
+} from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -156,7 +159,7 @@ const addPlan = migPlan => {
         callback: statusPollingCallback,
       };
 
-      dispatch(Creators.startStatusPolling(statusParams));
+      dispatch(startStatusPolling(statusParams));
 
       const pvPollingCallback = updatedPlansPollingResponse => {
         if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
