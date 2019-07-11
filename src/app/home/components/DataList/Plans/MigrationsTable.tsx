@@ -114,8 +114,7 @@ export default class MigrationsTable extends React.Component<any, any> {
             status.progress = null;
             break;
           default:
-            status.phase = 'Something went wrong...';
-            status.progress = null;
+            status.phase = migPhase;
             break;
         }
         return status;
