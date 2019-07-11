@@ -5,7 +5,7 @@ import planSagas from './app/plan/duck/sagas';
 export default function* rootSaga() {
   yield all([
     commonSagas.watchDataListPolling(),
-    planSagas.watchStatusPolling(),
+    commonSagas.watchStatusPolling(),
     planSagas.watchPVPolling(),
   ]);
 }

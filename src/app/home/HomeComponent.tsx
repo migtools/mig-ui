@@ -116,6 +116,20 @@ class HomeComponent extends React.Component<IProps, IState> {
   ];
 
   componentDidMount = () => {
+    //start cluster polling
+    // const params = {
+    //   asyncFetch: planOperations.fetchPlansGenerator,
+    //   callback: this.handlePlanPoll,
+    //   onStatsChange: this.handleStatsChange,
+    //   delay: 5000,
+    //   retryOnFailure: true,
+    //   retryAfter: 5,
+    //   stopAfterRetries: 2,
+    // };
+
+    // this.props.startClusterPolling(params);
+    //
+
     this.props.fetchClusters();
     this.props.fetchStorage();
     this.props.fetchPlans();

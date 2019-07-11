@@ -1,6 +1,11 @@
-import { race, call, delay, take } from 'redux-saga/effects';
+import { race, call, delay, take, put } from 'redux-saga/effects';
 
-import { startDataListPolling, stopDataListPolling } from './actions';
+import {
+  startDataListPolling,
+  stopDataListPolling,
+  startStatusPolling,
+  stopStatusPolling,
+} from './actions';
 
 function* poll(action) {
   const params = { ...action.params };
@@ -46,6 +51,35 @@ function* watchDataListPolling() {
   }
 }
 
+function* checkStatus(action) {
+  const params = { ...action.params };
+  while (true) {
+    const plansRes = yield call(params.asyncFetch);
+    const pollingStatus = params.callback(plansRes);
+
+    switch (pollingStatus) {
+      case 'SUCCESS':
+        yield put({ type: 'STOP_STATUS_POLLING' });
+        break;
+      case 'FAILURE':
+        stopStatusPolling();
+
+        yield put({ type: 'STOP_STATUS_POLLING' });
+        break;
+      default:
+        break;
+    }
+    yield delay(params.delay);
+  }
+}
+function* watchStatusPolling() {
+  while (true) {
+    const data = yield take(startStatusPolling().type);
+    yield race([call(checkStatus, data), take('STOP_STATUS_POLLING')]);
+  }
+}
+
 export default {
   watchDataListPolling,
+  watchStatusPolling,
 };
