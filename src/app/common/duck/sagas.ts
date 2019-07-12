@@ -12,32 +12,13 @@ import {
 function* poll(action) {
   const params = { ...action.params };
 
-  const stats = {
-    inProgress: false,
-    fetching: false,
-    nextPollEta: null,
-    retries: null,
-    lastResponseStatus: null,
-  };
-
   while (true) {
-    stats.inProgress = true;
     try {
-      // Make the API call
-      stats.fetching = true;
-      // params.onStatsChange(stats);
       const response = yield call(params.asyncFetch);
-      // API call was successful
-      stats.fetching = false;
-      stats.nextPollEta = params.delay;
-      const shouldContinue = params.callback(response, stats);
+      const shouldContinue = params.callback(response);
 
       if (shouldContinue) {
-        stats.retries = 0;
-        stats.lastResponseStatus = 'success';
-        // params.onStatsChange(stats);
       } else {
-        // params.onStatsChange(stats);
         throw new Error('Error while fetching data.');
       }
     } catch (e) {

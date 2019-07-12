@@ -136,7 +136,6 @@ class HomeComponent extends React.Component<IProps, IState> {
     const params = {
       asyncFetch: clusterOperations.fetchClustersGenerator,
       callback: this.handleClusterPoll,
-      // onStatsChange: this.handleStatsChange,
       delay: 5000,
       retryOnFailure: true,
       retryAfter: 5,
