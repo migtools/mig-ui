@@ -28,7 +28,11 @@ class LoginComponent extends React.Component<IProps> {
     const routerLoc = this.props.router.location;
 
     const freshOauthMeta = !prevProps.auth.oauthMeta && !!oauthMeta;
-    if (freshOauthMeta) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get('action') === 'refresh';
+    const handleLogin = freshOauthMeta || shouldRefresh;
+
+    if (handleLogin) {
       const clusterAuth = new ClientOAuth2({
         clientId: migMeta.oauth.clientId,
         clientSecret: migMeta.oauth.clientSecret,
