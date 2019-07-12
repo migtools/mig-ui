@@ -4,18 +4,18 @@ export const ALERT_PROGRESS = 'ALERT_PROGRESS';
 export const ALERT_CLEAR = 'ALERT_CLEAR';
 export const UPDATE_DATA_LIST_POLLING_STATS = 'UPDATE_DATA_LIST_POLLING_STATS';
 
-export function alertSuccess(text: string) {
+export const alertSuccess = (text: string) => {
   return { type: ALERT_SUCCESS, text };
-}
-export function alertError(text: string) {
+};
+export const alertError = (text: string) => {
   return { type: ALERT_ERROR, text };
-}
-export function alertProgress(text: string) {
+};
+export const alertProgress = (text: string) => {
   return { type: ALERT_PROGRESS, text };
-}
-export function alertClear() {
+};
+export const alertClear = () => {
   return { type: ALERT_CLEAR };
-}
+};
 
 export const updateDataListPollingStats = stats => ({
   type: 'UPDATE_DATA_LIST_POLLING_STATS',

@@ -25,6 +25,7 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
+import { commonOperations } from '../common/duck';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import { planOperations } from '../plan/duck';
@@ -33,6 +34,7 @@ import DashboardCard from './components/Card/DashboardCard';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
+import { startStatusPolling, stopStatusPolling } from '../common/duck/actions';
 
 import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
 interface IProps {
@@ -44,6 +46,8 @@ interface IProps {
   fetchPlans: () => void;
   fetchClusters: () => void;
   fetchStorage: () => void;
+  startStatusPolling: (params) => void;
+  stopStatusPolling: () => void;
   onLogout: () => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
@@ -116,19 +120,15 @@ class HomeComponent extends React.Component<IProps, IState> {
   ];
 
   componentDidMount = () => {
-    //start cluster polling
-    // const params = {
-    //   asyncFetch: planOperations.fetchPlansGenerator,
-    //   callback: this.handlePlanPoll,
-    //   onStatsChange: this.handleStatsChange,
-    //   delay: 5000,
-    //   retryOnFailure: true,
-    //   retryAfter: 5,
-    //   stopAfterRetries: 2,
+    // const statusParams = {
+    //   asyncFetch: clusterOperations.fetchClustersGenerator,
+    //   delay: 500,
+    //   callback: commonOperations.getStatusCondition,
+    //   type: 'CLUSTER',
+    //   statusItem: null,
     // };
 
-    // this.props.startClusterPolling(params);
-    //
+    // this.props.startStatusPolling(statusParams);
 
     this.props.fetchClusters();
     this.props.fetchStorage();
@@ -289,5 +289,7 @@ export default connect(
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
     fetchPlans: () => dispatch(planOperations.fetchPlans()),
+    startStatusPolling: params => dispatch(startStatusPolling(params)),
+    stopStatusPolling: () => dispatch(stopStatusPolling()),
   })
 )(HomeComponent);

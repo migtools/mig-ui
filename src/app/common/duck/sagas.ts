@@ -54,8 +54,13 @@ function* watchDataListPolling() {
 function* checkStatus(action) {
   const params = { ...action.params };
   while (true) {
-    const plansRes = yield call(params.asyncFetch);
-    const pollingStatus = params.callback(plansRes);
+    const generatorRes = yield call(params.asyncFetch);
+    const pollingStatus = params.callback(
+      generatorRes,
+      params.type,
+      params.statusItem,
+      params.dispatch
+    );
 
     switch (pollingStatus) {
       case 'SUCCESS':
