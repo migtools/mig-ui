@@ -2,15 +2,9 @@ import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import {
-  CoreClusterResource,
-  CoreClusterResourceKind,
-  CoreNamespacedResource,
-  CoreNamespacedResourceKind,
-} from '../../../client/resources';
+import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 
 import {
-  createMigPlan,
   createMigMigration,
   createMigPlanNoStorage,
   updateMigPlanFromValues,
@@ -19,11 +13,7 @@ import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { groupPlan, groupPlans, getMigrationStatus, getPlanStatus, getPlanPVs } from './utils';
 import { select } from 'redux-saga/effects';
-import {
-  updateDataListPollingStats,
-  startStatusPolling,
-  stopStatusPolling,
-} from '../../common/duck/actions';
+import { startStatusPolling } from '../../common/duck/actions';
 
 import planOperations from '../../cluster/duck/operations';
 /* tslint:disable */
@@ -33,10 +23,7 @@ const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
 const pvFetchRequest = Creators.pvFetchRequest;
-const pvFetchFailure = Creators.pvFetchFailure;
 const pvFetchSuccess = Creators.pvFetchSuccess;
-const migrationSuccess = Creators.migrationSuccess;
-const stagingSuccess = Creators.stagingSuccess;
 const migrationFailure = Creators.migrationFailure;
 const stagingFailure = Creators.stagingFailure;
 const addPlanSuccess = Creators.addPlanSuccess;
