@@ -24,6 +24,8 @@ import {
   startStatusPolling,
   stopStatusPolling,
 } from '../../common/duck/actions';
+
+import planOperations from '../../cluster/duck/operations';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -61,20 +63,16 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const statusPollingCallback = updatedPlansPollingResponse => {
-        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          const type = 'STAGE';
-          return getStatusCondition(dispatch, updatedPlansPollingResponse, createMigRes, type);
-        }
-      };
-
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: statusPollingCallback,
+        callback: commonOperations.getStatusCondition,
+        type: 'STAGE',
+        statusItem: createMigRes,
+        dispatch: dispatch,
       };
 
-      dispatch(Creators.startStatusPolling(params));
+      dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -105,20 +103,16 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = groupPlan(plan, migrationListResponse);
 
-      const statusPollingCallback = updatedPlansPollingResponse => {
-        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          const type = 'MIGRATION';
-          return getStatusCondition(dispatch, updatedPlansPollingResponse, createMigRes, type);
-        }
-      };
-
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: statusPollingCallback,
+        callback: commonOperations.getStatusCondition,
+        type: 'MIGRATION',
+        statusItem: createMigRes,
+        dispatch: dispatch,
       };
 
-      dispatch(Creators.startStatusPolling(params));
+      dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -146,17 +140,13 @@ const addPlan = migPlan => {
         migPlanObj
       );
 
-      const statusPollingCallback = updatedPlansPollingResponse => {
-        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          const type = 'PLAN';
-          return getStatusCondition(dispatch, updatedPlansPollingResponse, createPlanRes, type);
-        }
-      };
-
       const statusParams = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: statusPollingCallback,
+        type: 'PLAN',
+        callback: commonOperations.getStatusCondition,
+        statusItem: createPlanRes,
+        dispatch: dispatch,
       };
 
       dispatch(startStatusPolling(statusParams));
@@ -303,58 +293,6 @@ const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
   } else if (pvSearchStatus.error) {
     return 'FAILURE';
   }
-};
-const getStatusCondition = (dispatch, updatedPlansPollingResponse, newObjectRes, type) => {
-  switch (type) {
-    case 'STAGE': {
-      const matchingPlan = updatedPlansPollingResponse.updatedPlans
-        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name)
-        .pop();
-
-      const migStatus = matchingPlan ? getMigrationStatus(matchingPlan, newObjectRes) : null;
-      if (migStatus.success) {
-        dispatch(stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
-        dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
-        return 'SUCCESS';
-      } else if (migStatus.error) {
-        dispatch(stagingFailure());
-        dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
-        return 'FAILURE';
-      }
-      break;
-    }
-
-    case 'MIGRATION': {
-      const matchingPlan = updatedPlansPollingResponse.updatedPlans
-        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name)
-        .pop();
-      const migStatus = matchingPlan ? getMigrationStatus(matchingPlan, newObjectRes) : null;
-      if (migStatus.success) {
-        dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-        dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
-        return 'SUCCESS';
-      } else if (migStatus.error) {
-        dispatch(migrationFailure());
-        dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
-        return 'FAILURE';
-      }
-      break;
-    }
-    case 'PLAN': {
-      const matchingPlan = updatedPlansPollingResponse.updatedPlans
-        .filter(p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name)
-        .pop();
-
-      const planStatus = matchingPlan ? getPlanStatus(matchingPlan) : null;
-      if (planStatus.success) {
-        return 'SUCCESS';
-      } else if (planStatus.error) {
-        return 'FAILURE';
-      }
-      break;
-    }
-  }
-  return;
 };
 
 export default {
