@@ -3,6 +3,7 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import ConnectionState from '../../common/connection_state';
+import { select } from 'redux-saga/effects';
 
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 
@@ -203,7 +204,23 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
   });
 }
 
+function* fetchStorageGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const resource = new MigResource(MigResourceKind.MigStorage, state.migMeta.namespace);
+  try {
+    let storageList = yield client.list(resource);
+    storageList = yield storageList.data.items;
+    const refs = yield Promise.all(fetchMigStorageRefs(client, state.migMeta, storageList));
+    const groupedStorages = groupStorages(storageList, refs);
+    return { updatedStorages: groupedStorages, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
 export default {
+  fetchStorageGenerator,
   fetchStorage,
   addStorage,
   updateStorage,

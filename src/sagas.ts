@@ -7,6 +7,7 @@ export default function* rootSaga() {
     commonSagas.watchDataListPolling(),
     commonSagas.watchStatusPolling(),
     commonSagas.watchClustersPolling(),
+    commonSagas.watchStoragePolling(),
     planSagas.watchPVPolling(),
   ]);
 }

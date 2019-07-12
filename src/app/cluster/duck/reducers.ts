@@ -52,14 +52,6 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const updateClusters = (state = INITIAL_STATE, action) => {
-  // const updatedClusterList = action.updatedClusters.map(p => {
-  //   //filter migrations
-  //   p.Migrations = sortMigrations(p.Migrations);
-  //   return p;
-  // });
-
-  // const sortedList = sortPlans(updatedPlanList);
-
   return {
     ...state,
     clusterList: action.updatedClusters,
@@ -71,6 +63,7 @@ export const HANDLERS = {
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.SET_CONNECTION_STATE]: setConnectionState,
