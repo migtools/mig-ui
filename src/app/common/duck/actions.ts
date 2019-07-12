@@ -31,6 +31,15 @@ export const stopDataListPolling = () => ({
   type: 'DATA_LIST_POLL_STOP',
 });
 
+export const startClusterPolling = (params?: any) => ({
+  type: 'CLUSTER_POLL_START',
+  params,
+});
+
+export const stopClusterPolling = () => ({
+  type: 'CLUSTER_POLL_STOP',
+});
+
 export const startStatusPolling = (params?: any) => ({
   type: 'STATUS_POLL_START',
   params,

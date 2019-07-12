@@ -25,6 +25,9 @@ import {
   GridItem,
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
+
+import { Creators as ClusterCreators } from '../cluster/duck/actions';
+
 import { commonOperations } from '../common/duck';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
@@ -34,7 +37,7 @@ import DashboardCard from './components/Card/DashboardCard';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import { startStatusPolling, stopStatusPolling } from '../common/duck/actions';
+import { startClusterPolling, stopClusterPolling } from '../common/duck/actions';
 
 import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
 interface IProps {
@@ -46,8 +49,9 @@ interface IProps {
   fetchPlans: () => void;
   fetchClusters: () => void;
   fetchStorage: () => void;
-  startStatusPolling: (params) => void;
-  stopStatusPolling: () => void;
+  startClusterPolling: (params) => void;
+  stopClusterPolling: () => void;
+  updateClusters: (updatedClusters) => void;
   onLogout: () => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
@@ -119,16 +123,27 @@ class HomeComponent extends React.Component<IProps, IState> {
     </DropdownItem>,
   ];
 
-  componentDidMount = () => {
-    // const statusParams = {
-    //   asyncFetch: clusterOperations.fetchClustersGenerator,
-    //   delay: 500,
-    //   callback: commonOperations.getStatusCondition,
-    //   type: 'CLUSTER',
-    //   statusItem: null,
-    // };
+  handleClusterPoll = response => {
+    if (response && response.isSuccessful === true) {
+      this.props.updateClusters(response.updatedClusters);
+      return true;
+    }
 
-    // this.props.startStatusPolling(statusParams);
+    return false;
+  };
+
+  componentDidMount = () => {
+    const params = {
+      asyncFetch: clusterOperations.fetchClustersGenerator,
+      callback: this.handleClusterPoll,
+      // onStatsChange: this.handleStatsChange,
+      delay: 5000,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+
+    this.props.startClusterPolling(params);
 
     this.props.fetchClusters();
     this.props.fetchStorage();
@@ -289,7 +304,8 @@ export default connect(
     fetchClusters: () => dispatch(clusterOperations.fetchClusters()),
     fetchStorage: () => dispatch(storageOperations.fetchStorage()),
     fetchPlans: () => dispatch(planOperations.fetchPlans()),
-    startStatusPolling: params => dispatch(startStatusPolling(params)),
-    stopStatusPolling: () => dispatch(stopStatusPolling()),
+    startClusterPolling: params => dispatch(startClusterPolling(params)),
+    stopClusterPolling: () => dispatch(stopClusterPolling()),
+    updateClusters: updatedClusters => dispatch(ClusterCreators.updateClusters(updatedClusters)),
   })
 )(HomeComponent);
