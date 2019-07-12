@@ -5,6 +5,8 @@ import {
   stopDataListPolling,
   startStatusPolling,
   stopStatusPolling,
+  startClusterPolling,
+  stopClusterPolling,
 } from './actions';
 
 function* poll(action) {
@@ -23,7 +25,7 @@ function* poll(action) {
     try {
       // Make the API call
       stats.fetching = true;
-      params.onStatsChange(stats);
+      // params.onStatsChange(stats);
       const response = yield call(params.asyncFetch);
       // API call was successful
       stats.fetching = false;
@@ -33,9 +35,9 @@ function* poll(action) {
       if (shouldContinue) {
         stats.retries = 0;
         stats.lastResponseStatus = 'success';
-        params.onStatsChange(stats);
+        // params.onStatsChange(stats);
       } else {
-        params.onStatsChange(stats);
+        // params.onStatsChange(stats);
         throw new Error('Error while fetching data.');
       }
     } catch (e) {
@@ -48,6 +50,13 @@ function* watchDataListPolling() {
   while (true) {
     const action = yield take(startDataListPolling().type);
     yield race([call(poll, action), take(stopDataListPolling().type)]);
+  }
+}
+
+function* watchClustersPolling() {
+  while (true) {
+    const action = yield take(startClusterPolling().type);
+    yield race([call(poll, action), take(stopClusterPolling().type)]);
   }
 }
 
@@ -85,6 +94,7 @@ function* watchStatusPolling() {
 }
 
 export default {
+  watchClustersPolling,
   watchDataListPolling,
   watchStatusPolling,
 };
