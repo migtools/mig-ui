@@ -7,6 +7,8 @@ import {
   stopStatusPolling,
   startClusterPolling,
   stopClusterPolling,
+  startStoragePolling,
+  stopStoragePolling,
 } from './actions';
 
 function* poll(action) {
@@ -34,6 +36,12 @@ function* watchDataListPolling() {
   }
 }
 
+function* watchStoragePolling() {
+  while (true) {
+    const action = yield take(startStoragePolling().type);
+    yield race([call(poll, action), take(stopStoragePolling().type)]);
+  }
+}
 function* watchClustersPolling() {
   while (true) {
     const action = yield take(startClusterPolling().type);
@@ -75,6 +83,7 @@ function* watchStatusPolling() {
 }
 
 export default {
+  watchStoragePolling,
   watchClustersPolling,
   watchDataListPolling,
   watchStatusPolling,

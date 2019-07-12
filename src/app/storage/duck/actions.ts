@@ -11,6 +11,7 @@ const { Creators, Types } = createActions({
   updateStorageSuccess: ['updatedStorage'],
   updateSearchTerm: ['searchTerm'],
   setConnectionState: ['connectionState'],
+  updateStorages: ['updatedStorages'],
 });
 
 export { Creators, Types };
