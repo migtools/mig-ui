@@ -21,7 +21,7 @@ class AddClusterModal extends React.Component<any, any> {
 
   handleUpdate = vals => {
     this.props.updateCluster(vals);
-  }
+  };
 
   render() {
     const { checkConnection, connectionState, name, url, token, mode } = this.props;
@@ -31,8 +31,8 @@ class AddClusterModal extends React.Component<any, any> {
         <AddClusterForm
           connectionState={connectionState}
           onHandleModalToggle={this.handleClose}
-          onItemSubmit={ (mode === 'update') ? this.handleUpdate : this.handleAdd}
-          checkConnection={checkConnection}
+          onItemSubmit={mode === 'update' ? this.handleUpdate : this.handleAdd}
+          // onCheckConnection={checkConnection}
           name={name}
           url={url}
           token={token}
@@ -50,7 +50,7 @@ export default connect(
     };
   },
   dispatch => ({
-    checkConnection: () => dispatch(clusterOperations.checkConnection()),
+    // checkConnection: () => dispatch(clusterOperations.checkConnection()),
     addCluster: values => dispatch(clusterOperations.addCluster(values)),
     updateCluster: values => dispatch(clusterOperations.updateCluster(values)),
     resetConnectionState: () => dispatch(Creators.setConnectionState(ConnectionState.Pending)),

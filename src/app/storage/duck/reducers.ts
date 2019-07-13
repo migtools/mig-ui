@@ -6,7 +6,6 @@ export const INITIAL_STATE = {
   isFetching: false,
   isError: false,
   migStorageList: [],
-  searchTerm: '',
   connectionState: ConnectionState.Pending,
 };
 
@@ -46,9 +45,6 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
     ),
   };
 };
-export const updateSearchTerm = (state = INITIAL_STATE, action) => {
-  return { ...state, searchTerm: action.searchTerm };
-};
 
 export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
   return {
@@ -77,7 +73,6 @@ export const HANDLERS = {
   [Types.UPDATE_STORAGES]: updateStorages,
   [Types.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
-  [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
   [Types.SET_CONNECTION_STATE]: setConnectionState,
 };
 

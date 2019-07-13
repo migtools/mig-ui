@@ -10,19 +10,20 @@ interface IProps {
   connectionState: any;
   errors: any;
   touched: any;
-  checkConnection: () => void;
+  onItemSubmit: (values) => void;
   onHandleModalToggle: () => void;
   mode: string;
+  values: any;
 }
 
 const CheckConnection: React.FunctionComponent<IProps> = ({
   connectionState,
-  checkConnection,
+  onItemSubmit,
   errors,
   touched,
   onHandleModalToggle,
   mode,
-  ...props
+  values,
 }) => {
   const errorsObj = Object.entries(errors).length === 0 && errors.constructor === Object;
   const touchedObj = Object.entries(touched).length === 0 && touched.constructor === Object;
@@ -39,7 +40,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
                 key="check connection"
                 variant="secondary"
                 isDisabled={!errorsObj || touchedObj}
-                onClick={() => checkConnection()}
+                onClick={() => onItemSubmit(values)}
                 id="check-connection-btn"
               >
                 Check connection

@@ -24,7 +24,6 @@ const updateStorageSuccess = Creators.updateStorageSuccess;
 const addStorageFailure = Creators.addStorageFailure;
 const removeStorageSuccess = Creators.removeStorageSuccess;
 const removeStorageFailure = Creators.removeStorageFailure;
-const updateSearchTerm = Creators.updateSearchTerm;
 
 const addStorage = storageValues => {
   return async (dispatch, getState) => {
@@ -225,6 +224,5 @@ export default {
   addStorage,
   updateStorage,
   removeStorage,
-  updateSearchTerm,
   checkConnection,
 };

@@ -19,6 +19,7 @@ import {
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { commonOperations } from '../../common/duck';
 import { select } from 'redux-saga/effects';
+import { startStatusPolling } from '../../common/duck/actions';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
@@ -73,6 +74,19 @@ const addCluster = clusterValues => {
         return accum;
       }, {});
       cluster.status = clusterValues.connectionStatus;
+
+      //status polling logic
+      const statusParams = {
+        asyncFetch: fetchClustersGenerator,
+        delay: 500,
+        type: 'CLUSTER',
+        callback: commonOperations.getStatusCondition,
+        statusItem: cluster,
+        dispatch: dispatch,
+      };
+
+      dispatch(startStatusPolling(statusParams));
+
       dispatch(addClusterSuccess(cluster));
       dispatch(commonOperations.alertSuccessTimeout('Successfully added cluster'));
     } catch (err) {
@@ -186,14 +200,14 @@ const fetchClusters = () => {
   };
 };
 
-function checkConnection() {
-  return (dispatch, getState) => {
-    dispatch(Creators.setConnectionState(ConnectionState.Checking));
-    setTimeout(() => {
-      dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 500);
-  };
-}
+// function checkConnection() {
+//   return (dispatch, getState) => {
+//     dispatch(Creators.setConnectionState(ConnectionState.Checking));
+//     setTimeout(() => {
+//       dispatch(Creators.setConnectionState(ConnectionState.Success));
+//     }, 500);
+//   };
+// }
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -258,5 +272,5 @@ export default {
   removeCluster,
   updateCluster,
   updateSearchTerm,
-  checkConnection,
+  // checkConnection,
 };

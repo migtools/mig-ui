@@ -57,8 +57,8 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
         dispatch(alertSuccessTimeout('Staging Successful'));
         return 'SUCCESS';
       } else if (migStatus.error) {
-        // dispatch(stagingFailure());
-        // dispatch(alertErrorTimeout('Staging Failed'));
+        dispatch(stagingFailure());
+        dispatch(alertErrorTimeout('Staging Failed'));
         return 'FAILURE';
       }
       break;
@@ -70,12 +70,12 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
         .pop();
       const migStatus = matchingPlan ? getMigrationStatus(matchingPlan, newObjectRes) : null;
       if (migStatus.success) {
-        // dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-        // dispatch(alertSuccessTimeout('Migration Successful'));
+        dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+        dispatch(alertSuccessTimeout('Migration Successful'));
         return 'SUCCESS';
       } else if (migStatus.error) {
-        // dispatch(migrationFailure());
-        // dispatch(alertErrorTimeout('Migration Failed'));
+        dispatch(migrationFailure());
+        dispatch(alertErrorTimeout('Migration Failed'));
         return 'FAILURE';
       }
       break;
@@ -91,6 +91,19 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
       } else if (planStatus.error) {
         return 'FAILURE';
       }
+      break;
+    }
+    case 'CLUSTER': {
+      const matchingCluster = pollingResponse.updatedClusters
+        .filter(c => c.MigCluster.metadata.name === newObjectRes.data.metadata.name)
+        .pop();
+      console.log('matchingCluster', matchingCluster);
+      // const planStatus = matchingPlan ? getPlanStatus(matchingPlan) : null;
+      // if (planStatus.success) {
+      //   return 'SUCCESS';
+      // } else if (planStatus.error) {
+      //   return 'FAILURE';
+      // }
       break;
     }
   }

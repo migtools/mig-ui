@@ -6,7 +6,6 @@ export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
   clusterList: [],
-  searchTerm: '',
   connectionState: ConnectionState.Pending,
 };
 

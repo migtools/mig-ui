@@ -9,7 +9,6 @@ const { Creators, Types } = createActions({
   addStorageFailure: ['error'],
   removeStorageSuccess: ['name'],
   updateStorageSuccess: ['updatedStorage'],
-  updateSearchTerm: ['searchTerm'],
   setConnectionState: ['connectionState'],
   updateStorages: ['updatedStorages'],
 });
