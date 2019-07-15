@@ -2,5 +2,6 @@
   "baseUrl": "http://localhost:9000",
   "video": false,
   "pluginsFile": false,
-  "supportFile": false
+  "supportFile": false,
+  "chromeWebSecurity": false
 }

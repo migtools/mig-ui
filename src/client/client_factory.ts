@@ -1,4 +1,4 @@
-import { ClusterClient } from './client';
+import { ClusterClient, TokenExpiryHandler } from './client';
 
 export class ClientFactoryUnknownClusterError extends Error {
   constructor(clusterName: string) {
@@ -30,11 +30,18 @@ export const ClientFactory = {
       throw new ClientFactoryMissingApiRoot();
     }
 
-    return new ClusterClient(state.migMeta.clusterApi, state.auth.user.access_token);
+    const newClient = new ClusterClient(state.migMeta.clusterApi, state.auth.user.access_token);
+
+    if(tokenExpiryHandler) {
+      newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
+    }
+
+    return newClient;
   },
   forCluster: (clusterName: string, state: any) => {
     const { clusterApi, accessToken } = getAuthForCluster(clusterName, state);
-    return new ClusterClient(clusterApi, accessToken);
+    const newClient = new ClusterClient(clusterApi, accessToken);
+    return newClient;
   },
 };
 
@@ -53,3 +60,9 @@ function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
 
   return { clusterApi, accessToken };
 }
+
+let tokenExpiryHandler = null;
+
+export const setTokenExpiryHandler = (newExpiryHandler: TokenExpiryHandler) => {
+  tokenExpiryHandler = newExpiryHandler;
+};

@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Creators } from './actions';
 import { push } from 'connected-react-router';
 import commonOperations from '../../common/duck/operations';
+import moment from 'moment';
+
 import {
   isSelfSignedCertError,
   handleSelfSignedCertError,
@@ -35,6 +37,10 @@ const fetchToken = (oauthClient, codeRedirect) => {
     try {
       const result = await oauthClient.code.getToken(codeRedirect);
       const user = result.data;
+      const currentUnixTime = moment().unix();
+      const expiryUnixTime = currentUnixTime + user.expires_in;
+      user.login_time = currentUnixTime;
+      user.expiry_time = expiryUnixTime;
       localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
       dispatch(loginSuccess(user));
       dispatch(push('/'));
@@ -54,8 +60,16 @@ const initFromStorage = () => {
   };
 };
 
+const logoutUser = () => {
+  return dispatch => {
+    localStorage.removeItem(LS_KEY_CURRENT_USER);
+    dispatch(push('/login?action=refresh'));
+  };
+};
+
 export default {
   fetchOauthMeta,
   fetchToken,
   initFromStorage,
+  logoutUser,
 };

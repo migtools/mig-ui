@@ -10,6 +10,7 @@ import configureStore from './configureStore';
 const { persistor, store } = configureStore();
 import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
+import { setTokenExpiryHandler } from './client/client_factory';
 
 import Loader from 'react-loader-spinner';
 
@@ -31,6 +32,13 @@ if (!!migMeta) {
   // @ts-ignore
   store.dispatch(authOperations.initFromStorage());
 }
+
+// Configure token expiry behavior
+setTokenExpiryHandler(expiredToken => {
+  // TODO: same thunk issue as above
+  // @ts-ignore
+  store.dispatch(authOperations.logoutUser());
+});
 
 render(
   <Provider store={store}>

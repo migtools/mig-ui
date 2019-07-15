@@ -1,11 +1,14 @@
 import { KubeResource } from './resources';
 import KubeStore from './kube_store';
+import { TokenExpiryHandler } from './client';
 
 export class MockClusterClient {
   private name: string;
   private state: object;
   private kube_store: KubeStore;
   private reqTime = 500;
+  private tokenExpiryHandler: TokenExpiryHandler;
+  private tokenExpiryTime: number;
   public apiRoot: string;
 
   constructor(name: string, state: object) {
@@ -13,6 +16,11 @@ export class MockClusterClient {
     this.kube_store = new KubeStore(name);
     this.state = state;
     this.apiRoot = 'http://mock-api.biz';
+  }
+
+  public setTokenExpiryHandler(handler: TokenExpiryHandler, tokenExpiryTime: number) {
+    this.tokenExpiryHandler = handler;
+    this.tokenExpiryTime = tokenExpiryTime;
   }
 
   public list(resource: KubeResource): Promise<any> {
