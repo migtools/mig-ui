@@ -3,11 +3,13 @@ import React from 'react';
 import { jsx } from '@emotion/core';
 import { Button, FormGroup } from '@patternfly/react-core';
 import { Flex, Box } from '@rebass/emotion';
-import ConnectionState from '../connection_state';
 import StatusIcon from './StatusIcon';
+import Loader from 'react-loader-spinner';
+import theme from '../../../theme';
 
 interface IProps {
   connectionState: any;
+  isCheckingConnection?: boolean;
   errors: any;
   touched: any;
   onItemSubmit: (values) => void;
@@ -17,6 +19,7 @@ interface IProps {
 }
 
 const CheckConnection: React.FunctionComponent<IProps> = ({
+  isCheckingConnection,
   connectionState,
   onItemSubmit,
   errors,
@@ -25,6 +28,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
   mode,
   values,
 }) => {
+  console.log('isCheckingConnection', isCheckingConnection, connectionState);
   const errorsObj = Object.entries(errors).length === 0 && errors.constructor === Object;
   const touchedObj = Object.entries(touched).length === 0 && touched.constructor === Object;
   const displayMode =
@@ -46,14 +50,32 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
                 Check connection
               </Button>
             </Box>
-            <Box alignSelf="flex-start">{renderConnectionState(connectionState)}</Box>
+
+            <Box alignSelf="flex-start">
+              <Flex m="10px 10px 10px 0">
+                {isCheckingConnection ? (
+                  <Loader
+                    type="RevolvingDot"
+                    color={theme.colors.medGray3}
+                    height="1em"
+                    width="1em"
+                    style={{ display: 'inline' }}
+                  />
+                ) : (
+                  <Box>
+                    {connectionState.status}
+                    <StatusIcon isReady={connectionState.isReady} />
+                  </Box>
+                )}
+              </Flex>
+            </Box>
           </Flex>
         </Box>
         <Box mt={30} alignSelf="flex-start">
           <Button
             variant="primary"
             type="submit"
-            isDisabled={connectionState !== ConnectionState.Success}
+            isDisabled={!connectionState.isReady}
             style={{ marginRight: '10px' }}
             id="submit-cluster-btn"
           >
@@ -69,31 +91,3 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
 };
 
 export default CheckConnection;
-
-function renderConnectionState(connectionState: ConnectionState) {
-  let cxStateContents;
-  let iconStatus;
-
-  switch (connectionState) {
-    case ConnectionState.Checking:
-      cxStateContents = 'Checking...';
-      iconStatus = false;
-      break;
-    case ConnectionState.Success:
-      cxStateContents = 'Success!';
-      iconStatus = true;
-      break;
-    case ConnectionState.Failed:
-      cxStateContents = 'Failed!';
-      iconStatus = false;
-      break;
-  }
-
-  return (
-    <Flex m="10px 10px 10px 0">
-      <Box>
-        {cxStateContents} <StatusIcon isReady={iconStatus} />
-      </Box>
-    </Flex>
-  );
-}

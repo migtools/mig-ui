@@ -1,12 +1,12 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
+  isCheckingConnection: false,
   clusterList: [],
-  connectionState: ConnectionState.Pending,
+  connectionState: { status: 'Not Ready', isReady: null },
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
@@ -23,13 +23,29 @@ export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
+export const resetConnectionState = (state = INITIAL_STATE, action) => {
+  return { ...state, connectionState: { status: 'Not Ready', isReady: null } };
+};
+export const addClusterRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isCheckingConnection: true,
+    connectionState: { status: 'checking', isReady: null },
+  };
 };
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [...state.clusterList, action.newCluster],
+    isCheckingConnection: false,
+    connectionState: { status: 'Ready', isReady: true },
+  };
+};
+export const addClusterFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isCheckingConnection: false,
+    connectionState: { status: 'Connection Failed', isReady: false },
   };
 };
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
@@ -61,11 +77,13 @@ export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
+  [Types.ADD_CLUSTER_REQUEST]: addClusterRequest,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.ADD_CLUSTER_FAILURE]: addClusterFailure,
   [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
+  [Types.RESET_CONNECTION_STATE]: resetConnectionState,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

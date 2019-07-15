@@ -24,6 +24,8 @@ const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, ...rest }) => {
         <SuccessIcon />
       </React.Fragment>
     );
+  } else if (isReady === null) {
+    return <React.Fragment />;
   } else {
     return (
       <React.Fragment>

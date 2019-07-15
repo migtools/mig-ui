@@ -1,7 +1,6 @@
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import ConnectionState from '../../common/connection_state';
 
 import {
   ClusterRegistryResource,
@@ -24,7 +23,7 @@ import { startStatusPolling } from '../../common/duck/actions';
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const clusterFetchFailure = Creators.clusterFetchFailure;
-const addClusterSuccess = Creators.addClusterSuccess;
+const addClusterRequest = Creators.addClusterRequest;
 const updateClusterSuccess = Creators.updateClusterSuccess;
 const removeClusterSuccess = Creators.removeClusterSuccess;
 const removeClusterFailure = Creators.removeClusterFailure;
@@ -73,7 +72,6 @@ const addCluster = clusterValues => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
-      cluster.status = clusterValues.connectionStatus;
 
       //status polling logic
       const statusParams = {
@@ -84,11 +82,8 @@ const addCluster = clusterValues => {
         statusItem: cluster,
         dispatch: dispatch,
       };
-
+      dispatch(addClusterRequest());
       dispatch(startStatusPolling(statusParams));
-
-      dispatch(addClusterSuccess(cluster));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully added cluster'));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -200,15 +195,6 @@ const fetchClusters = () => {
   };
 };
 
-// function checkConnection() {
-//   return (dispatch, getState) => {
-//     dispatch(Creators.setConnectionState(ConnectionState.Checking));
-//     setTimeout(() => {
-//       dispatch(Creators.setConnectionState(ConnectionState.Success));
-//     }, 500);
-//   };
-// }
-
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
@@ -272,5 +258,4 @@ export default {
   removeCluster,
   updateCluster,
   updateSearchTerm,
-  // checkConnection,
 };

@@ -24,11 +24,6 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       tokenHidden: !this.state.tokenHidden,
     });
   };
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.connectionState !== this.props.connectionState) {
-      this.props.setFieldValue('connectionStatus', this.props.connectionState);
-    }
-  }
 
   render() {
     const {
@@ -39,6 +34,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       handleBlur,
       handleSubmit,
       connectionState,
+      isCheckingConnection,
       setFieldTouched,
       setFieldValue,
       onItemSubmit,
@@ -102,9 +98,9 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           errors={errors}
           touched={mode === 'update' ? true : touched}
           connectionState={connectionState}
+          isCheckingConnection={isCheckingConnection}
           onItemSubmit={onItemSubmit}
           values={values}
-          // onCheckConnection={onCheckConnection}
           onHandleModalToggle={onHandleModalToggle}
           mode={mode}
         />

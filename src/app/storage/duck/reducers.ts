@@ -1,12 +1,11 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
   isFetching: false,
   isError: false,
   migStorageList: [],
-  connectionState: ConnectionState.Pending,
+  connectionState: { status: 'Not Ready', isReady: null },
 };
 
 export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
@@ -27,16 +26,24 @@ export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
+export const resetConnectionState = (state = INITIAL_STATE, action) => {
+  return { ...state, connectionState: { status: 'Not Ready', isReady: null } };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: [...state.migStorageList, action.newStorage],
+    connectionState: { status: 'Ready', isReady: true },
   };
 };
+export const addStorageFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    connectionState: { status: 'Connection Failed', isReady: false },
+  };
+};
+
 export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -70,10 +77,11 @@ export const HANDLERS = {
   [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
   [Types.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
+  [Types.ADD_STORAGE_FAILURE]: addStorageFailure,
   [Types.UPDATE_STORAGES]: updateStorages,
   [Types.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
+  [Types.RESET_CONNECTION_STATE]: resetConnectionState,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

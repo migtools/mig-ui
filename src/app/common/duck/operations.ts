@@ -1,8 +1,12 @@
 import { alertSuccess, alertError, alertProgress, alertClear } from './actions';
 import { getMigrationStatus, getPlanStatus } from '../../plan/duck/utils';
+import { getClusterStatus } from '../../cluster/duck/utils';
 import { Creators as PlanCreators } from '../../plan/duck/actions';
-import { call, put } from 'redux-saga/effects';
+import { Creators as ClusterCreators } from '../../cluster/duck/actions';
+import clusterOperations from '../../cluster/duck/operations';
 
+const addClusterSuccess = ClusterCreators.addClusterSuccess;
+const addClusterFailure = ClusterCreators.addClusterFailure;
 const migrationSuccess = PlanCreators.migrationSuccess;
 const stagingSuccess = PlanCreators.stagingSuccess;
 const migrationFailure = PlanCreators.migrationFailure;
@@ -95,15 +99,21 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
     }
     case 'CLUSTER': {
       const matchingCluster = pollingResponse.updatedClusters
-        .filter(c => c.MigCluster.metadata.name === newObjectRes.data.metadata.name)
+        .filter(c => c.MigCluster.metadata.name === newObjectRes.MigCluster.metadata.name)
         .pop();
-      console.log('matchingCluster', matchingCluster);
-      // const planStatus = matchingPlan ? getPlanStatus(matchingPlan) : null;
-      // if (planStatus.success) {
-      //   return 'SUCCESS';
-      // } else if (planStatus.error) {
-      //   return 'FAILURE';
-      // }
+      const clusterStatus = matchingCluster ? getClusterStatus(matchingCluster) : null;
+      if (clusterStatus.success) {
+        dispatch(addClusterSuccess(matchingCluster));
+        dispatch(alertSuccessTimeout('Successfully added cluster'));
+        return 'SUCCESS';
+      } else if (clusterStatus.error) {
+        dispatch(addClusterFailure());
+        dispatch(alertErrorTimeout('Failed to add cluster'));
+        dispatch(clusterOperations.removeCluster(newObjectRes.MigCluster.metadata.name));
+        return 'FAILURE';
+      } else {
+        console.log('still running');
+      }
       break;
     }
   }

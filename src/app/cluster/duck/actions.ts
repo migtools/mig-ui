@@ -5,10 +5,11 @@ const { Creators, Types } = createActions({
   clusterFetchRequest: [],
   clusterFetchFailure: [],
   updateClusters: ['updatedClusters'],
+  addClusterRequest: [],
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
   removeClusterSuccess: ['name'],
-  setConnectionState: ['connectionState'],
+  resetConnectionState: [],
   updateClusterSuccess: ['updatedCluster'],
 });
 

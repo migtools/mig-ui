@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import AddStorageForm from './AddStorageForm';
 import { storageOperations } from '../../duck';
 import { Creators } from '../../duck/actions';
-import ConnectionState from '../../../common/connection_state';
 import { Modal } from '@patternfly/react-core';
 
 class AddStorageModal extends React.Component<any, any> {
@@ -53,7 +52,6 @@ export default connect(
   dispatch => ({
     addStorage: values => dispatch(storageOperations.addStorage(values)),
     updateStorage: values => dispatch(storageOperations.updateStorage(values)),
-    checkConnection: () => dispatch(storageOperations.checkConnection()),
-    resetConnectionState: () => dispatch(Creators.setConnectionState(ConnectionState.Pending)),
+    resetConnectionState: () => dispatch(Creators.resetConnectionState()),
   })
 )(AddStorageModal);

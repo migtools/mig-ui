@@ -2,7 +2,6 @@ import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import ConnectionState from '../../common/connection_state';
 import { select } from 'redux-saga/effects';
 
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
@@ -112,15 +111,6 @@ const updateStorage = storageValues => {
   };
 };
 
-function checkConnection() {
-  return (dispatch, getState) => {
-    dispatch(Creators.setConnectionState(ConnectionState.Checking));
-    setTimeout(() => {
-      dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 500);
-  };
-}
-
 const removeStorage = name => {
   return async (dispatch, getState) => {
     try {
@@ -224,5 +214,4 @@ export default {
   addStorage,
   updateStorage,
   removeStorage,
-  checkConnection,
 };
