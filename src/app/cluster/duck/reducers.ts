@@ -59,9 +59,11 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [
-      ...state.clusterList.filter(
-        s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
-      ),
+      ...state.clusterList.filter(s => {
+        if (s.Cluster) {
+          return s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name;
+        }
+      }),
       { ...action.updatedCluster },
     ],
   };
