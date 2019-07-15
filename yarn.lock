@@ -944,11 +944,6 @@
   resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-0.8.2.tgz#576ff7fb1230185b619a75d258cbc98f0867a8dc"
   integrity sha512-rLu3wcBWH4P5q1CGoSSH/i9hrXs7SlbRLkoq9IGuoPYNGQvDJ3pt/wmOM+XgYjIDRMVIdkUWt0RsfzF50JfnCw==
 
-"@emotion/weak-memoize@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.2.tgz#63985d3d8b02530e0869962f4da09142ee8e200e"
-  integrity sha512-n/VQ4mbfr81aqkx/XmVicOLjviMuy02eenSdJY33SVA7S2J42EU0P1H0mOogfYedb3wXA0d/LVtBrgTSm04WEA==
-
 "@emotion/weak-memoize@0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.3.tgz#dfa0c92efe44a1d1a7974fb49ffeb40ef2da5a27"
@@ -3259,7 +3254,7 @@ create-emotion-server@^9.2.12:
     multipipe "^1.0.2"
     through "^2.3.8"
 
-create-emotion@^10.0.9:
+create-emotion@^10.0.14:
   version "10.0.14"
   resolved "https://registry.yarnpkg.com/create-emotion/-/create-emotion-10.0.14.tgz#4c140aaef6a9588ed47c926f9c4679e4719be43e"
   integrity sha512-5G4naKMxokOur+94eDz7iPKBfwzy4wa/+0isnPhxXyosIQHBq7yvBy4jjdZw/nnRm7G3PM7P9Ug8mUmtoqcaHg==
@@ -3873,22 +3868,22 @@ emotion-server@^9.2.9:
   dependencies:
     create-emotion-server "^9.2.12"
 
-emotion-theming@10.0.9:
-  version "10.0.9"
-  resolved "https://registry.yarnpkg.com/emotion-theming/-/emotion-theming-10.0.9.tgz#80e9fc40db8c46b466fcc11f3ae076f332933a4e"
-  integrity sha512-Z8fg5+5u62fOkZR9uCO9/TTxjTk5ieL/GIQgtRhi6WrZT++NAqY9u9GBUjbbJDWYkt6GIcy/S+m7yKaB+iGrDA==
+emotion-theming@^10.0.9:
+  version "10.0.14"
+  resolved "https://registry.yarnpkg.com/emotion-theming/-/emotion-theming-10.0.14.tgz#e548d388493d07bedbb0d9d3bbe221766174b1f4"
+  integrity sha512-zMGhPSYz48AAR6DYjQVaZHeO42cYKPq4VyB1XjxzgR62/NmO99679fx8qDDB1QZVYGkRWZtsOe+zJE/e30XdbA==
   dependencies:
-    "@emotion/weak-memoize" "0.2.2"
+    "@babel/runtime" "^7.4.3"
+    "@emotion/weak-memoize" "0.2.3"
     hoist-non-react-statics "^3.3.0"
-    object-assign "^4.1.1"
 
-emotion@10.0.9:
-  version "10.0.9"
-  resolved "https://registry.yarnpkg.com/emotion/-/emotion-10.0.9.tgz#2c37598af13df31dcd35a1957eaa8830f368c066"
-  integrity sha512-IMFwwWlU2TDt7eh4v6dm58E8VHAYOitqRbVoazQdxIu9/0CAH4a3UrTMnZSlWQAo09MrRRlKfgQFHswnj40meQ==
+emotion@^10.0.9:
+  version "10.0.14"
+  resolved "https://registry.yarnpkg.com/emotion/-/emotion-10.0.14.tgz#d7702a6147de6e8ce863dacde98418a467c5fed4"
+  integrity sha512-6cTWfwqVGy9UinGSZQKRGyuRsRGkzlT0MaeH2pF4BvL7u6PnyTZeyHj4INwzpaXBLwA9C0JaFqS31J62RWUNNw==
   dependencies:
-    babel-plugin-emotion "^10.0.9"
-    create-emotion "^10.0.9"
+    babel-plugin-emotion "^10.0.14"
+    create-emotion "^10.0.14"
 
 emotion@^9.1.2, emotion@^9.2.9:
   version "9.2.12"
