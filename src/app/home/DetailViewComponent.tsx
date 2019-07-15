@@ -29,6 +29,7 @@ interface IProps {
   stagingSuccess: (plan) => void;
   isStaging?: boolean;
   isMigrating?: boolean;
+  isCheckingConnection: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
   startDataListPolling: (params) => void;
@@ -124,6 +125,7 @@ class DetailViewComponent extends Component<IProps, IState> {
       plansWithStatus,
       clusterAssociatedPlans,
       storageAssociatedPlans,
+      isCheckingConnection,
     } = this.props;
     const { isWizardOpen } = this.state;
 
@@ -139,6 +141,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             migMeta={this.props.migMeta}
             removeCluster={this.props.removeCluster}
+            isCheckingConnection={isCheckingConnection}
           />
           <StorageDataListItem
             dataList={allStorage}
@@ -173,6 +176,7 @@ function mapStateToProps(state) {
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
+  const { isCheckingConnection } = state.cluster;
   const { isMigrating, isStaging } = state.plan;
   const migMeta = state.migMeta;
   return {
@@ -185,6 +189,7 @@ function mapStateToProps(state) {
     isMigrating,
     isStaging,
     migMeta,
+    isCheckingConnection,
   };
 }
 const mapDispatchToProps = dispatch => {

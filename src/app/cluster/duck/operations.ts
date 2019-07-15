@@ -24,6 +24,7 @@ const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const clusterFetchFailure = Creators.clusterFetchFailure;
 const addClusterRequest = Creators.addClusterRequest;
+const updateClusterRequest = Creators.updateClusterRequest;
 const updateClusterSuccess = Creators.updateClusterSuccess;
 const removeClusterSuccess = Creators.removeClusterSuccess;
 const removeClusterFailure = Creators.removeClusterFailure;
@@ -80,7 +81,7 @@ const addCluster = clusterValues => {
         type: 'CLUSTER',
         callback: commonOperations.getStatusCondition,
         statusItem: cluster,
-        dispatch: dispatch,
+        dispatch,
       };
       dispatch(addClusterRequest());
       dispatch(startStatusPolling(statusParams));
@@ -119,14 +120,17 @@ const updateCluster = clusterValues => {
         accum[res.data.kind] = res.data;
         return accum;
       }, {});
-      cluster.status = clusterValues.connectionStatus;
 
-      dispatch(updateClusterSuccess(cluster));
-      dispatch(
-        commonOperations.alertSuccessTimeout(
-          `Successfully updated cluster "${clusterValues.name}"!`
-        )
-      );
+      const statusParams = {
+        asyncFetch: fetchClustersGenerator,
+        delay: 500,
+        type: 'UPDATE_CLUSTER',
+        callback: commonOperations.getStatusCondition,
+        statusItem: cluster,
+        dispatch,
+      };
+      dispatch(updateClusterRequest());
+      dispatch(startStatusPolling(statusParams));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
     }
@@ -157,7 +161,6 @@ const removeCluster = name => {
       ]);
 
       dispatch(removeClusterSuccess(name));
-      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
       dispatch(removeClusterFailure(err));

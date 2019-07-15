@@ -154,7 +154,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     const clusterPollParams = {
       asyncFetch: clusterOperations.fetchClustersGenerator,
       callback: this.handleClusterPoll,
-      delay: 5000,
+      delay: 6000,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
@@ -162,7 +162,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     const storagePollParams = {
       asyncFetch: storageOperations.fetchStorageGenerator,
       callback: this.handleStoragePoll,
-      delay: 5000,
+      delay: 6000,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,

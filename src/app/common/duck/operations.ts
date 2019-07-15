@@ -5,6 +5,8 @@ import { Creators as PlanCreators } from '../../plan/duck/actions';
 import { Creators as ClusterCreators } from '../../cluster/duck/actions';
 import clusterOperations from '../../cluster/duck/operations';
 
+const updateClusterSuccess = ClusterCreators.updateClusterSuccess;
+const updateClusterFailure = ClusterCreators.updateClusterFailure;
 const addClusterSuccess = ClusterCreators.addClusterSuccess;
 const addClusterFailure = ClusterCreators.addClusterFailure;
 const migrationSuccess = PlanCreators.migrationSuccess;
@@ -111,8 +113,23 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
         dispatch(alertErrorTimeout('Failed to add cluster'));
         dispatch(clusterOperations.removeCluster(newObjectRes.MigCluster.metadata.name));
         return 'FAILURE';
-      } else {
-        console.log('still running');
+      }
+      break;
+    }
+    case 'UPDATE_CLUSTER': {
+      const matchingCluster = pollingResponse.updatedClusters
+        .filter(c => c.MigCluster.metadata.name === newObjectRes.MigCluster.metadata.name)
+        .pop();
+      const clusterStatus = matchingCluster ? getClusterStatus(matchingCluster) : null;
+      if (clusterStatus.success) {
+        dispatch(updateClusterSuccess(matchingCluster));
+        dispatch(alertSuccessTimeout('Successfully updated cluster'));
+        return 'SUCCESS';
+      } else if (clusterStatus.error) {
+        dispatch(updateClusterFailure());
+        dispatch(alertErrorTimeout('Failed to update cluster'));
+        // dispatch(clusterOperations.removeCluster(newObjectRes.MigCluster.metadata.name));
+        return 'FAILURE';
       }
       break;
     }

@@ -58,7 +58,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             name="name"
             type="text"
             id="cluster-name-input"
-            isDisabled={mode === 'update' ? true : false}
+            isDisabled={mode === 'update' ? true : false || connectionState.isReady !== null}
           />
           {errors.name && touched.name && (
             <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -74,6 +74,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             type="text"
             // isValid={!errors.url && touched.url}
             id="url-input"
+            isDisabled={connectionState.isReady !== null}
           />
           {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
         </FormGroup>
@@ -88,6 +89,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
             onBlur={handleBlur}
             name="token"
             id="token-input"
+            isDisabled={connectionState.isReady !== null}
             type={this.state.tokenHidden ? 'password' : 'text'}
           />
           {errors.token && touched.token && (

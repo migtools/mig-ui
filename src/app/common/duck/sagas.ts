@@ -19,8 +19,7 @@ function* poll(action) {
       const response = yield call(params.asyncFetch);
       const shouldContinue = params.callback(response);
 
-      if (shouldContinue) {
-      } else {
+      if (!shouldContinue) {
         throw new Error('Error while fetching data.');
       }
     } catch (e) {

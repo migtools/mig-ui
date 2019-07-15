@@ -12,7 +12,7 @@ interface IProps {
   isCheckingConnection?: boolean;
   errors: any;
   touched: any;
-  onItemSubmit: (values) => void;
+  onItemSubmit: (values, mode) => void;
   onHandleModalToggle: () => void;
   mode: string;
   values: any;
@@ -28,11 +28,10 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
   mode,
   values,
 }) => {
-  console.log('isCheckingConnection', isCheckingConnection, connectionState);
   const errorsObj = Object.entries(errors).length === 0 && errors.constructor === Object;
   const touchedObj = Object.entries(touched).length === 0 && touched.constructor === Object;
-  const displayMode =
-    typeof mode === 'undefined' ? 'Add' : mode.charAt(0).toUpperCase() + mode.substring(1);
+  // const displayMode =
+  //   typeof mode === 'undefined' ? 'Add' : mode.charAt(0).toUpperCase() + mode.substring(1);
 
   return (
     <FormGroup fieldId="check-connection" id="check-connection">
@@ -43,8 +42,8 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
               <Button
                 key="check connection"
                 variant="secondary"
-                isDisabled={!errorsObj || touchedObj}
-                onClick={() => onItemSubmit(values)}
+                isDisabled={!errorsObj || touchedObj || connectionState.isReady !== null}
+                onClick={() => onItemSubmit(values, mode)}
                 id="check-connection-btn"
               >
                 Check connection
@@ -72,17 +71,8 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
           </Flex>
         </Box>
         <Box mt={30} alignSelf="flex-start">
-          <Button
-            variant="primary"
-            type="submit"
-            isDisabled={!connectionState.isReady}
-            style={{ marginRight: '10px' }}
-            id="submit-cluster-btn"
-          >
-            {displayMode}
-          </Button>
           <Button key="cancel" variant="secondary" onClick={() => onHandleModalToggle()}>
-            Cancel
+            Close
           </Button>
         </Box>
       </Flex>

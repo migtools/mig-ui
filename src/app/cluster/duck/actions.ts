@@ -10,7 +10,9 @@ const { Creators, Types } = createActions({
   addClusterFailure: ['error'],
   removeClusterSuccess: ['name'],
   resetConnectionState: [],
+  updateClusterRequest: [],
   updateClusterSuccess: ['updatedCluster'],
+  updateClusterFailure: [],
 });
 
 export { Creators, Types };
