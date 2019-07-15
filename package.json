@@ -29,18 +29,8 @@
     "mocks:prune": "node scripts/gather-mocked-data.js prune"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
-    "@babel/plugin-transform-runtime": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.3.3",
-    "@emotion/babel-preset-css-prop": "^10.0.9",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.13.6",
-    "babel-loader": "^8.0.6",
-    "babel-plugin-emotion": "^10.0.9",
     "clean-webpack-plugin": "^2.0.1",
     "css-loader": "^2.1.1",
     "cypress": "^3.3.1",
