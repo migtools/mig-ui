@@ -144,26 +144,7 @@ class HomeComponent extends React.Component<IProps, IState> {
         </NavList>
       </Nav>
     );
-    const PageToolbar = (
-      <Toolbar>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Dropdown
-              isPlain
-              position="right"
-              onSelect={this.onDropdownSelect}
-              isOpen={isDropdownOpen}
-              toggle={
-                <DropdownToggle onToggle={this.onDropdownToggle}>
-                  <div>jmatthews</div>
-                </DropdownToggle>
-              }
-              dropdownItems={this.userDropdownItems}
-            />
-          </ToolbarItem>
-        </ToolbarGroup>
-      </Toolbar>
-    );
+
     const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand {
         height: 2.5em;
@@ -189,9 +170,9 @@ class HomeComponent extends React.Component<IProps, IState> {
             <Brand src={openshiftLogo} alt="OpenShift Logo" />
           </React.Fragment>
         }
-        toolbar={PageToolbar}
       />
     );
+
     const {
       isFetchingStorage,
       isFetchingClusters,
