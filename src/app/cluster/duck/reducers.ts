@@ -16,7 +16,11 @@ export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 export const resetConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: { status: 'Not Ready', isReady: null } };
+  return {
+    ...state,
+    isCheckingConnection: false,
+    connectionState: { status: 'Not Ready', isReady: null },
+  };
 };
 export const addClusterRequest = (state = INITIAL_STATE, action) => {
   return {
@@ -66,6 +70,7 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
       }),
       { ...action.updatedCluster },
     ],
+    isCheckingConnection: false,
   };
 };
 

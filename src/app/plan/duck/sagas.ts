@@ -26,6 +26,8 @@ function* checkPVs(action) {
           break;
       }
       yield delay(params.delay);
+    } else {
+      yield put({ type: 'STOP_PV_POLLING' });
     }
   }
 }

@@ -16,6 +16,7 @@ class AddClusterModal extends React.Component<any, any> {
   };
 
   handleUpdate = vals => {
+    console.log('handle update called');
     this.props.updateCluster(vals);
   };
 

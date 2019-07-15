@@ -49,29 +49,38 @@ function* watchClustersPolling() {
 }
 
 function* checkStatus(action) {
+  let statusCheckComplete = false;
+  let tries = 0;
   const params = { ...action.params };
-  while (true) {
-    const generatorRes = yield call(params.asyncFetch);
-    const pollingStatus = params.callback(
-      generatorRes,
-      params.type,
-      params.statusItem,
-      params.dispatch
-    );
+  while (!statusCheckComplete) {
+    if (tries < params.maxTries) {
+      tries += 1;
+      const generatorRes = yield call(params.asyncFetch);
+      const pollingStatus = params.callback(
+        generatorRes,
+        params.type,
+        params.statusItem,
+        params.dispatch
+      );
 
-    switch (pollingStatus) {
-      case 'SUCCESS':
-        yield put({ type: 'STOP_STATUS_POLLING' });
-        break;
-      case 'FAILURE':
-        stopStatusPolling();
-
-        yield put({ type: 'STOP_STATUS_POLLING' });
-        break;
-      default:
-        break;
+      switch (pollingStatus) {
+        case 'SUCCESS':
+          statusCheckComplete = true;
+          yield put({ type: 'STOP_STATUS_POLLING' });
+          break;
+        case 'FAILURE':
+          statusCheckComplete = true;
+          stopStatusPolling();
+          yield put({ type: 'STOP_STATUS_POLLING' });
+          break;
+        default:
+          break;
+      }
+      yield delay(params.delay);
+    } else {
+      statusCheckComplete = true;
+      yield put({ type: 'STOP_STATUS_POLLING' });
     }
-    yield delay(params.delay);
   }
 }
 function* watchStatusPolling() {

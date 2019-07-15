@@ -57,6 +57,7 @@ const runStage = plan => {
         type: 'STAGE',
         statusItem: createMigRes,
         dispatch,
+        maxTries: 12,
       };
 
       dispatch(startStatusPolling(params));
@@ -97,6 +98,7 @@ const runMigration = plan => {
         type: 'MIGRATION',
         statusItem: createMigRes,
         dispatch,
+        maxTries: 12,
       };
 
       dispatch(startStatusPolling(params));
@@ -134,6 +136,7 @@ const addPlan = migPlan => {
         callback: commonOperations.getStatusCondition,
         statusItem: createPlanRes,
         dispatch,
+        maxTries: 12,
       };
 
       dispatch(startStatusPolling(statusParams));

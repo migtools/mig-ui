@@ -12,7 +12,7 @@ interface IProps {
   isCheckingConnection?: boolean;
   errors: any;
   touched: any;
-  onItemSubmit: (values, mode) => void;
+  onItemSubmit: (values) => void;
   onHandleModalToggle: () => void;
   mode: string;
   values: any;
@@ -43,7 +43,7 @@ const CheckConnection: React.FunctionComponent<IProps> = ({
                 key="check connection"
                 variant="secondary"
                 isDisabled={!errorsObj || touchedObj || connectionState.isReady !== null}
-                onClick={() => onItemSubmit(values, mode)}
+                onClick={() => onItemSubmit(values)}
                 id="check-connection-btn"
               >
                 Check connection

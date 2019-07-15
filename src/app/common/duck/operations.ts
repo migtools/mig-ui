@@ -1,6 +1,6 @@
 import { alertSuccess, alertError, alertProgress, alertClear } from './actions';
 import { getMigrationStatus, getPlanStatus } from '../../plan/duck/utils';
-import { getClusterStatus } from '../../cluster/duck/utils';
+import { getClusterStatus, getClusterUpdatedStatus } from '../../cluster/duck/utils';
 import { Creators as PlanCreators } from '../../plan/duck/actions';
 import { Creators as ClusterCreators } from '../../cluster/duck/actions';
 import clusterOperations from '../../cluster/duck/operations';
@@ -120,7 +120,9 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
       const matchingCluster = pollingResponse.updatedClusters
         .filter(c => c.MigCluster.metadata.name === newObjectRes.MigCluster.metadata.name)
         .pop();
-      const clusterStatus = matchingCluster ? getClusterStatus(matchingCluster) : null;
+      const clusterStatus = matchingCluster
+        ? getClusterUpdatedStatus(matchingCluster, newObjectRes.MigCluster)
+        : null;
       if (clusterStatus.success) {
         dispatch(updateClusterSuccess(matchingCluster));
         dispatch(alertSuccessTimeout('Successfully updated cluster'));
@@ -128,7 +130,6 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
       } else if (clusterStatus.error) {
         dispatch(updateClusterFailure());
         dispatch(alertErrorTimeout('Failed to update cluster'));
-        // dispatch(clusterOperations.removeCluster(newObjectRes.MigCluster.metadata.name));
         return 'FAILURE';
       }
       break;

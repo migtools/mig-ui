@@ -98,7 +98,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
         </FormGroup>
         <CheckConnection
           errors={errors}
-          touched={mode === 'update' ? true : touched}
+          touched={touched}
           connectionState={connectionState}
           isCheckingConnection={isCheckingConnection}
           onItemSubmit={onItemSubmit}

@@ -82,6 +82,7 @@ const addCluster = clusterValues => {
         callback: commonOperations.getStatusCondition,
         statusItem: cluster,
         dispatch,
+        maxTries: 10,
       };
       dispatch(addClusterRequest());
       dispatch(startStatusPolling(statusParams));
@@ -128,6 +129,7 @@ const updateCluster = clusterValues => {
         callback: commonOperations.getStatusCondition,
         statusItem: cluster,
         dispatch,
+        maxTries: 10,
       };
       dispatch(updateClusterRequest());
       dispatch(startStatusPolling(statusParams));
