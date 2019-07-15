@@ -217,11 +217,13 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
     namespace: migPlan.metadata.namespace,
   };
 
-  updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-    v.action = userPv.type;
-    return v;
-  });
+  if(updatedSpec.persistentVolumes) {
+    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
+      const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
+      v.action = userPv.type;
+      return v;
+    });
+  }
 
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -255,14 +257,6 @@ export function createMigPlanNoStorage(
         namespace,
       },
       namespaces,
-      //////////////////////////////////////////////////////////////////////////
-      // TODO: Need to rip this out once the controller allows for creation
-      // of a MigPlan without a storage ref.
-      migStorageRef: {
-        name: 'my-s2-bucket',
-        namespace,
-      },
-      //////////////////////////////////////////////////////////////////////////
     },
   };
 }

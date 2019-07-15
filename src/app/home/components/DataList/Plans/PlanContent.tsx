@@ -50,6 +50,9 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
           }
         }
 
+        const migStorageName = plan.MigPlan.spec.migStorageRef ?
+          plan.MigPlan.spec.migStorageRef.name : 'N/A';
+
         return [
           {
             cells: [
@@ -93,7 +96,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: <span>{plan.MigPlan.spec.destMigClusterRef.name}</span>,
               },
               {
-                title: <span>{plan.MigPlan.spec.migStorageRef.name}</span>,
+                title: <span>{migStorageName}</span>,
               },
               {
                 title: (

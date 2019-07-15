@@ -17,9 +17,12 @@ const getAssociatedPlans = createSelector(
     return storageList.reduce((associatedPlans, storage) => {
       const storageName = storage.MigStorage.metadata.name;
       associatedPlans[storageName] = plans.reduce((count, plan) => {
+        const hasStorage = !!plan.MigPlan.spec.migStorageRef;
+
         const isAssociated =
-          plan.MigPlan.spec.migStorageRef.name === storageName ||
-          plan.MigPlan.spec.migStorageRef.name === storageName;
+          hasStorage &&
+          (plan.MigPlan.spec.migStorageRef.name === storageName ||
+          plan.MigPlan.spec.migStorageRef.name === storageName);
 
         return isAssociated ? count + 1 : count;
       }, 0);
