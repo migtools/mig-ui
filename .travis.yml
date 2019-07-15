@@ -6,4 +6,4 @@ git:
   depth: 3
 jobs:
   include:
-    - script: yarn ci
+    - script: cypress install && yarn ci
