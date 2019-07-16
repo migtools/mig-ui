@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-export const getPlanPVs = plan => {
+const getPlanPVs = plan => {
   const statusObj = { success: null, error: null };
   const PvsDiscoveredType = 'PvsDiscovered';
 
@@ -14,7 +14,7 @@ export const getPlanPVs = plan => {
 
   return statusObj;
 };
-export const getPlanStatus = plan => {
+const getPlanStatus = plan => {
   const statusObj = { success: null, error: null };
   if (plan.MigPlan.status) {
     const hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
@@ -25,10 +25,10 @@ export const getPlanStatus = plan => {
   return statusObj;
 };
 
-export const getMigrationStatus = (plan, newResObject) => {
-  const matchingMigration = plan.Migrations.filter(
+const getMigrationStatus = (plan, newResObject) => {
+  const matchingMigration = plan.Migrations.find(
     s => s.metadata.name === newResObject.data.metadata.name
-  ).pop();
+  );
   const statusObj = { success: null, error: null };
 
   if (matchingMigration && matchingMigration.status) {
@@ -42,7 +42,7 @@ export const getMigrationStatus = (plan, newResObject) => {
   return statusObj;
 };
 
-export function groupPlans(migPlans: any[], refs: any[]): any[] {
+function groupPlans(migPlans: any[], refs: any[]): any[] {
   return migPlans.map(mp => {
     const fullPlan = {
       MigPlan: mp,
@@ -58,8 +58,7 @@ export function groupPlans(migPlans: any[], refs: any[]): any[] {
     return fullPlan;
   });
 }
-
-export const groupPlan: any = (plan, response) => {
+const groupPlan: any = (plan, response) => {
   const fullPlan = {
     MigPlan: plan.MigPlan,
   };
@@ -80,4 +79,12 @@ export const groupPlan: any = (plan, response) => {
     fullPlan['Migrations'] = [];
   }
   return fullPlan;
+};
+
+export default {
+  getPlanPVs,
+  getPlanStatus,
+  getMigrationStatus,
+  groupPlan,
+  groupPlans,
 };

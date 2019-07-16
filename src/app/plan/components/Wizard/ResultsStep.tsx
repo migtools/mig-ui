@@ -14,11 +14,9 @@ const StyledSpan = styled.span`
 
 const ResultsStep = props => {
   const { values, errors, planList } = props;
-  const matchingPlan = planList
-    .filter(p => {
-      return values.planName === p.MigPlan.metadata.name;
-    })
-    .pop();
+  const matchingPlan = planList.find(p => {
+    return values.planName === p.MigPlan.metadata.name;
+  });
   return (
     <Flex
       css={css`

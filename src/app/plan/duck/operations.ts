@@ -11,7 +11,7 @@ import {
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
-import { groupPlan, groupPlans, getMigrationStatus, getPlanStatus, getPlanPVs } from './utils';
+import planUtils from './utils';
 import { select } from 'redux-saga/effects';
 import { startStatusPolling } from '../../common/duck/actions';
 
@@ -48,7 +48,7 @@ const runStage = plan => {
       //created migration response object
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(plan, migrationListResponse);
+      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
       const params = {
         asyncFetch: fetchPlansGenerator,
@@ -88,7 +88,7 @@ const runMigration = plan => {
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
 
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(plan, migrationListResponse);
+      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
       const params = {
         asyncFetch: fetchPlansGenerator,
@@ -206,7 +206,7 @@ const fetchPlans = () => {
       const migPlans = res.data.items || [];
 
       const refs = await Promise.all(fetchMigMigrationsRefs(client, migMeta, migPlans));
-      const groupedPlans = groupPlans(migPlans, refs);
+      const groupedPlans = planUtils.groupPlans(migPlans, refs);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
       if (err.response) {
@@ -259,23 +259,21 @@ function* fetchPlansGenerator() {
     let planList = yield client.list(resource);
     planList = yield planList.data.items;
     const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
-    const groupedPlans = yield groupPlans(planList, refs);
+    const groupedPlans = yield planUtils.groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
   } catch (e) {
     return { e, isSuccessful: false };
   }
 }
 const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
-  const matchingPlan = updatedPlansPollingResponse.updatedPlans
-    .filter(p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name)
-    .pop();
+  const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
+    p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
+  );
 
-  const pvSearchStatus = matchingPlan ? getPlanPVs(matchingPlan) : null;
+  const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
   if (pvSearchStatus.success) {
     dispatch(Creators.updatePlan(matchingPlan.MigPlan));
     dispatch(pvFetchSuccess());
-    dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
-
     return 'SUCCESS';
   } else if (pvSearchStatus.error) {
     return 'FAILURE';
