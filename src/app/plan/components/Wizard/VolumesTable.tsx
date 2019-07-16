@@ -13,6 +13,7 @@ import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import planOperations from '../../duck/operations';
+import planSelectors from '../../duck/selectors';
 
 interface IState {
   page: number;
@@ -35,8 +36,9 @@ class VolumesTable extends React.Component<any, any> {
   handleTypeChange = (row, option) => {
     this.updateTableData(row.index, option.value);
   };
-  getCurrentPlan = (): any =>
-    this.props.plans.find(p => p.metadata.name === this.props.values.planName);
+  getCurrentPlan = (): any => {
+    return this.props.plans.find(p => p.MigPlan.metadata.name === this.props.values.planName);
+  };
 
   updateTableData = (rowIndex, updatedValue) => {
     const currentPlan = this.getCurrentPlan();
@@ -57,7 +59,7 @@ class VolumesTable extends React.Component<any, any> {
     // Builds table data from a combination of the formik values, and the
     // persistent volumes as seen on a MigPlan object.
     if (currentPlan) {
-      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || null;
+      const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || null;
 
       // No PVs discovered to be in use. This is normal for stateless cloud apps.
       if (!discoveredPersistentVolumes) {
@@ -324,7 +326,7 @@ class VolumesTable extends React.Component<any, any> {
 
 const mapStateToProps = state => {
   return {
-    plans: state.plan.migPlanList.map(p => p.MigPlan),
+    plans: planSelectors.getPlansWithStatus(state),
     isPVError: state.plan.isPVError,
     isFetching: state.plan.isFetchingPVList,
   };

@@ -5,6 +5,7 @@ import moment from 'moment';
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
+  isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
   migPlanList: [],
@@ -56,6 +57,18 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migPlanList: [...state.migPlanList, newPlan],
+  };
+};
+
+export const addPlanFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+  };
+};
+
+export const addPlanRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
   };
 };
 
@@ -184,11 +197,23 @@ export const migrationFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isMigrating: false };
 };
 
+export const planResultsRequest = (state = INITIAL_STATE, action) => {
+  return { ...state, isCheckingPlanStatus: true };
+};
+
+export const updatePlanResults = (state = INITIAL_STATE, action) => {
+  return { ...state, isCheckingPlanStatus: false };
+};
+
 export const HANDLERS = {
+  [Types.PLAN_RESULTS_REQUEST]: planResultsRequest,
+  [Types.UPDATE_PLAN_RESULTS]: updatePlanResults,
   [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
   [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
   [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
+  [Types.ADD_PLAN_REQUEST]: addPlanRequest,
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
+  [Types.ADD_PLAN_FAILURE]: addPlanFailure,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
   [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
   [Types.INIT_STAGE]: initStage,

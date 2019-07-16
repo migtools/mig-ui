@@ -6,75 +6,72 @@ import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
+import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
+import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
 import StatusIcon from '../../../common/components/StatusIcon';
 const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
-interface IState {
-  page: number;
-  perPage: number;
-  pageOfItems: any[];
-  rows: any;
-  selectAll: any;
-  checked: any;
-}
-interface IProps {
-  values: any;
-}
+const ResultsStep = props => {
+  const { values, errors, planList, isCheckingPlanStatus } = props;
+  const matchingPlan = planList.find(p => {
+    return values.planName === p.MigPlan.metadata.name;
+  });
 
-class ResultsStep extends React.Component<any, any> {
-  state = {
-    isLoading: true,
-  };
-
-  componentDidMount() {
-    this.props.onWizardLoadingToggle(true);
-
-    setTimeout(() => {
-      this.setState(() => ({ isLoading: false }));
-      this.props.onWizardLoadingToggle(false);
-      this.props.setFieldValue('connectionStatus', 'success');
-    }, 500);
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        {this.state.isLoading ? (
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-            `}
-          >
-            <Box flex="1" m="auto">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+  return (
+    <Flex
+      css={css`
+        height: 100%;
+        text-align: center;
+      `}
+    >
+      <Box
+        flex="1"
+        m="auto"
+        css={css`
+          color: ${theme.colors.darkGray1};
+          border: 1px solid;
+          border-radius: 40px;
+          width: 100%;
+          padding: 14px;
+          background: linear-gradient(
+            90deg,
+            ${theme.colors.lightGray3} 20%,
+            ${theme.colors.medGray1} 8%
+          );
+        `}
+      >
+        <Flex mx={-2}>
+          <Box width={1 / 5} px={2} my="auto">
+            <Text fontSize={[2, 3, 4]}>Plan Status</Text>
+          </Box>
+          <Box width={4 / 5} px={2}>
+            {isCheckingPlanStatus ? (
+              <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
+            ) : (
               <Text fontSize={[2, 3, 4]}>
-                {' '}
-                Validating migration plan <StyledSpan>{this.props.values.planName}</StyledSpan>
+                {matchingPlan.PlanStatus.hasReadyCondition ? (
+                  <StatusIcon isReady={true} />
+                ) : (
+                  <StatusIcon isReady={false} />
+                )}
+                <StyledSpan>{values.planName} </StyledSpan>
+                <Box
+                  css={css`
+                    margin: 0.3em;
+                    display: inline-block;
+                  `}
+                >
+                  <PlanStatus plan={matchingPlan} />
+                </Box>
               </Text>
-              <Text fontSize={[2, 3, 4]}> This might take a few minutes.</Text>
-            </Box>
-          </Flex>
-        ) : (
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-            `}
-          >
-            <Box flex="1" m="auto">
-              <Text fontSize={[2, 3, 4]}>
-                <StatusIcon isReady={true} />
-                <StyledSpan>{this.props.values.planName} </StyledSpan>
-                has been validated.
-              </Text>
-            </Box>
-          </Flex>
-        )}
-      </React.Fragment>
-    );
-  }
-}
+            )}
+          </Box>
+        </Flex>
+      </Box>
+    </Flex>
+  );
+};
+
 export default ResultsStep;

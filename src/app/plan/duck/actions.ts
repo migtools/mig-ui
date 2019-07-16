@@ -1,8 +1,8 @@
 import { createActions } from 'reduxsauce';
 
 const { Creators, Types } = createActions({
-  startStatusPolling: ['params'],
-  stopStatusPolling: [],
+  startPVPolling: ['params'],
+  stopPVPolling: [],
   updatePlans: ['updatedPlans'],
   migPlanFetchRequest: [],
   migPlanFetchSuccess: ['migPlanList'],
@@ -10,8 +10,11 @@ const { Creators, Types } = createActions({
   pvFetchRequest: [],
   pvFetchFailure: [],
   pvFetchSuccess: [],
+  addPlanRequest: [],
   addPlanSuccess: ['newPlan'],
   addPlanFailure: ['error'],
+  planResultsRequest: [],
+  updatePlanResults: ['results'],
   removePlanSuccess: ['id'],
   initStage: ['planName'],
   stagingSuccess: ['planName'],

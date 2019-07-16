@@ -1,25 +1,21 @@
-import moment from 'moment';
-import { select } from 'redux-saga/effects';
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import {
-  CoreClusterResource,
-  CoreClusterResourceKind,
-  CoreNamespacedResource,
-  CoreNamespacedResourceKind,
-} from '../../../client/resources';
+import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 
 import {
-  createMigPlan,
   createMigMigration,
   createMigPlanNoStorage,
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
+import planUtils from './utils';
+import { select } from 'redux-saga/effects';
+import { startStatusPolling } from '../../common/duck/actions';
 
+import planOperations from '../../cluster/duck/operations';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -27,40 +23,15 @@ const migPlanFetchRequest = Creators.migPlanFetchRequest;
 const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
 const pvFetchRequest = Creators.pvFetchRequest;
-const pvFetchFailure = Creators.pvFetchFailure;
 const pvFetchSuccess = Creators.pvFetchSuccess;
-const migrationSuccess = Creators.migrationSuccess;
-const stagingSuccess = Creators.stagingSuccess;
 const migrationFailure = Creators.migrationFailure;
 const stagingFailure = Creators.stagingFailure;
+const planResultsRequest = Creators.planResultsRequest;
+const addPlanRequest = Creators.addPlanRequest;
 const addPlanSuccess = Creators.addPlanSuccess;
+const addPlanFailure = Creators.addPlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 
-const PollingInterval = 5000;
-const PvsDiscoveredType = 'PvsDiscovered';
-
-const groupPlan: any = (plan, response) => {
-  const fullPlan = {
-    MigPlan: plan.MigPlan,
-  };
-  if (response.data.items.length > 0) {
-    const sortMigrations = migrationList =>
-      migrationList.sort((left, right) => {
-        return moment
-          .utc(right.metadata.creationTimestamp)
-          .diff(moment.utc(left.metadata.creationTimestamp));
-      });
-
-    const matchingMigrations = response.data.items.filter(
-      i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
-    );
-
-    fullPlan['Migrations'] = sortMigrations(matchingMigrations);
-  } else {
-    fullPlan['Migrations'] = [];
-  }
-  return fullPlan;
-};
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
@@ -79,22 +50,18 @@ const runStage = plan => {
       //created migration response object
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(plan, migrationListResponse);
-
-      const statusPollingCallback = response => {
-        if (response && response.isSuccessful === true) {
-          const isStage = true;
-          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
-        }
-      };
+      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: statusPollingCallback,
+        callback: commonOperations.getStatusCondition,
+        type: 'STAGE',
+        statusItem: createMigRes,
+        dispatch,
       };
 
-      dispatch(Creators.startStatusPolling(params));
+      dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -123,22 +90,18 @@ const runMigration = plan => {
       const createMigRes = await client.create(migMigrationResource, migMigrationObj);
 
       const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = groupPlan(plan, migrationListResponse);
-
-      const statusPollingCallback = response => {
-        if (response && response.isSuccessful === true) {
-          const isStage = false;
-          return checkMigrationStatus(dispatch, response, createMigRes, isStage);
-        }
-      };
+      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: statusPollingCallback,
+        callback: commonOperations.getStatusCondition,
+        type: 'MIGRATION',
+        statusItem: createMigRes,
+        dispatch,
       };
 
-      dispatch(Creators.startStatusPolling(params));
+      dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(commonOperations.alertErrorTimeout(err));
@@ -146,57 +109,10 @@ const runMigration = plan => {
     }
   };
 };
-const checkMigrationStatus = (dispatch, response, createMigRes, isStage) => {
-  const matchingPlan = response.updatedPlans
-    .filter(p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name)
-    .pop();
-
-  if (matchingPlan) {
-    const matchingMigration = matchingPlan.Migrations.filter(
-      s => s.metadata.name === createMigRes.data.metadata.name
-    ).pop();
-    if (matchingMigration && matchingMigration.status) {
-      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Succeeded'
-      );
-      const hasErrorCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Failed'
-      );
-      switch (isStage) {
-        case true: {
-          if (hasSucceededCondition) {
-            dispatch(stagingSuccess(createMigRes.data.spec.migPlanRef.name));
-            dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
-            return 'SUCCESS';
-          } else if (hasErrorCondition) {
-            dispatch(stagingFailure());
-            dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
-            return 'FAILURE';
-          }
-          break;
-        }
-
-        case false:
-          if (hasSucceededCondition) {
-            dispatch(migrationSuccess(createMigRes.data.spec.migPlanRef.name));
-            dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
-            return 'SUCCESS';
-          } else if (hasErrorCondition) {
-            dispatch(migrationFailure());
-            dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
-            return 'FAILURE';
-          }
-          break;
-      }
-      return;
-    }
-  }
-};
 
 const addPlan = migPlan => {
   return async (dispatch, getState) => {
     try {
-      dispatch(pvFetchRequest());
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
@@ -208,47 +124,42 @@ const addPlan = migPlan => {
         migPlan.namespaces
       );
 
-      const createRes = await client.create(
+      const createPlanRes = await client.create(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         migPlanObj
       );
 
-      dispatch(addPlanSuccess(createRes.data));
+      const statusParams = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        type: 'PLAN',
+        callback: commonOperations.getStatusCondition,
+        statusItem: createPlanRes,
+        dispatch,
+      };
 
-      let timesRun = 0;
-      const interval = setInterval(async () => {
-        timesRun += 1;
-        // TODO: replace timesRun with poller class
-        if (timesRun === 12) {
-          clearInterval(interval);
-          dispatch(commonOperations.alertErrorTimeout('No PVs found'));
-          dispatch(pvFetchFailure());
+      dispatch(planResultsRequest());
+      dispatch(startStatusPolling(statusParams));
+
+      const pvPollingCallback = updatedPlansPollingResponse => {
+        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
+          return getPVs(dispatch, updatedPlansPollingResponse, createPlanRes);
         }
+      };
 
-        const planName = migPlan.planName;
+      const pvParams = {
+        asyncFetch: fetchPlansGenerator,
+        delay: 500,
+        callback: pvPollingCallback,
+      };
 
-        const getRes = await client.get(
-          new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-          planName
-        );
+      dispatch(Creators.pvFetchRequest());
+      dispatch(Creators.startPVPolling(pvParams));
 
-        const plan = getRes.data;
-        if (plan.status) {
-          const pvsDiscovered = !!plan.status.conditions.find(c => {
-            return c.type === PvsDiscoveredType;
-          });
-
-          if (pvsDiscovered) {
-            dispatch(Creators.updatePlan(plan));
-            dispatch(pvFetchSuccess());
-            dispatch(commonOperations.alertSuccessTimeout('Found PVs!'));
-            console.debug('Discovered PVs, clearing interaval.');
-            clearInterval(interval);
-          }
-        }
-      }, PollingInterval);
+      dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err.toString()));
+      dispatch(addPlanFailure());
+      dispatch(commonOperations.alertErrorTimeout('Failed to add plan'));
     }
   };
 };
@@ -299,7 +210,7 @@ const fetchPlans = () => {
       const migPlans = res.data.items || [];
 
       const refs = await Promise.all(fetchMigMigrationsRefs(client, migMeta, migPlans));
-      const groupedPlans = groupPlans(migPlans, refs);
+      const groupedPlans = planUtils.groupPlans(migPlans, refs);
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
       if (err.response) {
@@ -324,23 +235,6 @@ function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Arra
   });
 
   return refs;
-}
-
-function groupPlans(migPlans: any[], refs: any[]): any[] {
-  return migPlans.map(mp => {
-    const fullPlan = {
-      MigPlan: mp,
-    };
-    if (refs[0].data.items.length > 0) {
-      const matchingMigrations = refs[0].data.items.filter(
-        i => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
-      );
-      fullPlan['Migrations'] = matchingMigrations;
-    } else {
-      fullPlan['Migrations'] = [];
-    }
-    return fullPlan;
-  });
 }
 
 const fetchNamespacesForCluster = clusterName => {
@@ -369,12 +263,26 @@ function* fetchPlansGenerator() {
     let planList = yield client.list(resource);
     planList = yield planList.data.items;
     const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
-    const groupedPlans = yield groupPlans(planList, refs);
+    const groupedPlans = yield planUtils.groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
   } catch (e) {
     return { e, isSuccessful: false };
   }
 }
+const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
+  const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
+    p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
+  );
+
+  const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
+  if (pvSearchStatus.success) {
+    dispatch(Creators.updatePlan(matchingPlan.MigPlan));
+    dispatch(pvFetchSuccess());
+    return 'SUCCESS';
+  } else if (pvSearchStatus.error) {
+    return 'FAILURE';
+  }
+};
 
 export default {
   pvFetchRequest,

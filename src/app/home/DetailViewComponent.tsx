@@ -7,11 +7,7 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { Creators as PlanCreators } from '../plan/duck/actions';
-import {
-  startDataListPolling,
-  stopDataListPolling,
-  updateDataListPollingStats,
-} from '../common/duck/actions';
+import { startDataListPolling, stopDataListPolling } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
@@ -35,7 +31,6 @@ interface IProps {
   isMigrating?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
-  updateDataListPollingStats: (stats) => void;
   startDataListPolling: (params) => void;
   stopDataListPolling: () => void;
 }
@@ -100,9 +95,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.runStage(plan);
   };
 
-  handleStatsChange = stats => {
-    this.props.updateDataListPollingStats(stats);
-  };
   handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
       this.props.updatePlans(response.updatedPlans);
@@ -116,8 +108,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     const params = {
       asyncFetch: planOperations.fetchPlansGenerator,
       callback: this.handlePlanPoll,
-      onStatsChange: this.handleStatsChange,
-      delay: 5000,
+      delay: 15000,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
@@ -184,7 +175,6 @@ function mapStateToProps(state) {
   const { migStorageList } = state.storage;
   const { isMigrating, isStaging } = state.plan;
   const migMeta = state.migMeta;
-  const pollingStats = state.common.pollingStats;
   return {
     allClusters,
     allStorage,
@@ -195,7 +185,6 @@ function mapStateToProps(state) {
     isMigrating,
     isStaging,
     migMeta,
-    ...pollingStats,
   };
 }
 const mapDispatchToProps = dispatch => {
@@ -208,7 +197,6 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
-    updateDataListPollingStats: stats => dispatch(updateDataListPollingStats(stats)),
     startDataListPolling: params => dispatch(startDataListPolling(params)),
     stopDataListPolling: () => dispatch(stopDataListPolling()),
   };

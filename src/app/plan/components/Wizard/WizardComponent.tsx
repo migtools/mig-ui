@@ -23,8 +23,10 @@ const WizardComponent = props => {
     setFieldTouched,
     setFieldValue,
     clusterList,
+    planList,
     storageList,
     isFetchingPVList,
+    isCheckingPlanStatus,
   } = props;
   const steps = [
     {
@@ -109,7 +111,8 @@ const WizardComponent = props => {
           values={values}
           errors={errors}
           onWizardLoadingToggle={toggleLoading}
-          setFieldValue={setFieldValue}
+          planList={planList}
+          isCheckingPlanStatus={isCheckingPlanStatus}
         />
       ),
       enableNext: !isLoading,
@@ -130,7 +133,7 @@ const WizardComponent = props => {
     if (prev.prevId === MigSourceStepId && curr.id !== 1) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
-      const currentPlan = props.plans.find(p => {
+      const currentPlan = props.planList.find(p => {
         return p.metadata.name === props.values.planName;
       });
 

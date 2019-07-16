@@ -18,6 +18,7 @@ import {
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { commonOperations } from '../../common/duck';
+import { select } from 'redux-saga/effects';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
@@ -233,7 +234,25 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
     return fullCluster;
   });
 }
+
+function* fetchClustersGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const resource = new MigResource(MigResourceKind.MigCluster, state.migMeta.namespace);
+  try {
+    let clusterList = yield client.list(resource);
+    clusterList = yield clusterList.data.items;
+    const nonHostClusters = clusterList.filter(c => !c.spec.isHostCluster);
+    const refs = yield Promise.all(fetchMigClusterRefs(client, state.migMeta, nonHostClusters));
+    const groupedClusters = groupClusters(clusterList, refs);
+    return { updatedClusters: groupedClusters, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
 export default {
+  fetchClustersGenerator,
   fetchClusters,
   addCluster,
   removeCluster,

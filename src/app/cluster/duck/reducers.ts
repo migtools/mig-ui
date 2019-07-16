@@ -42,13 +42,20 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
 export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    clusterList: [ ...state.clusterList.filter(
-      s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name),
-      { ...action.updatedCluster } ] };
+    clusterList: [
+      ...state.clusterList.filter(
+        s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
+      ),
+      { ...action.updatedCluster },
+    ],
+  };
 };
 
-export const updateSearchTerm = (state = INITIAL_STATE, action) => {
-  return { ...state, searchTerm: action.searchTerm };
+export const updateClusters = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    clusterList: action.updatedClusters,
+  };
 };
 
 export const HANDLERS = {
@@ -56,9 +63,9 @@ export const HANDLERS = {
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
   [Types.SET_CONNECTION_STATE]: setConnectionState,
 };
 
