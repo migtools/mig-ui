@@ -6,10 +6,7 @@ const migrationSuccess = PlanCreators.migrationSuccess;
 const stagingSuccess = PlanCreators.stagingSuccess;
 const migrationFailure = PlanCreators.migrationFailure;
 const stagingFailure = PlanCreators.stagingFailure;
-const addPlanSuccess = PlanCreators.addPlanSuccess;
-const addPlanFailure = PlanCreators.addPlanFailure;
 const updatePlanResults = PlanCreators.updatePlanResults;
-// const removePlan = PlanCreators.removePlan;
 
 const alertErrorTimeout = (message: string) => {
   return async (dispatch, getState) => {

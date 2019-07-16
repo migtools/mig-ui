@@ -58,7 +58,7 @@ const runStage = plan => {
         callback: commonOperations.getStatusCondition,
         type: 'STAGE',
         statusItem: createMigRes,
-        dispatch: dispatch,
+        dispatch,
       };
 
       dispatch(startStatusPolling(params));
@@ -98,7 +98,7 @@ const runMigration = plan => {
         callback: commonOperations.getStatusCondition,
         type: 'MIGRATION',
         statusItem: createMigRes,
-        dispatch: dispatch,
+        dispatch,
       };
 
       dispatch(startStatusPolling(params));
@@ -135,7 +135,7 @@ const addPlan = migPlan => {
         type: 'PLAN',
         callback: commonOperations.getStatusCondition,
         statusItem: createPlanRes,
-        dispatch: dispatch,
+        dispatch,
       };
 
       dispatch(planResultsRequest());
