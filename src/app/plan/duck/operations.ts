@@ -26,6 +26,8 @@ const pvFetchRequest = Creators.pvFetchRequest;
 const pvFetchSuccess = Creators.pvFetchSuccess;
 const migrationFailure = Creators.migrationFailure;
 const stagingFailure = Creators.stagingFailure;
+const planResultsRequest = Creators.planResultsRequest;
+const addPlanRequest = Creators.addPlanRequest;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
@@ -136,6 +138,7 @@ const addPlan = migPlan => {
         dispatch: dispatch,
       };
 
+      dispatch(planResultsRequest());
       dispatch(startStatusPolling(statusParams));
 
       const pvPollingCallback = updatedPlansPollingResponse => {
@@ -152,10 +155,11 @@ const addPlan = migPlan => {
 
       dispatch(Creators.pvFetchRequest());
       dispatch(Creators.startPVPolling(pvParams));
+
       dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {
       dispatch(addPlanFailure());
-      dispatch(commonOperations.alertErrorTimeout(err.toString()));
+      dispatch(commonOperations.alertErrorTimeout('Failed to add plan'));
     }
   };
 };

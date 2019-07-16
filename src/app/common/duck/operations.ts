@@ -6,6 +6,10 @@ const migrationSuccess = PlanCreators.migrationSuccess;
 const stagingSuccess = PlanCreators.stagingSuccess;
 const migrationFailure = PlanCreators.migrationFailure;
 const stagingFailure = PlanCreators.stagingFailure;
+const addPlanSuccess = PlanCreators.addPlanSuccess;
+const addPlanFailure = PlanCreators.addPlanFailure;
+const updatePlanResults = PlanCreators.updatePlanResults;
+// const removePlan = PlanCreators.removePlan;
 
 const alertErrorTimeout = (message: string) => {
   return async (dispatch, getState) => {
@@ -90,8 +94,10 @@ function getStatusCondition(pollingResponse, type, newObjectRes, dispatch) {
 
       const planStatus = matchingPlan ? planUtils.getPlanStatus(matchingPlan) : null;
       if (planStatus.success) {
+        dispatch(updatePlanResults('Success'));
         return 'SUCCESS';
       } else if (planStatus.error) {
+        dispatch(updatePlanResults('Failure'));
         return 'FAILURE';
       }
       break;

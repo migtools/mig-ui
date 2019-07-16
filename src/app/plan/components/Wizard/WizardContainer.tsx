@@ -52,6 +52,7 @@ const mapStateToProps = state => {
     selectedStorage: '',
     persistentVolumes: [],
     isFetchingPVList: state.plan.isFetchingPVList,
+    isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
   };
 };
 const mapDispatchToProps = dispatch => {

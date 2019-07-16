@@ -26,6 +26,7 @@ const WizardComponent = props => {
     planList,
     storageList,
     isFetchingPVList,
+    isCheckingPlanStatus,
   } = props;
   const steps = [
     {
@@ -111,6 +112,7 @@ const WizardComponent = props => {
           errors={errors}
           onWizardLoadingToggle={toggleLoading}
           planList={planList}
+          isCheckingPlanStatus={isCheckingPlanStatus}
         />
       ),
       enableNext: !isLoading,
