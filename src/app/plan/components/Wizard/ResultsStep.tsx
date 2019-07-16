@@ -26,34 +26,49 @@ const ResultsStep = props => {
         text-align: center;
       `}
     >
-      <Box flex="1" m="auto">
-        <Card style={{ minHeight: '100%', height: '16em' }}>
-          <CardHeader>Plan Status</CardHeader>
-          {isCheckingPlanStatus ? (
-            <Flex
-              css={css`
-                height: 100%;
-                text-align: center;
-                margin: auto;
-              `}
-            >
-              <Box flex="1" m="auto">
-                <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-                <Text fontSize={[2, 3, 4]}> Checking status </Text>
-              </Box>
-            </Flex>
-          ) : (
-            <Text fontSize={[2, 3, 4]}>
-              {matchingPlan.PlanStatus.hasReadyCondition ? (
-                <StatusIcon isReady={true} />
-              ) : (
-                <StatusIcon isReady={false} />
-              )}
-              <StyledSpan>{values.planName} </StyledSpan>
-              <PlanStatus plan={matchingPlan} />
-            </Text>
-          )}
-        </Card>
+      <Box
+        flex="1"
+        m="auto"
+        css={css`
+          color: ${theme.colors.darkGray1};
+          border: 1px solid;
+          border-radius: 40px;
+          width: 100%;
+          padding: 14px;
+          background: linear-gradient(
+            90deg,
+            ${theme.colors.lightGray3} 20%,
+            ${theme.colors.medGray1} 8%
+          );
+        `}
+      >
+        <Flex mx={-2}>
+          <Box width={1 / 5} px={2} my="auto">
+            <Text fontSize={[2, 3, 4]}>Plan Status</Text>
+          </Box>
+          <Box width={4 / 5} px={2}>
+            {isCheckingPlanStatus ? (
+              <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
+            ) : (
+              <Text fontSize={[2, 3, 4]}>
+                {matchingPlan.PlanStatus.hasReadyCondition ? (
+                  <StatusIcon isReady={true} />
+                ) : (
+                  <StatusIcon isReady={false} />
+                )}
+                <StyledSpan>{values.planName} </StyledSpan>
+                <Box
+                  css={css`
+                    margin: 0.3em;
+                    display: inline-block;
+                  `}
+                >
+                  <PlanStatus plan={matchingPlan} />
+                </Box>
+              </Text>
+            )}
+          </Box>
+        </Flex>
       </Box>
     </Flex>
   );
