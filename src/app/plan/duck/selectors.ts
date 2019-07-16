@@ -14,18 +14,17 @@ const getAllPlans = createSelector(
 const getPlansWithStatus = createSelector(
   [planSelector],
   plans => {
-    let hasReadyCondition = null;
-    let hasPlanError = null;
-    let hasMigrationError = null;
-    let hasPrevMigrations = null;
-    let hasRunningMigrations = null;
-    let finalMigrationComplete = null;
-    let hasSucceededMigration = null;
-    let hasSucceededStage = null;
-    let hasClosedCondition = null;
-    let latestType = null;
-
     const plansWithStatus = plans.map(plan => {
+      let hasReadyCondition = null;
+      let hasPlanError = null;
+      let hasMigrationError = null;
+      let hasPrevMigrations = null;
+      let hasRunningMigrations = null;
+      let finalMigrationComplete = null;
+      let hasSucceededMigration = null;
+      let hasSucceededStage = null;
+      let hasClosedCondition = null;
+      let latestType = null;
       if (plan.MigPlan.status) {
         hasClosedCondition = plan.MigPlan.spec.closed;
         hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
