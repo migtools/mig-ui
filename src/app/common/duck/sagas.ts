@@ -11,6 +11,8 @@ import {
   stopStoragePolling,
 } from './actions';
 
+export const StatusPollingInterval = 4000;
+
 function* poll(action) {
   const params = { ...action.params };
 

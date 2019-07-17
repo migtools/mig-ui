@@ -35,6 +35,8 @@ const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetc
 const updatePlanResults = Creators.updatePlanResults;
 const updatePlan = Creators.updatePlan;
 
+const PlanMigrationPollingInterval = 1000;
+
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
@@ -76,7 +78,7 @@ const runStage = plan => {
 
       const params = {
         asyncFetch: fetchPlansGenerator,
-        delay: 500,
+        delay: PlanMigrationPollingInterval,
         callback: getStageStatusCondition,
         type: 'STAGE',
         statusItem: createMigRes,
@@ -134,7 +136,7 @@ const runMigration = plan => {
 
       const params = {
         asyncFetch: fetchPlansGenerator,
-        delay: 500,
+        delay: PlanMigrationPollingInterval,
         callback: getMigrationStatusCondition,
         type: 'MIGRATION',
         statusItem: createMigRes,
@@ -188,7 +190,7 @@ const addPlan = migPlan => {
 
       const statusParams = {
         asyncFetch: fetchPlansGenerator,
-        delay: 500,
+        delay: PlanMigrationPollingInterval,
         type: 'PLAN',
         callback: getPlanStatusCondition,
         statusItem: createPlanRes,
@@ -206,7 +208,7 @@ const addPlan = migPlan => {
 
       const pvParams = {
         asyncFetch: fetchPlansGenerator,
-        delay: 500,
+        delay: PlanMigrationPollingInterval,
         callback: pvPollingCallback,
       };
 
