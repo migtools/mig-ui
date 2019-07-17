@@ -15,7 +15,6 @@ import planUtils from './utils';
 import { select } from 'redux-saga/effects';
 import { startStatusPolling } from '../../common/duck/actions';
 
-import planOperations from '../../cluster/duck/operations';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
@@ -24,13 +23,17 @@ const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
 const migPlanFetchFailure = Creators.migPlanFetchFailure;
 const pvFetchRequest = Creators.pvFetchRequest;
 const pvFetchSuccess = Creators.pvFetchSuccess;
+const migrationSuccess = Creators.migrationSuccess;
 const migrationFailure = Creators.migrationFailure;
+const stagingSuccess = Creators.stagingSuccess;
 const stagingFailure = Creators.stagingFailure;
 const planResultsRequest = Creators.planResultsRequest;
 const addPlanRequest = Creators.addPlanRequest;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
+const updatePlanResults = Creators.updatePlanResults;
+const updatePlan = Creators.updatePlan;
 
 const runStage = plan => {
   return async (dispatch, getState) => {
@@ -52,10 +55,29 @@ const runStage = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
+      const getStageStatusCondition = (pollingResponse, newObjectRes) => {
+        const matchingPlan = pollingResponse.updatedPlans.find(
+          p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+        );
+
+        const migStatus = matchingPlan
+          ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+          : null;
+        if (migStatus.success) {
+          dispatch(stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
+          dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
+          return 'SUCCESS';
+        } else if (migStatus.error) {
+          dispatch(stagingFailure());
+          dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
+          return 'FAILURE';
+        }
+      };
+
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: commonOperations.getStatusCondition,
+        callback: getStageStatusCondition,
         type: 'STAGE',
         statusItem: createMigRes,
         dispatch,
@@ -92,10 +114,28 @@ const runMigration = plan => {
       const migrationListResponse = await client.list(migMigrationResource);
       const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
+      const getMigrationStatusCondition = (pollingResponse, newObjectRes) => {
+        const matchingPlan = pollingResponse.updatedPlans.find(
+          p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+        );
+        const migStatus = matchingPlan
+          ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+          : null;
+        if (migStatus.success) {
+          dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+          dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
+          return 'SUCCESS';
+        } else if (migStatus.error) {
+          dispatch(migrationFailure());
+          dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
+          return 'FAILURE';
+        }
+      };
+
       const params = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
-        callback: commonOperations.getStatusCondition,
+        callback: getMigrationStatusCondition,
         type: 'MIGRATION',
         statusItem: createMigRes,
         dispatch,
@@ -128,12 +168,29 @@ const addPlan = migPlan => {
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         migPlanObj
       );
+      const getPlanStatusCondition = (pollingResponse, newObjectRes) => {
+        const matchingPlan = pollingResponse.updatedPlans.find(
+          p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
+        );
+
+        const planStatus = matchingPlan ? planUtils.getPlanStatus(matchingPlan) : null;
+        if (planStatus.success) {
+          dispatch(updatePlanResults('Success'));
+          dispatch(updatePlan(matchingPlan.MigPlan));
+
+          return 'SUCCESS';
+        } else if (planStatus.error) {
+          dispatch(updatePlanResults('Failure'));
+          dispatch(updatePlan(matchingPlan.MigPlan));
+          return 'FAILURE';
+        }
+      };
 
       const statusParams = {
         asyncFetch: fetchPlansGenerator,
         delay: 500,
         type: 'PLAN',
-        callback: commonOperations.getStatusCondition,
+        callback: getPlanStatusCondition,
         statusItem: createPlanRes,
         dispatch,
       };

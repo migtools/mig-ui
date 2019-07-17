@@ -52,12 +52,7 @@ function* checkStatus(action) {
   const params = { ...action.params };
   while (true) {
     const generatorRes = yield call(params.asyncFetch);
-    const pollingStatus = params.callback(
-      generatorRes,
-      params.type,
-      params.statusItem,
-      params.dispatch
-    );
+    const pollingStatus = params.callback(generatorRes, params.statusItem);
 
     switch (pollingStatus) {
       case 'SUCCESS':
