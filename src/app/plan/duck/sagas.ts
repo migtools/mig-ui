@@ -1,7 +1,7 @@
 import { race, call, delay, put, take } from 'redux-saga/effects';
 
 import { Creators } from './actions';
-import { alertError } from '../../common/duck/actions'
+import { alertError } from '../../common/duck/actions';
 
 const TicksUntilTimeout = 20;
 
@@ -33,7 +33,7 @@ function* checkPVs(action) {
       // PV discovery timed out, alert and stop polling
       pvsFound = true; // No PVs timed out
       Creators.stopPVPolling();
-      yield put(alertError("Timed out during PV discovery"));
+      yield put(alertError('Timed out during PV discovery'));
       yield put(Creators.pvFetchSuccess());
       yield put({ type: 'STOP_PV_POLLING' });
       break;
