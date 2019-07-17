@@ -134,7 +134,7 @@ const WizardComponent = props => {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
       const currentPlan = props.planList.find(p => {
-        return p.metadata.name === props.values.planName;
+        return p.MigPlan.metadata.name === props.values.planName;
       });
 
       if (!currentPlan) {
