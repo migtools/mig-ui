@@ -13,6 +13,8 @@ import StorageDataListItem from './components/DataList/Storage/StorageDataListIt
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import { DataList } from '@patternfly/react-core';
 import { PlanContext } from './duck/context';
+import { StatusPollingInterval } from '../common/duck/sagas';
+
 interface IProps {
   allClusters: any[];
   allStorage: any[];
@@ -108,7 +110,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     const params = {
       asyncFetch: planOperations.fetchPlansGenerator,
       callback: this.handlePlanPoll,
-      delay: 15000,
+      delay: StatusPollingInterval,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,

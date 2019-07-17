@@ -46,6 +46,9 @@ import {
 } from '../common/duck/actions';
 
 import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
+
+import { StatusPollingInterval } from '../common/duck/sagas';
+
 interface IProps {
   loggingIn?: boolean;
   user: any;
@@ -154,7 +157,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     const clusterPollParams = {
       asyncFetch: clusterOperations.fetchClustersGenerator,
       callback: this.handleClusterPoll,
-      delay: 15000,
+      delay: StatusPollingInterval,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
@@ -162,7 +165,7 @@ class HomeComponent extends React.Component<IProps, IState> {
     const storagePollParams = {
       asyncFetch: storageOperations.fetchStorageGenerator,
       callback: this.handleStoragePoll,
-      delay: 15000,
+      delay: StatusPollingInterval,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
