@@ -92,17 +92,13 @@ class DetailViewComponent extends Component<IProps, IState> {
   handlePlanSubmit = planWizardValues => {
     this.props.putPlan(planWizardValues);
   };
-
-  handlePlanDelete = id => {
-    this.props.removePlan(id);
-  };
-
-  handlePlanEdit = id => {
-    this.props.removePlan(id);
-  };
-
+  
   handleStageTriggered = plan => {
     this.props.runStage(plan);
+  };
+
+  handleDeletePlan = id => {
+    this.props.removePlan(id);
   };
 
   handlePlanPoll = response => {
@@ -138,7 +134,10 @@ class DetailViewComponent extends Component<IProps, IState> {
     const { isWizardOpen } = this.state;
 
     const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
-    const { handleStageTriggered } = this;
+    const { 
+      handleStageTriggered,
+      handleDeletePlan,
+     } = this;
     return (
       <React.Fragment>
         <DataList aria-label="data-list-main-container">
@@ -157,7 +156,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanContext.Provider value={{ handleStageTriggered }}>
+          <PlanContext.Provider value={{ handleStageTriggered, handleDeletePlan }}>
             <PlanDataListItem
               planList={plansWithStatus}
               clusterList={allClusters}
@@ -201,6 +200,7 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
+    removePlan: id => dispatch(planOperations.removePlan(id)),
     putPlan: planValues => dispatch(planOperations.putPlan(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>

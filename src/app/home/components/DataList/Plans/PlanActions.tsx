@@ -72,7 +72,8 @@ const PlanActions = ({ plan, isLoading }) => {
           }
           variant="primary"
           onClick={() => {
-            planContext.handlePlanEdit(plan);
+            // planContext.handlePlanEdit(plan.id);
+            alert("Plan Edit onClick()");
           }}
         >
           Edit
@@ -86,7 +87,8 @@ const PlanActions = ({ plan, isLoading }) => {
           }
           variant="primary"
           onClick={() => {
-            planContext.handlePlanDelete(plan);
+            planContext.handleDeletePlan(plan.id);
+            // alert("Plan delete onClick()");
           }}
         >
           Remove
