@@ -4,9 +4,10 @@ import { Modal } from '@patternfly/react-core';
 import MigrateModalForm from './MigrateModalForm';
 import planOperations from '../../duck/operations';
 
+
 const MigrateModal = ({ runMigration, onHandleClose, isOpen, plan }) => {
-  const handleSubmit = () => {
-    runMigration(plan);
+  const handleSubmit = (disableQuiesce) => {
+    runMigration(plan, disableQuiesce);
   };
   const handleClose = () => {
     onHandleClose();
@@ -19,14 +20,14 @@ const MigrateModal = ({ runMigration, onHandleClose, isOpen, plan }) => {
       onClose={handleClose}
       title={`Migrate ${plan.MigPlan.metadata.name}`}
     >
-      <MigrateModalForm onHandleModalToggle={handleClose} handleSubmit={handleSubmit} />
+      <MigrateModalForm onHandleModalToggle={handleClose} handleSubmit={handleSubmit}/>
     </Modal>
   );
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    runMigration: plan => dispatch(planOperations.runMigration(plan)),
+    runMigration: (plan, disableQuiesce) => dispatch(planOperations.runMigration(plan, disableQuiesce)),
   };
 };
 
