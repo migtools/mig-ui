@@ -93,6 +93,14 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.putPlan(planWizardValues);
   };
 
+  handlePlanDelete = id => {
+    this.props.removePlan(id);
+  };
+
+  handlePlanEdit = id => {
+    this.props.removePlan(id);
+  };
+
   handleStageTriggered = plan => {
     this.props.runStage(plan);
   };

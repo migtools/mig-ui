@@ -62,6 +62,37 @@ const PlanActions = ({ plan, isLoading }) => {
         </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </Box>
+      {/* ADDING EDIT AND DELETE */}
+      <Box mx={1}>
+        <Button
+          isDisabled={
+            hasRunningMigrations ||
+            finalMigrationComplete ||
+            isLoading
+          }
+          variant="primary"
+          onClick={() => {
+            planContext.handlePlanEdit(plan);
+          }}
+        >
+          Edit
+        </Button>
+      </Box>
+
+      <Box mx={1}>
+        <Button
+          isDisabled={
+            isLoading
+          }
+          variant="primary"
+          onClick={() => {
+            planContext.handlePlanDelete(plan);
+          }}
+        >
+          Remove
+        </Button>
+      </Box>
+      {/* DONE ADDING EDIT AND DELETE */}
       {isLoading && (
         <Box
           css={css`

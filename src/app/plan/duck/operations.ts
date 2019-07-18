@@ -31,6 +31,8 @@ const planResultsRequest = Creators.planResultsRequest;
 const addPlanRequest = Creators.addPlanRequest;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
+const removePlanSuccess = Creators.removePlanSuccess;
+const removePlanFailure = Creators.removePlanFailure;
 const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
 const updatePlanResults = Creators.updatePlanResults;
 const updatePlan = Creators.updatePlan;
@@ -255,7 +257,25 @@ const putPlan = planValues => {
 };
 
 const removePlan = id => {
-  throw new Error('NOT IMPLEMENTED');
+  return async (dispatch, getState) => {
+    try {
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      const migPlanResource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
+
+      const arr = await Promise.all([
+        client.delete(migPlanResource, name),
+      ]);
+
+      dispatch(removePlanSuccess(name));
+      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed plan "${name}"!`));
+    } catch (err) {
+      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(removePlanFailure(err));
+    }
+  };
 };
 
 const fetchPlans = () => {
