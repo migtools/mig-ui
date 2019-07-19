@@ -28,6 +28,8 @@ const WizardComponent = props => {
     isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
+    isFetchingStorageClasses,
+    isStorageClassError,
     isCheckingPlanStatus,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
@@ -109,7 +111,6 @@ const WizardComponent = props => {
       name: 'Storage Class',
       component: (
         <StorageClassForm
-          planList={planList}
           values={values}
           errors={errors}
           touched={touched}
@@ -119,9 +120,11 @@ const WizardComponent = props => {
           setFieldTouched={setFieldTouched}
           onWizardLoadingToggle={toggleLoading}
           isWizardLoading={isLoading}
+          planList={planList}
+          isStorageClassError={isStorageClassError}
         />
       ),
-      enableNext: !isLoading,
+      enableNext: !isLoading && !isFetchingStorageClasses,
       canJumpTo: stepIdReached >= 4,
     },
     {

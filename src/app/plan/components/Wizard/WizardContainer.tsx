@@ -68,21 +68,31 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-    isFetchingPVList: state.plan.isFetchingPVList,
     isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
+<<<<<<< HEAD
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
+=======
+    isFetchingPVList: state.plan.isFetchingPVList,
+>>>>>>> wip storage class
     isPVError: state.plan.isPVError,
+    isFetchingStorageClasses: state.plan.isFetchingStorageClasses,
+    isStorageClassError: state.plan.isStorageClassError,
+    storageClassList: state.plan.storageClassList,
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: plan => dispatch(planOperations.addPlan(plan)),
+<<<<<<< HEAD
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
 
     pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
+=======
+    storageClassFetch: () => dispatch(planOperations.storageClassFetch()),
+>>>>>>> wip storage class
   };
 };
 

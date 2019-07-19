@@ -3,10 +3,18 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
-// import StorageClassTable from './StorageClassTable';
+import StorageClassTable from './StorageClassTable';
 import styled from '@emotion/styled';
 const StorageClassForm = props => {
-  const { setFieldValue, values, planList } = props;
+  const {
+    setFieldValue,
+    values,
+    planList,
+    storageClassList,
+    storageClassFetch,
+    isStorageClassError,
+    isFetchingStorageClasses,
+  } = props;
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
   `;
@@ -18,7 +26,15 @@ const StorageClassForm = props => {
             <TextListItem component="dt">Select storage class for copied PVs:</TextListItem>
           </TextList>
         </StyledTextContent>
-        {/* <StorageClassTable planList={planList} setFieldValue={setFieldValue} values={values} /> */}
+        <StorageClassTable
+          storageClassList={storageClassList}
+          storageClassFetch={storageClassFetch}
+          isStorageClassError={isStorageClassError}
+          isFetchingPVList={isFetchingStorageClasses}
+          setFieldValue={setFieldValue}
+          values={values}
+          planList={planList}
+        />
       </Box>
     </React.Fragment>
   );

@@ -1,7 +1,12 @@
 import { Creators } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind } from '../../../client/resources';
+import {
+  MigResource,
+  MigResourceKind,
+  StorageClassesResource,
+  StorageClassesResourceKind,
+} from '../../../client/resources';
 import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 
 import {
@@ -306,6 +311,27 @@ const fetchNamespacesForCluster = clusterName => {
   };
 };
 
+const storageClassFetch = () => {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(Creators.storageClassFetchRequest());
+      const state = getState();
+      const migMeta = state.migMeta;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+
+      // When updating objects
+      const storageClassResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+      const storageClassListResponse = await client.list(storageClassResource);
+      const storageClassList = storageClassListResponse.data;
+      console.log('storage classes', storageClassList);
+      dispatch(Creators.storageClassFetchSuccess(storageClassList));
+    } catch (err) {
+      dispatch(Creators.storageClassFetchFailure(err));
+      dispatch(commonOperations.alertErrorTimeout(err));
+    }
+  };
+};
+
 function* fetchPlansGenerator() {
   const state = yield select();
   const client: IClusterClient = ClientFactory.hostCluster(state);
@@ -323,6 +349,7 @@ function* fetchPlansGenerator() {
 
 export default {
   pvFetchRequest,
+  storageClassFetch,
   fetchPlans,
   addPlan,
   removePlan,

@@ -89,7 +89,7 @@ const VolumesTable = (props): any => {
       setFieldValue('persistentVolumes', mappedPVs);
       setRows(mappedPVs);
     }
-  }, [isFetchingPVList]); // Only re-run the effect if count changes
+  }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
