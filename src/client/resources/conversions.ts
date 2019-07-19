@@ -265,7 +265,8 @@ export function createMigMigration(
   migID: string,
   planName: string,
   namespace: string,
-  isStage: boolean
+  isStage: boolean,
+  disableQuiesce: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -279,10 +280,7 @@ export function createMigMigration(
         name: planName,
         namespace,
       },
-      // TODO: We need to wire these up to the UI when stage is implemented
-      // and we've more thouroughly tested quiesce/stage combos in conjunction
-      // with the controller and velero.
-      quiescePods: true,
+      quiescePods: !isStage && !disableQuiesce,
       stage: isStage,
     },
   };

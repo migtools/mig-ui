@@ -1,18 +1,22 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import { useState } from 'react';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { Button, Checkbox } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 
 const MigrateModalForm = props => {
+  const [disableQuiesce, toggleQuiesce] = useState(false);
+  const handleChange = (checked, _event) => {
+    toggleQuiesce(!!checked);
+  };
   return (
     <Flex>
       <form
         onSubmit={e => {
           e.preventDefault();
           props.onHandleModalToggle(null);
-          props.handleSubmit();
+          props.handleSubmit(disableQuiesce);
         }}
       >
         <Box>
@@ -30,6 +34,8 @@ const MigrateModalForm = props => {
             label="Don't halt transactions on the source while migrating"
             aria-label="don't halt transactions on the source while migrating"
             id="transaction-halt-checkbox"
+            isChecked={disableQuiesce}
+            onChange={handleChange}
           />
         </Box>
         <Box mt={20}>
