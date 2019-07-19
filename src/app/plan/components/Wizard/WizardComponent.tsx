@@ -61,7 +61,8 @@ const WizardComponent = props => {
           isWizardLoading={isLoading}
         />
       ),
-      enableNext: !errors.sourceCluster && touched.sourceCluster === true && !isLoading,
+      enableNext: !errors.sourceCluster && touched.sourceCluster === true
+        && !errors.selectedNamespaces && !isLoading,
       canJumpTo: stepIdReached >= 2,
     },
     {
