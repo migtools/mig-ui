@@ -4,6 +4,7 @@ import GeneralForm from './GeneralForm';
 import MigSourceForm from './MigSourceForm';
 import MigTargetForm from './MigTargetForm';
 import VolumesForm from './VolumesForm';
+import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
 
@@ -26,16 +27,19 @@ const WizardComponent = props => {
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
+    isPVError,
     isCheckingPlanStatus,
     fetchNamespacesForCluster,
-    sourceClusterNamespaces
+    sourceClusterNamespaces,
   } = props;
+
   enum stepId {
     General = 1,
     MigrationSource,
     PersistentVolumes,
+    StorageClass,
     MigrationTarget,
-    Results
+    Results,
   }
   const steps = [
     {
@@ -71,8 +75,11 @@ const WizardComponent = props => {
           sourceClusterNamespaces={sourceClusterNamespaces}
         />
       ),
-      enableNext: !errors.sourceCluster && touched.sourceCluster === true
-        && !errors.selectedNamespaces && !isLoading,
+      enableNext:
+        !errors.sourceCluster &&
+        touched.sourceCluster === true &&
+        !errors.selectedNamespaces &&
+        !isLoading,
       canJumpTo: stepIdReached >= stepId.MigrationSource,
     },
     {
@@ -89,10 +96,33 @@ const WizardComponent = props => {
           setFieldTouched={setFieldTouched}
           onWizardLoadingToggle={toggleLoading}
           isWizardLoading={isLoading}
+          planList={planList}
+          isFetchingPVList={isFetchingPVList}
+          isPVError={isPVError}
         />
       ),
       enableNext: !isLoading && !isFetchingPVList,
       canJumpTo: stepIdReached >= stepId.PersistentVolumes,
+    },
+    {
+      id: stepId.StorageClass,
+      name: 'Storage Class',
+      component: (
+        <StorageClassForm
+          planList={planList}
+          values={values}
+          errors={errors}
+          touched={touched}
+          handleBlur={handleBlur}
+          handleChange={handleChange}
+          setFieldValue={setFieldValue}
+          setFieldTouched={setFieldTouched}
+          onWizardLoadingToggle={toggleLoading}
+          isWizardLoading={isLoading}
+        />
+      ),
+      enableNext: !isLoading,
+      canJumpTo: stepIdReached >= 4,
     },
     {
       id: stepId.MigrationTarget,

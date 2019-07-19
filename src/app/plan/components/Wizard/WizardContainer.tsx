@@ -72,6 +72,7 @@ const mapStateToProps = state => {
     isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
+    isPVError: state.plan.isPVError,
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -81,6 +82,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
 
+    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
   };
 };
 

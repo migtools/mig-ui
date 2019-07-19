@@ -213,6 +213,20 @@ const addPlan = migPlan => {
           return getPVs(dispatch, updatedPlansPollingResponse, createPlanRes);
         }
       };
+      const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
+        const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
+          p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
+        );
+
+        const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
+        if (pvSearchStatus.success) {
+          dispatch(Creators.updatePlan(matchingPlan.MigPlan));
+          dispatch(pvFetchSuccess());
+          return 'SUCCESS';
+        } else if (pvSearchStatus.error) {
+          return 'FAILURE';
+        }
+      };
 
       const pvParams = {
         asyncFetch: fetchPlansGenerator,
@@ -306,20 +320,6 @@ function* fetchPlansGenerator() {
     return { e, isSuccessful: false };
   }
 }
-const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
-  const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
-    p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
-  );
-
-  const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
-  if (pvSearchStatus.success) {
-    dispatch(Creators.updatePlan(matchingPlan.MigPlan));
-    dispatch(pvFetchSuccess());
-    return 'SUCCESS';
-  } else if (pvSearchStatus.error) {
-    return 'FAILURE';
-  }
-};
 
 export default {
   pvFetchRequest,

@@ -3,10 +3,10 @@ import { jsx } from '@emotion/core';
 import React from 'react';
 import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
-import VolumesTable from './VolumesTable';
+// import StorageClassTable from './StorageClassTable';
 import styled from '@emotion/styled';
-const VolumesForm = props => {
-  const { setFieldValue, values, isPVError, isFetchingPVList, planList } = props;
+const StorageClassForm = props => {
+  const { setFieldValue, values, planList } = props;
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
   `;
@@ -15,18 +15,12 @@ const VolumesForm = props => {
       <Box>
         <StyledTextContent>
           <TextList component="dl">
-            <TextListItem component="dt">Choose to move or copy persistent volumes:</TextListItem>
+            <TextListItem component="dt">Select storage class for copied PVs:</TextListItem>
           </TextList>
         </StyledTextContent>
-        <VolumesTable
-          isPVError={isPVError}
-          isFetchingPVList={isFetchingPVList}
-          setFieldValue={setFieldValue}
-          values={values}
-          planList={planList}
-        />
+        {/* <StorageClassTable planList={planList} setFieldValue={setFieldValue} values={values} /> */}
       </Box>
     </React.Fragment>
   );
 };
-export default VolumesForm;
+export default StorageClassForm;
