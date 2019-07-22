@@ -64,7 +64,7 @@ const VolumesTable = (props): any => {
             claim: '',
             type: pvAction,
             details: '',
-            supportedActions: planVolume.supportedActions,
+            supportedActions: planVolume.supported.actions,
           };
         });
       } else {
@@ -82,7 +82,7 @@ const VolumesTable = (props): any => {
             claim: '',
             type: pvAction,
             details: '',
-            supportedActions: planVolume.supportedActions,
+            supportedActions: planVolume.supported.actions,
           };
         });
       }
