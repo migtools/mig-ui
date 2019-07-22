@@ -59,7 +59,7 @@ const VolumesTable = (props): any => {
           return {
             name: planVolume.name,
             project: '',
-            storageClass: '',
+            storageClass: planVolume.selection.storageClass || '',
             size: '100 Gi',
             claim: '',
             type: pvAction,
@@ -77,7 +77,7 @@ const VolumesTable = (props): any => {
           return {
             name: planVolume.name,
             project: '',
-            storageClass: '',
+            storageClass: planVolume.selection.storageClass || '',
             size: '100 Gi',
             claim: '',
             type: pvAction,

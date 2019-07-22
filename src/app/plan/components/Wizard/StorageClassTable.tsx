@@ -23,6 +23,7 @@ const StorageClassTable = (props): any => {
     isFetchingStorageClasses,
   } = props;
   const [rows, setRows] = useState([]);
+  const [storageClassOptions, setStorageClassOptions] = useState([]);
 
   const handleTypeChange = (row, option) => {
     updateTableData(row.index, option.value);
@@ -36,7 +37,7 @@ const StorageClassTable = (props): any => {
     const currentPlan = getCurrentPlan();
     const rowsCopy = [...rows];
     if (currentPlan !== null && values.persistentVolumes) {
-      const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
+      const updatedRow = { ...rowsCopy[rowIndex], storageClass: updatedValue };
 
       rowsCopy[rowIndex] = updatedRow;
     }
@@ -46,83 +47,40 @@ const StorageClassTable = (props): any => {
   };
 
   useEffect(() => {
-    storageClassFetch();
-    console.log('storageClassList', storageClassList);
+    // storageClassFetch();
+    // console.log('storageClassList', storageClassList);
     const currentPlan = getCurrentPlan();
     if (currentPlan) {
-      // const discoveredStorageClasses = currentPlan.MigPlan.spec.persistentVolumes || [];
+      const copiedPVs = currentPlan.MigPlan.spec.persistentVolumes || [];
       let mappedPVs;
-      // if (values.persistentVolumes) {
-      //   mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-      //     let pvAction = 'copy'; // Default to copy
-      //     if (values.persistentVolumes.length !== 0) {
-      //       const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-      //       pvAction = rowVal.type;
-      //     }
-      //     // TODO: A number of these values will need to be further supported by the
-      //     // controller. Today the data is not available.
-      //     // See the mig controller issue describing what data we need here:
-      //     // https://github.com/fusor/mig-controller/issues/134
-      //     return {
-      //       name: planVolume.name,
-      //       project: '',
-      //       storageClass: '',
-      //       size: '100 Gi',
-      //       claim: '',
-      //       type: pvAction,
-      //       details: '',
-      //       supportedActions: planVolume.supportedActions,
-      //     };
-      //   });
-      // } else {
-      //   mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-      //     const pvAction = 'copy'; // Default to copy
-      //     // TODO: A number of these values will need to be further supported by the
-      //     // controller. Today the data is not available.
-      //     // See the mig controller issue describing what data we need here:
-      //     // https://github.com/fusor/mig-controller/issues/134
-      //     return {
-      //       name: planVolume.name,
-      //       project: '',
-      //       storageClass: '',
-      //       size: '100 Gi',
-      //       claim: '',
-      //       type: pvAction,
-      //       details: '',
-      //       supportedActions: planVolume.supportedActions,
-      //     };
-      //   });
-      // }
-      // setFieldValue('persistentVolumes', mappedPVs);
-      // setRows(mappedPVs);
+      if (values.persistentVolumes) {
+        mappedPVs = copiedPVs.map(planVolume => {
+          let pvStorageClass = ''; // Default to emptry
+          if (values.persistentVolumes.length !== 0) {
+            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
+            if (rowVal.type === 'copy') {
+              pvStorageClass = rowVal.storageClass;
+              setStorageClassOptions([pvStorageClass, 'other']);
+              return {
+                name: planVolume.name,
+                type: planVolume.type,
+                storageClass: pvStorageClass,
+              };
+            } else {
+              return {};
+            }
+          }
+        });
+      } else {
+        mappedPVs = [];
+      }
+      setFieldValue('persistentVolumes', mappedPVs);
+      setRows(mappedPVs);
     }
   }, [isFetchingStorageClasses]); // Only re-run the effect if fetching value changes
 
-  const StyledTextContent = styled(TextContent)`
-    margin: 1em 0 1em 0;
-  `;
-
-  //TODO: added this component level error state to handle the case of no PVs
-  // showing up after 3 checks of the interval. When the isPVError flag is checked,
-  // the volumes form will show this error. Need to add redux actions & state to encapsulate
-  // validation so that this error state enables the user to go to next page( that possibly
-  // shows a different set of forms catered to stateless apps)
-
   if (isStorageClassError) {
-    return (
-      <Box
-        css={css`
-          text-align: center;
-        `}
-      >
-        <StyledTextContent>
-          <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
-            <StatusIcon isReady={false} />
-            Unable to find storage classes
-          </Text>
-        </StyledTextContent>
-      </Box>
-    );
+    return <div>error</div>;
   }
   if (isFetchingStorageClasses) {
     return (
@@ -175,11 +133,11 @@ const StorageClassTable = (props): any => {
                     fontWeight: 600,
                   }}
                 >
-                  Project
+                  Type
                 </div>
               ),
-              accessor: 'project',
-              width: 150,
+              accessor: 'type',
+              width: 180,
               resizable: false,
             },
             {
@@ -194,89 +152,22 @@ const StorageClassTable = (props): any => {
                 </div>
               ),
               accessor: 'storageClass',
-              width: 150,
-              resizable: false,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Size
-                </div>
-              ),
-              accessor: 'size',
-              width: 75,
-              resizable: false,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Claim
-                </div>
-              ),
-              accessor: 'claim',
-              width: 180,
-              resizable: false,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Type
-                </div>
-              ),
-              accessor: 'type',
               width: 120,
               resizable: false,
               Cell: row => (
                 <Select
                   onChange={(option: any) => handleTypeChange(row, option)}
-                  options={row.original.supportedActions.map(a => {
-                    // NOTE: Each PV may not support all actions (any at all even),
+                  options={storageClassOptions.map(a => {
+                    // NOTE: Each PV may not support all storage classes (any at all even),
                     // we need to inspect the PV to determine this
                     return { value: a, label: a };
                   })}
-                  name="persistentVolumes"
+                  name="storageClasses"
                   value={{
-                    label: row.original.type,
-                    value: row.original.type,
+                    label: row.original.storageClass,
+                    value: row.original.storageClass,
                   }}
                 />
-              ),
-            },
-
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Details
-                </div>
-              ),
-              accessor: 'details',
-              width: 50,
-              resizable: false,
-              textAlign: 'left',
-              Cell: row => (
-                <a href="https://google.com" target="_blank">
-                  view
-                </a>
               ),
             },
           ]}
