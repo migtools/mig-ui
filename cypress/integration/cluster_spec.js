@@ -4,7 +4,7 @@ describe('Cluster functionality test', () => {
   });
 
   context('Add cluster', () => {
-    const clusterName = 'testCluster';
+    const clusterName = 'testcluster';
     const url = 'http://example.com';
     const token = '123456';
 
