@@ -27,13 +27,7 @@ const { Creators, Types } = createActions({
   migrationFailure: [],
   updatePlan: ['updatedPlan'],
   updatePlanMigrations: ['updatedPlan'],
-<<<<<<< HEAD
-  planUpdateRequest: ['planValues'],
-=======
-  storageClassFetchRequest: [],
-  storageClassFetchSuccess: ['storageClassList'],
-  storageClassFetchFailure: ['err'],
->>>>>>> wip storage class
+  planUpdateRequest: ['planValues']
 });
 
 export { Creators, Types };

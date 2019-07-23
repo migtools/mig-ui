@@ -28,11 +28,13 @@ const WizardComponent = props => {
     isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
-    isFetchingStorageClasses,
-    isStorageClassError,
     isCheckingPlanStatus,
     fetchNamespacesForCluster,
+<<<<<<< HEAD
     sourceClusterNamespaces,
+=======
+    sourceClusterNamespaces
+>>>>>>> remove code for storageclass fetch
   } = props;
 
   enum stepId {
@@ -121,10 +123,9 @@ const WizardComponent = props => {
           onWizardLoadingToggle={toggleLoading}
           isWizardLoading={isLoading}
           planList={planList}
-          isStorageClassError={isStorageClassError}
         />
       ),
-      enableNext: !isLoading && !isFetchingStorageClasses,
+      enableNext: !isLoading,
       canJumpTo: stepIdReached >= 4,
     },
     {

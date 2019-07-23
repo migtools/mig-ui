@@ -3,9 +3,6 @@ import { createReducer } from 'reduxsauce';
 import moment from 'moment';
 
 export const INITIAL_STATE = {
-  isStorageClassError: false,
-  isFetchingStorageClasses: false,
-  storageClassList: [],
   isPVError: false,
   isFetchingPVList: false,
   isCheckingPlanStatus: false,
@@ -51,20 +48,6 @@ export const pvFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, isPVError: false, isFetchingPVList: false };
 };
 
-export const storageClassFetchRequest = (state = INITIAL_STATE, action) => {
-  return { ...state, isPVError: false, isFetchingStorageClasses: true };
-};
-export const storageClassFetchFailure = (state = INITIAL_STATE, action) => {
-  return { ...state, isStorageClassError: true, isFetchingStorageClasses: false };
-};
-export const storageClassFetchSuccess = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    isStorageClassError: false,
-    isFetchingStorageClasses: false,
-    storageClassList: action.storageClassList,
-  };
-};
 export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   const newPlan = {
     MigPlan: action.newPlan,
@@ -262,9 +245,6 @@ export const HANDLERS = {
   [Types.PV_FETCH_SUCCESS]: pvFetchSuccess,
   [Types.PV_FETCH_FAILURE]: pvFetchFailure,
   [Types.PV_FETCH_REQUEST]: pvFetchRequest,
-  [Types.STORAGE_CLASS_FETCH_SUCCESS]: storageClassFetchSuccess,
-  [Types.STORAGE_CLASS_FETCH_FAILURE]: storageClassFetchFailure,
-  [Types.STORAGE_CLASS_FETCH_REQUEST]: storageClassFetchRequest,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);
