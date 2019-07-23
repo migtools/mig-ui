@@ -247,8 +247,8 @@ const putPlan = planValues => {
       dispatch(Creators.updatePlan(latestPlan));
       const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
 
-      const fetch_retry: any = async n => {
-        for (let i = 0; i < n; i++) {
+      const fetchRetry: any = async totalTries => {
+        for (let currentTries = 0; currentTries < totalTries; currentTries++) {
           try {
             return await client.put(
               new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -256,14 +256,16 @@ const putPlan = planValues => {
               updatedMigPlan
             );
           } catch (err) {
-            const isLastAttempt = i + 1 === n;
+            dispatch(commonOperations.alertErrorTimeout('Failed to update plan. Retrying...'));
+            const isLastAttempt = currentTries + 1 === totalTries;
             if (isLastAttempt) {
-              throw err;
+              dispatch(commonOperations.alertErrorTimeout('Failed to update plan'));
             }
           }
         }
       };
-      fetch_retry(3).then(res => dispatch(Creators.updatePlan(res.data)));
+      const res = await fetchRetry(3);
+      dispatch(updatePlan(res.data));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
     }
