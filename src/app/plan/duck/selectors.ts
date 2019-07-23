@@ -103,9 +103,6 @@ const getCounts = createSelector(
         hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
           .length;
 
-        if (hasErrorCondition) {
-          counts.completed.push(plan);
-        }
         if (plan.Migrations.length) {
           hasRunningMigrations = !!plan.Migrations.filter(m => {
             if (m.status) {
