@@ -2,6 +2,7 @@ import { withFormik } from 'formik';
 import WizardComponent from './WizardComponent';
 import planOperations from '../../duck/operations';
 import { connect } from 'react-redux';
+import utils from '../../../common/duck/utils';
 
 const WizardContainer: any = withFormik({
   mapPropsToValues: () => ({
@@ -19,6 +20,8 @@ const WizardContainer: any = withFormik({
 
     if (!values.planName) {
       errors.planName = 'Required';
+    } else if (!utils.testDNS1123(values.planName)) {
+      errors.planName = utils.DNS1123Error(values.planName);
     }
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';

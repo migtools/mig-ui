@@ -10,7 +10,7 @@ import {
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import { commonOperations } from '../../common/duck';
-import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
+import utils from '../../common/duck/utils';
 import planUtils from './utils';
 import { select } from 'redux-saga/effects';
 import { startStatusPolling } from '../../common/duck/actions';
@@ -219,6 +219,7 @@ const addPlan = migPlan => {
 
       dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {
+      console.error(err);
       dispatch(addPlanFailure());
       dispatch(commonOperations.alertErrorTimeout('Failed to add plan'));
     }
@@ -306,9 +307,9 @@ const fetchNamespacesForCluster = clusterName => {
       const res = await client.list(nsResource);
       dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
     } catch (err) {
-      if (isSelfSignedCertError(err)) {
+      if (utils.isSelfSignedCertError(err)) {
         const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
-        handleSelfSignedCertError(failedUrl, dispatch);
+        utils.handleSelfSignedCertError(failedUrl, dispatch);
         return;
       }
       dispatch(commonOperations.alertErrorTimeout(err));

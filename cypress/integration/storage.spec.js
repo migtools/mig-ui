@@ -4,9 +4,9 @@ describe('Storage functionality test', () => {
   });
 
   context('Add storage', () => {
-    const repoName = 'test repo';
-    const bucketName = 'AWSBucket';
-    const bucketRegion = 'AWSRegion';
+    const repoName = 'testrepo';
+    const bucketName = 'awsbucket123';
+    const bucketRegion = 'us-east-1';
     const accessKey = 'accessKey';
     const secret = 'secret';
 
