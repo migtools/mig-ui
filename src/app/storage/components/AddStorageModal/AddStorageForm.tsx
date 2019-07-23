@@ -5,13 +5,16 @@ import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
 import CheckConnection from './../../../common/components/CheckConnection';
+import utils from '../../../common/duck/utils';
+import storageUtils from '../../duck/utils';
 
 class WrappedAddStorageForm extends React.Component<any, any> {
   state = {
     accessKeyHidden: true,
     secretHidden: true,
   };
-  onHandleChange = (val, e) => {
+
+  onHandleChange = (e) => {
     this.props.handleChange(e);
   };
 
@@ -41,7 +44,6 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       values,
       touched,
       errors,
-      handleChange,
       handleBlur,
       handleSubmit,
       setFieldTouched,
@@ -49,11 +51,12 @@ class WrappedAddStorageForm extends React.Component<any, any> {
       checkConnection,
       mode,
     } = this.props;
+    console.error(values);
     return (
       <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
         <FormGroup label="Repository Name" isRequired fieldId="name">
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('name', true, true)}
             onBlur={handleBlur}
             value={values.name}
@@ -68,13 +71,12 @@ class WrappedAddStorageForm extends React.Component<any, any> {
         </FormGroup>
         <FormGroup label="S3 Bucket Name" isRequired fieldId="bucketName">
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('bucketName', true, true)}
             onBlur={handleBlur}
             value={values.bucketName}
             name="bucketName"
             type="text"
-            // isValid={!errors.bucketName && touched.bucketName}
             id="bucketName"
           />
           {errors.bucketName && touched.bucketName && (
@@ -84,17 +86,16 @@ class WrappedAddStorageForm extends React.Component<any, any> {
 
         <FormGroup label="S3 Bucket Region" isRequired fieldId="bucketRegion">
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('bucketRegion', true, true)}
             onBlur={handleBlur}
             value={values.bucketRegion}
             name="bucketRegion"
             type="text"
-            // isValid={!errors.bucketRegion && touched.bucketRegion}
             id="bucketRegion"
           />
           {errors.bucketRegion && touched.bucketRegion && (
-            <FormErrorDiv id="feedback-bucket-region">{errors.bucketRegion}</FormErrorDiv>
+            <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
           )}
         </FormGroup>
 
@@ -103,7 +104,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.accessKeyHidden} />
           </HideWrapper>
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('accessKey', true, true)}
             onBlur={handleBlur}
             value={values.accessKey}
@@ -124,7 +125,7 @@ class WrappedAddStorageForm extends React.Component<any, any> {
             <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.secretHidden} />
           </HideWrapper>
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('secret', true, true)}
             onBlur={handleBlur}
             value={values.secret}
@@ -164,13 +165,22 @@ const AddStorageForm: any = withFormik({
 
     if (!values.name) {
       errors.name = 'Required';
+    } else if (!utils.testDNS1123(values.name)) {
+      errors.name = utils.DNS1123Error(values.name);
     }
     if (!values.bucketName) {
       errors.bucketName = 'Required';
     }
+
     if (!values.bucketRegion) {
       errors.bucketRegion = 'Required';
     }
+
+    const s3Error = storageUtils.testS3Name(values.bucketName);
+    if (s3Error !== '') {
+      errors.bucketName = s3Error;
+    }
+
     if (!values.accessKey) {
       errors.accessKey = 'Required';
     }
