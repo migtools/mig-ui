@@ -157,8 +157,8 @@ const fetchStorage = () => {
       const res = await client.list(resource);
       //temporary for ui work
       const migStorages = res.data.items;
-      const refs = await Promise.all(fetchMigStorageRefs(client, migMeta, migStorages));
-      const groupedStorages = groupStorages(migStorages, refs);
+      const secretRefs = await Promise.all(fetchMigStorageSecretRefs(client, migStorages));
+      const groupedStorages = groupStorages(migStorages, secretRefs);
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
       if (err.response) {
@@ -172,7 +172,8 @@ const fetchStorage = () => {
     }
   };
 };
-function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
+
+function fetchMigStorageSecretRefs(client: IClusterClient, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migStorages.forEach(storage => {
@@ -181,22 +182,25 @@ function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Arra
       CoreNamespacedResourceKind.Secret,
       secretRef.namespace
     );
-    refs.push(client.get(secretResource, secretRef.name));
+    const resp = client.get(secretResource, secretRef.name);
+    resp.then(r => {
+      refs.push(r.data);
+    }, err => {
+      console.error('No secret matches', err.message);
+    });
   });
 
   return refs;
 }
 
-function groupStorages(migStorages: any[], refs: any[]): any[] {
+function groupStorages(migStorages: any[], secrets: any[]): any[] {
   return migStorages.map(ms => {
-    const fullStorage = {
+    return {
       MigStorage: ms,
+      Secret: secrets.find(
+        s => s.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
+      )
     };
-    fullStorage['Secret'] = refs.find(
-      i => i.data.kind === 'Secret' && i.data.metadata.name === ms.metadata.name
-    ).data;
-
-    return fullStorage;
   });
 }
 
@@ -204,15 +208,10 @@ function* fetchStorageGenerator() {
   const state = yield select();
   const client: IClusterClient = ClientFactory.hostCluster(state);
   const resource = new MigResource(MigResourceKind.MigStorage, state.migMeta.namespace);
-  try {
-    let storageList = yield client.list(resource);
-    storageList = yield storageList.data.items;
-    const refs = yield Promise.all(fetchMigStorageRefs(client, state.migMeta, storageList));
-    const groupedStorages = groupStorages(storageList, refs);
-    return { updatedStorages: groupedStorages, isSuccessful: true };
-  } catch (e) {
-    return { e, isSuccessful: false };
-  }
+  let storageList = yield client.list(resource);
+  storageList = yield storageList.data.items;
+  const secretRefs = yield Promise.all(fetchMigStorageSecretRefs(client, storageList));
+  return { updatedStorages: groupStorages(storageList, secretRefs), isSuccessful: true };
 }
 
 export default {

@@ -144,12 +144,10 @@ class HomeComponent extends React.Component<IProps, IState> {
   };
 
   handleStoragePoll = response => {
-    if (response && response.isSuccessful === true) {
+    if (response) {
       this.props.updateStorages(response.updatedStorages);
-      return true;
     }
-
-    return false;
+    return response.isSuccessful;
   };
 
   componentDidMount = () => {
