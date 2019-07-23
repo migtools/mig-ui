@@ -8,11 +8,12 @@ import FormErrorDiv from './../../../common/components/FormErrorDiv';
 import { css } from '@emotion/core';
 import HideWrapper from './../../../common/components/HideWrapper';
 import CheckConnection from './../../../common/components/CheckConnection';
+import utils from '../../../common/duck/utils';
 class WrappedAddClusterForm extends React.Component<any, any> {
   state = {
     tokenHidden: true,
   };
-  onHandleChange = (val, e) => {
+  onHandleChange = e => {
     this.props.handleChange(e);
   };
 
@@ -35,7 +36,6 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       values,
       touched,
       errors,
-      handleChange,
       handleBlur,
       handleSubmit,
       connectionState,
@@ -45,17 +45,11 @@ class WrappedAddClusterForm extends React.Component<any, any> {
       onHandleModalToggle,
       mode
     } = this.props;
-    const dynamicTokenSecurity = this.state.tokenHidden ? 'disc' : 'inherit';
-    const customCss = css`
-      display: inline;
-      padding: 1em;
-      cursor: pointer;
-    `;
     return (
       <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
         <FormGroup label="Cluster Name" isRequired fieldId="name">
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('name', true, true)}
             onBlur={handleBlur}
             value={values.name}
@@ -70,13 +64,12 @@ class WrappedAddClusterForm extends React.Component<any, any> {
         </FormGroup>
         <FormGroup label="Url" isRequired fieldId="url">
           <TextInput
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('url', true, true)}
             onBlur={handleBlur}
             value={values.url}
             name="url"
             type="text"
-            // isValid={!errors.url && touched.url}
             id="url-input"
           />
           {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
@@ -87,7 +80,7 @@ class WrappedAddClusterForm extends React.Component<any, any> {
           </HideWrapper>
           <TextInput
             value={values.token}
-            onChange={(val, e) => this.onHandleChange(val, e)}
+            onChange={(_val, e) => this.onHandleChange(e)}
             onInput={() => setFieldTouched('token', true, true)}
             onBlur={handleBlur}
             name="token"
@@ -124,10 +117,14 @@ const AddClusterForm: any = withFormik({
 
     if (!values.name) {
       errors.name = 'Required';
+    } else if (!utils.testDNS1123(values.name)) {
+      errors.name = utils.DNS1123Error(values.name);
     }
 
     if (!values.url) {
       errors.url = 'Required';
+    } else if (!utils.testURL(values.url)) {
+      errors.url = 'Not a valid URL';
     }
 
     if (!values.token) {
