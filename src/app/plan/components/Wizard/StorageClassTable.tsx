@@ -47,35 +47,24 @@ const StorageClassTable = (props): any => {
   };
 
   useEffect(() => {
-    // storageClassFetch();
-    // console.log('storageClassList', storageClassList);
     const currentPlan = getCurrentPlan();
-    if (currentPlan) {
-      const copiedPVs = currentPlan.MigPlan.spec.persistentVolumes || [];
+    if (values.persistentVolumes.length) {
       let mappedPVs;
-      if (values.persistentVolumes) {
-        mappedPVs = copiedPVs.map(planVolume => {
-          let pvStorageClass = ''; // Default to emptry
-          if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            if (rowVal.type === 'copy') {
-              pvStorageClass = rowVal.storageClass;
-              setStorageClassOptions([pvStorageClass, 'other']);
-              return {
-                name: planVolume.name,
-                type: planVolume.type,
-                storageClass: pvStorageClass,
-              };
-            } else {
-              return {};
-            }
-          }
-        });
-      } else {
-        mappedPVs = [];
-      }
+      mappedPVs = values.persistentVolumes.map(planVolume => {
+        let pvStorageClass = ''; // Default to empty
+
+        const rowVal = currentPlan.MigPlan.spec.persistentVolumes.find(
+          v => v.name === planVolume.name
+        );
+        pvStorageClass = rowVal.selection.storageClass;
+        setStorageClassOptions([pvStorageClass, 'other']);
+        return {
+          ...planVolume,
+          storageClass: pvStorageClass,
+        };
+      });
       setFieldValue('persistentVolumes', mappedPVs);
-      setRows(mappedPVs);
+      setRows(mappedPVs.filter(v => v.type === 'copy'));
     }
   }, [isFetchingStorageClasses]); // Only re-run the effect if fetching value changes
 
