@@ -188,11 +188,12 @@ const addPlan = migPlan => {
       );
 
       /**
-       * Begin PV polling when adding a plan. This is triggered when the user navigates to the pv discovery part of the plan
+       * Begin PV polling when adding a plan.
+       * This is triggered when the user navigates to the pv discovery part of the plan
        * because the discovery is dependent on the creation of a plan
        */
 
-      const getPVs = (dispatch, updatedPlansPollingResponse, newObjectRes) => {
+      const getPVs = (updatedPlansPollingResponse, newObjectRes) => {
         const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
           p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
         );
@@ -209,7 +210,7 @@ const addPlan = migPlan => {
 
       const pvPollingCallback = updatedPlansPollingResponse => {
         if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          return getPVs(dispatch, updatedPlansPollingResponse, createPlanRes);
+          return getPVs(updatedPlansPollingResponse, createPlanRes);
         }
       };
       const pvParams = {
