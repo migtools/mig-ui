@@ -4,8 +4,8 @@ describe('Cluster functionality test', () => {
   });
 
   context('Add cluster', () => {
-    const clusterName = 'test cluster';
-    const url = 'example.com';
+    const clusterName = 'testCluster';
+    const url = 'http://example.com';
     const token = '123456';
 
     it('adds cluster with valid data', () => {
@@ -21,7 +21,8 @@ describe('Cluster functionality test', () => {
             cy.get('#submit-cluster-btn').click();
           });
       });
-      cy.contains('test cluster');
+      cy.contains(clusterName);
+      cy.contains(url);
     });
 
     it('has buttons disabled when input data is missing', () => {
