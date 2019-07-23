@@ -6,22 +6,11 @@ import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
-import styled from '@emotion/styled';
-import StatusIcon from '../../../common/components/StatusIcon';
-import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 
 const StorageClassTable = (props): any => {
-  const {
-    setFieldValue,
-    planList,
-    storageClassList,
-    values,
-    storageClassFetch,
-    isStorageClassError,
-    isFetchingStorageClasses,
-  } = props;
+  const { setFieldValue, planList, clusterList, values, isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
 
@@ -48,30 +37,31 @@ const StorageClassTable = (props): any => {
 
   useEffect(() => {
     const currentPlan = getCurrentPlan();
+    const destCluster = clusterList.find(
+      c => c.MigCluster.metadata.name === currentPlan.MigPlan.spec.destMigClusterRef.name
+    );
+    setStorageClassOptions(destCluster.MigCluster.spec.storageClasses);
+
     if (values.persistentVolumes.length) {
-      let mappedPVs;
-      mappedPVs = values.persistentVolumes.map(planVolume => {
-        let pvStorageClass = ''; // Default to empty
+      // let mappedPVs;
+      // mappedPVs = values.persistentVolumes.map(planVolume => {
+      //   let pvStorageClass = ''; // Default to empty
 
-        const rowVal = currentPlan.MigPlan.spec.persistentVolumes.find(
-          v => v.name === planVolume.name
-        );
-        pvStorageClass = rowVal.selection.storageClass;
-        setStorageClassOptions([pvStorageClass, 'other']);
-        return {
-          ...planVolume,
-          storageClass: pvStorageClass,
-        };
-      });
-      setFieldValue('persistentVolumes', mappedPVs);
-      setRows(mappedPVs.filter(v => v.type === 'copy'));
+      //   const rowVal = currentPlan.MigPlan.spec.persistentVolumes.find(
+      //     v => v.name === planVolume.name
+      //   );
+      //   pvStorageClass = rowVal.selection.storageClass;
+      //   return {
+      //     ...planVolume,
+      //     storageClass: pvStorageClass,
+      //   };
+      // });
+      // setFieldValue('persistentVolumes', mappedPVs);
+      setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
     }
-  }, [isFetchingStorageClasses]); // Only re-run the effect if fetching value changes
+  }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
 
-  if (isStorageClassError) {
-    return <div>error</div>;
-  }
-  if (isFetchingStorageClasses) {
+  if (isFetchingPVList) {
     return (
       <Flex
         css={css`
@@ -141,23 +131,26 @@ const StorageClassTable = (props): any => {
                 </div>
               ),
               accessor: 'storageClass',
-              width: 120,
+              width: 500,
               resizable: false,
-              Cell: row => (
-                <Select
-                  onChange={(option: any) => handleTypeChange(row, option)}
-                  options={storageClassOptions.map(a => {
-                    // NOTE: Each PV may not support all storage classes (any at all even),
-                    // we need to inspect the PV to determine this
-                    return { value: a, label: a };
-                  })}
-                  name="storageClasses"
-                  value={{
-                    label: row.original.storageClass,
-                    value: row.original.storageClass,
-                  }}
-                />
-              ),
+              Cell: row => {
+                const defaultStorageClass = storageClassOptions.find(sc => sc.default === true);
+                return (
+                  <Select
+                    onChange={(option: any) => handleTypeChange(row, option)}
+                    options={storageClassOptions.map(sc => {
+                      // NOTE: Each PV may not support all storage classes (any at all even),
+                      // we need to inspect the PV to determine this
+                      return { value: sc.name, label: sc.name + ':' + sc.provisioner };
+                    })}
+                    name="storageClasses"
+                    value={{
+                      label: defaultStorageClass.name + ':' + defaultStorageClass.provisioner,
+                      value: defaultStorageClass.name,
+                    }}
+                  />
+                );
+              },
             },
           ]}
           defaultPageSize={5}

@@ -123,6 +123,8 @@ const WizardComponent = props => {
           onWizardLoadingToggle={toggleLoading}
           isWizardLoading={isLoading}
           planList={planList}
+          isFetchingPVList={isFetchingPVList}
+          clusterList={clusterList}
         />
       ),
       enableNext: !isLoading,
