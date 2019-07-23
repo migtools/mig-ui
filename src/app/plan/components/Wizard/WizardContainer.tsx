@@ -23,7 +23,7 @@ const WizardContainer: any = withFormik({
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
     }
-    if (!values.selectedNamespaces) {
+    if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
       errors.selectedNamespaces = 'Required';
     }
     if (!values.targetCluster) {

@@ -48,6 +48,7 @@ const runStage = plan => {
         uuidv1(),
         plan.MigPlan.metadata.name,
         migMeta.namespace,
+        true,
         true
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -94,7 +95,7 @@ const runStage = plan => {
   };
 };
 
-const runMigration = plan => {
+const runMigration = (plan, disableQuiesce) => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
@@ -106,7 +107,8 @@ const runMigration = plan => {
         uuidv1(),
         plan.MigPlan.metadata.name,
         migMeta.namespace,
-        false
+        false,
+        disableQuiesce
       );
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
