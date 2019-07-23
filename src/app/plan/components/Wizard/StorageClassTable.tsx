@@ -10,7 +10,7 @@ import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 
 const StorageClassTable = (props): any => {
-  const { setFieldValue, planList, clusterList, values, isFetchingPVList } = props;
+  const { planList, clusterList, values, isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
 
@@ -43,20 +43,6 @@ const StorageClassTable = (props): any => {
     setStorageClassOptions(destCluster.MigCluster.spec.storageClasses);
 
     if (values.persistentVolumes.length) {
-      // let mappedPVs;
-      // mappedPVs = values.persistentVolumes.map(planVolume => {
-      //   let pvStorageClass = ''; // Default to empty
-
-      //   const rowVal = currentPlan.MigPlan.spec.persistentVolumes.find(
-      //     v => v.name === planVolume.name
-      //   );
-      //   pvStorageClass = rowVal.selection.storageClass;
-      //   return {
-      //     ...planVolume,
-      //     storageClass: pvStorageClass,
-      //   };
-      // });
-      // setFieldValue('persistentVolumes', mappedPVs);
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
     }
   }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
@@ -139,8 +125,6 @@ const StorageClassTable = (props): any => {
                   <Select
                     onChange={(option: any) => handleTypeChange(row, option)}
                     options={storageClassOptions.map(sc => {
-                      // NOTE: Each PV may not support all storage classes (any at all even),
-                      // we need to inspect the PV to determine this
                       return { value: sc.name, label: sc.name + ':' + sc.provisioner };
                     })}
                     name="storageClasses"
