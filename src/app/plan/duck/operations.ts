@@ -46,7 +46,7 @@ const namespaceFetchFailure = Creators.namespaceFetchFailure;
 const updatePlanResults = Creators.updatePlanResults;
 const updatePlan = Creators.updatePlan;
 
-const PlanMigrationPollingInterval = 1000;
+const PlanMigrationPollingInterval = 5000;
 
 const runStage = plan => {
   return async (dispatch, getState) => {

@@ -217,10 +217,10 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
     namespace: migPlan.metadata.namespace,
   };
 
-  if(updatedSpec.persistentVolumes) {
+  if (updatedSpec.persistentVolumes) {
     updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      v.action = userPv.type;
+      v.selection.action = userPv.type;
       return v;
     });
   }
