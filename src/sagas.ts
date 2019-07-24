@@ -10,6 +10,5 @@ export default function* rootSaga() {
     commonSagas.watchStoragePolling(),
     commonSagas.watchAlerts(),
     planSagas.watchPVPolling(),
-    planSagas.watchPVPolling(),
   ]);
 }
