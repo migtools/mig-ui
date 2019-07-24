@@ -1,115 +1,90 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import { useState } from 'react';
 import { withFormik } from 'formik';
-import { TextInput, Form, FormGroup } from '@patternfly/react-core';
+import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from './../../../common/components/FormErrorDiv';
-import { css } from '@emotion/core';
 import HideWrapper from './../../../common/components/HideWrapper';
-import CheckConnection from './../../../common/components/CheckConnection';
 import utils from '../../../common/duck/utils';
-class WrappedAddClusterForm extends React.Component<any, any> {
-  state = {
-    tokenHidden: true,
-  };
-  onHandleChange = e => {
-    this.props.handleChange(e);
-  };
 
-  handleKeyToggle = e => {
+const nameKey = 'name';
+const urlKey = 'url';
+const tokenKey = 'token';
+
+const InnerAddClusterForm = ({
+  values,
+  touched,
+  errors,
+  ...props
+}) => {
+  const [isTokenHidden, setIsTokenHidden ] = useState(true);
+  const toggleHideToken = e => {
     e.preventDefault();
     e.stopPropagation();
-
-    this.setState({
-      tokenHidden: !this.state.tokenHidden,
-    });
-  };
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.connectionState !== this.props.connectionState) {
-      this.props.setFieldValue('connectionStatus', this.props.connectionState);
-    }
+    setIsTokenHidden(!isTokenHidden);
   }
+  const formikHandleChange = (_val, e) => props.handleChange(e);
+  const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
 
-  render() {
-    const {
-      values,
-      touched,
-      errors,
-      handleBlur,
-      handleSubmit,
-      connectionState,
-      setFieldTouched,
-      setFieldValue,
-      checkConnection,
-      onHandleModalToggle,
-      mode
-    } = this.props;
-    return (
-      <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-        <FormGroup label="Cluster Name" isRequired fieldId="name">
-          <TextInput
-            onChange={(_val, e) => this.onHandleChange(e)}
-            onInput={() => setFieldTouched('name', true, true)}
-            onBlur={handleBlur}
-            value={values.name}
-            name="name"
-            type="text"
-            id="cluster-name-input"
-            isDisabled = { (mode === 'update') ? true : false }
-          />
-          {errors.name && touched.name && (
-            <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-          )}
-        </FormGroup>
-        <FormGroup label="Url" isRequired fieldId="url">
-          <TextInput
-            onChange={(_val, e) => this.onHandleChange(e)}
-            onInput={() => setFieldTouched('url', true, true)}
-            onBlur={handleBlur}
-            value={values.url}
-            name="url"
-            type="text"
-            id="url-input"
-          />
-          {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
-        </FormGroup>
-        <FormGroup label="Service account token" isRequired fieldId="url">
-          <HideWrapper onClick={this.handleKeyToggle}>
-            <KeyDisplayIcon id="accessKeyIcon" isHidden={this.state.tokenHidden} />
-          </HideWrapper>
-          <TextInput
-            value={values.token}
-            onChange={(_val, e) => this.onHandleChange(e)}
-            onInput={() => setFieldTouched('token', true, true)}
-            onBlur={handleBlur}
-            name="token"
-            id="token-input"
-            type={this.state.tokenHidden ? 'password' : 'text'}
-          />
-          {errors.token && touched.token && (
-            <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
-          )}
-        </FormGroup>
-        <CheckConnection
-          errors={errors}
-          touched={ (mode === 'update') ? true : touched }
-          connectionState={connectionState}
-          checkConnection={checkConnection}
-          onHandleModalToggle={onHandleModalToggle}
-          mode={mode}
+  return (
+    <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
+      <FormGroup label="Cluster Name" isRequired fieldId={nameKey}>
+        <TextInput
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(nameKey)}
+          onBlur={props.handleBlur}
+          value={values.name}
+          name={nameKey}
+          type="text"
+          id="cluster-name-input"
+        // isDisabled = { (mode === 'update') ? true : false }
         />
-      </Form>
-    );
-  }
+        {errors.name && touched.name && (
+          <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
+        )}
+      </FormGroup>
+      <FormGroup label="Url" isRequired fieldId={urlKey}>
+        <TextInput
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(urlKey)}
+          onBlur={props.handleBlur}
+          value={values.url}
+          name={urlKey}
+          type="text"
+          id="url-input"
+        />
+        {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
+      </FormGroup>
+      <FormGroup label="Service account token" isRequired fieldId={tokenKey}>
+        <HideWrapper onClick={toggleHideToken}>
+          <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
+        </HideWrapper>
+        <TextInput
+          value={values.token}
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(tokenKey)}
+          onBlur={props.handleBlur}
+          name={tokenKey}
+          id="token-input"
+          type={isTokenHidden ? 'password' : 'text'}
+        />
+        {errors.token && touched.token && (
+          <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
+        )}
+      </FormGroup>
+      <Button type="submit" >
+        Debug Submit
+      </Button>
+    </Form>
+  )
 }
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: ({name, url, token}) => ({
-    name: name || '',
-    url: url || '',
-    token: token || '',
-    connectionStatus: '',
+  mapPropsToValues: (_props) => ({
+      name: '',
+      url: '',
+      token: '',
   }),
 
   validate: (values: any) => {
@@ -135,12 +110,13 @@ const AddClusterForm: any = withFormik({
   },
 
   handleSubmit: (values, formikBag: any) => {
+    console.log('handleSubmit in formik');
+    console.log('values', values);
+    console.log('formikBag', formikBag);
+    // Formik will set isSubmitting to true, so we need to flip this back off
     formikBag.setSubmitting(false);
-    formikBag.props.onHandleModalToggle();
-    formikBag.props.onItemSubmit(values);
+    // TODO: Trigger parent submit
   },
-
-  displayName: 'Cluster Form',
-})(WrappedAddClusterForm);
+})(InnerAddClusterForm);
 
 export default AddClusterForm;

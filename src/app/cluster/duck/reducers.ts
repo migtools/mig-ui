@@ -1,13 +1,11 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
   clusterList: [],
   searchTerm: '',
-  connectionState: ConnectionState.Pending,
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
@@ -18,27 +16,29 @@ export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
   });
   return { ...state, clusterList, isFetching: false };
 };
+
 export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
 };
+
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
-};
+
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [...state.clusterList, action.newCluster],
   };
 };
+
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: state.clusterList.filter(item => item.MigCluster.metadata.name !== action.name),
   };
 };
+
 export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -66,7 +66,6 @@ export const HANDLERS = {
   [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);
