@@ -64,10 +64,10 @@ export class ClusterClient {
     this.checkExpiry();
     return this.requester.get(resource.namedPath(name));
   }
-  public put = (resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> => {
+  public put(resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> {
     this.checkExpiry();
     return this.requester.put(resource.namedPath(name), updatedObject);
-  };
+  }
   public patch(resource: KubeResource, name: string, patch: object): AxiosPromise<any> {
     this.checkExpiry();
     return this.patchRequester.patch(resource.namedPath(name), patch);
@@ -81,18 +81,18 @@ export class ClusterClient {
     return this.requester.delete(resource.namedPath(name));
   }
 
-  private checkExpiry = () => {
-    if (this.isTokenExpired() && this.tokenExpiryHandler) {
+  private checkExpiry() {
+    if(this.isTokenExpired() && this.tokenExpiryHandler) {
       this.tokenExpiryHandler(this.oldToken());
     }
-  };
+  }
 
   private isTokenExpired() {
     const currentUnixTime = moment().unix();
     const expiredTime = this.tokenExpiryTime;
     const isExpired = currentUnixTime > expiredTime;
 
-    if (isExpired) {
+    if(isExpired) {
       console.warn('Client token appears to be expired:');
       console.warn(`Current time: ${currentUnixTime}`);
       console.warn(`Token expiry time: ${expiredTime}`);

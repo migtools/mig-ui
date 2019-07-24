@@ -78,7 +78,7 @@ function* putPlanSaga(getPlanRes, planValues) {
 function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
-    const getPlanResponse = yield retry(3, 10 * SECOND, getPlanSaga, action.planValues);
+    const getPlanResponse = yield call(getPlanSaga, action.planValues);
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put({ type: 'REQUEST_FAIL', payload: { error } });
