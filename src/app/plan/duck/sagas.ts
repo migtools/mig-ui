@@ -45,34 +45,44 @@ function* checkPVs(action) {
   }
 }
 
-function* planUpdateGenerator(planValues) {
+function* getPlanSaga(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    const latestPlanRes = yield client.get(
+    return yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       planValues.planName
     );
+  } catch (err) {
+    throw err;
 
-    const latestPlan = latestPlanRes.data;
-    const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
-    return yield client.put(
+    // return { err };
+  }
+}
+function* putPlanSaga(getPlanRes, planValues) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  try {
+    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const putPlanResponse = yield client.put(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      latestPlan.metadata.name,
+      getPlanRes.data.metadata.name,
       updatedMigPlan
     );
+    yield put({ type: 'UPDATE_PLAN', updatedPlan: putPlanResponse.data });
   } catch (err) {
-    return { err };
+    throw err;
+    // return { throw err };
   }
 }
 
 function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
-    const response = yield retry(3, 10 * SECOND, planUpdateGenerator, action.planValues);
-
-    yield put({ type: 'UPDATE_PLAN', updatedPlan: response.data });
+    const getPlanResponse = yield retry(3, 10 * SECOND, getPlanSaga, action.planValues);
+    yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put({ type: 'REQUEST_FAIL', payload: { error } });
   }
