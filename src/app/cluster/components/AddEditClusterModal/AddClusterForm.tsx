@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { withFormik } from 'formik';
 import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
-import FormErrorDiv from './../../../common/components/FormErrorDiv';
-import HideWrapper from './../../../common/components/HideWrapper';
+import FormErrorDiv from '../../../common/components/FormErrorDiv';
+import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
 
 const nameKey = 'name';

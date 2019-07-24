@@ -13,7 +13,7 @@ import {
 } from '@patternfly/react-core';
 import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import AddClusterModal from '../../../../cluster/components/AddClusterModal';
+import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ClusterContent from './ClusterContent';
 
 const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, removeCluster, ...props }) => {
@@ -39,7 +39,7 @@ const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, re
             <Button aria-label="add-cluster-btn" id="add-cluster-btn" onClick={toggleOpen} variant="link">
               <PlusCircleIcon /> Add cluster
             </Button>
-            <AddClusterModal isOpen={isOpen} onHandleClose={toggleOpen} mode={'add'} />
+            <AddEditClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />
           </DataListAction>
         </DataListItemRow>
         <ClusterContent
