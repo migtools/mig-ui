@@ -5,7 +5,7 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 
 import { Creators } from './actions';
-import { alertError } from '../../common/duck/actions';
+import { alertErrorTimeout } from '../../common/duck/actions';
 
 const TicksUntilTimeout = 20;
 
@@ -37,7 +37,7 @@ function* checkPVs(action) {
       // PV discovery timed out, alert and stop polling
       pvsFound = true; // No PVs timed out
       Creators.stopPVPolling();
-      yield put(alertError('Timed out during PV discovery'));
+      yield put(alertErrorTimeout('Timed out during PV discovery'));
       yield put(Creators.pvFetchSuccess());
       yield put({ type: 'STOP_PV_POLLING' });
       break;
@@ -82,7 +82,7 @@ function* planUpdateRetry(action) {
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put({ type: 'REQUEST_FAIL', payload: { error } });
-    yield put({ type: 'ALERT_ERROR', text: 'Failed to update plan' });
+    yield put(alertErrorTimeout('Failed to update plan'));
   }
 }
 
@@ -93,7 +93,7 @@ function* watchPVPolling() {
   }
 }
 function* watchPlanUpdate() {
-  yield takeEvery('PLAN_UPDATE_REQUEST', planUpdateRetry);
+  yield takeEvery(Creators.planUpdateRequest, planUpdateRetry);
 }
 
 export default {
