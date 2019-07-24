@@ -22,12 +22,12 @@ function* checkPVs(action) {
       switch (pollingStatus) {
         case 'SUCCESS':
           pvsFound = true;
-          yield put({ type: 'STOP_PV_POLING' });
+          yield put({ type: Creators.stopPVPolling().type });
           break;
         case 'FAILURE':
           pvsFound = true;
           Creators.stopPVPolling();
-          yield put({ type: 'STOP_PV_POLLING' });
+          yield put({ type: Creators.stopPVPolling().type });
           break;
         default:
           break;
@@ -39,7 +39,7 @@ function* checkPVs(action) {
       Creators.stopPVPolling();
       yield put(alertErrorTimeout('Timed out during PV discovery'));
       yield put(Creators.pvFetchSuccess());
-      yield put({ type: 'STOP_PV_POLLING' });
+      yield put({ type: Creators.stopPVPolling().type });
       break;
     }
   }
@@ -69,7 +69,7 @@ function* putPlanSaga(getPlanRes, planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
-    yield put({ type: 'UPDATE_PLAN', updatedPlan: putPlanResponse.data });
+    yield put({ type: Creators.updatePlan().type, updatedPlan: putPlanResponse.data });
   } catch (err) {
     throw err;
   }
@@ -81,7 +81,6 @@ function* planUpdateRetry(action) {
     const getPlanResponse = yield call(getPlanSaga, action.planValues);
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
-    yield put({ type: 'REQUEST_FAIL', payload: { error } });
     yield put(alertErrorTimeout('Failed to update plan'));
   }
 }
@@ -89,11 +88,11 @@ function* planUpdateRetry(action) {
 function* watchPVPolling() {
   while (true) {
     const data = yield take(Creators.startPVPolling().type);
-    yield race([call(checkPVs, data), take('STOP_PV_POLLING')]);
+    yield race([call(checkPVs, data), take(Creators.stopPVPolling().type)]);
   }
 }
 function* watchPlanUpdate() {
-  yield takeEvery(Creators.planUpdateRequest, planUpdateRetry);
+  yield takeEvery(Creators.planUpdateRequest().type, planUpdateRetry);
 }
 
 export default {
