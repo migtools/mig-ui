@@ -56,8 +56,6 @@ function* getPlanSaga(planValues) {
     );
   } catch (err) {
     throw err;
-
-    // return { err };
   }
 }
 function* putPlanSaga(getPlanRes, planValues) {
@@ -74,7 +72,6 @@ function* putPlanSaga(getPlanRes, planValues) {
     yield put({ type: 'UPDATE_PLAN', updatedPlan: putPlanResponse.data });
   } catch (err) {
     throw err;
-    // return { throw err };
   }
 }
 
@@ -85,6 +82,7 @@ function* planUpdateRetry(action) {
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put({ type: 'REQUEST_FAIL', payload: { error } });
+    yield put({ type: 'ALERT_ERROR', text: 'Failed to update plan' });
   }
 }
 
