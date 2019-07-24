@@ -247,25 +247,14 @@ const putPlan = planValues => {
       dispatch(Creators.updatePlan(latestPlan));
       const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
 
-      const fetchRetry: any = async totalTries => {
-        for (let currentTries = 0; currentTries < totalTries; currentTries++) {
-          try {
-            return await client.put(
-              new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-              latestPlan.metadata.name,
-              updatedMigPlan
-            );
-          } catch (err) {
-            dispatch(commonOperations.alertErrorTimeout('Failed to update plan. Retrying...'));
-            const isLastAttempt = currentTries + 1 === totalTries;
-            if (isLastAttempt) {
-              dispatch(commonOperations.alertErrorTimeout('Failed to update plan'));
-            }
-          }
-        }
-      };
-      const res = await fetchRetry(3);
-      dispatch(updatePlan(res.data));
+      const putRes = await client.put(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        latestPlan.metadata.name,
+        updatedMigPlan
+      );
+      // TODO: Need some kind of retry logic here in case the resourceVersion
+      // gets ticked up in between us getting and putting the mutated object back
+      dispatch(Creators.updatePlan(putRes.data));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
     }

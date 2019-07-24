@@ -193,7 +193,7 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    putPlan: planValues => dispatch(planOperations.putPlan(planValues)),
+    putPlan: planValues => dispatch(PlanCreators.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
