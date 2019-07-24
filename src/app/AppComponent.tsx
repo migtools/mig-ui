@@ -7,7 +7,9 @@ import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
-import { commonOperations } from './common/duck';
+import {
+  alertClear,
+} from './common/duck/actions';
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
@@ -39,48 +41,48 @@ const AppComponent: React.SFC<IProps> = ({
   isLoggedIn,
   clearAlerts,
 }) => (
-  <Flex flexDirection="column" width="100%">
-    {progressMessage && (
-      <NotificationContainer>
-        <Alert
-          variant="info"
-          title={progressMessage}
-          action={<AlertActionCloseButton onClose={clearAlerts} />}
-        />
-      </NotificationContainer>
-    )}
-    {errorMessage && (
-      <NotificationContainer>
-        <Alert
-          variant="danger"
-          title={errorMessage}
-          action={<AlertActionCloseButton onClose={clearAlerts} />}
-        />
-      </NotificationContainer>
-    )}
-    {successMessage && (
-      <NotificationContainer>
-        <Alert
-          variant="success"
-          title={successMessage}
-          action={<AlertActionCloseButton onClose={clearAlerts} />}
-        />
-      </NotificationContainer>
-    )}
+    <Flex flexDirection="column" width="100%">
+      {progressMessage && (
+        <NotificationContainer>
+          <Alert
+            variant="info"
+            title={progressMessage}
+            action={<AlertActionCloseButton onClose={clearAlerts} />}
+          />
+        </NotificationContainer>
+      )}
+      {errorMessage && (
+        <NotificationContainer>
+          <Alert
+            variant="danger"
+            title={errorMessage}
+            action={<AlertActionCloseButton onClose={clearAlerts} />}
+          />
+        </NotificationContainer>
+      )}
+      {successMessage && (
+        <NotificationContainer>
+          <Alert
+            variant="success"
+            title={successMessage}
+            action={<AlertActionCloseButton onClose={clearAlerts} />}
+          />
+        </NotificationContainer>
+      )}
 
-    <Box>
-      <ThemeProvider theme={theme}>
-        <ConnectedRouter history={history}>
-          <Switch>
-            <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-            <Route path="/login" component={LoginComponent} />
-            <Route path="/cert-error" component={CertErrorComponent} />
-          </Switch>
-        </ConnectedRouter>
-      </ThemeProvider>
-    </Box>
-    <Global
-      styles={css`
+      <Box>
+        <ThemeProvider theme={theme}>
+          <ConnectedRouter history={history}>
+            <Switch>
+              <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+              <Route path="/login" component={LoginComponent} />
+              <Route path="/cert-error" component={CertErrorComponent} />
+            </Switch>
+          </ConnectedRouter>
+        </ThemeProvider>
+      </Box>
+      <Global
+        styles={css`
         body html,
         body,
         #root,
@@ -92,18 +94,18 @@ const AppComponent: React.SFC<IProps> = ({
           background-color: #ededed;
         }
       `}
-    />
-    <Global
-      styles={{
-        'body.noScroll': {
-          // Prevent scrolling; conditionally activate this
-          // in subcomponents when necessary ...
-          overflow: 'hidden',
-        },
-      }}
-    />
-  </Flex>
-);
+      />
+      <Global
+        styles={{
+          'body.noScroll': {
+            // Prevent scrolling; conditionally activate this
+            // in subcomponents when necessary ...
+            overflow: 'hidden',
+          },
+        }}
+      />
+    </Flex>
+  );
 
 export default connect(
   state => ({
@@ -113,6 +115,6 @@ export default connect(
     progressMessage: state.common.progressText,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(commonOperations.alertClear()),
+    clearAlerts: () => dispatch(alertClear()),
   })
 )(AppComponent);

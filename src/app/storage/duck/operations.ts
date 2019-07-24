@@ -14,7 +14,11 @@ import {
   updateMigStorage,
   updateStorageSecret,
 } from '../../../client/resources/conversions';
-import { commonOperations } from '../../common/duck';
+import {
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+} from '../../common/duck/actions';
 
 const migStorageFetchRequest = Creators.migStorageFetchRequest;
 const migStorageFetchSuccess = Creators.migStorageFetchSuccess;
@@ -64,11 +68,9 @@ const addStorage = storageValues => {
       }, {});
       storage.status = storageValues.connectionStatus;
       dispatch(addStorageSuccess(storage));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully added a repository!'));
+      dispatch(alertSuccessTimeout('Successfully added a repository!'));
     } catch (err) {
-      dispatch(
-        commonOperations.alertErrorTimeout(err.response.data.message || 'Failed to fetch storage')
-      );
+      dispatch(alertErrorTimeout(err.response.data.message || 'Failed to fetch storage'));
     }
   };
 };
@@ -102,13 +104,9 @@ const updateStorage = storageValues => {
       storage.status = storageValues.connectionStatus;
 
       dispatch(updateStorageSuccess(storage));
-      dispatch(
-        commonOperations.alertSuccessTimeout(
-          `Successfully updated repository "${storageValues.name}"!`
-        )
-      );
+      dispatch(alertSuccessTimeout(`Successfully updated repository "${storageValues.name}"!`));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -141,9 +139,9 @@ const removeStorage = name => {
       ]);
 
       dispatch(removeStorageSuccess(name));
-      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed repository "${name}"!`));
+      dispatch(alertSuccessTimeout(`Successfully removed repository "${name}"!`));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -164,13 +162,11 @@ const fetchStorage = () => {
       dispatch(migStorageFetchSuccess(groupedStorages));
     } catch (err) {
       if (err.response) {
-        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+        dispatch(alertErrorTimeout(err.response.data.message));
       } else if (err.message) {
-        dispatch(commonOperations.alertErrorTimeout(err.message));
+        dispatch(alertErrorTimeout(err.message));
       } else {
-        dispatch(
-          commonOperations.alertErrorTimeout('Failed to fetch storage: An unknown error occurred')
-        );
+        dispatch(alertErrorTimeout('Failed to fetch storage: An unknown error occurred'));
       }
       dispatch(migStorageFetchFailure());
     }

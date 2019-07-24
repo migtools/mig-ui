@@ -9,7 +9,11 @@ import {
   createMigPlanNoStorage,
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
-import { commonOperations } from '../../common/duck';
+import {
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+} from '../../common/duck/actions';
 import utils from '../../common/duck/utils';
 import planUtils from './utils';
 import { select } from 'redux-saga/effects';
@@ -41,7 +45,7 @@ const runStage = plan => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initStage(plan.MigPlan.metadata.name));
-      dispatch(commonOperations.alertProgressTimeout('Staging Started'));
+      dispatch(alertProgressTimeout('Staging Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
       const migMigrationObj = createMigMigration(
@@ -68,11 +72,11 @@ const runStage = plan => {
           : null;
         if (migStatus.success) {
           dispatch(stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
-          dispatch(commonOperations.alertSuccessTimeout('Staging Successful'));
+          dispatch(alertSuccessTimeout('Staging Successful'));
           return 'SUCCESS';
         } else if (migStatus.error) {
           dispatch(stagingFailure());
-          dispatch(commonOperations.alertErrorTimeout('Staging Failed'));
+          dispatch(alertErrorTimeout('Staging Failed'));
           return 'FAILURE';
         }
       };
@@ -89,7 +93,7 @@ const runStage = plan => {
       dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
       dispatch(stagingFailure(err));
     }
   };
@@ -99,7 +103,7 @@ const runMigration = (plan, disableQuiesce) => {
   return async (dispatch, getState) => {
     try {
       dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
-      dispatch(commonOperations.alertProgressTimeout('Migration Started'));
+      dispatch(alertProgressTimeout('Migration Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
@@ -127,11 +131,11 @@ const runMigration = (plan, disableQuiesce) => {
           : null;
         if (migStatus.success) {
           dispatch(migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-          dispatch(commonOperations.alertSuccessTimeout('Migration Successful'));
+          dispatch(alertSuccessTimeout('Migration Successful'));
           return 'SUCCESS';
         } else if (migStatus.error) {
           dispatch(migrationFailure());
-          dispatch(commonOperations.alertErrorTimeout('Migration Failed'));
+          dispatch(alertErrorTimeout('Migration Failed'));
           return 'FAILURE';
         }
       };
@@ -148,7 +152,7 @@ const runMigration = (plan, disableQuiesce) => {
       dispatch(startStatusPolling(params));
       dispatch(Creators.updatePlanMigrations(groupedPlan));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
       dispatch(migrationFailure(err));
     }
   };
@@ -221,7 +225,7 @@ const addPlan = migPlan => {
     } catch (err) {
       console.error(err);
       dispatch(addPlanFailure());
-      dispatch(commonOperations.alertErrorTimeout('Failed to add plan'));
+      dispatch(alertErrorTimeout('Failed to add plan'));
     }
   };
 };
@@ -252,7 +256,7 @@ const putPlan = planValues => {
       // gets ticked up in between us getting and putting the mutated object back
       dispatch(Creators.updatePlan(putRes.data));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -276,13 +280,11 @@ const fetchPlans = () => {
       dispatch(migPlanFetchSuccess(groupedPlans));
     } catch (err) {
       if (err.response) {
-        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+        dispatch(alertErrorTimeout(err.response.data.message));
       } else if (err.message) {
-        dispatch(commonOperations.alertErrorTimeout(err.message));
+        dispatch(alertErrorTimeout(err.message));
       } else {
-        dispatch(
-          commonOperations.alertErrorTimeout('Failed to fetch plans: An unknown error occurred')
-        );
+        dispatch(alertErrorTimeout('Failed to fetch plans: An unknown error occurred'));
       }
       dispatch(migPlanFetchFailure());
     }
@@ -312,7 +314,7 @@ const fetchNamespacesForCluster = clusterName => {
         utils.handleSelfSignedCertError(failedUrl, dispatch);
         return;
       }
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };

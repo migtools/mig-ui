@@ -17,7 +17,11 @@ import {
   updateTokenSecret,
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import { commonOperations } from '../../common/duck';
+import {
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+} from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
 
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
@@ -74,9 +78,9 @@ const addCluster = clusterValues => {
       }, {});
       cluster.status = clusterValues.connectionStatus;
       dispatch(addClusterSuccess(cluster));
-      dispatch(commonOperations.alertSuccessTimeout('Successfully added cluster'));
+      dispatch(alertSuccessTimeout('Successfully added cluster'));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -113,13 +117,9 @@ const updateCluster = clusterValues => {
       cluster.status = clusterValues.connectionStatus;
 
       dispatch(updateClusterSuccess(cluster));
-      dispatch(
-        commonOperations.alertSuccessTimeout(
-          `Successfully updated cluster "${clusterValues.name}"!`
-        )
-      );
+      dispatch(alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -148,9 +148,9 @@ const removeCluster = name => {
       ]);
 
       dispatch(removeClusterSuccess(name));
-      dispatch(commonOperations.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+      dispatch(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
       dispatch(removeClusterFailure(err));
     }
   };
@@ -173,13 +173,11 @@ const fetchClusters = () => {
       dispatch(clusterFetchSuccess(groupedClusters));
     } catch (err) {
       if (err.response) {
-        dispatch(commonOperations.alertErrorTimeout(err.response.data.message));
+        dispatch(alertErrorTimeout(err.response.data.message));
       } else if (err.message) {
-        dispatch(commonOperations.alertErrorTimeout(err.message));
+        dispatch(alertErrorTimeout(err.message));
       } else {
-        dispatch(
-          commonOperations.alertErrorTimeout('Failed to fetch clusters: An unknown error occurred')
-        );
+        dispatch(alertErrorTimeout('Failed to fetch clusters: An unknown error occurred'));
       }
       dispatch(clusterFetchFailure());
     }
