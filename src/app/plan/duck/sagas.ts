@@ -1,6 +1,6 @@
 import { takeEvery, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
-import { IClusterClient, ClusterClient } from '../../../client/client';
+import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 

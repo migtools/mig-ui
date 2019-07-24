@@ -230,6 +230,7 @@ const addPlan = migPlan => {
   };
 };
 
+<<<<<<< HEAD
 const putPlan = planValues => {
   return async (dispatch, getState) => {
     try {
@@ -261,6 +262,8 @@ const putPlan = planValues => {
   };
 };
 
+=======
+>>>>>>> putPlan cleanup
 const removePlan = id => {
   throw new Error('NOT IMPLEMENTED');
 };
@@ -352,7 +355,6 @@ export default {
   pvFetchRequest,
   fetchPlans,
   addPlan,
-  putPlan,
   removePlan,
   fetchNamespacesForCluster,
   runStage,
