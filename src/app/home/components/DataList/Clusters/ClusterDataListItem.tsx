@@ -1,12 +1,9 @@
 import React from 'react';
-import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
-  DataList,
   DataListItem,
   DataListCell,
   DataListToggle,
-  DataListContent,
   DataListItemRow,
   DataListItemCells,
   DataListAction,
