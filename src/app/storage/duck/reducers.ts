@@ -1,6 +1,6 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import ConnectionState from '../../common/connection_state';
+import { defaultAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -8,7 +8,7 @@ export const INITIAL_STATE = {
   isError: false,
   migStorageList: [],
   searchTerm: '',
-  connectionState: ConnectionState.Pending,
+  addEditStatus: defaultAddEditStatus(),
 };
 
 export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
@@ -27,10 +27,6 @@ export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
     isError: true,
     isFetching: false,
   };
-};
-
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
 };
 
 export const setIsPollingStorage = (state = INITIAL_STATE, action) => {
@@ -74,6 +70,13 @@ export const updateStorages = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
+  return{
+    ...state,
+    addEditStatus: action.status,
+  }
+}
+
 export const HANDLERS = {
   [Types.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
   [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
@@ -83,7 +86,7 @@ export const HANDLERS = {
   [Types.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
+  [Types.SET_STORAGE_ADD_EDIT_STATUS]: setStorageAddEditStatus,
   [Types.SET_IS_POLLING_STORAGE]: setIsPollingStorage,
 };
 

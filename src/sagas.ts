@@ -1,6 +1,8 @@
 import { all } from 'redux-saga/effects';
 import commonSagas from './app/common/duck/sagas';
 import planSagas from './app/plan/duck/sagas';
+import clusterSagas from './app/cluster/duck/sagas';
+import storageSagas from './app/storage/duck/sagas';
 
 export default function* rootSaga() {
   yield all([
@@ -12,5 +14,11 @@ export default function* rootSaga() {
     planSagas.watchPVPolling(),
     planSagas.watchPlanUpdate(),
     planSagas.watchPlanDelete(),
+    clusterSagas.watchAddClusterRequest(),
+    clusterSagas.watchUpdateClusterRequest(),
+    clusterSagas.watchClusterAddEditStatus(),
+    storageSagas.watchAddStorageRequest(),
+    storageSagas.watchStorageAddEditStatus(),
+    storageSagas.watchUpdateStorageRequest(),
   ]);
 }

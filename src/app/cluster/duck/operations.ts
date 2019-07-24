@@ -10,15 +10,11 @@ import {
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
 import {
-  createClusterRegistryObj,
-  createTokenSecret,
-  createMigCluster,
   updateClusterRegistryObj,
   updateTokenSecret,
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import {
-  alertProgressTimeout,
   alertSuccessTimeout,
   alertErrorTimeout,
 } from '../../common/duck/actions';
@@ -27,63 +23,10 @@ import { select } from 'redux-saga/effects';
 const clusterFetchSuccess = Creators.clusterFetchSuccess;
 const clusterFetchRequest = Creators.clusterFetchRequest;
 const clusterFetchFailure = Creators.clusterFetchFailure;
-const addClusterSuccess = Creators.addClusterSuccess;
 const updateClusterSuccess = Creators.updateClusterSuccess;
 const removeClusterSuccess = Creators.removeClusterSuccess;
 const removeClusterFailure = Creators.removeClusterFailure;
 const updateSearchTerm = Creators.updateSearchTerm;
-
-const addCluster = clusterValues => {
-  return async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const { migMeta } = state;
-      const client: IClusterClient = ClientFactory.hostCluster(state);
-
-      const clusterReg = createClusterRegistryObj(
-        clusterValues.name,
-        migMeta.namespace,
-        clusterValues.url
-      );
-      const tokenSecret = createTokenSecret(
-        clusterValues.name,
-        migMeta.configNamespace,
-        clusterValues.token
-      );
-      const migCluster = createMigCluster(
-        clusterValues.name,
-        migMeta.namespace,
-        clusterReg,
-        tokenSecret
-      );
-
-      const clusterRegResource = new ClusterRegistryResource(
-        ClusterRegistryResourceKind.Cluster,
-        migMeta.namespace
-      );
-      const secretResource = new CoreNamespacedResource(
-        CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace
-      );
-      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
-
-      const arr = await Promise.all([
-        client.create(clusterRegResource, clusterReg),
-        client.create(secretResource, tokenSecret),
-        client.create(migClusterResource, migCluster),
-      ]);
-      const cluster = arr.reduce((accum, res) => {
-        accum[res.data.kind] = res.data;
-        return accum;
-      }, {});
-      cluster.status = clusterValues.connectionStatus;
-      dispatch(addClusterSuccess(cluster));
-      dispatch(alertSuccessTimeout('Successfully added cluster'));
-    } catch (err) {
-      dispatch(alertErrorTimeout(err));
-    }
-  };
-};
 
 const updateCluster = clusterValues => {
   return async (dispatch, getState) => {
@@ -223,7 +166,6 @@ function* fetchClustersGenerator() {
 
 export default {
   fetchClustersGenerator,
-  addCluster,
   removeCluster,
   updateCluster,
   updateSearchTerm,

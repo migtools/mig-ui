@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
@@ -10,8 +10,9 @@ import {
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
-import AddClusterModal from '../../../../cluster/components/AddClusterModal';
+import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
+import { ClusterContext } from '../../../duck/context';
 
 const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
@@ -31,7 +32,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
-  const [isOpen, toggleOpen] = useOpenModal(false);
+  const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
@@ -46,6 +47,13 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
       toggleConfirmOpen();
     }
   };
+
+  const clusterContext = useContext(ClusterContext);
+
+  const editCluster = () => {
+    clusterContext.watchClusterAddEditStatus(clusterName);
+    toggleIsAddEditOpen();
+  }
 
   return (
     <DataListItem key={clusterIndex} aria-labelledby="cluster-item">
@@ -67,26 +75,23 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
             <DataListCell key="actions" width={2}>
               <Flex justifyContent="flex-end">
                 <Box mx={1}>
-                  <Button 
-                    onClick={toggleOpen} 
+                  <Button
+                    onClick={editCluster}
                     variant="secondary"
                     isDisabled={isHostCluster}
                   >
                     Edit
                   </Button>
-                  <AddClusterModal
-                    isOpen={isOpen}
-                    onHandleClose={toggleOpen}
-                    name={clusterName}
-                    url={clusterUrl}
-                    token={clusterSvcToken}
-                    mode="update"
+                  <AddEditClusterModal
+                    isOpen={isAddEditOpen}
+                    onHandleClose={toggleIsAddEditOpen}
+                    initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
                   />
                 </Box>
                 <Box mx={1}>
-                  <Button 
-                    onClick={toggleConfirmOpen} 
-                    variant="danger" 
+                  <Button
+                    onClick={toggleConfirmOpen}
+                    variant="danger"
                     isDisabled={isHostCluster}
                     key="remove-action"
                   >
