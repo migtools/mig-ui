@@ -1,13 +1,16 @@
 import axios from 'axios';
 import { Creators } from './actions';
+import {
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+} from '../../common/duck/actions';
+
 import { push } from 'connected-react-router';
-import commonOperations from '../../common/duck/operations';
+import commonSagas from '../../common/duck/sagas';
 import moment from 'moment';
 
-import {
-  isSelfSignedCertError,
-  handleSelfSignedCertError,
-} from '../../common/duck/utils';
+import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 const loginSuccess = Creators.loginSuccess;
 const loginFailure = Creators.loginFailure;
 const setOauthMeta = Creators.setOauthMeta;
@@ -22,12 +25,12 @@ const fetchOauthMeta = clusterApi => {
       const res = await axios.get(oauthMetaUrl);
       dispatch(setOauthMeta(res.data));
     } catch (err) {
-      if(isSelfSignedCertError(err)) {
+      if (isSelfSignedCertError(err)) {
         handleSelfSignedCertError(oauthMetaUrl, dispatch);
         return;
       }
       dispatch(loginFailure());
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };
@@ -46,7 +49,7 @@ const fetchToken = (oauthClient, codeRedirect) => {
       dispatch(push('/'));
     } catch (err) {
       dispatch(loginFailure());
-      dispatch(commonOperations.alertErrorTimeout(err));
+      dispatch(alertErrorTimeout(err));
     }
   };
 };

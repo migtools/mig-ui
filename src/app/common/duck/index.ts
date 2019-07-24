@@ -1,3 +1,3 @@
 import commonReducer from './reducers';
-export { default as commonOperations } from './operations';
+export { default as commonSagas } from './sagas';
 export default commonReducer;

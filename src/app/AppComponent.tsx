@@ -7,7 +7,12 @@ import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
-import { commonOperations } from './common/duck';
+import {
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+  alertClear,
+} from './common/duck/actions';
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
@@ -113,6 +118,6 @@ export default connect(
     progressMessage: state.common.progressText,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(commonOperations.alertClear()),
+    clearAlerts: () => dispatch(alertClear()),
   })
 )(AppComponent);

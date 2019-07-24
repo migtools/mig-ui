@@ -51,3 +51,18 @@ export const startStatusPolling = (params?: any) => ({
 export const stopStatusPolling = () => ({
   type: 'STATUS_POLL_STOP',
 });
+
+export const alertProgressTimeout = (params?: any) => ({
+  type: 'ALERT_PROGRESS_TIMEOUT',
+  params,
+});
+
+export const alertErrorTimeout = (params?: any) => ({
+  type: 'ALERT_ERROR_TIMEOUT',
+  params,
+});
+
+export const alertSuccessTimeout = (params?: any) => ({
+  type: 'ALERT_SUCCESS_TIMEOUT',
+  params,
+});

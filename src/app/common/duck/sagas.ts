@@ -1,4 +1,4 @@
-import { race, call, delay, take, put } from 'redux-saga/effects';
+import { takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 
 import {
   startDataListPolling,
@@ -9,6 +9,13 @@ import {
   stopClusterPolling,
   startStoragePolling,
   stopStoragePolling,
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+  alertProgress,
+  alertError,
+  alertSuccess,
+  alertClear,
 } from './actions';
 
 export const StatusPollingInterval = 4000;
@@ -78,9 +85,45 @@ function* watchStatusPolling() {
   }
 }
 
+export function* progressTimeoutSaga(action) {
+  try {
+    yield put(alertProgress(action.params));
+    yield delay(5000);
+    yield put(alertClear());
+  } catch (error) {
+    put(alertClear());
+  }
+}
+
+export function* errorTimeoutSaga(action) {
+  try {
+    yield put(alertError(action.params));
+    yield delay(5000);
+    yield put(alertClear());
+  } catch (error) {
+    put(alertClear());
+  }
+}
+
+export function* successTimeoutSaga(action) {
+  try {
+    yield put(alertSuccess(action.params));
+    yield delay(5000);
+    yield put(alertClear());
+  } catch (error) {
+    yield put(alertClear());
+  }
+}
+
+function* watchAlerts() {
+  yield takeLatest(alertProgressTimeout().type, progressTimeoutSaga);
+  yield takeLatest(alertErrorTimeout().type, errorTimeoutSaga);
+  yield takeLatest(alertSuccessTimeout().type, successTimeoutSaga);
+}
 export default {
   watchStoragePolling,
   watchClustersPolling,
   watchDataListPolling,
   watchStatusPolling,
+  watchAlerts,
 };

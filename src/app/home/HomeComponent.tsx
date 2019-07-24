@@ -29,7 +29,6 @@ import { BellIcon, CogIcon } from '@patternfly/react-icons';
 import { Creators as ClusterCreators } from '../cluster/duck/actions';
 import { Creators as StorageCreators } from '../storage/duck/actions';
 
-import { commonOperations } from '../common/duck';
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import { planOperations } from '../plan/duck';
