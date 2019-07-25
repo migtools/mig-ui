@@ -9,9 +9,10 @@ import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
-import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
+import { TextContent, TextList, TextListItem, Popover, PopoverPosition, Button } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
+import ReactJson from 'react-json-view';
 
 const VolumesTable = (props): any => {
   const { setFieldValue, currentPlan, values, isPVError, isFetchingPVList } = props;
@@ -229,7 +230,6 @@ const VolumesTable = (props): any => {
                 />
               ),
             },
-
             {
               Header: () => (
                 <div
@@ -243,11 +243,21 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'details',
               width: 50,
+              resizable: false,
               textAlign: 'left',
               Cell: row => (
-                <a href="https://google.com" target="_blank">
-                  view
-                </a>
+                <Popover
+                  position={PopoverPosition.right}
+                  bodyContent={
+                    <ReactJson src={row.original} />
+
+                  }
+                  aria-label="pv-details"
+                  closeBtnAriaLabel="close-pv-details"
+                  footerContent="PV Details"
+                >
+                  <a>View</a>
+                </Popover>
               ),
             },
           ]}
