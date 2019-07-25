@@ -1,4 +1,5 @@
 import { createActions } from 'reduxsauce';
+import { AddEditStatus } from '../../common/add_edit_state';
 
 const { Creators, Types } = createActions({
   clusterFetchSuccess: ['clusterList'],
@@ -10,6 +11,17 @@ const { Creators, Types } = createActions({
   addClusterFailure: ['error'],
   removeClusterSuccess: ['name'],
   updateClusterSuccess: ['updatedCluster'],
+  watchClusterAddEditStatus: ['clusterName'],
+  cancelWatchClusterAddEditStatus: [],
 });
+
+
+Types.SET_CLUSTER_ADD_EDIT_STATUS = 'SET_CLUSTER_ADD_EDIT_STATUS';
+Creators.setClusterAddEditStatus = (status: AddEditStatus) => {
+  return {
+    type: Types.SET_CLUSTER_ADD_EDIT_STATUS,
+    status,
+  }
+}
 
 export { Creators, Types };
