@@ -17,31 +17,6 @@ import {
 import { Creators } from './actions';
 import { alertSuccessTimeout, alertErrorTimeout } from '../../common/duck/actions';
 
-
-// function* getPlanSaga(planValues) {
-//   const state = yield select();
-//   const migMeta = state.migMeta;
-//   const client: IClusterClient = ClientFactory.hostCluster(state);
-//   try {
-//     return yield client.get(
-//       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-//       planValues.planName
-//     );
-//   } catch (err) {
-//     throw err;
-//   }
-// }
-
-// function* planUpdateRetry(action) {
-//   try {
-//     const SECOND = 1000;
-//     const getPlanResponse = yield call(getPlanSaga, action.planValues);
-//     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
-//   } catch (error) {
-//     yield put(alertErrorTimeout('Failed to update plan'));
-//   }
-// }
-
 function* addClusterRequest(action)  {
   // TODO: Need to improve this to fall into the failed create state with rollback
   const state = yield select();
