@@ -195,12 +195,18 @@ function fetchMigStorageSecretRefs(client: IClusterClient, migStorages): Array<P
 
 function groupStorages(migStorages: any[], secrets: any[]): any[] {
   return migStorages.map(ms => {
-    return {
+    const fullStorage = {
       MigStorage: ms,
-      Secret: secrets.find(
-        s => s.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
-      )
     };
+
+    const secret = secrets.find(
+      s => s.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
+    );
+    if (secret !== undefined) {
+      fullStorage['Secret'] = secret;
+    }
+
+    return fullStorage;
   });
 }
 

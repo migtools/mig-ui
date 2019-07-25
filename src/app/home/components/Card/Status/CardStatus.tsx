@@ -6,16 +6,23 @@ import { Grid, GridItem } from '@patternfly/react-core';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
+  let failureList = [];
+  let successfulNames = [];
+
   if (type === 'repositories') {
     successList = dataList.filter(item =>
       item.MigStorage.status && item.MigStorage.status.conditions.filter(c => c.type === 'Ready').length !== 0
       );
+    successfulNames = successList.map(item => item.MigStorage.metadata.name);
+    failureList = dataList.filter(item => !successfulNames.includes(item.MigStorage.metadata.name));
   } else if (type === 'clusters') {
     successList = dataList.filter(item =>
       item.MigCluster.status && item.MigCluster.status.conditions.filter(c => c.type === 'Ready').length !== 0
     );
+    successfulNames = successList.map(item => item.MigCluster.metadata.name);
+    failureList = dataList.filter(item => !successfulNames.includes(item.MigCluster.metadata.name));
   }
-  const failureList = dataList.filter(item => successList.indexOf(item) < 0);
+
   return (
     <React.Fragment>
       <Grid>
