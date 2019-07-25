@@ -8,7 +8,6 @@ import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
 
 const WizardComponent = props => {
-  const MigSourceStepId = 2;
   const HostClusterName = 'host';
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -31,9 +30,16 @@ const WizardComponent = props => {
     fetchNamespacesForCluster,
     sourceClusterNamespaces
   } = props;
+  enum stepId {
+    General = 1,
+    MigrationSource,
+    PersistentVolumes,
+    MigrationTarget,
+    Results
+  }
   const steps = [
     {
-      id: 1,
+      id: stepId.General,
       name: 'General',
       component: (
         <GeneralForm
@@ -48,7 +54,7 @@ const WizardComponent = props => {
       enableNext: !errors.planName && touched.planName === true,
     },
     {
-      id: 2,
+      id: stepId.MigrationSource,
       name: 'Migration Source',
       component: (
         <MigSourceForm
@@ -67,10 +73,10 @@ const WizardComponent = props => {
       ),
       enableNext: !errors.sourceCluster && touched.sourceCluster === true
         && !errors.selectedNamespaces && !isLoading,
-      canJumpTo: stepIdReached >= 2,
+      canJumpTo: stepIdReached >= stepId.MigrationSource,
     },
     {
-      id: 3,
+      id: stepId.PersistentVolumes,
       name: 'Persistent Volumes',
       component: (
         <VolumesForm
@@ -86,11 +92,11 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !isLoading && !isFetchingPVList,
-      canJumpTo: stepIdReached >= 3,
+      canJumpTo: stepIdReached >= stepId.PersistentVolumes,
     },
     {
-      id: 4,
-      name: 'Migration Targets',
+      id: stepId.MigrationTarget,
+      name: 'Migration Target',
       component: (
         <MigTargetForm
           values={values}
@@ -106,10 +112,10 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !errors.targetCluster && touched.targetCluster === true && !isLoading,
-      canJumpTo: stepIdReached >= 4,
+      canJumpTo: stepIdReached >= stepId.MigrationTarget,
     },
     {
-      id: 5,
+      id: stepId.Results,
       name: 'Results',
       component: (
         <ResultsStep
@@ -124,18 +130,16 @@ const WizardComponent = props => {
       nextButtonText: 'Close',
       hideCancelButton: true,
       hideBackButton: true,
-      canJumpTo: stepIdReached >= 5,
+      canJumpTo: stepIdReached >= stepId.Results,
     },
   ];
 
   const onMove = (curr, prev) => {
     if (stepIdReached < curr.id) {
       setStepIdReached(curr.id);
-    } else {
-      setStepIdReached(stepIdReached);
     }
 
-    if (prev.prevId === MigSourceStepId && curr.id !== 1) {
+    if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
       const currentPlan = props.planList.find(p => {
@@ -151,11 +155,14 @@ const WizardComponent = props => {
         });
       }
     }
-    if (curr.id === 5) {
+    if (curr.id === stepId.Results) {
       props.handleSubmit();
     }
   };
   const handleClose = () => {
+    if (stepIdReached === stepId.Results) {
+      setStepIdReached(stepId.General);
+    }
     props.onHandleClose();
     props.resetForm();
   };
