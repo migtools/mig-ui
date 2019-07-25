@@ -287,7 +287,7 @@ const fetchNamespacesForCluster = clusterName => {
         return;
       }
       dispatch(namespaceFetchFailure(err));
-      dispatch(alertErrorTimeout(err));
+      dispatch(alertErrorTimeout('Failed to fetch namespaces'));
     }
   };
 };

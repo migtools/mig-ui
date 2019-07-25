@@ -70,7 +70,7 @@ const mapStateToProps = state => {
     persistentVolumes: [],
     isFetchingPVList: state.plan.isFetchingPVList,
     isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
-    isFetchingNamespaceList: state.plan.isCheckingPlanStatus,
+    isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
   };
 };
