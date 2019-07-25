@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import AddClusterForm from './AddClusterForm';
+import AddClusterForm from './AddEditClusterForm';
 import { clusterOperations } from '../../duck';
 import { Modal } from '@patternfly/react-core';
 
