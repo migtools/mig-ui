@@ -7,17 +7,40 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
+import { AddEditState, AddEditStatus } from '../../../common/add_edit_state';
 
 const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
 
 const currentStatus = (props) => {
-  return 'Hello world';
+  const addEditStatus: AddEditStatus = props.addEditStatus;
+  switch(addEditStatus.state) {
+    case AddEditState.Pending: {
+      return `Ready to create a cluster.`
+    }
+    case AddEditState.Critical: {
+      return `Critical: ${addEditStatus.message} | ${addEditStatus.reason}`
+    }
+    case AddEditState.Ready: {
+      return `Ready: ${addEditStatus.message}`
+    }
+    case AddEditState.Watching: {
+      return `Watching your cluster for an update...`
+    }
+    default: {
+      return `AddEditStatus fell into an unknown state.`
+    }
+  }
 }
 
 const addEditButtonText = (props) => {
-  return 'Add Cluster';
+  return props.addEditStatus.state === AddEditState.Pending ?
+    'Add Cluster' : 'Update Cluster';
+}
+
+const isAddEditButtonDisabled = (props) => {
+  return props.addEditStatus.state === AddEditState.Watching;
 }
 
 const InnerAddClusterForm = ({
@@ -85,7 +108,7 @@ const InnerAddClusterForm = ({
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <Button type="submit">
+      <Button type="submit" isDisabled={isAddEditButtonDisabled(props)}>
         {addEditButtonText(props)}
       </Button>
       <h3>Status:</h3>
