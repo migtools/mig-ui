@@ -56,27 +56,27 @@ export class ClusterClient {
     this.tokenExpiryTime = tokenExpiryTime;
   }
 
-  public list(resource: KubeResource): AxiosPromise<any> {
+  public list = (resource: KubeResource): AxiosPromise<any> => {
     this.checkExpiry();
     return this.requester.get(resource.listPath());
   }
-  public get(resource: KubeResource, name: string): AxiosPromise<any> {
+  public get = (resource: KubeResource, name: string): AxiosPromise<any> => {
     this.checkExpiry();
     return this.requester.get(resource.namedPath(name));
   }
-  public put(resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> {
+  public put = (resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> => {
     this.checkExpiry();
     return this.requester.put(resource.namedPath(name), updatedObject);
   }
-  public patch(resource: KubeResource, name: string, patch: object): AxiosPromise<any> {
+  public patch = (resource: KubeResource, name: string, patch: object): AxiosPromise<any> => {
     this.checkExpiry();
     return this.patchRequester.patch(resource.namedPath(name), patch);
   }
-  public create(resource: KubeResource, newObject: object): AxiosPromise<any> {
+  public create = (resource: KubeResource, newObject: object): AxiosPromise<any> => {
     this.checkExpiry();
     return this.requester.post(resource.listPath(), newObject);
   }
-  public delete(resource: KubeResource, name: string): AxiosPromise<any> {
+  public delete = (resource: KubeResource, name: string): AxiosPromise<any> => {
     this.checkExpiry();
     return this.requester.delete(resource.namedPath(name));
   }
