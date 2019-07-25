@@ -4,14 +4,12 @@ import AddClusterForm from './AddClusterForm';
 import { clusterOperations } from '../../duck';
 import { Modal } from '@patternfly/react-core';
 
-class AddEditClusterModal extends React.Component<any, any> {
-  render() {
-    return (
-      <Modal isSmall isOpen={this.props.isOpen} onClose={this.props.onHandleClose} title="Cluster">
-        <AddClusterForm />
-      </Modal>
-    );
-  }
+const AddEditClusterModal = (props) => {
+  return (
+    <Modal isSmall isOpen={props.isOpen} onClose={props.onHandleClose} title="Cluster">
+      <AddClusterForm />
+    </Modal>
+  );
 }
 
 export default connect(
