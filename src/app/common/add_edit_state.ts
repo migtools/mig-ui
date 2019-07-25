@@ -42,15 +42,11 @@ export const defaultAddEditStatus = (): AddEditStatus => {
   }
 }
 
-export interface AddEditCondition {
-  state: AddEditState;
-  message: string;
-  reason?: string;
-}
-
+export const AddEditConditionCritical = 'Critical';
+export const AddEditConditionReady = 'Ready';
 
 const addEditTimeoutSeconds = 20;
-export const AddEditTimeout = addEditTimeoutSeconds * 1000;
+export const AddEditWatchTimeout = addEditTimeoutSeconds * 1000;
 
 const addEditPollIntervalSeconds = 4;
-export const AddEditTimeoutPollInterval = addEditPollIntervalSeconds * 1000;
+export const AddEditWatchTimeoutPollInterval = addEditPollIntervalSeconds * 1000;

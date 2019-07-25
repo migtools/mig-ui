@@ -60,6 +60,13 @@ export const updateClusters = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
+  return{
+    ...state,
+    addEditStatus: action.status,
+  }
+}
+
 export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
@@ -68,6 +75,7 @@ export const HANDLERS = {
   [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
+  [Types.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

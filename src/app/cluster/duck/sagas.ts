@@ -1,4 +1,4 @@
-import { takeLatest, select, race, take, put, delay, } from 'redux-saga/effects';
+import { takeLatest, select, race, take, call, put, delay, } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -15,15 +15,18 @@ import {
 } from '../../../client/resources/conversions';
 
 import { Creators } from './actions';
-import { alertSuccessTimeout, alertErrorTimeout } from '../../common/duck/actions';
+import { alertErrorTimeout } from '../../common/duck/actions';
 import {
   createAddEditStatus,
   AddEditState,
   AddEditMode,
   AddEditStatus,
   defaultAddEditStatus,
-  AddEditTimeout,
-  AddEditTimeoutPollInterval,
+  AddEditWatchTimeout,
+  AddEditWatchTimeoutPollInterval,
+  AddEditConditionCritical,
+  createAddEditStatusWithMeta,
+  AddEditConditionReady,
 } from '../../common/add_edit_state';
 
 function* addClusterRequest(action)  {
@@ -72,13 +75,13 @@ function* addClusterRequest(action)  {
       return accum;
     }, {});
 
-    put(Creators.addClusterSuccess(cluster));
+    yield put(Creators.addClusterSuccess(cluster));
 
     // Push into watching state
-    put(Creators.setClusterAddEditStatus(
+    yield put(Creators.setClusterAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
-    put(Creators.watchAddClusterRequest(clusterValues.name));
+    yield put(Creators.watchClusterAddEditStatus(clusterValues.name));
   } catch(err) {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
@@ -93,39 +96,62 @@ function* watchAddClusterRequest() {
 }
 
 function* pollClusterAddEditStatus(action) {
+  // Give the controller some time to bounce
+  yield delay(4000);
   while(true) {
     try {
-      console.log('Cluster add edit poll status');
       const state = yield select();
       const { migMeta } = state;
       const { clusterName } = action;
 
       const client: IClusterClient = ClientFactory.hostCluster(state);
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
-      const clusterPollResult = client.get(migClusterResource, clusterName);
-      console.log('Got cluster poll result: ', clusterPollResult);
+      const clusterPollResult = yield client.get(migClusterResource, clusterName);
 
-      // TODO: If the condition is present, return a new status!
+      const criticalCond = clusterPollResult.data.status.conditions.find(cond => {
+        return cond.category === AddEditConditionCritical;
+      })
 
-      yield delay(AddEditTimeoutPollInterval);
+      if(criticalCond) {
+        return createAddEditStatusWithMeta(
+          AddEditState.Critical,
+          AddEditMode.Edit,
+          criticalCond.message,
+          criticalCond.reason,
+        );
+      }
+
+      const readyCond = clusterPollResult.data.status.conditions.find(cond => {
+        return cond.type === AddEditConditionReady;
+      });
+
+      if(readyCond) {
+        return createAddEditStatusWithMeta(
+          AddEditState.Ready,
+          AddEditMode.Edit,
+          readyCond.message,
+          '', // Ready has no reason
+        );
+      }
+
+      // No conditions found, let's wait a bit and keep checking
+      yield delay(AddEditWatchTimeoutPollInterval);
     } catch(err) {
       // TODO: what happens when the poll fails? Back into that hard error state?
-      console.log('Hard error branch hit in poll cluster add edit', err);
-      break;
+      console.error('Hard error branch hit in poll cluster add edit', err);
+      return;
     }
   }
 }
 
-function* watchClusterAddEditStatus() {
-  console.log('watch cluster add edit status triggered, falling into a race!');
+function* startWatchingClusterAddEditStatus(action) {
   // Start a race, poll until the watch is cancelled (by closing the modal),
   // polling times out, or the condition is added, in that order of precedence.
   const raceResult = yield race({
-    addEditResult: takeLatest(Creators.watchClusterAddEditStatus().type, pollClusterAddEditStatus),
-    timeout: delay(AddEditTimeout),
-    cancel: take(Creators.cancelWatchClusterAddEditStatus()),
+    addEditResult: call(pollClusterAddEditStatus, action),
+    timeout: delay(AddEditWatchTimeout),
+    cancel: take(Creators.cancelWatchClusterAddEditStatus().type),
   });
-  console.log('race finished. got result: ', raceResult);
 
   if(raceResult.cancel) {
     return;
@@ -136,10 +162,14 @@ function* watchClusterAddEditStatus() {
   const statusToDispatch = addEditResult || createAddEditStatus(
     AddEditState.TimedOut, AddEditMode.Edit);
 
-  put(Creators.setClusterAddEditStatus(statusToDispatch));
+  yield put(Creators.setClusterAddEditStatus(statusToDispatch));
+}
+
+function* watchClusterAddEditStatus() {
+  yield takeLatest(Creators.watchClusterAddEditStatus().type, startWatchingClusterAddEditStatus);
 }
 
 export default {
   watchAddClusterRequest,
-  watchClusterAddEditStatus
+  watchClusterAddEditStatus,
 };
