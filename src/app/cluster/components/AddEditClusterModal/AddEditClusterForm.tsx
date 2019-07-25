@@ -12,6 +12,14 @@ const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
 
+const currentStatus = (props) => {
+  return 'Hello world';
+}
+
+const addEditButtonText = (props) => {
+  return 'Add Cluster';
+}
+
 const InnerAddClusterForm = ({
   values,
   touched,
@@ -26,6 +34,10 @@ const InnerAddClusterForm = ({
   }
   const formikHandleChange = (_val, e) => props.handleChange(e);
   const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
+
+  const onClose = () => {
+    props.onClose();
+  }
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
@@ -73,8 +85,13 @@ const InnerAddClusterForm = ({
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <Button type="submit" >
-        Debug Submit
+      <Button type="submit">
+        {addEditButtonText(props)}
+      </Button>
+      <h3>Status:</h3>
+      <div>{currentStatus(props)}</div>
+      <Button variant="primary" onClick={onClose}>
+        Close
       </Button>
     </Form>
   )
@@ -110,12 +127,10 @@ const AddClusterForm: any = withFormik({
   },
 
   handleSubmit: (values, formikBag: any) => {
-    console.log('handleSubmit in formik');
-    console.log('values', values);
-    console.log('formikBag', formikBag);
     // Formik will set isSubmitting to true, so we need to flip this back off
     formikBag.setSubmitting(false);
-    // TODO: Trigger parent submit
+    // Manually trigger formik submit
+    formikBag.props.onAddEditSubmit(values);
   },
 })(InnerAddClusterForm);
 

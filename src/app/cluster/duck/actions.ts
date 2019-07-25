@@ -5,6 +5,7 @@ const { Creators, Types } = createActions({
   clusterFetchRequest: [],
   clusterFetchFailure: [],
   updateClusters: ['updatedClusters'],
+  addClusterRequest: ['clusterValues'],
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
   removeClusterSuccess: ['name'],
