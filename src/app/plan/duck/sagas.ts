@@ -1,4 +1,4 @@
-import { takeEvery, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -6,6 +6,7 @@ import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 
 import { Creators } from './actions';
 import { alertErrorTimeout } from '../../common/duck/actions';
+import { request } from 'https';
 
 const TicksUntilTimeout = 20;
 
@@ -91,11 +92,33 @@ function* watchPVPolling() {
     yield race([call(checkPVs, data), take(Creators.stopPVPolling().type)]);
   }
 }
+
 function* watchPlanUpdate() {
   yield takeEvery(Creators.planUpdateRequest().type, planUpdateRetry);
+}
+
+function* planDeleteSaga(action) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  try{
+    yield client.delete(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      action.planName,
+    )
+    yield put(Creators.planDeleteSuccess(action.planName));
+  } catch(err) {
+    console.error(err);
+    yield put(alertErrorTimeout('Plan delete request failed'));
+  }
+}
+
+function* watchPlanDelete() {
+  yield takeLatest(Creators.planDeleteRequest().type, planDeleteSaga);
 }
 
 export default {
   watchPlanUpdate,
   watchPVPolling,
+  watchPlanDelete,
 };
