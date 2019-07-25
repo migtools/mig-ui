@@ -1,11 +1,13 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
+import { defaultAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isError: false,
   isFetching: false,
   clusterList: [],
   searchTerm: '',
+  addEditStatus: defaultAddEditStatus(),
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
