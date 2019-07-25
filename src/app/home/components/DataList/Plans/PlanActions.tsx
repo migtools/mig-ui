@@ -60,6 +60,7 @@ const PlanActions = ({ plan, isLoading }) => {
         >
           Migrate
         </Button>
+        <Button onClick={() => planContext.handleDeletePlan(plan)}> Delete </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </Box>
       {isLoading && (
