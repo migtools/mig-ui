@@ -76,10 +76,25 @@ export const removePlanSuccess = (state = INITIAL_STATE, action) => {
   return { ...state };
 };
 
-export const sourceClusterNamespacesFetchSuccess = (state = INITIAL_STATE, action) => {
+export const namespaceFetchRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    sourceClusterNamespaces: [],
+    isFetchingNamespaceList: true,
+  };
+};
+export const namespaceFetchSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     sourceClusterNamespaces: action.sourceClusterNamespaces,
+    isFetchingNamespaceList: false,
+  };
+};
+export const namespaceFetchFailure = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    sourceClusterNamespaces: [],
+    isFetchingNamespaceList: false,
   };
 };
 
@@ -215,7 +230,9 @@ export const HANDLERS = {
   [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
   [Types.ADD_PLAN_FAILURE]: addPlanFailure,
   [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
-  [Types.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS]: sourceClusterNamespacesFetchSuccess,
+  [Types.NAMESPACE_FETCH_REQUEST]: namespaceFetchRequest,
+  [Types.NAMESPACE_FETCH_SUCCESS]: namespaceFetchSuccess,
+  [Types.NAMESPACE_FETCH_FAILURE]: namespaceFetchFailure,
   [Types.INIT_STAGE]: initStage,
   [Types.STAGING_SUCCESS]: stagingSuccess,
   [Types.STAGING_FAILURE]: stagingFailure,

@@ -26,7 +26,10 @@ const WizardComponent = props => {
     planList,
     storageList,
     isFetchingPVList,
+    isFetchingNamespaceList,
     isCheckingPlanStatus,
+    fetchNamespacesForCluster,
+    sourceClusterNamespaces
   } = props;
   const steps = [
     {
@@ -57,8 +60,9 @@ const WizardComponent = props => {
           setFieldValue={setFieldValue}
           setFieldTouched={setFieldTouched}
           clusterList={clusterList}
-          onWizardLoadingToggle={toggleLoading}
-          isWizardLoading={isLoading}
+          isFetchingNamespaceList={isFetchingNamespaceList}
+          fetchNamespacesForCluster={fetchNamespacesForCluster}
+          sourceClusterNamespaces={sourceClusterNamespaces}
         />
       ),
       enableNext: !errors.sourceCluster && touched.sourceCluster === true

@@ -46,6 +46,20 @@ const WizardContainer: any = withFormik({
 })(WizardComponent);
 
 const mapStateToProps = state => {
+  const allSourceClusterNamespaces = state.plan.sourceClusterNamespaces;
+  const filteredSourceClusterNamespaces = allSourceClusterNamespaces.filter(ns => {
+    const rejectedRegex = [
+      RegExp('^kube-.*', 'i'),
+      RegExp('^openshift-.*', 'i'),
+      RegExp('^openshift$', 'i'),
+      RegExp('^velero$', 'i'),
+      RegExp('^default$', 'i'),
+    ];
+
+    // Short circuit the regex check if any of them match a rejected regex and filter it out
+    return !rejectedRegex.some(rx => rx.test(ns.metadata.name));
+  });
+
   return {
     connectionStatus: '',
     planName: '',
@@ -56,11 +70,17 @@ const mapStateToProps = state => {
     persistentVolumes: [],
     isFetchingPVList: state.plan.isFetchingPVList,
     isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
+    isFetchingNamespaceList: state.plan.isCheckingPlanStatus,
+    sourceClusterNamespaces: filteredSourceClusterNamespaces,
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: plan => dispatch(planOperations.addPlan(plan)),
+    fetchNamespacesForCluster: clusterName => {
+      dispatch(planOperations.fetchNamespacesForCluster(clusterName));
+    },
+
   };
 };
 
