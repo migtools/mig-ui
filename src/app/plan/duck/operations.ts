@@ -230,37 +230,6 @@ const addPlan = migPlan => {
   };
 };
 
-const putPlan = planValues => {
-  return async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const migMeta = state.migMeta;
-      const client: IClusterClient = ClientFactory.hostCluster(state);
-
-      // When updating objects
-      const latestPlanRes = await client.get(
-        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        planValues.planName
-      );
-      const latestPlan = latestPlanRes.data;
-
-      dispatch(Creators.updatePlan(latestPlan));
-      const updatedMigPlan = updateMigPlanFromValues(latestPlan, planValues);
-
-      const putRes = await client.put(
-        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        latestPlan.metadata.name,
-        updatedMigPlan
-      );
-      // TODO: Need some kind of retry logic here in case the resourceVersion
-      // gets ticked up in between us getting and putting the mutated object back
-      dispatch(Creators.updatePlan(putRes.data));
-    } catch (err) {
-      dispatch(alertErrorTimeout(err));
-    }
-  };
-};
-
 const removePlan = id => {
   throw new Error('NOT IMPLEMENTED');
 };
@@ -352,7 +321,6 @@ export default {
   pvFetchRequest,
   fetchPlans,
   addPlan,
-  putPlan,
   removePlan,
   fetchNamespacesForCluster,
   runStage,
