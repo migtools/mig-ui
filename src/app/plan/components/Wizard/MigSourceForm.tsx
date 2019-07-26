@@ -59,7 +59,7 @@ const MigSourceForm = props => {
       setSrcClusterOptions(myOptions);
     }
 
-  }, []); // Only re-run the effect if fetching value changes
+  }, [values]);
 
 
   const handleSourceChange = option => {

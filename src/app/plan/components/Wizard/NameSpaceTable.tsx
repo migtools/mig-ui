@@ -6,8 +6,13 @@ import 'react-table/react-table.css';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
+interface INamespaceTableProps {
+  values: any;
+  sourceClusterNamespaces: any;
+  setFieldValue: (fieldName, fieldValue) => void;
+}
 
-const NamespaceTable = props => {
+const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   const { setFieldValue, sourceClusterNamespaces, values } = props;
   const [checkedNamespaceRows, setCheckedRows] = useState([]);
 
@@ -24,7 +29,7 @@ const NamespaceTable = props => {
       });
       setCheckedRows(checkedCopy);
     }
-  }, [sourceClusterNamespaces]);
+  }, [sourceClusterNamespaces, values]);
 
   const selectRow = row => {
     const index = row.index;
