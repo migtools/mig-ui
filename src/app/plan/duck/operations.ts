@@ -35,7 +35,9 @@ const planResultsRequest = Creators.planResultsRequest;
 const addPlanRequest = Creators.addPlanRequest;
 const addPlanSuccess = Creators.addPlanSuccess;
 const addPlanFailure = Creators.addPlanFailure;
-const sourceClusterNamespacesFetchSuccess = Creators.sourceClusterNamespacesFetchSuccess;
+const namespaceFetchRequest = Creators.namespaceFetchRequest;
+const namespaceFetchSuccess = Creators.namespaceFetchSuccess;
+const namespaceFetchFailure = Creators.namespaceFetchFailure;
 const updatePlanResults = Creators.updatePlanResults;
 const updatePlan = Creators.updatePlan;
 
@@ -275,15 +277,17 @@ const fetchNamespacesForCluster = clusterName => {
     const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
     const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
     try {
+      dispatch(namespaceFetchRequest());
       const res = await client.list(nsResource);
-      dispatch(sourceClusterNamespacesFetchSuccess(res.data.items));
+      dispatch(namespaceFetchSuccess(res.data.items));
     } catch (err) {
       if (utils.isSelfSignedCertError(err)) {
         const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
         utils.handleSelfSignedCertError(failedUrl, dispatch);
         return;
       }
-      dispatch(alertErrorTimeout(err));
+      dispatch(namespaceFetchFailure(err));
+      dispatch(alertErrorTimeout('Failed to fetch namespaces'));
     }
   };
 };

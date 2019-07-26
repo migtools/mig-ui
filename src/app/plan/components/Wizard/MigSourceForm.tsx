@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
@@ -9,44 +9,46 @@ import NamespaceTable from './NameSpaceTable';
 import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
-class MigSourceForm extends React.Component<any> {
-  state = {
-    options: [],
-    selectedOption: null,
-  };
 
-  componentDidMount() {
-    const { clusterList } = this.props;
+const MigSourceForm = props => {
+  const [srcClusterOptions, setSrcClusterOptions] = useState([]);
+  const [selectedSrcCluster, setSelectedSrcCluster] = useState(null);
+  const {
+    clusterList,
+    values,
+    errors,
+    touched,
+    setFieldValue,
+    setFieldTouched,
+    isFetchingNamespaceList,
+    fetchNamespacesForCluster,
+    sourceClusterNamespaces
+  } = props;
+
+  useEffect(() => {
     if (clusterList.length) {
       const myOptions: any = [];
-      const len = this.props.clusterList.length;
+      const len = clusterList.length;
       for (let i = 0; i < len; i++) {
-        if (this.props.clusterList[i].MigCluster.metadata.name !== 'host') {
+        if (clusterList[i].MigCluster.metadata.name !== 'host') {
           myOptions.push({
-            label: this.props.clusterList[i].MigCluster.metadata.name,
-            value: this.props.clusterList[i].MigCluster.metadata.name,
+            label: clusterList[i].MigCluster.metadata.name,
+            value: clusterList[i].MigCluster.metadata.name,
           });
         }
       }
-      this.setState({ options: myOptions });
-      //check existing data
+      setSrcClusterOptions(myOptions);
 
-      if (this.props.values.sourceCluster !== null) {
-        const matchingCluster = this.props.clusterList.filter(
-          c => c.MigCluster.metadata.name === this.props.values.sourceCluster
+      if (values.sourceCluster !== null) {
+        const matchingCluster = clusterList.filter(
+          c => c.MigCluster.metadata.name === values.sourceCluster
         );
-
-        this.setState({
-          selectedOption: {
+        setSelectedSrcCluster(
+          {
             label: matchingCluster[0].MigCluster.metadata.name,
             value: matchingCluster[0].MigCluster.metadata.name,
-          },
-        });
-
-        this.props.onWizardLoadingToggle(true);
-        setTimeout(() => {
-          this.props.onWizardLoadingToggle(false);
-        }, 500);
+          }
+        );
       }
     } else {
       const myOptions: any = [];
@@ -54,71 +56,64 @@ class MigSourceForm extends React.Component<any> {
         label: 'No Valid Clusters Found',
         value: 'N/A',
       });
-      this.setState({ options: myOptions });
+      setSrcClusterOptions(myOptions);
     }
-  }
-  handleSourceChange = option => {
-    this.props.setFieldValue('sourceCluster', option.value);
-    const matchingCluster = this.props.clusterList.filter(
+
+  }, [values]);
+
+
+  const handleSourceChange = option => {
+    setFieldValue('sourceCluster', option.value);
+    const matchingCluster = clusterList.find(
       c => c.MigCluster.metadata.name === option.value
     );
-
-    this.setState({
-      selectedOption: {
-        label: matchingCluster[0].MigCluster.metadata.name,
-        value: matchingCluster[0].MigCluster.metadata.name,
-      },
+    setSelectedSrcCluster({
+      label: matchingCluster.MigCluster.metadata.name,
+      value: matchingCluster.MigCluster.metadata.name,
     });
-    this.props.setFieldTouched('sourceCluster');
-    this.props.onWizardLoadingToggle(true);
-    setTimeout(() => {
-      this.props.onWizardLoadingToggle(false);
-    }, 500);
+    setFieldTouched('sourceCluster');
+    fetchNamespacesForCluster(matchingCluster.MigCluster.metadata.name);
   };
-  render() {
-    const { errors, touched, setFieldValue, setFieldTouched, values } = this.props;
-    const { selectedOption, options } = this.state;
-    return (
-      <Box>
-        <TextContent>
-          <TextList component="dl">
-            <TextListItem component="dt">Source Cluster</TextListItem>
-            <Select
-              css={css`
+  return (
+    <Box>
+      <TextContent>
+        <TextList component="dl">
+          <TextListItem component="dt">Source Cluster</TextListItem>
+          <Select
+            css={css`
                 width: 20em;
               `}
-              name="sourceCluster"
-              onChange={this.handleSourceChange}
-              options={options}
-              value={selectedOption}
-            />
-            {errors.sourceCluster && touched.sourceCluster && (
-              <div id="feedback">{errors.sourceCluster}</div>
-            )}
-          </TextList>
-        </TextContent>
-        {this.props.isWizardLoading ? (
-          <Flex
-            css={css`
+            name="sourceCluster"
+            onChange={handleSourceChange}
+            options={srcClusterOptions}
+            value={selectedSrcCluster}
+          />
+          {errors.sourceCluster && touched.sourceCluster && (
+            <div id="feedback">{errors.sourceCluster}</div>
+          )}
+        </TextList>
+      </TextContent>
+      {isFetchingNamespaceList ? (
+        <Flex
+          css={css`
               height: 100%;
               text-align: center;
             `}
-          >
-            <Box flex="1" m="auto">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-              <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
-            </Box>
-          </Flex>
-        ) : (
+        >
+          <Box flex="1" m="auto">
+            <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+            <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
+          </Box>
+        </Flex>
+      ) : (
           <NamespaceTable
             setFieldValue={setFieldValue}
-            sourceCluster={this.props.values.sourceCluster}
             values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
           />
         )}
-      </Box>
-    );
-  }
-}
+    </Box>
+  );
+};
 
 export default MigSourceForm;
