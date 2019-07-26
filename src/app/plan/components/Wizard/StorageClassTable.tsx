@@ -120,7 +120,9 @@ const StorageClassTable = (props): any => {
               width: 500,
               resizable: false,
               Cell: row => {
-                const defaultStorageClass = storageClassOptions.find(sc => sc.default === true);
+                const selectedStorageClass = storageClassOptions.find(
+                  sc => sc.name === row.original.storageClass
+                );
                 return (
                   <Select
                     onChange={(option: any) => handleTypeChange(row, option)}
@@ -129,8 +131,8 @@ const StorageClassTable = (props): any => {
                     })}
                     name="storageClasses"
                     value={{
-                      label: defaultStorageClass.name + ':' + defaultStorageClass.provisioner,
-                      value: defaultStorageClass.name,
+                      label: selectedStorageClass.name + ':' + selectedStorageClass.provisioner,
+                      value: selectedStorageClass.name,
                     }}
                   />
                 );
