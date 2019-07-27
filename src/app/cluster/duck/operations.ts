@@ -156,34 +156,6 @@ const removeCluster = name => {
   };
 };
 
-const fetchClusters = () => {
-  return async (dispatch, getState) => {
-    dispatch(clusterFetchRequest());
-    try {
-      const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
-
-      const resource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
-
-      const res = await client.list(resource);
-      const migClusters = res.data.items;
-      const nonHostClusters = migClusters.filter(c => !c.spec.isHostCluster);
-      const refs = await Promise.all(fetchMigClusterRefs(client, migMeta, nonHostClusters));
-      const groupedClusters = groupClusters(migClusters, refs);
-      dispatch(clusterFetchSuccess(groupedClusters));
-    } catch (err) {
-      if (err.response) {
-        dispatch(alertErrorTimeout(err.response.data.message));
-      } else if (err.message) {
-        dispatch(alertErrorTimeout(err.message));
-      } else {
-        dispatch(alertErrorTimeout('Failed to fetch clusters: An unknown error occurred'));
-      }
-      dispatch(clusterFetchFailure());
-    }
-  };
-};
-
 function checkConnection() {
   return (dispatch, getState) => {
     dispatch(Creators.setConnectionState(ConnectionState.Checking));
@@ -251,7 +223,6 @@ function* fetchClustersGenerator() {
 
 export default {
   fetchClustersGenerator,
-  fetchClusters,
   addCluster,
   removeCluster,
   updateCluster,
