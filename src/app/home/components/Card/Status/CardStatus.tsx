@@ -6,28 +6,23 @@ import { Grid, GridItem } from '@patternfly/react-core';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
-  const failureList = [];
-  if (type === 'repositories') {
-    // hasReadyCondition = plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length > 0;
-    // hasErrorCondition =
-    //   plan.MigPlan.status.conditions.filter(c => c.category === 'Critical').length > 0;
+  let failureList = [];
+  let successfulNames = [];
 
-    successList = dataList.filter(item => {
-      if (item.MigStorage.status) {
-        return item.MigStorage.status.conditions.filter(c => c.type === 'Ready');
-      } else {
-        failureList.push(item);
-      }
-    });
+  if (type === 'repositories') {
+    successList = dataList.filter(item =>
+      item.MigStorage.status && item.MigStorage.status.conditions.filter(c => c.type === 'Ready').length !== 0
+      );
+    successfulNames = successList.map(item => item.MigStorage.metadata.name);
+    failureList = dataList.filter(item => !successfulNames.includes(item.MigStorage.metadata.name));
   } else if (type === 'clusters') {
-    successList = dataList.filter(item => {
-      if (item.MigCluster.status) {
-        return item.MigCluster.status.conditions.filter(c => c.type === 'Ready');
-      } else {
-        failureList.push(item);
-      }
-    });
+    successList = dataList.filter(item =>
+      item.MigCluster.status && item.MigCluster.status.conditions.filter(c => c.type === 'Ready').length !== 0
+    );
+    successfulNames = successList.map(item => item.MigCluster.metadata.name);
+    failureList = dataList.filter(item => !successfulNames.includes(item.MigCluster.metadata.name));
   }
+
   return (
     <React.Fragment>
       <Grid>

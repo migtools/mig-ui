@@ -34,6 +34,8 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
   const [isOpen, toggleOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
+  const isHostCluster = cluster.MigCluster.spec.isHostCluster;
+
   const removeMessage = `Are you sure you want to remove "${clusterName}"`;
 
   const handleRemoveCluster = isConfirmed => {
@@ -65,7 +67,11 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
             <DataListCell key="actions" width={2}>
               <Flex justifyContent="flex-end">
                 <Box mx={1}>
-                  <Button onClick={toggleOpen} variant="secondary">
+                  <Button 
+                    onClick={toggleOpen} 
+                    variant="secondary"
+                    isDisabled={isHostCluster}
+                  >
                     Edit
                   </Button>
                   <AddClusterModal
@@ -78,7 +84,12 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
                   />
                 </Box>
                 <Box mx={1}>
-                  <Button onClick={toggleConfirmOpen} variant="danger" key="remove-action">
+                  <Button 
+                    onClick={toggleConfirmOpen} 
+                    variant="danger" 
+                    isDisabled={isHostCluster}
+                    key="remove-action"
+                  >
                     Remove
                   </Button>
                   <ConfirmModal
