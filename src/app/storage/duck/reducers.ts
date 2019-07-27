@@ -3,6 +3,7 @@ import { createReducer } from 'reduxsauce';
 import ConnectionState from '../../common/connection_state';
 
 export const INITIAL_STATE = {
+  isPolling: false,
   isFetching: false,
   isError: false,
   migStorageList: [],
@@ -30,6 +31,10 @@ export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
 
 export const setConnectionState = (state = INITIAL_STATE, action) => {
   return { ...state, connectionState: action.connectionState };
+};
+
+export const setIsPollingStorage = (state = INITIAL_STATE, action) => {
+  return { ...state, isPolling: action.isPolling };
 };
 
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
@@ -79,6 +84,7 @@ export const HANDLERS = {
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
   [Types.SET_CONNECTION_STATE]: setConnectionState,
+  [Types.SET_IS_POLLING_STORAGE]: setIsPollingStorage,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

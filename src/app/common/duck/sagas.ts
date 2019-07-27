@@ -18,6 +18,9 @@ import {
   alertClear,
 } from './actions';
 
+import { Creators as ClusterActionCreators } from '../../cluster/duck/actions';
+import { Creators as StorageActionCreators } from '../../storage/duck/actions';
+
 export const StatusPollingInterval = 4000;
 
 function* poll(action) {
@@ -47,13 +50,18 @@ function* watchDataListPolling() {
 function* watchStoragePolling() {
   while (true) {
     const action = yield take(startStoragePolling().type);
+    yield put(StorageActionCreators.setIsPollingStorage(true));
     yield race([call(poll, action), take(stopStoragePolling().type)]);
+    yield put(StorageActionCreators.setIsPollingStorage(false));
   }
 }
+
 function* watchClustersPolling() {
   while (true) {
     const action = yield take(startClusterPolling().type);
+    yield put(ClusterActionCreators.setIsPollingCluster(true));
     yield race([call(poll, action), take(stopClusterPolling().type)]);
+    yield put(ClusterActionCreators.setIsPollingCluster(false));
   }
 }
 

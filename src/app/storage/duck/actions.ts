@@ -12,6 +12,7 @@ const { Creators, Types } = createActions({
   updateSearchTerm: ['searchTerm'],
   setConnectionState: ['connectionState'],
   updateStorages: ['updatedStorages'],
+  setIsPollingStorage: ['isPolling'],
 });
 
 export { Creators, Types };
