@@ -28,10 +28,6 @@ export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
-};
-
 export const setIsPollingCluster = (state = INITIAL_STATE, action) => {
   return { ...state, isPolling: action.isPolling };
 };
@@ -85,7 +81,6 @@ export const HANDLERS = {
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
   [Types.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
 };
 
