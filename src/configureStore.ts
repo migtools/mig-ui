@@ -1,5 +1,5 @@
 import { history } from './helpers';
-import logger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './reducers';
@@ -30,6 +30,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const sagaMiddleware = createSagaMiddleware();
 
 const enhancers = [];
+const logger = createLogger({collapsed: true});
 const middleware = [thunk, logger, sagaMiddleware, routerMiddleware(history)];
 
 if (devMode === 'local') {
