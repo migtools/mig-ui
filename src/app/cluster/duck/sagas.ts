@@ -105,7 +105,7 @@ function* updateClusterRequest(action)  {
   const client: IClusterClient = ClientFactory.hostCluster(state);
 
   const currentCluster = state.cluster.clusterList.find(c => {
-    return c.MigCluster.metadata.name = clusterValues.name;
+    return c.MigCluster.metadata.name === clusterValues.name;
   });
   console.log('found currentCluster: ', currentCluster)
   const currentUrl = currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
