@@ -10,6 +10,7 @@ const { Creators, Types } = createActions({
   removeClusterSuccess: ['name'],
   setConnectionState: ['connectionState'],
   updateClusterSuccess: ['updatedCluster'],
+  setIsPollingCluster: ['isPolling'],
 });
 
 export { Creators, Types };
