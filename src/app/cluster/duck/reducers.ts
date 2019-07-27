@@ -51,7 +51,7 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
     ...state,
     clusterList: [
       ...state.clusterList.filter(
-        s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
+        s => s.MigCluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
       ),
       { ...action.updatedCluster },
     ],

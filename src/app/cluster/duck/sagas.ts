@@ -106,6 +106,7 @@ function* updateClusterRequest(action)  {
   const currentCluster = state.cluster.clusterList.find(c => {
     return c.MigCluster.metadata.name === clusterValues.name;
   });
+
   const currentUrl = currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
   const urlUpdated = clusterValues.url !== currentUrl;
 
@@ -113,7 +114,7 @@ function* updateClusterRequest(action)  {
   const currentToken = atob(currentCluster.Secret.data.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
 
-  if(!(urlUpdated && tokenUpdated)) {
+  if(!urlUpdated && !tokenUpdated) {
     console.warn('A cluster update was requested, but nothing was changed');
     return;
   }
@@ -155,7 +156,7 @@ function* updateClusterRequest(action)  {
     // Need to merge the grouped results onto the currentCluster since
     // its possible the grouped results was only a partial update
     // Ex: could have just been a Cluster or a Secret
-    const updatedCluster = { ...currentCluster, groupedResults };
+    const updatedCluster = { ...currentCluster, ...groupedResults };
 
     // Update the state tree with the updated cluster, and start to watch
     // again to check for its condition after edits
