@@ -97,7 +97,6 @@ function* watchAddClusterRequest() {
 }
 
 function* updateClusterRequest(action)  {
-  console.log('updateClusterRequest')
   // TODO: Probably need rollback logic here too if any fail
   const state = yield select();
   const { migMeta } = state;
@@ -107,14 +106,17 @@ function* updateClusterRequest(action)  {
   const currentCluster = state.cluster.clusterList.find(c => {
     return c.MigCluster.metadata.name === clusterValues.name;
   });
-  console.log('found currentCluster: ', currentCluster)
   const currentUrl = currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
   const urlUpdated = clusterValues.url !== currentUrl;
-  console.log('urlUpdated: ', urlUpdated);
 
-  const currentToken = currentCluster.Secret.data.saToken;
+  // NOTE: Need to decode the b64 token
+  const currentToken = atob(currentCluster.Secret.data.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
-  console.log('tokenUpdated: ', tokenUpdated);
+
+  if(!(urlUpdated && tokenUpdated)) {
+    console.warn('A cluster update was requested, but nothing was changed');
+    return;
+  }
 
   const updatePromises = [];
   if(urlUpdated) {
@@ -144,24 +146,26 @@ function* updateClusterRequest(action)  {
     // Then yield a wrapper all promise to the saga middleware and wait
     // on the results
     const results = yield Promise.all(updatePromises.map(reqfn => reqfn()));
-    console.log('got the results: ', results);
 
     const groupedResults = results.reduce((accum, res) => {
       accum[res.data.kind] = res.data;
       return accum;
     }, {});
-    console.log('groupedResults: ', groupedResults);
 
     // Need to merge the grouped results onto the currentCluster since
     // its possible the grouped results was only a partial update
     // Ex: could have just been a Cluster or a Secret
     const updatedCluster = { ...currentCluster, groupedResults };
-    console.log('Going to try to yield the updated cluster as a success')
-    console.log(updatedCluster);
 
-    // yield put(Creators.updateClusterSuccess(cluster))
+    // Update the state tree with the updated cluster, and start to watch
+    // again to check for its condition after edits
+    yield put(Creators.updateClusterSuccess(updatedCluster));
+    yield put(Creators.setClusterAddEditStatus(
+      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
+    ));
+    yield put(Creators.watchClusterAddEditStatus(clusterValues.name));
   } catch(err) {
-    console.log('An error occurred during updateClusterRequest:', err);
+    console.log('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
     // TODO: We probably even need retry logic here...
   }
