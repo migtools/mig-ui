@@ -7,7 +7,7 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
-import { AddEditState, AddEditStatus } from '../../../common/add_edit_state';
+import { AddEditState, AddEditStatus, AddEditMode } from '../../../common/add_edit_state';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -17,26 +17,39 @@ const currentStatus = (props) => {
   const addEditStatus: AddEditStatus = props.addEditStatus;
   switch(addEditStatus.state) {
     case AddEditState.Pending: {
-      return `Ready to create a cluster.`
+      return `Ready to create a cluster`;
     }
     case AddEditState.Critical: {
-      return `Critical: ${addEditStatus.message} | ${addEditStatus.reason}`
+      return `Connection failed: ${addEditStatus.message} | ${addEditStatus.reason}`;
     }
     case AddEditState.Ready: {
-      return `Ready: ${addEditStatus.message}`
+      return `Connection successful`;
     }
     case AddEditState.Watching: {
-      return `Watching your cluster for an update...`
+      return `Validating connection...`;
+    }
+    case AddEditState.TimedOut: {
+      return `Validation timed out, double check your inputs and try again?`
     }
     default: {
-      return `AddEditStatus fell into an unknown state.`
+      return `AddEditStatus fell into an unknown state`;
     }
   }
 }
 
 const addEditButtonText = (props) => {
-  return props.addEditStatus.state === AddEditState.Pending ?
-    'Add Cluster' : 'Update Cluster';
+  const { state } = props.addEditStatus;
+  switch(state) {
+    case AddEditState.TimedOut: {
+      return 'Try Again';
+    }
+    case AddEditState.Pending: {
+      return 'Add Cluster';
+    }
+    default: {
+      return 'Update Cluster';
+    }
+  }
 }
 
 const isAddEditButtonDisabled = (props) => {
@@ -49,6 +62,9 @@ const InnerAddClusterForm = ({
   errors,
   ...props
 }) => {
+  // Formik doesn't like addEditStatus destructured in the signature for some reason
+  const status = props.addEditStatus;
+
   const [isTokenHidden, setIsTokenHidden ] = useState(true);
   const toggleHideToken = e => {
     e.preventDefault();
@@ -73,7 +89,7 @@ const InnerAddClusterForm = ({
           name={nameKey}
           type="text"
           id="cluster-name-input"
-        // isDisabled = { (mode === 'update') ? true : false }
+          isDisabled={status.mode === AddEditMode.Edit}
         />
         {errors.name && touched.name && (
           <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -121,10 +137,10 @@ const InnerAddClusterForm = ({
 }
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: (_props) => ({
-      name: '',
-      url: '',
-      token: '',
+  mapPropsToValues: ({initialClusterValues}) => ({
+    name: initialClusterValues ? initialClusterValues.clusterName : '',
+    url: initialClusterValues ? initialClusterValues.clusterUrl : '',
+    token: initialClusterValues ? initialClusterValues.clusterSvcToken: '',
   }),
 
   validate: (values: any) => {

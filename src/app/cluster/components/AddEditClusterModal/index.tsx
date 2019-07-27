@@ -5,7 +5,11 @@ import { Modal } from '@patternfly/react-core';
 import { Creators } from '../../duck/actions';
 import { defaultAddEditStatus } from '../../../common/add_edit_state';
 
-const AddEditClusterModal = (props) => {
+const AddEditClusterModal = ({
+  addEditStatus,
+  initialClusterValues,
+  ...props
+}) => {
   const onAddEditSubmit = (clusterValues) => {
     props.addCluster(clusterValues);
   }
@@ -21,7 +25,8 @@ const AddEditClusterModal = (props) => {
       <AddClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
-        addEditStatus={props.addEditStatus}
+        addEditStatus={addEditStatus}
+        initialClusterValues={initialClusterValues}
       />
     </Modal>
   );

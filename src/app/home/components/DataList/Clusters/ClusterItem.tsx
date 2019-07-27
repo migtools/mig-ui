@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
@@ -12,6 +12,7 @@ import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
+import { ClusterContext } from '../../../duck/context';
 
 const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
@@ -47,6 +48,13 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
     }
   };
 
+  const clusterContext = useContext(ClusterContext);
+
+  const editCluster = () => {
+    clusterContext.watchClusterAddEditStatus(clusterName);
+    toggleIsAddEditOpen();
+  }
+
   return (
     <DataListItem key={clusterIndex} aria-labelledby="cluster-item">
       <DataListItemRow>
@@ -68,13 +76,17 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
               <Flex justifyContent="flex-end">
                 <Box mx={1}>
                   <Button
-                    onClick={toggleIsAddEditOpen}
+                    onClick={editCluster}
                     variant="secondary"
                     isDisabled={isHostCluster}
                   >
                     Edit
                   </Button>
-                  <AddEditClusterModal isOpen={isAddEditOpen} onHandleClose={toggleIsAddEditOpen} />
+                  <AddEditClusterModal
+                    isOpen={isAddEditOpen}
+                    onHandleClose={toggleIsAddEditOpen}
+                    initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
+                  />
                 </Box>
                 <Box mx={1}>
                   <Button

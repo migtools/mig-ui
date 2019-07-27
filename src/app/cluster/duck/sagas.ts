@@ -21,7 +21,6 @@ import {
   AddEditState,
   AddEditMode,
   AddEditStatus,
-  defaultAddEditStatus,
   AddEditWatchTimeout,
   AddEditWatchTimeoutPollInterval,
   AddEditConditionCritical,
@@ -97,7 +96,7 @@ function* watchAddClusterRequest() {
 
 function* pollClusterAddEditStatus(action) {
   // Give the controller some time to bounce
-  yield delay(4000);
+  yield delay(3000);
   while(true) {
     try {
       const state = yield select();

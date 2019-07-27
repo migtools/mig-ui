@@ -6,14 +6,16 @@ import planOperations from '../plan/duck/operations';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import { Creators as PlanCreators } from '../plan/duck/actions';
+import { Creators as PlanActionCreators } from '../plan/duck/actions';
+import { Creators as ClusterActionCreators } from '../cluster/duck/actions';
 import { startDataListPolling, stopDataListPolling } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import { DataList } from '@patternfly/react-core';
-import { PlanContext } from './duck/context';
+import { PlanContext, ClusterContext } from './duck/context';
 import { StatusPollingInterval } from '../common/duck/sagas';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
 
 interface IProps {
   allClusters: any[];
@@ -35,6 +37,7 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   startDataListPolling: (params) => void;
   stopDataListPolling: () => void;
+  watchClusterAddEditStatus: (string) => void;
 }
 
 interface IState {
@@ -123,10 +126,10 @@ class DetailViewComponent extends Component<IProps, IState> {
     const {
       allStorage,
       allClusters,
-      migStorageList,
       plansWithStatus,
       clusterAssociatedPlans,
       storageAssociatedPlans,
+      watchClusterAddEditStatus,
     } = this.props;
     const { isWizardOpen } = this.state;
 
@@ -135,14 +138,16 @@ class DetailViewComponent extends Component<IProps, IState> {
     return (
       <React.Fragment>
         <DataList aria-label="data-list-main-container">
-          <ClusterDataListItem
-            dataList={allClusters}
-            id="clusterList"
-            associatedPlans={clusterAssociatedPlans}
-            isLoading={this.props.isMigrating || this.props.isStaging}
-            migMeta={this.props.migMeta}
-            removeCluster={this.props.removeCluster}
-          />
+          <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+            <ClusterDataListItem
+              dataList={allClusters}
+              id="clusterList"
+              associatedPlans={clusterAssociatedPlans}
+              isLoading={this.props.isMigrating || this.props.isStaging}
+              migMeta={this.props.migMeta}
+              removeCluster={this.props.removeCluster}
+            />
+          </ClusterContext.Provider>
           <StorageDataListItem
             dataList={allStorage}
             id="storageList"
@@ -194,14 +199,21 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    planUpdateRequest: planValues => dispatch(PlanCreators.planUpdateRequest(planValues)),
+    planUpdateRequest: planValues => dispatch(PlanActionCreators.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
-      dispatch(PlanCreators.updateStageProgress(plan.planName, progress)),
-    stagingSuccess: plan => dispatch(PlanCreators.stagingSuccess(plan.planName)),
-    updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
+      dispatch(PlanActionCreators.updateStageProgress(plan.planName, progress)),
+    stagingSuccess: plan => dispatch(PlanActionCreators.stagingSuccess(plan.planName)),
+    updatePlans: updatedPlans => dispatch(PlanActionCreators.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(startDataListPolling(params)),
     stopDataListPolling: () => dispatch(stopDataListPolling()),
+    watchClusterAddEditStatus: (clusterName) => {
+      // Push the add edit status into watching state, and start watching
+      dispatch(ClusterActionCreators.setClusterAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      ));
+      dispatch(ClusterActionCreators.watchClusterAddEditStatus(clusterName));
+    }
   };
 };
 

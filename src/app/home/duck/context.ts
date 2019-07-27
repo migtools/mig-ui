@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export const PlanContext = React.createContext(null);
+export const ClusterContext = React.createContext(null);
 export const AppContext = React.createContext(null);
