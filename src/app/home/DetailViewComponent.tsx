@@ -90,6 +90,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     }));
   };
   handlePlanSubmit = planWizardValues => {
+    console.error(planWizardValues);
     this.props.planUpdateRequest(planWizardValues);
   };
 
