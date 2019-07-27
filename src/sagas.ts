@@ -13,6 +13,7 @@ export default function* rootSaga() {
     planSagas.watchPVPolling(),
     planSagas.watchPlanUpdate(),
     clusterSagas.watchAddClusterRequest(),
+    clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),
   ]);
 }

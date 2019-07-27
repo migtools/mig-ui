@@ -12,6 +12,8 @@ import {
   createClusterRegistryObj,
   createTokenSecret,
   createMigCluster,
+  updateClusterRegistryObj,
+  updateTokenSecret,
 } from '../../../client/resources/conversions';
 
 import { Creators } from './actions';
@@ -94,6 +96,81 @@ function* watchAddClusterRequest() {
   yield takeLatest(Creators.addClusterRequest().type, addClusterRequest);
 }
 
+function* updateClusterRequest(action)  {
+  console.log('updateClusterRequest')
+  // TODO: Probably need rollback logic here too if any fail
+  const state = yield select();
+  const { migMeta } = state;
+  const { clusterValues } = action;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+
+  const currentCluster = state.cluster.clusterList.find(c => {
+    return c.MigCluster.metadata.name = clusterValues.name;
+  });
+  console.log('found currentCluster: ', currentCluster)
+  const currentUrl = currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const urlUpdated = clusterValues.url !== currentUrl;
+  console.log('urlUpdated: ', urlUpdated);
+
+  const currentToken = currentCluster.Secret.data.saToken;
+  const tokenUpdated = clusterValues.token !== currentToken;
+  console.log('tokenUpdated: ', tokenUpdated);
+
+  const updatePromises = [];
+  if(urlUpdated) {
+    const newClusterReg = updateClusterRegistryObj(clusterValues.url);
+    const clusterRegResource = new ClusterRegistryResource(
+      ClusterRegistryResourceKind.Cluster,
+      migMeta.namespace,
+    )
+    // Pushing a request fn to delay the call until its yielded in a batch at same time
+    updatePromises.push(() => client.patch(
+      clusterRegResource, clusterValues.name, newClusterReg));
+  }
+
+  if(tokenUpdated) {
+    const newTokenSecret = updateTokenSecret(clusterValues.token);
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace,
+    )
+    // Pushing a request fn to delay the call until its yielded in a batch at same time
+    updatePromises.push(() => client.patch(
+      secretResource, clusterValues.name, newTokenSecret));
+  }
+
+  try {
+    // Convert reqfns to promises, executing the requsts in the process
+    // Then yield a wrapper all promise to the saga middleware and wait
+    // on the results
+    const results = yield Promise.all(updatePromises.map(reqfn => reqfn()));
+    console.log('got the results: ', results);
+
+    const groupedResults = results.reduce((accum, res) => {
+      accum[res.data.kind] = res.data;
+      return accum;
+    }, {});
+    console.log('groupedResults: ', groupedResults);
+
+    // Need to merge the grouped results onto the currentCluster since
+    // its possible the grouped results was only a partial update
+    // Ex: could have just been a Cluster or a Secret
+    const updatedCluster = { ...currentCluster, groupedResults };
+    console.log('Going to try to yield the updated cluster as a success')
+    console.log(updatedCluster);
+
+    // yield put(Creators.updateClusterSuccess(cluster))
+  } catch(err) {
+    console.log('An error occurred during updateClusterRequest:', err);
+    // TODO: What are we planning on doing in the event of an update failure?
+    // TODO: We probably even need retry logic here...
+  }
+}
+
+function* watchUpdateClusterRequest() {
+  yield takeLatest(Creators.updateClusterRequest().type, updateClusterRequest);
+}
+
 function* pollClusterAddEditStatus(action) {
   // Give the controller some time to bounce
   yield delay(3000);
@@ -170,5 +247,6 @@ function* watchClusterAddEditStatus() {
 
 export default {
   watchAddClusterRequest,
+  watchUpdateClusterRequest,
   watchClusterAddEditStatus,
 };

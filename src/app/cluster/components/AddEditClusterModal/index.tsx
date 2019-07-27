@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import AddClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
 import { Creators } from '../../duck/actions';
-import { defaultAddEditStatus } from '../../../common/add_edit_state';
+import {
+  defaultAddEditStatus,
+  AddEditMode,
+} from '../../../common/add_edit_state';
 
 const AddEditClusterModal = ({
   addEditStatus,
   initialClusterValues,
+  isOpen,
   ...props
 }) => {
   const onAddEditSubmit = (clusterValues) => {
-    props.addCluster(clusterValues);
+    switch(addEditStatus.mode) {
+      case AddEditMode.Edit: {
+        props.updateCluster(clusterValues);
+        break;
+      }
+      case AddEditMode.Add: {
+        props.addCluster(clusterValues);
+        break;
+      }
+      default: {
+        console.warn(
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`, );
+      }
+    }
   }
 
   const onClose = () => {
@@ -20,8 +37,22 @@ const AddEditClusterModal = ({
     props.onHandleClose();
   }
 
+  // useEffect(() => {
+  //   console.log('AddEditClusterModal::useEffect');
+  //   console.log('isOpen: ', isOpen);
+  //   if(isOpen) {
+  //     console.log('suspending cluster polling since it was opened');
+  //   }
+  //   return () => {
+  //     console.log('return effect');
+  //     if(!isOpen) {
+  //       console.log('starting polling again since the modal is closed');
+  //     }
+  //   }
+  // }, [isOpen])
+
   return (
-    <Modal isSmall isOpen={props.isOpen} onClose={props.onHandleClose} title="Cluster">
+    <Modal isSmall isOpen={isOpen} onClose={props.onHandleClose} title="Cluster">
       <AddClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
@@ -40,10 +71,11 @@ export default connect(
   },
   dispatch => ({
     addCluster: clusterValues => dispatch(Creators.addClusterRequest(clusterValues)),
+    updateCluster: updatedClusterValues => dispatch(
+      Creators.updateClusterRequest(updatedClusterValues)),
     cancelAddEditWatch: () => dispatch(Creators.cancelWatchClusterAddEditStatus()),
     resetAddEditState: () => {
       dispatch(Creators.setClusterAddEditStatus(defaultAddEditStatus()));
     },
-    //updateCluster: values => dispatch(clusterOperations.updateCluster(values)),
   })
 )(AddEditClusterModal);

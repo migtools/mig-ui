@@ -10,6 +10,7 @@ const { Creators, Types } = createActions({
   addClusterSuccess: ['newCluster'],
   addClusterFailure: ['error'],
   removeClusterSuccess: ['name'],
+  updateClusterRequest: ['clusterValues'],
   updateClusterSuccess: ['updatedCluster'],
   watchClusterAddEditStatus: ['clusterName'],
   cancelWatchClusterAddEditStatus: [],
