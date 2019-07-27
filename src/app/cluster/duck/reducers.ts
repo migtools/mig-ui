@@ -3,6 +3,7 @@ import { createReducer } from 'reduxsauce';
 import { defaultAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
+  isPolling: false,
   isError: false,
   isFetching: false,
   clusterList: [],
@@ -25,6 +26,14 @@ export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
 
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
+};
+
+export const setConnectionState = (state = INITIAL_STATE, action) => {
+  return { ...state, connectionState: action.connectionState };
+};
+
+export const setIsPollingCluster = (state = INITIAL_STATE, action) => {
+  return { ...state, isPolling: action.isPolling };
 };
 
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
@@ -76,6 +85,8 @@ export const HANDLERS = {
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
+  [Types.SET_CONNECTION_STATE]: setConnectionState,
+  [Types.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

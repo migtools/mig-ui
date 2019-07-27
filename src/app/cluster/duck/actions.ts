@@ -14,6 +14,7 @@ const { Creators, Types } = createActions({
   updateClusterSuccess: ['updatedCluster'],
   watchClusterAddEditStatus: ['clusterName'],
   cancelWatchClusterAddEditStatus: [],
+  setIsPollingCluster: ['isPolling'],
 });
 
 
