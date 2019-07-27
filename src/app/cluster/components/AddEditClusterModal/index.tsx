@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
@@ -7,13 +7,16 @@ import {
   defaultAddEditStatus,
   AddEditMode,
 } from '../../../common/add_edit_state';
+import { PollingContext } from '../../../home/duck/context';
 
 const AddEditClusterModal = ({
   addEditStatus,
   initialClusterValues,
   isOpen,
+  isPolling,
   ...props
 }) => {
+  const pollingContext = useContext(PollingContext);
   const onAddEditSubmit = (clusterValues) => {
     switch(addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -31,25 +34,19 @@ const AddEditClusterModal = ({
     }
   }
 
+
+  useEffect(() => {
+    if(isOpen && isPolling) {
+      pollingContext.stopClusterPolling();
+    }
+  })
+
   const onClose = () => {
     props.cancelAddEditWatch();
     props.resetAddEditState();
     props.onHandleClose();
+    pollingContext.startDefaultClusterPolling();
   }
-
-  // useEffect(() => {
-  //   console.log('AddEditClusterModal::useEffect');
-  //   console.log('isOpen: ', isOpen);
-  //   if(isOpen) {
-  //     console.log('suspending cluster polling since it was opened');
-  //   }
-  //   return () => {
-  //     console.log('return effect');
-  //     if(!isOpen) {
-  //       console.log('starting polling again since the modal is closed');
-  //     }
-  //   }
-  // }, [isOpen])
 
   return (
     <Modal isSmall isOpen={isOpen} onClose={props.onHandleClose} title="Cluster">
@@ -67,6 +64,7 @@ export default connect(
   state => {
     return {
       addEditStatus: state.cluster.addEditStatus,
+      isPolling: state.cluster.isPolling,
     };
   },
   dispatch => ({
