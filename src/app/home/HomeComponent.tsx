@@ -4,18 +4,9 @@ import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import {
   Brand,
-  Toolbar,
-  ToolbarGroup,
-  Button,
-  ToolbarItem,
-  Dropdown,
-  ButtonVariant,
   DropdownItem,
-  KebabToggle,
-  DropdownToggle,
   Page,
   PageHeader,
-  PageSidebar,
   Nav,
   NavList,
   NavExpandable,
@@ -182,29 +173,7 @@ class HomeComponent extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { isDropdownOpen, activeItem, activeGroup, isNavOpen } = this.state;
-
-    const PageNav = (
-      <Nav onSelect={this.onNavSelect} aria-label="Nav">
-        <NavList>
-          <NavExpandable
-            title="System Panel"
-            groupId="grp-1"
-            isActive={activeGroup === 'grp-1'}
-            isExpanded
-          >
-            <NavItem
-              to="#expandable-1"
-              groupId="grp-1"
-              itemId="grp-1_itm-1"
-              isActive={activeItem === 'grp-1_itm-1'}
-            >
-              Overview
-            </NavItem>
-          </NavExpandable>
-        </NavList>
-      </Nav>
-    );
+    const { activeItem, activeGroup } = this.state;
 
     const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand {
