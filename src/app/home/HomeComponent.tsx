@@ -261,6 +261,14 @@ class HomeComponent extends React.Component<IProps, IState> {
                   startDefaultStoragePolling: () => this.startDefaultStoragePolling(),
                   stopClusterPolling: () => this.props.stopClusterPolling(),
                   stopStoragepolling: () => this.props.stopStoragePolling(),
+                  startAllDefaultPolling: () => {
+                    this.startDefaultClusterPolling();
+                    this.startDefaultStoragePolling();
+                  },
+                  stopAllPolling: () => {
+                    this.props.stopClusterPolling();
+                    this.props.stopStoragePolling();
+                  }
                 }}>
                   <DetailViewComponent />
                 </PollingContext.Provider>

@@ -37,7 +37,7 @@ const AddEditClusterModal = ({
 
   useEffect(() => {
     if(isOpen && isPolling) {
-      pollingContext.stopClusterPolling();
+      pollingContext.stopAllPolling();
     }
   })
 
@@ -45,11 +45,11 @@ const AddEditClusterModal = ({
     props.cancelAddEditWatch();
     props.resetAddEditState();
     props.onHandleClose();
-    pollingContext.startDefaultClusterPolling();
+    pollingContext.startAllDefaultPolling();
   }
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={props.onHandleClose} title="Cluster">
+    <Modal isSmall isOpen={isOpen} onClose={onClose} title="Cluster">
       <AddClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
