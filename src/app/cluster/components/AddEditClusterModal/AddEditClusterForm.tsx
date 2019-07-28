@@ -52,8 +52,13 @@ const addEditButtonText = (props) => {
   }
 }
 
-const isAddEditButtonDisabled = (props) => {
-  return props.addEditStatus.state === AddEditState.Watching;
+const isAddEditButtonDisabled = (props, errors, touched) => {
+  const hasNotBeenTouched = Object.keys(touched).length === 0;
+  const hasValidationErrors = Object.keys(errors).length > 0;
+  const valuesAreNotReady = hasNotBeenTouched || hasValidationErrors;
+  const isDisabled = valuesAreNotReady ||
+    props.addEditStatus.state === AddEditState.Watching;
+  return isDisabled;
 }
 
 const InnerAddClusterForm = ({
@@ -124,7 +129,7 @@ const InnerAddClusterForm = ({
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <Button type="submit" isDisabled={isAddEditButtonDisabled(props)}>
+      <Button type="submit" isDisabled={isAddEditButtonDisabled(props, errors, touched)}>
         {addEditButtonText(props)}
       </Button>
       <h3>Status:</h3>
