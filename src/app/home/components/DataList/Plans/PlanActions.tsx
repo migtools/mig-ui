@@ -22,13 +22,13 @@ const PlanActions = ({ plan, isLoading }) => {
     finalMigrationComplete,
   } = plan.PlanStatus;
 
-  const [kebabIsOpen, kebabToggleOpen] = useState(false);
+  const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
     <DropdownItem 
       // @ts-ignore
       onClick={() => {
         planContext.handleDeletePlan(plan);
-        kebabToggleOpen(false);
+        setKebabIsOpen(false);
       }}
       key="deletePlan"
     >
@@ -79,7 +79,7 @@ const PlanActions = ({ plan, isLoading }) => {
 
       <Box mx={1}>
         <Dropdown
-          toggle={<KebabToggle onToggle={kebabToggleOpen} />}
+          toggle={<KebabToggle onToggle={setKebabIsOpen} />}
           isOpen={kebabIsOpen}
           isPlain
           dropdownItems={kebabDropdownItems}

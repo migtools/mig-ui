@@ -259,7 +259,7 @@ class HomeComponent extends React.Component<IProps, IState> {
           </Flex>
         </PageSection>
         <PageSection>
-          <Text textAlign="center">&copy; Red Hat 2019</Text>
+          {/* <TODO: footer content */}
         </PageSection>
       </Page>
     );
