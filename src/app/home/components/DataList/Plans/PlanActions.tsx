@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React, { useState, useContext } from 'react';
 import { PlanContext } from '../../../duck/context';
-import { Button, Dropdown, DropdownToggle, DropdownItem, DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle } from '@patternfly/react-core';
+import { Button, Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import { Flex, Box } from '@rebass/emotion';
 import PlanStatus from './PlanStatus';
