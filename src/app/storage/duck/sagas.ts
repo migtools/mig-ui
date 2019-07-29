@@ -192,9 +192,10 @@ function* pollStorageAddEditStatus(action) {
         MigResourceKind.MigStorage, migMeta.namespace);
       const storagePollResult = yield client.get(migStorageResource, storageName);
 
-      const criticalCond = storagePollResult.data.status.conditions.find(cond => {
-        return cond.category === AddEditConditionCritical;
-      });
+      const criticalCond = storagePollResult.data.status &&
+        storagePollResult.data.status.conditions.find(cond => {
+          return cond.category === AddEditConditionCritical;
+        });
 
       if(criticalCond) {
         return createAddEditStatusWithMeta(
@@ -205,9 +206,10 @@ function* pollStorageAddEditStatus(action) {
         );
       }
 
-      const readyCond = storagePollResult.data.status.conditions.find(cond => {
-        return cond.type === AddEditConditionReady;
-      });
+      const readyCond = storagePollResult.data.status &&
+        storagePollResult.data.status.conditions.find(cond => {
+          return cond.type === AddEditConditionReady;
+        });
 
       if(readyCond) {
         return createAddEditStatusWithMeta(

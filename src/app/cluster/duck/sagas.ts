@@ -190,9 +190,10 @@ function* pollClusterAddEditStatus(action) {
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
       const clusterPollResult = yield client.get(migClusterResource, clusterName);
 
-      const criticalCond = clusterPollResult.data.status.conditions.find(cond => {
-        return cond.category === AddEditConditionCritical;
-      });
+      const criticalCond = clusterPollResult.data.status &&
+        clusterPollResult.data.status.conditions.find(cond => {
+          return cond.category === AddEditConditionCritical;
+        });
 
       if(criticalCond) {
         return createAddEditStatusWithMeta(
@@ -203,9 +204,10 @@ function* pollClusterAddEditStatus(action) {
         );
       }
 
-      const readyCond = clusterPollResult.data.status.conditions.find(cond => {
-        return cond.type === AddEditConditionReady;
-      });
+      const readyCond = clusterPollResult.data.status &&
+        clusterPollResult.data.status.conditions.find(cond => {
+          return cond.type === AddEditConditionReady;
+        });
 
       if(readyCond) {
         return createAddEditStatusWithMeta(
