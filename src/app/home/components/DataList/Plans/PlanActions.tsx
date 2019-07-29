@@ -26,10 +26,13 @@ const PlanActions = ({ plan, isLoading }) => {
   const kebabDropdownItems = [
     <DropdownItem 
       // @ts-ignore
-      onClick={() => planContext.handleDeletePlan(plan)} 
+      onClick={() => {
+        planContext.handleDeletePlan(plan);
+        kebabToggleOpen(false);
+      }}
       key="deletePlan"
     >
-      Delete Plan
+      Delete
     </DropdownItem>
   ];
 
@@ -81,8 +84,6 @@ const PlanActions = ({ plan, isLoading }) => {
           isPlain
           dropdownItems={kebabDropdownItems}
         />
-
-
       </Box>
       
       {isLoading && (
