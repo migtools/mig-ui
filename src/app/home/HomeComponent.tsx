@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Flex, Box } from '@rebass/emotion';
+import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import {
   Brand,
@@ -176,27 +176,6 @@ class HomeComponent extends React.Component<IProps, IState> {
 
   render() {
     const { isDropdownOpen, activeItem, activeGroup, isNavOpen } = this.state;
-    const PageNav = (
-      <Nav onSelect={this.onNavSelect} aria-label="Nav">
-        <NavList>
-          <NavExpandable
-            title="System Panel"
-            groupId="grp-1"
-            isActive={activeGroup === 'grp-1'}
-            isExpanded
-          >
-            <NavItem
-              to="#expandable-1"
-              groupId="grp-1"
-              itemId="grp-1_itm-1"
-              isActive={activeItem === 'grp-1_itm-1'}
-            >
-              Overview
-            </NavItem>
-          </NavExpandable>
-        </NavList>
-      </Nav>
-    );
 
     const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand {
@@ -238,53 +217,51 @@ class HomeComponent extends React.Component<IProps, IState> {
       isStorageError,
       planStatusCounts,
     } = this.props;
-    const StyledPageSection = styled(PageSection)`
-      padding-top: '50px';
-    `;
     return (
-      <React.Fragment>
-        <Page header={Header}>
-          <StyledPageSection>
-            <Grid gutter="md">
-              <GridItem span={4}>
-                <DashboardCard
-                  type="clusters"
-                  title="Clusters"
-                  dataList={allClusters}
-                  isFetching={isFetchingClusters}
-                  isError={isClusterError}
-                />
-              </GridItem>
-              <GridItem span={4}>
-                <DashboardCard
-                  title="Replication Repositories"
-                  type="repositories"
-                  dataList={allStorage}
-                  isFetching={isFetchingStorage}
-                  isError={isStorageError}
-                />
-              </GridItem>
-              <GridItem span={4}>
-                <DashboardCard
-                  type="plans"
-                  title="Migration Plans"
-                  planStatusCounts={planStatusCounts}
-                  dataList={allPlans}
-                  isFetching={isFetchingPlans}
-                  isError={isPlanError}
-                />
-              </GridItem>
-            </Grid>
-          </StyledPageSection>
-          <PageSection>
-            <Flex justifyContent="center">
-              <Box flex="0 0 100%">
-                <DetailViewComponent />
-              </Box>
-            </Flex>
-          </PageSection>
-        </Page>
-      </React.Fragment>
+      <Page header={Header}>
+        <PageSection>
+          <Grid gutter="md">
+            <GridItem span={4}>
+              <DashboardCard
+                type="clusters"
+                title="Clusters"
+                dataList={allClusters}
+                isFetching={isFetchingClusters}
+                isError={isClusterError}
+              />
+            </GridItem>
+            <GridItem span={4}>
+              <DashboardCard
+                title="Replication Repositories"
+                type="repositories"
+                dataList={allStorage}
+                isFetching={isFetchingStorage}
+                isError={isStorageError}
+              />
+            </GridItem>
+            <GridItem span={4}>
+              <DashboardCard
+                type="plans"
+                title="Migration Plans"
+                planStatusCounts={planStatusCounts}
+                dataList={allPlans}
+                isFetching={isFetchingPlans}
+                isError={isPlanError}
+              />
+            </GridItem>
+          </Grid>
+        </PageSection>
+        <PageSection>
+          <Flex justifyContent="center">
+            <Box flex="0 0 100%">
+              <DetailViewComponent />
+            </Box>
+          </Flex>
+        </PageSection>
+        <PageSection>
+          <Text textAlign="center">&copy; Red Hat 2019</Text>
+        </PageSection>
+      </Page>
     );
   }
 }
