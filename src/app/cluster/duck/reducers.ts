@@ -1,6 +1,6 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import { defaultAddEditStatus } from '../../common/add_edit_state';
+import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -12,12 +12,7 @@ export const INITIAL_STATE = {
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  // TODO: Obviously this needs to be removed when connected is actually implemented!
-  const clusterList = action.clusterList.map(cluster => {
-    cluster.status = 'success';
-    return cluster;
-  });
-  return { ...state, clusterList, isFetching: false };
+  return { ...state, clusterList: action.clusterList, isFetching: false };
 };
 
 export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
@@ -32,6 +27,12 @@ export const setIsPollingCluster = (state = INITIAL_STATE, action) => {
   return { ...state, isPolling: action.isPolling };
 };
 
+export const addClusterRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    addEditStatus: fetchingAddEditStatus(),
+  };
+};
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -77,6 +78,7 @@ export const HANDLERS = {
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.ADD_CLUSTER_REQUEST]: addClusterRequest,
   [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
