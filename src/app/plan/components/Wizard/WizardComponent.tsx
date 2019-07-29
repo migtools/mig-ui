@@ -30,11 +30,7 @@ const WizardComponent = props => {
     isPVError,
     isCheckingPlanStatus,
     fetchNamespacesForCluster,
-<<<<<<< HEAD
     sourceClusterNamespaces,
-=======
-    sourceClusterNamespaces
->>>>>>> remove code for storageclass fetch
   } = props;
 
   enum stepId {
