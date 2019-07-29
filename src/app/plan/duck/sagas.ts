@@ -5,7 +5,10 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 
 import { Creators } from './actions';
-import { alertErrorTimeout } from '../../common/duck/actions';
+import { 
+  alertErrorTimeout, 
+  alertSuccessTimeout ,
+} from '../../common/duck/actions';
 import { request } from 'https';
 
 const TicksUntilTimeout = 20;
@@ -107,6 +110,7 @@ function* planDeleteSaga(action) {
       action.planName,
     )
     yield put(Creators.planDeleteSuccess(action.planName));
+    yield put(alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch(err) {
     console.error(err);
     yield put(alertErrorTimeout('Plan delete request failed'));
