@@ -24,7 +24,7 @@
     "test:unit": "jest --rootDir=. --config=config/jest.config.js",
     "test:integration": "./scripts/test-integration.sh",
     "test": "yarn test:unit && yarn test:integration",
-    "ci": "yarn lint && yarn test && yarn build",
+    "ci": "yarn lint && yarn test:unit && yarn build",
     "mocks": "node scripts/gather-mocked-data.js",
     "mocks:prune": "node scripts/gather-mocked-data.js prune"
   },
