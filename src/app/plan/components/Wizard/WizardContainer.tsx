@@ -68,10 +68,11 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-    isFetchingPVList: state.plan.isFetchingPVList,
     isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
+    isFetchingPVList: state.plan.isFetchingPVList,
+    isPVError: state.plan.isPVError,
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -80,7 +81,7 @@ const mapDispatchToProps = dispatch => {
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
-
+    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
   };
 };
 
