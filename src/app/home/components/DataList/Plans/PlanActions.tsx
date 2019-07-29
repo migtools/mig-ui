@@ -79,7 +79,9 @@ const PlanActions = ({ plan, isLoading }) => {
 
       <Box mx={1}>
         <Dropdown
-          toggle={<KebabToggle onToggle={setKebabIsOpen} />}
+          toggle={<KebabToggle 
+            onToggle={() => setKebabIsOpen(!kebabIsOpen) } 
+          />}
           isOpen={kebabIsOpen}
           isPlain
           dropdownItems={kebabDropdownItems}
