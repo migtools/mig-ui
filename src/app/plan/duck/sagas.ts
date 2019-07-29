@@ -108,7 +108,7 @@ function* planDeleteSaga(action) {
     yield client.delete(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       action.planName,
-    )
+    );
     yield put(Creators.planDeleteSuccess(action.planName));
     yield put(alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch(err) {
