@@ -18,7 +18,7 @@ import {
   createAddEditStatus,
   AddEditState,
   AddEditMode,
-  AddEditStatus,
+  IAddEditStatus,
   AddEditWatchTimeout,
   AddEditWatchTimeoutPollInterval,
   AddEditConditionCritical,
@@ -168,7 +168,7 @@ function* updateStorageRequest(action)  {
     ));
     yield put(Creators.watchStorageAddEditStatus(storageValues.name));
   } catch(err) {
-    console.log('NOT IMPLEMENTED: An error occurred during updateStorageRequest:', err);
+    console.error('NOT IMPLEMENTED: An error occurred during updateStorageRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
     // TODO: We probably even need retry logic here...
   }
@@ -241,7 +241,7 @@ function* startWatchingStorageAddEditStatus(action) {
     return;
   }
 
-  const addEditResult: AddEditStatus = raceResult.addEditResult;
+  const addEditResult: IAddEditStatus = raceResult.addEditResult;
 
   const statusToDispatch = addEditResult || createAddEditStatus(
     AddEditState.TimedOut, AddEditMode.Edit);

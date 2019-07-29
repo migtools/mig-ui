@@ -1,5 +1,5 @@
 import { createActions } from 'reduxsauce';
-import { AddEditStatus } from '../../common/add_edit_state';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 const { Creators, Types } = createActions({
   migStorageFetchRequest: [],
@@ -20,7 +20,7 @@ const { Creators, Types } = createActions({
 });
 
 Types.SET_STORAGE_ADD_EDIT_STATUS = 'SET_STORAGE_ADD_EDIT_STATUS';
-Creators.setStorageAddEditStatus = (status: AddEditStatus) => {
+Creators.setStorageAddEditStatus = (status: IAddEditStatus) => {
   return {
     type: Types.SET_STORAGE_ADD_EDIT_STATUS,
     status,

@@ -12,7 +12,7 @@ export enum AddEditMode {
   Edit = 'edit',
 }
 
-export interface AddEditStatus {
+export interface IAddEditStatus {
   mode: AddEditMode;
   state: AddEditState;
   message?: string;
@@ -22,7 +22,7 @@ export interface AddEditStatus {
 export const createAddEditStatus = (
   state: AddEditState,
   mode: AddEditMode
-): AddEditStatus => {
+): IAddEditStatus => {
   return { state, mode };
 };
 
@@ -31,11 +31,11 @@ export const createAddEditStatusWithMeta = (
   mode: AddEditMode,
   message: string,
   reason: string,
-): AddEditStatus => {
+): IAddEditStatus => {
   return { state, mode, message, reason };
 };
 
-export const defaultAddEditStatus = (): AddEditStatus => {
+export const defaultAddEditStatus = (): IAddEditStatus => {
   return {
     state: AddEditState.Pending,
     mode: AddEditMode.Add,
@@ -54,7 +54,7 @@ export const AddEditWatchTimeoutPollInterval = addEditPollIntervalSeconds * 1000
 const addEditDebounceWaitSeconds = 3;
 export const AddEditDebounceWait = addEditDebounceWaitSeconds * 1000;
 
-export const addEditStatusText = (componentType: string) => (status: AddEditStatus) => {
+export const addEditStatusText = (componentType: string) => (status: IAddEditStatus) => {
   switch(status.state) {
     case AddEditState.Pending: {
       return `Ready to create a ${componentType}`;
@@ -77,7 +77,7 @@ export const addEditStatusText = (componentType: string) => (status: AddEditStat
   }
 };
 
-export const addEditButtonText = (componentType: string) => (status: AddEditStatus) => {
+export const addEditButtonText = (componentType: string) => (status: IAddEditStatus) => {
   switch(status.state) {
     case AddEditState.TimedOut: {
       return 'Try Again';
@@ -92,7 +92,7 @@ export const addEditButtonText = (componentType: string) => (status: AddEditStat
 };
 
 export const isAddEditButtonDisabled = (
-  status: AddEditStatus, errors: object, touched: object
+  status: IAddEditStatus, errors: object, touched: object
 ) => {
   const hasNotBeenTouched = Object.keys(touched).length === 0;
   const hasValidationErrors = Object.keys(errors).length > 0;

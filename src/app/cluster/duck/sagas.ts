@@ -22,7 +22,7 @@ import {
   createAddEditStatus,
   AddEditState,
   AddEditMode,
-  AddEditStatus,
+  IAddEditStatus,
   AddEditWatchTimeout,
   AddEditWatchTimeoutPollInterval,
   AddEditConditionCritical,
@@ -167,7 +167,7 @@ function* updateClusterRequest(action)  {
     ));
     yield put(Creators.watchClusterAddEditStatus(clusterValues.name));
   } catch(err) {
-    console.log('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
+    console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
     // TODO: We probably even need retry logic here...
   }
@@ -239,7 +239,7 @@ function* startWatchingClusterAddEditStatus(action) {
     return;
   }
 
-  const addEditResult: AddEditStatus = raceResult.addEditResult;
+  const addEditResult: IAddEditStatus = raceResult.addEditResult;
 
   const statusToDispatch = addEditResult || createAddEditStatus(
     AddEditState.TimedOut, AddEditMode.Edit);
