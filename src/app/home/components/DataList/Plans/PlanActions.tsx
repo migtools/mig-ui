@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core';
 import React, { useState, useContext } from 'react';
 import { PlanContext } from '../../../duck/context';
-import { Button } from '@patternfly/react-core';
+import { Button, Dropdown, DropdownToggle, DropdownItem, DropdownSeparator, DropdownPosition, DropdownDirection, KebabToggle } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import { Flex, Box } from '@rebass/emotion';
 import PlanStatus from './PlanStatus';
@@ -21,6 +21,17 @@ const PlanActions = ({ plan, isLoading }) => {
     hasSucceededMigration,
     finalMigrationComplete,
   } = plan.PlanStatus;
+
+  const [kebabIsOpen, kebabToggleOpen] = useState(false);
+  const kebabDropdownItems = [
+    <DropdownItem 
+      // @ts-ignore
+      onClick={() => planContext.handleDeletePlan(plan)} 
+      key="deletePlan"
+    >
+      Delete Plan
+    </DropdownItem>
+  ];
 
   return (
     <Flex>
@@ -60,9 +71,20 @@ const PlanActions = ({ plan, isLoading }) => {
         >
           Migrate
         </Button>
-        <Button onClick={() => planContext.handleDeletePlan(plan)}> Delete </Button>
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </Box>
+
+      <Box mx={1}>
+        <Dropdown
+          toggle={<KebabToggle onToggle={kebabToggleOpen} />}
+          isOpen={kebabIsOpen}
+          isPlain
+          dropdownItems={kebabDropdownItems}
+        />
+
+
+      </Box>
+      
       {isLoading && (
         <Box
           css={css`
