@@ -74,8 +74,8 @@ export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
   return{
     ...state,
     addEditStatus: action.status,
-  }
-}
+  };
+};
 
 export const HANDLERS = {
   [Types.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,

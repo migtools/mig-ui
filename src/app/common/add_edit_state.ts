@@ -24,7 +24,7 @@ export const createAddEditStatus = (
   mode: AddEditMode
 ): AddEditStatus => {
   return { state, mode };
-}
+};
 
 export const createAddEditStatusWithMeta = (
   state: AddEditState,
@@ -33,14 +33,14 @@ export const createAddEditStatusWithMeta = (
   reason: string,
 ): AddEditStatus => {
   return { state, mode, message, reason };
-}
+};
 
 export const defaultAddEditStatus = (): AddEditStatus => {
   return {
     state: AddEditState.Pending,
     mode: AddEditMode.Add,
-  }
-}
+  };
+};
 
 export const AddEditConditionCritical = 'Critical';
 export const AddEditConditionReady = 'Ready';
@@ -69,13 +69,13 @@ export const addEditStatusText = (componentType: string) => (status: AddEditStat
       return `Validating connection...`;
     }
     case AddEditState.TimedOut: {
-      return `Validation timed out, double check your inputs and try again?`
+      return `Validation timed out, double check your inputs and try again?`;
     }
     default: {
       return `AddEditStatus fell into an unknown state`;
     }
   }
-}
+};
 
 export const addEditButtonText = (componentType: string) => (status: AddEditStatus) => {
   switch(status.state) {
@@ -89,7 +89,7 @@ export const addEditButtonText = (componentType: string) => (status: AddEditStat
       return `Update ${componentType}`;
     }
   }
-}
+};
 
 export const isAddEditButtonDisabled = (
   status: AddEditStatus, errors: object, touched: object
@@ -100,4 +100,4 @@ export const isAddEditButtonDisabled = (
   const isDisabled = valuesAreNotReady ||
     status.state === AddEditState.Watching;
   return isDisabled;
-}
+};

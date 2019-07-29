@@ -23,7 +23,7 @@ Creators.setClusterAddEditStatus = (status: AddEditStatus) => {
   return {
     type: Types.SET_CLUSTER_ADD_EDIT_STATUS,
     status,
-  }
-}
+  };
+};
 
 export { Creators, Types };

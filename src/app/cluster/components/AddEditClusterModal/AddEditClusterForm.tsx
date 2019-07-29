@@ -36,13 +36,13 @@ const InnerAddEditClusterForm = ({
     e.preventDefault();
     e.stopPropagation();
     setIsTokenHidden(!isTokenHidden);
-  }
+  };
   const formikHandleChange = (_val, e) => props.handleChange(e);
   const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
 
   const onClose = () => {
     props.onClose();
-  }
+  };
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
@@ -101,8 +101,8 @@ const InnerAddEditClusterForm = ({
         Close
       </Button>
     </Form>
-  )
-}
+  );
+};
 
 const AddClusterForm: any = withFormik({
   mapPropsToValues: ({initialClusterValues}) => {
@@ -111,7 +111,7 @@ const AddClusterForm: any = withFormik({
       name: v ? v.clusterName : '',
       url: v ? v.clusterUrl : '',
       token: v ? v.clusterSvcToken: '',
-    }
+    };
   },
 
   validate: (values: any) => {

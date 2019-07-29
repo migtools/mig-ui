@@ -41,20 +41,20 @@ const InnerAddEditStorageForm = ({
     e.preventDefault();
     e.stopPropagation();
     setIsAccessKeyHidden(!isAccessKeyHidden);
-  }
+  };
   const [ isSecretHidden, setIsSecretHidden ] = useState(true);
   const handleSecretHiddenToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSecretHidden(!isSecretHidden);
-  }
+  };
 
   const formikHandleChange = (_val, e) => props.handleChange(e);
   const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
 
   const onClose = () => {
     props.onClose();
-  }
+  };
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
@@ -150,8 +150,8 @@ const InnerAddEditStorageForm = ({
         Close
       </Button>
     </Form>
-  )
-}
+  );
+};
 
 const AddEditStorageForm: any = withFormik({
   mapPropsToValues: ({initialStorageValues}) => {

@@ -88,7 +88,7 @@ function* addClusterRequest(action)  {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
     // Could use Promise.allSettled here as well.
-    console.error('Cluster failed creation with error: ', err)
+    console.error('Cluster failed creation with error: ', err);
     put(alertErrorTimeout('Cluster failed creation'));
   }
 }
@@ -126,7 +126,7 @@ function* updateClusterRequest(action)  {
     const clusterRegResource = new ClusterRegistryResource(
       ClusterRegistryResourceKind.Cluster,
       migMeta.namespace,
-    )
+    );
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
       clusterRegResource, clusterValues.name, newClusterReg));
@@ -137,7 +137,7 @@ function* updateClusterRequest(action)  {
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
       migMeta.configNamespace,
-    )
+    );
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
       secretResource, clusterValues.name, newTokenSecret));
@@ -192,7 +192,7 @@ function* pollClusterAddEditStatus(action) {
 
       const criticalCond = clusterPollResult.data.status.conditions.find(cond => {
         return cond.category === AddEditConditionCritical;
-      })
+      });
 
       if(criticalCond) {
         return createAddEditStatusWithMeta(

@@ -24,8 +24,8 @@ Creators.setStorageAddEditStatus = (status: AddEditStatus) => {
   return {
     type: Types.SET_STORAGE_ADD_EDIT_STATUS,
     status,
-  }
-}
+  };
+};
 
 
 export { Creators, Types };

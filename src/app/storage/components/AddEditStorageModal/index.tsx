@@ -31,7 +31,7 @@ const AddEditStorageModal = ({
           `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`, );
       }
     }
-  }
+  };
 
   useEffect(() => {
     if(isOpen && isPolling) {
@@ -44,7 +44,7 @@ const AddEditStorageModal = ({
     props.resetAddEditState();
     props.onHandleClose();
     pollingContext.startAllDefaultPolling();
-  }
+  };
 
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title="Repository">
@@ -55,8 +55,8 @@ const AddEditStorageModal = ({
         initialStorageValues={initialStorageValues}
       />
     </Modal>
-  )
-}
+  );
+};
 
 export default connect(
   state => {

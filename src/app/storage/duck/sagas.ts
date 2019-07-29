@@ -78,7 +78,7 @@ function* addStorageRequest(action)  {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
     // Could use Promise.allSettled here as well.
-    console.error('Storage failed creation with error: ', err)
+    console.error('Storage failed creation with error: ', err);
     put(alertErrorTimeout('Storage failed creation'));
   }
 }
@@ -138,7 +138,7 @@ function* updateStorageRequest(action)  {
   if(kubeSecretUpdated) {
     const updatedSecret = updateStorageSecret(storageValues.secret, storageValues.accessKey);
     const secretResource = new CoreNamespacedResource(
-      CoreNamespacedResourceKind.Secret, migMeta.configNamespace)
+      CoreNamespacedResourceKind.Secret, migMeta.configNamespace);
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
@@ -194,7 +194,7 @@ function* pollStorageAddEditStatus(action) {
 
       const criticalCond = storagePollResult.data.status.conditions.find(cond => {
         return cond.category === AddEditConditionCritical;
-      })
+      });
 
       if(criticalCond) {
         return createAddEditStatusWithMeta(

@@ -69,8 +69,8 @@ export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
   return{
     ...state,
     addEditStatus: action.status,
-  }
-}
+  };
+};
 
 export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,

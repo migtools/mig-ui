@@ -34,7 +34,7 @@ const AddEditClusterModal = ({
           `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`, );
       }
     }
-  }
+  };
 
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const AddEditClusterModal = ({
     props.resetAddEditState();
     props.onHandleClose();
     pollingContext.startAllDefaultPolling();
-  }
+  };
 
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title="Cluster">
@@ -60,7 +60,7 @@ const AddEditClusterModal = ({
       />
     </Modal>
   );
-}
+};
 
 export default connect(
   state => {

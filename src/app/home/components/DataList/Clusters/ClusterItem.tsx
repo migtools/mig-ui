@@ -53,7 +53,7 @@ const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster,
   const editCluster = () => {
     clusterContext.watchClusterAddEditStatus(clusterName);
     toggleIsAddEditOpen();
-  }
+  };
 
   return (
     <DataListItem key={clusterIndex} aria-labelledby="cluster-item">

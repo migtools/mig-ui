@@ -55,8 +55,8 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
 
   const editStorage = () => {
     storageContext.watchStorageAddEditStatus(name);
-    toggleIsAddEditModalOpen()
-  }
+    toggleIsAddEditModalOpen();
+  };
 
   return (
     <DataListItem key={storageIndex} aria-labelledby="">
