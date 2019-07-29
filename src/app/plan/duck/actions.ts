@@ -27,7 +27,9 @@ const { Creators, Types } = createActions({
   migrationFailure: [],
   updatePlan: ['updatedPlan'],
   updatePlanMigrations: ['updatedPlan'],
-  planUpdateRequest: ['planValues']
+  planUpdateRequest: ['planValues'],
+  planDeleteRequest: ['planName'],
+  planDeleteSuccess: ['planName'],
 });
 
 export { Creators, Types };

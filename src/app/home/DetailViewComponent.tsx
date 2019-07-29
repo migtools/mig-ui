@@ -35,6 +35,7 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   startDataListPolling: (params) => void;
   stopDataListPolling: () => void;
+  triggerPlanDelete: (string) => void;
 }
 
 interface IState {
@@ -98,6 +99,10 @@ class DetailViewComponent extends Component<IProps, IState> {
     this.props.runStage(plan);
   };
 
+  handleDeletePlan = plan => {
+    this.props.triggerPlanDelete(plan.MigPlan.metadata.name);
+  };
+
   handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
       this.props.updatePlans(response.updatedPlans);
@@ -131,7 +136,7 @@ class DetailViewComponent extends Component<IProps, IState> {
     const { isWizardOpen } = this.state;
 
     const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
-    const { handleStageTriggered } = this;
+    const { handleStageTriggered, handleDeletePlan } = this;
     return (
       <React.Fragment>
         <DataList aria-label="data-list-main-container">
@@ -150,7 +155,7 @@ class DetailViewComponent extends Component<IProps, IState> {
             isLoading={this.props.isMigrating || this.props.isStaging}
             removeStorage={this.props.removeStorage}
           />
-          <PlanContext.Provider value={{ handleStageTriggered }}>
+          <PlanContext.Provider value={{ handleStageTriggered, handleDeletePlan }}>
             <PlanDataListItem
               planList={plansWithStatus}
               clusterList={allClusters}
@@ -202,6 +207,7 @@ const mapDispatchToProps = dispatch => {
     updatePlans: updatedPlans => dispatch(PlanCreators.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(startDataListPolling(params)),
     stopDataListPolling: () => dispatch(stopDataListPolling()),
+    triggerPlanDelete: planName => dispatch(PlanCreators.planDeleteRequest(planName)),
   };
 };
 
