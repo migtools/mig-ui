@@ -63,7 +63,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
@@ -77,7 +77,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
@@ -91,7 +91,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
@@ -105,7 +105,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
@@ -119,7 +119,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
@@ -133,7 +133,7 @@ export class ClusterClient {
         .then(res => resolve(res))
         .catch(err => {
           if(err.response.status === 401) {
-            this.tokenExpiryHandler(this.oldToken())
+            this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
           }
