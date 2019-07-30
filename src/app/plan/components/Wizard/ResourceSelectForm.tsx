@@ -38,8 +38,8 @@ const ResourceSelectForm = props => {
     if (clusterList.length) {
       const sourceOptions = [];
       const targetOptions = [];
-      const len = clusterList.length;
-      for (let i = 0; i < len; i++) {
+      const clusterLen = clusterList.length;
+      for (let i = 0; i < clusterLen; i++) {
         if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster) {
           targetOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -68,7 +68,7 @@ const ResourceSelectForm = props => {
             label: existingSrcCluster.MigCluster.metadata.name,
             value: existingSrcCluster.MigCluster.metadata.name,
           }
-        )}
+        );}
       if (values.targetCluster !== null) {
         const existingTargetCluster = clusterList.find(
           c => c.MigCluster.metadata.name === values.targetCluster
@@ -92,15 +92,15 @@ const ResourceSelectForm = props => {
     // ***
     // * Populate storage dropdown
     // ***
-      const storageOptions = [];
-      const len = storageList.length;
-      for (let i = 0; i < len; i++) {
-          storageOptions.push({
+      const newStorageOptions = [];
+      const storageLen = storageList.length;
+      for (let i = 0; i < storageLen; i++) {
+          newStorageOptions.push({
             label: storageList[i].MigStorage.metadata.name,
             value: storageList[i].MigStorage.metadata.name,
           });
       }
-      setStorageOptions(storageOptions);
+      setStorageOptions(newStorageOptions);
 
       if (values.selectedStorage !== null) {
         const existingStorageSelection = storageList.find(
