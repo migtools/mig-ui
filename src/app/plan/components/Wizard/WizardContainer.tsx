@@ -6,12 +6,11 @@ import utils from '../../../common/duck/utils';
 
 const WizardContainer: any = withFormik({
   mapPropsToValues: () => ({
-    connectionStatus: '',
     planName: '',
     sourceCluster: null,
     targetCluster: null,
     selectedNamespaces: [],
-    selectedStorage: '',
+    selectedStorage: null,
     persistentVolumes: [],
   }),
 
@@ -61,7 +60,6 @@ const mapStateToProps = state => {
   });
 
   return {
-    connectionStatus: '',
     planName: '',
     sourceCluster: null,
     targetCluster: null,

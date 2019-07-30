@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
-import MigSourceForm from './MigSourceForm';
-import MigTargetForm from './MigTargetForm';
+import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
 import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
@@ -59,9 +58,9 @@ const WizardComponent = props => {
     },
     {
       id: stepId.MigrationSource,
-      name: 'Migration Source',
+      name: 'Resources',
       component: (
-        <MigSourceForm
+        <ResourceSelectForm
           values={values}
           errors={errors}
           touched={touched}
@@ -70,12 +69,17 @@ const WizardComponent = props => {
           setFieldValue={setFieldValue}
           setFieldTouched={setFieldTouched}
           clusterList={clusterList}
+          storageList={storageList}
           isFetchingNamespaceList={isFetchingNamespaceList}
           fetchNamespacesForCluster={fetchNamespacesForCluster}
           sourceClusterNamespaces={sourceClusterNamespaces}
         />
       ),
       enableNext:
+        !errors.selectedStorage &&
+        touched.selectedStorage === true &&
+        !errors.targetCluster &&
+        touched.targetCluster === true &&
         !errors.sourceCluster &&
         touched.sourceCluster === true &&
         !errors.selectedNamespaces &&
@@ -124,27 +128,7 @@ const WizardComponent = props => {
         />
       ),
       enableNext: !isLoading,
-      canJumpTo: stepIdReached >= 4,
-    },
-    {
-      id: stepId.MigrationTarget,
-      name: 'Migration Target',
-      component: (
-        <MigTargetForm
-          values={values}
-          errors={errors}
-          touched={touched}
-          handleBlur={handleBlur}
-          handleChange={handleChange}
-          setFieldValue={setFieldValue}
-          setFieldTouched={setFieldTouched}
-          clusterList={clusterList}
-          storageList={storageList}
-          onWizardLoadingToggle={toggleLoading}
-        />
-      ),
-      enableNext: !errors.targetCluster && touched.targetCluster === true && !isLoading,
-      canJumpTo: stepIdReached >= stepId.MigrationTarget,
+      canJumpTo: stepIdReached >= stepId.StorageClass,
     },
     {
       id: stepId.Results,
