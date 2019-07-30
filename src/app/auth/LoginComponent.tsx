@@ -23,9 +23,13 @@ class LoginComponent extends React.Component<IProps> {
   };
 
   componentDidUpdate = prevProps => {
-    const oauthMeta = this.props.auth.oauthMeta;
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
+    const oauthMeta = this.props.auth.oauthMeta;
+    if(!oauthMeta) {
+      this.props.fetchOauthMeta(migMeta.clusterApi);
+      return;
+    }
 
     const freshOauthMeta = !prevProps.auth.oauthMeta && !!oauthMeta;
     const urlParams = new URLSearchParams(window.location.search);
