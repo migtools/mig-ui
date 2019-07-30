@@ -52,16 +52,12 @@ const VolumesTable = (props): any => {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
             pvAction = rowVal.type;
           }
-          // TODO: A number of these values will need to be further supported by the
-          // controller. Today the data is not available.
-          // See the mig controller issue describing what data we need here:
-          // https://github.com/fusor/mig-controller/issues/134
           return {
             name: planVolume.name,
-            project: '',
+            project: planVolume.pvc.namespace,
             storageClass: planVolume.storageClass || 'None',
-            size: '100 Gi',
-            claim: '',
+            size: planVolume.capacity,
+            claim: planVolume.pvc.name,
             type: pvAction,
             details: '',
             supportedActions: planVolume.supported.actions,
@@ -70,16 +66,12 @@ const VolumesTable = (props): any => {
       } else {
         mappedPVs = discoveredPersistentVolumes.map(planVolume => {
           const pvAction = 'copy'; // Default to copy
-          // TODO: A number of these values will need to be further supported by the
-          // controller. Today the data is not available.
-          // See the mig controller issue describing what data we need here:
-          // https://github.com/fusor/mig-controller/issues/134
           return {
             name: planVolume.name,
-            project: '',
+            project: planVolume.pvc.namespace,
             storageClass: planVolume.selection.storageClass || '',
-            size: '100 Gi',
-            claim: '',
+            size: planVolume.capacity,
+            claim: planVolume.pvc.name,
             type: pvAction,
             details: '',
             supportedActions: planVolume.supported.actions,
