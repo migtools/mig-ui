@@ -9,38 +9,46 @@ import { Flex, Box, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 
+export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
+
 const StorageClassTable = (props): any => {
   const { planList, clusterList, values, isFetchingPVList } = props;
+  const currentPlan =
+    planList.find(p => p.MigPlan.metadata.name === values.planName);
+  const migPlanPvs = currentPlan.MigPlan.spec.persistentVolumes;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
+  // Create a bit of state that will hold the storage class assignments
+  // for each of the pvs. This will get set on the plan values.
+  const [pvStorageClassAssignment, setPvStorageClassAssignment] = useState({});
 
-  const handleTypeChange = (row, option) => {
-    updateTableData(row.index, option.value);
-  };
+  const handleStorageClassChange= (row, option) => {
+    const pvName = row.original.name;
+    const selectedScName = option.value;
+    const newSc = storageClassOptions.find(sc => sc.name === selectedScName);
+    const updatedAssignment = {
+      ...pvStorageClassAssignment,
+      [pvName]: newSc,
+    };
 
-  const getCurrentPlan = () => {
-    return planList.find(p => p.MigPlan.metadata.name === values.planName);
-  };
-
-  const updateTableData = (rowIndex, updatedValue) => {
-    const currentPlan = getCurrentPlan();
-    const rowsCopy = [...rows];
-    if (currentPlan !== null && values.persistentVolumes) {
-      const updatedRow = { ...rowsCopy[rowIndex], storageClass: updatedValue };
-
-      rowsCopy[rowIndex] = updatedRow;
-    }
-
-    setRows(rowsCopy);
-    props.setFieldValue('persistentVolumes', rowsCopy);
+    setPvStorageClassAssignment(updatedAssignment);
+    props.setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
   };
 
   useEffect(() => {
-    const currentPlan = getCurrentPlan();
     const destCluster = clusterList.find(
       c => c.MigCluster.metadata.name === currentPlan.MigPlan.spec.destMigClusterRef.name
     );
-    setStorageClassOptions(destCluster.MigCluster.spec.storageClasses);
+
+    const scs = destCluster.MigCluster.spec.storageClasses || [];
+    setStorageClassOptions(scs);
+    // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
+    const initialAssignedScs = migPlanPvs.reduce((assignedScs, pv) => {
+      assignedScs[pv.name] = scs.find(sc => sc.name === pv.selection.storageClass)
+      return assignedScs;
+    }, {});
+    setPvStorageClassAssignment(initialAssignedScs);
+    props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
 
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
@@ -58,6 +66,21 @@ const StorageClassTable = (props): any => {
         <Box flex="1" m="auto">
           <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
           <Text fontSize={[2, 3, 4]}> Discovering storage classes.</Text>
+        </Box>
+      </Flex>
+    );
+  }
+
+  if (storageClassOptions.length === 0) {
+    return (
+      <Flex
+        css={css`
+          height: 100%;
+          text-align: center;
+        `}
+      >
+        <Box flex="1" m="auto">
+          <Text fontSize={[2, 3, 4]}>No StorageClasses available for selection in target cluster</Text>
         </Box>
       </Flex>
     );
@@ -120,19 +143,17 @@ const StorageClassTable = (props): any => {
               width: 500,
               resizable: false,
               Cell: row => {
-                const selectedStorageClass = storageClassOptions.find(
-                  sc => sc.name === row.original.storageClass
-                );
+                const currentStorageClass = pvStorageClassAssignment[row.original.name];
                 return (
                   <Select
-                    onChange={(option: any) => handleTypeChange(row, option)}
+                    onChange={(option: any) => handleStorageClassChange(row, option)}
                     options={storageClassOptions.map(sc => {
                       return { value: sc.name, label: sc.name + ':' + sc.provisioner };
                     })}
                     name="storageClasses"
                     value={{
-                      label: selectedStorageClass.name + ':' + selectedStorageClass.provisioner,
-                      value: selectedStorageClass.name,
+                      label: currentStorageClass.name + ':' + currentStorageClass.provisioner,
+                      value: currentStorageClass.name,
                     }}
                   />
                 );
