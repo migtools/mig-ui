@@ -36,7 +36,7 @@ function* addStorageRequest(action)  {
 
   const storageSecret = createStorageSecret(
     storageValues.name,
-    migMeta.namespace,
+    migMeta.configNamespace,
     storageValues.secret,
     storageValues.accessKey,
   );

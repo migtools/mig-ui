@@ -40,7 +40,7 @@ function* addClusterRequest(action)  {
 
   const clusterReg = createClusterRegistryObj(
     clusterValues.name,
-    migMeta.namespace,
+    migMeta.configNamespace,
     clusterValues.url
   );
   const tokenSecret = createTokenSecret(
