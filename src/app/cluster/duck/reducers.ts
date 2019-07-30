@@ -1,6 +1,6 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import ConnectionState from '../../common/connection_state';
+import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -8,28 +8,30 @@ export const INITIAL_STATE = {
   isFetching: false,
   clusterList: [],
   searchTerm: '',
-  connectionState: ConnectionState.Pending,
+  addEditStatus: defaultAddEditStatus(),
 };
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
-  // TODO: Obviously this needs to be removed when connected is actually implemented!
-  const clusterList = action.clusterList.map(cluster => {
-    cluster.status = 'success';
-    return cluster;
-  });
-  return { ...state, clusterList, isFetching: false };
+  return { ...state, clusterList: action.clusterList, isFetching: false };
 };
+
 export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
 };
+
 export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
-export const setConnectionState = (state = INITIAL_STATE, action) => {
-  return { ...state, connectionState: action.connectionState };
-};
+
 export const setIsPollingCluster = (state = INITIAL_STATE, action) => {
   return { ...state, isPolling: action.isPolling };
+};
+
+export const addClusterRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    addEditStatus: fetchingAddEditStatus(),
+  };
 };
 export const addClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
@@ -37,18 +39,20 @@ export const addClusterSuccess = (state = INITIAL_STATE, action) => {
     clusterList: [...state.clusterList, action.newCluster],
   };
 };
+
 export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: state.clusterList.filter(item => item.MigCluster.metadata.name !== action.name),
   };
 };
+
 export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [
       ...state.clusterList.filter(
-        s => s.Cluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
+        s => s.MigCluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
       ),
       { ...action.updatedCluster },
     ],
@@ -62,16 +66,24 @@ export const updateClusters = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
+  return{
+    ...state,
+    addEditStatus: action.status,
+  };
+};
+
 export const HANDLERS = {
   [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
   [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
   [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [Types.ADD_CLUSTER_REQUEST]: addClusterRequest,
   [Types.UPDATE_CLUSTERS]: updateClusters,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [Types.SET_CONNECTION_STATE]: setConnectionState,
   [Types.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
+  [Types.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

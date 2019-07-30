@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import AddStorageModal from '../../../../storage/components/AddStorageModal';
+import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
 
 const StorageDataListItem = ({ dataList, isLoading, associatedPlans, removeStorage, ...props }) => {
@@ -36,7 +36,10 @@ const StorageDataListItem = ({ dataList, isLoading, associatedPlans, removeStora
             <Button onClick={toggleOpen} variant="link" id="add-repo-btn">
               <PlusCircleIcon /> Add Repository
             </Button>
-            <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} mode={'add'} />
+            <AddEditStorageModal
+              isOpen={isOpen}
+              onHandleClose={toggleOpen}
+            />
           </DataListAction>
         </DataListItemRow>
         <StorageContent

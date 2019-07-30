@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import StorageItem from './StorageItem';
 import { Flex, Box } from '@rebass/emotion';
-import AddStorageModal from '../../../../storage/components/AddStorageModal';
+import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import {
   DataList,
   DataListContent,
@@ -18,7 +18,6 @@ const StorageContent = ({
   isExpanded,
   associatedPlans,
   removeStorage,
-  ...props
 }) => {
   const [isOpen, toggleOpen] = useState(false);
   return (
@@ -47,11 +46,14 @@ const StorageContent = ({
               <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
                 Add Repository
               </Button>
-              <AddStorageModal isOpen={isOpen} onHandleClose={toggleOpen} />
             </EmptyState>
           </Box>
         </Flex>
       )}
+      <AddEditStorageModal
+        isOpen={isOpen}
+        onHandleClose={toggleOpen}
+      />
     </DataListContent>
   );
 };
