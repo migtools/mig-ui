@@ -1,6 +1,6 @@
-
 export enum AddEditState {
   Pending = 'pending',
+  Fetching = 'fetching',
   Watching = 'watching',
   Critical = 'critical',
   Ready = 'ready',
@@ -42,6 +42,13 @@ export const defaultAddEditStatus = (): IAddEditStatus => {
   };
 };
 
+export const fetchingAddEditStatus = (): IAddEditStatus => {
+  return {
+    state: AddEditState.Fetching,
+    mode: AddEditMode.Add,
+  };
+};
+
 export const AddEditConditionCritical = 'Critical';
 export const AddEditConditionReady = 'Ready';
 
@@ -58,6 +65,9 @@ export const addEditStatusText = (componentType: string) => (status: IAddEditSta
   switch(status.state) {
     case AddEditState.Pending: {
       return `Ready to create a ${componentType}`;
+    }
+    case AddEditState.Fetching: {
+      return `Validating connection...`;
     }
     case AddEditState.Critical: {
       return `Connection failed: ${status.message} | ${status.reason}`;
@@ -97,7 +107,9 @@ export const isAddEditButtonDisabled = (
   const hasNotBeenTouched = Object.keys(touched).length === 0;
   const hasValidationErrors = Object.keys(errors).length > 0;
   const valuesAreNotReady = hasNotBeenTouched || hasValidationErrors;
-  const isDisabled = valuesAreNotReady ||
-    status.state === AddEditState.Watching;
+  const isDisabled =
+    valuesAreNotReady ||
+    status.state === AddEditState.Watching ||
+    status.state === AddEditState.Fetching;
   return isDisabled;
 };
