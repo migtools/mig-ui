@@ -8,20 +8,28 @@ import {
   DataListItemCells,
   DataListAction,
 } from '@patternfly/react-core';
-import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ClusterContent from './ClusterContent';
 
-const ClusterDataListItem = ({ dataList, isLoading, associatedPlans, migMeta, removeCluster, ...props }) => {
-  const [isExpanded, toggleExpanded] = useExpandDataList(false);
+const ClusterDataListItem = ({
+  id,
+  isExpanded,
+  toggleExpanded,
+  dataList,
+  isLoading,
+  associatedPlans,
+  migMeta,
+  removeCluster,
+  ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
     return (
       <DataListItem aria-labelledby="cluster-container-item" isExpanded={isExpanded}>
         <DataListItemRow>
           <DataListToggle
-            onClick={() => toggleExpanded()}
+            onClick={() => toggleExpanded(id)}
             isExpanded={isExpanded}
             id="cluster-toggle"
           />

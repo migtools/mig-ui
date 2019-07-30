@@ -8,20 +8,27 @@ import {
   DataListItemCells,
   DataListAction,
 } from '@patternfly/react-core';
-import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
 
-const StorageDataListItem = ({ dataList, isLoading, associatedPlans, removeStorage, ...props }) => {
-  const [isExpanded, toggleExpanded] = useExpandDataList(false);
+const StorageDataListItem = ({
+  id,
+  dataList,
+  isLoading,
+  associatedPlans,
+  removeStorage,
+  isExpanded,
+  toggleExpanded,
+  ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
     return (
       <DataListItem aria-labelledby="storage-container-item" isExpanded={isExpanded}>
         <DataListItemRow>
           <DataListToggle
-            onClick={() => toggleExpanded()}
+            onClick={() => toggleExpanded(id)}
             isExpanded={isExpanded}
             id="storage-toggle"
           />
