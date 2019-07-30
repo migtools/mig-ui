@@ -166,7 +166,8 @@ const WizardComponent = props => {
         props.addPlan({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
-          targetCluster: HostClusterName,
+          targetCluster: props.values.targetCluster,
+          selectedStorage: props.values.selectedStorage,
           namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
         });
       }
