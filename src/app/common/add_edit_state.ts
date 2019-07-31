@@ -19,10 +19,7 @@ export interface IAddEditStatus {
   reason?: string;
 }
 
-export const createAddEditStatus = (
-  state: AddEditState,
-  mode: AddEditMode
-): IAddEditStatus => {
+export const createAddEditStatus = (state: AddEditState, mode: AddEditMode): IAddEditStatus => {
   return { state, mode };
 };
 
@@ -30,7 +27,7 @@ export const createAddEditStatusWithMeta = (
   state: AddEditState,
   mode: AddEditMode,
   message: string,
-  reason: string,
+  reason: string
 ): IAddEditStatus => {
   return { state, mode, message, reason };
 };
@@ -62,9 +59,9 @@ const addEditDebounceWaitSeconds = 3;
 export const AddEditDebounceWait = addEditDebounceWaitSeconds * 1000;
 
 export const addEditStatusText = (componentType: string) => (status: IAddEditStatus) => {
-  switch(status.state) {
+  switch (status.state) {
     case AddEditState.Pending: {
-      return `Ready to create a ${componentType}`;
+      return ``;
     }
     case AddEditState.Fetching: {
       return `Validating connection...`;
@@ -88,7 +85,7 @@ export const addEditStatusText = (componentType: string) => (status: IAddEditSta
 };
 
 export const addEditButtonText = (componentType: string) => (status: IAddEditStatus) => {
-  switch(status.state) {
+  switch (status.state) {
     case AddEditState.TimedOut: {
       return 'Try Again';
     }
@@ -102,7 +99,9 @@ export const addEditButtonText = (componentType: string) => (status: IAddEditSta
 };
 
 export const isAddEditButtonDisabled = (
-  status: IAddEditStatus, errors: object, touched: object
+  status: IAddEditStatus,
+  errors: object,
+  touched: object
 ) => {
   const hasNotBeenTouched = Object.keys(touched).length === 0;
   const hasValidationErrors = Object.keys(errors).length > 0;

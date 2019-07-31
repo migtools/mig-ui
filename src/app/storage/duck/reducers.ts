@@ -1,6 +1,6 @@
 import { Types } from './actions';
 import { createReducer } from 'reduxsauce';
-import { defaultAddEditStatus } from '../../common/add_edit_state';
+import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -33,6 +33,12 @@ export const setIsPollingStorage = (state = INITIAL_STATE, action) => {
   return { ...state, isPolling: action.isPolling };
 };
 
+export const addStorageRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    addEditStatus: fetchingAddEditStatus(),
+  };
+};
 export const addStorageSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -49,6 +55,13 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 export const updateSearchTerm = (state = INITIAL_STATE, action) => {
   return { ...state, searchTerm: action.searchTerm };
+};
+
+export const updateStorageRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    addEditStatus: fetchingAddEditStatus(),
+  };
 };
 
 export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
@@ -71,7 +84,7 @@ export const updateStorages = (state = INITIAL_STATE, action) => {
 };
 
 export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
-  return{
+  return {
     ...state,
     addEditStatus: action.status,
   };
@@ -82,6 +95,8 @@ export const HANDLERS = {
   [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
   [Types.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
   [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
+  [Types.ADD_STORAGE_REQUEST]: addStorageRequest,
+  [Types.UPDATE_STORAGE_REQUEST]: updateStorageRequest,
   [Types.UPDATE_STORAGES]: updateStorages,
   [Types.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
   [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,

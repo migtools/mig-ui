@@ -14,7 +14,8 @@ import {
   addEditButtonText,
   isAddEditButtonDisabled,
 } from '../../../common/add_edit_state';
-
+import { Flex, Box, Text } from '@rebass/emotion';
+import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
 const nameKey = 'name';
 const bucketNameKey = 'bucketName';
@@ -26,24 +27,18 @@ const componentTypeStr = 'repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-
-const InnerAddEditStorageForm = ({
-  values,
-  touched,
-  errors,
-  ...props
-}) => {
+const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
 
-  const [ isAccessKeyHidden, setIsAccessKeyHidden ] = useState(true);
-  const handleAccessKeyHiddenToggle = (e) => {
+  const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
+  const handleAccessKeyHiddenToggle = e => {
     e.preventDefault();
     e.stopPropagation();
     setIsAccessKeyHidden(!isAccessKeyHidden);
   };
-  const [ isSecretHidden, setIsSecretHidden ] = useState(true);
-  const handleSecretHiddenToggle = (e) => {
+  const [isSecretHidden, setIsSecretHidden] = useState(true);
+  const handleSecretHiddenToggle = e => {
     e.preventDefault();
     e.stopPropagation();
     setIsSecretHidden(!isSecretHidden);
@@ -67,7 +62,7 @@ const InnerAddEditStorageForm = ({
           name={nameKey}
           type="text"
           id="storage-name-input"
-          isDisabled = { currentStatus.state === AddEditMode.Edit }
+          isDisabled={currentStatus.state === AddEditMode.Edit}
         />
         {errors.name && touched.name && (
           <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
@@ -118,11 +113,7 @@ const InnerAddEditStorageForm = ({
           <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup
-        label="S3 Provider Secret Access Key"
-        isRequired
-        fieldId={secretKey}
-      >
+      <FormGroup label="S3 Provider Secret Access Key" isRequired fieldId={secretKey}>
         <HideWrapper onClick={handleSecretHiddenToggle}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
         </HideWrapper>
@@ -139,33 +130,44 @@ const InnerAddEditStorageForm = ({
           <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
         )}
       </FormGroup>
-      <Button type="submit"
-        isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched)}
-      >
-        {addEditButtonTextFn(currentStatus)}
-      </Button>
-      <h3>Status:</h3>
-      <div>{currentStatusFn(currentStatus)}</div>
-      <Button variant="primary" onClick={onClose}>
-        Close
-      </Button>
+      <Flex flexDirection="column">
+        <Box m="0 0 1em 0 ">
+          <Button
+            type="submit"
+            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched)}
+          >
+            {addEditButtonTextFn(currentStatus)}
+          </Button>
+        </Box>
+        <Box m="0 0 1em 0 ">
+          <ConnectionStatusLabel
+            status={currentStatus}
+            statusText={currentStatusFn(currentStatus)}
+          />
+        </Box>
+        <Box m="auto 0 0 0 ">
+          <Button variant="primary" onClick={onClose}>
+            Close
+          </Button>
+        </Box>
+      </Flex>
     </Form>
   );
 };
 
 const AddEditStorageForm: any = withFormik({
-  mapPropsToValues: ({initialStorageValues}) => {
+  mapPropsToValues: ({ initialStorageValues }) => {
     const v = initialStorageValues;
     return {
       name: v ? v.name : '',
       bucketName: v ? v.bucketName : '',
-      bucketRegion: v ? v.bucketRegion: '',
-      accessKey: v ? v.accessKey: '',
-      secret: v ? v.secret: '',
+      bucketRegion: v ? v.bucketRegion : '',
+      accessKey: v ? v.accessKey : '',
+      secret: v ? v.secret : '',
     };
   },
 
-  validate: (values: any)  => {
+  validate: (values: any) => {
     const errors: any = {};
 
     if (!values.name) {
