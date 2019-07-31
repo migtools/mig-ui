@@ -29,10 +29,12 @@ export class ClusterClient {
   private patchRequester: AxiosInstance;
   private tokenExpiryHandler: TokenExpiryHandler;
   private tokenExpiryTime: number;
+  private isOauth: boolean;
 
-  constructor(apiRoot: string, token: string) {
+  constructor(apiRoot: string, token: string, isOauth: boolean) {
     this.apiRoot = apiRoot;
     this.token = token;
+    this.isOauth = isOauth;
     this.requester = axios.create({
       baseURL: this.apiRoot,
       headers: {
@@ -62,7 +64,7 @@ export class ClusterClient {
       this.requester.get(resource.listPath())
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
@@ -76,7 +78,7 @@ export class ClusterClient {
       this.requester.get(resource.namedPath(name))
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
@@ -90,7 +92,7 @@ export class ClusterClient {
       this.requester.put(resource.namedPath(name), updatedObject)
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
@@ -104,7 +106,7 @@ export class ClusterClient {
       this.patchRequester.patch(resource.namedPath(name), patch)
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
@@ -118,7 +120,7 @@ export class ClusterClient {
       this.requester.post(resource.listPath(), newObject)
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);
@@ -132,7 +134,7 @@ export class ClusterClient {
       this.requester.delete(resource.namedPath(name))
         .then(res => resolve(res))
         .catch(err => {
-          if(err.response.status === 401) {
+          if(err.response.status === 401 && this.isOauth) {
             this.tokenExpiryHandler(this.oldToken());
           } else {
             reject(err);

@@ -30,7 +30,8 @@ export const ClientFactory = {
       throw new ClientFactoryMissingApiRoot();
     }
 
-    const newClient = new ClusterClient(state.migMeta.clusterApi, state.auth.user.access_token);
+    const newClient = new ClusterClient(
+      state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/);
 
     if(tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
@@ -40,7 +41,7 @@ export const ClientFactory = {
   },
   forCluster: (clusterName: string, state: any) => {
     const { clusterApi, accessToken } = getAuthForCluster(clusterName, state);
-    const newClient = new ClusterClient(clusterApi, accessToken);
+    const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/);
     return newClient;
   },
 };
