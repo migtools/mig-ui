@@ -1,5 +1,5 @@
 import { push } from 'connected-react-router';
-import { Creators } from '../../auth/duck/actions';
+import { ErrorCreators } from '../../auth/duck/errorActions';
 
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 const URLValidator =
@@ -14,7 +14,7 @@ export const isSelfSignedCertError = (err) => {
 };
 
 export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
-  dispatch(Creators.certErrorOccurred(failedUrl));
+  dispatch(ErrorCreators.certErrorOccurred(failedUrl));
   dispatch(push('/cert-error'));
 };
 

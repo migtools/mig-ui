@@ -4,7 +4,8 @@ import { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
-import { Creators } from '../../duck/actions';
+import { ChangeActions } from '../../duck/change_actions';
+import { ClusterRequestActions } from '../../duck/request_actions';
 import {
   defaultAddEditStatus,
   AddEditMode,
@@ -70,12 +71,12 @@ export default connect(
     };
   },
   dispatch => ({
-    addCluster: clusterValues => dispatch(Creators.addClusterRequest(clusterValues)),
+    addCluster: clusterValues => dispatch(ClusterRequestActions.addClusterRequest(clusterValues)),
     updateCluster: updatedClusterValues => dispatch(
-      Creators.updateClusterRequest(updatedClusterValues)),
-    cancelAddEditWatch: () => dispatch(Creators.cancelWatchClusterAddEditStatus()),
+      ClusterRequestActions.updateClusterRequest(updatedClusterValues)),
+    cancelAddEditWatch: () => dispatch(ChangeActions.cancelWatchClusterAddEditStatus()),
     resetAddEditState: () => {
-      dispatch(Creators.setClusterAddEditStatus(defaultAddEditStatus()));
+      dispatch(ChangeActions.setClusterAddEditStatus(defaultAddEditStatus()));
     },
   })
 )(AddEditClusterModal);

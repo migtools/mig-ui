@@ -1,4 +1,6 @@
-import { Types } from './actions';
+import { RequestActionTypes } from './actions/request_actions';
+import { ChangeActionTypes } from './actions/change_actions';
+import { FetchActionTypes } from './actions/fetch_actions';
 import { createReducer } from 'reduxsauce';
 import moment from 'moment';
 
@@ -221,30 +223,30 @@ export const updatePlanResults = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.PLAN_RESULTS_REQUEST]: planResultsRequest,
-  [Types.UPDATE_PLAN_RESULTS]: updatePlanResults,
-  [Types.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
-  [Types.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
-  [Types.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
-  [Types.ADD_PLAN_REQUEST]: addPlanRequest,
-  [Types.ADD_PLAN_SUCCESS]: addPlanSuccess,
-  [Types.ADD_PLAN_FAILURE]: addPlanFailure,
-  [Types.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
-  [Types.NAMESPACE_FETCH_REQUEST]: namespaceFetchRequest,
-  [Types.NAMESPACE_FETCH_SUCCESS]: namespaceFetchSuccess,
-  [Types.NAMESPACE_FETCH_FAILURE]: namespaceFetchFailure,
-  [Types.INIT_STAGE]: initStage,
-  [Types.STAGING_SUCCESS]: stagingSuccess,
-  [Types.STAGING_FAILURE]: stagingFailure,
-  [Types.INIT_MIGRATION]: initMigration,
-  [Types.MIGRATION_SUCCESS]: migrationSuccess,
-  [Types.MIGRATION_FAILURE]: migrationFailure,
-  [Types.UPDATE_PLAN]: updatePlan,
-  [Types.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
-  [Types.UPDATE_PLANS]: updatePlans,
-  [Types.PV_FETCH_SUCCESS]: pvFetchSuccess,
-  [Types.PV_FETCH_FAILURE]: pvFetchFailure,
-  [Types.PV_FETCH_REQUEST]: pvFetchRequest,
+  [RequestActionTypes.PLAN_RESULTS_REQUEST]: planResultsRequest,
+  [RequestActionTypes.ADD_PLAN_REQUEST]: addPlanRequest,
+  [RequestActionTypes.INIT_STAGE]: initStage,
+  [RequestActionTypes.INIT_MIGRATION]: initMigration,
+  [FetchActionTypes.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
+  [FetchActionTypes.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
+  [FetchActionTypes.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
+  [FetchActionTypes.NAMESPACE_FETCH_REQUEST]: namespaceFetchRequest,
+  [FetchActionTypes.NAMESPACE_FETCH_SUCCESS]: namespaceFetchSuccess,
+  [FetchActionTypes.NAMESPACE_FETCH_FAILURE]: namespaceFetchFailure,
+  [FetchActionTypes.PV_FETCH_SUCCESS]: pvFetchSuccess,
+  [FetchActionTypes.PV_FETCH_FAILURE]: pvFetchFailure,
+  [FetchActionTypes.PV_FETCH_REQUEST]: pvFetchRequest,
+  [ChangeActionTypes.UPDATE_PLAN_RESULTS]: updatePlanResults,
+  [ChangeActionTypes.ADD_PLAN_SUCCESS]: addPlanSuccess,
+  [ChangeActionTypes.ADD_PLAN_FAILURE]: addPlanFailure,
+  [ChangeActionTypes.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
+  [ChangeActionTypes.STAGING_SUCCESS]: stagingSuccess,
+  [ChangeActionTypes.STAGING_FAILURE]: stagingFailure,
+  [ChangeActionTypes.MIGRATION_SUCCESS]: migrationSuccess,
+  [ChangeActionTypes.MIGRATION_FAILURE]: migrationFailure,
+  [ChangeActionTypes.UPDATE_PLAN]: updatePlan,
+  [ChangeActionTypes.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
+  [ChangeActionTypes.UPDATE_PLANS]: updatePlans,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

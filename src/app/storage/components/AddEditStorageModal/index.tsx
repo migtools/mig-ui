@@ -3,7 +3,7 @@ import { jsx } from '@emotion/core';
 import { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
-import { Creators } from '../../duck/actions';
+import { Creators } from '../../duck/actions/actions';
 import { Modal } from '@patternfly/react-core';
 import { PollingContext } from '../../../home/duck/context';
 import { AddEditMode, defaultAddEditStatus } from '../../../common/add_edit_state';

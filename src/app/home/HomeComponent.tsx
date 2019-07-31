@@ -13,8 +13,9 @@ import {
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
 
-import { Creators as ClusterCreators } from '../cluster/duck/actions';
-import { Creators as StorageCreators } from '../storage/duck/actions';
+import { ChangeActions as ClusterCreators } from '../cluster/duck/change_actions';
+import { ChangeCreators as StorageCreators } from '../storage/duck/actions/change_actions';
+
 
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';

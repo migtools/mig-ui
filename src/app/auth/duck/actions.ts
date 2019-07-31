@@ -1,12 +1,40 @@
-import { createActions } from 'reduxsauce';
+interface ILoginParams {
+  token?: string;
+  username?: string;
+  access_token?: string;
+  expires_in?: number;
+  expiry_time?: number;
+  login_time?: number;
+  scope?: string;
+  token_type?: string;
+}
 
-export const CERT_ERROR_OCCURRED = 'CERT_ERROR_OCCURRED';
-
-const { Types, Creators } = createActions({
-  loginSuccess: ['user'],
-  loginFailure: [],
-  setOauthMeta: ['oauthMeta'],
-  certErrorOccurred: ['failedUrl'],
+const loginSuccess = (user: ILoginParams) =>
+({
+  type: Types.LOGIN_SUCCESS,
+  user,
 });
 
-export { Types, Creators };
+const loginFailure = () =>
+({
+  type: Types.LOGIN_FAILURE,
+});
+
+const setOauthMeta = (oauthMeta: string) =>
+({
+  type: Types.SET_OAUTH_META,
+  oauthMeta,
+});
+
+
+export const Types = {
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'LOGIN_FAILURE',
+  SET_OAUTH_META: 'SET_OAUTH_META',
+};
+
+export const Creators = {
+  loginSuccess,
+  loginFailure,
+  setOauthMeta,
+};

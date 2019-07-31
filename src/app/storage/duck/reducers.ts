@@ -1,4 +1,6 @@
-import { Types } from './actions';
+import { Types } from './actions/actions';
+import { FetchTypes } from './actions/fetch_actions';
+import { ChangeTypes } from './actions/change_actions';
 import { createReducer } from 'reduxsauce';
 import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
@@ -91,15 +93,13 @@ export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
-  [Types.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
-  [Types.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
-  [Types.ADD_STORAGE_SUCCESS]: addStorageSuccess,
-  [Types.ADD_STORAGE_REQUEST]: addStorageRequest,
-  [Types.UPDATE_STORAGE_REQUEST]: updateStorageRequest,
-  [Types.UPDATE_STORAGES]: updateStorages,
-  [Types.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
-  [Types.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
+  [FetchTypes.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
+  [FetchTypes.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
+  [FetchTypes.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
+  [ChangeTypes.ADD_STORAGE_SUCCESS]: addStorageSuccess,
+  [ChangeTypes.UPDATE_STORAGES]: updateStorages,
+  [ChangeTypes.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
+  [ChangeTypes.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
   [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
   [Types.SET_STORAGE_ADD_EDIT_STATUS]: setStorageAddEditStatus,
   [Types.SET_IS_POLLING_STORAGE]: setIsPollingStorage,

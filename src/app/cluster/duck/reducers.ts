@@ -1,4 +1,6 @@
-import { Types } from './actions';
+import { ChangeTypes } from './change_actions';
+import { FetchTypes } from './fetch_actions';
+import { ClusterRequestActions, ClusterRequestTypes } from './request_actions';
 import { createReducer } from 'reduxsauce';
 import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
@@ -81,17 +83,16 @@ export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
 };
 
 export const HANDLERS = {
-  [Types.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
-  [Types.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
-  [Types.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
-  [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
-  [Types.ADD_CLUSTER_REQUEST]: addClusterRequest,
-  [Types.UPDATE_CLUSTERS]: updateClusters,
-  [Types.UPDATE_CLUSTER_REQUEST]: updateClusterRequest,
-  [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
-  [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [Types.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
-  [Types.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
+  [ClusterRequestTypes.ADD_CLUSTER_REQUEST]: addClusterRequest,
+  [ChangeTypes.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
+  [FetchTypes.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
+  [FetchTypes.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
+  [FetchTypes.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
+  [ChangeTypes.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
+  [ChangeTypes.UPDATE_CLUSTERS]: updateClusters,
+  [ChangeTypes.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
+  [ChangeTypes.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
+  [ChangeTypes.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
 };
 
 export default createReducer(INITIAL_STATE, HANDLERS);

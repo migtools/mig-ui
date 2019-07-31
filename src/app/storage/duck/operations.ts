@@ -1,4 +1,6 @@
-import { Creators } from './actions';
+import { Creators } from './actions/actions';
+import { ChangeCreators } from './actions/change_actions';
+import { FetchCreators } from './actions/fetch_actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -11,7 +13,7 @@ import {
   alertErrorTimeout,
 } from '../../common/duck/actions';
 
-const removeStorageSuccess = Creators.removeStorageSuccess;
+const removeStorageSuccess = ChangeCreators.removeStorageSuccess;
 const updateSearchTerm = Creators.updateSearchTerm;
 
 const removeStorage = name => {

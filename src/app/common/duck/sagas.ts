@@ -18,8 +18,8 @@ import {
   alertClear,
 } from './actions';
 
-import { Creators as ClusterActionCreators } from '../../cluster/duck/actions';
-import { Creators as StorageActionCreators } from '../../storage/duck/actions';
+import { ChangeActions as ClusterActionCreators } from '../../cluster/duck/change_actions';
+import { Creators as StorageActionCreators } from '../../storage/duck/actions/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 30; // Seconds

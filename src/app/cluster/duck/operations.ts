@@ -1,4 +1,5 @@
-import { Creators } from './actions';
+import { ChangeActions } from './change_actions';
+import { FetchActions } from './fetch_actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import ConnectionState from '../../common/connection_state';
@@ -20,13 +21,10 @@ import {
 } from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
 
-const clusterFetchSuccess = Creators.clusterFetchSuccess;
-const clusterFetchRequest = Creators.clusterFetchRequest;
-const clusterFetchFailure = Creators.clusterFetchFailure;
-const updateClusterSuccess = Creators.updateClusterSuccess;
-const removeClusterSuccess = Creators.removeClusterSuccess;
-const removeClusterFailure = Creators.removeClusterFailure;
-const updateSearchTerm = Creators.updateSearchTerm;
+const updateClusterSuccess = ChangeActions.updateClusterSuccess;
+const removeClusterSuccess = ChangeActions.removeClusterSuccess;
+const removeClusterFailure = ChangeActions.removeClusterFailure;
+const updateSearchTerm = ChangeActions.updateSearchTerm;
 
 const updateCluster = clusterValues => {
   return async (dispatch, getState) => {
@@ -99,15 +97,6 @@ const removeCluster = name => {
   };
 };
 
-function checkConnection() {
-  return (dispatch, getState) => {
-    dispatch(Creators.setConnectionState(ConnectionState.Checking));
-    setTimeout(() => {
-      dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 500);
-  };
-}
-
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
@@ -169,5 +158,4 @@ export default {
   removeCluster,
   updateCluster,
   updateSearchTerm,
-  checkConnection,
 };

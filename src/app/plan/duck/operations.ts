@@ -1,4 +1,6 @@
-import { Creators } from './actions';
+import { RequestActions } from './actions/request_actions';
+import { FetchActions } from './actions/fetch_actions';
+import { ChangeActions } from './actions/change_actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -22,32 +24,32 @@ import { startStatusPolling } from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
-const migPlanFetchRequest = Creators.migPlanFetchRequest;
-const migPlanFetchSuccess = Creators.migPlanFetchSuccess;
-const migPlanFetchFailure = Creators.migPlanFetchFailure;
-const pvFetchRequest = Creators.pvFetchRequest;
-const pvFetchSuccess = Creators.pvFetchSuccess;
-const startPVPolling = Creators.startPVPolling;
-const migrationSuccess = Creators.migrationSuccess;
-const migrationFailure = Creators.migrationFailure;
-const stagingSuccess = Creators.stagingSuccess;
-const stagingFailure = Creators.stagingFailure;
-const planResultsRequest = Creators.planResultsRequest;
-const addPlanRequest = Creators.addPlanRequest;
-const addPlanSuccess = Creators.addPlanSuccess;
-const addPlanFailure = Creators.addPlanFailure;
-const namespaceFetchRequest = Creators.namespaceFetchRequest;
-const namespaceFetchSuccess = Creators.namespaceFetchSuccess;
-const namespaceFetchFailure = Creators.namespaceFetchFailure;
-const updatePlanResults = Creators.updatePlanResults;
-const updatePlan = Creators.updatePlan;
+const startPVPolling = RequestActions.startPVPolling;
+const migPlanFetchRequest = FetchActions.migPlanFetchRequest;
+const migPlanFetchSuccess = FetchActions.migPlanFetchSuccess;
+const migPlanFetchFailure = FetchActions.migPlanFetchFailure;
+const pvFetchRequest = FetchActions.pvFetchRequest;
+const pvFetchSuccess = FetchActions.pvFetchSuccess;
+const migrationSuccess = ChangeActions.migrationSuccess;
+const migrationFailure = ChangeActions.migrationFailure;
+const stagingSuccess = ChangeActions.stagingSuccess;
+const stagingFailure = ChangeActions.stagingFailure;
+const planResultsRequest = RequestActions.planResultsRequest;
+const addPlanRequest = RequestActions.addPlanRequest;
+const addPlanSuccess = ChangeActions.addPlanSuccess;
+const addPlanFailure = ChangeActions.addPlanFailure;
+const namespaceFetchRequest = FetchActions.namespaceFetchRequest;
+const namespaceFetchSuccess = FetchActions.namespaceFetchSuccess;
+const namespaceFetchFailure = FetchActions.namespaceFetchFailure;
+const updatePlanResults = ChangeActions.updatePlanResults;
+const updatePlan = ChangeActions.updatePlan;
 
 const PlanMigrationPollingInterval = 5000;
 
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
-      dispatch(Creators.initStage(plan.MigPlan.metadata.name));
+      dispatch(RequestActions.initStage(plan.MigPlan.metadata.name));
       dispatch(alertProgressTimeout('Staging Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
@@ -78,7 +80,7 @@ const runStage = plan => {
           dispatch(alertSuccessTimeout('Staging Successful'));
           return 'SUCCESS';
         } else if (migStatus.error) {
-          dispatch(stagingFailure());
+          dispatch(stagingFailure(migStatus.error));
           dispatch(alertErrorTimeout('Staging Failed'));
           return 'FAILURE';
         }
@@ -94,7 +96,7 @@ const runStage = plan => {
       };
 
       dispatch(startStatusPolling(params));
-      dispatch(Creators.updatePlanMigrations(groupedPlan));
+      dispatch(ChangeActions.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
       dispatch(stagingFailure(err));
@@ -105,7 +107,7 @@ const runStage = plan => {
 const runMigration = (plan, disableQuiesce) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(Creators.initMigration(plan.MigPlan.metadata.name));
+      dispatch(RequestActions.initMigration(plan.MigPlan.metadata.name));
       dispatch(alertProgressTimeout('Migration Started'));
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
@@ -137,7 +139,7 @@ const runMigration = (plan, disableQuiesce) => {
           dispatch(alertSuccessTimeout('Migration Successful'));
           return 'SUCCESS';
         } else if (migStatus.error) {
-          dispatch(migrationFailure());
+          dispatch(migrationFailure(migStatus.error));
           dispatch(alertErrorTimeout('Migration Failed'));
           return 'FAILURE';
         }
@@ -153,7 +155,7 @@ const runMigration = (plan, disableQuiesce) => {
       };
 
       dispatch(startStatusPolling(params));
-      dispatch(Creators.updatePlanMigrations(groupedPlan));
+      dispatch(ChangeActions.updatePlanMigrations(groupedPlan));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
       dispatch(migrationFailure(err));
@@ -201,7 +203,7 @@ const addPlan = migPlan => {
 
         const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
         if (pvSearchStatus.success) {
-          dispatch(Creators.updatePlan(matchingPlan.MigPlan));
+          dispatch(ChangeActions.updatePlan(matchingPlan.MigPlan));
           dispatch(pvFetchSuccess());
           return 'SUCCESS';
         } else if (pvSearchStatus.error) {
@@ -258,8 +260,7 @@ const addPlan = migPlan => {
 
       dispatch(addPlanSuccess(createPlanRes.data));
     } catch (err) {
-      console.error(err);
-      dispatch(addPlanFailure());
+      dispatch(addPlanFailure(err));
       dispatch(alertErrorTimeout('Failed to add plan'));
     }
   };

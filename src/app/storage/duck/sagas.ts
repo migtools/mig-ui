@@ -12,7 +12,8 @@ import {
   updateMigStorage,
   updateStorageSecret,
 } from '../../../client/resources/conversions';
-import { Creators } from './actions';
+import { Creators, Types } from './actions/actions';
+import { ChangeCreators } from './actions/change_actions';
 import { alertErrorTimeout } from '../../common/duck/actions';
 import {
   createAddEditStatus,
@@ -67,7 +68,7 @@ function* addStorageRequest(action)  {
       return accum;
     }, {});
 
-    yield put(Creators.addStorageSuccess(storage));
+    yield put(ChangeCreators.addStorageSuccess(storage));
 
     // Push into watching state
     yield put(Creators.setStorageAddEditStatus(
@@ -84,7 +85,7 @@ function* addStorageRequest(action)  {
 }
 
 function* watchAddStorageRequest() {
-  yield takeLatest(Creators.addStorageRequest().type, addStorageRequest);
+  yield takeLatest(Types.ADD_STORAGE_REQUEST, addStorageRequest);
 }
 
 const accessKeyIdSecretField = 'aws-access-key-id';
@@ -162,7 +163,7 @@ function* updateStorageRequest(action)  {
 
     // Update the state tree with the updated storage, and start to watch
     // again to check for its condition after edits
-    yield put(Creators.updateStorageSuccess(updatedStorage));
+    yield put(ChangeCreators.updateStorageSuccess(updatedStorage));
     yield put(Creators.setStorageAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
@@ -175,7 +176,7 @@ function* updateStorageRequest(action)  {
 }
 
 function* watchUpdateStorageRequest() {
-  yield takeLatest(Creators.updateStorageRequest().type, updateStorageRequest);
+  yield takeLatest(Types.UPDATE_STORAGE_REQUEST, updateStorageRequest);
 }
 
 function* pollStorageAddEditStatus(action) {
@@ -257,7 +258,7 @@ function* startWatchingStorageAddEditStatus(action) {
 
 function* watchStorageAddEditStatus() {
   yield takeLatest(
-    Creators.watchStorageAddEditStatus().type,
+    Types.WATCH_STORAGE_ADD_EDIT_STATUS,
     startWatchingStorageAddEditStatus
   );
 }

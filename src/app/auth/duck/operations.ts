@@ -11,9 +11,6 @@ import commonSagas from '../../common/duck/sagas';
 import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
-const loginSuccess = Creators.loginSuccess;
-const loginFailure = Creators.loginFailure;
-const setOauthMeta = Creators.setOauthMeta;
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -23,13 +20,13 @@ const fetchOauthMeta = clusterApi => {
   return async dispatch => {
     try {
       const res = await axios.get(oauthMetaUrl);
-      dispatch(setOauthMeta(res.data));
+      dispatch(Creators.setOauthMeta(res.data));
     } catch (err) {
       if (isSelfSignedCertError(err)) {
         handleSelfSignedCertError(oauthMetaUrl, dispatch);
         return;
       }
-      dispatch(loginFailure());
+      dispatch(Creators.loginFailure());
       dispatch(alertErrorTimeout(err));
     }
   };
@@ -45,10 +42,10 @@ const fetchToken = (oauthClient, codeRedirect) => {
       user.login_time = currentUnixTime;
       user.expiry_time = expiryUnixTime;
       localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
-      dispatch(loginSuccess(user));
+      dispatch(Creators.loginSuccess(user));
       dispatch(push('/'));
     } catch (err) {
-      dispatch(loginFailure());
+      dispatch(Creators.loginFailure());
       dispatch(alertErrorTimeout(err));
     }
   };
@@ -58,7 +55,7 @@ const initFromStorage = () => {
   return dispatch => {
     const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
     if (!!currentUser) {
-      dispatch(loginSuccess(JSON.parse(currentUser)));
+      dispatch(Creators.loginSuccess(JSON.parse(currentUser)));
     }
   };
 };
