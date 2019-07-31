@@ -12,8 +12,7 @@ import {
   updateMigStorage,
   updateStorageSecret,
 } from '../../../client/resources/conversions';
-import { Creators, Types } from './actions/actions';
-import { ChangeCreators } from './actions/change_actions';
+import { StorageActions, StorageActionTypes } from './actions';
 import { alertErrorTimeout } from '../../common/duck/actions';
 import {
   createAddEditStatus,
@@ -68,13 +67,13 @@ function* addStorageRequest(action)  {
       return accum;
     }, {});
 
-    yield put(ChangeCreators.addStorageSuccess(storage));
+    yield put(StorageActions.addStorageSuccess(storage));
 
     // Push into watching state
-    yield put(Creators.setStorageAddEditStatus(
+    yield put(StorageActions.setStorageAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
-    yield put(Creators.watchStorageAddEditStatus(storageValues.name));
+    yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch(err) {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
@@ -85,7 +84,7 @@ function* addStorageRequest(action)  {
 }
 
 function* watchAddStorageRequest() {
-  yield takeLatest(Types.ADD_STORAGE_REQUEST, addStorageRequest);
+  yield takeLatest(StorageActionTypes.ADD_STORAGE_REQUEST, addStorageRequest);
 }
 
 const accessKeyIdSecretField = 'aws-access-key-id';
@@ -163,11 +162,11 @@ function* updateStorageRequest(action)  {
 
     // Update the state tree with the updated storage, and start to watch
     // again to check for its condition after edits
-    yield put(ChangeCreators.updateStorageSuccess(updatedStorage));
-    yield put(Creators.setStorageAddEditStatus(
+    yield put(StorageActions.updateStorageSuccess(updatedStorage));
+    yield put(StorageActions.setStorageAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
-    yield put(Creators.watchStorageAddEditStatus(storageValues.name));
+    yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch(err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateStorageRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
@@ -176,7 +175,7 @@ function* updateStorageRequest(action)  {
 }
 
 function* watchUpdateStorageRequest() {
-  yield takeLatest(Types.UPDATE_STORAGE_REQUEST, updateStorageRequest);
+  yield takeLatest(StorageActionTypes.UPDATE_STORAGE_REQUEST, updateStorageRequest);
 }
 
 function* pollStorageAddEditStatus(action) {
@@ -241,7 +240,7 @@ function* startWatchingStorageAddEditStatus(action) {
   const raceResult = yield race({
     addEditResult: call(pollStorageAddEditStatus, action),
     timeout: delay(AddEditWatchTimeout),
-    cancel: take(Creators.cancelWatchStorageAddEditStatus().type),
+    cancel: take(StorageActions.cancelWatchStorageAddEditStatus().type),
   });
 
   if(raceResult.cancel) {
@@ -253,12 +252,12 @@ function* startWatchingStorageAddEditStatus(action) {
   const statusToDispatch = addEditResult || createAddEditStatus(
     AddEditState.TimedOut, AddEditMode.Edit);
 
-  yield put(Creators.setStorageAddEditStatus(statusToDispatch));
+  yield put(StorageActions.setStorageAddEditStatus(statusToDispatch));
 }
 
 function* watchStorageAddEditStatus() {
   yield takeLatest(
-    Types.WATCH_STORAGE_ADD_EDIT_STATUS,
+    StorageActionTypes.WATCH_STORAGE_ADD_EDIT_STATUS,
     startWatchingStorageAddEditStatus
   );
 }

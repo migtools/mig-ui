@@ -1,24 +1,23 @@
-import { createReducer } from 'reduxsauce';
-import { Types } from './actions';
-import { ErrorTypes } from './errorActions';
+import { AuthActionTypes } from './actions';
 
-const initialState = {
+const INITIAL_STATE = {
   user: null,
   oauthMeta: null,
   certError: null,
 };
 
-export default createReducer(initialState, {
-  [Types.LOGIN_SUCCESS]: (state = initialState, action) => {
-    return { ...state, user: action.user };
-  },
-  [Types.LOGIN_FAILURE]: (state = initialState, _action) => {
-    return { ...state, user: null };
-  },
-  [Types.SET_OAUTH_META]: (state = initialState, action) => {
-    return { ...state, oauthMeta: action.oauthMeta };
-  },
-  [ErrorTypes.CERT_ERROR_OCCURRED]: (state, action) => {
-    return { ...state, certError: { failedUrl: action.failedUrl } };
-  },
-});
+export const authReducer = (state=INITIAL_STATE, action) => {
+  switch (action.type) {
+    case AuthActionTypes.LOGIN_SUCCESS:
+      return { ...state, user: action.user };
+    case AuthActionTypes.LOGIN_FAILURE:
+      return { ...state, user: null };
+    case AuthActionTypes.SET_OAUTH_META:
+      return { ...state, oauthMeta: action.oauthMeta };
+    case AuthActionTypes.CERT_ERROR_OCCURRED:
+      return { ...state, certError: { failedUrl: action.failedUrl } };
+    default: return state;
+  }
+};
+
+export default authReducer;

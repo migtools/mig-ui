@@ -11,30 +11,37 @@ interface ILoginParams {
 
 const loginSuccess = (user: ILoginParams) =>
 ({
-  type: Types.LOGIN_SUCCESS,
+  type: AuthActionTypes.LOGIN_SUCCESS,
   user,
 });
 
 const loginFailure = () =>
 ({
-  type: Types.LOGIN_FAILURE,
+  type: AuthActionTypes.LOGIN_FAILURE,
 });
 
 const setOauthMeta = (oauthMeta: string) =>
 ({
-  type: Types.SET_OAUTH_META,
+  type: AuthActionTypes.SET_OAUTH_META,
   oauthMeta,
 });
 
+const certErrorOccurred = (failedUrl: string) =>
+({
+  type: AuthActionTypes.CERT_ERROR_OCCURRED,
+  failedUrl,
+});
 
-export const Types = {
+export const AuthActionTypes = {
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
   LOGIN_FAILURE: 'LOGIN_FAILURE',
   SET_OAUTH_META: 'SET_OAUTH_META',
+  CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
 };
 
-export const Creators = {
+export const AuthActions = {
   loginSuccess,
   loginFailure,
   setOauthMeta,
+  certErrorOccurred,
 };

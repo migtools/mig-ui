@@ -13,8 +13,8 @@ import {
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon } from '@patternfly/react-icons';
 
-import { ChangeActions as ClusterCreators } from '../cluster/duck/change_actions';
-import { ChangeCreators as StorageCreators } from '../storage/duck/actions/change_actions';
+import { ClusterActions } from '../cluster/duck/actions';
+import { StorageActions as StorageActions } from '../storage/duck/actions';
 
 
 import { clusterOperations } from '../cluster/duck';
@@ -296,7 +296,7 @@ export default connect(
     stopStoragePolling: () => dispatch(stopStoragePolling()),
     startClusterPolling: params => dispatch(startClusterPolling(params)),
     stopClusterPolling: () => dispatch(stopClusterPolling()),
-    updateClusters: updatedClusters => dispatch(ClusterCreators.updateClusters(updatedClusters)),
-    updateStorages: updatedStorages => dispatch(StorageCreators.updateStorages(updatedStorages)),
+    updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
+    updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
   })
 )(HomeComponent);

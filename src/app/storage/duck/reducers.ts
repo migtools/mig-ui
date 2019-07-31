@@ -1,8 +1,6 @@
-import { Types } from './actions/actions';
-import { FetchTypes } from './actions/fetch_actions';
-import { ChangeTypes } from './actions/change_actions';
-import { createReducer } from 'reduxsauce';
-import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
+import { fetchingAddEditStatus } from '../../common/add_edit_state';
+import { StorageActionTypes } from './actions';
+import { defaultAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -16,6 +14,7 @@ export const INITIAL_STATE = {
 export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
+
 export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -92,17 +91,21 @@ export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const HANDLERS = {
-  [FetchTypes.MIG_STORAGE_FETCH_REQUEST]: migStorageFetchRequest,
-  [FetchTypes.MIG_STORAGE_FETCH_SUCCESS]: migStorageFetchSuccess,
-  [FetchTypes.MIG_STORAGE_FETCH_FAILURE]: migStorageFetchFailure,
-  [ChangeTypes.ADD_STORAGE_SUCCESS]: addStorageSuccess,
-  [ChangeTypes.UPDATE_STORAGES]: updateStorages,
-  [ChangeTypes.UPDATE_STORAGE_SUCCESS]: updateStorageSuccess,
-  [ChangeTypes.REMOVE_STORAGE_SUCCESS]: removeStorageSuccess,
-  [Types.UPDATE_SEARCH_TERM]: updateSearchTerm,
-  [Types.SET_STORAGE_ADD_EDIT_STATUS]: setStorageAddEditStatus,
-  [Types.SET_IS_POLLING_STORAGE]: setIsPollingStorage,
+
+const storageReducer = (state = INITIAL_STATE, action) => {
+  switch(action.type) {
+    case StorageActionTypes.MIG_STORAGE_FETCH_REQUEST:   return migStorageFetchRequest(state, action);
+    case StorageActionTypes.MIG_STORAGE_FETCH_SUCCESS:   return migStorageFetchSuccess(state, action);
+    case StorageActionTypes.MIG_STORAGE_FETCH_FAILURE:   return migStorageFetchFailure(state, action);
+    case StorageActionTypes.ADD_STORAGE_SUCCESS:         return addStorageSuccess(state, action);
+    case StorageActionTypes.UPDATE_STORAGES:             return updateStorages(state, action);
+    case StorageActionTypes.UPDATE_STORAGE_SUCCESS:      return updateStorageSuccess(state, action);
+    case StorageActionTypes.REMOVE_STORAGE_SUCCESS:      return removeStorageSuccess(state, action);
+    case StorageActionTypes.UPDATE_SEARCH_TERM:          return updateSearchTerm(state, action);
+    case StorageActionTypes.SET_STORAGE_ADD_EDIT_STATUS: return setStorageAddEditStatus(state, action);
+    case StorageActionTypes.SET_IS_POLLING_STORAGE:      return setIsPollingStorage(state, action);
+    default:                                             return state;
+  }
 };
 
-export default createReducer(INITIAL_STATE, HANDLERS);
+export default storageReducer;

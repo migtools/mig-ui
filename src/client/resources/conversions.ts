@@ -293,3 +293,10 @@ export function createMigMigration(
     },
   };
 }
+
+export type IMigPlan = ReturnType<typeof createMigPlan>;
+export type IMigCluster = ReturnType<typeof createMigCluster>;
+export type IMigMigration = ReturnType<typeof createMigMigration>;
+export type IClusterRegistryObj = ReturnType<typeof createClusterRegistryObj>;
+export type IMigStorage = ReturnType<typeof createMigStorage>;
+export type IStorageSecret = ReturnType<typeof createStorageSecret>;

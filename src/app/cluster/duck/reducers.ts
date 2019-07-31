@@ -1,7 +1,4 @@
-import { ChangeTypes } from './change_actions';
-import { FetchTypes } from './fetch_actions';
-import { ClusterRequestActions, ClusterRequestTypes } from './request_actions';
-import { createReducer } from 'reduxsauce';
+import { ClusterActionTypes } from './actions';
 import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
 export const INITIAL_STATE = {
@@ -82,17 +79,21 @@ export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const HANDLERS = {
-  [ClusterRequestTypes.ADD_CLUSTER_REQUEST]: addClusterRequest,
-  [ChangeTypes.SET_CLUSTER_ADD_EDIT_STATUS]: setClusterAddEditStatus,
-  [FetchTypes.CLUSTER_FETCH_REQUEST]: clusterFetchRequest,
-  [FetchTypes.CLUSTER_FETCH_SUCCESS]: clusterFetchSuccess,
-  [FetchTypes.CLUSTER_FETCH_FAILURE]: clusterFetchFailure,
-  [ChangeTypes.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
-  [ChangeTypes.UPDATE_CLUSTERS]: updateClusters,
-  [ChangeTypes.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
-  [ChangeTypes.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
-  [ChangeTypes.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,
+
+export const clusterReducer = (state=INITIAL_STATE, action) => {
+  switch (action.type) {
+    case ClusterActionTypes.ADD_CLUSTER_REQUEST:          return addClusterRequest(state, action);
+    case ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS:  return setClusterAddEditStatus(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_REQUEST:        return clusterFetchRequest(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_SUCCESS:        return clusterFetchSuccess(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_FAILURE:        return clusterFetchFailure(state, action);
+    case ClusterActionTypes.ADD_CLUSTER_SUCCESS:          return addClusterSuccess(state, action);
+    case ClusterActionTypes.UPDATE_CLUSTERS:              return updateClusters(state, action);
+    case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS:       return updateClusterSuccess(state, action);
+    case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS:       return removeClusterSuccess(state, action);
+    case ClusterActionTypes.SET_IS_POLLING_CLUSTER:       return setIsPollingCluster(state, action);
+    default:                                              return state;
+  }
 };
 
-export default createReducer(INITIAL_STATE, HANDLERS);
+export default clusterReducer;

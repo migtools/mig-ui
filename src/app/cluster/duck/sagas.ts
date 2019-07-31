@@ -16,8 +16,7 @@ import {
   updateTokenSecret,
 } from '../../../client/resources/conversions';
 
-import { ChangeActions, ChangeTypes } from './change_actions';
-import { ClusterRequestTypes } from './request_actions';
+import { ClusterActions, ClusterActionTypes } from './actions';
 import { alertErrorTimeout } from '../../common/duck/actions';
 import {
   createAddEditStatus,
@@ -31,7 +30,6 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import { RequestActions } from '../../plan/duck/actions/request_actions';
 
 function* addClusterRequest(action)  {
   // TODO: Need to improve this to fall into the failed create state with rollback
@@ -79,13 +77,13 @@ function* addClusterRequest(action)  {
       return accum;
     }, {});
 
-    yield put(ChangeActions.addClusterSuccess(cluster));
+    yield put(ClusterActions.addClusterSuccess(cluster));
 
     // Push into watching state
-    yield put(ChangeActions.setClusterAddEditStatus(
+    yield put(ClusterActions.setClusterAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
-    yield put(ChangeActions.watchClusterAddEditStatus(clusterValues.name));
+    yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch(err) {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
@@ -96,7 +94,7 @@ function* addClusterRequest(action)  {
 }
 
 function* watchAddClusterRequest() {
-  yield takeLatest(ClusterRequestTypes.ADD_CLUSTER_REQUEST, addClusterRequest);
+  yield takeLatest(ClusterActionTypes.ADD_CLUSTER_REQUEST, addClusterRequest);
 }
 
 function* updateClusterRequest(action)  {
@@ -163,11 +161,11 @@ function* updateClusterRequest(action)  {
 
     // Update the state tree with the updated cluster, and start to watch
     // again to check for its condition after edits
-    yield put(ChangeActions.updateClusterSuccess(updatedCluster));
-    yield put(ChangeActions.setClusterAddEditStatus(
+    yield put(ClusterActions.updateClusterSuccess(updatedCluster));
+    yield put(ClusterActions.setClusterAddEditStatus(
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
-    yield put(ChangeActions.watchClusterAddEditStatus(clusterValues.name));
+    yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch(err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
@@ -176,7 +174,7 @@ function* updateClusterRequest(action)  {
 }
 
 function* watchUpdateClusterRequest() {
-  yield takeLatest(ClusterRequestTypes.UPDATE_CLUSTER_REQUEST, updateClusterRequest);
+  yield takeLatest(ClusterActionTypes.UPDATE_CLUSTER_REQUEST, updateClusterRequest);
 }
 
 function* pollClusterAddEditStatus(action) {
@@ -240,7 +238,7 @@ function* startWatchingClusterAddEditStatus(action) {
   const raceResult = yield race({
     addEditResult: call(pollClusterAddEditStatus, action),
     timeout: delay(AddEditWatchTimeout),
-    cancel: take(ChangeTypes.CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS),
+    cancel: take(ClusterActionTypes.CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS),
   });
 
   if(raceResult.cancel) {
@@ -252,11 +250,11 @@ function* startWatchingClusterAddEditStatus(action) {
   const statusToDispatch = addEditResult || createAddEditStatus(
     AddEditState.TimedOut, AddEditMode.Edit);
 
-  yield put(ChangeActions.setClusterAddEditStatus(statusToDispatch));
+  yield put(ClusterActions.setClusterAddEditStatus(statusToDispatch));
 }
 
 function* watchClusterAddEditStatus() {
-  yield takeLatest(ChangeTypes.WATCH_CLUSTER_ADD_EDIT_STATUS, startWatchingClusterAddEditStatus);
+  yield takeLatest(ClusterActionTypes.WATCH_CLUSTER_ADD_EDIT_STATUS, startWatchingClusterAddEditStatus);
 }
 
 export default {

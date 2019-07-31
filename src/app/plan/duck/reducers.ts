@@ -1,7 +1,4 @@
-import { RequestActionTypes } from './actions/request_actions';
-import { ChangeActionTypes } from './actions/change_actions';
-import { FetchActionTypes } from './actions/fetch_actions';
-import { createReducer } from 'reduxsauce';
+import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
 
 export const INITIAL_STATE = {
@@ -16,6 +13,7 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
 };
+
 const sortPlans = planList =>
   planList.sort((left, right) => {
     return moment
@@ -29,28 +27,35 @@ const sortMigrations = migList =>
       .diff(moment.utc(left.metadata.creationTimestamp));
   });
 
-export const migPlanFetchRequest = (state = INITIAL_STATE, action) => {
+export const migPlanFetchRequest =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchRequest>) => {
   return { ...state, isFetching: true };
 };
 
-export const migPlanFetchSuccess = (state = INITIAL_STATE, action) => {
+export const migPlanFetchSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchSuccess>) => {
   const sortedList = sortPlans(action.migPlanList);
   return { ...state, migPlanList: sortedList, isFetching: false };
 };
-export const migPlanFetchFailure = (state = INITIAL_STATE, action) => {
+export const migPlanFetchFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchFailure>) => {
   return { ...state, isError: true, isFetching: false };
 };
-export const pvFetchRequest = (state = INITIAL_STATE, action) => {
+export const pvFetchRequest =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchRequest>) => {
   return { ...state, isPVError: false, isFetchingPVList: true };
 };
-export const pvFetchFailure = (state = INITIAL_STATE, action) => {
+export const pvFetchFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchFailure>) => {
   return { ...state, isPVError: true, isFetchingPVList: false };
 };
-export const pvFetchSuccess = (state = INITIAL_STATE, action) => {
+export const pvFetchSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchSuccess>) => {
   return { ...state, isPVError: false, isFetchingPVList: false };
 };
 
-export const addPlanSuccess = (state = INITIAL_STATE, action) => {
+export const addPlanSuccess =
+    (state=INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
   const newPlan = {
     MigPlan: action.newPlan,
     Migrations: [],
@@ -62,37 +67,43 @@ export const addPlanSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const addPlanFailure = (state = INITIAL_STATE, action) => {
+export const addPlanFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanFailure>) => {
   return {
     ...state,
   };
 };
 
-export const addPlanRequest = (state = INITIAL_STATE, action) => {
+export const addPlanRequest =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
   return {
     ...state,
   };
 };
 
-export const removePlanSuccess = (state = INITIAL_STATE, action) => {
+export const removePlanSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.removePlanSuccess>) => {
   return { ...state };
 };
 
-export const namespaceFetchRequest = (state = INITIAL_STATE, action) => {
+export const namespaceFetchRequest =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.namespaceFetchRequest>) => {
   return {
     ...state,
     sourceClusterNamespaces: [],
     isFetchingNamespaceList: true,
   };
 };
-export const namespaceFetchSuccess = (state = INITIAL_STATE, action) => {
+export const namespaceFetchSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.namespaceFetchSuccess>) => {
   return {
     ...state,
     sourceClusterNamespaces: action.sourceClusterNamespaces,
     isFetchingNamespaceList: false,
   };
 };
-export const namespaceFetchFailure = (state = INITIAL_STATE, action) => {
+export const namespaceFetchFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.namespaceFetchFailure>) => {
   return {
     ...state,
     sourceClusterNamespaces: [],
@@ -100,7 +111,8 @@ export const namespaceFetchFailure = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updatePlan = (state = INITIAL_STATE, action) => {
+export const updatePlan =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlan>) => {
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
       return {
@@ -119,10 +131,12 @@ export const updatePlan = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
+export const updatePlanMigrations =
+    (state = INITIAL_STATE, action) => { // TODO: add migplan and migmigration typing
   const updatedPlanList = state.migPlanList.map(p => {
     if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
       //filter migrations
+      // TODO: fix api for MigPlan: should not contain migrations to be sane kubeApi resource
       action.updatedPlan.Migrations = sortMigrations(action.updatedPlan.Migrations);
       return action.updatedPlan;
     } else {
@@ -138,7 +152,8 @@ export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updatePlans = (state = INITIAL_STATE, action) => {
+export const updatePlans =
+    (state = INITIAL_STATE, action) => {
   const updatedPlanList = action.updatedPlans.map(p => {
     //filter migrations
     p.Migrations = sortMigrations(p.Migrations);
@@ -153,7 +168,8 @@ export const updatePlans = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const initStage = (state = INITIAL_STATE, action) => {
+export const initStage =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.initStage>) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
@@ -167,7 +183,8 @@ export const initStage = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const initMigration = (state = INITIAL_STATE, action) => {
+export const initMigration =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.initMigration>) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
@@ -180,7 +197,8 @@ export const initMigration = (state = INITIAL_STATE, action) => {
     isMigrating: true,
   };
 };
-export const stagingSuccess = (state = INITIAL_STATE, action) => {
+export const stagingSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stagingSuccess>) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
@@ -193,11 +211,13 @@ export const stagingSuccess = (state = INITIAL_STATE, action) => {
     isStaging: false,
   };
 };
-export const stagingFailure = (state = INITIAL_STATE, action) => {
+export const stagingFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stagingFailure>) => {
   return { ...state, isStaging: false };
 };
 
-export const migrationSuccess = (state = INITIAL_STATE, action) => {
+export const migrationSuccess =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migrationSuccess>) => {
   const updatedPlan = state.migPlanList.find(p => p.MigPlan.metadata.name === action.planName);
   const filteredPlans = state.migPlanList.filter(p => p.MigPlan.metadata.name !== action.planName);
 
@@ -210,43 +230,49 @@ export const migrationSuccess = (state = INITIAL_STATE, action) => {
     isMigrating: false,
   };
 };
-export const migrationFailure = (state = INITIAL_STATE, action) => {
+export const migrationFailure =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migrationFailure>) => {
   return { ...state, isMigrating: false };
 };
 
-export const planResultsRequest = (state = INITIAL_STATE, action) => {
+export const planResultsRequest =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.planResultsRequest>) => {
   return { ...state, isCheckingPlanStatus: true };
 };
 
-export const updatePlanResults = (state = INITIAL_STATE, action) => {
+export const updatePlanResults =
+    (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanResults>) => {
   return { ...state, isCheckingPlanStatus: false };
 };
 
-export const HANDLERS = {
-  [RequestActionTypes.PLAN_RESULTS_REQUEST]: planResultsRequest,
-  [RequestActionTypes.ADD_PLAN_REQUEST]: addPlanRequest,
-  [RequestActionTypes.INIT_STAGE]: initStage,
-  [RequestActionTypes.INIT_MIGRATION]: initMigration,
-  [FetchActionTypes.MIG_PLAN_FETCH_REQUEST]: migPlanFetchRequest,
-  [FetchActionTypes.MIG_PLAN_FETCH_SUCCESS]: migPlanFetchSuccess,
-  [FetchActionTypes.MIG_PLAN_FETCH_FAILURE]: migPlanFetchFailure,
-  [FetchActionTypes.NAMESPACE_FETCH_REQUEST]: namespaceFetchRequest,
-  [FetchActionTypes.NAMESPACE_FETCH_SUCCESS]: namespaceFetchSuccess,
-  [FetchActionTypes.NAMESPACE_FETCH_FAILURE]: namespaceFetchFailure,
-  [FetchActionTypes.PV_FETCH_SUCCESS]: pvFetchSuccess,
-  [FetchActionTypes.PV_FETCH_FAILURE]: pvFetchFailure,
-  [FetchActionTypes.PV_FETCH_REQUEST]: pvFetchRequest,
-  [ChangeActionTypes.UPDATE_PLAN_RESULTS]: updatePlanResults,
-  [ChangeActionTypes.ADD_PLAN_SUCCESS]: addPlanSuccess,
-  [ChangeActionTypes.ADD_PLAN_FAILURE]: addPlanFailure,
-  [ChangeActionTypes.REMOVE_PLAN_SUCCESS]: removePlanSuccess,
-  [ChangeActionTypes.STAGING_SUCCESS]: stagingSuccess,
-  [ChangeActionTypes.STAGING_FAILURE]: stagingFailure,
-  [ChangeActionTypes.MIGRATION_SUCCESS]: migrationSuccess,
-  [ChangeActionTypes.MIGRATION_FAILURE]: migrationFailure,
-  [ChangeActionTypes.UPDATE_PLAN]: updatePlan,
-  [ChangeActionTypes.UPDATE_PLAN_MIGRATIONS]: updatePlanMigrations,
-  [ChangeActionTypes.UPDATE_PLANS]: updatePlans,
+const planReducer = (state = INITIAL_STATE, action) => {
+  switch (action.type) {
+    case PlanActionTypes.PLAN_RESULTS_REQUEST:    return planResultsRequest(state, action);
+    case PlanActionTypes.ADD_PLAN_REQUEST:        return addPlanRequest(state, action);
+    case PlanActionTypes.INIT_STAGE:              return initStage(state, action);
+    case PlanActionTypes.INIT_MIGRATION:          return initMigration(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_REQUEST:  return migPlanFetchRequest(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_SUCCESS:  return migPlanFetchSuccess(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_FAILURE:  return migPlanFetchFailure(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_REQUEST: return namespaceFetchRequest(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
+    case PlanActionTypes.PV_FETCH_SUCCESS:        return pvFetchSuccess(state, action);
+    case PlanActionTypes.PV_FETCH_FAILURE:        return pvFetchFailure(state, action);
+    case PlanActionTypes.PV_FETCH_REQUEST:        return pvFetchRequest(state, action);
+    case PlanActionTypes.UPDATE_PLAN_RESULTS:     return updatePlanResults(state, action);
+    case PlanActionTypes.ADD_PLAN_SUCCESS:        return addPlanSuccess(state, action);
+    case PlanActionTypes.ADD_PLAN_FAILURE:        return addPlanFailure(state, action);
+    case PlanActionTypes.REMOVE_PLAN_SUCCESS:     return removePlanSuccess(state, action);
+    case PlanActionTypes.STAGING_SUCCESS:         return stagingSuccess(state, action);
+    case PlanActionTypes.STAGING_FAILURE:         return stagingFailure(state, action);
+    case PlanActionTypes.MIGRATION_SUCCESS:       return migrationSuccess(state, action);
+    case PlanActionTypes.MIGRATION_FAILURE:       return migrationFailure(state, action);
+    case PlanActionTypes.UPDATE_PLAN:             return updatePlan(state, action);
+    case PlanActionTypes.UPDATE_PLAN_MIGRATIONS:  return updatePlanMigrations(state, action);
+    case PlanActionTypes.UPDATE_PLANS:            return updatePlans(state, action);
+    default:                                      return state;
+  }
 };
 
-export default createReducer(INITIAL_STATE, HANDLERS);
+export default planReducer;

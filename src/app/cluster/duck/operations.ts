@@ -1,5 +1,4 @@
-import { ChangeActions } from './change_actions';
-import { FetchActions } from './fetch_actions';
+import { ClusterActions } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import ConnectionState from '../../common/connection_state';
@@ -21,10 +20,6 @@ import {
 } from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
 
-const updateClusterSuccess = ChangeActions.updateClusterSuccess;
-const removeClusterSuccess = ChangeActions.removeClusterSuccess;
-const removeClusterFailure = ChangeActions.removeClusterFailure;
-const updateSearchTerm = ChangeActions.updateSearchTerm;
 
 const updateCluster = clusterValues => {
   return async (dispatch, getState) => {
@@ -57,7 +52,7 @@ const updateCluster = clusterValues => {
       }, {});
       cluster.status = clusterValues.connectionStatus;
 
-      dispatch(updateClusterSuccess(cluster));
+      dispatch(ClusterActions.updateClusterSuccess(cluster));
       dispatch(alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
@@ -88,11 +83,11 @@ const removeCluster = name => {
         client.delete(migClusterResource, name),
       ]);
 
-      dispatch(removeClusterSuccess(name));
+      dispatch(ClusterActions.removeClusterSuccess(name));
       dispatch(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
-      dispatch(removeClusterFailure(err));
+      dispatch(ClusterActions.removeClusterFailure(err));
     }
   };
 };
@@ -157,5 +152,4 @@ export default {
   fetchClustersGenerator,
   removeCluster,
   updateCluster,
-  updateSearchTerm,
 };

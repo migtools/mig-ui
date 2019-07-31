@@ -6,10 +6,9 @@ import planOperations from '../plan/duck/operations';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import { RequestActions as PlanRequestActions } from '../plan/duck/actions/request_actions';
-import { ChangeActions as PlanChangeActions } from '../plan/duck/actions/change_actions';
-import { ChangeActions as ClusterChangeActions } from '../cluster/duck/change_actions';
-import { Creators as StorageActionCreators } from '../storage/duck/actions/actions';
+import { PlanActions } from '../plan/duck/actions';
+import { ClusterActions } from '../cluster/duck/actions';
+import { StorageActions as StorageActions } from '../storage/duck/actions';
 import { startDataListPolling, stopDataListPolling } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
@@ -213,28 +212,28 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    planUpdateRequest: planValues => dispatch(PlanRequestActions.planUpdateRequest(planValues)),
+    planUpdateRequest: planValues => dispatch(PlanActions.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
-      dispatch(PlanChangeActions.updateStageProgress(plan.planName, progress)),
-    stagingSuccess: plan => dispatch(PlanChangeActions.stagingSuccess(plan.planName)),
-    updatePlans: updatedPlans => dispatch(PlanChangeActions.updatePlans(updatedPlans)),
+      dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
+    stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
+    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(startDataListPolling(params)),
     stopDataListPolling: () => dispatch(stopDataListPolling()),
-    triggerPlanDelete: planName => dispatch(PlanRequestActions.planDeleteRequest(planName)),
+    triggerPlanDelete: planName => dispatch(PlanActions.planDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(ClusterChangeActions.setClusterAddEditStatus(
+      dispatch(ClusterActions.setClusterAddEditStatus(
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
       ));
-      dispatch(ClusterChangeActions.watchClusterAddEditStatus(clusterName));
+      dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
     },
     watchStorageAddEditStatus: (storageName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(StorageActionCreators.setStorageAddEditStatus(
+      dispatch(StorageActions.setStorageAddEditStatus(
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
       ));
-      dispatch(StorageActionCreators.watchStorageAddEditStatus(storageName));
+      dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     }
   };
 };
