@@ -192,32 +192,36 @@ function* pollStorageAddEditStatus(action) {
         MigResourceKind.MigStorage, migMeta.namespace);
       const storagePollResult = yield client.get(migStorageResource, storageName);
 
-      const criticalCond = storagePollResult.data.status &&
-        storagePollResult.data.status.conditions.find(cond => {
-          return cond.category === AddEditConditionCritical;
-        });
+      const hasStatusAndConditions =
+        storagePollResult.data.status &&
+        storagePollResult.data.status.conditions;
 
-      if(criticalCond) {
-        return createAddEditStatusWithMeta(
-          AddEditState.Critical,
-          AddEditMode.Edit,
-          criticalCond.message,
-          criticalCond.reason,
-        );
-      }
+      if (hasStatusAndConditions) {
+        const criticalCond = storagePollResult.data.status.conditions.find(cond => {
+            return cond.category === AddEditConditionCritical;
+          });
 
-      const readyCond = storagePollResult.data.status &&
-        storagePollResult.data.status.conditions.find(cond => {
-          return cond.type === AddEditConditionReady;
-        });
+        if (criticalCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Critical,
+            AddEditMode.Edit,
+            criticalCond.message,
+            criticalCond.reason,
+          );
+        }
 
-      if(readyCond) {
-        return createAddEditStatusWithMeta(
-          AddEditState.Ready,
-          AddEditMode.Edit,
-          readyCond.message,
-          '', // Ready has no reason
-        );
+        const readyCond = storagePollResult.data.status.conditions.find(cond => {
+            return cond.type === AddEditConditionReady;
+          });
+
+        if (readyCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Ready,
+            AddEditMode.Edit,
+            readyCond.message,
+            '', // Ready has no reason
+          );
+        }
       }
 
       // No conditions found, let's wait a bit and keep checking

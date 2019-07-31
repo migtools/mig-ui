@@ -40,7 +40,7 @@ function* addClusterRequest(action)  {
 
   const clusterReg = createClusterRegistryObj(
     clusterValues.name,
-    migMeta.configNamespace,
+    migMeta.namespace,
     clusterValues.url
   );
   const tokenSecret = createTokenSecret(
@@ -190,32 +190,36 @@ function* pollClusterAddEditStatus(action) {
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
       const clusterPollResult = yield client.get(migClusterResource, clusterName);
 
-      const criticalCond = clusterPollResult.data.status &&
-        clusterPollResult.data.status.conditions.find(cond => {
+      const hasStatusAndConditions =
+        clusterPollResult.data.status &&
+        clusterPollResult.data.status.conditions;
+
+      if (hasStatusAndConditions) {
+        const criticalCond = clusterPollResult.data.status.conditions.find(cond => {
           return cond.category === AddEditConditionCritical;
         });
 
-      if(criticalCond) {
-        return createAddEditStatusWithMeta(
-          AddEditState.Critical,
-          AddEditMode.Edit,
-          criticalCond.message,
-          criticalCond.reason,
-        );
-      }
+        if (criticalCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Critical,
+            AddEditMode.Edit,
+            criticalCond.message,
+            criticalCond.reason,
+          );
+        }
 
-      const readyCond = clusterPollResult.data.status &&
-        clusterPollResult.data.status.conditions.find(cond => {
+        const readyCond = clusterPollResult.data.status.conditions.find(cond => {
           return cond.type === AddEditConditionReady;
         });
 
-      if(readyCond) {
-        return createAddEditStatusWithMeta(
-          AddEditState.Ready,
-          AddEditMode.Edit,
-          readyCond.message,
-          '', // Ready has no reason
-        );
+        if (readyCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Ready,
+            AddEditMode.Edit,
+            readyCond.message,
+            '', // Ready has no reason
+          );
+        }
       }
 
       // No conditions found, let's wait a bit and keep checking
