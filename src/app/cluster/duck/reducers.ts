@@ -47,6 +47,13 @@ export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const updateClusterRequest = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    addEditStatus: fetchingAddEditStatus(),
+  };
+};
+
 export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -67,7 +74,7 @@ export const updateClusters = (state = INITIAL_STATE, action) => {
 };
 
 export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
-  return{
+  return {
     ...state,
     addEditStatus: action.status,
   };
@@ -80,6 +87,7 @@ export const HANDLERS = {
   [Types.ADD_CLUSTER_SUCCESS]: addClusterSuccess,
   [Types.ADD_CLUSTER_REQUEST]: addClusterRequest,
   [Types.UPDATE_CLUSTERS]: updateClusters,
+  [Types.UPDATE_CLUSTER_REQUEST]: updateClusterRequest,
   [Types.UPDATE_CLUSTER_SUCCESS]: updateClusterSuccess,
   [Types.REMOVE_CLUSTER_SUCCESS]: removeClusterSuccess,
   [Types.SET_IS_POLLING_CLUSTER]: setIsPollingCluster,

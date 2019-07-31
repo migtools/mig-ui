@@ -1,18 +1,22 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core';
+import { jsx, css } from '@emotion/core';
+import styled from '@emotion/styled';
+import theme from '../../../../theme';
 import { useState } from 'react';
 import { withFormik } from 'formik';
-import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
+import { Button, Label, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
+import { Flex, Box, Text } from '@rebass/emotion';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
 } from '../../../common/add_edit_state';
+import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -22,16 +26,11 @@ const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-const InnerAddEditClusterForm = ({
-  values,
-  touched,
-  errors,
-  ...props
-}) => {
+const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
 
-  const [ isTokenHidden, setIsTokenHidden ] = useState(true);
+  const [isTokenHidden, setIsTokenHidden] = useState(true);
   const toggleHideToken = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -90,27 +89,38 @@ const InnerAddEditClusterForm = ({
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <Button type="submit"
-        isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched)}
-      >
-        {addEditButtonTextFn(currentStatus)}
-      </Button>
-      <h3>Status:</h3>
-      <div>{currentStatusFn(currentStatus)}</div>
-      <Button variant="primary" onClick={onClose}>
-        Close
-      </Button>
+      <Flex flexDirection="column">
+        <Box m="0 0 1em 0 ">
+          <Button
+            type="submit"
+            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched)}
+          >
+            {addEditButtonTextFn(currentStatus)}
+          </Button>
+        </Box>
+        <Box m="0 0 1em 0 ">
+          <ConnectionStatusLabel
+            status={currentStatus}
+            statusText={currentStatusFn(currentStatus)}
+          />
+        </Box>
+        <Box m="auto 0 0 0 ">
+          <Button variant="primary" onClick={onClose}>
+            Close
+          </Button>
+        </Box>
+      </Flex>
     </Form>
   );
 };
 
 const AddClusterForm: any = withFormik({
-  mapPropsToValues: ({initialClusterValues}) => {
+  mapPropsToValues: ({ initialClusterValues }) => {
     const v = initialClusterValues;
     return {
       name: v ? v.clusterName : '',
       url: v ? v.clusterUrl : '',
-      token: v ? v.clusterSvcToken: '',
+      token: v ? v.clusterSvcToken : '',
     };
   },
 
