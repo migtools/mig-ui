@@ -1,36 +1,21 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
-import { Button, Label, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import { Flex, Box, Text } from '@rebass/emotion';
 
 import Loader from 'react-loader-spinner';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
-import { InProgressIcon, OutlinedCircleIcon } from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  OutlinedCircleIcon,
+} from '@patternfly/react-icons';
 import theme from '../../../theme';
 import * as React from 'react';
+import { AddEditState } from '../../common/add_edit_state';
 
 interface IProps {
   status: any;
   statusText: string;
-}
-export enum AddEditState {
-  Pending = 'pending',
-  Fetching = 'fetching',
-  Watching = 'watching',
-  Critical = 'critical',
-  Ready = 'ready',
-  TimedOut = 'timedout',
-}
-export interface IAddEditStatus {
-  mode: AddEditMode;
-  state: AddEditState;
-  message?: string;
-  reason?: string;
-}
-export enum AddEditMode {
-  Add = 'add',
-  Edit = 'edit',
 }
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
