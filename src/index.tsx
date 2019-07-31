@@ -34,7 +34,7 @@ if (!!migMeta) {
 }
 
 // Configure token expiry behavior
-setTokenExpiryHandler(expiredToken => {
+setTokenExpiryHandler(_old_token => {
   // TODO: same thunk issue as above
   // @ts-ignore
   store.dispatch(authOperations.logoutUser());
