@@ -236,11 +236,12 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
   };
 }
 
-export function createMigPlanNoStorage(
+export function createInitialMigPlan(
   name: string,
   namespace: string,
   sourceClusterObj: any,
   destinationClusterObj: any,
+  storageObj: any,
   namespaces: string[]
 ) {
   return {
@@ -257,6 +258,10 @@ export function createMigPlanNoStorage(
       },
       destMigClusterRef: {
         name: destinationClusterObj,
+        namespace,
+      },
+      migStorageRef: {
+        name: storageObj,
         namespace,
       },
       namespaces,

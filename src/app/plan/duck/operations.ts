@@ -6,7 +6,7 @@ import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/re
 
 import {
   createMigMigration,
-  createMigPlanNoStorage,
+  createInitialMigPlan,
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import {
@@ -174,11 +174,12 @@ const addPlan = migPlan => {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const migPlanObj = createMigPlanNoStorage(
+      const migPlanObj = createInitialMigPlan(
         migPlan.planName,
         migMeta.namespace,
         migPlan.sourceCluster,
         migPlan.targetCluster,
+        migPlan.selectedStorage,
         migPlan.namespaces
       );
 
