@@ -22,6 +22,7 @@ import { Creators as ClusterActionCreators } from '../../cluster/duck/actions';
 import { Creators as StorageActionCreators } from '../../storage/duck/actions';
 
 export const StatusPollingInterval = 4000;
+const ErrorToastTimeout = 30; // Seconds
 
 function* poll(action) {
   const params = { ...action.params };
@@ -106,7 +107,7 @@ export function* progressTimeoutSaga(action) {
 export function* errorTimeoutSaga(action) {
   try {
     yield put(alertError(action.params));
-    yield delay(5000);
+    yield delay(ErrorToastTimeout);
     yield put(alertClear());
   } catch (error) {
     put(alertClear());
