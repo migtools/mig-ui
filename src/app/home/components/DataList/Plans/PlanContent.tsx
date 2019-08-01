@@ -163,11 +163,15 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
   onExpand = (event, rowIndex, colIndex, isOpen, rowData, extraData) => {
     const { rows } = this.state;
     if (!isOpen) {
-      //set all other expanded cells false in this row if we are expanding
-      this.state.rows[rowIndex].cells.forEach(cell => {
-        if (cell.props) {
-          cell.props.isOpen = false;
-        }
+      // close all expanded rows
+      this.state.rows.forEach(row => {
+        //set all other expanded cells false in this row if we are expanding
+        row.cells.forEach(cell => {
+          if (cell.props) {
+            cell.props.isOpen = false;
+          }
+        });
+        row.isOpen = false;
       });
       rows[rowIndex].cells[colIndex].props.isOpen = true;
       rows[rowIndex].isOpen = true;
