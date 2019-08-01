@@ -43,10 +43,10 @@ const StorageClassTable = (props): any => {
     const scs = destCluster.MigCluster.spec.storageClasses || [];
     setStorageClassOptions(scs);
     // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
-    const initialAssignedScs = migPlanPvs.reduce((assignedScs, pv) => {
+    const initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
       assignedScs[pv.name] = scs.find(sc => sc.name === pv.selection.storageClass);
       return assignedScs;
-    }, {});
+    }, {}) : {};
     setPvStorageClassAssignment(initialAssignedScs);
     props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
 
