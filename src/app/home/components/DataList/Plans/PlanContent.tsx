@@ -53,6 +53,8 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
         const migStorageName = plan.MigPlan.spec.migStorageRef ?
           plan.MigPlan.spec.migStorageRef.name : 'N/A';
 
+        const pvCount = plan.MigPlan.spec.persistentVolumes ?
+          plan.MigPlan.spec.persistentVolumes.length : 0;
         return [
           {
             cells: [
@@ -105,7 +107,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                       <DatabaseIcon />
                     </Box>
                     <Box m="auto 0 auto 0">
-                      <span>0</span>
+                      <span>{pvCount}</span>
                     </Box>
                   </Flex>
                 ),
