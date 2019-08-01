@@ -4,13 +4,6 @@ const planSelector = state => state.plan.migPlanList.map(p => p);
 
 const getMigMeta = state => state.migMeta;
 
-const getAllPlans = createSelector(
-  [planSelector],
-  plans => {
-    return plans;
-  }
-);
-
 const getPlansWithStatus = createSelector(
   [planSelector],
   plans => {
@@ -78,6 +71,7 @@ const getPlansWithStatus = createSelector(
         hasFailedCondition: hasMigrationError,
         latestType,
       };
+
       //remove controller update fields
       const { metadata } = plan.MigPlan;
       if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
@@ -89,7 +83,6 @@ const getPlansWithStatus = createSelector(
         for (let i = 0; plan.MigPlan.status.conditions.length > i; i++) {
           delete plan.MigPlan.status.conditions[i].lastTransitionTime;
         }
-        //
       }
       return { ...plan, PlanStatus: statusObject };
     });
@@ -148,7 +141,6 @@ const getCounts = createSelector(
 );
 
 export default {
-  // getAllPlans,
   getPlansWithStatus,
   getMigMeta,
   getCounts,

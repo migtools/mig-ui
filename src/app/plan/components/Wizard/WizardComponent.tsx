@@ -17,7 +17,6 @@ const WizardComponent = props => {
     touched,
     errors,
     handleChange,
-    handleSubmit,
     handleBlur,
     setFieldTouched,
     setFieldValue,
@@ -48,16 +47,20 @@ const WizardComponent = props => {
     return ref.current;
   }
 
-  const prevPlans: any = usePrevious(planList);
-  const prevValues: any = usePrevious(values);
-  const prevTouched: any = usePrevious(touched);
-  const prevErrors: any = usePrevious(errors);
-  const prevIsFetchingPVList: any = usePrevious(isFetchingPVList);
+  const prevPlans = usePrevious(planList);
+  const prevValues = usePrevious(values);
+  const prevTouched = usePrevious(touched);
+  const prevErrors = usePrevious(errors);
+  const prevIsFetchingPVList = usePrevious(isFetchingPVList);
+  const prevIsPVError = usePrevious(isPVError);
+  const prevIsFetchingNamespaceList = usePrevious(isFetchingNamespaceList);
 
   useEffect(() => {
     if (JSON.stringify(prevPlans) !== JSON.stringify(planList) ||
       prevValues !== values ||
       prevIsFetchingPVList !== isFetchingPVList ||
+      prevIsPVError !== isPVError ||
+      prevIsFetchingNamespaceList !== isFetchingNamespaceList ||
       prevErrors !== errors ||
       prevTouched !== touched
     ) {
@@ -167,7 +170,7 @@ const WizardComponent = props => {
       setUpdatedSteps(steps);
 
     }
-  }, [planList, values, setFieldValue, isPVError, isFetchingPVList, errors, touched, stepIdReached, stepId]);
+  }, [planList, values, isPVError, isFetchingPVList, errors, touched]);
 
 
   const onMove = (curr, prev) => {
