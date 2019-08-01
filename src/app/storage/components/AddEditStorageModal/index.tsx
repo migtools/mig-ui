@@ -3,7 +3,7 @@ import { jsx } from '@emotion/core';
 import { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
-import { Creators } from '../../duck/actions';
+import { StorageActions } from '../../duck/actions';
 import { Modal } from '@patternfly/react-core';
 import { PollingContext } from '../../../home/duck/context';
 import { AddEditMode, defaultAddEditStatus } from '../../../common/add_edit_state';
@@ -66,12 +66,12 @@ export default connect(
     };
   },
   dispatch => ({
-    addStorage: storageValues => dispatch(Creators.addStorageRequest(storageValues)),
+    addStorage: storageValues => dispatch(StorageActions.addStorageRequest(storageValues)),
     updateStorage: updatedStorageValues => dispatch(
-      Creators.updateStorageRequest(updatedStorageValues)),
-    cancelAddEditWatch: () => dispatch(Creators.cancelWatchStorageAddEditStatus()),
+      StorageActions.updateStorageRequest(updatedStorageValues)),
+    cancelAddEditWatch: () => dispatch(StorageActions.cancelWatchStorageAddEditStatus()),
     resetAddEditState: () => {
-      dispatch(Creators.setStorageAddEditStatus(defaultAddEditStatus()));
+      dispatch(StorageActions.setStorageAddEditStatus(defaultAddEditStatus()));
     },
   })
 )(AddEditStorageModal);

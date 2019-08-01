@@ -4,12 +4,11 @@ import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 
-import { Creators } from './actions';
-import { 
-  alertErrorTimeout, 
-  alertSuccessTimeout ,
+import {
+  alertErrorTimeout,
+  alertSuccessTimeout,
 } from '../../common/duck/actions';
-import { request } from 'https';
+import { PlanActions, PlanActionTypes } from './actions';
 
 const TicksUntilTimeout = 20;
 
@@ -26,12 +25,12 @@ function* checkPVs(action) {
       switch (pollingStatus) {
         case 'SUCCESS':
           pvsFound = true;
-          yield put({ type: Creators.stopPVPolling().type });
+          yield put({ type: PlanActionTypes.STOP_PV_POLLING });
           break;
         case 'FAILURE':
           pvsFound = true;
-          Creators.stopPVPolling();
-          yield put({ type: Creators.stopPVPolling().type });
+          PlanActions.stopPVPolling();
+          yield put({ type: PlanActionTypes.STOP_PV_POLLING });
           break;
         default:
           break;
@@ -40,10 +39,10 @@ function* checkPVs(action) {
     } else {
       // PV discovery timed out, alert and stop polling
       pvsFound = true; // No PVs timed out
-      Creators.stopPVPolling();
+      PlanActions.stopPVPolling();
       yield put(alertErrorTimeout('Timed out during PV discovery'));
-      yield put(Creators.pvFetchSuccess());
-      yield put({ type: Creators.stopPVPolling().type });
+      yield put({ type: PlanActionTypes.PV_FETCH_SUCCESS, });
+      yield put({ type: PlanActionTypes.STOP_PV_POLLING });
       break;
     }
   }
@@ -73,7 +72,7 @@ function* putPlanSaga(getPlanRes, planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
-    yield put({ type: Creators.updatePlan().type, updatedPlan: putPlanResponse.data });
+    yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
   } catch (err) {
     throw err;
   }
@@ -91,13 +90,13 @@ function* planUpdateRetry(action) {
 
 function* watchPVPolling() {
   while (true) {
-    const data = yield take(Creators.startPVPolling().type);
-    yield race([call(checkPVs, data), take(Creators.stopPVPolling().type)]);
+    const data = yield take(PlanActionTypes.START_PV_POLLING);
+    yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
   }
 }
 
 function* watchPlanUpdate() {
-  yield takeEvery(Creators.planUpdateRequest().type, planUpdateRetry);
+  yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
 function* planDeleteSaga(action) {
@@ -109,7 +108,7 @@ function* planDeleteSaga(action) {
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       action.planName,
     );
-    yield put(Creators.planDeleteSuccess(action.planName));
+    yield put(PlanActions.planDeleteSuccess(action.planName));
     yield put(alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch(err) {
     console.error(err);
@@ -118,7 +117,7 @@ function* planDeleteSaga(action) {
 }
 
 function* watchPlanDelete() {
-  yield takeLatest(Creators.planDeleteRequest().type, planDeleteSaga);
+  yield takeLatest(PlanActionTypes.PLAN_DELETE_REQUEST, planDeleteSaga);
 }
 
 export default {

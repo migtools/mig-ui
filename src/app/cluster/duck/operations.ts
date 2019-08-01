@@ -1,4 +1,4 @@
-import { Creators } from './actions';
+import { ClusterActions } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import ConnectionState from '../../common/connection_state';
@@ -20,13 +20,6 @@ import {
 } from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
 
-const clusterFetchSuccess = Creators.clusterFetchSuccess;
-const clusterFetchRequest = Creators.clusterFetchRequest;
-const clusterFetchFailure = Creators.clusterFetchFailure;
-const updateClusterSuccess = Creators.updateClusterSuccess;
-const removeClusterSuccess = Creators.removeClusterSuccess;
-const removeClusterFailure = Creators.removeClusterFailure;
-const updateSearchTerm = Creators.updateSearchTerm;
 
 const updateCluster = clusterValues => {
   return async (dispatch, getState) => {
@@ -59,7 +52,7 @@ const updateCluster = clusterValues => {
       }, {});
       cluster.status = clusterValues.connectionStatus;
 
-      dispatch(updateClusterSuccess(cluster));
+      dispatch(ClusterActions.updateClusterSuccess(cluster));
       dispatch(alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
@@ -90,23 +83,14 @@ const removeCluster = name => {
         client.delete(migClusterResource, name),
       ]);
 
-      dispatch(removeClusterSuccess(name));
+      dispatch(ClusterActions.removeClusterSuccess(name));
       dispatch(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
-      dispatch(removeClusterFailure(err));
+      dispatch(ClusterActions.removeClusterFailure(err));
     }
   };
 };
-
-function checkConnection() {
-  return (dispatch, getState) => {
-    dispatch(Creators.setConnectionState(ConnectionState.Checking));
-    setTimeout(() => {
-      dispatch(Creators.setConnectionState(ConnectionState.Success));
-    }, 500);
-  };
-}
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -168,6 +152,4 @@ export default {
   fetchClustersGenerator,
   removeCluster,
   updateCluster,
-  updateSearchTerm,
-  checkConnection,
 };
