@@ -78,6 +78,19 @@ const getPlansWithStatus = createSelector(
         hasFailedCondition: hasMigrationError,
         latestType,
       };
+      //remove controller update fields
+      const { metadata } = plan.MigPlan;
+      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+        delete metadata.annotations;
+        delete metadata.generation;
+        delete metadata.resourceVersion;
+      }
+      if (plan.MigPlan.status) {
+        for (let i = 0; plan.MigPlan.status.conditions.length > i; i++) {
+          delete plan.MigPlan.status.conditions[i].lastTransitionTime;
+        }
+        //
+      }
       return { ...plan, PlanStatus: statusObject };
     });
 
@@ -135,7 +148,7 @@ const getCounts = createSelector(
 );
 
 export default {
-  getAllPlans,
+  // getAllPlans,
   getPlansWithStatus,
   getMigMeta,
   getCounts,

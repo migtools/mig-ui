@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Button,
   DataListItem,
@@ -27,7 +27,35 @@ const PlanDataListItem = ({
   toggleExpanded,
 }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
-  if (planList) {
+  const [myPlanList, setMyPlanList] = useState([]);
+  const [myClusterList, setMyClusterList] = useState([]);
+  const [myStorageList, setMyStorageList] = useState([]);
+
+  function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
+
+  const prevStorage: any = usePrevious(storageList);
+  const prevPlans: any = usePrevious(planList);
+  const prevClusters: any = usePrevious(clusterList);
+
+  useEffect(() => {
+    if (JSON.stringify(prevStorage) !== JSON.stringify(storageList)) {
+      setMyStorageList(storageList);
+    }
+    if (JSON.stringify(prevPlans) !== JSON.stringify(planList)) {
+      setMyPlanList(planList);
+    }
+    if (JSON.stringify(prevClusters) !== JSON.stringify(clusterList)) {
+      setMyClusterList(clusterList);
+    }
+  }, [planList, clusterList, storageList]);
+
+  if (myPlanList) {
     return (
       <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
         <DataListItemRow>
@@ -55,9 +83,9 @@ const PlanDataListItem = ({
               <PlusCircleIcon /> Add Plan
             </Button>
             <WizardContainer
-              planList={planList}
-              clusterList={clusterList}
-              storageList={storageList}
+              planList={myPlanList}
+              clusterList={myClusterList}
+              storageList={myStorageList}
               isOpen={isOpen}
               onHandleClose={toggleOpen}
               isLoading={isLoading}
@@ -68,9 +96,9 @@ const PlanDataListItem = ({
         <PlanContent
           onPlanSubmit={onPlanSubmit}
           plansDisabled={plansDisabled}
-          planList={planList}
-          clusterList={clusterList}
-          storageList={storageList}
+          planList={myPlanList}
+          clusterList={myClusterList}
+          storageList={myStorageList}
           isLoading={isLoading}
           isExpanded={isExpanded}
         />

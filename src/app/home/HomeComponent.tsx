@@ -279,7 +279,7 @@ export default connect(
     planStatusCounts: planSelectors.getCounts(state),
     allClusters: clusterSelectors.getAllClusters(state),
     allStorage: storageSelectors.getAllStorage(state),
-    allPlans: planSelectors.getAllPlans(state),
+    allPlans: planSelectors.getPlansWithStatus(state),
     loggingIn: state.auth.loggingIn,
     user: state.auth.user,
     isFetchingClusters: state.cluster.isFetching,
