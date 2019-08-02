@@ -54,13 +54,15 @@ const WizardComponent = props => {
   const prevIsFetchingPVList = usePrevious(isFetchingPVList);
   const prevIsPVError = usePrevious(isPVError);
   const prevIsFetchingNamespaceList = usePrevious(isFetchingNamespaceList);
+  const prevIsCheckingPlanStatus = usePrevious(isCheckingPlanStatus);
 
   useEffect(() => {
-    if (JSON.stringify(prevPlans) !== JSON.stringify(planList) ||
+    if (prevPlans !== planList ||
       prevValues !== values ||
       prevIsFetchingPVList !== isFetchingPVList ||
       prevIsPVError !== isPVError ||
       prevIsFetchingNamespaceList !== isFetchingNamespaceList ||
+      prevIsCheckingPlanStatus !== isCheckingPlanStatus ||
       prevErrors !== errors ||
       prevTouched !== touched
     ) {
