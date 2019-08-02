@@ -14,11 +14,7 @@ const StyledSpan = styled.span`
 `;
 
 const ResultsStep = props => {
-  const { values, errors, planList, isCheckingPlanStatus } = props;
-  const matchingPlan = planList.find(p => {
-    return values.planName === p.MigPlan.metadata.name;
-  });
-
+  const { values, errors, currentPlan, isCheckingPlanStatus } = props;
   return (
     <Flex
       css={css`
@@ -50,23 +46,23 @@ const ResultsStep = props => {
             {isCheckingPlanStatus ? (
               <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
             ) : (
-              <Text fontSize={[2, 3, 4]}>
-                {matchingPlan.PlanStatus.hasReadyCondition ? (
-                  <StatusIcon isReady={true} />
-                ) : (
-                  <StatusIcon isReady={false} />
-                )}
-                <StyledSpan>{values.planName} </StyledSpan>
-                <Box
-                  css={css`
+                <Text fontSize={[2, 3, 4]}>
+                  {currentPlan.PlanStatus.hasReadyCondition ? (
+                    <StatusIcon isReady={true} />
+                  ) : (
+                      <StatusIcon isReady={false} />
+                    )}
+                  <StyledSpan>{values.planName} </StyledSpan>
+                  <Box
+                    css={css`
                     margin: 0.3em;
                     display: inline-block;
                   `}
-                >
-                  <PlanStatus plan={matchingPlan} />
-                </Box>
-              </Text>
-            )}
+                  >
+                    <PlanStatus plan={currentPlan} />
+                  </Box>
+                </Text>
+              )}
           </Box>
         </Flex>
       </Box>

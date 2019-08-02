@@ -21,7 +21,7 @@ const WizardComponent = props => {
     setFieldTouched,
     setFieldValue,
     clusterList,
-    planList,
+    currentPlan,
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
@@ -47,7 +47,7 @@ const WizardComponent = props => {
     return ref.current;
   }
 
-  const prevPlans = usePrevious(planList);
+  const prevPlan = usePrevious(currentPlan);
   const prevValues = usePrevious(values);
   const prevTouched = usePrevious(touched);
   const prevErrors = usePrevious(errors);
@@ -57,7 +57,7 @@ const WizardComponent = props => {
   const prevIsCheckingPlanStatus = usePrevious(isCheckingPlanStatus);
 
   useEffect(() => {
-    if (JSON.stringify(prevPlans) !== JSON.stringify(planList) ||
+    if (JSON.stringify(prevPlan) !== JSON.stringify(currentPlan) ||
       prevValues !== values ||
       prevIsFetchingPVList !== isFetchingPVList ||
       prevIsPVError !== isPVError ||
@@ -119,7 +119,7 @@ const WizardComponent = props => {
               values={values}
               setFieldValue={setFieldValue}
               setFieldTouched={setFieldTouched}
-              planList={planList}
+              currentPlan={currentPlan}
               isFetchingPVList={isFetchingPVList}
               isPVError={isPVError}
             />
@@ -141,7 +141,7 @@ const WizardComponent = props => {
               setFieldTouched={setFieldTouched}
               onWizardLoadingToggle={toggleLoading}
               isWizardLoading={isLoading}
-              planList={planList}
+              currentPlan={currentPlan}
               isFetchingPVList={isFetchingPVList}
               clusterList={clusterList}
             />
@@ -157,7 +157,7 @@ const WizardComponent = props => {
               values={values}
               errors={errors}
               onWizardLoadingToggle={toggleLoading}
-              planList={planList}
+              currentPlan={currentPlan}
               isCheckingPlanStatus={isCheckingPlanStatus}
             />
           ),
@@ -172,7 +172,7 @@ const WizardComponent = props => {
       setUpdatedSteps(steps);
 
     }
-  }, [planList, values, isPVError, isFetchingPVList, errors, touched]);
+  }, [currentPlan, values, isPVError, isFetchingPVList, errors, touched]);
 
 
   const onMove = (curr, prev) => {

@@ -6,7 +6,7 @@ import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import StorageClassTable from './StorageClassTable';
 import styled from '@emotion/styled';
 const StorageClassForm = props => {
-  const { setFieldValue, values, planList, clusterList, isFetchingPVList } = props;
+  const { setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
   `;
@@ -22,7 +22,7 @@ const StorageClassForm = props => {
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}
-          planList={planList}
+          currentPlan={currentPlan}
           clusterList={clusterList}
         />
       </Box>

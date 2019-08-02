@@ -2,7 +2,10 @@ import { createSelector } from 'reselect';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
+const currentPlanSelector = state => state.plan.currentPlan;
+
 const getMigMeta = state => state.migMeta;
+
 
 const getPlansWithStatus = createSelector(
   [planSelector],
@@ -139,8 +142,17 @@ const getCounts = createSelector(
     return counts;
   }
 );
+const getCurrentPlan = createSelector(
+  [getPlansWithStatus, currentPlanSelector],
+  (plans, currentPlan) => {
+    if (currentPlan) {
+      return plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
+    }
+  }
+)
 
 export default {
+  getCurrentPlan,
   getPlansWithStatus,
   getMigMeta,
   getCounts,

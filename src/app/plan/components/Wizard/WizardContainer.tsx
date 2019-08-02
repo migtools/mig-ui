@@ -1,6 +1,7 @@
 import { withFormik } from 'formik';
 import WizardComponent from './WizardComponent';
 import planOperations from '../../duck/operations';
+import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../common/duck/utils';
 
@@ -71,6 +72,8 @@ const mapStateToProps = state => {
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
     isFetchingPVList: state.plan.isFetchingPVList,
     isPVError: state.plan.isPVError,
+    currentPlan: planSelectors.getCurrentPlan(state)
+
   };
 };
 const mapDispatchToProps = dispatch => {

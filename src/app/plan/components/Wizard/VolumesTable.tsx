@@ -14,19 +14,14 @@ import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 
 const VolumesTable = (props): any => {
-  const { setFieldValue, planList, values, isPVError, isFetchingPVList } = props;
+  const { setFieldValue, currentPlan, values, isPVError, isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
 
   const handleTypeChange = (row, option) => {
     updateTableData(row.index, option.value);
   };
 
-  const getCurrentPlan = () => {
-    return planList.find(p => p.MigPlan.metadata.name === values.planName);
-  };
-
   const updateTableData = (rowIndex, updatedValue) => {
-    const currentPlan = getCurrentPlan();
     const rowsCopy = [...rows];
     if (currentPlan !== null && values.persistentVolumes) {
       const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
@@ -39,7 +34,6 @@ const VolumesTable = (props): any => {
   };
 
   useEffect(() => {
-    const currentPlan = getCurrentPlan();
     if (currentPlan) {
       const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || [];
       let mappedPVs;

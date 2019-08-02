@@ -12,9 +12,7 @@ import Loader from 'react-loader-spinner';
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 
 const StorageClassTable = (props): any => {
-  const { planList, clusterList, values, isFetchingPVList } = props;
-  const currentPlan =
-    planList.find(p => p.MigPlan.metadata.name === values.planName);
+  const { currentPlan, clusterList, values, isFetchingPVList } = props;
   const migPlanPvs = currentPlan.MigPlan.spec.persistentVolumes;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
@@ -22,7 +20,7 @@ const StorageClassTable = (props): any => {
   // for each of the pvs. This will get set on the plan values.
   const [pvStorageClassAssignment, setPvStorageClassAssignment] = useState({});
 
-  const handleStorageClassChange= (row, option) => {
+  const handleStorageClassChange = (row, option) => {
     const pvName = row.original.name;
     const selectedScName = option.value;
     const newSc = storageClassOptions.find(sc => sc.name === selectedScName);

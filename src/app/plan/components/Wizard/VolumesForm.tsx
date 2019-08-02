@@ -4,14 +4,11 @@ import { Box } from '@rebass/emotion';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import VolumesTable from './VolumesTable';
 import styled from '@emotion/styled';
-
 const VolumesForm = props => {
-  const { setFieldValue, values, isPVError, isFetchingPVList, planList } = props;
-
+  const { setFieldValue, values, isPVError, isFetchingPVList, currentPlan } = props;
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
   `;
-
   return (
     <Box>
       <StyledTextContent>
@@ -24,7 +21,7 @@ const VolumesForm = props => {
         isFetchingPVList={isFetchingPVList}
         setFieldValue={setFieldValue}
         values={values}
-        planList={planList}
+        currentPlan={currentPlan}
       />
     </Box>
   );
