@@ -134,7 +134,7 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
         <Box m="0 0 1em 0 ">
           <Button
             type="submit"
-            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched)}
+            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, props.dirty)}
           >
             {addEditButtonTextFn(currentStatus)}
           </Button>
