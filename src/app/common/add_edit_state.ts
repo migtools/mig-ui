@@ -101,12 +101,14 @@ export const addEditButtonText = (componentType: string) => (status: IAddEditSta
 export const isAddEditButtonDisabled = (
   status: IAddEditStatus,
   errors: object,
-  touched: object
+  touched: object,
+  dirty: boolean,
 ) => {
   const hasNotBeenTouched = Object.keys(touched).length === 0;
   const hasValidationErrors = Object.keys(errors).length > 0;
   const valuesAreNotReady = hasNotBeenTouched || hasValidationErrors;
   const isDisabled =
+    !dirty ||
     valuesAreNotReady ||
     status.state === AddEditState.Watching ||
     status.state === AddEditState.Fetching;
