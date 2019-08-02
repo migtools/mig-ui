@@ -8,12 +8,13 @@ import {
   DataListCell,
   DataListAction,
 } from '@patternfly/react-core';
-import { useExpandDataList, useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 
 const PlanDataListItem = ({
+  id,
   clusterList,
   storageList,
   onPlanSubmit,
@@ -22,8 +23,9 @@ const PlanDataListItem = ({
   plansDisabled,
   onStartPolling,
   onStopPolling,
+  isExpanded,
+  toggleExpanded,
 }) => {
-  const [isExpanded, toggleExpanded] = useExpandDataList(false);
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (planList) {
     return (
@@ -36,7 +38,7 @@ const PlanDataListItem = ({
               } else {
                 onStartPolling();
               }
-              toggleExpanded();
+              toggleExpanded(id);
             }}
             isExpanded={isExpanded}
             id="plan-toggle"

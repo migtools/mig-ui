@@ -6,9 +6,9 @@ import planOperations from '../plan/duck/operations';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import { Creators as PlanActionCreators } from '../plan/duck/actions';
-import { Creators as ClusterActionCreators } from '../cluster/duck/actions';
-import { Creators as StorageActionCreators } from '../storage/duck/actions';
+import { PlanActions } from '../plan/duck/actions';
+import { ClusterActions } from '../cluster/duck/actions';
+import { StorageActions as StorageActions } from '../storage/duck/actions';
 import { startDataListPolling, stopDataListPolling } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
@@ -21,6 +21,7 @@ import {
  } from './duck/context';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
+
 
 interface IProps {
   allClusters: any[];
@@ -48,29 +49,39 @@ interface IProps {
 }
 
 interface IState {
-  expanded: any[];
   plansDisabled: boolean;
-  isOpen: boolean;
-  isWizardOpen: boolean;
+  expanded: {
+    [s: string]: boolean;
+  };
   modalType: string;
+}
+
+const DataItemsLength = 3;
+enum DataListItems {
+  ClusterList = 'clusterList',
+  StorageList = 'storageList',
+  PlanList = 'planList',
 }
 
 class DetailViewComponent extends Component<IProps, IState> {
   state = {
-    expanded: [],
+    expanded: {
+      'clusterList': false,
+      'storageList': false,
+      'planList': false,
+    },
     plansDisabled: true,
-    isOpen: false,
-    isWizardOpen: false,
     modalType: '',
   };
 
-  componentDidMount() {
+  componentDidMount = () => {
     const { allClusters, allStorage } = this.props;
     if (allClusters.length > 1 && allStorage.length > 0) {
       this.setState({ plansDisabled: false });
     }
   }
-  componentDidUpdate(prevProps, prevState) {
+
+  componentDidUpdate = (prevProps, prevState) => {
     if (
       (prevProps.allClusters !== this.props.allClusters ||
         prevProps.allStorage !== this.props.allStorage) &&
@@ -78,6 +89,16 @@ class DetailViewComponent extends Component<IProps, IState> {
     ) {
       this.setState({ plansDisabled: false });
     }
+  }
+
+  handleExpand = (id: string) => {
+    const expanded = !this.state.expanded[id];
+    const newExpanded = Object.assign({}, this.state.expanded);
+    Object.values(DataListItems).map(
+      expandItem => newExpanded[expandItem] = false
+    );
+    newExpanded[id] = expanded;
+    this.setState({ expanded: newExpanded });
   }
 
   handleRemoveItem = (type, id) => {
@@ -94,11 +115,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     }
   };
 
-  handleWizardToggle = () => {
-    this.setState(({ isWizardOpen }) => ({
-      isWizardOpen: !isWizardOpen,
-    }));
-  };
   handlePlanSubmit = planWizardValues => {
     this.props.planUpdateRequest(planWizardValues);
   };
@@ -142,7 +158,6 @@ class DetailViewComponent extends Component<IProps, IState> {
       watchClusterAddEditStatus,
       watchStorageAddEditStatus,
     } = this.props;
-    const { isWizardOpen } = this.state;
 
     const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
     const { handleStageTriggered, handleDeletePlan } = this;
@@ -152,24 +167,29 @@ class DetailViewComponent extends Component<IProps, IState> {
           <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
             <ClusterDataListItem
               dataList={allClusters}
-              id="clusterList"
+              id={DataListItems.ClusterList}
               associatedPlans={clusterAssociatedPlans}
               isLoading={this.props.isMigrating || this.props.isStaging}
               migMeta={this.props.migMeta}
               removeCluster={this.props.removeCluster}
+              isExpanded={this.state.expanded[DataListItems.ClusterList]}
+              toggleExpanded={this.handleExpand}
             />
           </ClusterContext.Provider>
           <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
             <StorageDataListItem
               dataList={allStorage}
-              id="storageList"
+              id={DataListItems.StorageList}
               associatedPlans={storageAssociatedPlans}
               isLoading={this.props.isMigrating || this.props.isStaging}
               removeStorage={this.props.removeStorage}
+              isExpanded={this.state.expanded[DataListItems.StorageList]}
+              toggleExpanded={this.handleExpand}
             />
           </StorageContext.Provider>
           <PlanContext.Provider value={{ handleStageTriggered, handleDeletePlan }}>
             <PlanDataListItem
+              id={DataListItems.PlanList}
               planList={plansWithStatus}
               clusterList={allClusters}
               storageList={allStorage}
@@ -178,6 +198,8 @@ class DetailViewComponent extends Component<IProps, IState> {
               isLoading={this.props.isMigrating || this.props.isStaging}
               onStartPolling={this.handleStartPolling}
               onStopPolling={this.props.stopDataListPolling}
+              isExpanded={this.state.expanded[DataListItems.PlanList]}
+              toggleExpanded={this.handleExpand}
             />
           </PlanContext.Provider>
         </DataList>
@@ -208,32 +230,33 @@ function mapStateToProps(state) {
     migMeta,
   };
 }
+
 const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    planUpdateRequest: planValues => dispatch(PlanActionCreators.planUpdateRequest(planValues)),
+    planUpdateRequest: planValues => dispatch(PlanActions.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
-      dispatch(PlanActionCreators.updateStageProgress(plan.planName, progress)),
-    stagingSuccess: plan => dispatch(PlanActionCreators.stagingSuccess(plan.planName)),
-    updatePlans: updatedPlans => dispatch(PlanActionCreators.updatePlans(updatedPlans)),
+      dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
+    stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
+    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(startDataListPolling(params)),
     stopDataListPolling: () => dispatch(stopDataListPolling()),
-    triggerPlanDelete: planName => dispatch(PlanActionCreators.planDeleteRequest(planName)),
+    triggerPlanDelete: planName => dispatch(PlanActions.planDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(ClusterActionCreators.setClusterAddEditStatus(
+      dispatch(ClusterActions.setClusterAddEditStatus(
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
       ));
-      dispatch(ClusterActionCreators.watchClusterAddEditStatus(clusterName));
+      dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
     },
     watchStorageAddEditStatus: (storageName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(StorageActionCreators.setStorageAddEditStatus(
+      dispatch(StorageActions.setStorageAddEditStatus(
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
       ));
-      dispatch(StorageActionCreators.watchStorageAddEditStatus(storageName));
+      dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     }
   };
 };

@@ -1,5 +1,11 @@
 import React from 'react';
 
+const expandRefs = {
+  'clusters': '#cluster-toggle',
+  'repositories': '#storage-toggle',
+  'plans': '#plan-toggle',
+};
+
 const FooterText = ({ type, dataList, ...props }) => {
   const clusterText =
     dataList.length === 1
@@ -12,7 +18,7 @@ const FooterText = ({ type, dataList, ...props }) => {
   const planText =
     dataList.length === 1 ? `View ${dataList.length} Plan` : `View all ${dataList.length} Plans`;
   return (
-    <a href="#">
+    <a href={ expandRefs[type] }>
       {type === 'clusters' && clusterText}
       {type === 'repositories' && storageText}
       {type === 'plans' && planText}

@@ -18,8 +18,8 @@ import {
   alertClear,
 } from './actions';
 
-import { Creators as ClusterActionCreators } from '../../cluster/duck/actions';
-import { Creators as StorageActionCreators } from '../../storage/duck/actions';
+import { ClusterActions } from '../../cluster/duck/actions';
+import { StorageActions } from '../../storage/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 30; // Seconds
@@ -51,18 +51,18 @@ function* watchDataListPolling() {
 function* watchStoragePolling() {
   while (true) {
     const action = yield take(startStoragePolling().type);
-    yield put(StorageActionCreators.setIsPollingStorage(true));
+    yield put(StorageActions.setIsPollingStorage(true));
     yield race([call(poll, action), take(stopStoragePolling().type)]);
-    yield put(StorageActionCreators.setIsPollingStorage(false));
+    yield put(StorageActions.setIsPollingStorage(false));
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
     const action = yield take(startClusterPolling().type);
-    yield put(ClusterActionCreators.setIsPollingCluster(true));
+    yield put(ClusterActions.setIsPollingCluster(true));
     yield race([call(poll, action), take(stopClusterPolling().type)]);
-    yield put(ClusterActionCreators.setIsPollingCluster(false));
+    yield put(ClusterActions.setIsPollingCluster(false));
   }
 }
 

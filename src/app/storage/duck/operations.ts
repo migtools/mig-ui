@@ -1,4 +1,4 @@
-import { Creators } from './actions';
+import { StorageActions } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -11,8 +11,7 @@ import {
   alertErrorTimeout,
 } from '../../common/duck/actions';
 
-const removeStorageSuccess = Creators.removeStorageSuccess;
-const updateSearchTerm = Creators.updateSearchTerm;
+const updateSearchTerm = StorageActions.updateSearchTerm;
 
 const removeStorage = name => {
   return async (dispatch, getState) => {
@@ -32,7 +31,7 @@ const removeStorage = name => {
         client.delete(migStorageResource, name),
       ]);
 
-      dispatch(removeStorageSuccess(name));
+      dispatch(StorageActions.removeStorageSuccess(name));
       dispatch(alertSuccessTimeout(`Successfully removed repository "${name}"!`));
     } catch (err) {
       dispatch(alertErrorTimeout(err));
