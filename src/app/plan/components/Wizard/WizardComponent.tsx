@@ -57,7 +57,7 @@ const WizardComponent = props => {
   const prevIsCheckingPlanStatus = usePrevious(isCheckingPlanStatus);
 
   useEffect(() => {
-    if (prevPlans !== planList ||
+    if (JSON.stringify(prevPlans) !== JSON.stringify(planList) ||
       prevValues !== values ||
       prevIsFetchingPVList !== isFetchingPVList ||
       prevIsPVError !== isPVError ||

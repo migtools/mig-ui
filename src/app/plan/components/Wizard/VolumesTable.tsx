@@ -12,8 +12,6 @@ import StatusIcon from '../../../common/components/StatusIcon';
 import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
-import planOperations from '../../duck/operations';
-import planSelectors from '../../duck/selectors';
 
 const VolumesTable = (props): any => {
   const { setFieldValue, planList, values, isPVError, isFetchingPVList } = props;
