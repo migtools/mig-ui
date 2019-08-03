@@ -75,18 +75,6 @@ const getPlansWithStatus = createSelector(
         latestType,
       };
 
-      //remove controller update fields
-      const { metadata } = plan.MigPlan;
-      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
-        delete metadata.annotations;
-        delete metadata.generation;
-        delete metadata.resourceVersion;
-      }
-      if (plan.MigPlan.status) {
-        for (let i = 0; plan.MigPlan.status.conditions.length > i; i++) {
-          delete plan.MigPlan.status.conditions[i].lastTransitionTime;
-        }
-      }
       return { ...plan, PlanStatus: statusObject };
     });
 
@@ -142,14 +130,39 @@ const getCounts = createSelector(
     return counts;
   }
 );
-const getCurrentPlan = createSelector(
+
+const getPlanDiffSelector = createSelector(
   [getPlansWithStatus, currentPlanSelector],
   (plans, currentPlan) => {
     if (currentPlan) {
-      return plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
+      const foundPlan = plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
+      //remove controller update fields
+      const { metadata } = foundPlan.MigPlan;
+      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+        delete metadata.annotations;
+        delete metadata.generation;
+        delete metadata.resourceVersion;
+      }
+      if (foundPlan.MigPlan.status) {
+        for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
+          delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
+        }
+      }
+      if (JSON.stringify(currentPlan.MigPlan) === JSON.stringify(foundPlan.MigPlan)) {
+        return currentPlan;
+      } else if
+        (JSON.stringify(currentPlan.MigPlan) !== JSON.stringify(foundPlan.MigPlan)) {
+        return foundPlan;
+      }
+
     }
   }
 )
+
+const getCurrentPlan = createSelector(
+  [getPlanDiffSelector],
+  plan => plan)
+
 
 export default {
   getCurrentPlan,

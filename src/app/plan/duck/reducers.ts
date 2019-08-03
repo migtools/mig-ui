@@ -117,8 +117,13 @@ export const namespaceFetchFailure =
 
 export const updatePlan =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlan>) => {
+    let newCurrentPlan;
     const updatedPlanList = state.migPlanList.map(p => {
       if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
+        newCurrentPlan = {
+          MigPlan: action.updatedPlan,
+          Migrations: [],
+        }
         return {
           MigPlan: action.updatedPlan,
           Migrations: [],
@@ -132,6 +137,7 @@ export const updatePlan =
     return {
       ...state,
       migPlanList: sortedList,
+      currentPlan: newCurrentPlan
     };
   };
 
