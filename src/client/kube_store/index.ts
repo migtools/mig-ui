@@ -4,7 +4,7 @@ import { NamespacedResource, ClusterResource, KubeResource,
 
 import mocked_data from './mocked_data';
 import JsonMergePatch from 'json-merge-patch';
-import { updateClusterRegistryObj } from '../resources/conversions';
+//import { updateClusterRegistryObj } from '../resources/conversions';
 const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
 export default class KubeStore {
@@ -29,16 +29,18 @@ export default class KubeStore {
       alert('Unable to find expected mocked data for "clusters"');
       return {};
     }
+    // Returning a new copy of data on each call to limit unintentional changes
+    return {...d};
+  }
+
+  private data() {
+    // Focused on returning just the data for 'clusterName'
+    const d = this._data();
     if (! (this.clusterName in d['clusters'])) {
       alert('Unable to find expected mocked data for clusterName "' + this.clusterName + '"');
       return {};
     }
-    
-  }
-
-  private data() {
-    const d = this._data();
-    return d['clusters'][this.clusterName];
+   return d['clusters'][this.clusterName]; 
   }
 
   private ensureDataLoaded() {
@@ -50,9 +52,9 @@ export default class KubeStore {
   }
 
   private updateMockedData(key, name, updatedObject) {
-    const d = this._data();
-    d['clusters'][this.clusterName][key][name] = updatedObject;
-    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(d)); 
+    const newData = this._data();
+    newData['clusters'][this.clusterName][key][name] = updatedObject;
+    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData)); 
   }
 
   public static Instance() {
@@ -60,23 +62,22 @@ export default class KubeStore {
   }
 
   public patchResource(resource: KubeResource, name: string, patch: object): object {
-    let result: object = {};
+    let mockedObject = {};
     let key: string = '';
-
     if (resource instanceof NamespacedResource) {
       const namespacedResource = resource as NamespacedResource;
       if (resource instanceof CoreNamespacedResource) {
         // Core Namespaced
         key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
         if (this.data()[key]) {
-          result = this.data()[key][name];
+          mockedObject = {...this.data()[key][name]};
         }
       } else {
         // Extension Namespaced
         key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
           `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
         if (this.data()[key]) {
-          result = this.data()[key][name];
+          mockedObject = {...this.data()[key][name]};
         }
       }
     } else {
@@ -84,26 +85,20 @@ export default class KubeStore {
         // Core ClusterResource
         key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
         if (this.data()[key]) {
-          result = this.data()[key][name];
+          mockedObject = {...this.data()[key][name]};
         }
       } else {
         // Extension ClusterResource
         key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
         if (this.data()[key]) {
-          result = this.data()[key][name];
+          mockedObject = {...this.data()[key][name]};
         }
       }
     }
-
-    //console.log('Result is ');
-    //console.log(result);
-
-    const patchedObject = JsonMergePatch.apply(result, patch);
-    this.updateMockedData(key, name, patchedObject);
-
-    //localStorage[key] = patchedObject;
-    // console.log(patchedObject)
-    return patchedObject;
+    const patchedReturn = JsonMergePatch.apply(mockedObject, patch);
+    this.updateMockedData(key, name, mockedObject);
+    // Intentionally returning an empty object for the data response. 
+    return {}; 
   }
 
   public setResource(resource: KubeResource, name: string, newObject: object): object {
