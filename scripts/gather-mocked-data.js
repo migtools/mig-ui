@@ -51,7 +51,8 @@ function pruneOlderMocks() {
   filesToRemove.forEach(name => {
     try {
       execSync(`git rm ${MOCKED_DATA_DIR}/${name} &> /dev/null`, { stdio: 'inherit' });
-    } catch {
+    } 
+    catch (err) {
       execSync(`rm ${MOCKED_DATA_DIR}/${name}`, { stdio: 'inherit' });
     }
   });
