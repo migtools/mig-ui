@@ -4,7 +4,6 @@ import { NamespacedResource, ClusterResource, KubeResource,
 
 import mocked_data from './mocked_data';
 import JsonMergePatch from 'json-merge-patch';
-//import { updateClusterRegistryObj } from '../resources/conversions';
 const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
 export default class KubeStore {
