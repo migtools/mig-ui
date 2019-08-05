@@ -137,22 +137,26 @@ const getPlanDiffSelector = createSelector(
     if (currentPlan) {
       const foundPlan = plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
       //remove controller update fields
-      const { metadata } = foundPlan.MigPlan;
-      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
-        delete metadata.annotations;
-        delete metadata.generation;
-        delete metadata.resourceVersion;
-      }
-      if (foundPlan.MigPlan.status) {
-        for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
-          delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
+      if (foundPlan) {
+        const { metadata } = foundPlan.MigPlan;
+        if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+          delete metadata.annotations;
+          delete metadata.generation;
+          delete metadata.resourceVersion;
         }
-      }
-      if (JSON.stringify(currentPlan.MigPlan) === JSON.stringify(foundPlan.MigPlan)) {
-        return currentPlan;
-      } else if
-        (JSON.stringify(currentPlan.MigPlan) !== JSON.stringify(foundPlan.MigPlan)) {
-        return foundPlan;
+        if (foundPlan.MigPlan.status) {
+          for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
+            delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
+          }
+        }
+        if (JSON.stringify(currentPlan.MigPlan) === JSON.stringify(foundPlan.MigPlan)) {
+          return currentPlan;
+        } else if
+          (JSON.stringify(currentPlan.MigPlan) !== JSON.stringify(foundPlan.MigPlan)) {
+          return foundPlan;
+        }
+      } else {
+        return null;
       }
 
     }
