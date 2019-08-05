@@ -148,7 +148,16 @@ const WizardComponent = props => {
 
     setUpdatedSteps(steps);
 
-  }, [currentPlan, values, isPVError, isFetchingPVList, errors, touched]);
+  }, [
+      currentPlan,
+      values,
+      isPVError,
+      isFetchingPVList,
+      isCheckingPlanStatus,
+      isFetchingNamespaceList,
+      errors,
+      touched
+    ]);
 
 
   const onMove = (curr, prev) => {
