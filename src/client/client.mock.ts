@@ -47,7 +47,9 @@ export class MockClusterClient {
 
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({});
+      res({
+        data: this.kube_store.patchResource(resource, name, patch)
+      });
     });
   }
 
