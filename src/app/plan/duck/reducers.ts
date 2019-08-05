@@ -123,7 +123,7 @@ export const updatePlan =
         newCurrentPlan = {
           MigPlan: action.updatedPlan,
           Migrations: [],
-        }
+        };
         return {
           MigPlan: action.updatedPlan,
           Migrations: [],

@@ -168,9 +168,6 @@ const WizardComponent = props => {
     if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
-      const currentPlan = props.planList.find(p => {
-        return p.MigPlan.metadata.name === props.values.planName;
-      });
 
       if (!currentPlan) {
         props.addPlan({

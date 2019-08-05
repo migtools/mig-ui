@@ -157,11 +157,11 @@ const getPlanDiffSelector = createSelector(
 
     }
   }
-)
+);
 
 const getCurrentPlan = createSelector(
   [getPlanDiffSelector],
-  plan => plan)
+  plan => plan);
 
 
 export default {
