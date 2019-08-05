@@ -126,9 +126,6 @@ const VolumesTable = (props): any => {
         <ReactTable
           css={css`
             font-size: 14px;
-            .rt-td {
-              overflow: visible;
-            }
           `}
           data={rows}
           columns={[
@@ -221,6 +218,7 @@ const VolumesTable = (props): any => {
               accessor: 'type',
               width: 120,
               resizable: false,
+              style: { overflow: 'visible' },
               Cell: row => (
                 <Select
                   onChange={(option: any) => handleTypeChange(row, option)}

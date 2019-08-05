@@ -64,9 +64,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
         <ReactTable
           css={css`
               font-size: 14px;
-              .rt-td {
-                overflow: visible;
-              }
             `}
           data={sourceClusterNamespaces}
           columns={[
