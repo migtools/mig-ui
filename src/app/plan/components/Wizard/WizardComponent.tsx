@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
