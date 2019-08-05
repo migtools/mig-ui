@@ -72,7 +72,8 @@ const mapStateToProps = state => {
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
     isFetchingPVList: state.plan.isFetchingPVList,
     isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlan(state)
+    currentPlan: planSelectors.getCurrentPlan(state),
+    planList: planSelectors.getPlansWithStatus(state)
 
   };
 };

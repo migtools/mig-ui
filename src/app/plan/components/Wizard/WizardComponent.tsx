@@ -22,6 +22,7 @@ const WizardComponent = props => {
     setFieldValue,
     clusterList,
     currentPlan,
+    planList,
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
@@ -134,6 +135,7 @@ const WizardComponent = props => {
             onWizardLoadingToggle={toggleLoading}
             currentPlan={currentPlan}
             isCheckingPlanStatus={isCheckingPlanStatus}
+            planList={planList}
           />
         ),
         enableNext: !isLoading,

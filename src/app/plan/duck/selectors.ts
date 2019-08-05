@@ -132,7 +132,7 @@ const getCounts = createSelector(
 );
 
 const getPlanDiffSelector = createSelector(
-  [getPlansWithStatus, currentPlanSelector],
+  [planSelector, currentPlanSelector],
   (plans, currentPlan) => {
     if (currentPlan) {
       const foundPlan = plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
