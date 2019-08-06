@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { AuthActions } from './actions';
 import {
-  alertProgressTimeout,
-  alertSuccessTimeout,
-  alertErrorTimeout,
+  AlertActions
 } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
@@ -27,7 +25,7 @@ const fetchOauthMeta = clusterApi => {
         return;
       }
       dispatch(AuthActions.loginFailure());
-      dispatch(alertErrorTimeout(err));
+      dispatch(AlertActions.alertErrorTimeout(err));
     }
   };
 };
@@ -46,7 +44,7 @@ const fetchToken = (oauthClient, codeRedirect) => {
       dispatch(push('/'));
     } catch (err) {
       dispatch(AuthActions.loginFailure());
-      dispatch(alertErrorTimeout(err));
+      dispatch(AlertActions.alertErrorTimeout(err));
     }
   };
 };

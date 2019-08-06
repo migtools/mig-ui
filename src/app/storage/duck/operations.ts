@@ -7,8 +7,7 @@ import { select } from 'redux-saga/effects';
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 
 import {
-  alertSuccessTimeout,
-  alertErrorTimeout,
+  AlertActions
 } from '../../common/duck/actions';
 
 const updateSearchTerm = StorageActions.updateSearchTerm;
@@ -32,9 +31,9 @@ const removeStorage = name => {
       ]);
 
       dispatch(StorageActions.removeStorageSuccess(name));
-      dispatch(alertSuccessTimeout(`Successfully removed repository "${name}"!`));
+      dispatch(AlertActions.alertSuccessTimeout(`Successfully removed repository "${name}"!`));
     } catch (err) {
-      dispatch(alertErrorTimeout(err));
+      dispatch(AlertActions.alertErrorTimeout(err));
     }
   };
 };

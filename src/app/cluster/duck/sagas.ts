@@ -17,7 +17,7 @@ import {
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
-import { alertErrorTimeout } from '../../common/duck/actions';
+import { AlertActions } from '../../common/duck/actions';
 import {
   createAddEditStatus,
   AddEditState,
@@ -31,7 +31,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 
-function* addClusterRequest(action)  {
+function* addClusterRequest(action) {
   // TODO: Need to improve this to fall into the failed create state with rollback
   const state = yield select();
   const { migMeta } = state;
@@ -84,12 +84,12 @@ function* addClusterRequest(action)  {
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
-  } catch(err) {
+  } catch (err) {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
     // Could use Promise.allSettled here as well.
     console.error('Cluster failed creation with error: ', err);
-    put(alertErrorTimeout('Cluster failed creation'));
+    put(AlertActions.alertErrorTimeout('Cluster failed creation'));
   }
 }
 
@@ -97,7 +97,7 @@ function* watchAddClusterRequest() {
   yield takeLatest(ClusterActionTypes.ADD_CLUSTER_REQUEST, addClusterRequest);
 }
 
-function* updateClusterRequest(action)  {
+function* updateClusterRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
   const state = yield select();
   const { migMeta } = state;
@@ -115,13 +115,13 @@ function* updateClusterRequest(action)  {
   const currentToken = atob(currentCluster.Secret.data.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
 
-  if(!urlUpdated && !tokenUpdated) {
+  if (!urlUpdated && !tokenUpdated) {
     console.warn('A cluster update was requested, but nothing was changed');
     return;
   }
 
   const updatePromises = [];
-  if(urlUpdated) {
+  if (urlUpdated) {
     const newClusterReg = updateClusterRegistryObj(clusterValues.url);
     const clusterRegResource = new ClusterRegistryResource(
       ClusterRegistryResourceKind.Cluster,
@@ -132,7 +132,7 @@ function* updateClusterRequest(action)  {
       clusterRegResource, clusterValues.name, newClusterReg));
   }
 
-  if(tokenUpdated) {
+  if (tokenUpdated) {
     const newTokenSecret = updateTokenSecret(clusterValues.token);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
@@ -166,7 +166,7 @@ function* updateClusterRequest(action)  {
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
-  } catch(err) {
+  } catch (err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
     // TODO: We probably even need retry logic here...
@@ -180,7 +180,7 @@ function* watchUpdateClusterRequest() {
 function* pollClusterAddEditStatus(action) {
   // Give the controller some time to bounce
   yield delay(AddEditDebounceWait);
-  while(true) {
+  while (true) {
     try {
       const state = yield select();
       const { migMeta } = state;
@@ -224,7 +224,7 @@ function* pollClusterAddEditStatus(action) {
 
       // No conditions found, let's wait a bit and keep checking
       yield delay(AddEditWatchTimeoutPollInterval);
-    } catch(err) {
+    } catch (err) {
       // TODO: what happens when the poll fails? Back into that hard error state?
       console.error('Hard error branch hit in poll cluster add edit', err);
       return;
@@ -241,7 +241,7 @@ function* startWatchingClusterAddEditStatus(action) {
     cancel: take(ClusterActionTypes.CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS),
   });
 
-  if(raceResult.cancel) {
+  if (raceResult.cancel) {
     return;
   }
 

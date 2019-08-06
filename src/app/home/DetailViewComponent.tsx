@@ -9,7 +9,7 @@ import planSelectors from '../plan/duck/selectors';
 import { PlanActions } from '../plan/duck/actions';
 import { ClusterActions } from '../cluster/duck/actions';
 import { StorageActions as StorageActions } from '../storage/duck/actions';
-import { startDataListPolling, stopDataListPolling } from '../common/duck/actions';
+import { PollingActions } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
@@ -18,7 +18,7 @@ import {
   PlanContext,
   ClusterContext,
   StorageContext,
- } from './duck/context';
+} from './duck/context';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
 
@@ -241,8 +241,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
-    startDataListPolling: params => dispatch(startDataListPolling(params)),
-    stopDataListPolling: () => dispatch(stopDataListPolling()),
+    startDataListPolling: params => dispatch(PollingActions.startDataListPolling(params)),
+    stopDataListPolling: () => dispatch(PollingActions.stopDataListPolling()),
     triggerPlanDelete: planName => dispatch(PlanActions.planDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching

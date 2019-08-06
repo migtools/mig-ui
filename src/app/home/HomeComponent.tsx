@@ -26,10 +26,7 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import {
-  startClusterPolling,
-  stopClusterPolling,
-  startStoragePolling,
-  stopStoragePolling,
+  PollingActions
 } from '../common/duck/actions';
 import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
 import { StatusPollingInterval } from '../common/duck/sagas';
@@ -292,10 +289,10 @@ export default connect(
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
     fetchPlans: () => dispatch(planOperations.fetchPlans()),
-    startStoragePolling: params => dispatch(startStoragePolling(params)),
-    stopStoragePolling: () => dispatch(stopStoragePolling()),
-    startClusterPolling: params => dispatch(startClusterPolling(params)),
-    stopClusterPolling: () => dispatch(stopClusterPolling()),
+    startStoragePolling: params => dispatch(PollingActions.startStoragePolling(params)),
+    stopStoragePolling: () => dispatch(PollingActions.stopStoragePolling()),
+    startClusterPolling: params => dispatch(PollingActions.startClusterPolling(params)),
+    stopClusterPolling: () => dispatch(PollingActions.stopClusterPolling()),
     updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
     updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
   })

@@ -5,8 +5,7 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 
 import {
-  alertErrorTimeout,
-  alertSuccessTimeout,
+  AlertActions
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 
@@ -40,7 +39,7 @@ function* checkPVs(action) {
       // PV discovery timed out, alert and stop polling
       pvsFound = true; // No PVs timed out
       PlanActions.stopPVPolling();
-      yield put(alertErrorTimeout('Timed out during PV discovery'));
+      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
       yield put({ type: PlanActionTypes.PV_FETCH_SUCCESS, });
       yield put({ type: PlanActionTypes.STOP_PV_POLLING });
       break;
@@ -84,7 +83,7 @@ function* planUpdateRetry(action) {
     const getPlanResponse = yield call(getPlanSaga, action.planValues);
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
-    yield put(alertErrorTimeout('Failed to update plan'));
+    yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
   }
 }
 
@@ -103,16 +102,16 @@ function* planDeleteSaga(action) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
-  try{
+  try {
     yield client.delete(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       action.planName,
     );
     yield put(PlanActions.planDeleteSuccess(action.planName));
-    yield put(alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
-  } catch(err) {
-    console.error(err);
-    yield put(alertErrorTimeout('Plan delete request failed'));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
+  } catch (err) {
+    console.error(err)
+    yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
   }
 }
 

@@ -13,7 +13,7 @@ import {
   updateStorageSecret,
 } from '../../../client/resources/conversions';
 import { StorageActions, StorageActionTypes } from './actions';
-import { alertErrorTimeout } from '../../common/duck/actions';
+import { AlertActions } from '../../common/duck/actions';
 import {
   createAddEditStatus,
   AddEditState,
@@ -27,7 +27,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 
-function* addStorageRequest(action)  {
+function* addStorageRequest(action) {
   // TODO: Need to improve this to fall into the failed create state with rollback
   const state = yield select();
   const { migMeta } = state;
@@ -74,12 +74,12 @@ function* addStorageRequest(action)  {
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
-  } catch(err) {
+  } catch (err) {
     // TODO: Creation failed, should enter failed creation state here
     // Also need to rollback the objects that were successfully created.
     // Could use Promise.allSettled here as well.
     console.error('Storage failed creation with error: ', err);
-    put(alertErrorTimeout('Storage failed creation'));
+    put(AlertActions.alertErrorTimeout('Storage failed creation'));
   }
 }
 
@@ -90,7 +90,7 @@ function* watchAddStorageRequest() {
 const accessKeyIdSecretField = 'aws-access-key-id';
 const secretAccessKeySecretField = 'aws-secret-access-key';
 
-function* updateStorageRequest(action)  {
+function* updateStorageRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
   const state = yield select();
   const { migMeta } = state;
@@ -118,13 +118,13 @@ function* updateStorageRequest(action)  {
   const secretUpdated = storageValues.secret !== currentSecret;
   const kubeSecretUpdated = accessKeyUpdated || secretUpdated;
 
-  if(!migStorageUpdated && !kubeSecretUpdated) {
+  if (!migStorageUpdated && !kubeSecretUpdated) {
     console.warn('A storage update was requested, but nothing was changed');
     return;
   }
 
   const updatePromises = [];
-  if(migStorageUpdated) {
+  if (migStorageUpdated) {
     const updatedMigStorage = updateMigStorage(
       storageValues.bucketName, storageValues.bucketRegion);
     const migStorageResource = new MigResource(
@@ -135,7 +135,7 @@ function* updateStorageRequest(action)  {
       migStorageResource, storageValues.name, updatedMigStorage));
   }
 
-  if(kubeSecretUpdated) {
+  if (kubeSecretUpdated) {
     const updatedSecret = updateStorageSecret(storageValues.secret, storageValues.accessKey);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret, migMeta.configNamespace);
@@ -158,7 +158,7 @@ function* updateStorageRequest(action)  {
     // Need to merge the grouped results onto the currentStorage since
     // its possible the grouped results was only a partial update
     // Ex: could have just been a MigStorage or a Secret
-    const updatedStorage = { ...currentStorage, ...groupedResults};
+    const updatedStorage = { ...currentStorage, ...groupedResults };
 
     // Update the state tree with the updated storage, and start to watch
     // again to check for its condition after edits
@@ -167,7 +167,7 @@ function* updateStorageRequest(action)  {
       createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
     ));
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
-  } catch(err) {
+  } catch (err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateStorageRequest:', err);
     // TODO: What are we planning on doing in the event of an update failure?
     // TODO: We probably even need retry logic here...
@@ -181,7 +181,7 @@ function* watchUpdateStorageRequest() {
 function* pollStorageAddEditStatus(action) {
   // Give the controller some time to bounce
   yield delay(AddEditDebounceWait);
-  while(true) {
+  while (true) {
     try {
       const state = yield select();
       const { migMeta } = state;
@@ -198,8 +198,8 @@ function* pollStorageAddEditStatus(action) {
 
       if (hasStatusAndConditions) {
         const criticalCond = storagePollResult.data.status.conditions.find(cond => {
-            return cond.category === AddEditConditionCritical;
-          });
+          return cond.category === AddEditConditionCritical;
+        });
 
         if (criticalCond) {
           return createAddEditStatusWithMeta(
@@ -211,8 +211,8 @@ function* pollStorageAddEditStatus(action) {
         }
 
         const readyCond = storagePollResult.data.status.conditions.find(cond => {
-            return cond.type === AddEditConditionReady;
-          });
+          return cond.type === AddEditConditionReady;
+        });
 
         if (readyCond) {
           return createAddEditStatusWithMeta(
@@ -226,7 +226,7 @@ function* pollStorageAddEditStatus(action) {
 
       // No conditions found, let's wait a bit and keep checking
       yield delay(AddEditWatchTimeoutPollInterval);
-    } catch(err) {
+    } catch (err) {
       // TODO: what happens when the poll fails? Back into that hard error state?
       console.error('Hard error branch hit in poll storage add edit', err);
       return;
@@ -243,7 +243,7 @@ function* startWatchingStorageAddEditStatus(action) {
     cancel: take(StorageActions.cancelWatchStorageAddEditStatus().type),
   });
 
-  if(raceResult.cancel) {
+  if (raceResult.cancel) {
     return;
   }
 
