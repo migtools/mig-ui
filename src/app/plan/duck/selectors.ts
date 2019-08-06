@@ -21,6 +21,8 @@ const getPlansWithStatus = createSelector(
       let hasSucceededStage = null;
       let hasClosedCondition = null;
       let latestType = null;
+      let latestMigrationStep = null;
+
       if (plan.MigPlan.status) {
         hasClosedCondition = plan.MigPlan.spec.closed;
         hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
@@ -60,6 +62,13 @@ const getPlansWithStatus = createSelector(
               return m.status.conditions.some(c => c.type === 'Running');
             }
           }).length;
+
+          if (plan.Migrations[0].status.conditions.length) {
+            latestMigrationStep = plan.Migrations[0].status.conditions.filter(c => {
+              return c.type === 'Running';
+            })[0];
+            console.log(latestMigrationStep = plan.Migrations[0].status.conditions.filter(c => { return c.type === 'Running' })[0])
+          }
         }
       }
       const statusObject = {
@@ -73,6 +82,7 @@ const getPlansWithStatus = createSelector(
         finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
         latestType,
+        latestMigrationStep,
       };
 
       return { ...plan, PlanStatus: statusObject };

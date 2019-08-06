@@ -12,6 +12,7 @@ const PlanStatus = ({ plan }) => {
     hasPrevMigrations,
     hasFailedCondition,
     latestType,
+    latestMigrationStep,
   } = plan.PlanStatus;
 
   const getStatus = () => {
@@ -35,7 +36,8 @@ const PlanStatus = ({ plan }) => {
       status.text = 'Closed';
     }
     if (hasRunningMigrations) {
-      status.text = `${latestType} Running`;
+      status.text = `${latestType} Running - ${latestMigrationStep.message} (${latestMigrationStep.reason})`;
+
     }
     return status;
   };
