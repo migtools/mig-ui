@@ -110,7 +110,7 @@ function* planDeleteSaga(action) {
     yield put(PlanActions.planDeleteSuccess(action.planName));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
-    console.error(err)
+    console.error(err);
     yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
   }
 }
