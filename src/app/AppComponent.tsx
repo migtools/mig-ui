@@ -8,7 +8,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
 import {
-  alertClear,
+  AlertActions
 } from './common/duck/actions';
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
@@ -115,6 +115,6 @@ export default connect(
     progressMessage: state.common.progressText,
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(alertClear()),
+    clearAlerts: () => dispatch(AlertActions.alertClear()),
   })
 )(AppComponent);

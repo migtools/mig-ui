@@ -1,22 +1,9 @@
 import { takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 
 import {
-  startDataListPolling,
-  stopDataListPolling,
-  startStatusPolling,
-  stopStatusPolling,
-  startClusterPolling,
-  stopClusterPolling,
-  startStoragePolling,
-  stopStoragePolling,
-  alertProgressTimeout,
-  alertSuccessTimeout,
-  alertErrorTimeout,
-  alertProgress,
-  alertError,
-  alertSuccess,
-  alertClear,
-} from './actions';
+  AlertActions,
+  PollingActions
+} from '../../common/duck/actions';
 
 import { ClusterActions } from '../../cluster/duck/actions';
 import { StorageActions } from '../../storage/duck/actions';
@@ -43,25 +30,25 @@ function* poll(action) {
 }
 function* watchDataListPolling() {
   while (true) {
-    const action = yield take(startDataListPolling().type);
-    yield race([call(poll, action), take(stopDataListPolling().type)]);
+    const action = yield take(PollingActions.startDataListPolling().type);
+    yield race([call(poll, action), take(PollingActions.stopDataListPolling().type)]);
   }
 }
 
 function* watchStoragePolling() {
   while (true) {
-    const action = yield take(startStoragePolling().type);
+    const action = yield take(PollingActions.startStoragePolling().type);
     yield put(StorageActions.setIsPollingStorage(true));
-    yield race([call(poll, action), take(stopStoragePolling().type)]);
+    yield race([call(poll, action), take(PollingActions.stopStoragePolling().type)]);
     yield put(StorageActions.setIsPollingStorage(false));
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
-    const action = yield take(startClusterPolling().type);
+    const action = yield take(PollingActions.startClusterPolling().type);
     yield put(ClusterActions.setIsPollingCluster(true));
-    yield race([call(poll, action), take(stopClusterPolling().type)]);
+    yield race([call(poll, action), take(PollingActions.stopClusterPolling().type)]);
     yield put(ClusterActions.setIsPollingCluster(false));
   }
 }
@@ -77,7 +64,7 @@ function* checkStatus(action) {
         yield put({ type: 'STOP_STATUS_POLLING' });
         break;
       case 'FAILURE':
-        stopStatusPolling();
+        PollingActions.stopStatusPolling();
 
         yield put({ type: 'STOP_STATUS_POLLING' });
         break;
@@ -89,45 +76,45 @@ function* checkStatus(action) {
 }
 function* watchStatusPolling() {
   while (true) {
-    const data = yield take(startStatusPolling().type);
+    const data = yield take(PollingActions.startStatusPolling().type);
     yield race([call(checkStatus, data), take('STOP_STATUS_POLLING')]);
   }
 }
 
 export function* progressTimeoutSaga(action) {
   try {
-    yield put(alertProgress(action.params));
+    yield put(AlertActions.alertProgress(action.params));
     yield delay(5000);
-    yield put(alertClear());
+    yield put(AlertActions.alertClear());
   } catch (error) {
-    put(alertClear());
+    put(AlertActions.alertClear());
   }
 }
 
 export function* errorTimeoutSaga(action) {
   try {
-    yield put(alertError(action.params));
+    yield put(AlertActions.alertError(action.params));
     yield delay(ErrorToastTimeout);
-    yield put(alertClear());
+    yield put(AlertActions.alertClear());
   } catch (error) {
-    put(alertClear());
+    put(AlertActions.alertClear());
   }
 }
 
 export function* successTimeoutSaga(action) {
   try {
-    yield put(alertSuccess(action.params));
+    yield put(AlertActions.alertSuccess(action.params));
     yield delay(5000);
-    yield put(alertClear());
+    yield put(AlertActions.alertClear());
   } catch (error) {
-    yield put(alertClear());
+    yield put(AlertActions.alertClear());
   }
 }
 
 function* watchAlerts() {
-  yield takeLatest(alertProgressTimeout().type, progressTimeoutSaga);
-  yield takeLatest(alertErrorTimeout().type, errorTimeoutSaga);
-  yield takeLatest(alertSuccessTimeout().type, successTimeoutSaga);
+  yield takeLatest(AlertActions.alertProgressTimeout().type, progressTimeoutSaga);
+  yield takeLatest(AlertActions.alertErrorTimeout().type, errorTimeoutSaga);
+  yield takeLatest(AlertActions.alertSuccessTimeout().type, successTimeoutSaga);
 }
 export default {
   watchStoragePolling,

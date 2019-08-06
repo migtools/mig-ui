@@ -1,32 +1,49 @@
-export const ALERT_SUCCESS = 'ALERT_SUCCESS';
-export const ALERT_ERROR = 'ALERT_ERROR';
-export const ALERT_PROGRESS = 'ALERT_PROGRESS';
-export const ALERT_CLEAR = 'ALERT_CLEAR';
-
-export const alertSuccess = (text: string) => {
-  return { type: ALERT_SUCCESS, text };
-};
-export const alertError = (text: string) => {
-  return { type: ALERT_ERROR, text };
-};
-export const alertProgress = (text: string) => {
-  return { type: ALERT_PROGRESS, text };
-};
-export const alertClear = () => {
-  return { type: ALERT_CLEAR };
+export const AlertActionTypes = {
+  ALERT_SUCCESS: 'ALERT_SUCCESS',
+  ALERT_ERROR: 'ALERT_ERROR',
+  ALERT_PROGRESS: 'ALERT_PROGRESS',
+  ALERT_CLEAR: 'ALERT_CLEAR',
+  ALERT_PROGRESS_TIMEOUT: 'ALERT_PROGRESS_TIMEOUT',
+  ALERT_ERROR_TIMEOUT: 'ALERT_ERROR_TIMEOUT',
+  ALERT_SUCCESS_TIMEOUT: 'ALERT_SUCCESS_TIMEOUT',
 };
 
-export const alertProgressTimeout = (params?: any) => ({
-  type: 'ALERT_PROGRESS_TIMEOUT',
+const alertSuccess = (text: string) => ({
+  type: AlertActionTypes.ALERT_SUCCESS, text
+});
+
+const alertError = (text: string) => ({
+  type: AlertActionTypes.ALERT_ERROR, text
+});
+
+const alertProgress = (text: string) => ({
+  type: AlertActionTypes.ALERT_PROGRESS, text
+});
+
+const alertClear = () => ({
+  type: AlertActionTypes.ALERT_CLEAR
+});
+
+const alertProgressTimeout = (params?: any) => ({
+  type: AlertActionTypes.ALERT_PROGRESS_TIMEOUT,
   params,
 });
 
-export const alertErrorTimeout = (params?: any) => ({
-  type: 'ALERT_ERROR_TIMEOUT',
+const alertErrorTimeout = (params?: any) => ({
+  type: AlertActionTypes.ALERT_ERROR_TIMEOUT,
   params,
 });
 
-export const alertSuccessTimeout = (params?: any) => ({
-  type: 'ALERT_SUCCESS_TIMEOUT',
+const alertSuccessTimeout = (params?: any) => ({
+  type: AlertActionTypes.ALERT_SUCCESS_TIMEOUT,
   params,
 });
+export const AlertActions = {
+  alertSuccess,
+  alertError,
+  alertProgress,
+  alertClear,
+  alertSuccessTimeout,
+  alertErrorTimeout,
+  alertProgressTimeout
+};

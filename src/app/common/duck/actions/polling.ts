@@ -1,35 +1,57 @@
-export const startDataListPolling = (params?: any) => ({
-  type: 'DATA_LIST_POLL_START',
+export const PollingActionTypes = {
+  DATA_LIST_POLL_START: 'DATA_LIST_POLL_START',
+  DATA_LIST_POLL_STOP: 'DATA_LIST_POLL_STOP',
+  STORAGE_POLL_START: 'STORAGE_POLL_START',
+  STORAGE_POLL_STOP: 'STORAGE_POLL_STOP',
+  CLUSTER_POLL_START: 'CLUSTER_POLL_START',
+  CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
+  STATUS_POLL_START: 'STATUS_POLL_START',
+  STATUS_POLL_STOP: 'STATUS_POLL_STOP',
+};
+
+const startDataListPolling = (params?: any) => ({
+  type: PollingActionTypes.DATA_LIST_POLL_START,
   params,
 });
 
-export const stopDataListPolling = () => ({
-  type: 'DATA_LIST_POLL_STOP',
+const stopDataListPolling = () => ({
+  type: PollingActionTypes.DATA_LIST_POLL_STOP,
 });
 
-export const startStoragePolling = (params?: any) => ({
-  type: 'STORAGE_POLL_START',
+const startStoragePolling = (params?: any) => ({
+  type: PollingActionTypes.STORAGE_POLL_START,
   params,
 });
 
-export const stopStoragePolling = () => ({
-  type: 'STORAGE_POLL_STOP',
+const stopStoragePolling = () => ({
+  type: PollingActionTypes.STORAGE_POLL_STOP,
 });
 
-export const startClusterPolling = (params?: any) => ({
-  type: 'CLUSTER_POLL_START',
+const startClusterPolling = (params?: any) => ({
+  type: PollingActionTypes.CLUSTER_POLL_START,
   params,
 });
 
-export const stopClusterPolling = () => ({
-  type: 'CLUSTER_POLL_STOP',
+const stopClusterPolling = () => ({
+  type: PollingActionTypes.CLUSTER_POLL_STOP,
 });
 
-export const startStatusPolling = (params?: any) => ({
-  type: 'STATUS_POLL_START',
+const startStatusPolling = (params?: any) => ({
+  type: PollingActionTypes.STATUS_POLL_START,
   params,
 });
 
-export const stopStatusPolling = () => ({
-  type: 'STATUS_POLL_STOP',
+const stopStatusPolling = () => ({
+  type: PollingActionTypes.STATUS_POLL_STOP,
 });
+
+export const PollingActions = {
+  startDataListPolling,
+  stopDataListPolling,
+  startClusterPolling,
+  stopClusterPolling,
+  startStoragePolling,
+  stopStoragePolling,
+  startStatusPolling,
+  stopStatusPolling
+};

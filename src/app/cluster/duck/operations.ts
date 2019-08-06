@@ -15,8 +15,7 @@ import {
 } from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import {
-  alertSuccessTimeout,
-  alertErrorTimeout,
+  AlertActions
 } from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
 
@@ -53,9 +52,9 @@ const updateCluster = clusterValues => {
       cluster.status = clusterValues.connectionStatus;
 
       dispatch(ClusterActions.updateClusterSuccess(cluster));
-      dispatch(alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
+      dispatch(AlertActions.alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
     } catch (err) {
-      dispatch(alertErrorTimeout(err));
+      dispatch(AlertActions.alertErrorTimeout(err));
     }
   };
 };
@@ -84,9 +83,9 @@ const removeCluster = name => {
       ]);
 
       dispatch(ClusterActions.removeClusterSuccess(name));
-      dispatch(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+      dispatch(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
     } catch (err) {
-      dispatch(alertErrorTimeout(err));
+      dispatch(AlertActions.alertErrorTimeout(err));
       dispatch(ClusterActions.removeClusterFailure(err));
     }
   };
