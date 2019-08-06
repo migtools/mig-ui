@@ -227,6 +227,9 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       return v;
     });
   }
+  if (planValues.planClosed) {
+    updatedSpec.closed = true
+  }
 
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',

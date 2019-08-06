@@ -103,12 +103,21 @@ function* planDeleteSaga(action) {
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    yield client.delete(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      action.planName,
-    );
-    yield put(PlanActions.planDeleteSuccess(action.planName));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
+    //update plan before deleting
+    const updatedValues = {
+      planName: action.planName,
+      planClosed: true
+    };
+
+    yield put(PlanActions.planUpdateRequest(updatedValues));
+    // watch for type === closed
+    //
+    // yield client.delete(
+    //   new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    //   action.planName,
+    // );
+    // yield put(PlanActions.planDeleteSuccess(action.planName));
+    // yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
     console.error(err);
     yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
