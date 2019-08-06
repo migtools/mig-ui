@@ -90,9 +90,6 @@ const StorageClassTable = (props): any => {
         <ReactTable
           css={css`
             font-size: 14px;
-            .rt-td {
-              overflow: visible;
-            }
           `}
           data={rows}
           columns={[
@@ -140,6 +137,7 @@ const StorageClassTable = (props): any => {
               accessor: 'storageClass',
               width: 500,
               resizable: false,
+              style: { overflow: 'visible' },
               Cell: row => {
                 const currentStorageClass = pvStorageClassAssignment[row.original.name];
                 return (
