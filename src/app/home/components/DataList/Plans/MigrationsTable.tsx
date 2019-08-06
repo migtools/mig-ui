@@ -80,43 +80,54 @@ export default class MigrationsTable extends React.Component<any, any> {
         .toString();
       status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
 
-      const migPhase = migration.status.phase;
+      // const migPhase = migration.status.phase;
       const serverErrorMessage = migration.status.errors;
       if (serverErrorMessage) {
         status.phase = serverErrorMessage.pop();
         status.progress = null;
         return status;
       } else {
-        switch (migPhase) {
-          case 'WaitOnResticRestart':
-            status.phase = 'Waiting';
-            status.progress = 10;
-            break;
-          case 'BackupStarted':
-            status.phase = 'Backup started';
-            status.progress = 40;
-            break;
-
-          case 'WaitOnBackupReplication':
-            status.phase = 'Waiting';
-            status.progress = 50;
-            break;
-          case 'RestoreStarted':
-            status.phase = 'Restoring....';
-            status.progress = 60;
-            break;
-          case 'Completed':
-            status.phase = 'Succeeded';
-            status.progress = null;
-            break;
-          case 'BackupFailed':
-            status.phase = 'Backup Failed';
-            status.progress = null;
-            break;
-          default:
-            status.phase = migPhase;
-            break;
+        if (migration.status.conditions.length) {
+          let runningCondition;
+          runningCondition = migration.status.conditions.filter(c => {
+            return c.type === 'Running';
+          })[0];
+          status.phase = runningCondition.message;
+          status.progress = runningCondition.reason;
         }
+
+        // switch (migPhase) {
+        //   case 'WaitOnResticRestart':
+        //     status.phase = 'Waiting';
+        //     status.progress = 10;
+        //     break;
+        //   case 'BackupStarted':
+        //     status.phase = 'Backup started';
+        //     status.progress = 40;
+        //     break;
+
+        //   case 'WaitOnBackupReplication':
+        //     status.phase = 'Waiting';
+        //     status.progress = 50;
+        //     break;
+        //   case 'RestoreStarted':
+        //     status.phase = 'Restoring....';
+        //     status.progress = 60;
+        //     break;
+        //   case 'Completed':
+        //     status.phase = 'Succeeded';
+        //     status.progress = null;
+        //     break;
+        //   case 'BackupFailed':
+        //     status.phase = 'Backup Failed';
+        //     status.progress = null;
+        //     break;
+        //   default:
+        //     status.phase = migPhase;
+        //     break;
+        // }
+
+
         return status;
       }
     } else {
