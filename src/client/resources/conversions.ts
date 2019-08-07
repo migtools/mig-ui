@@ -230,7 +230,7 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
     });
   }
   if (planValues.planClosed) {
-    updatedSpec.closed = true
+    updatedSpec.closed = true;
   }
 
   return {
