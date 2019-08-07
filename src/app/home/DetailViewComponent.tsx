@@ -43,7 +43,7 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   startDataListPolling: (params) => void;
   stopDataListPolling: () => void;
-  planDeleteRequest: (string) => void;
+  planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
 }
@@ -124,7 +124,7 @@ class DetailViewComponent extends Component<IProps, IState> {
   };
 
   handleDeletePlan = plan => {
-    this.props.planDeleteRequest(plan.MigPlan.metadata.name);
+    this.props.planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
   };
 
   handlePlanPoll = response => {
@@ -243,7 +243,7 @@ const mapDispatchToProps = dispatch => {
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(PollingActions.startDataListPolling(params)),
     stopDataListPolling: () => dispatch(PollingActions.stopDataListPolling()),
-    planDeleteRequest: planName => dispatch(PlanActions.planDeleteRequest(planName)),
+    planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching
       dispatch(ClusterActions.setClusterAddEditStatus(

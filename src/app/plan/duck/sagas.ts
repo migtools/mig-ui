@@ -98,10 +98,8 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
-function* planDeleteSaga(action) {
+function* planCloseSaga(action) {
   const state = yield select();
-  const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
     //update plan before deleting
     const updatedValues = {
@@ -111,26 +109,45 @@ function* planDeleteSaga(action) {
     };
 
     yield put(PlanActions.planUpdateRequest(updatedValues));
-    // watch for type === closed
-    //
-    // yield client.delete(
-    //   new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-    //   action.planName,
-    // );
-    // yield put(PlanActions.planDeleteSuccess(action.planName));
-    // yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
+    yield put(PlanActions.planCloseSuccess());
+
+  }
+  catch (err) {
+    yield put(PlanActions.planCloseFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Plan close request failed'));
+
+  }
+}
+
+function* planCloseAndDeleteSaga(action) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  try {
+    yield put(PlanActions.planCloseRequest())
+    yield take(PlanActionTypes.PLAN_CLOSE_SUCCESS)
+    yield client.delete(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      action.planName,
+    );
+    yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
-    console.error(err);
+    yield put(PlanActions.planCloseAndDeleteFailure(err));
     yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
   }
 }
 
-function* watchPlanDelete() {
-  yield takeLatest(PlanActionTypes.PLAN_DELETE_REQUEST, planDeleteSaga);
+function* watchPlanCloseAndDelete() {
+  yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
+}
+function* watchPlanClose() {
+  yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
 }
 
 export default {
   watchPlanUpdate,
   watchPVPolling,
-  watchPlanDelete,
+  watchPlanCloseAndDelete,
+  watchPlanClose,
 };
