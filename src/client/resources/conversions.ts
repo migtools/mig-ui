@@ -222,8 +222,10 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
   if (updatedSpec.persistentVolumes) {
     updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      v.selection.action = userPv.type;
-      v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+      if (userPv) {
+        v.selection.action = userPv.type;
+        v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+      }
       return v;
     });
   }

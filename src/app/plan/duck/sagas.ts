@@ -106,7 +106,8 @@ function* planDeleteSaga(action) {
     //update plan before deleting
     const updatedValues = {
       planName: action.planName,
-      planClosed: true
+      planClosed: true,
+      persistentVolumes: []
     };
 
     yield put(PlanActions.planUpdateRequest(updatedValues));
