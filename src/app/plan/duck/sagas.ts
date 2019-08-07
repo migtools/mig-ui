@@ -99,7 +99,6 @@ function* watchPlanUpdate() {
 }
 
 function* planCloseSaga(action) {
-  const state = yield select();
   try {
     //update plan before deleting
     const updatedValues = {
@@ -124,7 +123,7 @@ function* planCloseAndDeleteSaga(action) {
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    yield put(PlanActions.planCloseRequest())
+    yield put(PlanActions.planCloseRequest(action.planName))
     yield take(PlanActionTypes.PLAN_CLOSE_SUCCESS)
     yield client.delete(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),

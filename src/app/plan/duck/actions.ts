@@ -186,13 +186,14 @@ const planCloseAndDeleteSuccess = (planName: string) => ({
   planName,
 });
 
-const planCloseAndDeleteFailure = (planName: string) => ({
+const planCloseAndDeleteFailure = (err) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE,
-  planName,
+  err,
 });
 
-const planCloseRequest = () => ({
+const planCloseRequest = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_REQUEST,
+  planName
 });
 
 const planCloseSuccess = () => ({
