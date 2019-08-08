@@ -142,7 +142,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'name',
               width: 180,
-              resizable: false,
             },
             {
               Header: () => (
@@ -157,7 +156,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'project',
               width: 150,
-              resizable: false,
             },
             {
               Header: () => (
@@ -172,7 +170,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'storageClass',
               width: 150,
-              resizable: false,
             },
             {
               Header: () => (
@@ -187,7 +184,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'size',
               width: 75,
-              resizable: false,
             },
             {
               Header: () => (
@@ -202,7 +198,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'claim',
               width: 180,
-              resizable: false,
             },
             {
               Header: () => (
@@ -217,7 +212,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'type',
               width: 120,
-              resizable: false,
               style: { overflow: 'visible' },
               Cell: row => (
                 <Select
@@ -249,7 +243,6 @@ const VolumesTable = (props): any => {
               ),
               accessor: 'details',
               width: 50,
-              resizable: false,
               textAlign: 'left',
               Cell: row => (
                 <a href="https://google.com" target="_blank">

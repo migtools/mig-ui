@@ -106,7 +106,6 @@ const StorageClassTable = (props): any => {
               ),
               accessor: 'name',
               width: 180,
-              resizable: false,
             },
             {
               Header: () => (
@@ -121,7 +120,6 @@ const StorageClassTable = (props): any => {
               ),
               accessor: 'type',
               width: 180,
-              resizable: false,
             },
             {
               Header: () => (
@@ -136,7 +134,6 @@ const StorageClassTable = (props): any => {
               ),
               accessor: 'storageClass',
               width: 500,
-              resizable: false,
               style: { overflow: 'visible' },
               Cell: row => {
                 const currentStorageClass = pvStorageClassAssignment[row.original.name];
