@@ -47,10 +47,10 @@ export default class MigrationsTable extends React.Component<any, any> {
         {
           title: (
             <div>
-              <div>{status.phase}</div>
-              {status.progress && (
+              <div>{status.phase} - {status.progress}</div>
+              {/* {status.progress && (
                 <Progress value={status.progress} title="" size={ProgressSize.sm} />
-              )}
+              )} */}
             </div>
           ),
         },
@@ -87,13 +87,17 @@ export default class MigrationsTable extends React.Component<any, any> {
         status.progress = null;
         return status;
       } else {
+
         if (migration.status.conditions.length) {
           let runningCondition;
-          runningCondition = migration.status.conditions.filter(c => {
+          runningCondition = migration.status.conditions.find(c => {
             return c.type === 'Running';
-          })[0];
-          status.phase = runningCondition.message;
-          status.progress = runningCondition.reason;
+          });
+          if (runningCondition != undefined) {
+            status.phase = runningCondition.message;
+            status.progress = runningCondition.reason;
+          }
+          console.log(runningCondition);  
         }
 
         // switch (migPhase) {
@@ -162,10 +166,10 @@ export default class MigrationsTable extends React.Component<any, any> {
           {
             title: (
               <div>
-                <div>{status.phase}</div>
-                {status.progress && (
+                <div>{status.phase} - {status.progress}</div>
+                {/* {status.progress && (
                   <Progress value={status.progress} title="" size={ProgressSize.sm} />
-                )}
+                )} */}
               </div>
             ),
           },
