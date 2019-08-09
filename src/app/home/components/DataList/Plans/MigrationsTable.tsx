@@ -95,31 +95,31 @@ export default class MigrationsTable extends React.Component<any, any> {
         if (migration.status.conditions.length) {
           
           // Handle completed migrations: successful and failed
-          if (migration.status.phase === "Completed") {
-            status.stepName = "Completed";
+          if (migration.status.phase === 'Completed') {
+            status.stepName = 'Completed';
             // For successful migrations, show green 100% progress
-            let succeededCondition = migration.status.conditions.find(c => {
+            const succeededCondition = migration.status.conditions.find(c => {
               return c.type === 'Succeeded';
             });
-            if (succeededCondition != undefined) {
+            if (succeededCondition !== undefined) {
               status.progress = 100;
             }
             // TODO: For failed migrations, show red 100% progress
           }
           
           // For running migrations, calculate percent progress
-          let runningCondition = migration.status.conditions.find(c => {
+          const runningCondition = migration.status.conditions.find(c => {
             return c.type === 'Running';
           });
-          if (runningCondition != undefined) {
+          if (runningCondition !== undefined) {
             status.isRunning = true;
             status.stepName = runningCondition.reason;
             // Match string in format 'Step: 16/26'. Capture both numbers.
-            let matches = runningCondition.message.match(/(\d+)\/(\d+)/);
+            const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
             if (matches && matches.length === 3) {
-              let currentStep = parseInt(matches[1]);
-              let totalSteps = parseInt(matches[2]);
-              if (currentStep != NaN && totalSteps != NaN) {
+              const currentStep = parseInt(matches[1], 10);
+              const totalSteps = parseInt(matches[2], 10);
+              if (!isNaN(currentStep) && !isNaN(totalSteps)) {
                 status.progress = (currentStep / totalSteps) * 100;
               }
             }
