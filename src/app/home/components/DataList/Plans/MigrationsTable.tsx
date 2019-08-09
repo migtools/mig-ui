@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, TableHeader, TableBody, sortable, SortByDirection } from '@patternfly/react-table';
-import { EmptyState } from '@patternfly/react-core';
+import { EmptyState, ProgressVariant } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
@@ -47,10 +47,14 @@ export default class MigrationsTable extends React.Component<any, any> {
         {
           title: (
             <div>
-              <div>{status.phase} - {status.progress}</div>
-              {/* {status.progress && (
-                <Progress value={status.progress} title="" size={ProgressSize.sm} />
-              )} */}
+              {status.progress && (
+                <Progress 
+                  value={status.progress} 
+                  title={status.stepName} 
+                  size={ProgressSize.sm}
+                  variant={status.isRunning ? ProgressVariant.info: ProgressVariant.success}
+                />
+              )}
             </div>
           ),
         },
@@ -66,7 +70,9 @@ export default class MigrationsTable extends React.Component<any, any> {
       end: 'TBD',
       moved: 0,
       copied: 0,
-      phase: 'Not started',
+      stepName: 'Not started',
+      isSucceeded: false,
+      isRunning: false,
     };
 
     if (migration.status) {
@@ -80,58 +86,47 @@ export default class MigrationsTable extends React.Component<any, any> {
         .toString();
       status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
 
-      // const migPhase = migration.status.phase;
       const serverErrorMessage = migration.status.errors;
       if (serverErrorMessage) {
-        status.phase = serverErrorMessage.pop();
+        status.stepName = serverErrorMessage.pop();
         status.progress = null;
         return status;
       } else {
 
         if (migration.status.conditions.length) {
-          let runningCondition;
-          runningCondition = migration.status.conditions.find(c => {
+          
+          // Handle completed migrations: successful and failed
+          if (migration.status.phase === "Completed") {
+            status.stepName = "Completed";
+            // For successful migrations, show green 100% progress
+            let succeededCondition = migration.status.conditions.find(c => {
+              return c.type === 'Succeeded';
+            });
+            if (succeededCondition != undefined) {
+              status.isSucceeded = true;
+              status.progress = 100;
+            }
+            // TODO: For failed migrations, show red 100% progress
+          }
+          
+          // For running migrations, calculate percent progress
+          let runningCondition = migration.status.conditions.find(c => {
             return c.type === 'Running';
           });
           if (runningCondition != undefined) {
-            status.phase = runningCondition.message;
-            status.progress = runningCondition.reason;
+            status.isRunning = true;
+            status.stepName = runningCondition.reason;
+            // Match string in format 'Step: 16/26'. Capture both numbers.
+            let matches = runningCondition.message.match(/(\d+)\/(\d+)/);
+            if (matches && matches.length === 3) {
+              let currentStep = parseInt(matches[1]);
+              let totalSteps = parseInt(matches[2]);
+              if (currentStep != NaN && totalSteps != NaN) {
+                status.progress = (currentStep / totalSteps) * 100;
+              }
+            }
           }
-          console.log(runningCondition);  
         }
-
-        // switch (migPhase) {
-        //   case 'WaitOnResticRestart':
-        //     status.phase = 'Waiting';
-        //     status.progress = 10;
-        //     break;
-        //   case 'BackupStarted':
-        //     status.phase = 'Backup started';
-        //     status.progress = 40;
-        //     break;
-
-        //   case 'WaitOnBackupReplication':
-        //     status.phase = 'Waiting';
-        //     status.progress = 50;
-        //     break;
-        //   case 'RestoreStarted':
-        //     status.phase = 'Restoring....';
-        //     status.progress = 60;
-        //     break;
-        //   case 'Completed':
-        //     status.phase = 'Succeeded';
-        //     status.progress = null;
-        //     break;
-        //   case 'BackupFailed':
-        //     status.phase = 'Backup Failed';
-        //     status.progress = null;
-        //     break;
-        //   default:
-        //     status.phase = migPhase;
-        //     break;
-        // }
-
-
         return status;
       }
     } else {
@@ -166,10 +161,16 @@ export default class MigrationsTable extends React.Component<any, any> {
           {
             title: (
               <div>
-                <div>{status.phase} - {status.progress}</div>
-                {/* {status.progress && (
-                  <Progress value={status.progress} title="" size={ProgressSize.sm} />
-                )} */}
+                <div>
+                  {status.progress && (
+                    <Progress 
+                      value={status.progress} 
+                      title={status.stepName} 
+                      size={ProgressSize.sm} 
+                      variant={status.isRunning ? ProgressVariant.info: ProgressVariant.success}
+                    />
+                  )}
+                </div>
               </div>
             ),
           },
