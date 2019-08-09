@@ -108,6 +108,7 @@ function* planCloseSaga(action) {
     };
 
     yield put(PlanActions.planUpdateRequest(updatedValues));
+    //take close confirmation action
     yield put(PlanActions.planCloseSuccess());
 
   }

@@ -2,7 +2,9 @@ import { takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 
 import {
   AlertActions,
-  PollingActions
+  PollingActions,
+  PollingActionTypes,
+  AlertActionTypes
 } from '../../common/duck/actions';
 
 import { ClusterActions } from '../../cluster/duck/actions';
@@ -30,25 +32,25 @@ function* poll(action) {
 }
 function* watchDataListPolling() {
   while (true) {
-    const action = yield take(PollingActions.startDataListPolling().type);
-    yield race([call(poll, action), take(PollingActions.stopDataListPolling().type)]);
+    const action = yield take(PollingActionTypes.DATA_LIST_POLL_START);
+    yield race([call(poll, action), take(PollingActionTypes.DATA_LIST_POLL_STOP)]);
   }
 }
 
 function* watchStoragePolling() {
   while (true) {
-    const action = yield take(PollingActions.startStoragePolling().type);
+    const action = yield take(PollingActionTypes.STORAGE_POLL_START);
     yield put(StorageActions.setIsPollingStorage(true));
-    yield race([call(poll, action), take(PollingActions.stopStoragePolling().type)]);
+    yield race([call(poll, action), take(PollingActionTypes.STORAGE_POLL_STOP)]);
     yield put(StorageActions.setIsPollingStorage(false));
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
-    const action = yield take(PollingActions.startClusterPolling().type);
+    const action = yield take(PollingActionTypes.CLUSTER_POLL_START);
     yield put(ClusterActions.setIsPollingCluster(true));
-    yield race([call(poll, action), take(PollingActions.stopClusterPolling().type)]);
+    yield race([call(poll, action), take(PollingActionTypes.CLUSTER_POLL_STOP)]);
     yield put(ClusterActions.setIsPollingCluster(false));
   }
 }
@@ -61,12 +63,10 @@ function* checkStatus(action) {
 
     switch (pollingStatus) {
       case 'SUCCESS':
-        yield put({ type: 'STOP_STATUS_POLLING' });
+        yield put(PollingActions.stopStatusPolling());
         break;
       case 'FAILURE':
-        PollingActions.stopStatusPolling();
-
-        yield put({ type: 'STOP_STATUS_POLLING' });
+        yield put(PollingActions.stopStatusPolling());
         break;
       default:
         break;
@@ -76,8 +76,8 @@ function* checkStatus(action) {
 }
 function* watchStatusPolling() {
   while (true) {
-    const data = yield take(PollingActions.startStatusPolling().type);
-    yield race([call(checkStatus, data), take('STOP_STATUS_POLLING')]);
+    const data = yield take(PollingActionTypes.STATUS_POLL_START);
+    yield race([call(checkStatus, data), take(PollingActionTypes.STATUS_POLL_STOP)]);
   }
 }
 
@@ -112,9 +112,9 @@ export function* successTimeoutSaga(action) {
 }
 
 function* watchAlerts() {
-  yield takeLatest(AlertActions.alertProgressTimeout().type, progressTimeoutSaga);
-  yield takeLatest(AlertActions.alertErrorTimeout().type, errorTimeoutSaga);
-  yield takeLatest(AlertActions.alertSuccessTimeout().type, successTimeoutSaga);
+  yield takeLatest(AlertActionTypes.ALERT_PROGRESS_TIMEOUT, progressTimeoutSaga);
+  yield takeLatest(AlertActionTypes.ALERT_ERROR_TIMEOUT, errorTimeoutSaga);
+  yield takeLatest(AlertActionTypes.ALERT_SUCCESS_TIMEOUT, successTimeoutSaga);
 }
 export default {
   watchStoragePolling,
