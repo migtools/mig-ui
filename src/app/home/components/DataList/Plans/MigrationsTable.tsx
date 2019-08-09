@@ -71,7 +71,6 @@ export default class MigrationsTable extends React.Component<any, any> {
       moved: 0,
       copied: 0,
       stepName: 'Not started',
-      isSucceeded: false,
       isRunning: false,
     };
 
@@ -103,7 +102,6 @@ export default class MigrationsTable extends React.Component<any, any> {
               return c.type === 'Succeeded';
             });
             if (succeededCondition != undefined) {
-              status.isSucceeded = true;
               status.progress = 100;
             }
             // TODO: For failed migrations, show red 100% progress

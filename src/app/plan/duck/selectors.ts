@@ -21,7 +21,6 @@ const getPlansWithStatus = createSelector(
       let hasSucceededStage = null;
       let hasClosedCondition = null;
       let latestType = null;
-
       if (plan.MigPlan.status) {
         hasClosedCondition = plan.MigPlan.spec.closed;
         hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;

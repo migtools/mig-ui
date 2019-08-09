@@ -36,7 +36,6 @@ const PlanStatus = ({ plan }) => {
     }
     if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
-
     }
     return status;
   };
