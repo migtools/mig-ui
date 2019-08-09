@@ -3,9 +3,10 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
-
+import PlanOperations from './operations';
 import {
-  AlertActions
+  AlertActions,
+  PollingActions
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 
@@ -47,14 +48,14 @@ function* checkPVs(action) {
   }
 }
 
-function* getPlanSaga(planValues) {
+function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
     return yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      planValues.planName
+      planName
     );
   } catch (err) {
     throw err;
@@ -80,7 +81,7 @@ function* putPlanSaga(getPlanRes, planValues) {
 function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
-    const getPlanResponse = yield call(getPlanSaga, action.planValues);
+    const getPlanResponse = yield call(getPlanSaga, action.planValues.planName);
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
@@ -98,19 +99,52 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
+
+function* checkClosedStatus(action) {
+  const getPlanStatusCondition = (MigPlan) => {
+    const statusObj = { success: null, error: null };
+    if (MigPlan.status) {
+      const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
+      if (hasClosedCondition) {
+        statusObj.success = hasClosedCondition;
+        return 'SUCCESS';
+      } else if (!hasClosedCondition) {
+        // statusObj.success = hasClosedCondition;
+        // return 'FAILURE';
+      }
+    }
+  }
+  while (true) {
+    const getPlanResponse = yield call(getPlanSaga, action.planName);
+    const pollingStatus = getPlanStatusCondition(getPlanResponse.data);
+
+    switch (pollingStatus) {
+      case 'SUCCESS':
+        yield put(PollingActions.stopStatusPolling());
+        yield put(PlanActions.planCloseSuccess());
+        break;
+      case 'FAILURE':
+        yield put(PollingActions.stopStatusPolling());
+        yield put(PlanActions.planCloseFailure('Failed to close plan'));
+        break;
+      default:
+        break;
+    }
+    const PollingInterval = 5000;
+    yield delay(PollingInterval);
+  }
+}
+
 function* planCloseSaga(action) {
   try {
-    //update plan before deleting
     const updatedValues = {
       planName: action.planName,
       planClosed: true,
       persistentVolumes: []
     };
-
     yield put(PlanActions.planUpdateRequest(updatedValues));
-    //take close confirmation action
-    yield put(PlanActions.planCloseSuccess());
 
+    yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
   }
   catch (err) {
     yield put(PlanActions.planCloseFailure(err));
@@ -144,10 +178,18 @@ function* watchPlanCloseAndDelete() {
 function* watchPlanClose() {
   yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
 }
+function* watchClosedStatus() {
+  while (true) {
+    const data = yield take(PlanActionTypes.CLOSED_STATUS_POLL_START);
+    yield race([call(checkClosedStatus, data), take(PlanActionTypes.CLOSED_STATUS_POLL_STOP)]);
+  }
+}
+
 
 export default {
   watchPlanUpdate,
   watchPVPolling,
   watchPlanCloseAndDelete,
   watchPlanClose,
+  watchClosedStatus
 };

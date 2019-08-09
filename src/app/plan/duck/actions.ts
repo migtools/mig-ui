@@ -1,4 +1,5 @@
 import { IMigPlan } from '../../../client/resources/conversions';
+import { PollingActionTypes } from '../../common/duck/actions';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
@@ -35,7 +36,9 @@ export const PlanActionTypes = {
   PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
   PLAN_CLOSE_REQUEST: 'PLAN_CLOSE_REQUEST',
   PLAN_CLOSE_SUCCESS: 'PLAN_CLOSE_SUCCESS',
-  PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE'
+  PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
+  CLOSED_STATUS_POLL_START: "CLOSED_STATUS_POLL_START",
+  CLOSED_STATUS_POLL_STOP: "CLOSED_STATUS_POLL_STOP",
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -205,6 +208,14 @@ const planCloseFailure = (err) => ({
   err
 });
 
+const startClosedStatusPolling = (planName) => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_START,
+  planName,
+});
+
+const stopClosedStatusPolling = () => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+});
 
 export const PlanActions = {
   updatePlans,
@@ -241,5 +252,7 @@ export const PlanActions = {
   planCloseAndDeleteFailure,
   planCloseSuccess,
   planCloseFailure,
-  planCloseRequest
+  planCloseRequest,
+  startClosedStatusPolling,
+  stopClosedStatusPolling
 };

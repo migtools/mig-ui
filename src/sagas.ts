@@ -15,6 +15,7 @@ export default function* rootSaga() {
     planSagas.watchPlanUpdate(),
     planSagas.watchPlanCloseAndDelete(),
     planSagas.watchPlanClose(),
+    planSagas.watchClosedStatus(),
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),
