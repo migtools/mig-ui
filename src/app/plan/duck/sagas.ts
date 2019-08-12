@@ -10,12 +10,12 @@ import {
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 
-const TicksUntilTimeout = 20;
 
 function* checkPVs(action) {
   const params = { ...action.params };
   let pvsFound = false;
   let tries = 0;
+  const TicksUntilTimeout = 20;
 
   while (!pvsFound) {
     if (tries < TicksUntilTimeout) {
@@ -101,35 +101,30 @@ function* watchPlanUpdate() {
 
 
 function* checkClosedStatus(action) {
-  const getPlanStatusCondition = (MigPlan) => {
-    const statusObj = { success: null, error: null };
-    if (MigPlan.status) {
+  let planClosed = false;
+  let tries = 0;
+  const TicksUntilTimeout = 20;
+  while (!planClosed) {
+    if (tries < TicksUntilTimeout) {
+      const getPlanResponse = yield call(getPlanSaga, action.planName);
+      let MigPlan = yield getPlanResponse.data;
+      //check for status 
+      if (!MigPlan.status) return;
+      //check for closed condition
       const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
       if (hasClosedCondition) {
-        statusObj.success = hasClosedCondition;
-        return 'SUCCESS';
-      } else if (!hasClosedCondition) {
-        // statusObj.success = hasClosedCondition;
-        // return 'FAILURE';
-      }
-    }
-  }
-  while (true) {
-    const getPlanResponse = yield call(getPlanSaga, action.planName);
-    const pollingStatus = getPlanStatusCondition(getPlanResponse.data);
-
-    switch (pollingStatus) {
-      case 'SUCCESS':
-        yield put(PollingActions.stopStatusPolling());
         yield put(PlanActions.planCloseSuccess());
-        break;
-      case 'FAILURE':
-        yield put(PollingActions.stopStatusPolling());
-        yield put(PlanActions.planCloseFailure('Failed to close plan'));
-        break;
-      default:
-        break;
+        yield put(PlanActions.stopClosedStatusPolling());
+      }
+    } else {
+      // Plan close timed out, alert and stop polling
+      planClosed = true; // plan not closed; timed out
+      yield put(PlanActions.planCloseFailure('Failed to close plan'));
+      yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+      yield put(PlanActions.stopClosedStatusPolling());
+      break;
     }
+
     const PollingInterval = 5000;
     yield delay(PollingInterval);
   }

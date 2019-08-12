@@ -12,7 +12,8 @@ export const INITIAL_STATE = {
   sourceClusterNamespaces: [],
   isStaging: false,
   isMigrating: false,
-  currentPlan: null
+  currentPlan: null,
+  isClosing: false,
 };
 
 const sortPlans = planList =>
@@ -255,6 +256,16 @@ export const updatePlanResults =
     return { ...state, isCheckingPlanStatus: false };
   };
 
+export const closedStatusPollStart =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startClosedStatusPolling>) => {
+    return { ...state, isClosing: true };
+  };
+
+export const closedStatusPollStop =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
+    return { ...state, isClosing: false };
+  };
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.PLAN_RESULTS_REQUEST: return planResultsRequest(state, action);
@@ -281,6 +292,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.UPDATE_PLAN: return updatePlan(state, action);
     case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
+    case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
+    case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
     default: return state;
   }
 };
