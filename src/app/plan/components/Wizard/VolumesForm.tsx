@@ -5,7 +5,7 @@ import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import VolumesTable from './VolumesTable';
 import styled from '@emotion/styled';
 const VolumesForm = props => {
-  const { setFieldValue, values, isPVError, isFetchingPVList, currentPlan } = props;
+  const { setFieldValue, values, isPVError, isFetchingPVList, currentPlan, getPVResourcesRequest } = props;
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
   `;
@@ -22,6 +22,7 @@ const VolumesForm = props => {
         setFieldValue={setFieldValue}
         values={values}
         currentPlan={currentPlan}
+        getPVResourcesRequest={getPVResourcesRequest}
       />
     </Box>
   );

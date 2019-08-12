@@ -30,6 +30,7 @@ const WizardComponent = props => {
     isCheckingPlanStatus,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
+    getPVResourcesRequest
   } = props;
 
   enum stepId {
@@ -98,6 +99,7 @@ const WizardComponent = props => {
             currentPlan={currentPlan}
             isFetchingPVList={isFetchingPVList}
             isPVError={isPVError}
+            getPVResourcesRequest={getPVResourcesRequest}
           />
         ),
         enableNext: !isLoading && !isFetchingPVList,

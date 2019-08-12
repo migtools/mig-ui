@@ -39,6 +39,7 @@ export const PlanActionTypes = {
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
   CLOSED_STATUS_POLL_START: 'CLOSED_STATUS_POLL_START',
   CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
+  GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST'
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -215,6 +216,12 @@ const startClosedStatusPolling = (planName) => ({
 
 const stopClosedStatusPolling = () => ({
   type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+})
+
+const getPVResourcesRequest = (pvList: any, clusterName: string) => ({
+  type: PlanActionTypes.GET_PV_RESOURCES_REQUEST,
+  pvList,
+  clusterName
 });
 
 export const PlanActions = {
@@ -254,5 +261,7 @@ export const PlanActions = {
   planCloseFailure,
   planCloseRequest,
   startClosedStatusPolling,
-  stopClosedStatusPolling
+  stopClosedStatusPolling,
+  getPVResourcesRequest
 };
+

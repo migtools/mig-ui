@@ -46,6 +46,8 @@ export class CoreClusterResource extends ClusterResource {
   }
 }
 
+
+
 export enum CoreNamespacedResourceKind {
   Pod = 'pods',
   Secret = 'secrets',
@@ -53,4 +55,5 @@ export enum CoreNamespacedResourceKind {
 
 export enum CoreClusterResourceKind {
   Namespace = 'namespaces',
+  PV = 'persistentvolumes'
 }

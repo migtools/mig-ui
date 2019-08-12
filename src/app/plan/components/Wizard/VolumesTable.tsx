@@ -5,17 +5,16 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
-import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
-import { TextContent, TextList, TextListItem, Popover, PopoverPosition, Button } from '@patternfly/react-core';
+import { TextContent, Popover, PopoverPosition, } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import ReactJson from 'react-json-view';
 
 const VolumesTable = (props): any => {
-  const { setFieldValue, currentPlan, values, isPVError, isFetchingPVList } = props;
+  const { setFieldValue, currentPlan, values, isPVError, isFetchingPVList, getPVResourcesRequest } = props;
   const [rows, setRows] = useState([]);
 
   const handleTypeChange = (row, option) => {
@@ -34,9 +33,15 @@ const VolumesTable = (props): any => {
     props.setFieldValue('persistentVolumes', rowsCopy);
   };
 
+  const getPVResources = (pvList = [], clusterName = '') => {
+    props.getPVResourcesRequest(pvList, clusterName);
+  }
+
   useEffect(() => {
     if (currentPlan) {
       const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || [];
+      //get resources for pv details
+      getPVResources(discoveredPersistentVolumes, values.sourceCluster)
       let mappedPVs;
       if (values.persistentVolumes) {
         mappedPVs = discoveredPersistentVolumes.map(planVolume => {
