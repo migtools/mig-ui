@@ -62,7 +62,7 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
           name={nameKey}
           type="text"
           id="storage-name-input"
-          isDisabled={currentStatus.state === AddEditMode.Edit}
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
         />
         {errors.name && touched.name && (
           <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
