@@ -102,14 +102,14 @@ function* watchPlanUpdate() {
 
 function* checkClosedStatus(action) {
   let planClosed = false;
-  let tries = 0;
+  const tries = 0;
   const TicksUntilTimeout = 20;
   while (!planClosed) {
     if (tries < TicksUntilTimeout) {
       const getPlanResponse = yield call(getPlanSaga, action.planName);
-      let MigPlan = yield getPlanResponse.data;
+      const MigPlan = yield getPlanResponse.data;
       //check for status 
-      if (!MigPlan.status) return;
+      if (!MigPlan.status) { return; }
       //check for closed condition
       const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
       if (hasClosedCondition) {
@@ -138,7 +138,6 @@ function* planCloseSaga(action) {
       persistentVolumes: []
     };
     yield put(PlanActions.planUpdateRequest(updatedValues));
-
     yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
   }
   catch (err) {
