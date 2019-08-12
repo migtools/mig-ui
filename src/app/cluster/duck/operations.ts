@@ -120,10 +120,10 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
 
     if (!mc.spec.isHostCluster) {
       fullCluster['Cluster'] = refs.find(
-        i => i.data.kind === 'Cluster' && i.data.metadata.name === mc.metadata.name
+        i => i.data.kind === 'Cluster' && i.data.metadata.name === mc.spec.clusterRef.name
       ).data;
       fullCluster['Secret'] = refs.find(
-        i => i.data.kind === 'Secret' && i.data.metadata.name === mc.metadata.name
+        i => i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
       ).data;
     }
 
