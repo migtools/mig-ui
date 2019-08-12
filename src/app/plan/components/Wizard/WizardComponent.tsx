@@ -184,9 +184,7 @@ const WizardComponent = props => {
     }
   };
   const handleClose = () => {
-    if (stepIdReached === stepId.Results) {
-      setStepIdReached(stepId.General);
-    }
+    setStepIdReached(stepId.General);
     props.onHandleClose();
     props.resetForm();
   };
