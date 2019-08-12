@@ -14,8 +14,6 @@ const getPlanPVs = plan => {
 
   return statusObj;
 };
-
-
 const getPlanStatus = plan => {
   const statusObj = { success: null, error: null };
   if (plan.MigPlan.status) {
