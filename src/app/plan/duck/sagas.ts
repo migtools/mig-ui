@@ -109,17 +109,16 @@ function* checkClosedStatus(action) {
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
       const MigPlan = getPlanResponse.data;
-      //check for status 
-      if (!MigPlan.status || !MigPlan.status.conditions) { return; }
-      //check for closed condition
-      const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
-      if (hasClosedCondition) {
-        yield put(PlanActions.planCloseSuccess());
-        yield put(PlanActions.stopClosedStatusPolling());
+
+      if (MigPlan.status && MigPlan.status.conditions) {
+        const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
+        if (hasClosedCondition) {
+          yield put(PlanActions.planCloseSuccess());
+          yield put(PlanActions.stopClosedStatusPolling());
+        }
       }
     } else {
-      // Plan close timed out, alert and stop polling
-      planClosed = true; // plan not closed; timed out
+      planClosed = true;
       yield put(PlanActions.planCloseFailure('Failed to close plan'));
       yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
       yield put(PlanActions.stopClosedStatusPolling());
