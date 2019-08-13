@@ -50,10 +50,25 @@ export default class KubeStore {
     localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
   }
 
-  private updateMockedData(key, name, updatedObject) {
+  private updateMockedData(apiKey, resourceName, updatedObject) {
     const newData = this._data();
-    newData['clusters'][this.clusterName][key][name] = updatedObject;
-    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData)); 
+    newData.clusters[this.clusterName][apiKey][resourceName] = updatedObject;
+    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
+  }
+
+  private createMockedData(apiKey, resourceName, obj) {
+    const newData = this._data();
+    const newObj = { [resourceName]: obj};
+    newData.clusters[this.clusterName][apiKey] = {
+      ...newData.clusters[this.clusterName][apiKey],
+      ...newObj};
+    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
+  }
+
+  private deleteMockedData(apiKey, resourceName) {
+    const newData = this._data();
+    delete newData.clusters[this.clusterName][apiKey][resourceName];
+    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
   }
 
   public static Instance() {
@@ -61,148 +76,34 @@ export default class KubeStore {
   }
 
   public patchResource(resource: KubeResource, name: string, patch: object): object {
-    let mockedObject = {};
-    let key: string = '';
-    if (resource instanceof NamespacedResource) {
-      const namespacedResource = resource as NamespacedResource;
-      if (resource instanceof CoreNamespacedResource) {
-        // Core Namespaced
-        key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          mockedObject = {...this.data()[key][name]};
-        }
-      } else {
-        // Extension Namespaced
-        key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
-          `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          mockedObject = {...this.data()[key][name]};
-        }
-      }
-    } else {
-      if (resource instanceof CoreClusterResource) {
-        // Core ClusterResource
-        key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          mockedObject = {...this.data()[key][name]};
-        }
-      } else {
-        // Extension ClusterResource
-        key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          mockedObject = {...this.data()[key][name]};
-        }
-      }
-    }
+    const apiKey = resource.listPath().substr(1);
+    const mockedObject = { ...this.data()[apiKey][name] };
     const patchedReturn = JsonMergePatch.apply(mockedObject, patch);
-    this.updateMockedData(key, name, mockedObject);
-    // Intentionally returning an empty object for the data response. 
-    return {}; 
+    this.updateMockedData(apiKey, name, patchedReturn);
+    return patchedReturn;
   }
 
   public setResource(resource: KubeResource, name: string, newObject: object): object {
-    const gvk = `${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
-    let toMerge;
-    if (resource instanceof NamespacedResource) {
-      const namespacedResource = resource as NamespacedResource;
-      toMerge = {
-        namespace: {
-          [namespacedResource.namespace]: {
-            [gvk]: {
-              [name]: newObject,
-            },
-          },
-        },
-      };
-    } else {
-      toMerge = {
-        cluster: {
-          [gvk]: {
-            [name]: newObject,
-          },
-        },
-      };
-    }
-
-    _.merge(this.db, toMerge);
+    const apiKey = resource.listPath().substr(1);
+    this.createMockedData(apiKey, name, newObject);
     return newObject;
   }
 
   public getResource(resource: KubeResource, name: string): object {
-    let result: object = {};
-    let key = '';
-    if (resource instanceof NamespacedResource) {
-      const namespacedResource = resource as NamespacedResource;
-      if (resource instanceof CoreNamespacedResource) {
-        // Core Namespaced
-        key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          result = this.data()[key][name];
-        }
-      } else {
-        // Extension Namespaced
-        key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
-          `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          result = this.data()[key][name];
-        }
-      }
-    } else {
-      if (resource instanceof CoreClusterResource) {
-        // Core ClusterResource
-        key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          result = this.data()[key][name];
-        }
-      } else {
-        // Extension ClusterResource
-        key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
-        if (this.data()[key]) {
-          result = this.data()[key][name];
-        }
-      }
-    }
-    return result;
+    const apiKey = resource.listPath().substr(1);
+    const resourceObj = this.data()[apiKey][name];
+    return resourceObj;
   }
 
   public listResource(resource: KubeResource): object {
-    // 2 Main Types of Resources
-    //   - NamespacedResource
-    //   - ClusterResource
-    //  Next 2 distinctions,  'Core' or Extension.
-    //   Core - are the main types built in k8s
-    //     If it's an instance of CoreNamespacedResource or CoreClusterResource
-    //   Extensions are everything else.
+    const apiKey = resource.listPath().substr(1);
+    const resourceObjList = this.data()[apiKey];
+    return Object.values(resourceObjList);
+  }
 
-    let result: object = {};
-    let key = '';
-    if (resource instanceof NamespacedResource) {
-      const namespacedResource = resource as NamespacedResource;
-      if (resource instanceof CoreNamespacedResource) {
-      // Core Namespaced
-      key = `api/${resource.gvk().version}/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-      result = this.data()[key];
-      } else {
-      // Extension Namespaced
-      key = `apis/${resource.gvk().group}/${resource.gvk().version}` +
-      `/namespaces/${namespacedResource.namespace}/${resource.gvk().kindPlural}`;
-      result = this.data()[key];
-      }
-    } else {
-      if (resource instanceof CoreClusterResource) {
-        // Core ClusterResource
-        key = `api/${resource.gvk().version}/namespaces/${resource.gvk().kindPlural}`;
-        result = this.data()[key];
-      } else {
-        // Extension ClusterResource
-        key = `apis/${resource.gvk().group}/${resource.gvk().version}/${resource.gvk().kindPlural}`;
-        result = this.data()[key];
-      }
-    }
-    if (result) {
-      return Object.keys(result).map(k => result[k]);
-    } else {
-      return [];
-    }
+  public deleteResource(resource: KubeResource, name: string): object {
+    const apiKey = resource.listPath().substr(1);
+    this.deleteMockedData(apiKey, name);
+    return {};
   }
 }

@@ -47,9 +47,11 @@ export class MockClusterClient {
 
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({
-        data: this.kube_store.patchResource(resource, name, patch)
-      });
+      setTimeout(() => {
+        res({
+          data: this.kube_store.patchResource(resource, name, patch)
+        });
+      }, this.reqTime);
     });
   }
 
@@ -65,7 +67,11 @@ export class MockClusterClient {
 
   public delete(resource: KubeResource, name: string): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({});
+      setTimeout(() => {
+        res({
+          data: this.kube_store.deleteResource(resource, name),
+        });
+      }, this.reqTime);
     });
   }
 }
