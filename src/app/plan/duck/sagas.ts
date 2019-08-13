@@ -107,7 +107,7 @@ function* checkClosedStatus(action) {
   while (!planClosed) {
     if (tries < TicksUntilTimeout) {
       const getPlanResponse = yield call(getPlanSaga, action.planName);
-      const MigPlan = yield getPlanResponse.data;
+      const MigPlan = getPlanResponse.data;
       //check for status 
       if (!MigPlan.status) { return; }
       //check for closed condition
