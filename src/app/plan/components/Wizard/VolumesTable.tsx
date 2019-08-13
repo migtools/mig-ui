@@ -144,7 +144,7 @@ const VolumesTable = (props): any => {
             .rt-td{
               margin: auto 0;
             }
-          `}
+      `}
       data={rows}
       columns={[
         {
@@ -156,11 +156,10 @@ const VolumesTable = (props): any => {
               }}
             >
               PV Name
-                </div>
+            </div>
           ),
           accessor: 'name',
           width: 180,
-          Cell: row => <div style={{ margin: 'auto auto' }}>{row.value}</div>
         },
         {
           Header: () => (
@@ -171,7 +170,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Project
-                </div>
+            </div>
           ),
           accessor: 'project',
           width: 150,
@@ -185,7 +184,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Storage Class
-                </div>
+            </div>
           ),
           accessor: 'storageClass',
           width: 150,
@@ -199,7 +198,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Size
-                </div>
+            </div>
           ),
           accessor: 'size',
           width: 75,
@@ -213,7 +212,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Claim
-                </div>
+            </div>
           ),
           accessor: 'claim',
           width: 180,
@@ -227,7 +226,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Type
-                </div>
+            </div>
           ),
           accessor: 'type',
           width: 120,
@@ -257,7 +256,7 @@ const VolumesTable = (props): any => {
               }}
             >
               Details
-                </div>
+            </div>
           ),
           accessor: 'details',
           width: 200,
@@ -273,11 +272,10 @@ const VolumesTable = (props): any => {
                       overflow-y: scroll;
                       max-height: 20rem;
                       width: 40rem;
-                      `}
+                `}
                 position={PopoverPosition.bottom}
                 bodyContent={
                   <ReactJson src={matchingPVResource} enableClipboard={false} />
-
                 }
                 aria-label="pv-details"
                 closeBtnAriaLabel="close-pv-details"
@@ -287,7 +285,7 @@ const VolumesTable = (props): any => {
                   <Box>
                     <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
                       View JSON
-                        </Button>
+                    </Button>
                   </Box>
                 </Flex>
               </Popover>
