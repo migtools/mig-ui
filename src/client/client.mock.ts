@@ -1,5 +1,5 @@
 import { KubeResource } from './resources';
-import KubeStore from './kube_store';
+import { KubeStore } from './kube_store';
 import { TokenExpiryHandler } from './client';
 
 export class MockClusterClient {

@@ -1,19 +1,14 @@
 import _ from 'lodash';
-import { NamespacedResource, ClusterResource, KubeResource,
-  CoreNamespacedResource, CoreClusterResource, } from '../resources';
+import { KubeResource } from '../resources';
 
 import mocked_data from './mocked_data';
 import JsonMergePatch from 'json-merge-patch';
-const localStorageMockedDataKey = 'CAM_MOCKED_DATA';
 
-export default class KubeStore {
+export const LocalStorageMockedDataKey = 'CAM_MOCKED_DATA';
+
+export class KubeStore {
   private static instance: KubeStore;
   private clusterName: string;
-
-  public db: any = {
-    namespace: {},
-    cluster: {},
-  };
 
   public constructor(clusterName) {
     this.clusterName = clusterName;
@@ -23,7 +18,7 @@ export default class KubeStore {
   private _data() {
     // Returns the chunk of data relevant for mocking data from this k8s cluster
     // All subsequent calls will use this data to lookup their responses
-    const d = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+    const d = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
     if (! ('clusters' in d)) {
       alert('Unable to find expected mocked data for "clusters"');
       return {};
@@ -43,17 +38,17 @@ export default class KubeStore {
   }
 
   private ensureDataLoaded() {
-    let localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+    let localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
     if ((!localData) || (!localData.TIME_STAMP) || (localData.TIME_STAMP < mocked_data.TIME_STAMP)) {
-      localStorage.setItem(localStorageMockedDataKey, JSON.stringify(mocked_data));
+      localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(mocked_data));
     }
-    localData = JSON.parse(localStorage.getItem(localStorageMockedDataKey));
+    localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
   }
 
   private updateMockedData(apiKey, resourceName, updatedObject) {
     const newData = this._data();
     newData.clusters[this.clusterName][apiKey][resourceName] = updatedObject;
-    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
+    localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
   }
 
   private createMockedData(apiKey, resourceName, obj) {
@@ -62,13 +57,13 @@ export default class KubeStore {
     newData.clusters[this.clusterName][apiKey] = {
       ...newData.clusters[this.clusterName][apiKey],
       ...newObj};
-    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
+    localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
   }
 
   private deleteMockedData(apiKey, resourceName) {
     const newData = this._data();
     delete newData.clusters[this.clusterName][apiKey][resourceName];
-    localStorage.setItem(localStorageMockedDataKey, JSON.stringify(newData));
+    localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
   }
 
   public static Instance() {

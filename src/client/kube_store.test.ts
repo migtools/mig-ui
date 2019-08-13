@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import KubeStore from './kube_store';
+import { KubeStore, LocalStorageMockedDataKey } from './kube_store';
 import { MigResource, MigResourceKind } from './resources';
 
 const examplePlan = {
@@ -35,22 +35,28 @@ const examplePlan = {
 
 const testNs = 'test-ns';
 const planName = 'my-plan';
-const expectedGvk = 'migration.openshift.io/v1alpha1/migplans';
+const expectedGvk = `apis/migration.openshift.io/v1alpha1/namespaces/${testNs}/migplans`;
 
 test('Test NamespacedResource setResource', () => {
   const migResource = new MigResource(MigResourceKind.MigPlan, testNs);
-  const store = new KubeStore('_host');
+  const hostCluster = '_host';
+  const store = new KubeStore(hostCluster);
+
   const expected = {
-    namespace: {
-      [testNs]: {
+    clusters: {
+      [hostCluster]: {
         [expectedGvk]: {
           [planName]: examplePlan,
         },
       },
     },
-    cluster: {},
   };
 
+  localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify({ clusters: {[hostCluster] : {}} }));
   store.setResource(migResource, planName, examplePlan);
-  expect(_.isEqual(expected, store.db)).toBe(true);
+  expect(_.isEqual(
+    JSON.stringify(expected),
+    localStorage.getItem(LocalStorageMockedDataKey)))
+    .toBe(true);
+  localStorage.clear();
 });
