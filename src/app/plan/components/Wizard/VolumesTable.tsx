@@ -45,13 +45,13 @@ const VolumesTable = (props): any => {
 
   const getPVResources = (pvList = [], clusterName = '') => {
     props.getPVResourcesRequest(pvList, clusterName);
-  }
+  };
 
   useEffect(() => {
     if (currentPlan) {
       const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || [];
       //get resources for pv details
-      getPVResources(discoveredPersistentVolumes, values.sourceCluster)
+      getPVResources(discoveredPersistentVolumes, values.sourceCluster);
       //
       let mappedPVs;
       if (values.persistentVolumes) {
@@ -160,7 +160,7 @@ const VolumesTable = (props): any => {
           ),
           accessor: 'name',
           width: 180,
-          Cell: row => <div style={{ margin: "auto auto" }}>{row.value}</div>
+          Cell: row => <div style={{ margin: 'auto auto' }}>{row.value}</div>
         },
         {
           Header: () => (
@@ -291,7 +291,7 @@ const VolumesTable = (props): any => {
                   </Box>
                 </Flex>
               </Popover>
-            )
+            );
           },
         },
       ]}

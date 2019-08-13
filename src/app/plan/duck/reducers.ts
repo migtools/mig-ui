@@ -256,7 +256,6 @@ export const planResultsRequest =
     return { ...state, isCheckingPlanStatus: true };
   };
 
-
 export const updatePlanResults =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanResults>) => {
     return { ...state, isCheckingPlanStatus: false };
