@@ -29,12 +29,15 @@ export default class MigrationsTable extends React.Component<any, any> {
         left: 40px;
       `;
       const type = migration.spec.stage ? 'Stage' : 'Migration';
+      const progressVariant = status.isRunning ? ProgressVariant.info : 
+        (status.isFailed ? ProgressVariant.danger : ProgressVariant.success);
+
       return [
         {
           title: (
             <Flex>
               <StyledBox>
-                <StatusIcon isReady={true} />
+                <StatusIcon isReady={!status.isFailed} />
               </StyledBox>
               <Box>{type}</Box>
             </Flex>
@@ -52,7 +55,7 @@ export default class MigrationsTable extends React.Component<any, any> {
                   value={status.progress} 
                   title={status.stepName} 
                   size={ProgressSize.sm}
-                  variant={status.isRunning ? ProgressVariant.info: ProgressVariant.success}
+                  variant={progressVariant}
                 />
               )}
             </div>
@@ -72,6 +75,7 @@ export default class MigrationsTable extends React.Component<any, any> {
       copied: 0,
       stepName: 'Not started',
       isRunning: false,
+      isFailed: false,
     };
 
     if (migration.status) {
@@ -85,51 +89,50 @@ export default class MigrationsTable extends React.Component<any, any> {
         .toString();
       status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
 
-      const serverErrorMessage = migration.status.errors;
-      if (serverErrorMessage) {
-        status.stepName = serverErrorMessage.pop();
-        status.progress = null;
-        return status;
-      } else {
+      if (migration.status.conditions.length) {
 
-        if (migration.status.conditions.length) {
-          
-          // Handle completed migrations: successful and failed
-          if (migration.status.phase === 'Completed') {
-            status.stepName = 'Completed';
-            // For successful migrations, show green 100% progress
-            const succeededCondition = migration.status.conditions.find(c => {
-              return c.type === 'Succeeded';
-            });
-            if (succeededCondition !== undefined) {
-              status.progress = 100;
-            }
-            // TODO: For failed migrations, show red 100% progress
-          }
-          
-          // For running migrations, calculate percent progress
-          const runningCondition = migration.status.conditions.find(c => {
-            return c.type === 'Running';
+        if (migration.status.phase === 'Completed') {
+          status.stepName = 'Completed';
+
+          // For successful migrations, show green 100% progress
+          const succeededCondition = migration.status.conditions.find(c => {
+            return c.type === 'Succeeded';
           });
-          if (runningCondition !== undefined) {
-            status.isRunning = true;
-            status.stepName = runningCondition.reason;
-            // Match string in format 'Step: 16/26'. Capture both numbers.
-            const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
-            if (matches && matches.length === 3) {
-              const currentStep = parseInt(matches[1], 10);
-              const totalSteps = parseInt(matches[2], 10);
-              if (!isNaN(currentStep) && !isNaN(totalSteps)) {
-                status.progress = (currentStep / totalSteps) * 100;
-              }
+          if (succeededCondition !== undefined) {
+            status.progress = 100;
+          }
+
+          // For failed migrations, show red 100% progress
+          const failedCondition = migration.status.conditions.find(c => {
+            return c.type === 'Failed';
+          });
+          if (failedCondition !== undefined) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = failedCondition.reason;
+          }
+        }
+        
+        // For running migrations, calculate percent progress
+        const runningCondition = migration.status.conditions.find(c => {
+          return c.type === 'Running';
+        });
+        if (runningCondition !== undefined) {
+          status.isRunning = true;
+          status.stepName = runningCondition.reason;
+          // Match string in format 'Step: 16/26'. Capture both numbers.
+          const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
+          if (matches && matches.length === 3) {
+            const currentStep = parseInt(matches[1], 10);
+            const totalSteps = parseInt(matches[2], 10);
+            if (!isNaN(currentStep) && !isNaN(totalSteps)) {
+              status.progress = (currentStep / totalSteps) * 100;
             }
           }
         }
-        return status;
       }
-    } else {
-      return status;
     }
+    return status;
   };
 
   componentDidUpdate(prevProps) {
@@ -141,12 +144,14 @@ export default class MigrationsTable extends React.Component<any, any> {
         `;
         const type = migration.spec.stage ? 'Stage' : 'Migration';
         const status = this.getStatus(migration);
+        const progressVariant = status.isRunning ? ProgressVariant.info : 
+          (status.isFailed ? ProgressVariant.danger : ProgressVariant.success);
         return [
           {
             title: (
               <Flex>
                 <StyledBox>
-                  <StatusIcon isReady={true} />
+                  <StatusIcon isReady={!status.isFailed} />
                 </StyledBox>
                 <Box>{type}</Box>
               </Flex>
@@ -165,7 +170,7 @@ export default class MigrationsTable extends React.Component<any, any> {
                       value={status.progress} 
                       title={status.stepName} 
                       size={ProgressSize.sm} 
-                      variant={status.isRunning ? ProgressVariant.info: ProgressVariant.success}
+                      variant={progressVariant}
                     />
                   )}
                 </div>

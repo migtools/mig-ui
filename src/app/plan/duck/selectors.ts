@@ -14,6 +14,7 @@ const getPlansWithStatus = createSelector(
       let hasReadyCondition = null;
       let hasPlanError = null;
       let hasMigrationError = null;
+      let hasStageError = null;
       let hasPrevMigrations = null;
       let hasRunningMigrations = null;
       let finalMigrationComplete = null;
@@ -44,7 +45,13 @@ const getPlansWithStatus = createSelector(
           }).length;
 
           hasMigrationError = !!plan.Migrations.filter(m => {
-            if (m.status) {
+            if (m.status && !m.spec.stage) {
+              return m.status.conditions.some(c => c.type === 'Failed');
+            }
+          }).length;
+
+          hasStageError = !!plan.Migrations.filter(m => {
+            if (m.status && m.spec.stage) {
               return m.status.conditions.some(c => c.type === 'Failed');
             }
           }).length;
@@ -71,7 +78,8 @@ const getPlansWithStatus = createSelector(
         hasRunningMigrations,
         hasSucceededMigration,
         finalMigrationComplete,
-        hasFailedCondition: hasMigrationError,
+        hasMigrationError,
+        hasStageError,
         latestType,
       };
 
