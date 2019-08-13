@@ -42,11 +42,13 @@ export abstract class ClusterResource {
   public listPath(): string {
     return ['/apis', this.gvk().group, this.gvk().version, this.gvk().kindPlural].join('/');
   }
-  public namedPath(): string {
+  public namedPath(name?): string {
+    console.log('name 46', name)
     return namedPath(this.listPath(), name);
   }
 }
 
 function namedPath(listPath, name) {
+  console.log('name 52', name)
   return [listPath, name].join('/');
 }

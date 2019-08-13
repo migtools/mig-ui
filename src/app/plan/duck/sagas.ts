@@ -160,9 +160,11 @@ function* getPVResourcesRequest(action) {
   const state = yield select();
   const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
 
+  const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
+  console.log('resource', resource)
   const responses = yield action.pvList.map(pv => {
     return client.get(
-      new CoreClusterResource(CoreClusterResourceKind.PV),
+      resource,
       pv.name
     )
   })
