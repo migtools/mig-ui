@@ -1,0 +1,579 @@
+{
+"api/v1/namespaces": {
+    "default": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/logging.data.prefix": ".operations",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c1,c0",
+                "openshift.io/sa.scc.supplemental-groups": "1000000000/10000",
+                "openshift.io/sa.scc.uid-range": "1000000000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:06Z",
+            "name": "default",
+            "namespace": "",
+            "resourceVersion": "5731",
+            "selfLink": "/api/v1/namespaces/default",
+            "uid": "f731ac7e-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "kube-public": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/sa.scc.mcs": "s0:c3,c2",
+                "openshift.io/sa.scc.supplemental-groups": "1000010000/10000",
+                "openshift.io/sa.scc.uid-range": "1000010000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:07Z",
+            "name": "kube-public",
+            "namespace": "",
+            "resourceVersion": "5732",
+            "selfLink": "/api/v1/namespaces/kube-public",
+            "uid": "f7396ced-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "kube-service-catalog": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c15,c5",
+                "openshift.io/sa.scc.supplemental-groups": "1000220000/10000",
+                "openshift.io/sa.scc.uid-range": "1000220000/10000"
+            },
+            "creationTimestamp": "2019-08-12T20:00:15Z",
+            "name": "kube-service-catalog",
+            "namespace": "",
+            "resourceVersion": "5733",
+            "selfLink": "/api/v1/namespaces/kube-service-catalog",
+            "uid": "cd1e5a61-bd3b-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "kube-system": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/logging.data.prefix": ".operations",
+                "openshift.io/sa.scc.mcs": "s0:c5,c0",
+                "openshift.io/sa.scc.supplemental-groups": "1000020000/10000",
+                "openshift.io/sa.scc.uid-range": "1000020000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:06Z",
+            "name": "kube-system",
+            "namespace": "",
+            "resourceVersion": "5734",
+            "selfLink": "/api/v1/namespaces/kube-system",
+            "uid": "f73560ce-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "management-infra": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "Management Infrastructure",
+                "openshift.io/display-name": "",
+                "openshift.io/sa.scc.mcs": "s0:c10,c0",
+                "openshift.io/sa.scc.supplemental-groups": "1000090000/10000",
+                "openshift.io/sa.scc.uid-range": "1000090000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:50:23Z",
+            "name": "management-infra",
+            "namespace": "",
+            "resourceVersion": "5735",
+            "selfLink": "/api/v1/namespaces/management-infra",
+            "uid": "6c936768-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "mig": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/sa.scc.mcs": "s0:c9,c4",
+                "openshift.io/sa.scc.supplemental-groups": "1000080000/10000",
+                "openshift.io/sa.scc.uid-range": "1000080000/10000"
+            },
+            "creationTimestamp": "2019-08-13T05:20:59Z",
+            "labels": {
+                "control-plane": "controller-manager",
+                "controller-tools.k8s.io": "1.0"
+            },
+            "name": "mig",
+            "namespace": "",
+            "resourceVersion": "78828",
+            "selfLink": "/api/v1/namespaces/mig",
+            "uid": "226385c0-bd8a-11e9-9271-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "mssql-persistent": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"mssql-container\"},\"name\":\"mssql-persistent\",\"namespace\":\"\"}}\n",
+                "openshift.io/sa.scc.mcs": "s0:c18,c12",
+                "openshift.io/sa.scc.supplemental-groups": "1000330000/10000",
+                "openshift.io/sa.scc.uid-range": "1000330000/10000"
+            },
+            "creationTimestamp": "2019-08-13T05:03:06Z",
+            "labels": {
+                "app": "mssql-container"
+            },
+            "name": "mssql-persistent",
+            "namespace": "",
+            "resourceVersion": "93257",
+            "selfLink": "/api/v1/namespaces/mssql-persistent",
+            "uid": "a31f5812-bd87-11e9-8a7f-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "ocp-workshop": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "node-role.kubernetes.io/infra=true",
+                "openshift.io/sa.scc.mcs": "s0:c18,c7",
+                "openshift.io/sa.scc.supplemental-groups": "1000320000/10000",
+                "openshift.io/sa.scc.uid-range": "1000320000/10000"
+            },
+            "creationTimestamp": "2019-08-12T20:05:36Z",
+            "name": "ocp-workshop",
+            "namespace": "",
+            "resourceVersion": "6638",
+            "selfLink": "/api/v1/namespaces/ocp-workshop",
+            "uid": "8c534653-bd3c-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/logging.data.prefix": ".operations",
+                "openshift.io/sa.scc.mcs": "s0:c6,c0",
+                "openshift.io/sa.scc.supplemental-groups": "1000030000/10000",
+                "openshift.io/sa.scc.uid-range": "1000030000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:07Z",
+            "name": "openshift",
+            "namespace": "",
+            "resourceVersion": "5736",
+            "selfLink": "/api/v1/namespaces/openshift",
+            "uid": "f7cbf13f-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-ansible-service-broker": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c15,c10",
+                "openshift.io/sa.scc.supplemental-groups": "1000230000/10000",
+                "openshift.io/sa.scc.uid-range": "1000230000/10000"
+            },
+            "creationTimestamp": "2019-08-12T20:02:32Z",
+            "name": "openshift-ansible-service-broker",
+            "namespace": "",
+            "resourceVersion": "5737",
+            "selfLink": "/api/v1/namespaces/openshift-ansible-service-broker",
+            "uid": "1ee7cd90-bd3c-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-console": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c13,c12",
+                "openshift.io/sa.scc.supplemental-groups": "1000180000/10000",
+                "openshift.io/sa.scc.uid-range": "1000180000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:54:11Z",
+            "name": "openshift-console",
+            "namespace": "",
+            "resourceVersion": "5738",
+            "selfLink": "/api/v1/namespaces/openshift-console",
+            "uid": "f46c03f3-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-infra": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/logging.data.prefix": ".operations",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c6,c5",
+                "openshift.io/sa.scc.supplemental-groups": "1000040000/10000",
+                "openshift.io/sa.scc.uid-range": "1000040000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:07Z",
+            "name": "openshift-infra",
+            "namespace": "",
+            "resourceVersion": "5739",
+            "selfLink": "/api/v1/namespaces/openshift-infra",
+            "uid": "f781f070-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-logging": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/logging.data.prefix": ".operations",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c11,c0",
+                "openshift.io/sa.scc.supplemental-groups": "1000110000/10000",
+                "openshift.io/sa.scc.uid-range": "1000110000/10000",
+                "quota.openshift.io/cluster-resource-override-enabled": "false"
+            },
+            "creationTimestamp": "2019-08-12T19:52:09Z",
+            "name": "openshift-logging",
+            "namespace": "",
+            "resourceVersion": "5740",
+            "selfLink": "/api/v1/namespaces/openshift-logging",
+            "uid": "ab5d68e2-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-metrics-server": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c14,c9",
+                "openshift.io/sa.scc.supplemental-groups": "1000200000/10000",
+                "openshift.io/sa.scc.uid-range": "1000200000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:56:30Z",
+            "name": "openshift-metrics-server",
+            "namespace": "",
+            "resourceVersion": "5744",
+            "selfLink": "/api/v1/namespaces/openshift-metrics-server",
+            "uid": "47376735-bd3b-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-monitoring": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "Openshift Monitoring",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c12,c4",
+                "openshift.io/sa.scc.supplemental-groups": "1000140000/10000",
+                "openshift.io/sa.scc.uid-range": "1000140000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:52:58Z",
+            "labels": {
+                "openshift.io/cluster-monitoring": "true"
+            },
+            "name": "openshift-monitoring",
+            "namespace": "",
+            "resourceVersion": "5748",
+            "selfLink": "/api/v1/namespaces/openshift-monitoring",
+            "uid": "c8cc300f-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-node": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c7,c4",
+                "openshift.io/sa.scc.supplemental-groups": "1000050000/10000",
+                "openshift.io/sa.scc.uid-range": "1000050000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:47:07Z",
+            "name": "openshift-node",
+            "namespace": "",
+            "resourceVersion": "5750",
+            "selfLink": "/api/v1/namespaces/openshift-node",
+            "uid": "f7ccca56-bd39-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-sdn": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c8,c7",
+                "openshift.io/sa.scc.supplemental-groups": "1000070000/10000",
+                "openshift.io/sa.scc.uid-range": "1000070000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:49:59Z",
+            "name": "openshift-sdn",
+            "namespace": "",
+            "resourceVersion": "5752",
+            "selfLink": "/api/v1/namespaces/openshift-sdn",
+            "uid": "5e3cc59f-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-template-service-broker": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c16,c5",
+                "openshift.io/sa.scc.supplemental-groups": "1000250000/10000",
+                "openshift.io/sa.scc.uid-range": "1000250000/10000"
+            },
+            "creationTimestamp": "2019-08-12T20:02:54Z",
+            "name": "openshift-template-service-broker",
+            "namespace": "",
+            "resourceVersion": "5755",
+            "selfLink": "/api/v1/namespaces/openshift-template-service-broker",
+            "uid": "2c4562a3-bd3c-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "openshift-web-console": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c13,c2",
+                "openshift.io/sa.scc.supplemental-groups": "1000160000/10000",
+                "openshift.io/sa.scc.uid-range": "1000160000/10000"
+            },
+            "creationTimestamp": "2019-08-12T19:53:39Z",
+            "name": "openshift-web-console",
+            "namespace": "",
+            "resourceVersion": "5757",
+            "selfLink": "/api/v1/namespaces/openshift-web-console",
+            "uid": "e0e92c5a-bd3a-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    "operator-lifecycle-manager": {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "annotations": {
+                "alm-manager": "operator-lifecycle-manager.olm-operator",
+                "openshift.io/description": "",
+                "openshift.io/display-name": "",
+                "openshift.io/node-selector": "",
+                "openshift.io/sa.scc.mcs": "s0:c17,c4",
+                "openshift.io/sa.scc.supplemental-groups": "1000280000/10000",
+                "openshift.io/sa.scc.uid-range": "1000280000/10000"
+            },
+            "creationTimestamp": "2019-08-12T20:03:53Z",
+            "name": "operator-lifecycle-manager",
+            "namespace": "",
+            "resourceVersion": "5760",
+            "selfLink": "/api/v1/namespaces/operator-lifecycle-manager",
+            "uid": "4f4aac9d-bd3c-11e9-8f9c-0a58ab88de30"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    }
+}
+}
