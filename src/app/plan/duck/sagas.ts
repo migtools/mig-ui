@@ -159,21 +159,6 @@ function* planCloseAndDeleteSaga(action) {
 function* getPVResourcesRequest(action) {
   const state = yield select();
   const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
-
-  const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
-  const responses = yield action.pvList.map(pv => {
-    // const pvResourceRefs = yield all(action.pvList.map(pv => {
-    //   return client.get(
-    //     resource,
-    //     pv.name
-    //   )
-    // })
-    // yield responses.map(response => {
-    // }))
-
-    // const pvResourceRes = yield pvResourceRefs.map(pvRes => pvRes.data)
-    // yield put(PlanActions.getPVResourcesSuccess(pvResourceRes));
-  })
 }
 
 function* watchPlanCloseAndDelete() {

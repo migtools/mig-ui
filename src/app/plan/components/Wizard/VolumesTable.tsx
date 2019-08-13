@@ -40,11 +40,11 @@ const VolumesTable = (props): any => {
     }
 
     setRows(rowsCopy);
-    props.setFieldValue('persistentVolumes', rowsCopy);
+    setFieldValue('persistentVolumes', rowsCopy);
   };
 
   const getPVResources = (pvList = [], clusterName = '') => {
-    props.getPVResourcesRequest(pvList, clusterName);
+    getPVResourcesRequest(pvList, clusterName);
   };
 
   useEffect(() => {
@@ -285,7 +285,7 @@ const VolumesTable = (props): any => {
               >
                 <Flex>
                   <Box>
-                    <Button variant="link" icon={<BlueprintIcon />}>
+                    <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
                       View JSON
                         </Button>
                   </Box>

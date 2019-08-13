@@ -161,6 +161,7 @@ const WizardComponent = props => {
       isFetchingPVList,
       isCheckingPlanStatus,
       isFetchingNamespaceList,
+      pvResourceList,
       errors,
       touched
     ]);

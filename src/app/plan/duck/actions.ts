@@ -40,7 +40,8 @@ export const PlanActionTypes = {
   CLOSED_STATUS_POLL_START: 'CLOSED_STATUS_POLL_START',
   CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
   GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST',
-  GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS'
+  GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS',
+  GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE'
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -230,6 +231,11 @@ const getPVResourcesSuccess = (pvResources) => ({
   pvResources
 });
 
+const getPVResourcesFailure = (error) => ({
+  type: PlanActionTypes.GET_PV_RESOURCES_FAILURE,
+  error
+});
+
 export const PlanActions = {
   updatePlans,
   addPlanSuccess,
@@ -269,5 +275,6 @@ export const PlanActions = {
   startClosedStatusPolling,
   stopClosedStatusPolling,
   getPVResourcesRequest,
-  getPVResourcesSuccess
+  getPVResourcesSuccess,
+  getPVResourcesFailure
 };

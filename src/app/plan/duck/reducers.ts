@@ -273,12 +273,17 @@ export const closedStatusPollStop =
 
 export const getPVResourcesRequest =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesRequest>) => {
-    return { ...state, isFetchingPVResources: true, };
+    return { ...state, isFetchingPVResources: true };
   };
 
 export const getPVResourcesSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesSuccess>) => {
-    return { ...state, isCheckingPlanStatus: false, pvResourceList: action.pvResources };
+    return { ...state, isFetchingPVResources: false, pvResourceList: action.pvResources };
+  };
+
+export const getPVResourcesFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesFailure>) => {
+    return { ...state, isFetchingPVResources: false };
   };
 
 const planReducer = (state = INITIAL_STATE, action) => {
@@ -311,6 +316,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
     default: return state;
   }
 };
