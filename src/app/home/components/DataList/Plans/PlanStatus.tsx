@@ -13,6 +13,7 @@ const PlanStatus = ({ plan }) => {
     hasMigrationError,
     hasStageError,
     latestType,
+    latestIsFailed,
   } = plan.PlanStatus;
 
   const getStatus = () => {
