@@ -200,6 +200,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               onStartPolling={this.handleStartPolling}
               onStopPolling={this.props.stopDataListPolling}
               isExpanded={this.state.expanded[DataListItems.PlanList]}
+              isClosing={this.props.isClosing}
               toggleExpanded={this.handleExpand}
             />
           </PlanContext.Provider>

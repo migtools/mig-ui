@@ -23,6 +23,7 @@ interface IPlanContentProps {
   clusterList: any;
   storageList: any;
   isLoading: boolean;
+  isClosing: boolean;
   isExpanded: boolean;
   plansDisabled: boolean;
 }
@@ -113,7 +114,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 ),
               },
               {
-                title: <PlanActions plan={plan} isLoading={this.props.isLoading} />,
+                title: <PlanActions plan={plan} isClosing={this.props.isClosing} isLoading={this.props.isLoading} />,
               },
             ],
           },
@@ -207,14 +208,14 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
             </DataListItem>
           </DataList>
         ) : (
-          <PlanEmptyState
-            clusterList={this.props.clusterList}
-            storageList={this.props.storageList}
-            isLoading={this.props.isLoading}
-            onPlanSubmit={this.props.onPlanSubmit}
-            plansDisabled={this.props.plansDisabled}
-          />
-        )}
+            <PlanEmptyState
+              clusterList={this.props.clusterList}
+              storageList={this.props.storageList}
+              isLoading={this.props.isLoading}
+              onPlanSubmit={this.props.onPlanSubmit}
+              plansDisabled={this.props.plansDisabled}
+            />
+          )}
       </DataListContent>
     );
   }

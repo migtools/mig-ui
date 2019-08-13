@@ -103,7 +103,7 @@ function* watchPlanUpdate() {
 function* checkClosedStatus(action) {
   let planClosed = false;
   let tries = 0;
-  const TicksUntilTimeout = 20;
+  const TicksUntilTimeout = 8;
   while (!planClosed) {
     if (tries < TicksUntilTimeout) {
       tries += 1;

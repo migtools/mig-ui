@@ -11,7 +11,7 @@ import { ClusterActions } from '../../cluster/duck/actions';
 import { StorageActions } from '../../storage/duck/actions';
 
 export const StatusPollingInterval = 4000;
-const ErrorToastTimeout = 30; // Seconds
+const ErrorToastTimeout = 5000;
 
 function* poll(action) {
   const params = { ...action.params };
