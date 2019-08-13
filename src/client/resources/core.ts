@@ -45,13 +45,6 @@ export class CoreClusterResource extends ClusterResource {
     return ['/api', this.gvk().version, this.gvk().kindPlural].join('/');
   }
 
-  public namedPath(name): string {
-    return namedPath(this.listPath(), name);
-  }
-}
-
-function namedPath(listPath, name) {
-  return [listPath, name].join('/');
 }
 
 export enum CoreNamespacedResourceKind {

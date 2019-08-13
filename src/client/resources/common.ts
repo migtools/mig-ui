@@ -42,7 +42,7 @@ export abstract class ClusterResource {
   public listPath(): string {
     return ['/apis', this.gvk().group, this.gvk().version, this.gvk().kindPlural].join('/');
   }
-  public namedPath(name?): string {
+  public namedPath(name): string {
     return namedPath(this.listPath(), name);
   }
 }
