@@ -20,6 +20,7 @@ const getPlansWithStatus = createSelector(
       let hasSucceededMigration = null;
       let hasSucceededStage = null;
       let hasClosedCondition = null;
+      let hasMigrationError = null;
       let latestType = null;
       let latestIsFailed = false;
       if (plan.MigPlan.status) {
@@ -79,6 +80,50 @@ const getPlansWithStatus = createSelector(
         latestIsFailed,
       };
 
+      if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
+        return { ...plan, PlanStatus: statusObject };
+      }
+
+      hasClosedCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Closed').length;
+      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
+      hasPlanError = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
+        .length;
+
+      if (plan.Migrations.length) {
+        hasPrevMigrations = !!plan.Migrations.length;
+        latestType = plan.Migrations[0].spec.stage ? 'Stage' : 'Migration';
+
+        hasSucceededStage = !!plan.Migrations.filter(m => {
+          if (m.status && m.spec.stage) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
+
+        hasSucceededMigration = !!plan.Migrations.filter(m => {
+          if (m.status && !m.spec.stage) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
+
+        hasMigrationError = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Failed');
+          }
+        }).length;
+
+        finalMigrationComplete = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.spec.stage === false && hasSucceededMigration;
+          }
+        }).length;
+
+        hasRunningMigrations = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Running');
+          }
+        }).length;
+      }
+
       return { ...plan, PlanStatus: statusObject };
     });
 
@@ -95,35 +140,33 @@ const getCounts = createSelector(
       completed: [],
     };
 
-    plans.filter(plan => {
+    plans.filter((plan = []) => {
       let hasErrorCondition = null;
       let hasRunningMigrations = null;
       let hasSucceededMigration = null;
+      if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
+        counts.notStarted.push(plan);
+        return;
+      }
+      hasErrorCondition = !!plan.MigPlan.status.conditions.some(c => c.category === 'Critical');
 
-      if (plan.MigPlan.status) {
-        hasErrorCondition = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
-          .length;
-
-        if (plan.Migrations.length) {
-          hasRunningMigrations = !!plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.status.conditions.some(c => c.type === 'Running');
-            }
-          }).length;
-
-          hasSucceededMigration = !!plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.status.conditions.some(c => c.type === 'Succeeded');
-            }
-          }).length;
-
-          if (hasRunningMigrations) {
-            counts.inProgress.push(plan);
-          } else if (hasSucceededMigration) {
-            counts.completed.push(plan);
-          } else {
-            counts.notStarted.push(plan);
+      if (plan.Migrations.length) {
+        hasRunningMigrations = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Running');
           }
+        }).length;
+
+        hasSucceededMigration = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Succeeded');
+          }
+        }).length;
+
+        if (hasRunningMigrations) {
+          counts.inProgress.push(plan);
+        } else if (hasSucceededMigration) {
+          counts.completed.push(plan);
         } else {
           counts.notStarted.push(plan);
         }
@@ -148,7 +191,7 @@ const getPlanDiffSelector = createSelector(
           delete metadata.generation;
           delete metadata.resourceVersion;
         }
-        if (foundPlan.MigPlan.status) {
+        if (foundPlan.MigPlan.status && foundPlan.MigPlan.status.conditions) {
           for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
             delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
           }

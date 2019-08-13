@@ -102,14 +102,15 @@ function* watchPlanUpdate() {
 
 function* checkClosedStatus(action) {
   let planClosed = false;
-  const tries = 0;
+  let tries = 0;
   const TicksUntilTimeout = 20;
   while (!planClosed) {
     if (tries < TicksUntilTimeout) {
+      tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
       const MigPlan = getPlanResponse.data;
       //check for status 
-      if (!MigPlan.status) { return; }
+      if (!MigPlan.status || !MigPlan.status.conditions) { return; }
       //check for closed condition
       const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
       if (hasClosedCondition) {
