@@ -17,7 +17,6 @@ const getPlanPVs = plan => {
 const getPlanStatus = plan => {
   const statusObj = { success: null, error: null };
   if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) { return statusObj; }
-  console.log('plan.MigPlan.status', plan.MigPlan.status)
 
   const hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
   if (hasReadyCondition) {
