@@ -4,6 +4,7 @@ import moment from 'moment';
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
+  isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
@@ -13,7 +14,11 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
   currentPlan: null,
+<<<<<<< HEAD
   isClosing: false,
+=======
+  pvResourceList: []
+>>>>>>> pv details popover and table styling
 };
 
 const sortPlans = planList =>
@@ -251,6 +256,7 @@ export const planResultsRequest =
     return { ...state, isCheckingPlanStatus: true };
   };
 
+
 export const updatePlanResults =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanResults>) => {
     return { ...state, isCheckingPlanStatus: false };
@@ -264,6 +270,16 @@ export const closedStatusPollStart =
 export const closedStatusPollStop =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
     return { ...state, isClosing: false };
+  };
+
+export const getPVResourcesRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesRequest>) => {
+    return { ...state, isFetchingPVResources: true, };
+  };
+
+export const getPVResourcesSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesSuccess>) => {
+    return { ...state, isCheckingPlanStatus: false, pvResourceList: action.pvResources };
   };
 
 const planReducer = (state = INITIAL_STATE, action) => {
@@ -294,6 +310,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
     default: return state;
   }
 };

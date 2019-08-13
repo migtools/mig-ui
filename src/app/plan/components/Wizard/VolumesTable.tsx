@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
@@ -8,13 +8,23 @@ import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
-import { TextContent, Popover, PopoverPosition, } from '@patternfly/react-core';
+import { Button, TextContent, Popover, PopoverPosition, } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import ReactJson from 'react-json-view';
+import { BlueprintIcon } from '@patternfly/react-icons';
 
 const VolumesTable = (props): any => {
-  const { setFieldValue, currentPlan, values, isPVError, isFetchingPVList, getPVResourcesRequest } = props;
+  const {
+    setFieldValue,
+    currentPlan,
+    values,
+    isPVError,
+    isFetchingPVList,
+    getPVResourcesRequest,
+    isFetchingPVResources,
+    pvResourceList
+  } = props;
   const [rows, setRows] = useState([]);
 
   const handleTypeChange = (row, option) => {
@@ -42,6 +52,7 @@ const VolumesTable = (props): any => {
       const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || [];
       //get resources for pv details
       getPVResources(discoveredPersistentVolumes, values.sourceCluster)
+      //
       let mappedPVs;
       if (values.persistentVolumes) {
         mappedPVs = discoveredPersistentVolumes.map(planVolume => {
@@ -126,154 +137,168 @@ const VolumesTable = (props): any => {
     );
   }
 
-  if (rows !== null) {
-    return (
-      <React.Fragment>
-        <ReactTable
-          css={css`
+  return (
+    <ReactTable
+      css={css`
             font-size: 14px;
+            .rt-td{
+              margin: auto 0;
+            }
           `}
-          data={rows}
-          columns={[
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  PV Name
+      data={rows}
+      columns={[
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              PV Name
                 </div>
-              ),
-              accessor: 'name',
-              width: 180,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Project
+          ),
+          accessor: 'name',
+          width: 180,
+          Cell: row => <div style={{ margin: "auto auto" }}>{row.value}</div>
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Project
                 </div>
-              ),
-              accessor: 'project',
-              width: 150,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Storage Class
+          ),
+          accessor: 'project',
+          width: 150,
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Storage Class
                 </div>
-              ),
-              accessor: 'storageClass',
-              width: 150,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Size
+          ),
+          accessor: 'storageClass',
+          width: 150,
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Size
                 </div>
-              ),
-              accessor: 'size',
-              width: 75,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Claim
+          ),
+          accessor: 'size',
+          width: 75,
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Claim
                 </div>
-              ),
-              accessor: 'claim',
-              width: 180,
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Type
+          ),
+          accessor: 'claim',
+          width: 180,
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Type
                 </div>
-              ),
-              accessor: 'type',
-              width: 120,
-              style: { overflow: 'visible' },
-              Cell: row => (
-                <Select
-                  onChange={(option: any) => handleTypeChange(row, option)}
-                  options={row.original.supportedActions.map(a => {
-                    // NOTE: Each PV may not support all actions (any at all even),
-                    // we need to inspect the PV to determine this
-                    return { value: a, label: a };
-                  })}
-                  name="persistentVolumes"
-                  value={{
-                    label: row.original.type,
-                    value: row.original.type,
-                  }}
-                />
-              ),
-            },
-            {
-              Header: () => (
-                <div
-                  style={{
-                    textAlign: 'left',
-                    fontWeight: 600,
-                  }}
-                >
-                  Details
+          ),
+          accessor: 'type',
+          width: 120,
+          style: { overflow: 'visible' },
+          Cell: row => (
+            <Select
+              onChange={(option: any) => handleTypeChange(row, option)}
+              options={row.original.supportedActions.map(a => {
+                // NOTE: Each PV may not support all actions (any at all even),
+                // we need to inspect the PV to determine this
+                return { value: a, label: a };
+              })}
+              name="persistentVolumes"
+              value={{
+                label: row.original.type,
+                value: row.original.type,
+              }}
+            />
+          ),
+        },
+        {
+          Header: () => (
+            <div
+              style={{
+                textAlign: 'left',
+                fontWeight: 600,
+              }}
+            >
+              Details
                 </div>
-              ),
-              accessor: 'details',
-              width: 50,
-              resizable: false,
-              textAlign: 'left',
-              Cell: row => (
-                <Popover
-                  position={PopoverPosition.right}
-                  bodyContent={
-                    <ReactJson src={row.original} />
+          ),
+          accessor: 'details',
+          width: 200,
+          resizable: false,
+          textAlign: 'left',
+          Cell: row => {
+            const matchingPVResource = pvResourceList.find(
+              pvResource => pvResource.metadata.name === row.original.name
+            );
+            return (
+              <Popover
+                css={css`
+                      overflow-y: scroll;
+                      max-height: 20rem;
+                      width: 40rem;
+                      `}
+                position={PopoverPosition.bottom}
+                bodyContent={
+                  <ReactJson src={matchingPVResource} enableClipboard={false} />
 
-                  }
-                  aria-label="pv-details"
-                  closeBtnAriaLabel="close-pv-details"
-                  footerContent="PV Details"
-                >
-                  <a>View</a>
-                </Popover>
-              ),
-            },
-          ]}
-          defaultPageSize={5}
-          className="-striped -highlight"
-        />
-      </React.Fragment>
-    );
-  } else {
-    return <div />;
-  }
+                }
+                aria-label="pv-details"
+                closeBtnAriaLabel="close-pv-details"
+                maxWidth="200rem"
+              >
+                <Flex>
+                  <Box>
+                    <Button variant="link" icon={<BlueprintIcon />}>
+                      View JSON
+                        </Button>
+                  </Box>
+                </Flex>
+              </Popover>
+            )
+          },
+        },
+      ]}
+      defaultPageSize={5}
+      className="-striped -highlight"
+    />
+  );
 };
 
 export default VolumesTable;

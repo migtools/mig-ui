@@ -72,10 +72,11 @@ const mapStateToProps = state => {
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
     isFetchingPVList: state.plan.isFetchingPVList,
+    isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlan(state),
-    planList: planSelectors.getPlansWithStatus(state)
-
+    planList: planSelectors.getPlansWithStatus(state),
+    pvResourceList: state.plan.pvResourceList,
   };
 };
 const mapDispatchToProps = dispatch => {

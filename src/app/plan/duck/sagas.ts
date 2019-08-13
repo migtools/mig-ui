@@ -1,4 +1,4 @@
-import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import { all, takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind, CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
@@ -161,15 +161,18 @@ function* getPVResourcesRequest(action) {
   const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
 
   const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
-  console.log('resource', resource)
   const responses = yield action.pvList.map(pv => {
-    return client.get(
-      resource,
-      pv.name
-    )
-  })
-  yield responses.map(response => {
+    // const pvResourceRefs = yield all(action.pvList.map(pv => {
+    //   return client.get(
+    //     resource,
+    //     pv.name
+    //   )
+    // })
+    // yield responses.map(response => {
+    // }))
 
+    // const pvResourceRes = yield pvResourceRefs.map(pvRes => pvRes.data)
+    // yield put(PlanActions.getPVResourcesSuccess(pvResourceRes));
   })
 }
 
