@@ -50,7 +50,7 @@ const getPlansWithStatus = createSelector(
             }
           }).length;
 
-          hasAttemptedMigration = !!plan.Migrations.filter(m => !m.spec.stage);
+          hasAttemptedMigration = !!plan.Migrations.some(m => !m.spec.stage);
 
           finalMigrationComplete = !!plan.Migrations.filter(m => {
             if (m.status) {
