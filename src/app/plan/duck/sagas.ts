@@ -3,18 +3,19 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
-
+import PlanOperations from './operations';
 import {
-  AlertActions
+  AlertActions,
+  PollingActions
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 
-const TicksUntilTimeout = 20;
 
 function* checkPVs(action) {
   const params = { ...action.params };
   let pvsFound = false;
   let tries = 0;
+  const TicksUntilTimeout = 20;
 
   while (!pvsFound) {
     if (tries < TicksUntilTimeout) {
@@ -47,14 +48,14 @@ function* checkPVs(action) {
   }
 }
 
-function* getPlanSaga(planValues) {
+function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
     return yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      planValues.planName
+      planName
     );
   } catch (err) {
     throw err;
@@ -80,7 +81,7 @@ function* putPlanSaga(getPlanRes, planValues) {
 function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
-    const getPlanResponse = yield call(getPlanSaga, action.planValues);
+    const getPlanResponse = yield call(getPlanSaga, action.planValues.planName);
     yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
@@ -98,29 +99,91 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
-function* planDeleteSaga(action) {
+
+function* checkClosedStatus(action) {
+  let planClosed = false;
+  let tries = 0;
+  const TicksUntilTimeout = 8;
+  while (!planClosed) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      const getPlanResponse = yield call(getPlanSaga, action.planName);
+      const MigPlan = getPlanResponse.data;
+
+      if (MigPlan.status && MigPlan.status.conditions) {
+        const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
+        if (hasClosedCondition) {
+          yield put(PlanActions.planCloseSuccess());
+          yield put(PlanActions.stopClosedStatusPolling());
+        }
+      }
+    } else {
+      planClosed = true;
+      yield put(PlanActions.planCloseFailure('Failed to close plan'));
+      yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+      yield put(PlanActions.stopClosedStatusPolling());
+      break;
+    }
+
+    const PollingInterval = 5000;
+    yield delay(PollingInterval);
+  }
+}
+
+function* planCloseSaga(action) {
+  try {
+    const updatedValues = {
+      planName: action.planName,
+      planClosed: true,
+      persistentVolumes: []
+    };
+    yield put(PlanActions.planUpdateRequest(updatedValues));
+    yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
+  }
+  catch (err) {
+    yield put(PlanActions.planCloseFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Plan close request failed'));
+
+  }
+}
+
+function* planCloseAndDeleteSaga(action) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
+    yield put(PlanActions.planCloseRequest(action.planName));
+    yield take(PlanActionTypes.PLAN_CLOSE_SUCCESS);
     yield client.delete(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       action.planName,
     );
-    yield put(PlanActions.planDeleteSuccess(action.planName));
+    yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
-    console.error(err);
+    yield put(PlanActions.planCloseAndDeleteFailure(err));
     yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
   }
 }
 
-function* watchPlanDelete() {
-  yield takeLatest(PlanActionTypes.PLAN_DELETE_REQUEST, planDeleteSaga);
+function* watchPlanCloseAndDelete() {
+  yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
 }
+function* watchPlanClose() {
+  yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
+}
+function* watchClosedStatus() {
+  while (true) {
+    const data = yield take(PlanActionTypes.CLOSED_STATUS_POLL_START);
+    yield race([call(checkClosedStatus, data), take(PlanActionTypes.CLOSED_STATUS_POLL_STOP)]);
+  }
+}
+
 
 export default {
   watchPlanUpdate,
   watchPVPolling,
-  watchPlanDelete,
+  watchPlanCloseAndDelete,
+  watchPlanClose,
+  watchClosedStatus
 };

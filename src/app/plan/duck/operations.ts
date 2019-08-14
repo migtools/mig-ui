@@ -212,8 +212,9 @@ const addPlan = migPlan => {
         const matchingPlan = pollingResponse.updatedPlans.find(
           p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
         );
+        if (!matchingPlan) { return; }
 
-        const planStatus = matchingPlan ? planUtils.getPlanStatus(matchingPlan) : null;
+        const planStatus = planUtils.getPlanStatus(matchingPlan);
         if (planStatus.success) {
           dispatch(PlanActions.updatePlanResults('Success'));
           dispatch(PlanActions.updatePlan(matchingPlan.MigPlan));

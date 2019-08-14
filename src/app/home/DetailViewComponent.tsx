@@ -39,11 +39,12 @@ interface IProps {
   stagingSuccess: (plan) => void;
   isStaging?: boolean;
   isMigrating?: boolean;
+  isClosing?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
   startDataListPolling: (params) => void;
   stopDataListPolling: () => void;
-  triggerPlanDelete: (string) => void;
+  planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
 }
@@ -124,7 +125,7 @@ class DetailViewComponent extends Component<IProps, IState> {
   };
 
   handleDeletePlan = plan => {
-    this.props.triggerPlanDelete(plan.MigPlan.metadata.name);
+    this.props.planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
   };
 
   handlePlanPoll = response => {
@@ -181,7 +182,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               dataList={allStorage}
               id={DataListItems.StorageList}
               associatedPlans={storageAssociatedPlans}
-              isLoading={this.props.isMigrating || this.props.isStaging}
+              isLoading={this.props.isMigrating || this.props.isStaging || this.props.isClosing}
               removeStorage={this.props.removeStorage}
               isExpanded={this.state.expanded[DataListItems.StorageList]}
               toggleExpanded={this.handleExpand}
@@ -199,6 +200,7 @@ class DetailViewComponent extends Component<IProps, IState> {
               onStartPolling={this.handleStartPolling}
               onStopPolling={this.props.stopDataListPolling}
               isExpanded={this.state.expanded[DataListItems.PlanList]}
+              isClosing={this.props.isClosing}
               toggleExpanded={this.handleExpand}
             />
           </PlanContext.Provider>
@@ -216,7 +218,7 @@ function mapStateToProps(state) {
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
-  const { isMigrating, isStaging } = state.plan;
+  const { isMigrating, isStaging, isClosing } = state.plan;
   const migMeta = state.migMeta;
   return {
     allClusters,
@@ -227,6 +229,7 @@ function mapStateToProps(state) {
     storageAssociatedPlans,
     isMigrating,
     isStaging,
+    isClosing,
     migMeta,
   };
 }
@@ -243,7 +246,7 @@ const mapDispatchToProps = dispatch => {
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
     startDataListPolling: params => dispatch(PollingActions.startDataListPolling(params)),
     stopDataListPolling: () => dispatch(PollingActions.stopDataListPolling()),
-    triggerPlanDelete: planName => dispatch(PlanActions.planDeleteRequest(planName)),
+    planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching
       dispatch(ClusterActions.setClusterAddEditStatus(

@@ -1,4 +1,5 @@
 import { IMigPlan } from '../../../client/resources/conversions';
+import { PollingActionTypes } from '../../common/duck/actions';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
@@ -13,7 +14,6 @@ export const PlanActionTypes = {
   MIGRATION_FAILURE: 'MIGRATION_FAILURE',
   UPDATE_PLAN: 'UPDATE_PLAN',
   UPDATE_PLAN_MIGRATIONS: 'UPDATE_PLAN_MIGRATIONS',
-  PLAN_DELETE_SUCCESS: 'PLAN_DELETE_SUCCESS',
   MIG_PLAN_FETCH_REQUEST: 'MIG_PLAN_FETCH_REQUEST',
   MIG_PLAN_FETCH_SUCCESS: 'MIG_PLAN_FETCH_SUCCESS',
   MIG_PLAN_FETCH_FAILURE: 'MIG_PLAN_FETCH_FAILURE',
@@ -31,7 +31,14 @@ export const PlanActionTypes = {
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
-  PLAN_DELETE_REQUEST: 'PLAN_DELETE_REQUEST',
+  PLAN_CLOSE_AND_DELETE_REQUEST: 'PLAN_CLOSE_AND_DELETE_REQUEST',
+  PLAN_CLOSE_AND_DELETE_SUCCESS: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
+  PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
+  PLAN_CLOSE_REQUEST: 'PLAN_CLOSE_REQUEST',
+  PLAN_CLOSE_SUCCESS: 'PLAN_CLOSE_SUCCESS',
+  PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
+  CLOSED_STATUS_POLL_START: 'CLOSED_STATUS_POLL_START',
+  CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -95,10 +102,6 @@ const updatePlanMigrations = (updatedPlan: IMigPlan) => ({
   updatedPlan,
 });
 
-const planDeleteSuccess = (planName: string) => ({
-  type: PlanActionTypes.PLAN_DELETE_SUCCESS,
-  planName,
-});
 
 const migPlanFetchRequest = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_REQUEST,
@@ -176,11 +179,43 @@ const initMigration = (planName: string) => ({
   planName,
 });
 
-const planDeleteRequest = (planName: string) => ({
-  type: PlanActionTypes.PLAN_DELETE_REQUEST,
+const planCloseAndDeleteRequest = (planName: string) => ({
+  type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST,
   planName,
 });
 
+const planCloseAndDeleteSuccess = (planName: string) => ({
+  type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS,
+  planName,
+});
+
+const planCloseAndDeleteFailure = (err) => ({
+  type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE,
+  err,
+});
+
+const planCloseRequest = (planName: string) => ({
+  type: PlanActionTypes.PLAN_CLOSE_REQUEST,
+  planName
+});
+
+const planCloseSuccess = () => ({
+  type: PlanActionTypes.PLAN_CLOSE_SUCCESS,
+});
+
+const planCloseFailure = (err) => ({
+  type: PlanActionTypes.PLAN_CLOSE_FAILURE,
+  err
+});
+
+const startClosedStatusPolling = (planName) => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_START,
+  planName,
+});
+
+const stopClosedStatusPolling = () => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+});
 
 export const PlanActions = {
   updatePlans,
@@ -195,7 +230,6 @@ export const PlanActions = {
   migrationFailure,
   updatePlan,
   updatePlanMigrations,
-  planDeleteSuccess,
   migPlanFetchRequest,
   migPlanFetchSuccess,
   migPlanFetchFailure,
@@ -213,5 +247,12 @@ export const PlanActions = {
   addPlanRequest,
   initStage,
   initMigration,
-  planDeleteRequest,
+  planCloseAndDeleteRequest,
+  planCloseAndDeleteSuccess,
+  planCloseAndDeleteFailure,
+  planCloseSuccess,
+  planCloseFailure,
+  planCloseRequest,
+  startClosedStatusPolling,
+  stopClosedStatusPolling
 };
