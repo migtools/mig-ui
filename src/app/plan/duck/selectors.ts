@@ -79,22 +79,23 @@ const getPlansWithStatus = createSelector(
             return m.status.conditions.some(c => c.type === 'Running');
           }
         }).length;
+      }
 
-        const statusObject = {
-          hasSucceededStage,
-          hasPrevMigrations,
-          hasClosedCondition,
-          hasReadyCondition,
-          hasNotReadyCondition: hasPlanError,
-          hasRunningMigrations,
-          hasSucceededMigration,
-          finalMigrationComplete,
-          hasFailedCondition: hasMigrationError,
-          latestType,
-        };
+      const statusObject = {
+        hasSucceededStage,
+        hasPrevMigrations,
+        hasClosedCondition,
+        hasReadyCondition,
+        hasNotReadyCondition: hasPlanError,
+        hasRunningMigrations,
+        hasSucceededMigration,
+        finalMigrationComplete,
+        hasFailedCondition: hasMigrationError,
+        latestType,
+      };
 
-        return { ...plan, PlanStatus: statusObject };
-      });
+      return { ...plan, PlanStatus: statusObject };
+    });
 
     return plansWithStatus;
   }
