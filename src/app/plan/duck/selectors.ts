@@ -29,7 +29,7 @@ const getPlansWithStatus = createSelector(
           .length;
 
         if (plan.Migrations.length) {
-          let latest = plan.Migrations[0]
+          const latest = plan.Migrations[0];
 
           hasPrevMigrations = !!plan.Migrations.length;
           latestType = latest.spec.stage ? 'Stage' : 'Migration';
