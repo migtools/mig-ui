@@ -8,6 +8,7 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
 import storageUtils from '../../duck/utils';
+import commonUtils from '../../../common/duck/utils';
 import {
   AddEditMode,
   addEditStatusText,
@@ -206,7 +207,8 @@ const AddEditStorageForm: any = withFormik({
     }
 
     if(values.s3Url !== '') {
-      const s3UrlError = storageUtils.testS3Url(values.s3Url);
+      const s3UrlError = commonUtils.testURL(values.s3Url) ?
+        '' : 'S3 URL must be a valid URL.';
       if (s3UrlError !== '') {
         errors.s3Url = s3UrlError;
       }

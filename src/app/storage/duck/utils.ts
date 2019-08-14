@@ -15,15 +15,6 @@ const testS3Name = (value: string) => {
   return '';
 };
 
-const testS3Url = (value: string) => {
-  const validUrl = /^(https?):\/\/[^ "]+$/.test(value);
-  console.log('testS3Url::validUrl', value, validUrl);
-  return !validUrl ?
-    'Provided S3 URL not a valid URL.' :
-    '';
-};
-
 export default {
   testS3Name,
-  testS3Url,
 };
