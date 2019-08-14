@@ -1,10 +1,8 @@
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
-import styled from '@emotion/styled';
-import theme from '../../../../theme';
+import { jsx } from '@emotion/core';
 import { useState } from 'react';
 import { withFormik } from 'formik';
-import { Button, Label, TextInput, Form, FormGroup } from '@patternfly/react-core';
+import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
