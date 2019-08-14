@@ -13,6 +13,11 @@ const { execSync } = require('child_process');
 //  4.  Write the fetched data to a .json file so KubeStore is able to process it
 //
 
+const CLUSTER_GROUPS = [
+  { apiGroup: 'api', version: 'v1', kind: 'namespaces' },
+  { apiGroup: 'apis', version: 'storage.k8s.io/v1', kind: 'storageclasses' },
+]
+
 const MIG_GROUPS = [
   { group: 'clusterregistry.k8s.io', version: 'v1alpha1', kind: 'clusters' },
   { group: 'migration.openshift.io', version: 'v1alpha1', kind: 'migclusters' },
@@ -98,24 +103,47 @@ function writeData(data) {
   });
 }
 
-function gatherMockedData(client, serverAddr) {
+function gatherMigData(client, serverAddr) {
   const namespace = MIG_NAMESPACE;
-  const all = MIG_GROUPS.map(v => {
-    let url = `apis/${v.group}/${v.version}/namespaces/${namespace}/${v.kind}`;
-    let fullUrl = `${serverAddr}/${url}`;
+  const namespaced = MIG_GROUPS.map(v => {
+    const url = `apis/${v.group}/${v.version}/namespaces/${namespace}/${v.kind}`;
     return client
-      .get(fullUrl)
+      .get(url)
       .then(response => {
         return { ...v, data: response.data, url: url, serverAddr: serverAddr };
       })
-      .catch(error => {
-        console.log(error);
+      .catch(err => {
+        console.error(err);
         process.exit(1);
       });
   });
+
   //  Reducing to a single promise that has collected all of the results.
   //  Transform from array to a dict that matches the layout of how we want to store the data
-  return all.reduce((promiseChain, currentTask) => {
+  return namespaced.reduce((promiseChain, currentTask) => {
+    return promiseChain.then(chainResults => {
+      return currentTask.then(currentResult => {
+        chainResults[currentResult.url] = currentResult;
+        return chainResults;
+      });
+    });
+  }, Promise.resolve({}));
+}
+
+function gatherLegacyData(client, serverAddr) {
+  const clusterWide = CLUSTER_GROUPS.map(v => {
+    const url = `${v.apiGroup}/${v.version}/${v.kind}`;
+    return client.get(url)
+      .then(resp => {
+        return { ...v, data: resp.data, url: url, serverAddr: serverAddr };
+      })
+      .catch(err => {
+        console.error(err);
+        process.exit(1);
+      });
+  });
+
+  return clusterWide.reduce((promiseChain, currentTask) => {
     return promiseChain.then(chainResults => {
       return currentTask.then(currentResult => {
         chainResults[currentResult.url] = currentResult;
@@ -164,10 +192,10 @@ function gatherSecretRefs(client, serverAddr, data) {
   // We are filtering the secretRefs as entries such as 
   // our host cluster entry will lack a clusterRef
   let all = secretRefs.filter(Boolean).map(s => {
-    let key = `api/v1/namespaces/${s.namespace}/secrets`;
-    let fullUrl = `${serverAddr}/${key}/${s.name}`;
+    const key = `api/v1/namespaces/${s.namespace}/secrets`;
+    const url = `${key}/${s.name}`;
     return client
-      .get(fullUrl)
+      .get(url)
       .then(response => {
         let data = sanitizeSecretData(response.data);
         return { ...s, key: key, data: data, serverAddr: serverAddr };
@@ -211,49 +239,113 @@ function sanitizeSecretData(data) {
   };
 }
 
-function getHostMigClusterName(results) {
+function getMigClusters(client, results) {
   //
   // We want to find the MigCluster entry that has 'isHostCluster' set to true
   // It represents the cluster running the UI
   //
+
   const migClusterKey = 'apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters';
   const migClusters = results[migClusterKey];
+  const extractedClusters = {}
+
   const potentialHostClusterNames = Object.keys(migClusters).filter(clusterName => {
     return migClusters[clusterName]['spec']['isHostCluster'];
   })
 
-  if (potentialHostClusterNames.length > 0) {
-    return potentialHostClusterNames[0];
+  if (potentialHostClusterNames.length === 0) {
+    throw new Error('Couldn\'t find a MigCluster object with isHostCluster ' + 
+      'set to true, unable to proceed with mocked data'); 
   }
-  throw new Error('Couldn\'t find a MigCluster object with isHostCluster ' + 
-    'set to true, unable to proceed with mocked data'); 
-}
 
+  extractedClusters['host'] = potentialHostClusterNames[0]
+  extractedClusters['remotes'] = [{
+    name: extractedClusters['host'],
+    client: client
+  }];
+
+  const remoteClusterNames = Object.keys(migClusters).filter(clusterName => {
+    return !Object.keys(migClusters[clusterName]['spec']).includes('isHostCluster') ||
+      !migClusters[clusterName]['spec']['isHostCluster']
+  })
+
+  remoteClusterNames.map(remoteCluster => {
+    const secretRef = migClusters[remoteCluster].spec.serviceAccountSecretRef
+    const secretsKey = `api/v1/namespaces/${secretRef.namespace}/secrets`
+
+    const clusterRef = migClusters[remoteCluster].spec.clusterRef
+    const clusterKey =
+    `apis/clusterregistry.k8s.io/v1alpha1/namespaces/${clusterRef.namespace}/clusters`
+
+    const saToken = Buffer.from(results[secretsKey][secretRef.name].data.saToken, 'base64').toString()
+    const clusterApiURL = results[clusterKey][clusterRef.name]
+      .spec.kubernetesApiEndpoints
+      .serverEndpoints[0]
+      .serverAddress
+    const remoteData = {
+      name: clusterRef.name,
+      apiURL: clusterApiURL,
+      client: axios.create({
+        baseURL: `${clusterApiURL}/`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${saToken}`,
+        },
+        responseType: 'json',
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false
+        })
+      })
+    }
+    extractedClusters.remotes.push(remoteData)
+  });
+
+  return extractedClusters;
+}
 
 function main() {
   const { serverAddr, clientcert, clientkey, cacert } = getKubeServerInfo();
   console.log('Connecting to ', serverAddr);
 
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-    cert: clientcert,
-    key: clientkey,
-    ca: cacert,
+  const axInst = axios.create({
+    baseURL: `${serverAddr}/`,
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false,
+      cert: clientcert,
+      key: clientkey,
+      ca: cacert,
+    })
   });
-  const axInst = axios.create({ httpsAgent });
-  let p = gatherMockedData(axInst, serverAddr);
-  collectAndReformat(p).then(reformatted => {
-    gatherSecretRefs(axInst, serverAddr, reformatted).then(results => {
-      const hostMigClusterName = getHostMigClusterName(results);
-      data = {};
-      data['TIME_STAMP'] = TIME_STAMP;
-      data['hostMigClusterName'] = hostMigClusterName
-      data['clusters'] = {};
-      data['clusters'][hostMigClusterName] = results;
-      console.log('Writing....');
-      console.log(data);
-      writeData(data);
-    });
+
+  const mig = gatherMigData(axInst, serverAddr);
+  let migClusters = [];
+  collectAndReformat(mig).then(reformatted => {
+    return gatherSecretRefs(axInst, serverAddr, reformatted).then(results => {
+      migClusters = getMigClusters(axInst, results);
+      const hostMigClusterName = migClusters['host'];
+      const data = {
+        TIME_STAMP: TIME_STAMP,
+        clusters: {
+          [hostMigClusterName]: results
+        },
+        'hostMigClusterName': hostMigClusterName,
+      };
+      return data;
+    })
+  }).then((data) =>
+    Promise.all(migClusters['remotes'].map(cl => {
+      const legacy = gatherLegacyData(cl.client, cl.apiURL);
+      return collectAndReformat(legacy).then(reformatted => {
+        data['clusters'][cl.name] = {
+          ...data['clusters'][cl.name],
+          ...reformatted
+        };
+        return data;
+      })
+    }))
+  ).then((data) => {
+    console.log('Writing....');
+    writeData(data[0]);
   });
 }
 
