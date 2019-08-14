@@ -22,6 +22,7 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
   const name = storage.MigStorage.metadata.name;
   const bucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
   const bucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
+  const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
   const accessKey =
     typeof storage.Secret === 'undefined'
@@ -85,7 +86,7 @@ const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props
                     isOpen={isAddEditModalOpen}
                     onHandleClose={toggleIsAddEditModalOpen}
                     initialStorageValues={{
-                      name, bucketName, bucketRegion, accessKey, secret,
+                      name, bucketName, bucketRegion, accessKey, secret, s3Url,
                     }}
                   />
                 </Box>
