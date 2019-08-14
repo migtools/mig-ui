@@ -50,8 +50,11 @@ const AddEditClusterModal = ({
     pollingContext.startAllDefaultPolling();
   };
 
+  const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
+    'Edit Cluster' : 'Add Cluster';
+
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title="Cluster">
+    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
       <AddEditClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}

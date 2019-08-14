@@ -46,8 +46,12 @@ const AddEditStorageModal = ({
     pollingContext.startAllDefaultPolling();
   };
 
+
+  const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
+    'Edit Repository' : 'Add Repository';
+
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title="Repository">
+    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}

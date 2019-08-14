@@ -14,7 +14,7 @@ import {
   addEditButtonText,
   isAddEditButtonDisabled,
 } from '../../../common/add_edit_state';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { Flex, Box } from '@rebass/emotion';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
 const nameKey = 'name';
