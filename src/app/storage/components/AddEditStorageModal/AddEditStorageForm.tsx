@@ -98,7 +98,7 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
           <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="S3 URL" fieldId={s3UrlKey}>
+      <FormGroup label="S3 Endpoint" fieldId={s3UrlKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(s3UrlKey)}
@@ -208,7 +208,7 @@ const AddEditStorageForm: any = withFormik({
 
     if(values.s3Url !== '') {
       const s3UrlError = commonUtils.testURL(values.s3Url) ?
-        '' : 'S3 URL must be a valid URL.';
+        '' : 'S3 Endpoint must be a valid URL.';
       if (s3UrlError !== '') {
         errors.s3Url = s3UrlError;
       }
