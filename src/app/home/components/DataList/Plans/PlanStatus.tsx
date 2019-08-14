@@ -10,8 +10,6 @@ const PlanStatus = ({ plan }) => {
     finalMigrationComplete,
     hasSucceededStage,
     hasPrevMigrations,
-    hasMigrationError,
-    hasStageError,
     latestType,
     latestIsFailed,
   } = plan.PlanStatus;
@@ -30,17 +28,14 @@ const PlanStatus = ({ plan }) => {
     if (hasSucceededMigration) {
       status.text = `Migration Succeeded`;
     }
-    if (hasClosedCondition) {
-      status.text = 'Closed';
+    if (latestIsFailed) {
+      status.text = `${latestType} Failed`;
     }
     if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
     }
-    if (hasMigrationError) {
-      status.text = 'Migration Failed';
-    }
-    if (hasStageError) {
-      status.text = 'Stage Failed';
+    if (hasClosedCondition) {
+      status.text = 'Closed';
     }
     return status;
   };

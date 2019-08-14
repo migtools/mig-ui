@@ -84,7 +84,7 @@ export default class MigrationsTable extends React.Component<any, any> {
       }
       let endTime;
       endTime = migration.status.conditions
-        .filter(c => c.type === 'Succeeded')
+        .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
         .map(c => c.lastTransitionTime)
         .toString();
       status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
