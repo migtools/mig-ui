@@ -18,6 +18,7 @@ import { Flex, Box } from '@rebass/emotion';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
 const nameKey = 'name';
+const s3UrlKey = 's3Url';
 const bucketNameKey = 'bucketName';
 const bucketRegionKey = 'bucketRegion';
 const accessKeyKey = 'accessKey';
@@ -82,7 +83,7 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
           <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="S3 Bucket Region" isRequired fieldId={bucketRegionKey}>
+      <FormGroup label="S3 Bucket Region" fieldId={bucketRegionKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(bucketRegionKey)}
@@ -94,6 +95,20 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
         />
         {errors.bucketRegion && touched.bucketRegion && (
           <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
+        )}
+      </FormGroup>
+      <FormGroup label="S3 URL" fieldId={s3UrlKey}>
+        <TextInput
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(s3UrlKey)}
+          onBlur={props.handleBlur}
+          value={values.s3Url}
+          name={s3UrlKey}
+          type="text"
+          id="storage-s3-url-input"
+        />
+        {errors.s3Url && touched.s3Url && (
+          <FormErrorDiv id="feedback-s3-url">{errors.s3Url}</FormErrorDiv>
         )}
       </FormGroup>
       <FormGroup label="S3 Provider Access Key" isRequired fieldId={accessKeyKey}>
@@ -164,6 +179,7 @@ const AddEditStorageForm: any = withFormik({
       bucketRegion: v ? v.bucketRegion : '',
       accessKey: v ? v.accessKey : '',
       secret: v ? v.secret : '',
+      s3Url: v ? v.s3Url : '',
     };
   },
 
@@ -175,22 +191,31 @@ const AddEditStorageForm: any = withFormik({
     } else if (!utils.testDNS1123(values.name)) {
       errors.name = utils.DNS1123Error(values.name);
     }
+
     if (!values.bucketName) {
       errors.bucketName = 'Required';
     }
 
-    if (!values.bucketRegion) {
-      errors.bucketRegion = 'Required';
+    const bucketNameError = storageUtils.testS3Name(values.bucketName);
+    if (bucketNameError !== '') {
+      errors.bucketName = bucketNameError;
     }
 
-    const s3Error = storageUtils.testS3Name(values.bucketName);
-    if (s3Error !== '') {
-      errors.bucketName = s3Error;
+    if (!values.bucketName) {
+      errors.bucketName = 'Required';
+    }
+
+    if(values.s3Url !== '') {
+      const s3UrlError = storageUtils.testS3Url(values.s3Url);
+      if (s3UrlError !== '') {
+        errors.s3Url = s3UrlError;
+      }
     }
 
     if (!values.accessKey) {
       errors.accessKey = 'Required';
     }
+
     if (!values.secret) {
       errors.secret = 'Required';
     }

@@ -1,6 +1,6 @@
 const validateIP = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
 
-const testS3Name = value => {
+const testS3Name = (value: string) => {
   if (value.length < 3 || value.length > 63) {
     return 'The bucket name can be between 3 and 63 characters long.';
   } else if (!/^[-a-z0-9\.]+$/.test(value)) {
@@ -15,7 +15,15 @@ const testS3Name = value => {
   return '';
 };
 
+const testS3Url = (value: string) => {
+  const validUrl = /^(https?):\/\/[^ "]+$/.test(value);
+  console.log('testS3Url::validUrl', value, validUrl);
+  return !validUrl ?
+    'Provided S3 URL not a valid URL.' :
+    '';
+};
 
 export default {
   testS3Name,
+  testS3Url,
 };
