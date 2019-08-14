@@ -129,7 +129,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                     id="migrations-history-expansion-table"
                   />
                 ),
-                props: { colSpan: 6, className: 'pf-m-no-padding' },
+                props: { colSpan: 9, className: 'pf-m-no-padding' },
               },
             ],
           },

@@ -13,14 +13,15 @@ const getPlansWithStatus = createSelector(
     const plansWithStatus = plans.map(plan => {
       let hasReadyCondition = null;
       let hasPlanError = null;
-      let hasMigrationError = null;
       let hasPrevMigrations = null;
       let hasRunningMigrations = null;
       let finalMigrationComplete = null;
+      let hasAttemptedMigration = null;
       let hasSucceededMigration = null;
       let hasSucceededStage = null;
       let hasClosedCondition = null;
       let latestType = null;
+      let latestIsFailed = false;
       if (plan.MigPlan.status) {
         hasClosedCondition = plan.MigPlan.spec.closed;
         hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
@@ -28,8 +29,14 @@ const getPlansWithStatus = createSelector(
           .length;
 
         if (plan.Migrations.length) {
+          const latest = plan.Migrations[0];
+
           hasPrevMigrations = !!plan.Migrations.length;
-          latestType = plan.Migrations[0].spec.stage ? 'Stage' : 'Migration';
+          latestType = latest.spec.stage ? 'Stage' : 'Migration';
+
+          if (latest.status && latest.status.conditions) {
+            latestIsFailed = !!(latest.status.conditions.some(c => c.type === 'Failed'));
+          }
 
           hasSucceededStage = !!plan.Migrations.filter(m => {
             if (m.status && m.spec.stage) {
@@ -43,11 +50,7 @@ const getPlansWithStatus = createSelector(
             }
           }).length;
 
-          hasMigrationError = !!plan.Migrations.filter(m => {
-            if (m.status) {
-              return m.status.conditions.some(c => c.type === 'Failed');
-            }
-          }).length;
+          hasAttemptedMigration = !!plan.Migrations.some(m => !m.spec.stage);
 
           finalMigrationComplete = !!plan.Migrations.filter(m => {
             if (m.status) {
@@ -70,9 +73,10 @@ const getPlansWithStatus = createSelector(
         hasNotReadyCondition: hasPlanError,
         hasRunningMigrations,
         hasSucceededMigration,
+        hasAttemptedMigration,
         finalMigrationComplete,
-        hasFailedCondition: hasMigrationError,
         latestType,
+        latestIsFailed,
       };
 
       return { ...plan, PlanStatus: statusObject };

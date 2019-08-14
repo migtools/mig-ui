@@ -18,6 +18,7 @@ const PlanActions = ({ plan, isLoading }) => {
     hasReadyCondition,
     hasErrorCondition,
     hasRunningMigrations,
+    hasAttemptedMigration,
     hasSucceededMigration,
     finalMigrationComplete,
   } = plan.PlanStatus;
@@ -48,6 +49,7 @@ const PlanActions = ({ plan, isLoading }) => {
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
+            hasAttemptedMigration ||
             finalMigrationComplete ||
             isLoading
           }
