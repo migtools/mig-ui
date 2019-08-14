@@ -21,7 +21,7 @@ const getPlansWithStatus = createSelector(
       let hasSucceededMigration = null;
       let hasSucceededStage = null;
       let hasClosedCondition = null;
-      let hasMigrationError = null;
+      const hasMigrationError = null;
       let latestType = null;
       let latestIsFailed = false;
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
