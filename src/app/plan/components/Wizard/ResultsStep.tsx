@@ -14,7 +14,7 @@ const StyledSpan = styled.span`
 `;
 
 const ResultsStep = props => {
-  const { values, errors, planList, isCheckingPlanStatus } = props;
+  const { values, planList, isCheckingPlanStatus } = props;
   const matchingPlan = planList.find(p => {
     return values.planName === p.MigPlan.metadata.name;
   });

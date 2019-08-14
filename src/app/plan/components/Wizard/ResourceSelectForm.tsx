@@ -46,7 +46,7 @@ const ResourceSelectForm = props => {
           });
         }
         if (
-          clusterList[i].MigCluster.metadata.name !== 'host' &&
+          !clusterList[i].MigCluster.spec.isHostCluster &&
           clusterList[i].MigCluster.metadata.name !== values.targetCluster
         ) {
           sourceOptions.push({
