@@ -66,22 +66,21 @@ const getPlansWithStatus = createSelector(
           }).length;
         }
       }
-      const statusObject = {
-        hasSucceededStage,
-        hasPrevMigrations,
-        hasClosedCondition,
-        hasReadyCondition,
-        hasNotReadyCondition: hasPlanError,
-        hasRunningMigrations,
-        hasSucceededMigration,
-        hasAttemptedMigration,
-        finalMigrationComplete,
-        latestType,
-        latestIsFailed,
-      };
 
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
-        return { ...plan, PlanStatus: statusObject };
+        const emptyStatusObject = {
+          hasSucceededStage,
+          hasPrevMigrations,
+          hasClosedCondition,
+          hasReadyCondition,
+          hasNotReadyCondition: hasPlanError,
+          hasRunningMigrations,
+          hasSucceededMigration,
+          finalMigrationComplete,
+          hasFailedCondition: hasMigrationError,
+          latestType,
+        };
+        return { ...plan, PlanStatus: emptyStatusObject };
       }
 
       hasClosedCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Closed').length;
@@ -123,6 +122,18 @@ const getPlansWithStatus = createSelector(
           }
         }).length;
       }
+      const statusObject = {
+        hasSucceededStage,
+        hasPrevMigrations,
+        hasClosedCondition,
+        hasReadyCondition,
+        hasNotReadyCondition: hasPlanError,
+        hasRunningMigrations,
+        hasSucceededMigration,
+        finalMigrationComplete,
+        hasFailedCondition: hasMigrationError,
+        latestType,
+      };
 
       return { ...plan, PlanStatus: statusObject };
     });
