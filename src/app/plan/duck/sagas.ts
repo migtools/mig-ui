@@ -3,7 +3,11 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind, CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
+<<<<<<< HEAD
 import PlanOperations from './operations';
+=======
+import Q from 'q';
+>>>>>>> wip adding Q
 import {
   AlertActions,
   PollingActions
@@ -156,10 +160,40 @@ function* planCloseAndDeleteSaga(action) {
   }
 }
 
-function* getPVResourcesRequest(action) {
-  const state = yield select();
-  const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
-}
+// function* getPVResourcesRequest(action) {
+//   const state = yield select();
+//   const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
+//   try {
+//     const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
+//     // const pvResourceRefs = yield all(action.pvList.map(pv => {
+//     //   return client.get(
+//     //     resource,
+//     //     pv.name
+//     //   );
+//     // }));
+//     const pvResourceRefs = action.pvList.map(pv => {
+//       return client.get(
+//         resource,
+//         pv.name
+//       );
+//     });
+//     // const testing = Q.allSettled(pvResourceRefs);
+//     const pvResourceRes = yield Q.allSettled(pvResourceRefs)
+//       .then(function (results) {
+//         results.forEach(function (result) {
+//           console.log('result ', result);
+//           if (result.state === "fulfilled") {
+//             var value = result.value;
+//           } else {
+//             var reason = result.reason;
+//           }
+//         });
+//       });
+//     console.log('pvResourceRes', pvResourceRes)
+//     // const pvResourceRes = yield pvResourceRefs.map(pvRes => pvRes.data);
+//     // yield put(PlanActions.getPVResourcesSuccess(pvResourceRes));
+//   }
+// }
 
 function* watchPlanCloseAndDelete() {
   yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
@@ -187,9 +221,9 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
-function* watchGetPVResourcesRequest() {
-  yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
-}
+// function* watchGetPVResourcesRequest() {
+//   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
+// }
 
 export default {
   watchPlanUpdate,
