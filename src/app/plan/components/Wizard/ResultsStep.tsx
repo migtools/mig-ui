@@ -9,12 +9,25 @@ import { Flex, Box, Text } from '@rebass/emotion';
 import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
 import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
 import StatusIcon from '../../../common/components/StatusIcon';
+
+interface IProps {
+  values: any;
+  errors: any;
+  onWizardLoadingToggle: () => void;
+  currentPlan: any;
+  planList: Array<any>;
+  isCheckingPlanStatus: boolean;
+}
+
 const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
-const ResultsStep = props => {
-  const { values, planList, isCheckingPlanStatus } = props;
+const ResultsStep: React.FunctionComponent<IProps> = ({
+  values,
+  planList,
+  isCheckingPlanStatus
+}) => {
   const matchingPlan = planList.find(p => {
     return values.planName === p.MigPlan.metadata.name;
   });
@@ -50,23 +63,23 @@ const ResultsStep = props => {
             {isCheckingPlanStatus ? (
               <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
             ) : (
-              <Text fontSize={[2, 3, 4]}>
-                {matchingPlan.PlanStatus.hasReadyCondition ? (
-                  <StatusIcon isReady={true} />
-                ) : (
-                  <StatusIcon isReady={false} />
-                )}
-                <StyledSpan>{values.planName} </StyledSpan>
-                <Box
-                  css={css`
+                <Text fontSize={[2, 3, 4]}>
+                  {matchingPlan.PlanStatus.hasReadyCondition ? (
+                    <StatusIcon isReady={true} />
+                  ) : (
+                      <StatusIcon isReady={false} />
+                    )}
+                  <StyledSpan>{values.planName} </StyledSpan>
+                  <Box
+                    css={css`
                     margin: 0.3em;
                     display: inline-block;
                   `}
-                >
-                  <PlanStatus plan={matchingPlan} />
-                </Box>
-              </Text>
-            )}
+                  >
+                    <PlanStatus plan={matchingPlan} />
+                  </Box>
+                </Text>
+              )}
           </Box>
         </Flex>
       </Box>

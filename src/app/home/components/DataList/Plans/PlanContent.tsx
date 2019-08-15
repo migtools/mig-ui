@@ -63,7 +63,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: (
                   <Flex>
                     <Box m="0 5px 0 0">
-                      <PlanStatusIcon plan={plan} />
+                      <PlanStatusIcon plan={plan} isClosing={this.props.isClosing} />
                     </Box>
                     <Box m="auto 0 auto 0">
                       <span>{plan.MigPlan.metadata.name}</span>
