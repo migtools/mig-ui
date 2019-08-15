@@ -14,11 +14,8 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
   currentPlan: null,
-<<<<<<< HEAD
   isClosing: false,
-=======
   pvResourceList: []
->>>>>>> pv details popover and table styling
 };
 
 const sortPlans = planList =>
