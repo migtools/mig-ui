@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
@@ -8,12 +8,22 @@ import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
-import { Button, TextContent, Popover, PopoverPosition, } from '@patternfly/react-core';
+import {
+  TextContent,
+  Popover,
+  PopoverPosition,
+  Title,
+  Button,
+  EmptyState,
+  EmptyStateVariant,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateSecondaryActions
+} from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import ReactJson from 'react-json-view';
-import { BlueprintIcon } from '@patternfly/react-icons';
-
+import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 const VolumesTable = (props): any => {
   const {
     setFieldValue,
@@ -273,7 +283,20 @@ const VolumesTable = (props): any => {
                 `}
                 position={PopoverPosition.bottom}
                 bodyContent={
-                  <ReactJson src={matchingPVResource} enableClipboard={false} />
+                  <React.Fragment>
+                    {matchingPVResource ?
+                      <ReactJson src={matchingPVResource} enableClipboard={false} /> :
+                      <EmptyState variant={EmptyStateVariant.small}>
+                        <EmptyStateIcon icon={WarningTriangleIcon} />
+                        <Title headingLevel="h5" size="sm">
+                          No PV data found
+                      </Title>
+                        <EmptyStateBody>
+                          Unable to retrieve PV data
+                      </EmptyStateBody>
+                      </EmptyState>
+                    }
+                  </React.Fragment>
                 }
                 aria-label="pv-details"
                 closeBtnAriaLabel="close-pv-details"
