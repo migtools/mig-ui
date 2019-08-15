@@ -4,7 +4,7 @@ const getPlanPVs = plan => {
   const statusObj = { success: null, error: null };
   const PvsDiscoveredType = 'PvsDiscovered';
 
-  if (plan.MigPlan.status) {
+  if (plan.MigPlan.status && plan.MigPlan.status.conditions) {
     const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
 
     if (pvsDiscovered) {
