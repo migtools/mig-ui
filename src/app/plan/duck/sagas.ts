@@ -172,8 +172,8 @@ function* getPVResourcesRequest(action) {
     yield Q.allSettled(pvResourceRefs)
       .then((results) => {
         results.forEach((result) => {
-          if (result.state === "fulfilled") {
-            pvList.push(result.value.data)
+          if (result.state === 'fulfilled') {
+            pvList.push(result.value.data);
           }
         });
       });

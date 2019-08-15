@@ -218,7 +218,7 @@ const startClosedStatusPolling = (planName) => ({
 
 const stopClosedStatusPolling = () => ({
   type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
-})
+});
 
 const getPVResourcesRequest = (pvList: any, clusterName: string) => ({
   type: PlanActionTypes.GET_PV_RESOURCES_REQUEST,
