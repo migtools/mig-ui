@@ -28,7 +28,7 @@ const pvFetchRequest = PlanActions.pvFetchRequest;
 const PlanMigrationPollingInterval = 5000;
 
 const setStageProgressPhase = (client, migMigration, migMeta) => {
-  [
+  const steps = [
     'Prepare',
     'EnsureInitialBackup',
     'InitialBackupCreated',
@@ -36,10 +36,16 @@ const setStageProgressPhase = (client, migMigration, migMeta) => {
     'EnsureInitialBackupReplicated',
     'EnsureFinalRestore',
     'FinalRestoreCreated',
-  ].map((migrationPhase, step) => {
+  ];
+  steps.map((migrationPhase, step) => {
     setTimeout(() => {
       const mockCompletedStatus = {
         status: {
+          conditions: [{
+            type: 'Running',
+            reason: migrationPhase,
+            message: `Step: ${step + 1}/${steps.length}`
+          }],
           phase: migrationPhase,
         }
       };
@@ -156,7 +162,7 @@ const setMigrationStartedConditionMock = (client, migMigration, migMeta) => {
 };
 
 const setMigrationProgressPhase = (client, migMigration, migMeta) => {
-  [
+  const steps = [
     'Prepare',
     'EnsureInitialBackup',
     'InitialBackupCreated',
@@ -177,10 +183,16 @@ const setMigrationProgressPhase = (client, migMigration, migMeta) => {
     'FinalRestoreCreated',
     'EnsureStagePodsDeleted',
     'EnsureAnnotationsDeleted',
-  ].map((migrationPhase, step) => {
+  ];
+  steps.map((migrationPhase, step) => {
     setTimeout(() => {
       const mockCompletedStatus = {
         status: {
+          conditions: [{
+            type: 'Running',
+            reason: migrationPhase,
+            message: `Step: ${step + 1}/${steps.length}`
+          }],
           phase: migrationPhase,
         }
       };

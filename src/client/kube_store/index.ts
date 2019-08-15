@@ -3,7 +3,6 @@ import { KubeResource } from '../resources';
 import { MigResource, MigResourceKind } from '../resources/mig';
 
 import mocked_data from './mocked_data';
-import mocked_static_data from './mocked_static_data';
 import JsonMergePatch from 'json-merge-patch';
 
 export const LocalStorageMockedDataKey = 'CAM_MOCKED_DATA';
@@ -41,11 +40,6 @@ export class KubeStore {
 
   private ensureDataLoaded() {
     let localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
-    const data = mocked_data;
-    data.clusters[this.clusterName] = {
-      ...data.clusters[this.clusterName],
-      ...mocked_static_data
-    };
     if ((!localData) || (!localData.TIME_STAMP) || (localData.TIME_STAMP < mocked_data.TIME_STAMP)) {
       localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(mocked_data));
     }
