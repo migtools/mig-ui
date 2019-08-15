@@ -15,7 +15,7 @@ interface IProps {
   errors: any;
   onWizardLoadingToggle: () => void;
   currentPlan: any;
-  planList: Array<any>;
+  planList: any[];
   isCheckingPlanStatus: boolean;
 }
 
