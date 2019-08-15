@@ -82,7 +82,7 @@ function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
     const getPlanResponse = yield call(getPlanSaga, action.planValues.planName);
-    yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
+    yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues.planName);
   } catch (error) {
     yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
   }
