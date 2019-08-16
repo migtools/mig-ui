@@ -9,9 +9,10 @@ import * as React from 'react';
 
 interface IProps {
   plan: any;
+  isClosing?: boolean;
 }
 
-const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, ...rest }) => {
+const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
   const InProgress = styled(InProgressIcon)`
     color: ${theme.colors.medGray3};
   `;
@@ -34,7 +35,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, ...rest }) => {
   } = plan.PlanStatus;
   if (hasFailedCondition || hasNotReadyCondition) {
     return <Error />;
-  } else if (hasRunningMigrations) {
+  } else if (hasRunningMigrations || isClosing) {
     return (
       <Loader
         type="RevolvingDot"

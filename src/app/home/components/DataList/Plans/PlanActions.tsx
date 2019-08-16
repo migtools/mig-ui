@@ -41,7 +41,7 @@ const PlanActions = ({ plan, isLoading, isClosing }) => {
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} />
+        <PlanStatus plan={plan} isClosing={isClosing} />
       </Box>
       <Box mx={1}>
         <Button

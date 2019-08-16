@@ -1,6 +1,11 @@
 import React from 'react';
 
-const PlanStatus = ({ plan }) => {
+interface IProps {
+  isClosing?: any;
+  plan: any;
+}
+
+const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
   const {
     hasClosedCondition,
     hasReadyCondition,
@@ -36,6 +41,9 @@ const PlanStatus = ({ plan }) => {
     }
     if (hasClosedCondition) {
       status.text = 'Closed';
+    }
+    if (isClosing) {
+      status.text = 'Closing';
     }
     return status;
   };
