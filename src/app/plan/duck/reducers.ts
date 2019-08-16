@@ -4,6 +4,7 @@ import moment from 'moment';
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
+  isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
@@ -14,6 +15,7 @@ export const INITIAL_STATE = {
   isMigrating: false,
   currentPlan: null,
   isClosing: false,
+  pvResourceList: []
 };
 
 const sortPlans = planList =>
@@ -266,6 +268,21 @@ export const closedStatusPollStop =
     return { ...state, isClosing: false };
   };
 
+export const getPVResourcesRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesRequest>) => {
+    return { ...state, isFetchingPVResources: true };
+  };
+
+export const getPVResourcesSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesSuccess>) => {
+    return { ...state, isFetchingPVResources: false, pvResourceList: action.pvResources };
+  };
+
+export const getPVResourcesFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesFailure>) => {
+    return { ...state, isFetchingPVResources: false };
+  };
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.PLAN_RESULTS_REQUEST: return planResultsRequest(state, action);
@@ -294,6 +311,9 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
     default: return state;
   }
 };

@@ -1,9 +1,9 @@
-import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import { all, takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind } from '../../../client/resources';
+import { MigResource, MigResourceKind, CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
-import PlanOperations from './operations';
+import Q from 'q';
 import {
   AlertActions,
   PollingActions
@@ -88,16 +88,6 @@ function* planUpdateRetry(action) {
   }
 }
 
-function* watchPVPolling() {
-  while (true) {
-    const data = yield take(PlanActionTypes.START_PV_POLLING);
-    yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
-  }
-}
-
-function* watchPlanUpdate() {
-  yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
-}
 
 
 function* checkClosedStatus(action) {
@@ -166,12 +156,42 @@ function* planCloseAndDeleteSaga(action) {
   }
 }
 
+function* getPVResourcesRequest(action) {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
+  try {
+    const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
+    const pvResourceRefs = action.pvList.map(pv => {
+      return client.get(
+        resource,
+        pv.name
+      );
+    });
+
+    const pvList = [];
+    yield Q.allSettled(pvResourceRefs)
+      .then((results) => {
+        results.forEach((result) => {
+          if (result.state === 'fulfilled') {
+            pvList.push(result.value.data);
+          }
+        });
+      });
+    yield put(PlanActions.getPVResourcesSuccess(pvList));
+  } catch (err) {
+    yield put(PlanActions.getPVResourcesFailure('Failed to get pv details'));
+
+  }
+}
+
 function* watchPlanCloseAndDelete() {
   yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
 }
+
 function* watchPlanClose() {
   yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
 }
+
 function* watchClosedStatus() {
   while (true) {
     const data = yield take(PlanActionTypes.CLOSED_STATUS_POLL_START);
@@ -179,11 +199,26 @@ function* watchClosedStatus() {
   }
 }
 
+function* watchPVPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.START_PV_POLLING);
+    yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
+  }
+}
+
+function* watchPlanUpdate() {
+  yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
+}
+
+function* watchGetPVResourcesRequest() {
+  yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
+}
 
 export default {
   watchPlanUpdate,
   watchPVPolling,
   watchPlanCloseAndDelete,
   watchPlanClose,
-  watchClosedStatus
+  watchClosedStatus,
+  watchGetPVResourcesRequest
 };
