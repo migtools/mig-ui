@@ -126,7 +126,7 @@ const setMigrationSucceededConditionMock = (client, migMigration, migMeta) => {
     const mockCompletedStatus = {
       status: {
         conditions: [{
-          lastTransitionTime: new Date(),
+          lastTransitionTime: new Date().toUTCString(),
           type: 'Succeeded',
         }],
         phase: 'Completed'
@@ -148,7 +148,7 @@ const setMigrationStartedConditionMock = (client, migMigration, migMeta) => {
       status: {
         conditions: [],
         phase: 'Started',
-        startTimestamp: new Date(),
+        startTimestamp: new Date().toUTCString(),
       }
     };
 
@@ -326,7 +326,7 @@ const setReadyConditionMock = (client, migPlan, migMeta) => {
     const mockReadyStatus = {
       status: {
         conditions: [{
-          lastTransitionTime: new Date(),
+          lastTransitionTime: new Date().toUTCString(),
           type: 'Ready',
         }]
       }

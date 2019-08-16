@@ -45,6 +45,9 @@ export class MockClusterClient {
     });
   }
 
+  public put = (resource: KubeResource, name: string, updatedObject: object): Promise<any> =>
+    this.create(resource, updatedObject);
+
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
