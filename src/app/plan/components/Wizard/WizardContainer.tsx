@@ -68,7 +68,7 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-    isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
+    isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
     isFetchingPVList: state.plan.isFetchingPVList,

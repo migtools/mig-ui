@@ -27,7 +27,7 @@ const WizardComponent = props => {
     isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
-    isCheckingPlanStatus,
+    isPollingStatus,
     isFetchingPVResources,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
@@ -140,7 +140,7 @@ const WizardComponent = props => {
             errors={errors}
             onWizardLoadingToggle={toggleLoading}
             currentPlan={currentPlan}
-            isCheckingPlanStatus={isCheckingPlanStatus}
+            isPollingStatus={isPollingStatus}
             planList={planList}
           />
         ),
@@ -159,7 +159,7 @@ const WizardComponent = props => {
       values,
       isPVError,
       isFetchingPVList,
-      isCheckingPlanStatus,
+      isPollingStatus,
       isFetchingNamespaceList,
       pvResourceList,
       errors,

@@ -39,6 +39,8 @@ export const PlanActionTypes = {
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
   CLOSED_STATUS_POLL_START: 'CLOSED_STATUS_POLL_START',
   CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
+  PLAN_STATUS_POLL_START: 'PLAN_STATUS_POLL_START',
+  PLAN_STATUS_POLL_STOP: 'PLAN_STATUS_POLL_STOP',
   GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST',
   GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS',
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE'
@@ -57,11 +59,6 @@ const addPlanSuccess = (newPlan: IMigPlan) => ({
 const addPlanFailure = (error) => ({
   type: PlanActionTypes.ADD_PLAN_FAILURE,
   error,
-});
-
-const updatePlanResults = (results: string) => ({
-  type: PlanActionTypes.UPDATE_PLAN_RESULTS,
-  results,
 });
 
 const removePlanSuccess = (id) => ({
@@ -159,10 +156,6 @@ const stopPVPolling = () => ({
   type: PlanActionTypes.STOP_PV_POLLING,
 });
 
-const planResultsRequest = () => ({
-  type: PlanActionTypes.PLAN_RESULTS_REQUEST,
-});
-
 const planUpdateRequest = (planValues) => ({
   type: PlanActionTypes.PLAN_UPDATE_REQUEST,
   planValues,
@@ -236,11 +229,19 @@ const getPVResourcesFailure = (error) => ({
   error
 });
 
+const startPlanStatusPolling = (planName) => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_START,
+  planName,
+});
+
+const stopPlanStatusPolling = () => ({
+  type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+});
+
 export const PlanActions = {
   updatePlans,
   addPlanSuccess,
   addPlanFailure,
-  updatePlanResults,
   removePlanSuccess,
   updateStageProgress,
   stagingSuccess,
@@ -261,7 +262,6 @@ export const PlanActions = {
   namespaceFetchFailure,
   startPVPolling,
   stopPVPolling,
-  planResultsRequest,
   planUpdateRequest,
   addPlanRequest,
   initStage,
@@ -274,6 +274,8 @@ export const PlanActions = {
   planCloseRequest,
   startClosedStatusPolling,
   stopClosedStatusPolling,
+  startPlanStatusPolling,
+  stopPlanStatusPolling,
   getPVResourcesRequest,
   getPVResourcesSuccess,
   getPVResourcesFailure

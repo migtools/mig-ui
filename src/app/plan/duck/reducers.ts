@@ -5,7 +5,6 @@ export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
   isFetchingPVResources: false,
-  isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
   migPlanList: [],
@@ -15,6 +14,7 @@ export const INITIAL_STATE = {
   isMigrating: false,
   currentPlan: null,
   isClosing: false,
+  isPollingStatus: false,
   pvResourceList: []
 };
 
@@ -248,15 +248,6 @@ export const migrationFailure =
     return { ...state, isMigrating: false };
   };
 
-export const planResultsRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.planResultsRequest>) => {
-    return { ...state, isCheckingPlanStatus: true };
-  };
-
-export const updatePlanResults =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanResults>) => {
-    return { ...state, isCheckingPlanStatus: false };
-  };
 
 export const closedStatusPollStart =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startClosedStatusPolling>) => {
@@ -266,6 +257,16 @@ export const closedStatusPollStart =
 export const closedStatusPollStop =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
     return { ...state, isClosing: false };
+  };
+
+export const planStatusPollStart =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startPlanStatusPolling>) => {
+    return { ...state, isPollingStatus: true };
+  };
+
+export const planStatusPollStop =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopPlanStatusPolling>) => {
+    return { ...state, isPollingStatus: false };
   };
 
 export const getPVResourcesRequest =
@@ -285,7 +286,6 @@ export const getPVResourcesFailure =
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case PlanActionTypes.PLAN_RESULTS_REQUEST: return planResultsRequest(state, action);
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
     case PlanActionTypes.INIT_STAGE: return initStage(state, action);
     case PlanActionTypes.INIT_MIGRATION: return initMigration(state, action);
@@ -298,7 +298,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PV_FETCH_SUCCESS: return pvFetchSuccess(state, action);
     case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
     case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
-    case PlanActionTypes.UPDATE_PLAN_RESULTS: return updatePlanResults(state, action);
     case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
     case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
     case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);

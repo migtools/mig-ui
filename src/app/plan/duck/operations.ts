@@ -203,41 +203,7 @@ const addPlan = migPlan => {
 
       dispatch(PlanActions.startPVPolling(pvParams));
 
-      /**
-       * Create the plan object & start status polling
-       */
-
-      dispatch(PlanActions.planResultsRequest());
-
-      const getPlanStatusCondition = (pollingResponse, newObjectRes) => {
-        const matchingPlan = pollingResponse.updatedPlans.find(
-          p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
-        );
-        if (!matchingPlan) { return; }
-
-        const planStatus = planUtils.getPlanStatus(matchingPlan);
-        if (planStatus.success) {
-          dispatch(PlanActions.updatePlanResults('Success'));
-          dispatch(PlanActions.updatePlan(matchingPlan.MigPlan));
-          return 'SUCCESS';
-        } else if (planStatus.error) {
-          dispatch(PlanActions.updatePlanResults('Failure'));
-          dispatch(PlanActions.updatePlan(matchingPlan.MigPlan));
-          return 'FAILURE';
-        }
-      };
-
-      const statusParams = {
-        asyncFetch: fetchPlansGenerator,
-        delay: PlanMigrationPollingInterval,
-        type: 'PLAN',
-        callback: getPlanStatusCondition,
-        statusItem: createPlanRes,
-        dispatch,
-      };
-
-      dispatch(PollingActions.startStatusPolling(statusParams));
-
+      dispatch(PlanActions.startPlanStatusPolling(migPlan.planName));
       dispatch(PlanActions.addPlanSuccess(createPlanRes.data));
     } catch (err) {
       dispatch(AlertActions.alertErrorTimeout('Failed to add plan'));

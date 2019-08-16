@@ -14,16 +14,6 @@ const getPlanPVs = plan => {
 
   return statusObj;
 };
-const getPlanStatus = plan => {
-  const statusObj = { success: null, error: null };
-  if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) { return statusObj; }
-
-  const hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
-  if (hasReadyCondition) {
-    statusObj.success = hasReadyCondition;
-  }
-  return statusObj;
-};
 
 const getMigrationStatus = (plan, newResObject) => {
   const matchingMigration = plan.Migrations.find(
@@ -83,7 +73,6 @@ const groupPlan: any = (plan, response) => {
 
 export default {
   getPlanPVs,
-  getPlanStatus,
   getMigrationStatus,
   groupPlan,
   groupPlans,

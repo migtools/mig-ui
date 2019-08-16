@@ -23,11 +23,16 @@ const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
+<<<<<<< HEAD
 const ResultsStep: React.FunctionComponent<IProps> = ({
   values,
   planList,
   isCheckingPlanStatus
 }) => {
+=======
+const ResultsStep = props => {
+  const { values, planList, isPollingStatus } = props;
+>>>>>>> wip refactor plan poll
   const matchingPlan = planList.find(p => {
     return values.planName === p.MigPlan.metadata.name;
   });
@@ -42,19 +47,8 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
       <Box
         flex="1"
         m="auto"
-        css={css`
-          color: ${theme.colors.darkGray1};
-          border: 1px solid;
-          border-radius: 40px;
-          width: 100%;
-          padding: 14px;
-          background: linear-gradient(
-            90deg,
-            ${theme.colors.lightGray3} 20%,
-            ${theme.colors.medGray1} 8%
-          );
-        `}
       >
+<<<<<<< HEAD
         <Flex mx={-2}>
           <Box width={1 / 5} px={2} my="auto">
             <Text fontSize={[2, 3, 4]}>Plan Status</Text>
@@ -82,8 +76,31 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
               )}
           </Box>
         </Flex>
+=======
+        {isPollingStatus ? (
+          <Flex mx={-2}>
+            <Box width={1 / 5} px={2}>
+              <Loader type="ThreeDots" color={theme.colors.darkGray1} height="75" width="75" />
+            </Box>
+            <Box width={4 / 5} px={2} my="auto">
+              <Text fontSize={[2, 3, 4]}>Validating migration plan</Text>
+              <Text fontSize={[2, 3, 4]}>{values.planName}</Text>
+            </Box>
+          </Flex>
+        ) : (
+            <Flex mx={-2}>
+              <Box width={1 / 5} px={2}>
+                <Loader type="ThreeDots" color={theme.colors.darkGray1} height="75" width="75" />
+              </Box>
+              <Box width={4 / 5} px={2} my="auto">
+                <Text fontSize={[2, 3, 4]}>Validating migration plan</Text>
+                <Text fontSize={[2, 3, 4]}>{values.planName}</Text>
+              </Box>
+            </Flex>
+          )}
+>>>>>>> wip refactor plan poll
       </Box>
-    </Flex>
+    </Flex >
   );
 };
 
