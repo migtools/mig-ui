@@ -78,7 +78,7 @@ if (devMode === 'local') {
     })
   );
   plugins.push(
-    new webpack.NormalModuleReplacementPlugin(/(?:cluster|storage)\/duck\/sagas\.ts/, res => {
+    new webpack.NormalModuleReplacementPlugin(/(?:cluster|storage|plan)\/duck\/sagas\.ts/, res => {
       if (res.rawRequest === '../sagas') return;
       res.request = res.request.replace(/sagas\.ts/, 'mock/sagas.mock.ts');
       res.resource = res.resource.replace(/sagas\.ts/, 'mock/sagas.mock.ts');
