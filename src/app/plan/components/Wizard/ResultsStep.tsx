@@ -16,23 +16,15 @@ interface IProps {
   onWizardLoadingToggle: () => void;
   currentPlan: any;
   planList: any[];
-  isCheckingPlanStatus: boolean;
+  isPollingStatus: boolean;
 }
 
 const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
-<<<<<<< HEAD
-const ResultsStep: React.FunctionComponent<IProps> = ({
-  values,
-  planList,
-  isCheckingPlanStatus
-}) => {
-=======
 const ResultsStep = props => {
   const { values, planList, isPollingStatus } = props;
->>>>>>> wip refactor plan poll
   const matchingPlan = planList.find(p => {
     return values.planName === p.MigPlan.metadata.name;
   });
@@ -48,35 +40,6 @@ const ResultsStep = props => {
         flex="1"
         m="auto"
       >
-<<<<<<< HEAD
-        <Flex mx={-2}>
-          <Box width={1 / 5} px={2} my="auto">
-            <Text fontSize={[2, 3, 4]}>Plan Status</Text>
-          </Box>
-          <Box width={4 / 5} px={2}>
-            {isCheckingPlanStatus ? (
-              <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
-            ) : (
-                <Text fontSize={[2, 3, 4]}>
-                  {matchingPlan.PlanStatus.hasReadyCondition ? (
-                    <StatusIcon isReady={true} />
-                  ) : (
-                      <StatusIcon isReady={false} />
-                    )}
-                  <StyledSpan>{values.planName} </StyledSpan>
-                  <Box
-                    css={css`
-                    margin: 0.3em;
-                    display: inline-block;
-                  `}
-                  >
-                    <PlanStatus plan={matchingPlan} />
-                  </Box>
-                </Text>
-              )}
-          </Box>
-        </Flex>
-=======
         {isPollingStatus ? (
           <Flex mx={-2}>
             <Box width={1 / 5} px={2}>
@@ -98,7 +61,6 @@ const ResultsStep = props => {
               </Box>
             </Flex>
           )}
->>>>>>> wip refactor plan poll
       </Box>
     </Flex >
   );

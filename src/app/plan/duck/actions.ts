@@ -230,12 +230,12 @@ const getPVResourcesFailure = (error) => ({
 });
 
 const startPlanStatusPolling = (planName) => ({
-  type: PlanActionTypes.CLOSED_STATUS_POLL_START,
+  type: PlanActionTypes.PLAN_STATUS_POLL_START,
   planName,
 });
 
 const stopPlanStatusPolling = () => ({
-  type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+  type: PlanActionTypes.PLAN_STATUS_POLL_STOP,
 });
 
 export const PlanActions = {
