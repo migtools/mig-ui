@@ -1,31 +1,9 @@
-import { PlanActions } from '../actions';
 import { ClientFactory } from '../../../../client/client_factory';
 import { IClusterClient } from '../../../../client/client';
 import { MigResource, MigResourceKind } from '../../../../client/resources';
-
-import {
-  createMigMigration,
-} from '../../../../client/resources/conversions';
-import {
-  AlertActions
-} from '../../../common/duck/actions';
 import planUtils from '../utils';
-import { PollingActions } from '../../../common/duck/actions';
 
 import * as operations from '../operations';
-
-const fetchPlans = operations.default.fetchPlans;
-const fetchPlansGenerator = operations.default.fetchPlansGenerator;
-const removePlan = operations.default.removePlan;
-const fetchNamespacesForCluster = operations.default.fetchNamespacesForCluster;
-const fetchMigMigrationsRefs = operations.default.fetchMigMigrationsRefs;
-
-/* tslint:disable */
-const uuidv1 = require('uuid/v1');
-/* tslint:enable */
-const pvFetchRequest = PlanActions.pvFetchRequest;
-
-const PlanMigrationPollingInterval = 5000;
 
 const setStageProgressPhase = (client, migMigration, migMeta) => {
   const steps = [
@@ -50,12 +28,10 @@ const setStageProgressPhase = (client, migMigration, migMeta) => {
         }
       };
 
-      return Promise.resolve(
-        client.patch(
+      return client.patch(
           new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
           migMigration.metadata.name,
-          mockCompletedStatus)
-      );
+          mockCompletedStatus);
     }, 3000 + step * 3000);
   });
 };
@@ -63,60 +39,20 @@ const setStageProgressPhase = (client, migMigration, migMeta) => {
 const runStage = plan => {
   return async (dispatch, getState) => {
     try {
-      dispatch(PlanActions.initStage(plan.MigPlan.metadata.name));
-      dispatch(AlertActions.alertProgressTimeout('Staging Started'));
-      const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
-      const migMigrationObj = createMigMigration(
-        uuidv1(),
-        plan.MigPlan.metadata.name,
-        migMeta.namespace,
-        true,
-        true
-      );
-      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+      // Start vanilla stage migration run
+      dispatch(operations.default.runStage(plan));
+
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+      const migMigrationObj = await searchAssociatedMigration(client, plan, migMeta);
+
       setMigrationStartedConditionMock(client, migMigrationObj, migMeta);
       setStageProgressPhase(client, migMigrationObj, migMeta);
       setMigrationSucceededConditionMock(client, migMigrationObj, migMeta);
 
-      //created migration response object
-      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
-      const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
-
-      const getStageStatusCondition = (pollingResponse, newObjectRes) => {
-        const matchingPlan = pollingResponse.updatedPlans.find(
-          p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
-        );
-
-        const migStatus = matchingPlan
-          ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-          : null;
-        if (migStatus.success) {
-          dispatch(PlanActions.stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
-          dispatch(AlertActions.alertSuccessTimeout('Staging Successful'));
-          return 'SUCCESS';
-        } else if (migStatus.error) {
-          dispatch(PlanActions.stagingFailure(migStatus.error));
-          dispatch(AlertActions.alertErrorTimeout('Staging Failed'));
-          return 'FAILURE';
-        }
-      };
-
-      const params = {
-        asyncFetch: fetchPlansGenerator,
-        delay: PlanMigrationPollingInterval,
-        callback: getStageStatusCondition,
-        type: 'STAGE',
-        statusItem: createMigRes,
-        dispatch,
-      };
-
-      dispatch(PollingActions.startStatusPolling(params));
-      dispatch(PlanActions.updatePlanMigrations(groupedPlan));
     } catch (err) {
-      dispatch(AlertActions.alertErrorTimeout(err));
-      dispatch(PlanActions.stagingFailure(err));
+      alert('Error while running a mocked stage migration: ' + err.toString());
     }
   };
 };
@@ -133,12 +69,10 @@ const setMigrationSucceededConditionMock = (client, migMigration, migMeta) => {
       }
     };
 
-    return Promise.resolve(
-      client.patch(
+    return client.patch(
         new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
         migMigration.metadata.name,
-        mockCompletedStatus)
-    );
+        mockCompletedStatus);
   }, 30000);
 };
 
@@ -152,12 +86,10 @@ const setMigrationStartedConditionMock = (client, migMigration, migMeta) => {
       }
     };
 
-    return Promise.resolve(
-      client.patch(
+    return client.patch(
         new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
         migMigration.metadata.name,
-        mockCompletedStatus)
-    );
+        mockCompletedStatus);
   }, 2000);
 };
 
@@ -197,74 +129,39 @@ const setMigrationProgressPhase = (client, migMigration, migMeta) => {
         }
       };
 
-      return Promise.resolve(
-        client.patch(
+      return client.patch(
           new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
           migMigration.metadata.name,
-          mockCompletedStatus)
-      );
+          mockCompletedStatus);
     }, 3000 + step * 1000);
   });
+};
+
+const searchAssociatedMigration = async (client, plan, migMeta) => {
+  const migrationListResponse = await client.list(
+    new MigResource(MigResourceKind.MigMigration, migMeta.namespace));
+  const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+  // Initial migration resource has no status field
+  return groupedPlan.Migrations.find((mig) => !mig.status);
 };
 
 const runMigration = (plan, disableQuiesce) => {
   return async (dispatch, getState) => {
     try {
-      dispatch(PlanActions.initMigration(plan.MigPlan.metadata.name));
-      dispatch(AlertActions.alertProgressTimeout('Migration Started'));
-      const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      // Start vanilla migration run
+      dispatch(operations.default.runMigration(plan, disableQuiesce));
 
-      const migMigrationObj = createMigMigration(
-        uuidv1(),
-        plan.MigPlan.metadata.name,
-        migMeta.namespace,
-        false,
-        disableQuiesce
-      );
-      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+      const state = getState();
+      const { migMeta } = state;
+      const client: IClusterClient = ClientFactory.hostCluster(state);
+      const migMigrationObj = await searchAssociatedMigration(client, plan, migMeta);
 
-      //created migration response object
-      const createMigRes = await client.create(migMigrationResource, migMigrationObj);
       setMigrationStartedConditionMock(client, migMigrationObj, migMeta);
       setMigrationProgressPhase(client, migMigrationObj, migMeta);
       setMigrationSucceededConditionMock(client, migMigrationObj, migMeta);
 
-      const migrationListResponse = await client.list(migMigrationResource);
-      const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
-
-      const getMigrationStatusCondition = (pollingResponse, newObjectRes) => {
-        const matchingPlan = pollingResponse.updatedPlans.find(
-          p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
-        );
-        const migStatus = matchingPlan
-          ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-          : null;
-        if (migStatus.success) {
-          dispatch(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-          dispatch(AlertActions.alertSuccessTimeout('Migration Successful'));
-          return 'SUCCESS';
-        } else if (migStatus.error) {
-          dispatch(PlanActions.migrationFailure(migStatus.error));
-          dispatch(AlertActions.alertErrorTimeout('Migration Failed'));
-          return 'FAILURE';
-        }
-      };
-
-      const params = {
-        asyncFetch: fetchPlansGenerator,
-        delay: PlanMigrationPollingInterval,
-        callback: getMigrationStatusCondition,
-        type: 'MIGRATION',
-        statusItem: createMigRes,
-        dispatch,
-      };
-
-      dispatch(PollingActions.startStatusPolling(params));
-      dispatch(PlanActions.updatePlanMigrations(groupedPlan));
     } catch (err) {
-      dispatch(AlertActions.alertErrorTimeout(err));
-      dispatch(PlanActions.migrationFailure(err));
+      alert('Error while running a mocked migration: ' + err.toString());
     }
   };
 };
@@ -331,12 +228,10 @@ const setReadyConditionMock = (client, migPlan, migMeta) => {
         }]
       }
     };
-    return Promise.resolve(
-      client.patch(
+    return client.patch(
         new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
         migPlan.planName,
-        mockReadyStatus)
-    );
+        mockReadyStatus);
   }, 10000);
 };
 
@@ -358,13 +253,13 @@ const addPlan = migPlan => {
 };
 
 export default {
-  pvFetchRequest,
-  fetchPlans,
+  pvFetchRequest: operations.default.pvFetchRequest,
+  fetchPlans: operations.default.fetchPlans,
   addPlan,
-  removePlan,
-  fetchNamespacesForCluster,
+  removePlan: operations.default.removePlan,
+  fetchNamespacesForCluster: operations.default.fetchNamespacesForCluster,
   runStage,
   runMigration,
-  fetchMigMigrationsRefs,
-  fetchPlansGenerator,
+  fetchMigMigrationsRefs: operations.default.fetchMigMigrationsRefs,
+  fetchPlansGenerator: operations.default.fetchPlansGenerator,
 };
