@@ -123,7 +123,7 @@ function* checkClosedStatus(action) {
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
   let tries = 0;
-  const TicksUntilTimeout = 8;
+  const TicksUntilTimeout = 10;
   while (!planStatusComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -138,7 +138,7 @@ function* checkPlanStatus(action) {
       }
     } else {
       planStatusComplete = true;
-      yield put(AlertActions.alertErrorTimeout('Plan status timed out'));
+      // yield put(AlertActions.alertErrorTimeout('Plan status timed out'));
       yield put(PlanActions.stopPlanStatusPolling());
       break;
     }

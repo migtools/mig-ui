@@ -87,6 +87,7 @@ const mapDispatchToProps = dispatch => {
     },
     pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
+    startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
   };
 };
 

@@ -32,6 +32,7 @@ const WizardComponent = props => {
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
     getPVResourcesRequest,
+    startPlanStatusPolling,
     pvResourceList
   } = props;
 
@@ -142,6 +143,7 @@ const WizardComponent = props => {
             currentPlan={currentPlan}
             isPollingStatus={isPollingStatus}
             planList={planList}
+            startPlanStatusPolling={startPlanStatusPolling}
           />
         ),
         enableNext: !isLoading,

@@ -310,6 +310,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_START: return planStatusPollStart(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_STOP: return planStatusPollStop(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);

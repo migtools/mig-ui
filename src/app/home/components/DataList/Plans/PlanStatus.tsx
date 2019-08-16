@@ -48,9 +48,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     return status;
   };
   return (
-    <div>
-      <div>{getStatus().text}</div>
-    </div>
+    <div>{getStatus().text}</div>
   );
 };
 

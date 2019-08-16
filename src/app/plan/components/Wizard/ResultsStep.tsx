@@ -6,7 +6,8 @@ import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
-import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
+import { RedoIcon } from '@patternfly/react-icons';
+import { Button, Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
 import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
 import StatusIcon from '../../../common/components/StatusIcon';
 
@@ -24,45 +25,89 @@ const StyledSpan = styled.span`
 `;
 
 const ResultsStep = props => {
-  const { values, planList, isPollingStatus } = props;
+  const { values, planList, isPollingStatus, startPlanStatusPolling } = props;
+
   const matchingPlan = planList.find(p => {
     return values.planName === p.MigPlan.metadata.name;
   });
+  const handlePollRestart = () => {
+    startPlanStatusPolling(values.planName);
+  };
 
   return (
     <Flex
+      flexDirection="column"
       css={css`
         height: 100%;
         text-align: center;
       `}
     >
-      <Box
-        flex="1"
-        m="auto"
-      >
+      <Box css={css`
+            display: inline-block; 
+            margin-right: 10px;
+            border-bottom: solid 1px ${theme.colors.medGray2};
+            text-align: left;
+            width: 20em;
+
+            `}>
         {isPollingStatus ? (
-          <Flex mx={-2}>
-            <Box width={1 / 5} px={2}>
-              <Loader type="ThreeDots" color={theme.colors.darkGray1} height="75" width="75" />
+          <React.Fragment>
+            <Box css={css`display: inline-block; margin-right: 10px;`}>
+              <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1.5em" width="1.5em" />
             </Box>
-            <Box width={4 / 5} px={2} my="auto">
-              <Text fontSize={[2, 3, 4]}>Validating migration plan</Text>
-              <Text fontSize={[2, 3, 4]}>{values.planName}</Text>
+            <Box css={css`display: inline-block; `}>
+              <Text fontSize={[1, 2, 3]}>
+                This might take a few minutes...
+              </Text>
             </Box>
-          </Flex>
+          </React.Fragment>
         ) : (
-            <Flex mx={-2}>
-              <Box width={4 / 5} px={2} my="auto">
-                <Text fontSize={[2, 3, 4]}>{values.planName}</Text>
-                <Text fontSize={[2, 3, 4]}>status: </Text>
+            <React.Fragment>
+              <Box css={css`
+                display: inline-block; 
+                margin-right: 10px;`
+              }
+              >
+                <Button onClick={handlePollRestart} variant="link" icon={<RedoIcon />} />
               </Box>
-              <Box width={1 / 5} px={2} my="auto">
-                <Text fontSize={[2, 3, 4]}>
-                  <PlanStatus plan={matchingPlan} />
-                </Text>
+              <Box css={css`display: inline-block; `}>
+                <Text fontSize={[1, 2, 3]}>
+                  Check current plan status
+              </Text>
               </Box>
-            </Flex>
+            </React.Fragment>
           )}
+      </Box>
+      <Box css={css`
+            margin-top: .5em;
+            text-align: left;
+            `
+      }
+      >
+        <Text fontSize={[2, 3, 4]}>
+          <Box css={css`
+            display: inline-block; 
+            margin-right: 10px;`
+          }
+          >
+            Plan <StyledSpan>{values.planName}</StyledSpan> status:
+          </Box>
+          <Box css={css`
+            display: inline-block; 
+            margin-right: 10px;`
+          }
+          >
+            <PlanStatus plan={matchingPlan} />
+          </Box>
+          <Box css={css`display: inline-block; `}>
+            {matchingPlan.PlanStatus.hasReadyCondition ? (
+              <StatusIcon isReady={true} />
+            ) : (
+                <StatusIcon isReady={false} />
+              )}
+
+          </Box>
+        </Text>
       </Box>
     </Flex >
   );
