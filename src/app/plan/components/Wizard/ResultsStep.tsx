@@ -52,12 +52,14 @@ const ResultsStep = props => {
           </Flex>
         ) : (
             <Flex mx={-2}>
-              <Box width={1 / 5} px={2}>
-                <Loader type="ThreeDots" color={theme.colors.darkGray1} height="75" width="75" />
-              </Box>
               <Box width={4 / 5} px={2} my="auto">
-                <Text fontSize={[2, 3, 4]}>Validating migration plan</Text>
                 <Text fontSize={[2, 3, 4]}>{values.planName}</Text>
+                <Text fontSize={[2, 3, 4]}>status: </Text>
+              </Box>
+              <Box width={1 / 5} px={2} my="auto">
+                <Text fontSize={[2, 3, 4]}>
+                  <PlanStatus plan={matchingPlan} />
+                </Text>
               </Box>
             </Flex>
           )}
