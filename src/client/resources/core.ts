@@ -44,6 +44,7 @@ export class CoreClusterResource extends ClusterResource {
     // not have an API group
     return ['/api', this.gvk().version, this.gvk().kindPlural].join('/');
   }
+
 }
 
 export enum CoreNamespacedResourceKind {
@@ -53,4 +54,5 @@ export enum CoreNamespacedResourceKind {
 
 export enum CoreClusterResourceKind {
   Namespace = 'namespaces',
+  PV = 'persistentvolumes'
 }
