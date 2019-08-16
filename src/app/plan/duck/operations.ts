@@ -114,6 +114,7 @@ const runMigration = (plan, disableQuiesce) => {
           : null;
         if (migStatus.success) {
           dispatch(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+          dispatch(PlanActions.planCloseRequest(newObjectRes.data.spec.migPlanRef.name));
           dispatch(AlertActions.alertSuccessTimeout('Migration Successful'));
           return 'SUCCESS';
         } else if (migStatus.error) {
