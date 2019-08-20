@@ -30,9 +30,6 @@ export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const setIsPollingStorage = (state = INITIAL_STATE, action) => {
-  return { ...state, isPolling: action.isPolling };
-};
 
 export const addStorageRequest = (state = INITIAL_STATE, action) => {
   return {
@@ -93,18 +90,17 @@ export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
 
 
 const storageReducer = (state = INITIAL_STATE, action) => {
-  switch(action.type) {
-    case StorageActionTypes.MIG_STORAGE_FETCH_REQUEST:   return migStorageFetchRequest(state, action);
-    case StorageActionTypes.MIG_STORAGE_FETCH_SUCCESS:   return migStorageFetchSuccess(state, action);
-    case StorageActionTypes.MIG_STORAGE_FETCH_FAILURE:   return migStorageFetchFailure(state, action);
-    case StorageActionTypes.ADD_STORAGE_SUCCESS:         return addStorageSuccess(state, action);
-    case StorageActionTypes.UPDATE_STORAGES:             return updateStorages(state, action);
-    case StorageActionTypes.UPDATE_STORAGE_SUCCESS:      return updateStorageSuccess(state, action);
-    case StorageActionTypes.REMOVE_STORAGE_SUCCESS:      return removeStorageSuccess(state, action);
-    case StorageActionTypes.UPDATE_SEARCH_TERM:          return updateSearchTerm(state, action);
+  switch (action.type) {
+    case StorageActionTypes.MIG_STORAGE_FETCH_REQUEST: return migStorageFetchRequest(state, action);
+    case StorageActionTypes.MIG_STORAGE_FETCH_SUCCESS: return migStorageFetchSuccess(state, action);
+    case StorageActionTypes.MIG_STORAGE_FETCH_FAILURE: return migStorageFetchFailure(state, action);
+    case StorageActionTypes.ADD_STORAGE_SUCCESS: return addStorageSuccess(state, action);
+    case StorageActionTypes.UPDATE_STORAGES: return updateStorages(state, action);
+    case StorageActionTypes.UPDATE_STORAGE_SUCCESS: return updateStorageSuccess(state, action);
+    case StorageActionTypes.REMOVE_STORAGE_SUCCESS: return removeStorageSuccess(state, action);
+    case StorageActionTypes.UPDATE_SEARCH_TERM: return updateSearchTerm(state, action);
     case StorageActionTypes.SET_STORAGE_ADD_EDIT_STATUS: return setStorageAddEditStatus(state, action);
-    case StorageActionTypes.SET_IS_POLLING_STORAGE:      return setIsPollingStorage(state, action);
-    default:                                             return state;
+    default: return state;
   }
 };
 

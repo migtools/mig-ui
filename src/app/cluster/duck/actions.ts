@@ -36,11 +36,6 @@ const updateSearchTerm = (searchTerm) => ({
   searchTerm,
 });
 
-const setIsPollingCluster = (isPolling: boolean) => ({
-  type: ClusterActionTypes.SET_IS_POLLING_CLUSTER,
-  isPolling
-});
-
 const setClusterAddEditStatus = (status: IAddEditStatus) => ({
   type: ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS,
   status,
@@ -87,7 +82,6 @@ export const ClusterActionTypes = {
   REMOVE_CLUSTER_FAILURE: 'REMOVE_CLUSTER_FAILURE',
   UPDATE_CLUSTER_SUCCESS: 'UPDATE_CLUSTER_SUCCESS',
   UPDATE_SERACH_TERM: 'UPDATE_SERACH_TERM',
-  SET_IS_POLLING_CLUSTER: 'SET_IS_POLLING_CLUSTER',
   SET_CLUSTER_ADD_EDIT_STATUS: 'SET_CLUSTER_ADD_EDIT_STATUS',
   WATCH_CLUSTER_ADD_EDIT_STATUS: 'WATCH_CLUSTER_ADD_EDIT_STATUS',
   CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS: 'CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS',

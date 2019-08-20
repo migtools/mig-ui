@@ -7,9 +7,6 @@ import {
   AlertActionTypes
 } from '../../common/duck/actions';
 
-import { ClusterActions } from '../../cluster/duck/actions';
-import { StorageActions } from '../../storage/duck/actions';
-
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
 
@@ -40,18 +37,14 @@ function* watchPlanPolling() {
 function* watchStoragePolling() {
   while (true) {
     const action = yield take(PollingActionTypes.STORAGE_POLL_START);
-    yield put(StorageActions.setIsPollingStorage(true));
     yield race([call(poll, action), take(PollingActionTypes.STORAGE_POLL_STOP)]);
-    yield put(StorageActions.setIsPollingStorage(false));
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
     const action = yield take(PollingActionTypes.CLUSTER_POLL_START);
-    yield put(ClusterActions.setIsPollingCluster(true));
     yield race([call(poll, action), take(PollingActionTypes.CLUSTER_POLL_STOP)]);
-    yield put(ClusterActions.setIsPollingCluster(false));
   }
 }
 
