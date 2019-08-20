@@ -39,6 +39,7 @@ interface IProps {
   stopClusterPolling: () => void;
   updateClusters: (updatedClusters) => void;
   updateStorages: (updatedStorages) => void;
+  updatePlans: (updatedPlans) => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
   isFetchingPlans: boolean;
@@ -89,6 +90,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     stopClusterPolling,
     updateClusters,
     updateStorages,
+    updatePlans,
     isFetchingClusters,
     isFetchingStorage,
     isFetchingPlans,
@@ -100,7 +102,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
 
   const handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
-      updateClusters(response.updatedClusters);
+      updatePlans(response.updatedPlans);
       return true;
     }
     return false;
@@ -256,5 +258,6 @@ export default connect(
     stopClusterPolling: () => dispatch(ClusterActions.stopClusterPolling()),
     updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
     updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
+    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
   })
 )(HomeComponent);

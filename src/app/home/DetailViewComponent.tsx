@@ -99,27 +99,13 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 
 
   const handleExpand = (id: string) => {
-    const expanded = !this.state.expanded[id];
+    const expanded = !expandedStateObj[id];
     const newExpanded = Object.assign({}, expandedStateObj);
     Object.values(DataListItems).map(
       expandItem => newExpanded[expandItem] = false
     );
     newExpanded[id] = expanded;
     setExpandedStateObj(newExpanded);
-  };
-
-  const handleRemoveItem = (type, id) => {
-    switch (type) {
-      case 'cluster':
-        removeCluster(id);
-        break;
-      case 'storage':
-        removeStorage(id);
-        break;
-      case 'plan':
-        removePlan(id);
-        break;
-    }
   };
 
   const handlePlanSubmit = planWizardValues => {
