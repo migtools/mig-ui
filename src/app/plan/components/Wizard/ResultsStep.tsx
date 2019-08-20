@@ -74,21 +74,6 @@ const ResultsStep = props => {
               >
                 Validating migration plan <StyledSpan>{values.planName}</StyledSpan>.
               </Box>
-              {/* <Box css={css`
-            display: inline-block; 
-            margin-right: 10px;`
-              }
-              >
-                <PlanStatus plan={matchingPlan} />
-              </Box>
-              <Box css={css`display: inline-block; `}>
-                {matchingPlan.PlanStatus.hasReadyCondition ? (
-                  <StatusIcon isReady={true} />
-                ) : (
-                    <StatusIcon isReady={false} />
-                  )}
-
-              </Box> */}
             </Text>
           </Box>
           <Box css={css`
@@ -106,11 +91,23 @@ const ResultsStep = props => {
                 </Box>
               </React.Fragment>
             ) : (
-                <Box css={css`display: inline-block; `}>
-                  <Text fontSize={[1, 2, 3]}>
-                    Check current plan status
-                  </Text>
-                </Box>
+                <React.Fragment>
+                  <Box css={css`
+                    display: inline-block; 
+                    margin-right: 10px;`
+                  }
+                  >
+                    <PlanStatus plan={matchingPlan} />
+                  </Box>
+                  <Box css={css`display: inline-block; `}>
+                    {matchingPlan.PlanStatus.hasReadyCondition ? (
+                      <StatusIcon isReady={true} />
+                    ) : (
+                        <StatusIcon isReady={false} />
+                      )}
+
+                  </Box>
+                </React.Fragment>
               )}
           </Box>
         </Flex >

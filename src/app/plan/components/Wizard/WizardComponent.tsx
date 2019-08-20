@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
@@ -6,11 +6,13 @@ import VolumesForm from './VolumesForm';
 import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
+import { PollingContext } from '../../../home/duck/context';
 
 const WizardComponent = props => {
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
+  const pollingContext = useContext(PollingContext);
 
   const {
     values,
@@ -33,7 +35,10 @@ const WizardComponent = props => {
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
-    pvResourceList
+    pvResourceList,
+    isPollingStorage,
+    isPollingClusters,
+    isPollingPlans
   } = props;
 
   enum stepId {
@@ -44,6 +49,12 @@ const WizardComponent = props => {
     MigrationTarget,
     Results,
   }
+
+  useEffect(() => {
+    if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
+      pollingContext.stopAllPolling();
+    }
+  });
 
   useEffect(() => {
     const steps = [
@@ -196,6 +207,7 @@ const WizardComponent = props => {
     setStepIdReached(stepId.General);
     props.onHandleClose();
     props.resetForm();
+    pollingContext.startAllDefaultPolling();
   };
   return (
     <React.Fragment>

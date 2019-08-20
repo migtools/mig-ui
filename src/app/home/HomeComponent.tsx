@@ -209,7 +209,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               startDefaultStoragePolling: () => startDefaultStoragePolling(),
               startDefaultPlanPolling: () => startDefaultPlanPolling(),
               stopClusterPolling: () => stopClusterPolling(),
-              stopStoragepolling: () => stopStoragePolling(),
+              stopStoragePolling: () => stopStoragePolling(),
+              stopPlanPolling: () => stopPlanPolling(),
               startAllDefaultPolling: () => {
                 startDefaultClusterPolling();
                 startDefaultStoragePolling();

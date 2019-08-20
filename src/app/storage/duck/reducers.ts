@@ -88,6 +88,20 @@ export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const startStoragePolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true
+  };
+};
+
+export const stopStoragePolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false
+  };
+};
+
 
 const storageReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -100,6 +114,8 @@ const storageReducer = (state = INITIAL_STATE, action) => {
     case StorageActionTypes.REMOVE_STORAGE_SUCCESS: return removeStorageSuccess(state, action);
     case StorageActionTypes.UPDATE_SEARCH_TERM: return updateSearchTerm(state, action);
     case StorageActionTypes.SET_STORAGE_ADD_EDIT_STATUS: return setStorageAddEditStatus(state, action);
+    case StorageActionTypes.STORAGE_POLL_START: return startStoragePolling(state, action);
+    case StorageActionTypes.STORAGE_POLL_STOP: return stopStoragePolling(state, action);
     default: return state;
   }
 };

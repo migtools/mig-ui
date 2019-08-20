@@ -15,6 +15,7 @@ export const INITIAL_STATE = {
   currentPlan: null,
   isClosing: false,
   isPollingStatus: false,
+  isPolling: false,
   pvResourceList: []
 };
 
@@ -284,6 +285,20 @@ export const getPVResourcesFailure =
     return { ...state, isFetchingPVResources: false };
   };
 
+export const startPlanPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true
+  };
+};
+
+export const stopPlanPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false
+  };
+};
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
@@ -315,6 +330,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
+    case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
+    case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
     default: return state;
   }
 };

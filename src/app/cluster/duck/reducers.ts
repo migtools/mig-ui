@@ -75,6 +75,19 @@ export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const startClusterPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true
+  };
+};
+
+export const stopClusterPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false
+  };
+};
 
 export const clusterReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -87,6 +100,8 @@ export const clusterReducer = (state = INITIAL_STATE, action) => {
     case ClusterActionTypes.UPDATE_CLUSTERS: return updateClusters(state, action);
     case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS: return updateClusterSuccess(state, action);
     case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS: return removeClusterSuccess(state, action);
+    case ClusterActionTypes.CLUSTER_POLL_START: return startClusterPolling(state, action);
+    case ClusterActionTypes.CLUSTER_POLL_STOP: return stopClusterPolling(state, action);
     default: return state;
   }
 };

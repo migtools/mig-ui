@@ -40,8 +40,6 @@ interface IProps {
   isClosing?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
-  startDataListPolling: (params) => void;
-  stopDataListPolling: () => void;
   planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
