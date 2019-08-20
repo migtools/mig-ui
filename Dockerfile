@@ -1,14 +1,13 @@
-FROM registry.access.redhat.com/ubi8 as builder
-RUN yum -y install nodejs
+FROM registry.access.redhat.com/ubi8-minimal as builder
 RUN curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo
-RUN yum -y install yarn
+RUN microdnf -y install yarn nodejs
 COPY . /mig-ui
 WORKDIR /mig-ui
 RUN yarn
 RUN yarn build
 
-FROM registry.access.redhat.com/ubi8
-RUN yum -y install nodejs
+FROM registry.access.redhat.com/ubi8-minimal
+RUN microdnf -y install nodejs && microdnf clean all
 COPY --from=builder /mig-ui/dist /srv/staticroot
 COPY --from=builder /mig-ui/public/favicon.ico /srv/staticroot
 COPY --from=builder /mig-ui/public/index.ejs /srv/staticroot
