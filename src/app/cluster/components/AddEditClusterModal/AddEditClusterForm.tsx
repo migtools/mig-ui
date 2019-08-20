@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
-import { withFormik } from 'formik';
+import { withFormik, FormikProps } from 'formik';
 import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
@@ -24,9 +24,8 @@ const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
-  // Formik doesn't like addEditStatus destructured in the signature for some reason
-  const currentStatus = props.addEditStatus;
+const InnerAddEditClusterForm = (props: OtherProps & FormikProps<FormValues>) => {
+  const { addEditStatus: currentStatus, values, touched, errors } = props;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
   const toggleHideToken = e => {
@@ -112,7 +111,19 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   );
 };
 
-const AddClusterForm: any = withFormik({
+interface FormValues {
+  name: string;
+  url: string;
+  token: string;
+}
+interface OtherProps {
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  initialClusterValues: any;
+}
+
+const AddEditClusterForm = withFormik<OtherProps, FormValues>({
   mapPropsToValues: ({ initialClusterValues }) => {
     const v = initialClusterValues;
     return {
@@ -151,4 +162,4 @@ const AddClusterForm: any = withFormik({
   },
 })(InnerAddEditClusterForm);
 
-export default AddClusterForm;
+export default AddEditClusterForm;

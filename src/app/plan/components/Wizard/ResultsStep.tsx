@@ -24,6 +24,11 @@ const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
+const StyledIcon = styled(RedoIcon)`
+  height: 3em;
+  width: 3em;
+`;
+
 const ResultsStep = props => {
   const { values, planList, isPollingStatus, startPlanStatusPolling } = props;
 
@@ -36,80 +41,81 @@ const ResultsStep = props => {
 
   return (
     <Flex
-      flexDirection="column"
       css={css`
+        margin: 5em 0;
+        height: 100%;
+        flex-direction: row;
+        justify-content: center;
+      `}
+    >
+      <Box css={css`display: inline-block; margin: auto 1em;`}>
+        {isPollingStatus ?
+          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="3em" width="3em" /> :
+          <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />
+        }
+      </Box>
+      <Box>
+        <Flex
+          flexDirection="column"
+          css={css`
         height: 100%;
         text-align: center;
       `}
-    >
-      <Box css={css`
-            display: inline-block; 
-            margin-right: 10px;
-            border-bottom: solid 1px ${theme.colors.medGray2};
-            text-align: left;
-            width: 20em;
-
-            `}>
-        {isPollingStatus ? (
-          <React.Fragment>
-            <Box css={css`display: inline-block; margin-right: 10px;`}>
-              <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1.5em" width="1.5em" />
-            </Box>
-            <Box css={css`display: inline-block; `}>
-              <Text fontSize={[1, 2, 3]}>
-                This might take a few minutes...
-              </Text>
-            </Box>
-          </React.Fragment>
-        ) : (
-            <React.Fragment>
+        >
+          <Box css={css`
+            `
+          }
+          >
+            <Text fontSize={[2, 3, 4]}>
               <Box css={css`
-                display: inline-block; 
-                margin-right: 10px;`
+            display: inline-block; 
+            margin-right: 10px;`
               }
               >
-                <Button onClick={handlePollRestart} variant="link" icon={<RedoIcon />} />
+                Validating migration plan <StyledSpan>{values.planName}</StyledSpan>.
+              </Box>
+              {/* <Box css={css`
+            display: inline-block; 
+            margin-right: 10px;`
+              }
+              >
+                <PlanStatus plan={matchingPlan} />
               </Box>
               <Box css={css`display: inline-block; `}>
-                <Text fontSize={[1, 2, 3]}>
-                  Check current plan status
-              </Text>
-              </Box>
-            </React.Fragment>
-          )}
-      </Box>
-      <Box css={css`
-            margin-top: .5em;
-            text-align: left;
-            `
-      }
-      >
-        <Text fontSize={[2, 3, 4]}>
-          <Box css={css`
-            display: inline-block; 
-            margin-right: 10px;`
-          }
-          >
-            Plan <StyledSpan>{values.planName}</StyledSpan> status:
-          </Box>
-          <Box css={css`
-            display: inline-block; 
-            margin-right: 10px;`
-          }
-          >
-            <PlanStatus plan={matchingPlan} />
-          </Box>
-          <Box css={css`display: inline-block; `}>
-            {matchingPlan.PlanStatus.hasReadyCondition ? (
-              <StatusIcon isReady={true} />
-            ) : (
-                <StatusIcon isReady={false} />
-              )}
+                {matchingPlan.PlanStatus.hasReadyCondition ? (
+                  <StatusIcon isReady={true} />
+                ) : (
+                    <StatusIcon isReady={false} />
+                  )}
 
+              </Box> */}
+            </Text>
           </Box>
-        </Text>
+          <Box css={css`
+            margin-top: .5em;
+            display: inline-block; 
+            margin-right: 10px;
+            width: 20em;
+            `}>
+            {isPollingStatus ? (
+              <React.Fragment>
+                <Box css={css`display: inline-block; `}>
+                  <Text fontSize={[1, 2, 3]} fontStyle="italic">
+                    This might take a few minutes...
+              </Text>
+                </Box>
+              </React.Fragment>
+            ) : (
+                <Box css={css`display: inline-block; `}>
+                  <Text fontSize={[1, 2, 3]}>
+                    Check current plan status
+                  </Text>
+                </Box>
+              )}
+          </Box>
+        </Flex >
       </Box>
-    </Flex >
+    </Flex>
   );
 };
 
