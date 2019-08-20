@@ -244,8 +244,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
-    startDataListPolling: params => dispatch(PollingActions.startDataListPolling(params)),
-    stopDataListPolling: () => dispatch(PollingActions.stopDataListPolling()),
+    startDataListPolling: params => dispatch(PollingActions.startPlanPolling(params)),
+    stopDataListPolling: () => dispatch(PollingActions.stopPlanPolling()),
     planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching

@@ -1,6 +1,6 @@
 export const PollingActionTypes = {
-  DATA_LIST_POLL_START: 'DATA_LIST_POLL_START',
-  DATA_LIST_POLL_STOP: 'DATA_LIST_POLL_STOP',
+  PLAN_POLL_START: 'PLAN_POLL_START',
+  PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   STORAGE_POLL_START: 'STORAGE_POLL_START',
   STORAGE_POLL_STOP: 'STORAGE_POLL_STOP',
   CLUSTER_POLL_START: 'CLUSTER_POLL_START',
@@ -9,13 +9,13 @@ export const PollingActionTypes = {
   STATUS_POLL_STOP: 'STATUS_POLL_STOP',
 };
 
-const startDataListPolling = (params?: any) => ({
-  type: PollingActionTypes.DATA_LIST_POLL_START,
+const startPlanPolling = (params?: any) => ({
+  type: PollingActionTypes.PLAN_POLL_START,
   params,
 });
 
-const stopDataListPolling = () => ({
-  type: PollingActionTypes.DATA_LIST_POLL_STOP,
+const stopPlanPolling = () => ({
+  type: PollingActionTypes.PLAN_POLL_STOP,
 });
 
 const startStoragePolling = (params?: any) => ({
@@ -46,8 +46,8 @@ const stopStatusPolling = () => ({
 });
 
 export const PollingActions = {
-  startDataListPolling,
-  stopDataListPolling,
+  startPlanPolling,
+  stopPlanPolling,
   startClusterPolling,
   stopClusterPolling,
   startStoragePolling,

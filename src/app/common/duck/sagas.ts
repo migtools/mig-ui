@@ -30,10 +30,10 @@ function* poll(action) {
     yield delay(params.delay);
   }
 }
-function* watchDataListPolling() {
+function* watchPlanPolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.DATA_LIST_POLL_START);
-    yield race([call(poll, action), take(PollingActionTypes.DATA_LIST_POLL_STOP)]);
+    const action = yield take(PollingActionTypes.PLAN_POLL_START);
+    yield race([call(poll, action), take(PollingActionTypes.PLAN_POLL_STOP)]);
   }
 }
 
@@ -119,7 +119,7 @@ function* watchAlerts() {
 export default {
   watchStoragePolling,
   watchClustersPolling,
-  watchDataListPolling,
+  watchPlanPolling,
   watchStatusPolling,
   watchAlerts,
 };

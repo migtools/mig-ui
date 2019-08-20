@@ -6,7 +6,7 @@ import storageSagas from './app/storage/duck/sagas';
 
 export default function* rootSaga() {
   yield all([
-    commonSagas.watchDataListPolling(),
+    commonSagas.watchPlanPolling(),
     commonSagas.watchStatusPolling(),
     commonSagas.watchClustersPolling(),
     commonSagas.watchStoragePolling(),

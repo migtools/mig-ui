@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
@@ -38,7 +38,8 @@ interface IProps {
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
-  fetchPlans: () => void;
+  startPlanPolling: (params) => void;
+  stopPlanPolling: () => void;
   startStoragePolling: (params) => void;
   stopStoragePolling: () => void;
   startClusterPolling: (params) => void;
@@ -62,112 +63,107 @@ interface IState {
   activeGroup: string;
   activeItem: string;
 }
-class HomeComponent extends React.Component<IProps, IState> {
-  state = {
-    isDropdownOpen: false,
-    isKebabDropdownOpen: false,
-    isNavOpen: false,
-    activeGroup: 'grp-1',
-    activeItem: 'grp-1_itm-1',
-  };
+const HomeComponent: React.FunctionComponent<IProps> = (props) => {
+  // state = {
+  //   isDropdownOpen: false,
+  //   isKebabDropdownOpen: false,
+  //   isNavOpen: false,
+  //   activeGroup: 'grp-1',
+  //   activeItem: 'grp-1_itm-1',
+  // };
+  const {
+    loggingIn,
+    user,
+    allClusters,
+    allStorage,
+    allPlans,
+    startPlanPolling,
+    stopPlanPolling,
+    startStoragePolling,
+    stopStoragePolling,
+    startClusterPolling,
+    stopClusterPolling,
+    updateClusters,
+    updateStorages,
+    onLogout,
+    isFetchingClusters,
+    isFetchingStorage,
+    isFetchingPlans,
+    isClusterError,
+    isStorageError,
+    isPlanError,
+    planStatusCounts
+  } = props;
 
-  onNavSelect = result => {
-    this.setState({
-      activeItem: result.itemId,
-    });
-  };
-
-  onDropdownToggle = isDropdownOpen => {
-    this.setState({
-      isDropdownOpen,
-    });
-  };
-
-  onDropdownSelect = event => {
-    this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen,
-    });
-  };
-
-  onKebabDropdownToggle = isKebabDropdownOpen => {
-    this.setState({
-      isKebabDropdownOpen,
-    });
-  };
-
-  onKebabDropdownSelect = event => {
-    this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
-    });
-  };
-
-  kebabDropdownItems = [
-    <DropdownItem key="0">
-      <BellIcon /> Notifications
-    </DropdownItem>,
-    <DropdownItem key="1">
-      <CogIcon /> Settings
-    </DropdownItem>,
-  ];
-
-  userDropdownItems = [
-    <DropdownItem key="0" onClick={this.props.onLogout}>
-      Logout
-    </DropdownItem>,
-  ];
-
-  handleClusterPoll = response => {
+  const handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
-      this.props.updateClusters(response.updatedClusters);
+      updateClusters(response.updatedClusters);
       return true;
     }
 
     return false;
   };
 
-  handleStoragePoll = response => {
+  const handleClusterPoll = response => {
     if (response && response.isSuccessful === true) {
-      this.props.updateStorages(response.updatedStorages);
+      updateClusters(response.updatedClusters);
       return true;
     }
 
     return false;
   };
 
-  startDefaultClusterPolling = () => {
+  const handleStoragePoll = response => {
+    if (response && response.isSuccessful === true) {
+      updateStorages(response.updatedStorages);
+      return true;
+    }
+
+    return false;
+  };
+
+  const startDefaultPlanPolling = () => {
+    const planPollParams = {
+      asyncFetch: planOperations.fetchPlansGenerator,
+      callback: handlePlanPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startClusterPolling(planPollParams);
+  }
+
+  const startDefaultClusterPolling = () => {
     const clusterPollParams = {
       asyncFetch: clusterOperations.fetchClustersGenerator,
-      callback: this.handleClusterPoll,
+      callback: handleClusterPoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
     };
-    this.props.startClusterPolling(clusterPollParams);
+    startClusterPolling(clusterPollParams);
   }
 
-  startDefaultStoragePolling = () => {
+  const startDefaultStoragePolling = () => {
     const storagePollParams = {
       asyncFetch: storageOperations.fetchStorageGenerator,
-      callback: this.handleStoragePoll,
+      callback: handleStoragePoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
     };
-    this.props.startStoragePolling(storagePollParams);
+    startStoragePolling(storagePollParams);
   }
+  useEffect(() => {
+    startDefaultClusterPolling();
+    startDefaultStoragePolling();
+    startDefaultPlanPolling();
 
-  componentDidMount = () => {
-    this.startDefaultClusterPolling();
-    this.startDefaultStoragePolling();
-    this.props.fetchPlans();
-  };
-
-  render() {
-    const { isDropdownOpen, activeItem, activeGroup, isNavOpen } = this.state;
-
-    const StyledPageHeader = styled(PageHeader)`
+  }, [])
+  const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand {
         height: 2.5em;
       }
@@ -185,90 +181,80 @@ class HomeComponent extends React.Component<IProps, IState> {
       }
     `;
 
-    const Header = (
-      <StyledPageHeader
-        logo={
-          <React.Fragment>
-            <Brand src={openshiftLogo} alt="OpenShift Logo" />
-          </React.Fragment>
-        }
-      />
-    );
+  const Header = (
+    <StyledPageHeader
+      logo={
+        <React.Fragment>
+          <Brand src={openshiftLogo} alt="OpenShift Logo" />
+        </React.Fragment>
+      }
+    />
+  );
 
-    const {
-      isFetchingStorage,
-      isFetchingClusters,
-      isFetchingPlans,
-      allStorage,
-      allPlans,
-      allClusters,
-      isClusterError,
-      isPlanError,
-      isStorageError,
-      planStatusCounts,
-    } = this.props;
-    return (
-      <Page header={Header}>
-        <PageSection>
-          <Grid gutter="md">
-            <GridItem span={4}>
-              <DashboardCard
-                type="clusters"
-                title="Clusters"
-                dataList={allClusters}
-                isFetching={isFetchingClusters}
-                isError={isClusterError}
-              />
-            </GridItem>
-            <GridItem span={4}>
-              <DashboardCard
-                title="Replication Repositories"
-                type="repositories"
-                dataList={allStorage}
-                isFetching={isFetchingStorage}
-                isError={isStorageError}
-              />
-            </GridItem>
-            <GridItem span={4}>
-              <DashboardCard
-                type="plans"
-                title="Migration Plans"
-                planStatusCounts={planStatusCounts}
-                dataList={allPlans}
-                isFetching={isFetchingPlans}
-                isError={isPlanError}
-              />
-            </GridItem>
-          </Grid>
-        </PageSection>
-        <PageSection>
-          <Flex justifyContent="center">
-            <Box flex="0 0 100%">
-              <PollingContext.Provider value={{
-                startDefaultClusterPolling: () => this.startDefaultClusterPolling(),
-                startDefaultStoragePolling: () => this.startDefaultStoragePolling(),
-                stopClusterPolling: () => this.props.stopClusterPolling(),
-                stopStoragepolling: () => this.props.stopStoragePolling(),
-                startAllDefaultPolling: () => {
-                  this.startDefaultClusterPolling();
-                  this.startDefaultStoragePolling();
-                },
-                stopAllPolling: () => {
-                  this.props.stopClusterPolling();
-                  this.props.stopStoragePolling();
-                }
-              }}>
-                <DetailViewComponent />
-              </PollingContext.Provider>
-            </Box>
-          </Flex>
-        </PageSection>
-        <PageSection>
-          {/* <TODO: footer content */}
-        </PageSection>
-      </Page>
-    );
-  }
+  return (
+    <Page header={Header}>
+      <PageSection>
+        <Grid gutter="md">
+          <GridItem span={4}>
+            <DashboardCard
+              type="clusters"
+              title="Clusters"
+              dataList={allClusters}
+              isFetching={isFetchingClusters}
+              isError={isClusterError}
+            />
+          </GridItem>
+          <GridItem span={4}>
+            <DashboardCard
+              title="Replication Repositories"
+              type="repositories"
+              dataList={allStorage}
+              isFetching={isFetchingStorage}
+              isError={isStorageError}
+            />
+          </GridItem>
+          <GridItem span={4}>
+            <DashboardCard
+              type="plans"
+              title="Migration Plans"
+              planStatusCounts={planStatusCounts}
+              dataList={allPlans}
+              isFetching={isFetchingPlans}
+              isError={isPlanError}
+            />
+          </GridItem>
+        </Grid>
+      </PageSection>
+      <PageSection>
+        <Flex justifyContent="center">
+          <Box flex="0 0 100%">
+            <PollingContext.Provider value={{
+              startDefaultClusterPolling: () => startDefaultClusterPolling(),
+              startDefaultStoragePolling: () => startDefaultStoragePolling(),
+              startDefaultPlanPolling: () => startDefaultPlanPolling(),
+              stopClusterPolling: () => stopClusterPolling(),
+              stopStoragepolling: () => stopStoragePolling(),
+              startAllDefaultPolling: () => {
+                startDefaultClusterPolling();
+                startDefaultStoragePolling();
+                startDefaultPlanPolling();
+              },
+              stopAllPolling: () => {
+                stopClusterPolling();
+                stopStoragePolling();
+                stopPlanPolling();
+              }
+            }}>
+              <DetailViewComponent />
+            </PollingContext.Provider>
+          </Box>
+        </Flex>
+      </PageSection>
+      <PageSection>
+        {/* <TODO: footer content */}
+      </PageSection>
+    </Page>
+  );
 }
 
 export default connect(
@@ -288,7 +274,8 @@ export default connect(
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
-    fetchPlans: () => dispatch(planOperations.fetchPlans()),
+    startPlanPolling: params => dispatch(PollingActions.startPlanPolling(params)),
+    stopPlanPolling: () => dispatch(PollingActions.stopPlanPolling()),
     startStoragePolling: params => dispatch(PollingActions.startStoragePolling(params)),
     stopStoragePolling: () => dispatch(PollingActions.stopStoragePolling()),
     startClusterPolling: params => dispatch(PollingActions.startClusterPolling(params)),
