@@ -73,6 +73,14 @@ const updateClusterRequest = (clusterValues: any) => ({
   clusterValues,
 });
 
+const startClusterPolling = (params?: any) => ({
+  type: ClusterActionTypes.CLUSTER_POLL_START,
+  params,
+});
+
+const stopClusterPolling = () => ({
+  type: ClusterActionTypes.CLUSTER_POLL_STOP,
+});
 
 export const ClusterActionTypes = {
   UPDATE_CLUSTERS: 'UPDATE_CLUSTERS',
@@ -90,6 +98,8 @@ export const ClusterActionTypes = {
   CLUSTER_FETCH_FAILURE: 'CLUSTER_FETCH_FAILURE',
   ADD_CLUSTER_REQUEST: 'ADD_CLUSTER_REQUEST',
   UPDATE_CLUSTER_REQUEST: 'UPDATE_CLUSTER_REQUEST',
+  CLUSTER_POLL_START: 'CLUSTER_POLL_START',
+  CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
 };
 
 export const ClusterActions = {
@@ -100,7 +110,6 @@ export const ClusterActions = {
   removeClusterFailure,
   updateClusterSuccess,
   updateSearchTerm,
-  setIsPollingCluster,
   setClusterAddEditStatus,
   watchClusterAddEditStatus,
   cancelWatchClusterAddEditStatus,
@@ -109,4 +118,6 @@ export const ClusterActions = {
   clusterFetchFailure,
   addClusterRequest,
   updateClusterRequest,
+  startClusterPolling,
+  stopClusterPolling,
 };

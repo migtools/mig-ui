@@ -21,8 +21,6 @@ const PlanDataListItem = ({
   isLoading,
   planList,
   plansDisabled,
-  onStartPolling,
-  onStopPolling,
   isExpanded,
   isClosing,
   toggleExpanded,
@@ -34,11 +32,6 @@ const PlanDataListItem = ({
         <DataListItemRow>
           <DataListToggle
             onClick={() => {
-              if (isExpanded) {
-                onStopPolling();
-              } else {
-                onStartPolling();
-              }
               toggleExpanded(id);
             }}
             isExpanded={isExpanded}

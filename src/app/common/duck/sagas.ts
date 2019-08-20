@@ -6,6 +6,9 @@ import {
   PollingActionTypes,
   AlertActionTypes
 } from '../../common/duck/actions';
+import { PlanActions, PlanActionTypes } from '../../plan/duck/actions';
+import { StorageActions, StorageActionTypes } from '../../storage/duck/actions';
+import { ClusterActions, ClusterActionTypes } from '../../cluster/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -29,22 +32,22 @@ function* poll(action) {
 }
 function* watchPlanPolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.PLAN_POLL_START);
-    yield race([call(poll, action), take(PollingActionTypes.PLAN_POLL_STOP)]);
+    const action = yield take(PlanActionTypes.PLAN_POLL_START);
+    yield race([call(poll, action), take(PlanActionTypes.PLAN_POLL_STOP)]);
   }
 }
 
 function* watchStoragePolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.STORAGE_POLL_START);
-    yield race([call(poll, action), take(PollingActionTypes.STORAGE_POLL_STOP)]);
+    const action = yield take(StorageActionTypes.STORAGE_POLL_START);
+    yield race([call(poll, action), take(StorageActionTypes.STORAGE_POLL_STOP)]);
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.CLUSTER_POLL_START);
-    yield race([call(poll, action), take(PollingActionTypes.CLUSTER_POLL_STOP)]);
+    const action = yield take(ClusterActionTypes.CLUSTER_POLL_START);
+    yield race([call(poll, action), take(ClusterActionTypes.CLUSTER_POLL_STOP)]);
   }
 }
 

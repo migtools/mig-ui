@@ -78,6 +78,15 @@ const updateStorageRequest = (storageValues) => ({
   storageValues,
 });
 
+const startStoragePolling = (params?: any) => ({
+  type: StorageActionTypes.STORAGE_POLL_START,
+  params,
+});
+
+const stopStoragePolling = () => ({
+  type: StorageActionTypes.STORAGE_POLL_STOP,
+});
+
 export const StorageActionTypes = {
   MIG_STORAGE_FETCH_REQUEST: 'MIG_STORAGE_FETCH_REQUEST',
   MIG_STORAGE_FETCH_SUCCESS: 'MIG_STORAGE_FETCH_SUCCESS',
@@ -95,6 +104,8 @@ export const StorageActionTypes = {
   REMOVE_STORAGE_SUCCESS: 'REMOVE_STORAGE_SUCCESS',
   UPDATE_STORAGE_SUCCESS: 'UPDATE_STORAGE_SUCCESS',
   UPDATE_STORAGES: 'UPDATE_STORAGES',
+  STORAGE_POLL_START: 'STORAGE_POLL_START',
+  STORAGE_POLL_STOP: 'STORAGE_POLL_STOP',
 };
 
 export const StorageActions = {
@@ -114,4 +125,6 @@ export const StorageActions = {
   removeStorageSuccess,
   updateStorageSuccess,
   updateStorages,
+  startStoragePolling,
+  stopStoragePolling,
 };
