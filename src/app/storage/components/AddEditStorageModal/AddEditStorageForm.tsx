@@ -64,7 +64,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
   return valuesUpdatedObject;
 };
 
-const InnerAddEditStorageForm = (props: OtherProps & FormikProps<FormValues>) => {
+const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const { addEditStatus: currentStatus, currentStorage, checkConnection, values, touched, errors } = props;
 
 
@@ -230,7 +230,7 @@ const InnerAddEditStorageForm = (props: OtherProps & FormikProps<FormValues>) =>
   );
 };
 
-interface FormValues {
+interface IFormValues {
   name: string;
   bucketName: string;
   bucketRegion: string;
@@ -238,7 +238,7 @@ interface FormValues {
   secret: string;
   s3Url: string;
 }
-interface OtherProps {
+interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;

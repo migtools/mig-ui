@@ -48,7 +48,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
     values.url !== existingEndpoint ||
     values.token !== rawToken;
 };
-const InnerAddEditClusterForm = (props: OtherProps & FormikProps<FormValues>) => {
+const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
     addEditStatus: currentStatus,
     currentCluster,
@@ -166,17 +166,16 @@ const InnerAddEditClusterForm = (props: OtherProps & FormikProps<FormValues>) =>
     </Form>
   );
 };
-interface FormValues {
+interface IFormValues {
   name: string;
   url: string;
   token: string;
 }
-interface OtherProps {
+interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
   currentCluster: any;
-  initialClusterValues: any;
   checkConnection: (name) => void;
 }
 

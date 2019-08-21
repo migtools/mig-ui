@@ -9,17 +9,17 @@ import { useToggleLoading } from '../../duck/hooks';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 
-interface FormValues {
+interface IFormValues {
   planName: string;
   sourceCluster: string;
   targetCluster: string;
   selectedStorage: string;
-  selectedNamespaces: Array<any>;
+  selectedNamespaces: any[];
 }
-interface OtherProps {
-  clusterList: Array<any>;
-  planList: Array<any>;
-  storageList: Array<any>;
+interface IOtherProps {
+  clusterList: any[];
+  planList: any[];
+  storageList: any[];
   isFetchingPVList: boolean;
   isPollingStatus: boolean;
   isPVError: boolean;
@@ -37,11 +37,11 @@ interface OtherProps {
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
   addPlan: (planValues) => void;
-  sourceClusterNamespaces: Array<any>
-  pvResourceList: Array<any>
+  sourceClusterNamespaces: any[];
+  pvResourceList: any[];
 }
 
-const WizardComponent = (props: OtherProps & FormikProps<FormValues>) => {
+const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
