@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
@@ -6,11 +6,13 @@ import VolumesForm from './VolumesForm';
 import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
+import { PollingContext } from '../../../home/duck/context';
 
 const WizardComponent = props => {
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
+  const pollingContext = useContext(PollingContext);
 
   const {
     values,
@@ -22,17 +24,20 @@ const WizardComponent = props => {
     setFieldValue,
     clusterList,
     currentPlan,
-    planList,
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
-    isCheckingPlanStatus,
+    isPollingStatus,
     isFetchingPVResources,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
     getPVResourcesRequest,
-    pvResourceList
+    startPlanStatusPolling,
+    pvResourceList,
+    isPollingStorage,
+    isPollingClusters,
+    isPollingPlans
   } = props;
 
   enum stepId {
@@ -43,6 +48,12 @@ const WizardComponent = props => {
     MigrationTarget,
     Results,
   }
+
+  useEffect(() => {
+    if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
+      pollingContext.stopAllPolling();
+    }
+  });
 
   useEffect(() => {
     const steps = [
@@ -121,8 +132,6 @@ const WizardComponent = props => {
             handleChange={handleChange}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
-            onWizardLoadingToggle={toggleLoading}
-            isWizardLoading={isLoading}
             currentPlan={currentPlan}
             isFetchingPVList={isFetchingPVList}
             clusterList={clusterList}
@@ -138,10 +147,9 @@ const WizardComponent = props => {
           <ResultsStep
             values={values}
             errors={errors}
-            onWizardLoadingToggle={toggleLoading}
             currentPlan={currentPlan}
-            isCheckingPlanStatus={isCheckingPlanStatus}
-            planList={planList}
+            isPollingStatus={isPollingStatus}
+            startPlanStatusPolling={startPlanStatusPolling}
           />
         ),
         enableNext: !isLoading,
@@ -159,7 +167,7 @@ const WizardComponent = props => {
       values,
       isPVError,
       isFetchingPVList,
-      isCheckingPlanStatus,
+      isPollingStatus,
       isFetchingNamespaceList,
       pvResourceList,
       errors,
@@ -194,6 +202,7 @@ const WizardComponent = props => {
     setStepIdReached(stepId.General);
     props.onHandleClose();
     props.resetForm();
+    pollingContext.startAllDefaultPolling();
   };
   return (
     <React.Fragment>

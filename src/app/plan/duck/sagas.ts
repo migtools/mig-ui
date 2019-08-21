@@ -120,6 +120,35 @@ function* checkClosedStatus(action) {
   }
 }
 
+function* checkPlanStatus(action) {
+  let planStatusComplete = false;
+  let tries = 0;
+  const TicksUntilTimeout = 10;
+  while (!planStatusComplete) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      const getPlanResponse = yield call(getPlanSaga, action.planName);
+      const MigPlan = getPlanResponse.data;
+      yield put(PlanActions.updatePlan(MigPlan));
+
+      if (MigPlan.status && MigPlan.status.conditions) {
+        const hasReadyCondition = !!MigPlan.status.conditions.some(c => c.type === 'Ready');
+        if (hasReadyCondition) {
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+      }
+    } else {
+      planStatusComplete = true;
+      // yield put(AlertActions.alertErrorTimeout('Plan status timed out'));
+      yield put(PlanActions.stopPlanStatusPolling());
+      break;
+    }
+
+    const PollingInterval = 5000;
+    yield delay(PollingInterval);
+  }
+}
+
 function* planCloseSaga(action) {
   try {
     const updatedValues = {
@@ -199,6 +228,13 @@ function* watchClosedStatus() {
   }
 }
 
+function* watchPlanStatus() {
+  while (true) {
+    const data = yield take(PlanActionTypes.PLAN_STATUS_POLL_START);
+    yield race([call(checkPlanStatus, data), take(PlanActionTypes.PLAN_STATUS_POLL_STOP)]);
+  }
+}
+
 function* watchPVPolling() {
   while (true) {
     const data = yield take(PlanActionTypes.START_PV_POLLING);
@@ -220,5 +256,6 @@ export default {
   watchPlanCloseAndDelete,
   watchPlanClose,
   watchClosedStatus,
+  watchPlanStatus,
   watchGetPVResourcesRequest
 };

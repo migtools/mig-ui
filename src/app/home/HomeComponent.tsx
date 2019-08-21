@@ -1,20 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import {
   Brand,
-  DropdownItem,
   Page,
   PageHeader,
   PageSection,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon } from '@patternfly/react-icons';
-
 import { ClusterActions } from '../cluster/duck/actions';
-import { StorageActions as StorageActions } from '../storage/duck/actions';
+import { StorageActions } from '../storage/duck/actions';
+import { PlanActions } from '../plan/duck/actions';
 
 
 import { clusterOperations } from '../cluster/duck';
@@ -25,27 +23,23 @@ import DashboardCard from './components/Card/DashboardCard';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import {
-  PollingActions
-} from '../common/duck/actions';
 import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { PollingContext } from './duck/context';
 
 interface IProps {
-  loggingIn?: boolean;
-  user: any;
   allClusters: any[];
   allStorage: any[];
   allPlans: any[];
-  fetchPlans: () => void;
+  startPlanPolling: (params) => void;
+  stopPlanPolling: () => void;
   startStoragePolling: (params) => void;
   stopStoragePolling: () => void;
   startClusterPolling: (params) => void;
   stopClusterPolling: () => void;
   updateClusters: (updatedClusters) => void;
   updateStorages: (updatedStorages) => void;
-  onLogout: () => void;
+  updatePlans: (updatedPlans) => void;
   isFetchingClusters: boolean;
   isFetchingStorage: boolean;
   isFetchingPlans: boolean;
@@ -55,144 +49,8 @@ interface IProps {
   planStatusCounts: any;
 }
 
-interface IState {
-  isDropdownOpen?: boolean;
-  isKebabDropdownOpen?: boolean;
-  isNavOpen?: boolean;
-  activeGroup: string;
-  activeItem: string;
-  expanded: {
-    [s: string]: boolean;
-  };
-}
-
-export const DataItemsLength = 3;
-export enum DataListItems {
-  ClusterList = 'clusterList',
-  StorageList = 'storageList',
-  PlanList = 'planList',
-}
-class HomeComponent extends React.Component<IProps, IState> {
-  state = {
-    isDropdownOpen: false,
-    isKebabDropdownOpen: false,
-    isNavOpen: false,
-    activeGroup: 'grp-1',
-    activeItem: 'grp-1_itm-1',
-    expanded: {
-      'clusterList': false,
-      'storageList': false,
-      'planList': false,
-    },
-  };
-
-  onNavSelect = result => {
-    this.setState({
-      activeItem: result.itemId,
-    });
-  };
-
-  onDropdownToggle = isDropdownOpen => {
-    this.setState({
-      isDropdownOpen,
-    });
-  };
-
-  onDropdownSelect = event => {
-    this.setState({
-      isDropdownOpen: !this.state.isDropdownOpen,
-    });
-  };
-
-  onKebabDropdownToggle = isKebabDropdownOpen => {
-    this.setState({
-      isKebabDropdownOpen,
-    });
-  };
-
-  onKebabDropdownSelect = event => {
-    this.setState({
-      isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
-    });
-  };
-
-  handleExpand = (id: string) => {
-    const expanded = !this.state.expanded[id];
-    const newExpanded = Object.assign({}, this.state.expanded);
-    Object.values(DataListItems).map(
-      expandItem => newExpanded[expandItem] = false
-    );
-    newExpanded[id] = expanded;
-    this.setState({ expanded: newExpanded });
-  }
-
-  kebabDropdownItems = [
-    <DropdownItem key="0">
-      <BellIcon /> Notifications
-    </DropdownItem>,
-    <DropdownItem key="1">
-      <CogIcon /> Settings
-    </DropdownItem>,
-  ];
-
-  userDropdownItems = [
-    <DropdownItem key="0" onClick={this.props.onLogout}>
-      Logout
-    </DropdownItem>,
-  ];
-
-  handleClusterPoll = response => {
-    if (response && response.isSuccessful === true) {
-      this.props.updateClusters(response.updatedClusters);
-      return true;
-    }
-
-    return false;
-  };
-
-  handleStoragePoll = response => {
-    if (response && response.isSuccessful === true) {
-      this.props.updateStorages(response.updatedStorages);
-      return true;
-    }
-
-    return false;
-  };
-
-  startDefaultClusterPolling = () => {
-    const clusterPollParams = {
-      asyncFetch: clusterOperations.fetchClustersGenerator,
-      callback: this.handleClusterPoll,
-      delay: StatusPollingInterval,
-      retryOnFailure: true,
-      retryAfter: 5,
-      stopAfterRetries: 2,
-    };
-    this.props.startClusterPolling(clusterPollParams);
-  }
-
-  startDefaultStoragePolling = () => {
-    const storagePollParams = {
-      asyncFetch: storageOperations.fetchStorageGenerator,
-      callback: this.handleStoragePoll,
-      delay: StatusPollingInterval,
-      retryOnFailure: true,
-      retryAfter: 5,
-      stopAfterRetries: 2,
-    };
-    this.props.startStoragePolling(storagePollParams);
-  }
-
-  componentDidMount = () => {
-    this.startDefaultClusterPolling();
-    this.startDefaultStoragePolling();
-    this.props.fetchPlans();
-  };
-
-  render() {
-    const { isDropdownOpen, activeItem, activeGroup, isNavOpen } = this.state;
-
-    const StyledPageHeader = styled(PageHeader)`
+const HomeComponent: React.FunctionComponent<IProps> = (props) => {
+  const StyledPageHeader = styled(PageHeader)`
       .pf-c-brand {
         height: 2.5em;
       }
@@ -210,93 +68,170 @@ class HomeComponent extends React.Component<IProps, IState> {
       }
     `;
 
-    const Header = (
-      <StyledPageHeader
-        logo={
-          <React.Fragment>
-            <Brand src={openshiftLogo} alt="OpenShift Logo" />
-          </React.Fragment>
-        }
-      />
-    );
+  const Header = (
+    <StyledPageHeader
+      logo={
+        <React.Fragment>
+          <Brand src={openshiftLogo} alt="OpenShift Logo" />
+        </React.Fragment>
+      }
+    />
+  );
 
-    const {
-      isFetchingStorage,
-      isFetchingClusters,
-      isFetchingPlans,
-      allStorage,
-      allPlans,
-      allClusters,
-      isClusterError,
-      isPlanError,
-      isStorageError,
-      planStatusCounts,
-    } = this.props;
-    return (
-      <Page header={Header}>
-        <PageSection>
-          <Grid gutter="md">
-            <GridItem span={4}>
-              <DashboardCard
-                type="clusters"
-                title="Clusters"
-                dataList={allClusters}
-                isFetching={isFetchingClusters}
-                isError={isClusterError}
-                expandDetails={() => this.handleExpand(DataListItems.ClusterList)}
-              />
-            </GridItem>
-            <GridItem span={4}>
-              <DashboardCard
-                title="Replication Repositories"
-                type="repositories"
-                dataList={allStorage}
-                isFetching={isFetchingStorage}
-                isError={isStorageError}
-                expandDetails={() => this.handleExpand(DataListItems.StorageList)}
-              />
-            </GridItem>
-            <GridItem span={4}>
-              <DashboardCard
-                type="plans"
-                title="Migration Plans"
-                planStatusCounts={planStatusCounts}
-                dataList={allPlans}
-                isFetching={isFetchingPlans}
-                isError={isPlanError}
-                expandDetails={() => this.handleExpand(DataListItems.PlanList)}
-              />
-            </GridItem>
-          </Grid>
-        </PageSection>
-        <PageSection>
-          <Flex justifyContent="center">
-            <Box flex="0 0 100%">
-              <PollingContext.Provider value={{
-                startDefaultClusterPolling: () => this.startDefaultClusterPolling(),
-                startDefaultStoragePolling: () => this.startDefaultStoragePolling(),
-                stopClusterPolling: () => this.props.stopClusterPolling(),
-                stopStoragepolling: () => this.props.stopStoragePolling(),
-                startAllDefaultPolling: () => {
-                  this.startDefaultClusterPolling();
-                  this.startDefaultStoragePolling();
-                },
-                stopAllPolling: () => {
-                  this.props.stopClusterPolling();
-                  this.props.stopStoragePolling();
-                }
-              }}>
-                <DetailViewComponent expanded={this.state.expanded} handleExpandDetails={this.handleExpand}/>
-              </PollingContext.Provider>
-            </Box>
-          </Flex>
-        </PageSection>
-        <PageSection>
-          {/* <TODO: footer content */}
-        </PageSection>
-      </Page>
-    );
-  }
+  const {
+    allClusters,
+    allStorage,
+    allPlans,
+    startPlanPolling,
+    stopPlanPolling,
+    startStoragePolling,
+    stopStoragePolling,
+    startClusterPolling,
+    stopClusterPolling,
+    updateClusters,
+    updateStorages,
+    updatePlans,
+    isFetchingClusters,
+    isFetchingStorage,
+    isFetchingPlans,
+    isClusterError,
+    isStorageError,
+    isPlanError,
+    planStatusCounts
+  } = props;
+
+  const handlePlanPoll = response => {
+    if (response && response.isSuccessful === true) {
+      updatePlans(response.updatedPlans);
+      return true;
+    }
+    return false;
+  };
+
+  const handleClusterPoll = response => {
+    if (response && response.isSuccessful === true) {
+      updateClusters(response.updatedClusters);
+      return true;
+    }
+    return false;
+  };
+
+  const handleStoragePoll = response => {
+    if (response && response.isSuccessful === true) {
+      updateStorages(response.updatedStorages);
+      return true;
+    }
+    return false;
+  };
+
+  const startDefaultPlanPolling = () => {
+    const planPollParams = {
+      asyncFetch: planOperations.fetchPlansGenerator,
+      callback: handlePlanPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startPlanPolling(planPollParams);
+  };
+
+  const startDefaultClusterPolling = () => {
+    const clusterPollParams = {
+      asyncFetch: clusterOperations.fetchClustersGenerator,
+      callback: handleClusterPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startClusterPolling(clusterPollParams);
+  };
+
+  const startDefaultStoragePolling = () => {
+    const storagePollParams = {
+      asyncFetch: storageOperations.fetchStorageGenerator,
+      callback: handleStoragePoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startStoragePolling(storagePollParams);
+  };
+
+  useEffect(() => {
+    startDefaultClusterPolling();
+    startDefaultStoragePolling();
+    startDefaultPlanPolling();
+
+  }, []);
+
+  return (
+    <Page header={Header}>
+      <PageSection>
+        <Grid gutter="md">
+          <GridItem span={4}>
+            <DashboardCard
+              type="clusters"
+              title="Clusters"
+              dataList={allClusters}
+              isFetching={isFetchingClusters}
+              isError={isClusterError}
+            />
+          </GridItem>
+          <GridItem span={4}>
+            <DashboardCard
+              title="Replication Repositories"
+              type="repositories"
+              dataList={allStorage}
+              isFetching={isFetchingStorage}
+              isError={isStorageError}
+            />
+          </GridItem>
+          <GridItem span={4}>
+            <DashboardCard
+              type="plans"
+              title="Migration Plans"
+              planStatusCounts={planStatusCounts}
+              dataList={allPlans}
+              isFetching={isFetchingPlans}
+              isError={isPlanError}
+            />
+          </GridItem>
+        </Grid>
+      </PageSection>
+      <PageSection>
+        <Flex justifyContent="center">
+          <Box flex="0 0 100%">
+            <PollingContext.Provider value={{
+              startDefaultClusterPolling: () => startDefaultClusterPolling(),
+              startDefaultStoragePolling: () => startDefaultStoragePolling(),
+              startDefaultPlanPolling: () => startDefaultPlanPolling(),
+              stopClusterPolling: () => stopClusterPolling(),
+              stopStoragePolling: () => stopStoragePolling(),
+              stopPlanPolling: () => stopPlanPolling(),
+              startAllDefaultPolling: () => {
+                startDefaultClusterPolling();
+                startDefaultStoragePolling();
+                startDefaultPlanPolling();
+              },
+              stopAllPolling: () => {
+                stopClusterPolling();
+                stopStoragePolling();
+                stopPlanPolling();
+              }
+            }}>
+              <DetailViewComponent />
+            </PollingContext.Provider>
+          </Box>
+        </Flex>
+      </PageSection>
+      <PageSection>
+        {/* <TODO: footer content */}
+      </PageSection>
+    </Page>
+  );
 }
 
 export default connect(
@@ -316,12 +251,14 @@ export default connect(
   }),
   dispatch => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
-    fetchPlans: () => dispatch(planOperations.fetchPlans()),
-    startStoragePolling: params => dispatch(PollingActions.startStoragePolling(params)),
-    stopStoragePolling: () => dispatch(PollingActions.stopStoragePolling()),
-    startClusterPolling: params => dispatch(PollingActions.startClusterPolling(params)),
-    stopClusterPolling: () => dispatch(PollingActions.stopClusterPolling()),
+    startPlanPolling: params => dispatch(PlanActions.startPlanPolling(params)),
+    stopPlanPolling: () => dispatch(PlanActions.stopPlanPolling()),
+    startStoragePolling: params => dispatch(StorageActions.startStoragePolling(params)),
+    stopStoragePolling: () => dispatch(StorageActions.stopStoragePolling()),
+    startClusterPolling: params => dispatch(ClusterActions.startClusterPolling(params)),
+    stopClusterPolling: () => dispatch(ClusterActions.stopClusterPolling()),
     updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
     updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
+    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
   })
 )(HomeComponent);

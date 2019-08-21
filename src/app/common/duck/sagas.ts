@@ -6,9 +6,9 @@ import {
   PollingActionTypes,
   AlertActionTypes
 } from '../../common/duck/actions';
-
-import { ClusterActions } from '../../cluster/duck/actions';
-import { StorageActions } from '../../storage/duck/actions';
+import { PlanActions, PlanActionTypes } from '../../plan/duck/actions';
+import { StorageActions, StorageActionTypes } from '../../storage/duck/actions';
+import { ClusterActions, ClusterActionTypes } from '../../cluster/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -30,28 +30,24 @@ function* poll(action) {
     yield delay(params.delay);
   }
 }
-function* watchDataListPolling() {
+function* watchPlanPolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.DATA_LIST_POLL_START);
-    yield race([call(poll, action), take(PollingActionTypes.DATA_LIST_POLL_STOP)]);
+    const action = yield take(PlanActionTypes.PLAN_POLL_START);
+    yield race([call(poll, action), take(PlanActionTypes.PLAN_POLL_STOP)]);
   }
 }
 
 function* watchStoragePolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.STORAGE_POLL_START);
-    yield put(StorageActions.setIsPollingStorage(true));
-    yield race([call(poll, action), take(PollingActionTypes.STORAGE_POLL_STOP)]);
-    yield put(StorageActions.setIsPollingStorage(false));
+    const action = yield take(StorageActionTypes.STORAGE_POLL_START);
+    yield race([call(poll, action), take(StorageActionTypes.STORAGE_POLL_STOP)]);
   }
 }
 
 function* watchClustersPolling() {
   while (true) {
-    const action = yield take(PollingActionTypes.CLUSTER_POLL_START);
-    yield put(ClusterActions.setIsPollingCluster(true));
-    yield race([call(poll, action), take(PollingActionTypes.CLUSTER_POLL_STOP)]);
-    yield put(ClusterActions.setIsPollingCluster(false));
+    const action = yield take(ClusterActionTypes.CLUSTER_POLL_START);
+    yield race([call(poll, action), take(ClusterActionTypes.CLUSTER_POLL_STOP)]);
   }
 }
 
@@ -119,7 +115,7 @@ function* watchAlerts() {
 export default {
   watchStoragePolling,
   watchClustersPolling,
-  watchDataListPolling,
+  watchPlanPolling,
   watchStatusPolling,
   watchAlerts,
 };

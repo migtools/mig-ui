@@ -6,82 +6,107 @@ import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
-import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
+import { RedoIcon } from '@patternfly/react-icons';
+import { Button, Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
 import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
 import StatusIcon from '../../../common/components/StatusIcon';
 
 interface IProps {
   values: any;
   errors: any;
-  onWizardLoadingToggle: () => void;
+  startPlanStatusPolling: (planName) => void;
   currentPlan: any;
-  planList: any[];
-  isCheckingPlanStatus: boolean;
+  isPollingStatus: boolean;
 }
 
 const StyledSpan = styled.span`
   font-weight: 600;
 `;
 
-const ResultsStep: React.FunctionComponent<IProps> = ({
-  values,
-  planList,
-  isCheckingPlanStatus
-}) => {
-  const matchingPlan = planList.find(p => {
-    return values.planName === p.MigPlan.metadata.name;
-  });
+const StyledIcon = styled(RedoIcon)`
+  height: 3em;
+  width: 3em;
+`;
+
+const ResultsStep: React.FunctionComponent<IProps> = props => {
+  const { values, currentPlan, isPollingStatus, startPlanStatusPolling } = props;
+
+  const handlePollRestart = () => {
+    startPlanStatusPolling(values.planName);
+  };
 
   return (
     <Flex
       css={css`
+        margin: 5em 0;
+        height: 100%;
+        flex-direction: row;
+        justify-content: center;
+      `}
+    >
+      <Box css={css`display: inline-block; margin: auto 1em;`}>
+        {isPollingStatus ?
+          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="3em" width="3em" /> :
+          <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />
+        }
+      </Box>
+      <Box>
+        <Flex
+          flexDirection="column"
+          css={css`
         height: 100%;
         text-align: center;
       `}
-    >
-      <Box
-        flex="1"
-        m="auto"
-        css={css`
-          color: ${theme.colors.darkGray1};
-          border: 1px solid;
-          border-radius: 40px;
-          width: 100%;
-          padding: 14px;
-          background: linear-gradient(
-            90deg,
-            ${theme.colors.lightGray3} 20%,
-            ${theme.colors.medGray1} 8%
-          );
-        `}
-      >
-        <Flex mx={-2}>
-          <Box width={1 / 5} px={2} my="auto">
-            <Text fontSize={[2, 3, 4]}>Plan Status</Text>
+        >
+          <Box css={css`
+            `
+          }
+          >
+            <Text fontSize={[2, 3, 4]}>
+              <Box css={css`
+            display: inline-block; 
+            margin-right: 10px;`
+              }
+              >
+                Validating migration plan <StyledSpan>{values.planName}</StyledSpan>.
+              </Box>
+            </Text>
           </Box>
-          <Box width={4 / 5} px={2}>
-            {isCheckingPlanStatus ? (
-              <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
+          <Box css={css`
+            margin-top: .5em;
+            display: inline-block; 
+            margin-right: 10px;
+            width: 20em;
+            `}>
+            {isPollingStatus ? (
+              <React.Fragment>
+                <Box css={css`display: inline-block; `}>
+                  <Text fontSize={[1, 2, 3]} fontStyle="italic">
+                    This might take a few minutes...
+              </Text>
+                </Box>
+              </React.Fragment>
             ) : (
-                <Text fontSize={[2, 3, 4]}>
-                  {matchingPlan.PlanStatus.hasReadyCondition ? (
-                    <StatusIcon isReady={true} />
-                  ) : (
-                      <StatusIcon isReady={false} />
-                    )}
-                  <StyledSpan>{values.planName} </StyledSpan>
-                  <Box
-                    css={css`
-                    margin: 0.3em;
-                    display: inline-block;
-                  `}
+                <React.Fragment>
+                  <Box css={css`
+                    display: inline-block; 
+                    margin-right: 10px;`
+                  }
                   >
-                    <PlanStatus plan={matchingPlan} />
+                    <PlanStatus plan={currentPlan} />
                   </Box>
-                </Text>
+                  {/* <Box css={css`display: inline-block; `}>
+                    {currentPlan.PlanStatus.hasReadyCondition ? (
+                      <StatusIcon isReady={true} />
+                    ) : (
+                        <StatusIcon isReady={false} />
+                      )}
+
+                  </Box> */}
+                </React.Fragment>
               )}
           </Box>
-        </Flex>
+        </Flex >
       </Box>
     </Flex>
   );
