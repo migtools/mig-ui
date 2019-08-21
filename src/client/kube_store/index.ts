@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { KubeResource } from '../resources';
+import { MigResource, MigResourceKind } from '../resources/mig';
 
 import mocked_data from './mocked_data';
 import JsonMergePatch from 'json-merge-patch';
@@ -45,18 +46,177 @@ export class KubeStore {
     localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
   }
 
+  private setResourceStatus(apiKey, resourceName, obj, statusType, timeout=2000) {
+    setTimeout(() => {
+      if (!obj['status']) {
+        obj['status'] = {};
+      }
+      obj['status']['conditions'] = [{
+        lastTransitionTime: new Date().toUTCString(),
+        type: statusType,
+      }];
+      this.updateMockedData(apiKey, resourceName, obj);
+    }, timeout);
+  }
+
+  private discoverPVsMock = (apiKey, resourceName, migPlan) => {
+    setTimeout(() => {
+      const mockPVC = {
+        accessModes: ['ReadWriteOnce'],
+        name: 'sample-pvc',
+        namespace: 'sample-namespace',
+      };
+
+      const mockSC = {
+        action: 'copy',
+        storageClass: 'gp2',
+      };
+
+      const mockSupported = {
+        actions: ['copy', 'move'],
+      };
+
+      const mockPV = {
+        capacity: '100Gi',
+        name: 'persistent-volume',
+        pvc: mockPVC,
+        selection: mockSC,
+        supported: mockSupported,
+      };
+
+      const mockPVDiscovery = {
+        conditions: [{
+          type: 'PvsDiscovered',
+        }]
+      };
+      migPlan.spec['persistentVolumes'] = [mockPV];
+      migPlan['status'] = mockPVDiscovery;
+      this.updateMockedData(apiKey, resourceName, migPlan);
+    }, 2000);
+  };
+
+  private setMigrationProgressPhase = (apiKey, resourceName, migMigration) => {
+    let steps = [];
+    if (migMigration.spec.stage) {
+      steps = [
+        'Prepare',
+        'EnsureInitialBackup',
+        'InitialBackupCreated',
+        'AnnotateResources',
+        'EnsureInitialBackupReplicated',
+        'EnsureFinalRestore',
+        'FinalRestoreCreated',
+      ];
+    } else {
+      steps = [
+        'Prepare',
+        'EnsureInitialBackup',
+        'InitialBackupCreated',
+        'AnnotateResources',
+        'EnsureStagePods',
+        'StagePodsCreated',
+        'RestartRestic',
+        'ResticRestarted',
+        'QuiesceApplications',
+        'EnsureQuiesced',
+        'EnsureStageBackup',
+        'StageBackupCreated',
+        'EnsureInitialBackupReplicated',
+        'EnsureStageBackupReplicated',
+        'EnsureStageRestore',
+        'StageRestoreCreated',
+        'EnsureFinalRestore',
+        'FinalRestoreCreated',
+        'EnsureStagePodsDeleted',
+        'EnsureAnnotationsDeleted',
+      ];
+    }
+    steps.map((migrationPhase, step) => {
+      setTimeout(() => {
+        migMigration['status']['conditions'] = [{
+          type: 'Running',
+          reason: migrationPhase,
+          message: `Step: ${step + 1}/${steps.length}`
+        }];
+        migMigration['status']['phase'] = migrationPhase;
+        this.updateMockedData(apiKey, resourceName, migMigration);
+      }, 3000 + step * 3000);
+    });
+  };
+
+  private setMigrationSucceededConditionMock = (apiKey, resourceName, migMigration) => {
+    let timeout;
+    if (migMigration.spec.stage) {
+      timeout = 25000;
+    } else {
+      timeout = 65000;
+      setTimeout(() => {
+        const planResource = new MigResource(MigResourceKind.MigPlan, migMigration.spec.migPlanRef.namespace);
+        const closedPlan = this.getResource(
+          new MigResource(MigResourceKind.MigPlan, migMigration.spec.migPlanRef.namespace),
+          migMigration.spec.migPlanRef.name
+        );
+        closedPlan['spec']['closed'] = true;
+        closedPlan['status']['conditions'] = [{
+          lastTransitionTime: new Date().toUTCString(),
+          type: 'Closed',
+        }];
+        this.updateMockedData(
+          planResource.listPath().substr(1),
+          migMigration.spec.migPlanRef.name,
+          closedPlan);
+      }, timeout + 3000);
+    }
+    setTimeout(() => {
+      migMigration['status']['conditions'] = [{
+        lastTransitionTime: new Date().toUTCString(),
+        type: 'Succeeded',
+      }];
+      migMigration['status']['phase'] = 'Completed';
+      this.updateMockedData(apiKey, resourceName, migMigration);
+    }, timeout);
+
+  };
+
+  private setMigrationStarted = (apiKey, resourceName, migMigration) => {
+    setTimeout(() => {
+      migMigration['status'] = {};
+      migMigration['status']['conditions'] = [];
+      migMigration['status']['phase'] = 'Started';
+      migMigration['status']['startTimestamp'] = new Date().toUTCString(),
+      this.updateMockedData(apiKey, resourceName, migMigration);
+    }, 2000);
+  };
+
   private updateMockedData(apiKey, resourceName, updatedObject) {
     const newData = this._data();
     newData.clusters[this.clusterName][apiKey][resourceName] = updatedObject;
     localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
+    if (['MigCluster', 'MigStorage'].includes(updatedObject.kind)) {
+      this.setResourceStatus(apiKey, resourceName, updatedObject, 'Ready');
+    }
   }
 
   private createMockedData(apiKey, resourceName, obj) {
     const newData = this._data();
-    const newObj = { [resourceName]: obj};
+
+    if (['MigCluster', 'MigStorage'].includes(obj.kind)) {
+      this.setResourceStatus(apiKey, resourceName, obj, 'Ready');
+    } else if (obj.kind === 'MigPlan') {
+      if (!obj.spec.closed) {
+        this.discoverPVsMock(apiKey, resourceName, obj);
+        this.setResourceStatus(apiKey, resourceName, obj, 'Ready', 7000);
+      }
+    } else if (obj.kind === 'MigMigration') {
+      this.setMigrationStarted(apiKey, resourceName, obj);
+      this.setMigrationProgressPhase(apiKey, resourceName, obj);
+      this.setMigrationSucceededConditionMock(apiKey, resourceName, obj);
+    }
+    const newObj = { [resourceName]: obj };
     newData.clusters[this.clusterName][apiKey] = {
       ...newData.clusters[this.clusterName][apiKey],
-      ...newObj};
+      ...newObj
+    };
     localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
   }
 

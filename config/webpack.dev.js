@@ -69,22 +69,6 @@ if (devMode === 'local') {
   plugins.push(
     new webpack.NormalModuleReplacementPlugin(/client_factory.ts/, 'client_factory.mock.ts')
   );
-  plugins.push(
-    new webpack.NormalModuleReplacementPlugin(/plan\/duck\/operations\.ts/, res => {
-      if (res.rawRequest === '../operations') return;
-      res.request = res.request.replace(/operation.\.ts/, 'mock/operations.mock.ts');
-      res.resource = res.resource.replace(/operation.\.ts/, 'mock/operations.mock.ts');
-      res.resourceResolveData.path = res.resourceResolveData.path.replace(/operation.\.ts/, 'mock/operations.mock.ts');
-    })
-  );
-  plugins.push(
-    new webpack.NormalModuleReplacementPlugin(/(?:cluster|storage|plan)\/duck\/sagas\.ts/, res => {
-      if (res.rawRequest === '../sagas') return;
-      res.request = res.request.replace(/sagas\.ts/, 'mock/sagas.mock.ts');
-      res.resource = res.resource.replace(/sagas\.ts/, 'mock/sagas.mock.ts');
-      res.resourceResolveData.path = res.resourceResolveData.path.replace(/sagas\.ts/, 'mock/sagas.mock.ts');
-    })
-  )
 }
 
 const webpackConfig = {
