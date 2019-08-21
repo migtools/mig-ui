@@ -77,8 +77,7 @@ const mapStateToProps = state => {
     isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlan(state),
-    planList: planSelectors.getPlansWithStatus(state),
+    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     pvResourceList: state.plan.pvResourceList,
   };
 };

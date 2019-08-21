@@ -16,7 +16,6 @@ interface IProps {
   errors: any;
   startPlanStatusPolling: (planName) => void;
   currentPlan: any;
-  planList: any[];
   isPollingStatus: boolean;
 }
 
@@ -30,11 +29,8 @@ const StyledIcon = styled(RedoIcon)`
 `;
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
-  const { values, planList, isPollingStatus, startPlanStatusPolling } = props;
+  const { values, currentPlan, isPollingStatus, startPlanStatusPolling } = props;
 
-  const matchingPlan = planList.find(p => {
-    return values.planName === p.MigPlan.metadata.name;
-  });
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
   };
@@ -97,16 +93,16 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
                     margin-right: 10px;`
                   }
                   >
-                    <PlanStatus plan={matchingPlan} />
+                    <PlanStatus plan={currentPlan} />
                   </Box>
-                  <Box css={css`display: inline-block; `}>
-                    {matchingPlan.PlanStatus.hasReadyCondition ? (
+                  {/* <Box css={css`display: inline-block; `}>
+                    {currentPlan.PlanStatus.hasReadyCondition ? (
                       <StatusIcon isReady={true} />
                     ) : (
                         <StatusIcon isReady={false} />
                       )}
 
-                  </Box>
+                  </Box> */}
                 </React.Fragment>
               )}
           </Box>

@@ -24,7 +24,6 @@ const WizardComponent = props => {
     setFieldValue,
     clusterList,
     currentPlan,
-    planList,
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
@@ -150,7 +149,6 @@ const WizardComponent = props => {
             errors={errors}
             currentPlan={currentPlan}
             isPollingStatus={isPollingStatus}
-            planList={planList}
             startPlanStatusPolling={startPlanStatusPolling}
           />
         ),

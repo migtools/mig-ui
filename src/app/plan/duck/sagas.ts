@@ -129,6 +129,7 @@ function* checkPlanStatus(action) {
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
       const MigPlan = getPlanResponse.data;
+      yield put(PlanActions.updatePlan(MigPlan));
 
       if (MigPlan.status && MigPlan.status.conditions) {
         const hasReadyCondition = !!MigPlan.status.conditions.some(c => c.type === 'Ready');
