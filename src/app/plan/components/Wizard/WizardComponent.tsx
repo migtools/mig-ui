@@ -133,8 +133,6 @@ const WizardComponent = props => {
             handleChange={handleChange}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
-            onWizardLoadingToggle={toggleLoading}
-            isWizardLoading={isLoading}
             currentPlan={currentPlan}
             isFetchingPVList={isFetchingPVList}
             clusterList={clusterList}
@@ -150,7 +148,6 @@ const WizardComponent = props => {
           <ResultsStep
             values={values}
             errors={errors}
-            onWizardLoadingToggle={toggleLoading}
             currentPlan={currentPlan}
             isPollingStatus={isPollingStatus}
             planList={planList}

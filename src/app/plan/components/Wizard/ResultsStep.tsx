@@ -14,7 +14,7 @@ import StatusIcon from '../../../common/components/StatusIcon';
 interface IProps {
   values: any;
   errors: any;
-  onWizardLoadingToggle: () => void;
+  startPlanStatusPolling: (planName) => void;
   currentPlan: any;
   planList: any[];
   isPollingStatus: boolean;
@@ -29,7 +29,7 @@ const StyledIcon = styled(RedoIcon)`
   width: 3em;
 `;
 
-const ResultsStep = props => {
+const ResultsStep: React.FunctionComponent<IProps> = props => {
   const { values, planList, isPollingStatus, startPlanStatusPolling } = props;
 
   const matchingPlan = planList.find(p => {

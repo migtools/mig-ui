@@ -18,7 +18,6 @@ interface IProps {
   setFieldTouched: any;
   clusterList: any;
   storageList: any;
-  onWizardLoadingToggle: (isLoading) => void;
 }
 interface IState {
   clusterOptions: any[];
@@ -96,7 +95,6 @@ class MigTargetForm extends React.Component<IProps, IState> {
               name="targetCluster"
               onChange={option => {
                 this.setState({ isLoading: true });
-                this.props.onWizardLoadingToggle(true);
 
                 setFieldValue('targetCluster', option.value);
                 const matchingCluster = this.props.clusterList.filter(
@@ -109,7 +107,6 @@ class MigTargetForm extends React.Component<IProps, IState> {
                 setFieldTouched('targetCluster');
                 setTimeout(() => {
                   this.setState(() => ({ isLoading: false }));
-                  this.props.onWizardLoadingToggle(false);
                 }, 500);
               }}
               options={clusterOptions}
@@ -134,10 +131,10 @@ class MigTargetForm extends React.Component<IProps, IState> {
             </Box>
           </Flex>
         ) : (
-          <Box mt={20}>
-            <TargetsTable values={values} />
-          </Box>
-        )}
+            <Box mt={20}>
+              <TargetsTable values={values} />
+            </Box>
+          )}
       </Box>
     );
   }
