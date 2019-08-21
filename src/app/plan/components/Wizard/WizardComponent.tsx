@@ -7,8 +7,41 @@ import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
 import { PollingContext } from '../../../home/duck/context';
+import { FormikProps } from 'formik';
 
-const WizardComponent = props => {
+interface FormValues {
+  planName: string;
+  sourceCluster: string;
+  targetCluster: string;
+  selectedStorage: string;
+  selectedNamespaces: Array<any>;
+}
+interface OtherProps {
+  clusterList: Array<any>;
+  planList: Array<any>;
+  storageList: Array<any>;
+  isFetchingPVList: boolean;
+  isPollingStatus: boolean;
+  isPVError: boolean;
+  isCheckingPlanStatus: boolean;
+  isFetchingPVResources: boolean;
+  isFetchingNamespaceList: boolean;
+  isOpen: boolean;
+  isPollingStorage: boolean;
+  isPollingClusters: boolean;
+  isPollingPlans: boolean;
+  currentPlan: any;
+  currentPlanStatus: any;
+  startPlanStatusPolling: () => void;
+  resetCurrentPlan: () => void;
+  fetchNamespacesForCluster: () => void;
+  getPVResourcesRequest: () => void;
+  addPlan: (planValues) => void;
+  sourceClusterNamespaces: Array<any>
+  pvResourceList: Array<any>
+}
+
+const WizardComponent = (props: OtherProps & FormikProps<FormValues>) => {
   const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
@@ -22,10 +55,12 @@ const WizardComponent = props => {
     handleBlur,
     setFieldTouched,
     setFieldValue,
+    resetForm,
     clusterList,
     currentPlan,
     currentPlanStatus,
     storageList,
+    isOpen,
     isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
@@ -35,10 +70,12 @@ const WizardComponent = props => {
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
-    pvResourceList,
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
+    pvResourceList,
+    addPlan,
+    resetCurrentPlan
   } = props;
 
   enum stepId {
@@ -185,7 +222,7 @@ const WizardComponent = props => {
       // requested namespaces and discover related PVs
 
       if (!currentPlan) {
-        props.addPlan({
+        addPlan({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
           targetCluster: props.values.targetCluster,
@@ -200,16 +237,16 @@ const WizardComponent = props => {
   };
   const handleClose = () => {
     setStepIdReached(stepId.General);
-    props.resetCurrentPlan();
-    props.onHandleClose();
-    props.resetForm();
+    resetCurrentPlan();
+    resetForm();
     pollingContext.startAllDefaultPolling();
+    resetForm();
   };
   return (
     <React.Fragment>
-      {props.isOpen && (
+      {isOpen && (
         <Wizard
-          isOpen={props.isOpen}
+          isOpen={isOpen}
           onNext={onMove}
           onBack={onMove}
           title="Migration Plan Wizard"
