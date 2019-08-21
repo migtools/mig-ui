@@ -8,6 +8,8 @@ import { ClusterActions } from '../../duck/actions';
 import {
   defaultAddEditStatus,
   AddEditMode,
+  createAddEditStatus,
+  AddEditState,
 } from '../../../common/add_edit_state';
 import { PollingContext } from '../../../home/duck/context';
 
@@ -16,6 +18,7 @@ const AddEditClusterModal = ({
   initialClusterValues,
   isOpen,
   isPolling,
+  checkConnection,
   ...props
 }) => {
   const pollingContext = useContext(PollingContext);
@@ -35,7 +38,6 @@ const AddEditClusterModal = ({
       }
     }
   };
-
 
   useEffect(() => {
     if(isOpen && isPolling) {
@@ -60,6 +62,7 @@ const AddEditClusterModal = ({
         onClose={onClose}
         addEditStatus={addEditStatus}
         initialClusterValues={initialClusterValues}
+        checkConnection={checkConnection}
       />
     </Modal>
   );
@@ -76,6 +79,12 @@ export default connect(
     addCluster: clusterValues => dispatch(ClusterActions.addClusterRequest(clusterValues)),
     updateCluster: updatedClusterValues => dispatch(
       ClusterActions.updateClusterRequest(updatedClusterValues)),
+    checkConnection: (clusterName: string) => {
+      dispatch(ClusterActions.setClusterAddEditStatus(createAddEditStatus(
+        AddEditState.Fetching, AddEditMode.Edit,
+      )));
+      dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
+    },
     cancelAddEditWatch: () => dispatch(ClusterActions.cancelWatchClusterAddEditStatus()),
     resetAddEditState: () => {
       dispatch(ClusterActions.setClusterAddEditStatus(defaultAddEditStatus()));
