@@ -85,15 +85,15 @@ export const addEditStatusText = (componentType: string) => (status: IAddEditSta
 };
 
 export const addEditButtonText = (componentType: string) => (status: IAddEditStatus) => {
-  switch (status.state) {
-    case AddEditState.TimedOut: {
-      return 'Try Again';
-    }
-    case AddEditState.Pending: {
+  switch (status.mode) {
+    case AddEditMode.Add: {
       return `Add ${componentType}`;
     }
-    default: {
+    case AddEditMode.Edit: {
       return `Update ${componentType}`;
+    }
+    default: {
+      return `Try Again`;
     }
   }
 };
