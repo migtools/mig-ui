@@ -299,6 +299,13 @@ export const stopPlanPolling = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentPlan: null
+  };
+};
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
@@ -332,6 +339,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
     case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
     case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
+    case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
     default: return state;
   }
 };

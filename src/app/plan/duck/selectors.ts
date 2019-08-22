@@ -105,90 +105,61 @@ const getPlansWithStatus = createSelector(
 const getCurrentPlanWithStatus = createSelector(
   [getCurrentPlan],
   plan => {
-    if (!plan) { return null; };
-    let hasReadyCondition = null;
-    let hasPlanError = null;
-    let hasPrevMigrations = null;
-    let hasRunningMigrations = null;
-    let finalMigrationComplete = null;
-    let hasAttemptedMigration = null;
-    let hasSucceededMigration = null;
-    let hasSucceededStage = null;
-    let hasClosedCondition = null;
-    const hasMigrationError = null;
-    let latestType = null;
-    let latestIsFailed = false;
-    if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
-      const emptyStatusObject = {
-        hasSucceededStage,
-        hasPrevMigrations,
-        hasClosedCondition,
-        hasReadyCondition,
-        hasNotReadyCondition: hasPlanError,
-        hasRunningMigrations,
-        hasSucceededMigration,
-        finalMigrationComplete,
-        hasFailedCondition: hasMigrationError,
-        latestType,
-      };
-      return { ...plan, PlanStatus: emptyStatusObject };
+    enum ValidationState {
+      Pending = 'Pending',
+      Fetching = 'fetching',
+      Watching = 'watching',
+      Critical = 'Critical',
+      Ready = 'Ready',
+      TimedOut = 'timedout',
     }
-    hasClosedCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Closed').length;
-    hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
-    hasPlanError = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
-      .length;
+    if (!plan) { return null; }
+    const PlanConditionCritical = 'Critical';
+    const PlanConditionReady = 'Ready';
+    const { MigPlan } = plan;
 
-    if (plan.Migrations.length) {
-      const latest = plan.Migrations[0];
+    let hasReadyCondition = null;
+    let hasCriticalCondition = null;
+    let CriticalCondition = null;
+    const hasStatusAndConditions =
+      MigPlan.status &&
+      MigPlan.status.conditions;
 
-      hasPrevMigrations = !!plan.Migrations.length;
-      latestType = latest.spec.stage ? 'Stage' : 'Migration';
-
-      if (latest.status && latest.status.conditions) {
-        latestIsFailed = !!(latest.status.conditions.some(c => c.type === 'Failed'));
+    if (hasStatusAndConditions) {
+      hasCriticalCondition = !!MigPlan.status.conditions.some(cond => {
+        return cond.category === PlanConditionCritical;
+      });
+      if (hasCriticalCondition) {
+        CriticalCondition = MigPlan.status.conditions.find(cond => {
+          return cond.category === PlanConditionCritical;
+        });
+        const statusObject = {
+          currentState: ValidationState.Critical,
+          errorMessage: CriticalCondition.message
+        };
+        return { ...plan, PlanStatus: statusObject };
       }
 
-      hasSucceededStage = !!plan.Migrations.filter(m => {
-        if (m.status && m.spec.stage) {
-          return m.status.conditions.some(c => c.type === 'Succeeded');
-        }
-      }).length;
 
-      hasSucceededMigration = !!plan.Migrations.filter(m => {
-        if (m.status && !m.spec.stage) {
-          return m.status.conditions.some(c => c.type === 'Succeeded');
-        }
-      }).length;
+      hasReadyCondition = !!MigPlan.status.conditions.find(cond => {
+        return cond.type === PlanConditionReady;
+      });
+      if (hasReadyCondition) {
+        const statusObject = {
+          currentState: ValidationState.Ready,
+          errorMessage: CriticalCondition.message
+        };
+        return { ...plan, PlanStatus: statusObject };
+      }
+    } else {
+      const emptyStatusObject = {
+        errorMessage: 'No status found.',
+        currentState: ValidationState.Pending
+      };
 
-      hasAttemptedMigration = !!plan.Migrations.some(m => !m.spec.stage);
-
-      finalMigrationComplete = !!plan.Migrations.filter(m => {
-        if (m.status) {
-          return m.spec.stage === false && hasSucceededMigration;
-        }
-      }).length;
-
-      hasRunningMigrations = !!plan.Migrations.filter(m => {
-        if (m.status) {
-          return m.status.conditions.some(c => c.type === 'Running');
-        }
-      }).length;
+      return { ...plan, PlanStatus: emptyStatusObject };
     }
 
-    const statusObject = {
-      hasSucceededStage,
-      hasPrevMigrations,
-      hasClosedCondition,
-      hasReadyCondition,
-      hasNotReadyCondition: hasPlanError,
-      hasRunningMigrations,
-      hasSucceededMigration,
-      finalMigrationComplete,
-      hasFailedCondition: hasMigrationError,
-      latestType,
-    };
-
-    return { ...plan, PlanStatus: statusObject };
   });
 
 

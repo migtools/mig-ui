@@ -37,7 +37,8 @@ const WizardComponent = props => {
     pvResourceList,
     isPollingStorage,
     isPollingClusters,
-    isPollingPlans
+    isPollingPlans,
+    resetCurrentPlan
   } = props;
 
   enum stepId {
@@ -53,6 +54,7 @@ const WizardComponent = props => {
     if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
       pollingContext.stopAllPolling();
     }
+
   });
 
   useEffect(() => {
@@ -200,6 +202,7 @@ const WizardComponent = props => {
   };
   const handleClose = () => {
     setStepIdReached(stepId.General);
+    props.resetCurrentPlan();
     props.onHandleClose();
     props.resetForm();
     pollingContext.startAllDefaultPolling();

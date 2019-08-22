@@ -46,6 +46,7 @@ export const PlanActionTypes = {
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE',
   PLAN_POLL_START: 'PLAN_POLL_START',
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
+  RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN'
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -249,6 +250,10 @@ const stopPlanPolling = () => ({
   type: PlanActionTypes.PLAN_POLL_STOP,
 });
 
+const resetCurrentPlan = () => ({
+  type: PlanActionTypes.RESET_CURRENT_PLAN,
+});
+
 export const PlanActions = {
   updatePlans,
   addPlanSuccess,
@@ -292,4 +297,5 @@ export const PlanActions = {
   getPVResourcesFailure,
   startPlanPolling,
   stopPlanPolling,
+  resetCurrentPlan
 };
