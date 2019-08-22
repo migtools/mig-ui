@@ -61,16 +61,16 @@ function* getPlanSaga(planName) {
     throw err;
   }
 }
-function* putPlanSaga(getPlanRes, planValues) {
+function* patchPlanSaga(getPlanRes, planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
-    const putPlanResponse = yield client.put(
+    const patch = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const putPlanResponse = yield client.patch(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       getPlanRes.data.metadata.name,
-      updatedMigPlan
+      patch
     );
     yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
   } catch (err) {
@@ -82,7 +82,7 @@ function* planUpdateRetry(action) {
   try {
     const SECOND = 1000;
     const getPlanResponse = yield call(getPlanSaga, action.planValues.planName);
-    yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
+    yield retry(3, 10 * SECOND, patchPlanSaga, getPlanResponse, action.planValues);
   } catch (error) {
     yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
   }
@@ -125,7 +125,6 @@ function* planCloseSaga(action) {
     const updatedValues = {
       planName: action.planName,
       planClosed: true,
-      persistentVolumes: []
     };
     yield put(PlanActions.planUpdateRequest(updatedValues));
     yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));

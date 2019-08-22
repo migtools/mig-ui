@@ -219,31 +219,31 @@ export function createMigPlan(
 }
 
 export function updateMigPlanFromValues(migPlan: any, planValues: any) {
-  const updatedSpec = Object.assign({}, migPlan.spec);
+  const updatedSpec = {};
 
-  updatedSpec.migStorageRef = {
-    name: planValues.selectedStorage,
-    namespace: migPlan.metadata.namespace,
-  };
-
-  if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-      const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      if (userPv) {
-        v.selection.action = userPv.type;
-        v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+  if (planValues.planClosed) {
+    updatedSpec['closed'] = true;
+  }
+  if (planValues.selectedStorage) {
+    updatedSpec['migStorageRef'] = {
+      name: planValues.selectedStorage,
+    };
+  }
+  if (planValues.persistentVolumes) {
+    updatedSpec['persistentVolumes'] = planValues.persistentVolumes.map(v => {
+      console.error(v);
+      const updatedSpecPv = {
+        selection: {
+          action: v.type
+        }
+      };
+      if (v.type !== 'move') {
+        updatedSpecPv.selection['storageClass'] = planValues[pvStorageClassAssignmentKey][v.name].name;
       }
-      return v;
+      return updatedSpecPv;
     });
   }
-  if (planValues.planClosed) {
-    updatedSpec.closed = true;
-  }
-
   return {
-    apiVersion: 'migration.openshift.io/v1alpha1',
-    kind: 'MigPlan',
-    metadata: migPlan.metadata,
     spec: updatedSpec,
   };
 }
