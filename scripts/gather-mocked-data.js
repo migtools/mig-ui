@@ -15,6 +15,7 @@ const { execSync } = require('child_process');
 
 const CLUSTER_GROUPS = [
   { apiGroup: 'api', version: 'v1', kind: 'namespaces' },
+  { apiGroup: 'api', version: 'v1', kind: 'persistentvolumes'},
   { apiGroup: 'apis', version: 'storage.k8s.io/v1', kind: 'storageclasses' },
 ]
 
@@ -25,7 +26,7 @@ const MIG_GROUPS = [
   { group: 'migration.openshift.io', version: 'v1alpha1', kind: 'migplans' },
   { group: 'migration.openshift.io', version: 'v1alpha1', kind: 'migstorages' },
 ];
-const MIG_NAMESPACE = 'mig';
+const MIG_NAMESPACE = 'openshift-migration';
 const TIME_STAMP = Math.round(+new Date() / 1000);
 
 const MOCKED_DATA_DIR = path.resolve(__dirname, '../src/client/kube_store/mocked_data');
@@ -174,7 +175,7 @@ function collectAndReformat(data) {
 }
 
 function gatherSecretRefs(client, serverAddr, data) {
-  let migstorages = data['apis/migration.openshift.io/v1alpha1/namespaces/mig/migstorages'];
+  let migstorages = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migstorages`];
   let storageKeys = Object.keys(migstorages);
   let storageSecretRefs = storageKeys.reduce((acc, currentKey) => {
     return acc
@@ -182,7 +183,7 @@ function gatherSecretRefs(client, serverAddr, data) {
       .concat(migstorages[currentKey].spec.volumeSnapshotConfig.credsSecretRef);
   }, []);
 
-  let migclusters = data['apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters'];
+  let migclusters = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migclusters`];
   let clusterKeys = Object.keys(migclusters);
   let clusterSecretRefs = clusterKeys.reduce((acc, currentKey) => {
     return acc.concat(migclusters[currentKey].spec.serviceAccountSecretRef);
@@ -245,7 +246,7 @@ function getMigClusters(client, results) {
   // It represents the cluster running the UI
   //
 
-  const migClusterKey = 'apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters';
+  const migClusterKey = `apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migclusters`;
   const migClusters = results[migClusterKey];
   const extractedClusters = {}
 
