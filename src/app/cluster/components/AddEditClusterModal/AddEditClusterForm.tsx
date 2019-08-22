@@ -33,9 +33,25 @@ const componentTypeStr = 'Cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
+// valuesHaveUpdate - returns true if the formik values hold values that differ
+// from a matching existing cluster. This is different from props.dirty, which returns
+// true when the form values differ from the initial values. It's possible to have
+// a cluster object exist, but have no initial values (user adds new cluster, then updates
+// while keeping the modal open). props.dirty is not sufficient for this case.
+const valuesHaveUpdate = (values, currentCluster) => {
+  if(!currentCluster) { return true; }
+
+  const rawToken = atob(currentCluster.Secret.data.saToken);
+  const existingEndpoint =
+    currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  return values.name !== currentCluster.MigCluster.metadata.name ||
+    values.url !== existingEndpoint ||
+    values.token !== rawToken;
+}
 const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
+  const currentCluster = props.currentCluster;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
   const toggleHideToken = e => {
@@ -53,7 +69,8 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   const isCheckConnectionDisabled =
     currentStatus.mode === AddEditMode.Add ||
     currentStatus.state === AddEditState.Fetching ||
-    currentStatus.state === AddEditState.Watching;
+    currentStatus.state === AddEditState.Watching ||
+    (currentStatus.mode === AddEditMode.Edit && valuesHaveUpdate(values, currentCluster));
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>

@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
@@ -19,9 +19,13 @@ const AddEditClusterModal = ({
   isOpen,
   isPolling,
   checkConnection,
+  clusterList,
   ...props
 }) => {
   const pollingContext = useContext(PollingContext);
+  const [currentClusterName, setCurrentClusterName] =
+    useState(initialClusterValues ? initialClusterValues.clusterName : null);
+
   const onAddEditSubmit = (clusterValues) => {
     switch(addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -30,6 +34,7 @@ const AddEditClusterModal = ({
       }
       case AddEditMode.Add: {
         props.addCluster(clusterValues);
+        setCurrentClusterName(clusterValues.name);
         break;
       }
       default: {
@@ -48,12 +53,17 @@ const AddEditClusterModal = ({
   const onClose = () => {
     props.cancelAddEditWatch();
     props.resetAddEditState();
+    setCurrentClusterName(null);
     props.onHandleClose();
     pollingContext.startAllDefaultPolling();
   };
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
     'Edit Cluster' : 'Add Cluster';
+
+  const currentCluster = clusterList.find(c => {
+    return c.MigCluster.metadata.name === currentClusterName;
+  });
 
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
@@ -62,6 +72,7 @@ const AddEditClusterModal = ({
         onClose={onClose}
         addEditStatus={addEditStatus}
         initialClusterValues={initialClusterValues}
+        currentCluster={currentCluster}
         checkConnection={checkConnection}
       />
     </Modal>
@@ -73,6 +84,7 @@ export default connect(
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,
+      clusterList: state.cluster.clusterList,
     };
   },
   dispatch => ({
