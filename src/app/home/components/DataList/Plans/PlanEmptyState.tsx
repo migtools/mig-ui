@@ -5,14 +5,16 @@ import { Flex, Box } from '@rebass/emotion';
 import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 
-const PlanEmptyState = ({ clusterList, storageList, onPlanSubmit, isLoading, plansDisabled }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+const PlanEmptyState = ({ toggleOpen, plansDisabled }) => {
   return (
     <Flex alignItems="center" justifyContent="center">
       <Box>
         <EmptyState variant="large">
           <EmptyStateIcon icon={AddCircleOIcon} />
           <Title size="lg">No currently started plans</Title>
+          <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
+            Add Plan
+          </Button>
         </EmptyState>
       </Box>
     </Flex>

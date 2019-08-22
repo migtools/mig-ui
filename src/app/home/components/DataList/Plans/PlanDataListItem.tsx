@@ -75,6 +75,7 @@ const PlanDataListItem = ({
           isLoading={isLoading}
           isExpanded={isExpanded}
           isClosing={isClosing}
+          toggleOpen={toggleOpen}
         />
       </DataListItem>
     );
