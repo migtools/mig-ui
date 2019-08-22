@@ -1,5 +1,5 @@
 import { KubeResource } from './resources';
-import KubeStore from './kube_store';
+import { KubeStore } from './kube_store';
 import { TokenExpiryHandler } from './client';
 
 export class MockClusterClient {
@@ -45,11 +45,16 @@ export class MockClusterClient {
     });
   }
 
+  public put = (resource: KubeResource, name: string, updatedObject: object): Promise<any> =>
+    this.create(resource, updatedObject);
+
   public patch(resource: KubeResource, name: string, patch: object): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({
-        data: this.kube_store.patchResource(resource, name, patch)
-      });
+      setTimeout(() => {
+        res({
+          data: this.kube_store.patchResource(resource, name, patch)
+        });
+      }, this.reqTime);
     });
   }
 
@@ -65,7 +70,11 @@ export class MockClusterClient {
 
   public delete(resource: KubeResource, name: string): Promise<any> {
     return new Promise<any>((res, rej) => {
-      res({});
+      setTimeout(() => {
+        res({
+          data: this.kube_store.deleteResource(resource, name),
+        });
+      }, this.reqTime);
     });
   }
 }
