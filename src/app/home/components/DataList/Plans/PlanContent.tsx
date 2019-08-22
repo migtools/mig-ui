@@ -26,6 +26,7 @@ interface IPlanContentProps {
   isClosing: boolean;
   isExpanded: boolean;
   plansDisabled: boolean;
+  toggleOpen: () => void;
 }
 
 class PlanContent extends React.Component<IPlanContentProps, any> {
@@ -209,10 +210,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
           </DataList>
         ) : (
             <PlanEmptyState
-              clusterList={this.props.clusterList}
-              storageList={this.props.storageList}
-              isLoading={this.props.isLoading}
-              onPlanSubmit={this.props.onPlanSubmit}
+              toggleOpen={this.props.toggleOpen}
               plansDisabled={this.props.plansDisabled}
             />
           )}
