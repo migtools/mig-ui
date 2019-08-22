@@ -8,6 +8,7 @@ import ResultsStep from './ResultsStep';
 import { useToggleLoading } from '../../duck/hooks';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
+<<<<<<< HEAD
 
 interface IFormValues {
   planName: string;
@@ -40,6 +41,9 @@ interface IOtherProps {
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
 }
+=======
+import { IOtherProps, IFormValues } from './WizardContainer';
+>>>>>>> export types from container
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [isLoading, toggleLoading] = useToggleLoading(false);

@@ -5,24 +5,31 @@ import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../common/duck/utils';
-interface IFormValues {
+export interface IFormValues {
   planName: string;
   sourceCluster: string;
   targetCluster: string;
   selectedStorage: string;
   selectedNamespaces: any[];
 }
-interface IOtherProps {
+export interface IOtherProps {
   clusterList: any[];
   planList: any[];
   storageList: any[];
   isFetchingPVList: boolean;
+  isPollingStatus: boolean;
   isPVError: boolean;
   isCheckingPlanStatus: boolean;
   isFetchingPVResources: boolean;
   isFetchingNamespaceList: boolean;
   isOpen: boolean;
+  isPollingStorage: boolean;
+  isPollingClusters: boolean;
+  isPollingPlans: boolean;
   currentPlan: any;
+  currentPlanStatus: any;
+  startPlanStatusPolling: () => void;
+  resetCurrentPlan: () => void;
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
   addPlan: (planValues) => void;
