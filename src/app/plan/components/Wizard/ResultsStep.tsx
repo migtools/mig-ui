@@ -35,6 +35,19 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     startPlanStatusPolling(values.planName);
   };
 
+  function ValidationStatus({ text, state }) {
+    switch (state) {
+      case 'info':
+        return <Info text={text} />;
+      case 'warning':
+        return <Warning text={text} />;
+      case 'error':
+        return <Error text={text} />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <Flex
       css={css`
@@ -95,6 +108,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
                   >
                     <PlanStatus plan={currentPlan} />
                   </Box>
+                  <ValidationStatus></ValidationStatus>
                   {/* <Box css={css`display: inline-block; `}>
                     {currentPlan.PlanStatus.hasReadyCondition ? (
                       <StatusIcon isReady={true} />
