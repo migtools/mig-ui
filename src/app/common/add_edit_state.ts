@@ -49,7 +49,7 @@ export const fetchingAddEditStatus = (): IAddEditStatus => {
 export const AddEditConditionCritical = 'Critical';
 export const AddEditConditionReady = 'Ready';
 
-const addEditTimeoutSeconds = 20;
+const addEditTimeoutSeconds = 30;
 export const AddEditWatchTimeout = addEditTimeoutSeconds * 1000;
 
 const addEditPollIntervalSeconds = 4;
@@ -67,7 +67,7 @@ export const addEditStatusText = (componentType: string) => (status: IAddEditSta
       return `Validating connection...`;
     }
     case AddEditState.Critical: {
-      return `Connection failed: ${status.message} | ${status.reason}`;
+      return `Connection failed. Message: "${status.message}", Reason: "${status.reason}"`;
     }
     case AddEditState.Ready: {
       return `Connection successful`;
@@ -76,7 +76,8 @@ export const addEditStatusText = (componentType: string) => (status: IAddEditSta
       return `Validating connection...`;
     }
     case AddEditState.TimedOut: {
-      return `Validation timed out, double check your inputs and try again?`;
+      return 'Validation timed out. Ensure your cluster details are correct, \
+        or continue to check the existing connection.';
     }
     default: {
       return `AddEditStatus fell into an unknown state`;
@@ -89,11 +90,8 @@ export const addEditButtonText = (componentType: string) => (status: IAddEditSta
     case AddEditMode.Add: {
       return `Add ${componentType}`;
     }
-    case AddEditMode.Edit: {
-      return `Update ${componentType}`;
-    }
     default: {
-      return `Try Again`;
+      return `Update ${componentType}`;
     }
   }
 };
