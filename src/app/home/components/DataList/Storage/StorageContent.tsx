@@ -44,7 +44,7 @@ const StorageContent = ({
               <EmptyStateIcon icon={AddCircleOIcon} />
               <Title size="lg">Add replication repositories for the migration</Title>
               <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
-                Add Repository
+                Add repository
               </Button>
             </EmptyState>
           </Box>

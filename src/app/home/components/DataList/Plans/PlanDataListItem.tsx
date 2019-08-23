@@ -53,7 +53,7 @@ const PlanDataListItem = ({
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="link">
-              <PlusCircleIcon /> Add Plan
+              <PlusCircleIcon /> Add plan
             </Button>
             <WizardContainer
               planList={planList}
