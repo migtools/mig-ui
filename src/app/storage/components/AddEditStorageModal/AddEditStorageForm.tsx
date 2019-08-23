@@ -53,7 +53,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
   const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
   const existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
 
-  const valuesHaveUpdate =
+  const valuesUpdatedObject =
     values.name !== existingMigStorageName ||
     values.bucketName !== existingBucketName ||
     values.bucketRegion !== existingBucketRegion ||
@@ -61,7 +61,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
     values.accessKey !== existingAccessKeyId ||
     values.secret !== existingSecretAccessKey;
 
-  return valuesHaveUpdate;
+  return valuesUpdatedObject;
 };
 
 const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {

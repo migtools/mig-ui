@@ -103,13 +103,13 @@ export const isCheckConnectionButtonDisabled = (
   const objectHasPendingUpdate =
     currentStatus.mode === AddEditMode.Edit && valuesUpdatedObject;
 
-  const isCheckConnectionButtonDisabled =
+  const isDisabled =
     currentStatus.mode === AddEditMode.Add ||
     currentStatus.state === AddEditState.Fetching ||
     currentStatus.state === AddEditState.Watching ||
     objectHasPendingUpdate;
 
-  return isCheckConnectionButtonDisabled;
+  return isDisabled;
 };
 
 export const isAddEditButtonDisabled = (
