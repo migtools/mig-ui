@@ -22,6 +22,7 @@ interface IProps {
   type?: string;
   isError: boolean;
   planStatusCounts?: any;
+  expandDetails: (string) => void;
 }
 
 class DashboardCard extends Component<IProps, IState> {
@@ -41,7 +42,7 @@ class DashboardCard extends Component<IProps, IState> {
     });
   };
   render() {
-    const { dataList, title, isFetching, type, isError, planStatusCounts } = this.props;
+    const { dataList, title, isFetching, type, isError, planStatusCounts, expandDetails } = this.props;
     const { isOpen } = this.state;
     if (isError) {
       return (
@@ -80,7 +81,7 @@ class DashboardCard extends Component<IProps, IState> {
               )}
             </CardBody>
             <CardFooter>
-              <FooterText dataList={dataList} type={type} />
+              <FooterText dataList={dataList} type={type} expandDetails={expandDetails}/>
             </CardFooter>
           </React.Fragment>
         ) : (
