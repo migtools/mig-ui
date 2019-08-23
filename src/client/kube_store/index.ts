@@ -55,7 +55,9 @@ export class KubeStore {
         lastTransitionTime: new Date().toUTCString(),
         type: statusType,
       }];
-      this.updateMockedData(apiKey, resourceName, obj);
+      if (this.data()[apiKey][resourceName]) {
+        this.updateMockedData(apiKey, resourceName, obj);
+      }
     }, timeout);
   }
 
@@ -80,8 +82,9 @@ export class KubeStore {
         };
 
         const pvKey = Object.keys(data.clusters[sourceCluster]['api/v1/persistentvolumes'])[0];
+        const pv = data.clusters[sourceCluster]['api/v1/persistentvolumes'][pvKey];
         const mockPV = {
-          capacity: '100Gi',
+          capacity: pv.spec.capacity.storage,
           name: pvKey,
           pvc: mockPVC,
           selection: mockSC,
@@ -211,6 +214,8 @@ export class KubeStore {
       if (!obj.spec.closed) {
         this.discoverPVsMock(apiKey, resourceName, obj);
         this.setResourceStatus(apiKey, resourceName, obj, 'Ready', 7000);
+      } else {
+        this.setResourceStatus(apiKey, resourceName, obj, 'Closed');
       }
     } else if (obj.kind === 'MigMigration') {
       this.setMigrationStarted(apiKey, resourceName, obj);
