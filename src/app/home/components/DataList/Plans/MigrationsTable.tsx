@@ -7,8 +7,16 @@ import styled from '@emotion/styled';
 import moment from 'moment';
 import { MigrationIcon } from '@patternfly/react-icons';
 import { Progress, ProgressSize } from '@patternfly/react-core';
+import { any } from 'prop-types';
 
-export default class MigrationsTable extends React.Component<any, any> {
+interface IProps {
+  type: string;
+  id: string;
+  migrations: any;
+  plan: any;
+}
+
+export default class MigrationsTable extends React.Component<IProps, any> {
   state = {
     columns: [
       { title: 'Type' },
@@ -20,53 +28,12 @@ export default class MigrationsTable extends React.Component<any, any> {
     ],
     rows: [],
   };
-  componentDidMount() {
-    const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
-      const status = this.getStatus(migration);
 
-      const StyledBox = styled(Box)`
-        position: absolute;
-        left: 40px;
-      `;
-      const type = migration.spec.stage ? 'Stage' : 'Migration';
-      const progressVariant = status.isSucceeded ? ProgressVariant.success : 
-        (status.isFailed ? ProgressVariant.danger : ProgressVariant.info);
+  componentDidMount = () => this.setState({
+    rows: this.getMigrationRows()
+  });
 
-      return [
-        {
-          title: (
-            <Flex>
-              <StyledBox>
-                <StatusIcon isReady={!status.isFailed} />
-              </StyledBox>
-              <Box>{type}</Box>
-            </Flex>
-          ),
-        },
-        { title: status.start },
-        { title: status.end },
-        { title: status.copied },
-        { title: status.moved },
-        {
-          title: (
-            <div>
-              {status.progress && (
-                <Progress 
-                  value={status.progress} 
-                  title={status.stepName} 
-                  size={ProgressSize.sm}
-                  variant={progressVariant}
-                />
-              )}
-            </div>
-          ),
-        },
-      ];
-    });
-
-    this.setState({ rows: mappedRows });
-  }
-  getStatus = migration => {
+  getStatus = (plan, migration) => {
     const status = {
       progress: null,
       start: 'TBD',
@@ -77,7 +44,12 @@ export default class MigrationsTable extends React.Component<any, any> {
       isFailed: false,
       isSucceeded: false,
     };
-
+    if (plan.spec.persistentVolumes) {
+      status.copied = plan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
+      if (!migration.spec.stage) {
+        status.moved = plan.spec.persistentVolumes.length - status.copied;
+      }
+    }
     if (migration.status) {
       if (migration.status.startTimestamp) {
         status.start = moment(migration.status.startTimestamp).format('LLL');
@@ -111,7 +83,7 @@ export default class MigrationsTable extends React.Component<any, any> {
           status.stepName = failedCondition.reason;
           return status;
         }
-        
+
         // For running migrations, calculate percent progress
         const runningCondition = migration.status.conditions.find(c => {
           return c.type === 'Running';
@@ -134,51 +106,54 @@ export default class MigrationsTable extends React.Component<any, any> {
     return status;
   };
 
+  getMigrationRows = () => {
+    return this.props.migrations.map((migration, migrationIndex) => {
+      const status = this.getStatus(this.props.plan, migration);
+
+      const StyledBox = styled(Box)`
+        position: absolute;
+        left: 40px;
+      `;
+      const type = migration.spec.stage ? 'Stage' : 'Migration';
+      const progressVariant = status.isSucceeded ? ProgressVariant.success :
+        (status.isFailed ? ProgressVariant.danger : ProgressVariant.info);
+
+      return [
+        {
+          title: (
+            <Flex>
+              <StyledBox>
+                <StatusIcon isReady={!status.isFailed} />
+              </StyledBox>
+              <Box>{type}</Box>
+            </Flex>
+          ),
+        },
+        { title: status.start },
+        { title: status.end },
+        { title: status.moved },
+        { title: status.copied },
+        {
+          title: (
+            <div>
+              {status.progress && (
+                <Progress
+                  value={status.progress}
+                  title={status.stepName}
+                  size={ProgressSize.sm}
+                  variant={progressVariant}
+                />
+              )}
+            </div>
+          ),
+        },
+      ];
+    });
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.migrations !== prevProps.migrations) {
-      const mappedRows = this.props.migrations.map((migration, migrationIndex) => {
-        const StyledBox = styled(Box)`
-          position: absolute;
-          left: 40px;
-        `;
-        const type = migration.spec.stage ? 'Stage' : 'Migration';
-        const status = this.getStatus(migration);
-        const progressVariant = status.isSucceeded ? ProgressVariant.success : 
-          (status.isFailed ? ProgressVariant.danger : ProgressVariant.info);
-        return [
-          {
-            title: (
-              <Flex>
-                <StyledBox>
-                  <StatusIcon isReady={!status.isFailed} />
-                </StyledBox>
-                <Box>{type}</Box>
-              </Flex>
-            ),
-          },
-          { title: status.start },
-          { title: status.end },
-          { title: status.copied },
-          { title: status.moved },
-          {
-            title: (
-              <div>
-                <div>
-                  {status.progress && (
-                    <Progress 
-                      value={status.progress} 
-                      title={status.stepName} 
-                      size={ProgressSize.sm} 
-                      variant={progressVariant}
-                    />
-                  )}
-                </div>
-              </div>
-            ),
-          },
-        ];
-      });
-
+      const mappedRows = this.getMigrationRows();
       this.setState({ rows: mappedRows });
     }
   }
@@ -211,8 +186,8 @@ export default class MigrationsTable extends React.Component<any, any> {
             <TableBody />
           </Table>
         ) : (
-          <EmptyState variant="large">No migrations started</EmptyState>
-        )}
+            <EmptyState variant="large">No migrations started</EmptyState>
+          )}
       </React.Fragment>
     );
   }
