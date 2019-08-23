@@ -61,35 +61,40 @@ export class KubeStore {
 
   private discoverPVsMock = (apiKey, resourceName, migPlan) => {
     setTimeout(() => {
-      const mockPVC = {
-        accessModes: ['ReadWriteOnce'],
-        name: 'sample-pvc',
-        namespace: 'sample-namespace',
-      };
+      const data = this._data();
+      const sourceCluster = migPlan.spec.srcMigClusterRef.name;
+      if (data.clusters[sourceCluster]['api/v1/persistentvolumes']) {
+        const mockPVC = {
+          accessModes: ['ReadWriteOnce'],
+          name: 'sample-pvc',
+          namespace: 'sample-namespace',
+        };
 
-      const mockSC = {
-        action: 'copy',
-        storageClass: 'gp2',
-      };
+        const mockSC = {
+          action: 'copy',
+          storageClass: 'gp2',
+        };
 
-      const mockSupported = {
-        actions: ['copy', 'move'],
-      };
+        const mockSupported = {
+          actions: ['copy', 'move'],
+        };
 
-      const mockPV = {
-        capacity: '100Gi',
-        name: 'persistent-volume',
-        pvc: mockPVC,
-        selection: mockSC,
-        supported: mockSupported,
-      };
+        const pvKey = Object.keys(data.clusters[sourceCluster]['api/v1/persistentvolumes'])[0];
+        const mockPV = {
+          capacity: '100Gi',
+          name: pvKey,
+          pvc: mockPVC,
+          selection: mockSC,
+          supported: mockSupported,
+        };
+        migPlan.spec['persistentVolumes'] = [mockPV];
+      }
 
       const mockPVDiscovery = {
         conditions: [{
           type: 'PvsDiscovered',
         }]
       };
-      migPlan.spec['persistentVolumes'] = [mockPV];
       migPlan['status'] = mockPVDiscovery;
       this.updateMockedData(apiKey, resourceName, migPlan);
     }, 2000);

@@ -1,5 +1,5 @@
 {
-    "TIME_STAMP": 1566478300,
+    "TIME_STAMP": 1566562129,
     "clusters": {
         "host": {
             "apis/clusterregistry.k8s.io/v1alpha1/namespaces/openshift-migration/clusters": {
@@ -7,13 +7,13 @@
                     "apiVersion": "clusterregistry.k8s.io/v1alpha1",
                     "kind": "Cluster",
                     "metadata": {
-                        "creationTimestamp": "2019-08-21T20:02:47Z",
+                        "creationTimestamp": "2019-08-22T14:14:19Z",
                         "generation": 1,
                         "name": "source",
                         "namespace": "openshift-migration",
-                        "resourceVersion": "165097",
+                        "resourceVersion": "435319",
                         "selfLink": "/apis/clusterregistry.k8s.io/v1alpha1/namespaces/openshift-migration/clusters/source",
-                        "uid": "a555d171-c44e-11e9-92cc-06ab32897ee4"
+                        "uid": "21e15fc9-c4e7-11e9-b418-0a82c596e194"
                     },
                     "spec": {
                         "kubernetesApiEndpoints": {
@@ -33,18 +33,20 @@
                     "kind": "MigCluster",
                     "metadata": {
                         "annotations": {
-                            "touch": "d00ffe5f-e7a2-4620-8cac-b481b6933a95"
+                            "operator-sdk/primary-resource": "openshift-migration-operator/migration-controller",
+                            "operator-sdk/primary-resource-type": "MigrationController.migration.openshift.io",
+                            "touch": "1ee308e5-f4e9-4d93-a0ad-1183d18ed532"
                         },
-                        "creationTimestamp": "2019-08-21T11:25:27Z",
+                        "creationTimestamp": "2019-08-22T14:12:08Z",
                         "finalizers": [
                             "openshift.io/migration"
                         ],
-                        "generation": 3,
+                        "generation": 146,
                         "name": "host",
                         "namespace": "openshift-migration",
-                        "resourceVersion": "363424",
+                        "resourceVersion": "755779",
                         "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migclusters/host",
-                        "uid": "602d9b4d-c406-11e9-a768-06ab32897ee4"
+                        "uid": "d38c6798-c4e6-11e9-b418-0a82c596e194"
                     },
                     "spec": {
                         "isHostCluster": true,
@@ -56,6 +58,14 @@
                                 "default": true,
                                 "name": "gp2",
                                 "provisioner": "kubernetes.io/aws-ebs"
+                            },
+                            {
+                                "accessModes": [
+                                    "ReadWriteOnce"
+                                ],
+                                "default": true,
+                                "name": "gp2-copy",
+                                "provisioner": "kubernetes.io/aws-ebs"
                             }
                         ]
                     },
@@ -63,7 +73,7 @@
                         "conditions": [
                             {
                                 "category": "Required",
-                                "lastTransitionTime": "2019-08-21T11:25:27Z",
+                                "lastTransitionTime": "2019-08-22T14:12:24Z",
                                 "message": "The cluster is ready.",
                                 "status": "True",
                                 "type": "Ready"
@@ -76,18 +86,18 @@
                     "kind": "MigCluster",
                     "metadata": {
                         "annotations": {
-                            "touch": "b988b252-9dc7-4e2c-85fd-cd267fc502c1"
+                            "touch": "8ae7ec40-927d-4a75-ac70-2d92cffe1b5f"
                         },
-                        "creationTimestamp": "2019-08-21T20:02:47Z",
+                        "creationTimestamp": "2019-08-22T14:14:19Z",
                         "finalizers": [
                             "openshift.io/migration"
                         ],
-                        "generation": 3,
+                        "generation": 4,
                         "name": "source",
                         "namespace": "openshift-migration",
-                        "resourceVersion": "410770",
+                        "resourceVersion": "761029",
                         "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migclusters/source",
-                        "uid": "a560fecd-c44e-11e9-8584-0a82c596e194"
+                        "uid": "21e02872-c4e7-11e9-b418-0a82c596e194"
                     },
                     "spec": {
                         "clusterRef": {
@@ -97,14 +107,14 @@
                         "isHostCluster": false,
                         "serviceAccountSecretRef": {
                             "name": "source",
-                            "namespace": "openshift-config"
+                            "namespace": "openshift-migration-operator"
                         }
                     },
                     "status": {
                         "conditions": [
                             {
                                 "category": "Required",
-                                "lastTransitionTime": "2019-08-21T20:02:48Z",
+                                "lastTransitionTime": "2019-08-22T14:14:21Z",
                                 "message": "The cluster is ready.",
                                 "status": "True",
                                 "type": "Ready"
@@ -114,22 +124,135 @@
                 }
             },
             "apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migmigrations": {},
-            "apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migplans": {},
+            "apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migplans": {
+                "123": {
+                    "apiVersion": "migration.openshift.io/v1alpha1",
+                    "kind": "MigPlan",
+                    "metadata": {
+                        "annotations": {
+                            "touch": "061d9f7b-c8ea-4533-80b9-fb0bc67d47d7"
+                        },
+                        "creationTimestamp": "2019-08-23T11:45:42Z",
+                        "finalizers": [
+                            "openshift.io/migration"
+                        ],
+                        "generation": 39,
+                        "name": "123",
+                        "namespace": "openshift-migration",
+                        "resourceVersion": "761034",
+                        "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migplans/123",
+                        "uid": "892733ab-c59b-11e9-b862-024008363f5e"
+                    },
+                    "spec": {
+                        "destMigClusterRef": {
+                            "name": "host",
+                            "namespace": "openshift-migration"
+                        },
+                        "migStorageRef": {
+                            "name": "bucket",
+                            "namespace": "openshift-migration"
+                        },
+                        "namespaces": [
+                            "mysql-persistent-test-move"
+                        ],
+                        "persistentVolumes": [
+                            {
+                                "capacity": "10Gi",
+                                "name": "vol11",
+                                "pvc": {
+                                    "accessModes": [
+                                        "ReadWriteOnce"
+                                    ],
+                                    "name": "mysql",
+                                    "namespace": "mysql-persistent-test-move"
+                                },
+                                "selection": {
+                                    "storageClass": "gp2"
+                                },
+                                "supported": {
+                                    "actions": [
+                                        "copy",
+                                        "move"
+                                    ]
+                                }
+                            },
+                            {
+                                "capacity": "10Gi",
+                                "name": "vol161",
+                                "pvc": {
+                                    "accessModes": [
+                                        "ReadWriteOnce"
+                                    ],
+                                    "name": "mysql-backup",
+                                    "namespace": "mysql-persistent-test-move"
+                                },
+                                "selection": {
+                                    "storageClass": "gp2"
+                                },
+                                "supported": {
+                                    "actions": [
+                                        "copy",
+                                        "move"
+                                    ]
+                                }
+                            }
+                        ],
+                        "srcMigClusterRef": {
+                            "name": "source",
+                            "namespace": "openshift-migration"
+                        }
+                    },
+                    "status": {
+                        "conditions": [
+                            {
+                                "category": "Required",
+                                "lastTransitionTime": "2019-08-23T11:45:42Z",
+                                "message": "The `persistentVolumes` list has been updated with discovered PVs.",
+                                "reason": "Done",
+                                "status": "True",
+                                "type": "PvsDiscovered"
+                            },
+                            {
+                                "category": "Error",
+                                "lastTransitionTime": "2019-08-23T12:07:53Z",
+                                "message": "PV in `persistentVolumes` [vol11,vol161] has an unsupported `action`.",
+                                "reason": "NotDone",
+                                "status": "True",
+                                "type": "PvInvalidAction"
+                            },
+                            {
+                                "category": "Required",
+                                "lastTransitionTime": "2019-08-23T11:45:42Z",
+                                "message": "The storage resources have been created.",
+                                "status": "True",
+                                "type": "StorageEnsured"
+                            },
+                            {
+                                "category": "Required",
+                                "lastTransitionTime": "2019-08-23T11:45:43Z",
+                                "message": "The migration registry resources have been created.",
+                                "status": "True",
+                                "type": "RegistriesEnsured"
+                            }
+                        ]
+                    }
+                }
+            },
             "apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migstorages": {
                 "bucket": {
                     "apiVersion": "migration.openshift.io/v1alpha1",
                     "kind": "MigStorage",
                     "metadata": {
                         "annotations": {
-                            "touch": "f77fadf1-defb-4d4d-9ae7-f56e2fc26355"
+                            "touch": "a135593e-e6b0-41ba-88fb-ecdf885ee932"
                         },
-                        "creationTimestamp": "2019-08-21T20:04:22Z",
-                        "generation": 3,
+                        "creationTimestamp": "2019-08-23T07:39:42Z",
+                        "generation": 2,
                         "name": "bucket",
                         "namespace": "openshift-migration",
-                        "resourceVersion": "363326",
+                        "resourceVersion": "731417",
                         "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/openshift-migration/migstorages/bucket",
-                        "uid": "de5ae8ab-c44e-11e9-92cc-06ab32897ee4"
+                        "uid": "2bccdd36-c579-11e9-b862-024008363f5e"
                     },
                     "spec": {
                         "backupStorageConfig": {
@@ -137,7 +260,7 @@
                             "awsRegion": "eu-central-1",
                             "credsSecretRef": {
                                 "name": "bucket",
-                                "namespace": "openshift-config"
+                                "namespace": "openshift-migration-operator"
                             }
                         },
                         "backupStorageProvider": "aws",
@@ -145,7 +268,7 @@
                             "awsRegion": "eu-central-1",
                             "credsSecretRef": {
                                 "name": "bucket",
-                                "namespace": "openshift-config"
+                                "namespace": "openshift-migration-operator"
                             }
                         },
                         "volumeSnapshotProvider": "aws"
@@ -154,7 +277,7 @@
                         "conditions": [
                             {
                                 "category": "Required",
-                                "lastTransitionTime": "2019-08-21T20:04:22Z",
+                                "lastTransitionTime": "2019-08-23T07:39:42Z",
                                 "message": "The storage is ready.",
                                 "status": "True",
                                 "type": "Ready"
@@ -163,17 +286,17 @@
                     }
                 }
             },
-            "api/v1/namespaces/openshift-config/secrets": {
+            "api/v1/namespaces/openshift-migration-operator/secrets": {
                 "bucket": {
                     "kind": "Secret",
                     "apiVersion": "v1",
                     "metadata": {
                         "name": "bucket",
-                        "namespace": "openshift-config",
-                        "selfLink": "/api/v1/namespaces/openshift-config/secrets/bucket",
-                        "uid": "de5ba4a0-c44e-11e9-8584-0a82c596e194",
-                        "resourceVersion": "165481",
-                        "creationTimestamp": "2019-08-21T20:04:22Z"
+                        "namespace": "openshift-migration-operator",
+                        "selfLink": "/api/v1/namespaces/openshift-migration-operator/secrets/bucket",
+                        "uid": "0c92e56e-c4e7-11e9-bbed-06ab32897ee4",
+                        "resourceVersion": "435180",
+                        "creationTimestamp": "2019-08-22T14:13:43Z"
                     },
                     "data": {
                         "aws-access-key-id": "bW9ja2VkLWRhdGE=",
@@ -186,11 +309,11 @@
                     "apiVersion": "v1",
                     "metadata": {
                         "name": "source",
-                        "namespace": "openshift-config",
-                        "selfLink": "/api/v1/namespaces/openshift-config/secrets/source",
-                        "uid": "a554e753-c44e-11e9-8584-0a82c596e194",
-                        "resourceVersion": "165096",
-                        "creationTimestamp": "2019-08-21T20:02:47Z"
+                        "namespace": "openshift-migration-operator",
+                        "selfLink": "/api/v1/namespaces/openshift-migration-operator/secrets/source",
+                        "uid": "21dff140-c4e7-11e9-bbed-06ab32897ee4",
+                        "resourceVersion": "435316",
+                        "creationTimestamp": "2019-08-22T14:14:19Z"
                     },
                     "data": {
                         "saToken": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNklpSjkuZXlKcGMzTWlPaUpyZFdKbGNtNWxkR1Z6TDNObGNuWnBZMlZoWTJOdmRXNTBJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5dVlXMWxjM0JoWTJVaU9pSnZjR1Z1YzJocFpuUXRiV2xuY21GMGFXOXVMVzl3WlhKaGRHOXlJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpXTnlaWFF1Ym1GdFpTSTZJbTFwWnkxMGIydGxiaTFqZDNSNmVDSXNJbXQxWW1WeWJtVjBaWE11YVc4dmMyVnlkbWxqWldGalkyOTFiblF2YzJWeWRtbGpaUzFoWTJOdmRXNTBMbTVoYldVaU9pSnRhV2NpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzWTJNeU1UZzFPQzFqTkRSbExURXhaVGt0WWpBelppMHdZVFU0WVdJNE9HUmxNekFpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmIzQmxibk5vYVdaMExXMXBaM0poZEdsdmJpMXZjR1Z5WVhSdmNqcHRhV2NpZlEuZUVmcHdmbDR1eTRWV19nTGtzQi1kSGtSTTNnYUdNa0JaWWNfNUwwbngxZkwtU3dmdmxQdlRGZzhBNWhwSXFLdllUVzVuQWZsNC1PdEFmNVZSdDZzZFhfNFhaMS1xZmwwVy1rWVJnZ0JkbTE5VWNlellOYWREWHJSblYwRjdJdUtWQ0toNXV4VTJtNlRmZG5udktYcV9LVzhGa1E4UWRCbm0xdV9xdEVDejFGTVJ5Y1dObjdycFlPVXZBUlZHUWJLOE1Ka2k5MTJ6bHJ5blQxUUdsS2ROSnAyTnpLd2c2akFHRE5kb2MxNkpHTDM2QnM0SlUxd2FxSlUxczQyRlgxM2xOVV83ZGttdHg5X3BqQm5VWUxLUlNuOHNSMXlVZlZMNFJGaGVzcnBFTTI5RHdGdERXSWcxWjNUNmtDaE9NRXpaNFZ0Y0dBWlhSMXc0SjgxTVB6elJ3"
@@ -1150,17 +1273,17 @@
                     "metadata": {
                         "name": "openshift-migration",
                         "selfLink": "/api/v1/namespaces/openshift-migration",
-                        "uid": "339af147-c406-11e9-a768-06ab32897ee4",
-                        "resourceVersion": "38564",
-                        "creationTimestamp": "2019-08-21T11:24:12Z",
+                        "uid": "cd6ca2c3-c4e6-11e9-b418-0a82c596e194",
+                        "resourceVersion": "434607",
+                        "creationTimestamp": "2019-08-22T14:11:57Z",
                         "labels": {
                             "control-plane": "controller-manager",
                             "controller-tools.k8s.io": "1.0"
                         },
                         "annotations": {
-                            "openshift.io/sa.scc.mcs": "s0:c22,c19",
-                            "openshift.io/sa.scc.supplemental-groups": "1000500000/10000",
-                            "openshift.io/sa.scc.uid-range": "1000500000/10000",
+                            "openshift.io/sa.scc.mcs": "s0:c23,c12",
+                            "openshift.io/sa.scc.supplemental-groups": "1000530000/10000",
+                            "openshift.io/sa.scc.uid-range": "1000530000/10000",
                             "operator-sdk/primary-resource": "openshift-migration-operator/migration-controller",
                             "operator-sdk/primary-resource-type": "MigrationController.migration.openshift.io"
                         }
@@ -1178,17 +1301,17 @@
                     "metadata": {
                         "name": "openshift-migration-operator",
                         "selfLink": "/api/v1/namespaces/openshift-migration-operator",
-                        "uid": "1be5d68e-c406-11e9-be3d-0a82c596e194",
-                        "resourceVersion": "38319",
-                        "creationTimestamp": "2019-08-21T11:23:32Z",
+                        "uid": "677bc828-c4e6-11e9-bbed-06ab32897ee4",
+                        "resourceVersion": "433771",
+                        "creationTimestamp": "2019-08-22T14:09:06Z",
                         "labels": {
                             "control-plane": "controller-manager",
                             "controller-tools.k8s.io": "1.0"
                         },
                         "annotations": {
-                            "openshift.io/sa.scc.mcs": "s0:c22,c14",
-                            "openshift.io/sa.scc.supplemental-groups": "1000490000/10000",
-                            "openshift.io/sa.scc.uid-range": "1000490000/10000"
+                            "openshift.io/sa.scc.mcs": "s0:c23,c7",
+                            "openshift.io/sa.scc.supplemental-groups": "1000520000/10000",
+                            "openshift.io/sa.scc.uid-range": "1000520000/10000"
                         }
                     },
                     "spec": {
@@ -1537,6 +1660,33 @@
                     },
                     "reclaimPolicy": "Delete",
                     "volumeBindingMode": "WaitForFirstConsumer"
+                },
+                "gp2-copy": {
+                    "metadata": {
+                        "name": "gp2-copy",
+                        "selfLink": "/apis/storage.k8s.io/v1/storageclasses/gp2-copy",
+                        "uid": "dd94b7a2-c579-11e9-bbed-06ab32897ee4",
+                        "resourceVersion": "693306",
+                        "creationTimestamp": "2019-08-23T07:44:41Z",
+                        "annotations": {
+                            "storageclass.kubernetes.io/is-default-class": "true"
+                        },
+                        "ownerReferences": [
+                            {
+                                "apiVersion": "v1",
+                                "kind": "clusteroperator",
+                                "name": "storage",
+                                "uid": "fdb3c999-bce0-11e9-b596-02c6f6e7c5d0"
+                            }
+                        ]
+                    },
+                    "provisioner": "kubernetes.io/aws-ebs",
+                    "parameters": {
+                        "encrypted": "true",
+                        "type": "gp2"
+                    },
+                    "reclaimPolicy": "Delete",
+                    "volumeBindingMode": "WaitForFirstConsumer"
                 }
             }
         },
@@ -1681,6 +1831,32 @@
                             "openshift.io/sa.scc.mcs": "s0:c18,c12",
                             "openshift.io/sa.scc.supplemental-groups": "1000330000/10000",
                             "openshift.io/sa.scc.uid-range": "1000330000/10000"
+                        }
+                    },
+                    "spec": {
+                        "finalizers": [
+                            "kubernetes"
+                        ]
+                    },
+                    "status": {
+                        "phase": "Active"
+                    }
+                },
+                "mysql-persistent-test-move": {
+                    "metadata": {
+                        "name": "mysql-persistent-test-move",
+                        "selfLink": "/api/v1/namespaces/mysql-persistent-test-move",
+                        "uid": "784ada3f-c57a-11e9-8ae7-0a58ab88de30",
+                        "resourceVersion": "1959386",
+                        "creationTimestamp": "2019-08-23T07:49:00Z",
+                        "labels": {
+                            "app": "mysql"
+                        },
+                        "annotations": {
+                            "alm-manager": "operator-lifecycle-manager.olm-operator",
+                            "openshift.io/sa.scc.mcs": "s0:c15,c0",
+                            "openshift.io/sa.scc.supplemental-groups": "1000210000/10000",
+                            "openshift.io/sa.scc.uid-range": "1000210000/10000"
                         }
                     },
                     "spec": {
@@ -2516,8 +2692,11 @@
                         "name": "vol11",
                         "selfLink": "/api/v1/persistentvolumes/vol11",
                         "uid": "759bab37-bd3c-11e9-8f9c-0a58ab88de30",
-                        "resourceVersion": "6000",
+                        "resourceVersion": "1959405",
                         "creationTimestamp": "2019-08-12T20:04:58Z",
+                        "annotations": {
+                            "pv.kubernetes.io/bound-by-controller": "yes"
+                        },
                         "finalizers": [
                             "kubernetes.io/pv-protection"
                         ]
@@ -2533,10 +2712,18 @@
                         "accessModes": [
                             "ReadWriteOnce"
                         ],
+                        "claimRef": {
+                            "kind": "PersistentVolumeClaim",
+                            "namespace": "mysql-persistent-test-move",
+                            "name": "mysql",
+                            "uid": "785dd2ca-c57a-11e9-8ae7-0a58ab88de30",
+                            "apiVersion": "v1",
+                            "resourceVersion": "1959392"
+                        },
                         "persistentVolumeReclaimPolicy": "Recycle"
                     },
                     "status": {
-                        "phase": "Available"
+                        "phase": "Bound"
                     }
                 },
                 "vol110": {
@@ -4152,8 +4339,11 @@
                         "name": "vol161",
                         "selfLink": "/api/v1/persistentvolumes/vol161",
                         "uid": "76015246-bd3c-11e9-8f9c-0a58ab88de30",
-                        "resourceVersion": "6307",
+                        "resourceVersion": "1959415",
                         "creationTimestamp": "2019-08-12T20:04:58Z",
+                        "annotations": {
+                            "pv.kubernetes.io/bound-by-controller": "yes"
+                        },
                         "finalizers": [
                             "kubernetes.io/pv-protection"
                         ]
@@ -4169,10 +4359,18 @@
                         "accessModes": [
                             "ReadWriteOnce"
                         ],
+                        "claimRef": {
+                            "kind": "PersistentVolumeClaim",
+                            "namespace": "mysql-persistent-test-move",
+                            "name": "mysql-backup",
+                            "uid": "786421a5-c57a-11e9-8ae7-0a58ab88de30",
+                            "apiVersion": "v1",
+                            "resourceVersion": "1959403"
+                        },
                         "persistentVolumeReclaimPolicy": "Recycle"
                     },
                     "status": {
-                        "phase": "Available"
+                        "phase": "Bound"
                     }
                 },
                 "vol162": {
@@ -5263,7 +5461,7 @@
                         "name": "vol197",
                         "selfLink": "/api/v1/persistentvolumes/vol197",
                         "uid": "761a9499-bd3c-11e9-8f9c-0a58ab88de30",
-                        "resourceVersion": "6379",
+                        "resourceVersion": "1826330",
                         "creationTimestamp": "2019-08-12T20:04:58Z",
                         "finalizers": [
                             "kubernetes.io/pv-protection"
@@ -5634,7 +5832,7 @@
                         "name": "vol29",
                         "selfLink": "/api/v1/persistentvolumes/vol29",
                         "uid": "75a58e9e-bd3c-11e9-8f9c-0a58ab88de30",
-                        "resourceVersion": "6037",
+                        "resourceVersion": "1959343",
                         "creationTimestamp": "2019-08-12T20:04:58Z",
                         "finalizers": [
                             "kubernetes.io/pv-protection"
