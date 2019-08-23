@@ -2,7 +2,14 @@
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
 import { withFormik } from 'formik';
-import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
+import {
+  Button,
+  TextInput,
+  Form,
+  FormGroup,
+  Tooltip,
+  TooltipPosition,
+ } from '@patternfly/react-core';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -14,9 +21,11 @@ import {
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
+  isCheckConnectionButtonDisabled,
 } from '../../../common/add_edit_state';
 import { Flex, Box } from '@rebass/emotion';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
 const nameKey = 'name';
 const s3UrlKey = 's3Url';
@@ -25,13 +34,40 @@ const bucketRegionKey = 'bucketRegion';
 const accessKeyKey = 'accessKey';
 const secretKey = 'secret';
 
-const componentTypeStr = 'repository';
+const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
+
+// valuesHaveUpdate - returns true if the formik values hold values that differ
+// from a matching existing repository. This is different from props.dirty, which returns
+// true when the form values differ from the initial values. It's possible to have
+// a storage object exist, but have no initial values (user adds new storage, then updates
+// while keeping the modal open). props.dirty is not sufficient for this case.
+const valuesHaveUpdate = (values, currentStorage) => {
+  if(!currentStorage) { return true; }
+
+  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+  const existingBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const existingBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
+  const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
+  const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
+  const existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+
+  const valuesHaveUpdate =
+    values.name !== existingMigStorageName ||
+    values.bucketName !== existingBucketName ||
+    values.bucketRegion !== existingBucketRegion ||
+    values.s3Url !== existingBucketUrl ||
+    values.accessKey !== existingAccessKeyId ||
+    values.secret !== existingSecretAccessKey;
+
+  return valuesHaveUpdate;
+};
 
 const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
+  const currentStorage = props.currentStorage;
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
   const handleAccessKeyHiddenToggle = e => {
@@ -150,10 +186,34 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
         <Box m="0 0 1em 0 ">
           <Button
             type="submit"
-            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, props.dirty)}
+            isDisabled={isAddEditButtonDisabled(
+              currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
+            )}
+            style={{marginRight: '10px'}}
           >
             {addEditButtonTextFn(currentStatus)}
           </Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Add or edit your storage details
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
+          <Button
+            style={{marginLeft: '10px', marginRight: '10px'}}
+            isDisabled={isCheckConnectionButtonDisabled(
+              currentStatus, valuesHaveUpdate(values, currentStorage),
+            )}
+            onClick={() => props.checkConnection(values.name)}
+          >
+            Check Connection
+          </Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Re-check your storage connection state
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
         </Box>
         <Box m="0 0 1em 0 ">
           <ConnectionStatusLabel
@@ -173,15 +233,25 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
 
 const AddEditStorageForm: any = withFormik({
   mapPropsToValues: ({ initialStorageValues }) => {
-    const v = initialStorageValues;
-    return {
-      name: v ? v.name : '',
-      bucketName: v ? v.bucketName : '',
-      bucketRegion: v ? v.bucketRegion : '',
-      accessKey: v ? v.accessKey : '',
-      secret: v ? v.secret : '',
-      s3Url: v ? v.s3Url : '',
+    const values = {
+      name: '',
+      bucketName: '',
+      bucketRegion: '',
+      accessKey: '',
+      secret: '',
+      s3Url: '',
     };
+
+    if(initialStorageValues) {
+      values.name = initialStorageValues.name || '';
+      values.bucketName = initialStorageValues.bucketName|| '';
+      values.bucketRegion = initialStorageValues.bucketRegion || '';
+      values.accessKey = initialStorageValues.accessKey || '';
+      values.secret = initialStorageValues.secret || '';
+      values.s3Url = initialStorageValues.s3Url || '';
+    }
+
+    return values;
   },
 
   validate: (values: any) => {

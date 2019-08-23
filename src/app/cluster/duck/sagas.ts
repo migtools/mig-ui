@@ -161,6 +161,7 @@ function* addClusterRequest(action) {
     ));
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch (err) {
+    console.error('Cluster failed creation with error: ', err);
     put(AlertActions.alertErrorTimeout('Cluster failed creation'));
     return;
   }
