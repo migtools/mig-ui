@@ -47,7 +47,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
     values.token !== rawToken;
-}
+};
 const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
