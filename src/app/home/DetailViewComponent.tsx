@@ -21,6 +21,7 @@ import {
 } from './duck/context';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
+import { DataListItems } from './HomeComponent';
 
 
 interface IProps {
@@ -47,30 +48,19 @@ interface IProps {
   planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
+  handleExpandDetails: (string) => void;
+  expanded: {
+    [s: string]: boolean;
+  };
 }
 
 interface IState {
   plansDisabled: boolean;
-  expanded: {
-    [s: string]: boolean;
-  };
   modalType: string;
 }
 
-const DataItemsLength = 3;
-enum DataListItems {
-  ClusterList = 'clusterList',
-  StorageList = 'storageList',
-  PlanList = 'planList',
-}
-
-class DetailViewComponent extends Component<IProps, IState> {
+export class DetailViewComponent extends Component<IProps, IState> {
   state = {
-    expanded: {
-      'clusterList': false,
-      'storageList': false,
-      'planList': false,
-    },
     plansDisabled: true,
     modalType: '',
   };
@@ -90,16 +80,6 @@ class DetailViewComponent extends Component<IProps, IState> {
     ) {
       this.setState({ plansDisabled: false });
     }
-  }
-
-  handleExpand = (id: string) => {
-    const expanded = !this.state.expanded[id];
-    const newExpanded = Object.assign({}, this.state.expanded);
-    Object.values(DataListItems).map(
-      expandItem => newExpanded[expandItem] = false
-    );
-    newExpanded[id] = expanded;
-    this.setState({ expanded: newExpanded });
   }
 
   handleRemoveItem = (type, id) => {
@@ -158,6 +138,15 @@ class DetailViewComponent extends Component<IProps, IState> {
       storageAssociatedPlans,
       watchClusterAddEditStatus,
       watchStorageAddEditStatus,
+      stopDataListPolling,
+      removeCluster,
+      removeStorage,
+      migMeta,
+      isMigrating,
+      isStaging,
+      expanded,
+      handleExpandDetails,
+      isClosing,
     } = this.props;
 
     const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
@@ -170,11 +159,11 @@ class DetailViewComponent extends Component<IProps, IState> {
               dataList={allClusters}
               id={DataListItems.ClusterList}
               associatedPlans={clusterAssociatedPlans}
-              isLoading={this.props.isMigrating || this.props.isStaging}
-              migMeta={this.props.migMeta}
-              removeCluster={this.props.removeCluster}
-              isExpanded={this.state.expanded[DataListItems.ClusterList]}
-              toggleExpanded={this.handleExpand}
+              isLoading={isMigrating || isStaging}
+              migMeta={migMeta}
+              removeCluster={removeCluster}
+              isExpanded={expanded[DataListItems.ClusterList]}
+              toggleExpanded={handleExpandDetails}
             />
           </ClusterContext.Provider>
           <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
@@ -182,10 +171,10 @@ class DetailViewComponent extends Component<IProps, IState> {
               dataList={allStorage}
               id={DataListItems.StorageList}
               associatedPlans={storageAssociatedPlans}
-              isLoading={this.props.isMigrating || this.props.isStaging || this.props.isClosing}
-              removeStorage={this.props.removeStorage}
-              isExpanded={this.state.expanded[DataListItems.StorageList]}
-              toggleExpanded={this.handleExpand}
+              isLoading={isMigrating || isStaging || isClosing}
+              removeStorage={removeStorage}
+              isExpanded={expanded[DataListItems.StorageList]}
+              toggleExpanded={handleExpandDetails}
             />
           </StorageContext.Provider>
           <PlanContext.Provider value={{ handleStageTriggered, handleDeletePlan }}>
@@ -196,12 +185,12 @@ class DetailViewComponent extends Component<IProps, IState> {
               storageList={allStorage}
               onPlanSubmit={this.handlePlanSubmit}
               plansDisabled={isAddPlanDisabled}
-              isLoading={this.props.isMigrating || this.props.isStaging}
+              isLoading={isMigrating || isStaging}
               onStartPolling={this.handleStartPolling}
-              onStopPolling={this.props.stopDataListPolling}
-              isExpanded={this.state.expanded[DataListItems.PlanList]}
-              isClosing={this.props.isClosing}
-              toggleExpanded={this.handleExpand}
+              onStopPolling={stopDataListPolling}
+              isExpanded={expanded[DataListItems.PlanList]}
+              isClosing={isClosing}
+              toggleExpanded={handleExpandDetails}
             />
           </PlanContext.Provider>
         </DataList>
