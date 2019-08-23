@@ -24,6 +24,9 @@ import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 const VolumesTable = (props): any => {
   const {
     setFieldValue,
@@ -242,14 +245,14 @@ const VolumesTable = (props): any => {
           Cell: row => (
             <Select
               onChange={(option: any) => handleTypeChange(row, option)}
-              options={row.original.supportedActions.map(a => {
+              options={row.original.supportedActions.map((a: string) => {
                 // NOTE: Each PV may not support all actions (any at all even),
                 // we need to inspect the PV to determine this
-                return { value: a, label: a };
+                return { value: a, label: capitalize(a) };
               })}
               name="persistentVolumes"
               value={{
-                label: row.original.type,
+                label: capitalize(row.original.type),
                 value: row.original.type,
               }}
             />

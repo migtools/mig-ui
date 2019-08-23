@@ -59,7 +59,7 @@ const AddEditClusterModal = ({
   };
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
-    'Edit Cluster' : 'Add Cluster';
+    'Edit cluster' : 'Add cluster';
 
   const currentCluster = clusterList.find(c => {
     return c.MigCluster.metadata.name === currentClusterName;
