@@ -2,7 +2,15 @@
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
 import { withFormik } from 'formik';
-import { Button, TextInput, Form, FormGroup } from '@patternfly/react-core';
+import {
+  Button,
+  TextInput,
+  Form,
+  FormGroup,
+  Tooltip,
+  TooltipPosition,
+} from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon, DivideIcon } from '@patternfly/react-icons';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -13,6 +21,7 @@ import {
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
+  AddEditState,
 } from '../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
@@ -20,13 +29,29 @@ const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
 
-const componentTypeStr = 'cluster';
+const componentTypeStr = 'Cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
+// valuesHaveUpdate - returns true if the formik values hold values that differ
+// from a matching existing cluster. This is different from props.dirty, which returns
+// true when the form values differ from the initial values. It's possible to have
+// a cluster object exist, but have no initial values (user adds new cluster, then updates
+// while keeping the modal open). props.dirty is not sufficient for this case.
+const valuesHaveUpdate = (values, currentCluster) => {
+  if(!currentCluster) { return true; }
+
+  const rawToken = atob(currentCluster.Secret.data.saToken);
+  const existingEndpoint =
+    currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  return values.name !== currentCluster.MigCluster.metadata.name ||
+    values.url !== existingEndpoint ||
+    values.token !== rawToken;
+};
 const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   // Formik doesn't like addEditStatus destructured in the signature for some reason
   const currentStatus = props.addEditStatus;
+  const currentCluster = props.currentCluster;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
   const toggleHideToken = e => {
@@ -40,6 +65,12 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   const onClose = () => {
     props.onClose();
   };
+
+  const isCheckConnectionDisabled =
+    currentStatus.mode === AddEditMode.Add ||
+    currentStatus.state === AddEditState.Fetching ||
+    currentStatus.state === AddEditState.Watching ||
+    (currentStatus.mode === AddEditMode.Edit && valuesHaveUpdate(values, currentCluster));
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
@@ -92,9 +123,29 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, props.dirty)}
+            style={{marginRight: '10px'}}
           >
             {addEditButtonTextFn(currentStatus)}
           </Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Add or Edit your Cluster details
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
+          <Button
+            style={{marginLeft: '10px', marginRight: '10px'}}
+            isDisabled={isCheckConnectionDisabled}
+            onClick={() => props.checkConnection(values.name)}
+          >
+            Check Connection
+          </Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Re-check your cluster's connection state
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
         </Box>
         <Box m="0 0 1em 0 ">
           <ConnectionStatusLabel
