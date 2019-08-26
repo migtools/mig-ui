@@ -149,6 +149,138 @@ const getCounts = createSelector(
   }
 );
 
+<<<<<<< HEAD
+=======
+const getPlanDiffSelector = createSelector(
+  [planSelector, currentPlanSelector],
+  (plans, currentPlan) => {
+    if (currentPlan) {
+      const foundPlan = plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
+      //remove controller update fields
+      if (foundPlan) {
+        const { metadata } = foundPlan.MigPlan;
+        if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+          delete metadata.annotations;
+          delete metadata.generation;
+          delete metadata.resourceVersion;
+        }
+        if (foundPlan.MigPlan.status && foundPlan.MigPlan.status.conditions) {
+          for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
+            delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
+          }
+        }
+        if (JSON.stringify(currentPlan.MigPlan) === JSON.stringify(foundPlan.MigPlan)) {
+          return currentPlan;
+        } else if
+          (JSON.stringify(currentPlan.MigPlan) !== JSON.stringify(foundPlan.MigPlan)) {
+          return foundPlan;
+        }
+      } else {
+        return null;
+      }
+
+    }
+  }
+);
+
+const getCurrentPlan = createSelector(
+  [getPlanDiffSelector],
+  plan => plan);
+
+const getPlansWithStatus = createSelector(
+  [getPlansWithPlanStatus],
+  plans => {
+    const getMigrationStatus = migration => {
+      const status = {
+        progress: null,
+        start: 'TBD',
+        end: 'TBD',
+        moved: 0,
+        copied: 0,
+        stepName: 'Not started',
+        isFailed: false,
+        isSucceeded: false,
+      };
+
+      if (migration.status) {
+        if (migration.status.startTimestamp) {
+          status.start = moment(migration.status.startTimestamp).format('LLL');
+        }
+        let endTime;
+        endTime = migration.status.conditions
+          .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
+          .map(c => c.lastTransitionTime)
+          .toString();
+        status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
+
+        if (migration.status.conditions.length) {
+          // For successful migrations, show green 100% progress
+          const succeededCondition = migration.status.conditions.find(c => {
+            return c.type === 'Succeeded';
+          });
+          if (succeededCondition) {
+            status.progress = 100;
+            status.isSucceeded = true;
+            status.stepName = 'Completed';
+            return status;
+          }
+
+          // For failed migrations, show red 100% progress
+          const failedCondition = migration.status.conditions.find(c => {
+            return c.type === 'Failed';
+          });
+          if (failedCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = failedCondition.reason;
+            return status;
+          }
+
+          // For running migrations, calculate percent progress
+          const runningCondition = migration.status.conditions.find(c => {
+            return c.type === 'Running';
+          });
+          if (runningCondition) {
+            status.stepName = runningCondition.reason;
+            // Match string in format 'Step: 16/26'. Capture both numbers.
+            const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
+            if (matches && matches.length === 3) {
+              const currentStep = parseInt(matches[1], 10);
+              const totalSteps = parseInt(matches[2], 10);
+              if (!isNaN(currentStep) && !isNaN(totalSteps)) {
+                status.progress = (currentStep / totalSteps) * 100;
+              }
+            }
+            return status;
+          }
+          // For running migrations, calculate percent progress
+          const planNotReadyCondition = migration.status.conditions.find(c => {
+            return c.type === 'PlanNotReady';
+          });
+          if (planNotReadyCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = planNotReadyCondition.message;
+            status.end = '--';
+            return status;
+          }
+
+        }
+      }
+      return status;
+    };
+    const plansWithMigrationStatus = plans.map(plan => {
+      const migrationsWithStatus = plan.Migrations.map(migration => {
+        const tableStatus = getMigrationStatus(migration);
+        return { ...migration, tableStatus };
+      });
+      return { ...plan, Migrations: migrationsWithStatus };
+
+    });
+    return plansWithMigrationStatus;
+  });
+
+>>>>>>> lint-fix
 export default {
   getCurrentPlan,
   getPlansWithStatus,

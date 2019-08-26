@@ -10,7 +10,7 @@ import { Progress, ProgressSize } from '@patternfly/react-core';
 import { any } from 'prop-types';
 
 interface IProps {
-  migrations: Array<any>;
+  migrations: any[];
   id: string;
   type: string;
 }
@@ -67,9 +67,9 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations }) => {
         },
       ];
     });
-    setCurrentRows(mappedRows)
+    setCurrentRows(mappedRows);
 
-  }), [migrations]
+  }, [migrations]);
 
   return (
     <React.Fragment>
@@ -88,5 +88,5 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations }) => {
         )}
     </React.Fragment>
   );
-}
+};
 export default MigrationsTable;
