@@ -22,7 +22,7 @@ interface IProps {
   type?: string;
   isError: boolean;
   planStatusCounts?: any;
-  expandDetails: (string) => void;
+  expandDetails?: (string) => void;
 }
 
 class DashboardCard extends Component<IProps, IState> {
@@ -77,27 +77,27 @@ class DashboardCard extends Component<IProps, IState> {
               {type === 'plans' ? (
                 <MigrationStatus planStatusCounts={planStatusCounts} />
               ) : (
-                <CardStatus dataList={dataList} type={type} />
-              )}
+                  <CardStatus dataList={dataList} type={type} />
+                )}
             </CardBody>
             <CardFooter>
-              <FooterText dataList={dataList} type={type} expandDetails={expandDetails}/>
+              <FooterText dataList={dataList} type={type} expandDetails={expandDetails} />
             </CardFooter>
           </React.Fragment>
         ) : (
-          <Flex
-            css={css`
+            <Flex
+              css={css`
               height: 100%;
               text-align: center;
               margin: auto;
             `}
-          >
-            <Box flex="1" m="auto">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-              <Text fontSize={[2, 3, 4]}> Loading </Text>
-            </Box>
-          </Flex>
-        )}
+            >
+              <Box flex="1" m="auto">
+                <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+                <Text fontSize={[2, 3, 4]}> Loading </Text>
+              </Box>
+            </Flex>
+          )}
       </Card>
     );
   }

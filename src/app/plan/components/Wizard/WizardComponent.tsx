@@ -140,10 +140,12 @@ const WizardComponent = props => {
         ),
         enableNext: !isLoading,
         canJumpTo: stepIdReached >= stepId.StorageClass,
+        nextButtonText: 'Finish'
       },
       {
         id: stepId.Results,
         name: 'Results',
+        isFinishedStep: true,
         component: (
           <ResultsStep
             values={values}
@@ -152,13 +154,9 @@ const WizardComponent = props => {
             currentPlanStatus={currentPlanStatus}
             isPollingStatus={isPollingStatus}
             startPlanStatusPolling={startPlanStatusPolling}
+            onClose={handleClose}
           />
         ),
-        enableNext: !isLoading,
-        nextButtonText: 'Close',
-        hideCancelButton: true,
-        hideBackButton: true,
-        canJumpTo: stepIdReached >= stepId.Results,
       },
     ];
 

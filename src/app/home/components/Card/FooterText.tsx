@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../DetailViewComponent';
-import { DetailViewComponent } from '../../DetailViewComponent';
 
 const expandRefs = {
   'clusters': '#cluster-toggle',

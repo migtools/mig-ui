@@ -7,23 +7,23 @@ import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
-import { Card, CardHeader, CardBody, Button } from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter, Button } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 interface IProps {
   values: any;
   errors: any;
   startPlanStatusPolling: (planName) => void;
+  onClose: () => void;
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
-
   isPollingStatus: boolean;
 }
 
 
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
-  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling } = props;
+  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling, onClose } = props;
 
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
@@ -136,9 +136,13 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return null;
     }
   }
+  const StyledCard = styled(Card)`
+    margin: auto;
+    width: 50em;
+  `;
 
   return (
-    <Card>
+    <StyledCard>
       <CardHeader>
         <HeaderIcon
           state={currentPlanStatus.state} />
@@ -148,7 +152,10 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       <CardBody>
         <BodyText state={currentPlanStatus.state} errorMessage={currentPlanStatus.errorMessage} />
       </CardBody>
-    </Card>
+      <CardFooter>
+        <Button onClick={onClose} variant="primary">Close</Button>
+      </CardFooter>
+    </StyledCard>
   );
 };
 
