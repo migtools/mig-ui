@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import HomeComponent from './home/HomeComponent';
+import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
 import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
@@ -75,11 +76,13 @@ const AppComponent: React.SFC<IProps> = ({
           <ConnectedRouter history={history}>
             <Switch>
               <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+              <PrivateRoute path="/logs/:planId" isLoggedIn={isLoggedIn} component={LogsComponent} />
               <Route path="/login" component={LoginComponent} />
               <Route path="/cert-error" component={CertErrorComponent} />
             </Switch>
           </ConnectedRouter>
         </ThemeProvider>
+
       </Box>
       <Global
         styles={css`

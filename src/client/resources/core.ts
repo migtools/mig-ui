@@ -24,6 +24,24 @@ export class CoreNamespacedResource extends NamespacedResource {
   }
 }
 
+export class ExtendedCoreNamespacedResource extends CoreNamespacedResource {
+  private _operation: ExtendedCoreNamespacedResourceKind;
+  constructor(kind: CoreNamespacedResourceKind, namespace: string, operation: ExtendedCoreNamespacedResourceKind) {
+    super(kind, namespace);
+
+    this._operation = operation;
+  }
+
+  public showOperation(): ExtendedCoreNamespacedResourceKind {
+    return this._operation;
+  }
+
+  public namedPath(name): string {
+    return [this.listPath(), name, this._operation].join('/');
+  }
+
+}
+
 export class CoreClusterResource extends ClusterResource {
   private _gvk: IGroupVersionKindPlural;
   constructor(kind: CoreClusterResourceKind) {
@@ -45,6 +63,10 @@ export class CoreClusterResource extends ClusterResource {
     return ['/api', this.gvk().version, this.gvk().kindPlural].join('/');
   }
 
+}
+
+export enum ExtendedCoreNamespacedResourceKind {
+  Log = 'log',
 }
 
 export enum CoreNamespacedResourceKind {

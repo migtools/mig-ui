@@ -1,20 +1,16 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
-import styled from '@emotion/styled';
 import {
-  Brand,
   Page,
-  PageHeader,
   PageSection,
   Grid,
   GridItem,
 } from '@patternfly/react-core';
+import HeaderComponent from '../common/components/HeaderComponent';
 import { ClusterActions } from '../cluster/duck/actions';
 import { StorageActions } from '../storage/duck/actions';
 import { PlanActions } from '../plan/duck/actions';
-
-
 import { clusterOperations } from '../cluster/duck';
 import { storageOperations } from '../storage/duck';
 import { planOperations } from '../plan/duck';
@@ -23,7 +19,6 @@ import DashboardCard from './components/Card/DashboardCard';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
-import openshiftLogo from '../../assets/Logo-Cluster_Application_Migration.svg';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { PollingContext } from './duck/context';
 
@@ -50,34 +45,6 @@ interface IProps {
 }
 
 const HomeComponent: React.FunctionComponent<IProps> = (props) => {
-  const StyledPageHeader = styled(PageHeader)`
-      .pf-c-brand {
-        height: 2.5em;
-      }
-      background-color: #151515 !important;
-      .pf-c-page__header-brand {
-        background-color: #151515 !important;
-        min-width: 56em;
-      }
-      -moz-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
-      -webkit-box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
-      box-shadow: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.2);
-      text-decoration: none;
-      .pf-c-page__header-brand-link {
-        text-decoration: none;
-      }
-    `;
-
-  const Header = (
-    <StyledPageHeader
-      logo={
-        <React.Fragment>
-          <Brand src={openshiftLogo} alt="OpenShift Logo" />
-        </React.Fragment>
-      }
-    />
-  );
-
   const {
     allClusters,
     allStorage,
@@ -168,7 +135,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   }, []);
 
   return (
-    <Page header={Header}>
+    <Page header={HeaderComponent}>
       <PageSection>
         <Grid gutter="md">
           <GridItem span={4}>
