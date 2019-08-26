@@ -73,7 +73,6 @@ function* putPlanSaga(getPlanRes, planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
-    // yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
     yield put(PlanActions.updatePlanList(putPlanResponse.data));
   } catch (err) {
     throw err;

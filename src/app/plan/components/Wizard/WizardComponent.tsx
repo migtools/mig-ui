@@ -54,7 +54,6 @@ const WizardComponent = props => {
     if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
       pollingContext.stopAllPolling();
     }
-
   });
 
   useEffect(() => {

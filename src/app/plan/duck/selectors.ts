@@ -101,8 +101,6 @@ const getPlansWithStatus = createSelector(
   }
 );
 
-
-
 const getCounts = createSelector(
   [planSelector],
   plans => {
