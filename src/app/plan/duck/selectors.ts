@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import moment from 'moment';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
@@ -7,7 +8,7 @@ const getCurrentPlan = state => state.plan.currentPlan;
 const getMigMeta = state => state.migMeta;
 
 
-const getPlansWithStatus = createSelector(
+const getPlansWithPlanStatus = createSelector(
   [planSelector],
   plans => {
 
