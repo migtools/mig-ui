@@ -120,15 +120,15 @@ export const namespaceFetchFailure =
     };
   };
 
-export const updatePlan =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlan>) => {
-    let newCurrentPlan;
+export const updatePlanList =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanList>) => {
+    // let newCurrentPlan;
     const updatedPlanList = state.migPlanList.map(p => {
       if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
-        newCurrentPlan = {
-          MigPlan: action.updatedPlan,
-          Migrations: [],
-        };
+        // newCurrentPlan = {
+        //   MigPlan: action.updatedPlan,
+        //   Migrations: [],
+        // };
         return {
           MigPlan: action.updatedPlan,
           Migrations: [],
@@ -142,7 +142,6 @@ export const updatePlan =
     return {
       ...state,
       migPlanList: sortedList,
-      currentPlan: newCurrentPlan
     };
   };
 
@@ -307,6 +306,12 @@ export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const setCurrentPlan = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentPlan: action.currentPlan
+  };
+};
 export const updateCurrentPlanStatus =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
     return { ...state, currentPlanStatus: action.currentPlanStatus };
@@ -333,7 +338,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.STAGING_FAILURE: return stagingFailure(state, action);
     case PlanActionTypes.MIGRATION_SUCCESS: return migrationSuccess(state, action);
     case PlanActionTypes.MIGRATION_FAILURE: return migrationFailure(state, action);
-    case PlanActionTypes.UPDATE_PLAN: return updatePlan(state, action);
+    case PlanActionTypes.UPDATE_PLAN_LIST: return updatePlanList(state, action);
     case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
     case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
@@ -347,6 +352,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
     case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
     case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
+    case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
     default: return state;
   }
 };

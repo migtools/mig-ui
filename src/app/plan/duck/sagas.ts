@@ -72,7 +72,8 @@ function* putPlanSaga(getPlanRes, planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
-    yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
+    // yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
+    yield put(PlanActions.updatePlanList(putPlanResponse.data));
   } catch (err) {
     throw err;
   }
@@ -129,6 +130,7 @@ function* checkPlanStatus(action) {
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
       const MigPlan = getPlanResponse.data;
+      yield put(PlanActions.setCurrentPlan(MigPlan));
       yield put(PlanActions.updateCurrentPlanStatus('Pending'));
 
       if (MigPlan.status && MigPlan.status.conditions) {

@@ -12,7 +12,7 @@ export const PlanActionTypes = {
   STAGING_FAILURE: 'STAGING_FAILURE',
   MIGRATION_SUCCESS: 'MIGRATION_SUCCESS',
   MIGRATION_FAILURE: 'MIGRATION_FAILURE',
-  UPDATE_PLAN: 'UPDATE_PLAN',
+  UPDATE_PLAN_LIST: 'UPDATE_PLAN_LIST',
   UPDATE_CURRENT_PLAN_STATUS: 'UPDATE_CURRENT_PLAN_STATUS',
   UPDATE_PLAN_MIGRATIONS: 'UPDATE_PLAN_MIGRATIONS',
   MIG_PLAN_FETCH_REQUEST: 'MIG_PLAN_FETCH_REQUEST',
@@ -47,7 +47,8 @@ export const PlanActionTypes = {
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE',
   PLAN_POLL_START: 'PLAN_POLL_START',
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
-  RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN'
+  RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
+  SET_CURRENT_PLAN: 'SET_CURRENT_PLAN'
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -96,8 +97,8 @@ const migrationFailure = (err) => ({
   err
 });
 
-const updatePlan = (updatedPlan: IMigPlan) => ({
-  type: PlanActionTypes.UPDATE_PLAN,
+const updatePlanList = (updatedPlan: IMigPlan) => ({
+  type: PlanActionTypes.UPDATE_PLAN_LIST,
   updatedPlan,
 });
 
@@ -255,6 +256,11 @@ const resetCurrentPlan = () => ({
   type: PlanActionTypes.RESET_CURRENT_PLAN,
 });
 
+const setCurrentPlan = (currentPlan) => ({
+  type: PlanActionTypes.SET_CURRENT_PLAN,
+  currentPlan
+});
+
 const updateCurrentPlanStatus = (currentPlanStatus) => ({
   type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
   currentPlanStatus
@@ -270,7 +276,7 @@ export const PlanActions = {
   stagingFailure,
   migrationSuccess,
   migrationFailure,
-  updatePlan,
+  updatePlanList,
   updateCurrentPlanStatus,
   updatePlanMigrations,
   migPlanFetchRequest,
@@ -304,5 +310,6 @@ export const PlanActions = {
   getPVResourcesFailure,
   startPlanPolling,
   stopPlanPolling,
-  resetCurrentPlan
+  resetCurrentPlan,
+  setCurrentPlan
 };

@@ -30,7 +30,6 @@ const StyledIcon = styled(RedoIcon)`
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
   const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling } = props;
-  const { MigPlan } = currentPlan;
 
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
@@ -51,11 +50,11 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   function HeaderText({ status }): any {
     switch (status) {
       case 'Pending':
-        return `Validating migration plan ${MigPlan.metadata.name}`;
+        return `Validating migration plan ${currentPlan.metadata.name}`;
       case 'Ready':
-        return `${MigPlan.metadata.name} has been validated.`;
+        return `${currentPlan.metadata.name} has been validated.`;
       case 'Critical':
-        return `Failed to validate migration plan ${MigPlan.metadata.name}`;
+        return `Failed to validate migration plan ${currentPlan.metadata.name}`;
       default:
         return null;
     }

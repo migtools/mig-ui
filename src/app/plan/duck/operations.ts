@@ -182,7 +182,8 @@ const addPlan = migPlan => {
 
         const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
         if (pvSearchStatus.success) {
-          dispatch(PlanActions.updatePlan(matchingPlan.MigPlan));
+          dispatch(PlanActions.updatePlanList(matchingPlan.MigPlan));
+          dispatch(PlanActions.setCurrentPlan(matchingPlan.MigPlan));
           dispatch(PlanActions.pvFetchSuccess());
           return 'SUCCESS';
         } else if (pvSearchStatus.error) {

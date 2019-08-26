@@ -13,7 +13,7 @@ export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 
 const StorageClassTable = (props): any => {
   const { currentPlan, clusterList, values, isFetchingPVList } = props;
-  const migPlanPvs = currentPlan.MigPlan.spec.persistentVolumes;
+  const migPlanPvs = currentPlan.spec.persistentVolumes;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
   // Create a bit of state that will hold the storage class assignments
@@ -35,7 +35,7 @@ const StorageClassTable = (props): any => {
 
   useEffect(() => {
     const destCluster = clusterList.find(
-      c => c.MigCluster.metadata.name === currentPlan.MigPlan.spec.destMigClusterRef.name
+      c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
     );
 
     const scs = destCluster.MigCluster.spec.storageClasses || [];
