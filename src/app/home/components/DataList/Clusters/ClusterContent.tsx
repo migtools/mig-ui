@@ -40,7 +40,7 @@ const ClusterContent = ({
               <EmptyStateIcon icon={AddCircleOIcon} />
               <Title size="lg">Add source and target clusters for the migration</Title>
               <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
-                Add Cluster
+                Add cluster
               </Button>
             </EmptyState>
           </Box>

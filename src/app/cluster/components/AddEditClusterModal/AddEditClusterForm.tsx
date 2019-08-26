@@ -29,7 +29,7 @@ const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
 
-const componentTypeStr = 'Cluster';
+const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
@@ -136,7 +136,7 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
             )}
             onClick={() => props.checkConnection(values.name)}
           >
-            Check Connection
+            Check connection
           </Button>
           <Tooltip
             position={TooltipPosition.top}

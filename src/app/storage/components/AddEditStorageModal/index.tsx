@@ -60,7 +60,7 @@ const AddEditStorageModal = ({
 
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
-    'Edit Repository' : 'Add Repository';
+    'Edit repository' : 'Add repository';
 
   const currentStorage = storageList.find(s => {
     return s.MigStorage.metadata.name === currentStorageName;
