@@ -139,6 +139,9 @@ function* checkPlanStatus(action) {
         const hasCriticalCondition = !!MigPlan.status.conditions.some(cond => {
           return cond.category === 'Critical';
         });
+        const hasConflictCondition = !!MigPlan.status.conditions.some(cond => {
+          return cond.type === 'PlanConflict';
+        });
         if (hasReadyCondition) {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
           yield put(PlanActions.stopPlanStatusPolling());
@@ -148,6 +151,15 @@ function* checkPlanStatus(action) {
             return cond.category === 'Critical';
           });
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Critical, errorMessage: criticalCond.message }));
+
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+
+        if (hasConflictCondition) {
+          const conflictCond = MigPlan.status.conditions.find(cond => {
+            return cond.type === 'PlanConflict';
+          });
+          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Critical, errorMessage: conflictCond.message }));
 
           yield put(PlanActions.stopPlanStatusPolling());
         }

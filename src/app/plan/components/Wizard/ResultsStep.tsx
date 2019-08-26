@@ -34,10 +34,20 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       height: 1.3em;
       width: 1.3em;
     `;
+    const StyledLoaderWrapper = styled.span`
+      display: inline-block;
+    `;
 
     switch (state) {
       case CurrentPlanState.Pending:
-        return <Loader css={css`display: inline;`} type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />;
+        return <StyledLoaderWrapper>
+          <Loader
+            type="RevolvingDot"
+            color={theme.colors.medGray3}
+            height="1em"
+            width="1em"
+          />
+        </StyledLoaderWrapper>;
       case CurrentPlanState.Ready:
         return <StatusIcon isReady={true} />;
       case CurrentPlanState.Critical:
