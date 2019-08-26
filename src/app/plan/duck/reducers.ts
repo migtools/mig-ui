@@ -29,10 +29,10 @@ export const INITIAL_STATE = {
   isPollingStatus: false,
   isPolling: false,
   pvResourceList: [],
-  currentPlanStatus: <ICurrentPlanStatus>{
+  currentPlanStatus: {
     state: CurrentPlanState.Pending,
     errorMessage: ''
-  }
+  } as ICurrentPlanStatus
 };
 
 const sortPlans = planList =>
@@ -327,7 +327,7 @@ export const updateCurrentPlanStatus =
     return {
       ...state, currentPlanStatus: action.currentPlanStatus
     };
-  }
+  };
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {

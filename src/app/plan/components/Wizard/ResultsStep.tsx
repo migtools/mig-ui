@@ -36,6 +36,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     `;
     const StyledLoaderWrapper = styled.span`
       display: inline-block;
+      margin-right: 0.75rem;
     `;
 
     switch (state) {
@@ -53,7 +54,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       case CurrentPlanState.Critical:
         return <StatusIcon isReady={false} />;
       case CurrentPlanState.TimedOut:
-        return <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />
+        return <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />;
       default:
         return null;
     }
@@ -79,7 +80,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             {currentPlan.metadata.name}
           </StyledPlanName>
           {`.`}
-        </StyledValidationText>
+        </StyledValidationText>;
       case CurrentPlanState.Ready:
         return <StyledValidationText>
           <StyledPlanName>
@@ -87,7 +88,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
           </StyledPlanName>
           {` `}
           has been validated.
-        </StyledValidationText>
+        </StyledValidationText>;
       case CurrentPlanState.Critical:
         return <StyledValidationText>
           Failed to validate migration plan
@@ -96,7 +97,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             {currentPlan.metadata.name}
           </StyledPlanName>
           {`.`}
-        </StyledValidationText>
+        </StyledValidationText>;
       case CurrentPlanState.TimedOut:
         return <StyledValidationText>
           Failed to validate migration plan
@@ -105,7 +106,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             {currentPlan.metadata.name}
           </StyledPlanName>
           {`. Please Try again.`}
-        </StyledValidationText>
+        </StyledValidationText>;
       default:
         return null;
     }
@@ -122,15 +123,15 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       case CurrentPlanState.Pending:
         return <StyledBodyText>
           This might take a few minutes.
-        </StyledBodyText>
+        </StyledBodyText>;
       case CurrentPlanState.Ready:
         return <StyledBodyText>
           Select an action from the Migration Plans section of the dashboard to start the migration
-        </StyledBodyText>
+        </StyledBodyText>;
       case CurrentPlanState.Critical:
         return <StyledBodyText>
           {errorMessage}
-        </StyledBodyText>
+        </StyledBodyText>;
       default:
         return null;
     }

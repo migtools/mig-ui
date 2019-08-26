@@ -232,7 +232,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
       </PageSection>
     </Page>
   );
-}
+};
 
 export default connect(
   state => ({

@@ -150,7 +150,9 @@ function* checkPlanStatus(action) {
           const criticalCond = MigPlan.status.conditions.find(cond => {
             return cond.category === 'Critical';
           });
-          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Critical, errorMessage: criticalCond.message }));
+          yield put(PlanActions.updateCurrentPlanStatus(
+            { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
+          ));
 
           yield put(PlanActions.stopPlanStatusPolling());
         }
@@ -159,7 +161,9 @@ function* checkPlanStatus(action) {
           const conflictCond = MigPlan.status.conditions.find(cond => {
             return cond.type === 'PlanConflict';
           });
-          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Critical, errorMessage: conflictCond.message }));
+          yield put(PlanActions.updateCurrentPlanStatus(
+            { state: CurrentPlanState.Critical, errorMessage: conflictCond.message }
+          ));
 
           yield put(PlanActions.stopPlanStatusPolling());
         }
