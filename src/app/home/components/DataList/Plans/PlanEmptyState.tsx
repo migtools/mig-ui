@@ -13,7 +13,7 @@ const PlanEmptyState = ({ toggleOpen, plansDisabled }) => {
           <EmptyStateIcon icon={AddCircleOIcon} />
           <Title size="lg">No currently started plans</Title>
           <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
-            Add Plan
+            Add plan
           </Button>
         </EmptyState>
       </Box>

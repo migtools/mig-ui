@@ -1,4 +1,6 @@
 import React from 'react';
+import '../../DetailViewComponent';
+import { DetailViewComponent } from '../../DetailViewComponent';
 
 const expandRefs = {
   'clusters': '#cluster-toggle',
@@ -6,7 +8,7 @@ const expandRefs = {
   'plans': '#plan-toggle',
 };
 
-const FooterText = ({ type, dataList, ...props }) => {
+const FooterText = ({ type, dataList, expandDetails, ...props }) => {
   const clusterText =
     dataList.length === 1
       ? `View ${dataList.length} Cluster`
@@ -18,7 +20,7 @@ const FooterText = ({ type, dataList, ...props }) => {
   const planText =
     dataList.length === 1 ? `View ${dataList.length} Plan` : `View all ${dataList.length} Plans`;
   return (
-    <a href={ expandRefs[type] }>
+    <a href={expandRefs[type]} onClick={expandDetails}>
       {type === 'clusters' && clusterText}
       {type === 'repositories' && storageText}
       {type === 'plans' && planText}

@@ -61,6 +61,16 @@ interface IState {
   isNavOpen?: boolean;
   activeGroup: string;
   activeItem: string;
+  expanded: {
+    [s: string]: boolean;
+  };
+}
+
+export const DataItemsLength = 3;
+export enum DataListItems {
+  ClusterList = 'clusterList',
+  StorageList = 'storageList',
+  PlanList = 'planList',
 }
 class HomeComponent extends React.Component<IProps, IState> {
   state = {
@@ -69,6 +79,11 @@ class HomeComponent extends React.Component<IProps, IState> {
     isNavOpen: false,
     activeGroup: 'grp-1',
     activeItem: 'grp-1_itm-1',
+    expanded: {
+      'clusterList': false,
+      'storageList': false,
+      'planList': false,
+    },
   };
 
   onNavSelect = result => {
@@ -100,6 +115,16 @@ class HomeComponent extends React.Component<IProps, IState> {
       isKebabDropdownOpen: !this.state.isKebabDropdownOpen,
     });
   };
+
+  handleExpand = (id: string) => {
+    const expanded = !this.state.expanded[id];
+    const newExpanded = Object.assign({}, this.state.expanded);
+    Object.values(DataListItems).map(
+      expandItem => newExpanded[expandItem] = false
+    );
+    newExpanded[id] = expanded;
+    this.setState({ expanded: newExpanded });
+  }
 
   kebabDropdownItems = [
     <DropdownItem key="0">
@@ -218,6 +243,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 dataList={allClusters}
                 isFetching={isFetchingClusters}
                 isError={isClusterError}
+                expandDetails={() => this.handleExpand(DataListItems.ClusterList)}
               />
             </GridItem>
             <GridItem span={4}>
@@ -227,6 +253,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 dataList={allStorage}
                 isFetching={isFetchingStorage}
                 isError={isStorageError}
+                expandDetails={() => this.handleExpand(DataListItems.StorageList)}
               />
             </GridItem>
             <GridItem span={4}>
@@ -237,6 +264,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                 dataList={allPlans}
                 isFetching={isFetchingPlans}
                 isError={isPlanError}
+                expandDetails={() => this.handleExpand(DataListItems.PlanList)}
               />
             </GridItem>
           </Grid>
@@ -258,7 +286,7 @@ class HomeComponent extends React.Component<IProps, IState> {
                   this.props.stopStoragePolling();
                 }
               }}>
-                <DetailViewComponent />
+                <DetailViewComponent expanded={this.state.expanded} handleExpandDetails={this.handleExpand}/>
               </PollingContext.Provider>
             </Box>
           </Flex>
