@@ -128,6 +128,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                   <MigrationsTable
                     type="Migrations"
                     migrations={plan.Migrations}
+                    plan={plan.MigPlan}
                     id="migrations-history-expansion-table"
                   />
                 ),
