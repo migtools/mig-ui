@@ -77,7 +77,8 @@ const mapStateToProps = state => {
     isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
+    currentPlan: planSelectors.getCurrentPlan(state),
+    currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
   };
 };
@@ -91,6 +92,7 @@ const mapDispatchToProps = dispatch => {
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
+    updateCurrentPlanStatus: (currentPlanStatus) => dispatch(PlanActions.updateCurrentPlanStatus(currentPlanStatus)),
   };
 };
 

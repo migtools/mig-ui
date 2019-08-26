@@ -13,6 +13,7 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
   currentPlan: null,
+  currentPlanStatus: null,
   isClosing: false,
   isPollingStatus: false,
   isPolling: false,
@@ -306,6 +307,11 @@ export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
   };
 };
 
+export const updateCurrentPlanStatus =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
+    return { ...state, currentPlanStatus: action.currentPlanStatus };
+  };
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
@@ -328,6 +334,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.MIGRATION_SUCCESS: return migrationSuccess(state, action);
     case PlanActionTypes.MIGRATION_FAILURE: return migrationFailure(state, action);
     case PlanActionTypes.UPDATE_PLAN: return updatePlan(state, action);
+    case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
     case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);

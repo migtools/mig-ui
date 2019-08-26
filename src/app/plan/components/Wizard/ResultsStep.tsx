@@ -15,6 +15,7 @@ interface IProps {
   errors: any;
   startPlanStatusPolling: (planName) => void;
   currentPlan: any;
+  currentPlanStatus: string;
   isPollingStatus: boolean;
 }
 
@@ -28,8 +29,9 @@ const StyledIcon = styled(RedoIcon)`
 `;
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
-  const { values, currentPlan, isPollingStatus, startPlanStatusPolling } = props;
+  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling } = props;
   const { MigPlan } = currentPlan;
+
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
   };
@@ -47,7 +49,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     }
   }
   function HeaderText({ status }): any {
-    switch (status.currentState) {
+    switch (status) {
       case 'Pending':
         return `Validating migration plan ${MigPlan.metadata.name}`;
       case 'Ready':
@@ -74,11 +76,11 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   return (
     <Card>
       <CardHeader>
-        <HeaderIcon status={currentPlan.PlanStatus} />
-        <HeaderText status={currentPlan.PlanStatus} />
+        <HeaderIcon status={currentPlanStatus} />
+        <HeaderText status={currentPlanStatus} />
       </CardHeader>
       <CardBody>
-        <BodyText status={currentPlan.PlanStatus} />
+        <BodyText status={currentPlanStatus} />
       </CardBody>
     </Card>
     // <Flex

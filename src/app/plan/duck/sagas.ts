@@ -129,17 +129,19 @@ function* checkPlanStatus(action) {
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
       const MigPlan = getPlanResponse.data;
-      yield put(PlanActions.updatePlan(MigPlan));
+      yield put(PlanActions.updateCurrentPlanStatus('Pending'));
 
       if (MigPlan.status && MigPlan.status.conditions) {
         const hasReadyCondition = !!MigPlan.status.conditions.some(c => c.type === 'Ready');
         if (hasReadyCondition) {
+          yield put(PlanActions.updateCurrentPlanStatus('Ready'));
           yield put(PlanActions.stopPlanStatusPolling());
         }
       }
     } else {
       planStatusComplete = true;
       // yield put(AlertActions.alertErrorTimeout('Plan status timed out'));
+      yield put(PlanActions.updateCurrentPlanStatus('Timeout'));
       yield put(PlanActions.stopPlanStatusPolling());
       break;
     }

@@ -13,6 +13,7 @@ export const PlanActionTypes = {
   MIGRATION_SUCCESS: 'MIGRATION_SUCCESS',
   MIGRATION_FAILURE: 'MIGRATION_FAILURE',
   UPDATE_PLAN: 'UPDATE_PLAN',
+  UPDATE_CURRENT_PLAN_STATUS: 'UPDATE_CURRENT_PLAN_STATUS',
   UPDATE_PLAN_MIGRATIONS: 'UPDATE_PLAN_MIGRATIONS',
   MIG_PLAN_FETCH_REQUEST: 'MIG_PLAN_FETCH_REQUEST',
   MIG_PLAN_FETCH_SUCCESS: 'MIG_PLAN_FETCH_SUCCESS',
@@ -254,6 +255,11 @@ const resetCurrentPlan = () => ({
   type: PlanActionTypes.RESET_CURRENT_PLAN,
 });
 
+const updateCurrentPlanStatus = (currentPlanStatus) => ({
+  type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
+  currentPlanStatus
+});
+
 export const PlanActions = {
   updatePlans,
   addPlanSuccess,
@@ -265,6 +271,7 @@ export const PlanActions = {
   migrationSuccess,
   migrationFailure,
   updatePlan,
+  updateCurrentPlanStatus,
   updatePlanMigrations,
   migPlanFetchRequest,
   migPlanFetchSuccess,

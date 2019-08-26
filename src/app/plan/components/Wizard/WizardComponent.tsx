@@ -24,6 +24,7 @@ const WizardComponent = props => {
     setFieldValue,
     clusterList,
     currentPlan,
+    currentPlanStatus,
     storageList,
     isFetchingPVList,
     isFetchingNamespaceList,
@@ -38,7 +39,8 @@ const WizardComponent = props => {
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
-    resetCurrentPlan
+    resetCurrentPlan,
+    updateCurrentPlanStatus
   } = props;
 
   enum stepId {
@@ -150,6 +152,7 @@ const WizardComponent = props => {
             values={values}
             errors={errors}
             currentPlan={currentPlan}
+            currentPlanStatus={currentPlanStatus}
             isPollingStatus={isPollingStatus}
             startPlanStatusPolling={startPlanStatusPolling}
           />

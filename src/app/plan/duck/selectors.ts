@@ -2,7 +2,6 @@ import { createSelector } from 'reselect';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
-// const currentPlanSelector = state => state.plan.currentPlan;
 const getCurrentPlan = state => state.plan.currentPlan;
 
 const getMigMeta = state => state.migMeta;
@@ -102,65 +101,6 @@ const getPlansWithStatus = createSelector(
   }
 );
 
-const getCurrentPlanWithStatus = createSelector(
-  [getCurrentPlan],
-  plan => {
-    enum ValidationState {
-      Pending = 'Pending',
-      Fetching = 'fetching',
-      Watching = 'watching',
-      Critical = 'Critical',
-      Ready = 'Ready',
-      TimedOut = 'timedout',
-    }
-    if (!plan) { return null; }
-    const PlanConditionCritical = 'Critical';
-    const PlanConditionReady = 'Ready';
-    const { MigPlan } = plan;
-
-    let hasReadyCondition = null;
-    let hasCriticalCondition = null;
-    let CriticalCondition = null;
-    const hasStatusAndConditions =
-      MigPlan.status &&
-      MigPlan.status.conditions;
-
-    if (hasStatusAndConditions) {
-      hasCriticalCondition = !!MigPlan.status.conditions.some(cond => {
-        return cond.category === PlanConditionCritical;
-      });
-      if (hasCriticalCondition) {
-        CriticalCondition = MigPlan.status.conditions.find(cond => {
-          return cond.category === PlanConditionCritical;
-        });
-        const statusObject = {
-          currentState: ValidationState.Critical,
-          errorMessage: CriticalCondition.message
-        };
-        return { ...plan, PlanStatus: statusObject };
-      }
-
-
-      hasReadyCondition = !!MigPlan.status.conditions.find(cond => {
-        return cond.type === PlanConditionReady;
-      });
-      if (hasReadyCondition) {
-        const statusObject = {
-          currentState: ValidationState.Ready,
-          errorMessage: CriticalCondition.message
-        };
-        return { ...plan, PlanStatus: statusObject };
-      }
-    } else {
-      const emptyStatusObject = {
-        errorMessage: 'No status found.',
-        currentState: ValidationState.Pending
-      };
-
-      return { ...plan, PlanStatus: emptyStatusObject };
-    }
-
-  });
 
 
 const getCounts = createSelector(
@@ -210,45 +150,8 @@ const getCounts = createSelector(
   }
 );
 
-// const getPlanDiffSelector = createSelector(
-//   [planSelector, currentPlanSelector],
-//   (plans, currentPlan) => {
-//     if (currentPlan) {
-//       const foundPlan = plans.find(p => p.MigPlan.metadata.name === currentPlan.MigPlan.metadata.name);
-//       //remove controller update fields
-//       if (foundPlan) {
-//         const { metadata } = foundPlan.MigPlan;
-//         if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
-//           delete metadata.annotations;
-//           delete metadata.generation;
-//           delete metadata.resourceVersion;
-//         }
-//         if (foundPlan.MigPlan.status && foundPlan.MigPlan.status.conditions) {
-//           for (let i = 0; foundPlan.MigPlan.status.conditions.length > i; i++) {
-//             delete foundPlan.MigPlan.status.conditions[i].lastTransitionTime;
-//           }
-//         }
-//         if (JSON.stringify(currentPlan.MigPlan) === JSON.stringify(foundPlan.MigPlan)) {
-//           return currentPlan;
-//         } else if
-//           (JSON.stringify(currentPlan.MigPlan) !== JSON.stringify(foundPlan.MigPlan)) {
-//           return foundPlan;
-//         }
-//       } else {
-//         return null;
-//       }
-
-//     }
-//   }
-// );
-
-// const getCurrentPlan = createSelector(
-//   [getPlanDiffSelector],
-//   plan => plan);
-
-
 export default {
-  getCurrentPlanWithStatus,
+  getCurrentPlan,
   getPlansWithStatus,
   getMigMeta,
   getCounts,
