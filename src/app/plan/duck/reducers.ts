@@ -1,6 +1,18 @@
 import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
 
+export enum CurrentPlanState {
+  Pending = 'Pending',
+  Critical = 'Critical',
+  Ready = 'Ready',
+  TimedOut = 'Timedout',
+}
+
+export interface ICurrentPlanStatus {
+  state: CurrentPlanState;
+  errorMessage?: string;
+}
+
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
@@ -13,11 +25,14 @@ export const INITIAL_STATE = {
   isStaging: false,
   isMigrating: false,
   currentPlan: null,
-  currentPlanStatus: null,
   isClosing: false,
   isPollingStatus: false,
   isPolling: false,
-  pvResourceList: []
+  pvResourceList: [],
+  currentPlanStatus: <ICurrentPlanStatus>{
+    state: CurrentPlanState.Pending,
+    errorMessage: ''
+  }
 };
 
 const sortPlans = planList =>
@@ -122,13 +137,8 @@ export const namespaceFetchFailure =
 
 export const updatePlanList =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanList>) => {
-    // let newCurrentPlan;
     const updatedPlanList = state.migPlanList.map(p => {
       if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
-        // newCurrentPlan = {
-        //   MigPlan: action.updatedPlan,
-        //   Migrations: [],
-        // };
         return {
           MigPlan: action.updatedPlan,
           Migrations: [],
@@ -314,8 +324,10 @@ export const setCurrentPlan = (state = INITIAL_STATE, action) => {
 };
 export const updateCurrentPlanStatus =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
-    return { ...state, currentPlanStatus: action.currentPlanStatus };
-  };
+    return {
+      ...state, currentPlanStatus: action.currentPlanStatus
+    };
+  }
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {

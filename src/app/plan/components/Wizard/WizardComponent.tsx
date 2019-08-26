@@ -39,8 +39,6 @@ const WizardComponent = props => {
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
-    resetCurrentPlan,
-    updateCurrentPlanStatus
   } = props;
 
   enum stepId {

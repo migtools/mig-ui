@@ -1,5 +1,6 @@
 import { IMigPlan } from '../../../client/resources/conversions';
 import { PollingActionTypes } from '../../common/duck/actions';
+import { ICurrentPlanStatus } from './reducers';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
@@ -261,9 +262,9 @@ const setCurrentPlan = (currentPlan) => ({
   currentPlan
 });
 
-const updateCurrentPlanStatus = (currentPlanStatus) => ({
+const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
   type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
-  currentPlanStatus
+  currentPlanStatus,
 });
 
 export const PlanActions = {

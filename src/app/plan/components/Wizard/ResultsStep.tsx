@@ -8,25 +8,19 @@ import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
 import { Card, CardHeader, CardBody, Button } from '@patternfly/react-core';
-import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
-
+import StatusIcon from '../../../common/components/StatusIcon';
+import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 interface IProps {
   values: any;
   errors: any;
   startPlanStatusPolling: (planName) => void;
   currentPlan: any;
-  currentPlanStatus: string;
+  currentPlanStatus: ICurrentPlanStatus;
+
   isPollingStatus: boolean;
 }
 
-const StyledSpan = styled.span`
-  font-weight: 600;
-`;
 
-const StyledIcon = styled(RedoIcon)`
-  height: 3em;
-  width: 3em;
-`;
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
   const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling } = props;
@@ -35,38 +29,98 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     startPlanStatusPolling(values.planName);
   };
 
-  function HeaderIcon({ status }) {
-    switch (status) {
-      // case 'info':
-      //   return <Info text={text} />;
-      // case 'warning':
-      //   return <Warning text={text} />;
-      // case 'error':
-      //   return <Error text={text} />;
+  function HeaderIcon({ state }) {
+    const StyledIcon = styled(RedoIcon)`
+      height: 1.3em;
+      width: 1.3em;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <Loader css={css`display: inline;`} type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />;
+      case CurrentPlanState.Ready:
+        return <StatusIcon isReady={true} />;
+      case CurrentPlanState.Critical:
+        return <StatusIcon isReady={false} />;
+      case CurrentPlanState.TimedOut:
+        return <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />
       default:
         return null;
     }
   }
-  function HeaderText({ status }): any {
-    switch (status) {
-      case 'Pending':
-        return `Validating migration plan ${currentPlan.metadata.name}`;
-      case 'Ready':
-        return `${currentPlan.metadata.name} has been validated.`;
-      case 'Critical':
-        return `Failed to validate migration plan ${currentPlan.metadata.name}`;
+  function HeaderText({ state }): any {
+    const StyledPlanName = styled.span`
+      display: inline-block;
+      font-size: 1.3em;
+      font-weight: 900;
+    `;
+    const StyledValidationText = styled.span`
+      font-size: 1.3em;
+      font-weight: 300;
+      display: inline-block;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <StyledValidationText>
+          Validating migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`.`}
+        </StyledValidationText>
+      case CurrentPlanState.Ready:
+        return <StyledValidationText>
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {` `}
+          has been validated.
+        </StyledValidationText>
+      case CurrentPlanState.Critical:
+        return <StyledValidationText>
+          Failed to validate migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`.`}
+        </StyledValidationText>
+      case CurrentPlanState.TimedOut:
+        return <StyledValidationText>
+          Failed to validate migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`. Please Try again.`}
+        </StyledValidationText>
       default:
         return null;
     }
   }
-  function BodyText({ status }): any {
-    switch (status) {
-      case 'Pending':
-        return `This might take a few minutes.`;
-      case 'Ready':
-        return `Select an action from the Migration Plans section of the dashboard to start the migration.`;
-      case 'Critical':
-        return status.errorMessage;
+  function BodyText({ state, errorMessage }): any {
+    const StyledBodyText = styled.span`
+      font-size: 1.0em;
+      font-weight: 300;
+      display: inline-block;
+      font-style: italic;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <StyledBodyText>
+          This might take a few minutes.
+        </StyledBodyText>
+      case CurrentPlanState.Ready:
+        return <StyledBodyText>
+          Select an action from the Migration Plans section of the dashboard to start the migration
+        </StyledBodyText>
+      case CurrentPlanState.Critical:
+        return <StyledBodyText>
+          {errorMessage}
+        </StyledBodyText>
       default:
         return null;
     }
@@ -75,87 +129,15 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   return (
     <Card>
       <CardHeader>
-        <HeaderIcon status={currentPlanStatus} />
-        <HeaderText status={currentPlanStatus} />
+        <HeaderIcon
+          state={currentPlanStatus.state} />
+        <HeaderText
+          state={currentPlanStatus.state} />
       </CardHeader>
       <CardBody>
-        <BodyText status={currentPlanStatus} />
+        <BodyText state={currentPlanStatus.state} errorMessage={currentPlanStatus.errorMessage} />
       </CardBody>
     </Card>
-    // <Flex
-    //   css={css`
-    //     margin: 5em 0;
-    //     height: 100%;
-    //     flex-direction: row;
-    //     justify-content: center;
-    //   `}
-    // >
-    //   <Box css={css`display: inline-block; margin: auto 1em;`}>
-    //     {isPollingStatus ?
-    //       <Loader type="RevolvingDot" color={theme.colors.medGray3} height="3em" width="3em" /> :
-    //       <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />
-    //     }
-    //   </Box>
-    //   <Box>
-    //     <Flex
-    //       flexDirection="column"
-    //       css={css`
-    //     height: 100%;
-    //     text-align: center;
-    //   `}
-    //     >
-    //       <Box css={css`
-    //         `
-    //       }
-    //       >
-    //         <Text fontSize={[2, 3, 4]}>
-    //           <Box css={css`
-    //         display: inline-block; 
-    //         margin-right: 10px;`
-    //           }
-    //           >
-    //             Validating migration plan <StyledSpan>{values.planName}</StyledSpan>.
-    //           </Box>
-    //         </Text>
-    //       </Box>
-    //       <Box css={css`
-    //         margin-top: .5em;
-    //         display: inline-block; 
-    //         margin-right: 10px;
-    //         width: 20em;
-    //         `}>
-    //         {isPollingStatus ? (
-    //           <React.Fragment>
-    //             <Box css={css`display: inline-block; `}>
-    //               <Text fontSize={[1, 2, 3]} fontStyle="italic">
-    //                 This might take a few minutes...
-    //           </Text>
-    //             </Box>
-    //           </React.Fragment>
-    //         ) : (
-    //             <React.Fragment>
-    //               <Box css={css`
-    //                 display: inline-block; 
-    //                 margin-right: 10px;`
-    //               }
-    //               >
-    //                 <PlanStatus plan={currentPlan} />
-    //               </Box>
-    //               <ValidationStatus status={currentPlan.PlanStatus} />
-    //               {/* <Box css={css`display: inline-block; `}>
-    //                 {currentPlan.PlanStatus.hasReadyCondition ? (
-    //                   <StatusIcon isReady={true} />
-    //                 ) : (
-    //                     <StatusIcon isReady={false} />
-    //                   )}
-
-    //               </Box> */}
-    //             </React.Fragment>
-    //           )}
-    //       </Box>
-    //     </Flex >
-    //   </Box>
-    // </Flex>
   );
 };
 
