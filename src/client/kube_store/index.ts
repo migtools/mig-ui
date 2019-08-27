@@ -55,41 +55,49 @@ export class KubeStore {
         lastTransitionTime: new Date().toUTCString(),
         type: statusType,
       }];
-      this.updateMockedData(apiKey, resourceName, obj);
+      if (this.data()[apiKey][resourceName]) {
+        this.updateMockedData(apiKey, resourceName, obj);
+      }
     }, timeout);
   }
 
   private discoverPVsMock = (apiKey, resourceName, migPlan) => {
     setTimeout(() => {
-      const mockPVC = {
-        accessModes: ['ReadWriteOnce'],
-        name: 'sample-pvc',
-        namespace: 'sample-namespace',
-      };
+      const data = this._data();
+      const sourceCluster = migPlan.spec.srcMigClusterRef.name;
+      if (data.clusters[sourceCluster]['api/v1/persistentvolumes']) {
+        const mockPVC = {
+          accessModes: ['ReadWriteOnce'],
+          name: 'sample-pvc',
+          namespace: 'sample-namespace',
+        };
 
-      const mockSC = {
-        action: 'copy',
-        storageClass: 'gp2',
-      };
+        const mockSC = {
+          action: 'copy',
+          storageClass: 'gp2',
+        };
 
-      const mockSupported = {
-        actions: ['copy', 'move'],
-      };
+        const mockSupported = {
+          actions: ['copy', 'move'],
+        };
 
-      const mockPV = {
-        capacity: '100Gi',
-        name: 'persistent-volume',
-        pvc: mockPVC,
-        selection: mockSC,
-        supported: mockSupported,
-      };
+        const pvKey = Object.keys(data.clusters[sourceCluster]['api/v1/persistentvolumes'])[0];
+        const pv = data.clusters[sourceCluster]['api/v1/persistentvolumes'][pvKey];
+        const mockPV = {
+          capacity: pv.spec.capacity.storage,
+          name: pvKey,
+          pvc: mockPVC,
+          selection: mockSC,
+          supported: mockSupported,
+        };
+        migPlan.spec['persistentVolumes'] = [mockPV];
+      }
 
       const mockPVDiscovery = {
         conditions: [{
           type: 'PvsDiscovered',
         }]
       };
-      migPlan.spec['persistentVolumes'] = [mockPV];
       migPlan['status'] = mockPVDiscovery;
       this.updateMockedData(apiKey, resourceName, migPlan);
     }, 2000);
@@ -206,6 +214,8 @@ export class KubeStore {
       if (!obj.spec.closed) {
         this.discoverPVsMock(apiKey, resourceName, obj);
         this.setResourceStatus(apiKey, resourceName, obj, 'Ready', 7000);
+      } else {
+        this.setResourceStatus(apiKey, resourceName, obj, 'Closed');
       }
     } else if (obj.kind === 'MigMigration') {
       this.setMigrationStarted(apiKey, resourceName, obj);
