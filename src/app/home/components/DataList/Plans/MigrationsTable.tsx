@@ -47,8 +47,8 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations }) => {
         },
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
-        { title: migration.tableStatus.copied },
         { title: migration.tableStatus.moved },
+        { title: migration.tableStatus.copied },
         {
           title: (
             <div>

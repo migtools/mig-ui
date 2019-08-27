@@ -191,6 +191,7 @@ const getPlansWithStatus = createSelector(
   [getPlansWithPlanStatus],
   plans => {
     const getMigrationStatus = (plan, migration) => {
+      const { MigPlan } = plan;
       const status = {
         progress: null,
         start: 'TBD',
@@ -201,10 +202,10 @@ const getPlansWithStatus = createSelector(
         isFailed: false,
         isSucceeded: false,
       };
-      if (plan.spec.persistentVolumes) {
-        status.copied = plan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
+      if (MigPlan.spec.persistentVolumes) {
+        status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
         if (!migration.spec.stage) {
-          status.moved = plan.spec.persistentVolumes.length - status.copied;
+          status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
         }
       }
       if (migration.status) {
