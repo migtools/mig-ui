@@ -35,6 +35,7 @@ export interface IOtherProps {
   addPlan: (planValues) => void;
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
+  onHandleWizardModalClose: () => void;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({

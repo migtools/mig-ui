@@ -5,48 +5,11 @@ import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
 import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
-import { useToggleLoading } from '../../duck/hooks';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
-<<<<<<< HEAD
-
-interface IFormValues {
-  planName: string;
-  sourceCluster: string;
-  targetCluster: string;
-  selectedStorage: string;
-  selectedNamespaces: any[];
-}
-interface IOtherProps {
-  clusterList: any[];
-  planList: any[];
-  storageList: any[];
-  isFetchingPVList: boolean;
-  isPollingStatus: boolean;
-  isPVError: boolean;
-  isCheckingPlanStatus: boolean;
-  isFetchingPVResources: boolean;
-  isFetchingNamespaceList: boolean;
-  isOpen: boolean;
-  isPollingStorage: boolean;
-  isPollingClusters: boolean;
-  isPollingPlans: boolean;
-  currentPlan: any;
-  currentPlanStatus: any;
-  startPlanStatusPolling: () => void;
-  resetCurrentPlan: () => void;
-  fetchNamespacesForCluster: () => void;
-  getPVResourcesRequest: () => void;
-  addPlan: (planValues) => void;
-  sourceClusterNamespaces: any[];
-  pvResourceList: any[];
-}
-=======
 import { IOtherProps, IFormValues } from './WizardContainer';
->>>>>>> export types from container
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
-  const [isLoading, toggleLoading] = useToggleLoading(false);
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
   const pollingContext = useContext(PollingContext);
@@ -79,7 +42,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isPollingPlans,
     pvResourceList,
     addPlan,
-    resetCurrentPlan
+    resetCurrentPlan,
+    onHandleWizardModalClose
   } = props;
 
   enum stepId {
@@ -159,7 +123,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isFetchingPVResources={isFetchingPVResources}
           />
         ),
-        enableNext: !isLoading && !isFetchingPVList,
+        enableNext: !isFetchingPVList,
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -179,7 +143,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             clusterList={clusterList}
           />
         ),
-        enableNext: !isLoading,
         canJumpTo: stepIdReached >= stepId.StorageClass,
         nextButtonText: 'Finish'
       },
@@ -240,11 +203,11 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     }
   };
   const handleClose = () => {
+    onHandleWizardModalClose();
     setStepIdReached(stepId.General);
-    resetCurrentPlan();
-    resetForm();
     pollingContext.startAllDefaultPolling();
     resetForm();
+    resetCurrentPlan();
   };
   return (
     <React.Fragment>
@@ -255,9 +218,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           onBack={onMove}
           title="Migration Plan Wizard"
           description="Create a migration plan"
-          onClose={() => {
-            handleClose();
-          }}
+          onClose={handleClose}
           steps={updatedSteps}
           isFullWidth
           isCompactNav
