@@ -1,18 +1,16 @@
 import React from 'react';
 
 interface IProps {
-  isClosing?: any;
   plan: any;
 }
 
-const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
+const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
   const {
     hasClosedCondition,
     hasReadyCondition,
     hasNotReadyCondition,
     hasRunningMigrations,
     hasSucceededMigration,
-    finalMigrationComplete,
     hasSucceededStage,
     hasPrevMigrations,
     latestType,
@@ -41,9 +39,6 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     }
     if (hasClosedCondition) {
       status.text = 'Closed';
-    }
-    if (isClosing) {
-      status.text = 'Closing';
     }
     return status;
   };
