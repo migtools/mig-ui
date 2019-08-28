@@ -21,7 +21,7 @@ import {
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
-  AddEditState,
+  isCheckConnectionButtonDisabled,
 } from '../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 
@@ -65,12 +65,6 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
   const onClose = () => {
     props.onClose();
   };
-
-  const isCheckConnectionDisabled =
-    currentStatus.mode === AddEditMode.Add ||
-    currentStatus.state === AddEditState.Fetching ||
-    currentStatus.state === AddEditState.Watching ||
-    (currentStatus.mode === AddEditMode.Edit && valuesHaveUpdate(values, currentCluster));
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
@@ -122,7 +116,9 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
         <Box m="0 0 1em 0 ">
           <Button
             type="submit"
-            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, props.dirty)}
+            isDisabled={isAddEditButtonDisabled(
+              currentStatus, errors, touched, valuesHaveUpdate(values, currentCluster)
+            )}
             style={{marginRight: '10px'}}
           >
             {addEditButtonTextFn(currentStatus)}
@@ -130,12 +126,14 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-              Add or Edit your Cluster details
+              Add or edit your cluster details
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
           <Button
             style={{marginLeft: '10px', marginRight: '10px'}}
-            isDisabled={isCheckConnectionDisabled}
+            isDisabled={isCheckConnectionButtonDisabled(
+              currentStatus, valuesHaveUpdate(values, currentCluster),
+            )}
             onClick={() => props.checkConnection(values.name)}
           >
             Check connection
@@ -165,12 +163,19 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
 
 const AddClusterForm: any = withFormik({
   mapPropsToValues: ({ initialClusterValues }) => {
-    const v = initialClusterValues;
-    return {
-      name: v ? v.clusterName : '',
-      url: v ? v.clusterUrl : '',
-      token: v ? v.clusterSvcToken : '',
+    const values = {
+      name: '',
+      url: '',
+      token: '',
     };
+
+    if(initialClusterValues) {
+      values.name = initialClusterValues.clusterName || '';
+      values.url = initialClusterValues.clusterUrl || '';
+      values.token = initialClusterValues.clusterSvcToken || '';
+    }
+
+    return values;
   },
 
   validate: (values: any) => {
