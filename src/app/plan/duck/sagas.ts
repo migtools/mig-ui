@@ -12,6 +12,10 @@ import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 
 
+const PlanUpdateTotalTries = 6;
+const PlanUpdateRetryPeriodSeconds = 5;
+
+
 function* checkPVs(action) {
   const params = { ...action.params };
   let pvsFound = false;
@@ -62,11 +66,12 @@ function* getPlanSaga(planName) {
     throw err;
   }
 }
-function* putPlanSaga(getPlanRes, planValues) {
+function* putPlanSaga(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
+    const getPlanRes = yield call(getPlanSaga, planValues.planName);
     const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
     const putPlanResponse = yield client.put(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -81,15 +86,16 @@ function* putPlanSaga(getPlanRes, planValues) {
 
 function* planUpdateRetry(action) {
   try {
-    const SECOND = 1000;
-    const getPlanResponse = yield call(getPlanSaga, action.planValues.planName);
-    yield retry(3, 10 * SECOND, putPlanSaga, getPlanResponse, action.planValues);
+    yield retry(
+      PlanUpdateTotalTries,
+      PlanUpdateRetryPeriodSeconds * 1000,
+      putPlanSaga,
+      action.planValues,
+    );
   } catch (error) {
     yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
   }
 }
-
-
 
 function* checkClosedStatus(action) {
   let planClosed = false;
