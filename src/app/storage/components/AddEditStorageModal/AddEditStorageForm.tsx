@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
-import { withFormik } from 'formik';
 import {
   Button,
   TextInput,
@@ -9,7 +8,8 @@ import {
   FormGroup,
   Tooltip,
   TooltipPosition,
- } from '@patternfly/react-core';
+} from '@patternfly/react-core';
+import { withFormik, FormikProps } from 'formik';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -44,7 +44,7 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 const valuesHaveUpdate = (values, currentStorage) => {
-  if(!currentStorage) { return true; }
+  if (!currentStorage) { return true; }
 
   const existingMigStorageName = currentStorage.MigStorage.metadata.name;
   const existingBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
@@ -64,10 +64,9 @@ const valuesHaveUpdate = (values, currentStorage) => {
   return valuesUpdatedObject;
 };
 
-const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
-  // Formik doesn't like addEditStatus destructured in the signature for some reason
-  const currentStatus = props.addEditStatus;
-  const currentStorage = props.currentStorage;
+const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+  const { addEditStatus: currentStatus, currentStorage, checkConnection, values, touched, errors } = props;
+
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
   const handleAccessKeyHiddenToggle = e => {
@@ -189,7 +188,7 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
             isDisabled={isAddEditButtonDisabled(
               currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
             )}
-            style={{marginRight: '10px'}}
+            style={{ marginRight: '10px' }}
           >
             {addEditButtonTextFn(currentStatus)}
           </Button>
@@ -200,11 +199,11 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
           <Button
-            style={{marginLeft: '10px', marginRight: '10px'}}
+            style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
               currentStatus, valuesHaveUpdate(values, currentStorage),
             )}
-            onClick={() => props.checkConnection(values.name)}
+            onClick={() => checkConnection(values.name)}
           >
             Check Connection
           </Button>
@@ -231,6 +230,23 @@ const InnerAddEditStorageForm = ({ values, touched, errors, ...props }) => {
   );
 };
 
+interface IFormValues {
+  name: string;
+  bucketName: string;
+  bucketRegion: string;
+  accessKey: string;
+  secret: string;
+  s3Url: string;
+}
+interface IOtherProps {
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  initialStorageValues: any;
+  checkConnection: (name) => void;
+  currentStorage: any;
+}
+
 const AddEditStorageForm: any = withFormik({
   mapPropsToValues: ({ initialStorageValues }) => {
     const values = {
@@ -242,9 +258,9 @@ const AddEditStorageForm: any = withFormik({
       s3Url: '',
     };
 
-    if(initialStorageValues) {
+    if (initialStorageValues) {
       values.name = initialStorageValues.name || '';
-      values.bucketName = initialStorageValues.bucketName|| '';
+      values.bucketName = initialStorageValues.bucketName || '';
       values.bucketRegion = initialStorageValues.bucketRegion || '';
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
@@ -276,7 +292,7 @@ const AddEditStorageForm: any = withFormik({
       errors.bucketName = 'Required';
     }
 
-    if(values.s3Url !== '') {
+    if (values.s3Url !== '') {
       const s3UrlError = commonUtils.testURL(values.s3Url) ?
         '' : 'S3 Endpoint must be a valid URL.';
       if (s3UrlError !== '') {

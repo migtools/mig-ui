@@ -1,12 +1,44 @@
-import { withFormik } from 'formik';
+import { withFormik, FormikProps } from 'formik';
 import WizardComponent from './WizardComponent';
 import planOperations from '../../duck/operations';
 import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../common/duck/utils';
+export interface IFormValues {
+  planName: string;
+  sourceCluster: string;
+  targetCluster: string;
+  selectedStorage: string;
+  selectedNamespaces: any[];
+}
+export interface IOtherProps {
+  clusterList: any[];
+  planList: any[];
+  storageList: any[];
+  isFetchingPVList: boolean;
+  isPollingStatus: boolean;
+  isPVError: boolean;
+  isCheckingPlanStatus: boolean;
+  isFetchingPVResources: boolean;
+  isFetchingNamespaceList: boolean;
+  isOpen: boolean;
+  isPollingStorage: boolean;
+  isPollingClusters: boolean;
+  isPollingPlans: boolean;
+  currentPlan: any;
+  currentPlanStatus: any;
+  startPlanStatusPolling: () => void;
+  resetCurrentPlan: () => void;
+  fetchNamespacesForCluster: () => void;
+  getPVResourcesRequest: () => void;
+  addPlan: (planValues) => void;
+  sourceClusterNamespaces: any[];
+  pvResourceList: any[];
+  onHandleWizardModalClose: () => void;
+}
 
-const WizardContainer: any = withFormik({
+const WizardContainer = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: () => ({
     planName: '',
     sourceCluster: null,
