@@ -48,7 +48,6 @@ const getPlansWithPlanStatus = createSelector(
         .length;
 
       isDeleting = plan.MigPlan.spec.closed && !hasReadyCondition;
-      console.log('isDeleting', isDeleting);
 
       if (plan.Migrations.length) {
         const latest = plan.Migrations[0];
