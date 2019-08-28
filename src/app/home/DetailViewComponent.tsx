@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import clusterOperations from '../cluster/duck/operations';
 import storageOperations from '../storage/duck/operations';
@@ -9,7 +9,6 @@ import planSelectors from '../plan/duck/selectors';
 import { PlanActions } from '../plan/duck/actions';
 import { ClusterActions } from '../cluster/duck/actions';
 import { StorageActions as StorageActions } from '../storage/duck/actions';
-import { PollingActions } from '../common/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
@@ -19,9 +18,7 @@ import {
   ClusterContext,
   StorageContext,
 } from './duck/context';
-import { StatusPollingInterval } from '../common/duck/sagas';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
-import { DataListItems } from './HomeComponent';
 
 
 interface IProps {
@@ -43,8 +40,6 @@ interface IProps {
   isClosing?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
-  startDataListPolling: (params) => void;
-  stopDataListPolling: () => void;
   planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
@@ -54,150 +49,121 @@ interface IProps {
   };
 }
 
-interface IState {
-  plansDisabled: boolean;
-  modalType: string;
+enum DataListItems {
+  ClusterList = 'clusterList',
+  StorageList = 'storageList',
+  PlanList = 'planList',
 }
 
-export class DetailViewComponent extends Component<IProps, IState> {
-  state = {
-    plansDisabled: true,
-    modalType: '',
-  };
+const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
+  const {
+    allClusters,
+    allStorage,
+    removeStorage,
+    removePlan,
+    removeCluster,
+    planUpdateRequest,
+    runStage,
+    planCloseAndDeleteRequest,
+    plansWithStatus,
+    clusterAssociatedPlans,
+    storageAssociatedPlans,
+    watchClusterAddEditStatus,
+    watchStorageAddEditStatus,
+    isClosing,
+    isMigrating,
+    isStaging,
+    migMeta,
+  } = props;
 
-  componentDidMount = () => {
-    const { allClusters, allStorage } = this.props;
+  const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
+  const [expandedStateObj, setExpandedStateObj] = useState(
+    {
+      'clusterList': false,
+      'storageList': false,
+      'planList': false,
+    },
+  );
+  useEffect(() => {
     if (allClusters.length > 1 && allStorage.length > 0) {
-      this.setState({ plansDisabled: false });
+      setAddPlanDisabled(false);
+    } else {
+      setAddPlanDisabled(true);
     }
-  }
+  }, [allClusters, allStorage]);
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (
-      (prevProps.allClusters !== this.props.allClusters ||
-        prevProps.allStorage !== this.props.allStorage) &&
-      (this.props.allClusters.length > 1 && this.props.allStorage.length > 0)
-    ) {
-      this.setState({ plansDisabled: false });
-    }
-  }
 
-  handleRemoveItem = (type, id) => {
-    switch (type) {
-      case 'cluster':
-        this.props.removeCluster(id);
-        break;
-      case 'storage':
-        this.props.removeStorage(id);
-        break;
-      case 'plan':
-        this.props.removePlan(id);
-        break;
-    }
-  };
-
-  handlePlanSubmit = planWizardValues => {
-    this.props.planUpdateRequest(planWizardValues);
-  };
-
-  handleStageTriggered = plan => {
-    this.props.runStage(plan);
-  };
-
-  handleDeletePlan = plan => {
-    this.props.planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
-  };
-
-  handlePlanPoll = response => {
-    if (response && response.isSuccessful === true) {
-      this.props.updatePlans(response.updatedPlans);
-      return true;
-    }
-
-    return false;
-  };
-
-  handleStartPolling = () => {
-    const params = {
-      asyncFetch: planOperations.fetchPlansGenerator,
-      callback: this.handlePlanPoll,
-      delay: StatusPollingInterval,
-      retryOnFailure: true,
-      retryAfter: 5,
-      stopAfterRetries: 2,
-    };
-    this.props.startDataListPolling(params);
-  };
-
-  render() {
-    const {
-      allStorage,
-      allClusters,
-      plansWithStatus,
-      clusterAssociatedPlans,
-      storageAssociatedPlans,
-      watchClusterAddEditStatus,
-      watchStorageAddEditStatus,
-      stopDataListPolling,
-      removeCluster,
-      removeStorage,
-      migMeta,
-      isMigrating,
-      isStaging,
-      expanded,
-      handleExpandDetails,
-      isClosing,
-    } = this.props;
-
-    const isAddPlanDisabled = allClusters.length < 2 || allStorage.length < 1;
-    const { handleStageTriggered, handleDeletePlan } = this;
-    return (
-      <React.Fragment>
-        <DataList aria-label="data-list-main-container">
-          <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-            <ClusterDataListItem
-              dataList={allClusters}
-              id={DataListItems.ClusterList}
-              associatedPlans={clusterAssociatedPlans}
-              isLoading={isMigrating || isStaging}
-              migMeta={migMeta}
-              removeCluster={removeCluster}
-              isExpanded={expanded[DataListItems.ClusterList]}
-              toggleExpanded={handleExpandDetails}
-            />
-          </ClusterContext.Provider>
-          <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
-            <StorageDataListItem
-              dataList={allStorage}
-              id={DataListItems.StorageList}
-              associatedPlans={storageAssociatedPlans}
-              isLoading={isMigrating || isStaging || isClosing}
-              removeStorage={removeStorage}
-              isExpanded={expanded[DataListItems.StorageList]}
-              toggleExpanded={handleExpandDetails}
-            />
-          </StorageContext.Provider>
-          <PlanContext.Provider value={{ handleStageTriggered, handleDeletePlan }}>
-            <PlanDataListItem
-              id={DataListItems.PlanList}
-              planList={plansWithStatus}
-              clusterList={allClusters}
-              storageList={allStorage}
-              onPlanSubmit={this.handlePlanSubmit}
-              plansDisabled={isAddPlanDisabled}
-              isLoading={isMigrating || isStaging}
-              onStartPolling={this.handleStartPolling}
-              onStopPolling={stopDataListPolling}
-              isExpanded={expanded[DataListItems.PlanList]}
-              isClosing={isClosing}
-              toggleExpanded={handleExpandDetails}
-            />
-          </PlanContext.Provider>
-        </DataList>
-      </React.Fragment>
+  const handleExpand = (id: string) => {
+    const expanded = !expandedStateObj[id];
+    const newExpanded = Object.assign({}, expandedStateObj);
+    Object.values(DataListItems).map(
+      expandItem => newExpanded[expandItem] = false
     );
-  }
-}
+    newExpanded[id] = expanded;
+    setExpandedStateObj(newExpanded);
+  };
+
+  const handlePlanSubmit = planWizardValues => {
+    planUpdateRequest(planWizardValues);
+  };
+
+  const handleStageTriggered = plan => {
+    runStage(plan);
+  };
+
+  const handleDeletePlan = plan => {
+    planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
+  };
+
+
+
+  return (
+    <React.Fragment>
+      <DataList aria-label="data-list-main-container">
+        <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+          <ClusterDataListItem
+            dataList={allClusters}
+            id={DataListItems.ClusterList}
+            associatedPlans={clusterAssociatedPlans}
+            isLoading={isMigrating || isStaging}
+            migMeta={migMeta}
+            removeCluster={removeCluster}
+            isExpanded={expandedStateObj[DataListItems.ClusterList]}
+            toggleExpanded={handleExpand}
+          />
+        </ClusterContext.Provider>
+        <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
+          <StorageDataListItem
+            dataList={allStorage}
+            id={DataListItems.StorageList}
+            associatedPlans={storageAssociatedPlans}
+            isLoading={isMigrating || isStaging || isClosing}
+            removeStorage={removeStorage}
+            isExpanded={expandedStateObj[DataListItems.StorageList]}
+            toggleExpanded={handleExpand}
+          />
+        </StorageContext.Provider>
+        <PlanContext.Provider value={{
+          handleStageTriggered,
+          handleDeletePlan
+        }}>
+          <PlanDataListItem
+            id={DataListItems.PlanList}
+            planList={plansWithStatus}
+            clusterList={allClusters}
+            storageList={allStorage}
+            onPlanSubmit={handlePlanSubmit}
+            plansDisabled={isAddPlanDisabled}
+            isLoading={isMigrating || isStaging}
+            isExpanded={expandedStateObj[DataListItems.PlanList]}
+            isClosing={isClosing}
+            toggleExpanded={handleExpand}
+          />
+        </PlanContext.Provider>
+      </DataList>
+    </React.Fragment>
+  );
+};
 
 function mapStateToProps(state) {
   const allClusters = clusterSelectors.getAllClusters(state);
@@ -233,8 +199,6 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
-    startDataListPolling: params => dispatch(PollingActions.startDataListPolling(params)),
-    stopDataListPolling: () => dispatch(PollingActions.stopDataListPolling()),
     planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching

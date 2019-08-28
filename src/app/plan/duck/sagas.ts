@@ -9,6 +9,7 @@ import {
   PollingActions
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
+import { CurrentPlanState } from './reducers';
 
 
 function* checkPVs(action) {
@@ -72,7 +73,7 @@ function* putPlanSaga(getPlanRes, planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
-    yield put({ type: PlanActionTypes.UPDATE_PLAN, updatedPlan: putPlanResponse.data });
+    yield put(PlanActions.updatePlanList(putPlanResponse.data));
   } catch (err) {
     throw err;
   }
@@ -112,6 +113,64 @@ function* checkClosedStatus(action) {
       yield put(PlanActions.planCloseFailure('Failed to close plan'));
       yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
       yield put(PlanActions.stopClosedStatusPolling());
+      break;
+    }
+
+    const PollingInterval = 5000;
+    yield delay(PollingInterval);
+  }
+}
+
+function* checkPlanStatus(action) {
+  let planStatusComplete = false;
+  let tries = 0;
+  const TicksUntilTimeout = 10;
+  while (!planStatusComplete) {
+    if (tries < TicksUntilTimeout) {
+      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+      tries += 1;
+      const getPlanResponse = yield call(getPlanSaga, action.planName);
+      const MigPlan = getPlanResponse.data;
+      yield put(PlanActions.setCurrentPlan(MigPlan));
+
+      if (MigPlan.status && MigPlan.status.conditions) {
+        const hasReadyCondition = !!MigPlan.status.conditions.some(c => c.type === 'Ready');
+        const hasCriticalCondition = !!MigPlan.status.conditions.some(cond => {
+          return cond.category === 'Critical';
+        });
+        const hasConflictCondition = !!MigPlan.status.conditions.some(cond => {
+          return cond.type === 'PlanConflict';
+        });
+        if (hasReadyCondition) {
+          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+        if (hasCriticalCondition) {
+          const criticalCond = MigPlan.status.conditions.find(cond => {
+            return cond.category === 'Critical';
+          });
+          yield put(PlanActions.updateCurrentPlanStatus(
+            { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
+          ));
+
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+
+        if (hasConflictCondition) {
+          const conflictCond = MigPlan.status.conditions.find(cond => {
+            return cond.type === 'PlanConflict';
+          });
+          yield put(PlanActions.updateCurrentPlanStatus(
+            { state: CurrentPlanState.Critical, errorMessage: conflictCond.message }
+          ));
+
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+      }
+    } else {
+      planStatusComplete = true;
+      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+      yield put(PlanActions.stopPlanStatusPolling());
       break;
     }
 
@@ -199,6 +258,13 @@ function* watchClosedStatus() {
   }
 }
 
+function* watchPlanStatus() {
+  while (true) {
+    const data = yield take(PlanActionTypes.PLAN_STATUS_POLL_START);
+    yield race([call(checkPlanStatus, data), take(PlanActionTypes.PLAN_STATUS_POLL_STOP)]);
+  }
+}
+
 function* watchPVPolling() {
   while (true) {
     const data = yield take(PlanActionTypes.START_PV_POLLING);
@@ -220,5 +286,6 @@ export default {
   watchPlanCloseAndDelete,
   watchPlanClose,
   watchClosedStatus,
+  watchPlanStatus,
   watchGetPVResourcesRequest
 };

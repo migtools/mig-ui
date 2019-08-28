@@ -6,84 +6,194 @@ import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
-import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
-import PlanStatus from '../../../home/components/DataList/Plans/PlanStatus';
+import { RedoIcon } from '@patternfly/react-icons';
+import { Card, CardHeader, CardBody, CardFooter, Button, Tooltip, TooltipPosition } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
-
+import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 interface IProps {
   values: any;
   errors: any;
-  onWizardLoadingToggle: () => void;
+  startPlanStatusPolling: (planName) => void;
+  onClose: () => void;
   currentPlan: any;
-  planList: any[];
-  isCheckingPlanStatus: boolean;
+  currentPlanStatus: ICurrentPlanStatus;
+  isPollingStatus: boolean;
 }
 
-const StyledSpan = styled.span`
-  font-weight: 600;
-`;
 
-const ResultsStep: React.FunctionComponent<IProps> = ({
-  values,
-  planList,
-  isCheckingPlanStatus
-}) => {
-  const matchingPlan = planList.find(p => {
-    return values.planName === p.MigPlan.metadata.name;
-  });
+
+const ResultsStep: React.FunctionComponent<IProps> = props => {
+  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling, onClose } = props;
+
+  const handlePollRestart = () => {
+    startPlanStatusPolling(values.planName);
+  };
+
+  function HeaderIcon({ state }) {
+    const StyledIcon = styled(RedoIcon)`
+      height: 1.3em;
+      width: 1.3em;
+    `;
+    const StyledLoaderWrapper = styled.span`
+      display: inline-block;
+      margin-right: 0.75rem;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <StyledLoaderWrapper>
+          <Loader
+            type="RevolvingDot"
+            color={theme.colors.medGray3}
+            height="1em"
+            width="1em"
+          />
+        </StyledLoaderWrapper>;
+      case CurrentPlanState.Ready:
+        return <StatusIcon isReady={true} />;
+      case CurrentPlanState.Critical:
+        return <StatusIcon isReady={false} />;
+      case CurrentPlanState.TimedOut:
+        return <StyledIcon />;
+      default:
+        return null;
+    }
+  }
+  function HeaderText({ state }): any {
+    const StyledPlanName = styled.span`
+      display: inline-block;
+      font-size: 1.3em;
+      font-weight: 900;
+    `;
+    const StyledValidationText = styled.span`
+      font-size: 1.3em;
+      font-weight: 300;
+      display: inline-block;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <StyledValidationText>
+          Validating migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`.`}
+        </StyledValidationText>;
+      case CurrentPlanState.Ready:
+        return <StyledValidationText>
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {` `}
+          has been validated.
+        </StyledValidationText>;
+      case CurrentPlanState.Critical:
+        return <StyledValidationText>
+          Failed to validate migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`.`}
+        </StyledValidationText>;
+      case CurrentPlanState.TimedOut:
+        return <StyledValidationText>
+          Failed to validate migration plan
+          {` `}
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {`. Please Try again.`}
+        </StyledValidationText>;
+      default:
+        return null;
+    }
+  }
+  function BodyText({ state, errorMessage }): any {
+    const StyledBodyText = styled.span`
+      font-size: 1.0em;
+      font-weight: 300;
+      display: inline-block;
+      font-style: italic;
+    `;
+
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return <StyledBodyText>
+          This might take a few minutes.
+        </StyledBodyText>;
+      case CurrentPlanState.Ready:
+        return <StyledBodyText>
+          Select an action from the Migration Plans section of the dashboard to start the migration
+        </StyledBodyText>;
+      case CurrentPlanState.Critical:
+        return <StyledBodyText>
+          {errorMessage}
+        </StyledBodyText>;
+      default:
+        return null;
+    }
+  }
+  function FooterText({ state }): any {
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return null;
+      case CurrentPlanState.Ready:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
+      case CurrentPlanState.Critical:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
+      case CurrentPlanState.TimedOut:
+        return <Box>
+          <Button
+            style={{ marginRight: '10px' }}
+            onClick={onClose}
+            variant="primary">
+            Close
+            </Button>
+          <Button
+            style={{ marginLeft: '10px', marginRight: '10px' }}
+            onClick={handlePollRestart} disabled={isPollingStatus} variant="secondary" >Check Connection</Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Re-check plan status.
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
+        </Box>;
+      default:
+        return null;
+    }
+  }
+  const StyledCard = styled(Card)`
+    margin: auto;
+    width: 50em;
+  `;
 
   return (
-    <Flex
-      css={css`
-        height: 100%;
-        text-align: center;
-      `}
-    >
-      <Box
-        flex="1"
-        m="auto"
-        css={css`
-          color: ${theme.colors.darkGray1};
-          border: 1px solid;
-          border-radius: 40px;
-          width: 100%;
-          padding: 14px;
-          background: linear-gradient(
-            90deg,
-            ${theme.colors.lightGray3} 20%,
-            ${theme.colors.medGray1} 8%
-          );
-        `}
-      >
-        <Flex mx={-2}>
-          <Box width={1 / 5} px={2} my="auto">
-            <Text fontSize={[2, 3, 4]}>Plan Status</Text>
-          </Box>
-          <Box width={4 / 5} px={2}>
-            {isCheckingPlanStatus ? (
-              <Loader type="ThreeDots" color={theme.colors.navy} height="75" width="75" />
-            ) : (
-                <Text fontSize={[2, 3, 4]}>
-                  {matchingPlan.PlanStatus.hasReadyCondition ? (
-                    <StatusIcon isReady={true} />
-                  ) : (
-                      <StatusIcon isReady={false} />
-                    )}
-                  <StyledSpan>{values.planName} </StyledSpan>
-                  <Box
-                    css={css`
-                    margin: 0.3em;
-                    display: inline-block;
-                  `}
-                  >
-                    <PlanStatus plan={matchingPlan} />
-                  </Box>
-                </Text>
-              )}
-          </Box>
-        </Flex>
-      </Box>
-    </Flex>
+    <StyledCard>
+      <CardHeader>
+        <HeaderIcon
+          state={currentPlanStatus.state}
+        />
+        <HeaderText
+          state={currentPlanStatus.state}
+        />
+      </CardHeader>
+      <CardBody>
+        <BodyText
+          state={currentPlanStatus.state}
+          errorMessage={currentPlanStatus.errorMessage}
+        />
+      </CardBody>
+      <CardFooter>
+        <FooterText
+          state={currentPlanStatus.state}
+        />
+      </CardFooter>
+    </StyledCard>
   );
 };
 

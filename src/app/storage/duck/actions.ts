@@ -54,11 +54,6 @@ const updateSearchTerm = (searchTerm: string) => ({
   searchTerm,
 });
 
-const setIsPollingStorage = (isPolling: boolean) => ({
-  type: StorageActionTypes.SET_IS_POLLING_STORAGE,
-  isPolling,
-});
-
 const setStorageAddEditStatus = (status: IAddEditStatus) => ({
   type: StorageActionTypes.SET_STORAGE_ADD_EDIT_STATUS,
   status,
@@ -83,12 +78,20 @@ const updateStorageRequest = (storageValues) => ({
   storageValues,
 });
 
+const startStoragePolling = (params?: any) => ({
+  type: StorageActionTypes.STORAGE_POLL_START,
+  params,
+});
+
+const stopStoragePolling = () => ({
+  type: StorageActionTypes.STORAGE_POLL_STOP,
+});
+
 export const StorageActionTypes = {
   MIG_STORAGE_FETCH_REQUEST: 'MIG_STORAGE_FETCH_REQUEST',
   MIG_STORAGE_FETCH_SUCCESS: 'MIG_STORAGE_FETCH_SUCCESS',
   MIG_STORAGE_FETCH_FAILURE: 'MIG_STORAGE_FETCH_FAILURE',
   UPDATE_SEARCH_TERM: 'UPDATE_SEARCH_TERM',
-  SET_IS_POLLING_STORAGE: 'SET_IS_POLLING_STORAGE',
   SET_STORAGE_ADD_EDIT_STATUS: 'SET_STORAGE_ADD_EDIT_STATUS',
   WATCH_STORAGE_ADD_EDIT_STATUS: 'WATCH_STORAGE_ADD_EDIT_STATUS',
   CANCEL_WATCH_STORAGE_ADD_EDIT_STATUS: 'CANCEL_WATCH_STORAGE_ADD_EDIT_STATUS',
@@ -101,11 +104,12 @@ export const StorageActionTypes = {
   REMOVE_STORAGE_SUCCESS: 'REMOVE_STORAGE_SUCCESS',
   UPDATE_STORAGE_SUCCESS: 'UPDATE_STORAGE_SUCCESS',
   UPDATE_STORAGES: 'UPDATE_STORAGES',
+  STORAGE_POLL_START: 'STORAGE_POLL_START',
+  STORAGE_POLL_STOP: 'STORAGE_POLL_STOP',
 };
 
 export const StorageActions = {
   updateSearchTerm,
-  setIsPollingStorage,
   setStorageAddEditStatus,
   watchStorageAddEditStatus,
   cancelWatchStorageAddEditStatus,
@@ -121,4 +125,6 @@ export const StorageActions = {
   removeStorageSuccess,
   updateStorageSuccess,
   updateStorages,
+  startStoragePolling,
+  stopStoragePolling,
 };

@@ -36,11 +36,6 @@ const updateSearchTerm = (searchTerm) => ({
   searchTerm,
 });
 
-const setIsPollingCluster = (isPolling: boolean) => ({
-  type: ClusterActionTypes.SET_IS_POLLING_CLUSTER,
-  isPolling
-});
-
 const setClusterAddEditStatus = (status: IAddEditStatus) => ({
   type: ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS,
   status,
@@ -78,6 +73,14 @@ const updateClusterRequest = (clusterValues: any) => ({
   clusterValues,
 });
 
+const startClusterPolling = (params?: any) => ({
+  type: ClusterActionTypes.CLUSTER_POLL_START,
+  params,
+});
+
+const stopClusterPolling = () => ({
+  type: ClusterActionTypes.CLUSTER_POLL_STOP,
+});
 
 export const ClusterActionTypes = {
   UPDATE_CLUSTERS: 'UPDATE_CLUSTERS',
@@ -87,7 +90,6 @@ export const ClusterActionTypes = {
   REMOVE_CLUSTER_FAILURE: 'REMOVE_CLUSTER_FAILURE',
   UPDATE_CLUSTER_SUCCESS: 'UPDATE_CLUSTER_SUCCESS',
   UPDATE_SERACH_TERM: 'UPDATE_SERACH_TERM',
-  SET_IS_POLLING_CLUSTER: 'SET_IS_POLLING_CLUSTER',
   SET_CLUSTER_ADD_EDIT_STATUS: 'SET_CLUSTER_ADD_EDIT_STATUS',
   WATCH_CLUSTER_ADD_EDIT_STATUS: 'WATCH_CLUSTER_ADD_EDIT_STATUS',
   CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS: 'CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS',
@@ -96,6 +98,8 @@ export const ClusterActionTypes = {
   CLUSTER_FETCH_FAILURE: 'CLUSTER_FETCH_FAILURE',
   ADD_CLUSTER_REQUEST: 'ADD_CLUSTER_REQUEST',
   UPDATE_CLUSTER_REQUEST: 'UPDATE_CLUSTER_REQUEST',
+  CLUSTER_POLL_START: 'CLUSTER_POLL_START',
+  CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
 };
 
 export const ClusterActions = {
@@ -106,7 +110,6 @@ export const ClusterActions = {
   removeClusterFailure,
   updateClusterSuccess,
   updateSearchTerm,
-  setIsPollingCluster,
   setClusterAddEditStatus,
   watchClusterAddEditStatus,
   cancelWatchClusterAddEditStatus,
@@ -115,4 +118,6 @@ export const ClusterActions = {
   clusterFetchFailure,
   addClusterRequest,
   updateClusterRequest,
+  startClusterPolling,
+  stopClusterPolling,
 };

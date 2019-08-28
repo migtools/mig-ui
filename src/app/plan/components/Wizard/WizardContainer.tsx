@@ -68,14 +68,17 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
-    isCheckingPlanStatus: state.plan.isCheckingPlanStatus,
+    isPollingPlans: state.plan.isPolling,
+    isPollingClusters: state.cluster.isPolling,
+    isPollingStorage: state.storage.isPolling,
+    isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
     isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlan(state),
-    planList: planSelectors.getPlansWithStatus(state),
+    currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
   };
 };
@@ -87,6 +90,8 @@ const mapDispatchToProps = dispatch => {
     },
     pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
+    startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
+    resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
   };
 };
 

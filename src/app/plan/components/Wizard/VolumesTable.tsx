@@ -62,7 +62,7 @@ const VolumesTable = (props): any => {
 
   useEffect(() => {
     if (currentPlan) {
-      const discoveredPersistentVolumes = currentPlan.MigPlan.spec.persistentVolumes || [];
+      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
       getPVResources(discoveredPersistentVolumes, values.sourceCluster);
       let mappedPVs;
       if (values.persistentVolumes) {

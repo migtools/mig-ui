@@ -1,11 +1,22 @@
 import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
 
+export enum CurrentPlanState {
+  Pending = 'Pending',
+  Critical = 'Critical',
+  Ready = 'Ready',
+  TimedOut = 'Timedout',
+}
+
+export interface ICurrentPlanStatus {
+  state: CurrentPlanState;
+  errorMessage?: string;
+}
+
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
   isFetchingPVResources: false,
-  isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
   migPlanList: [],
@@ -15,7 +26,13 @@ export const INITIAL_STATE = {
   isMigrating: false,
   currentPlan: null,
   isClosing: false,
-  pvResourceList: []
+  isPollingStatus: false,
+  isPolling: false,
+  pvResourceList: [],
+  currentPlanStatus: {
+    state: CurrentPlanState.Pending,
+    errorMessage: ''
+  } as ICurrentPlanStatus
 };
 
 const sortPlans = planList =>
@@ -118,15 +135,10 @@ export const namespaceFetchFailure =
     };
   };
 
-export const updatePlan =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlan>) => {
-    let newCurrentPlan;
+export const updatePlanList =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanList>) => {
     const updatedPlanList = state.migPlanList.map(p => {
       if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
-        newCurrentPlan = {
-          MigPlan: action.updatedPlan,
-          Migrations: [],
-        };
         return {
           MigPlan: action.updatedPlan,
           Migrations: [],
@@ -140,7 +152,6 @@ export const updatePlan =
     return {
       ...state,
       migPlanList: sortedList,
-      currentPlan: newCurrentPlan
     };
   };
 
@@ -248,15 +259,6 @@ export const migrationFailure =
     return { ...state, isMigrating: false };
   };
 
-export const planResultsRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.planResultsRequest>) => {
-    return { ...state, isCheckingPlanStatus: true };
-  };
-
-export const updatePlanResults =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updatePlanResults>) => {
-    return { ...state, isCheckingPlanStatus: false };
-  };
 
 export const closedStatusPollStart =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startClosedStatusPolling>) => {
@@ -266,6 +268,16 @@ export const closedStatusPollStart =
 export const closedStatusPollStop =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
     return { ...state, isClosing: false };
+  };
+
+export const planStatusPollStart =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startPlanStatusPolling>) => {
+    return { ...state, isPollingStatus: true };
+  };
+
+export const planStatusPollStop =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopPlanStatusPolling>) => {
+    return { ...state, isPollingStatus: false };
   };
 
 export const getPVResourcesRequest =
@@ -283,9 +295,42 @@ export const getPVResourcesFailure =
     return { ...state, isFetchingPVResources: false };
   };
 
+export const startPlanPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true
+  };
+};
+
+export const stopPlanPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false
+  };
+};
+
+export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentPlan: null
+  };
+};
+
+export const setCurrentPlan = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentPlan: action.currentPlan
+  };
+};
+export const updateCurrentPlanStatus =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
+    return {
+      ...state, currentPlanStatus: action.currentPlanStatus
+    };
+  };
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case PlanActionTypes.PLAN_RESULTS_REQUEST: return planResultsRequest(state, action);
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
     case PlanActionTypes.INIT_STAGE: return initStage(state, action);
     case PlanActionTypes.INIT_MIGRATION: return initMigration(state, action);
@@ -298,7 +343,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PV_FETCH_SUCCESS: return pvFetchSuccess(state, action);
     case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
     case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
-    case PlanActionTypes.UPDATE_PLAN_RESULTS: return updatePlanResults(state, action);
     case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
     case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
     case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
@@ -306,14 +350,21 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.STAGING_FAILURE: return stagingFailure(state, action);
     case PlanActionTypes.MIGRATION_SUCCESS: return migrationSuccess(state, action);
     case PlanActionTypes.MIGRATION_FAILURE: return migrationFailure(state, action);
-    case PlanActionTypes.UPDATE_PLAN: return updatePlan(state, action);
+    case PlanActionTypes.UPDATE_PLAN_LIST: return updatePlanList(state, action);
+    case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
     case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
     case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_START: return planStatusPollStart(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_STOP: return planStatusPollStop(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
+    case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
+    case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
+    case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
+    case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
     default: return state;
   }
 };
