@@ -165,12 +165,18 @@ const getPlansWithStatus = createSelector(
         isFailed: false,
         isSucceeded: false,
       };
-      if (MigPlan.spec.persistentVolumes) {
+
+      const succeededCondition = migration.status.conditions.find(c => {
+        return c.type === 'Succeeded';
+      });
+
+      if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
         status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
         if (!migration.spec.stage) {
           status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
         }
       }
+
       if (migration.status) {
         if (migration.status.startTimestamp) {
           status.start = moment(migration.status.startTimestamp).format('LLL');
@@ -184,9 +190,6 @@ const getPlansWithStatus = createSelector(
 
         if (migration.status.conditions.length) {
           // For successful migrations, show green 100% progress
-          const succeededCondition = migration.status.conditions.find(c => {
-            return c.type === 'Succeeded';
-          });
           if (succeededCondition) {
             status.progress = 100;
             status.isSucceeded = true;
