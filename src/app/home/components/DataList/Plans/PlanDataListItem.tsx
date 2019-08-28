@@ -53,7 +53,7 @@ const PlanDataListItem = ({
               clusterList={clusterList}
               storageList={storageList}
               isOpen={isOpen}
-              onHandleClose={toggleOpen}
+              onHandleWizardModalClose={toggleOpen}
               isLoading={isLoading}
               onPlanSubmit={onPlanSubmit}
             />

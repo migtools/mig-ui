@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
-import { withFormik } from 'formik';
 import {
   Button,
   TextInput,
@@ -11,6 +10,7 @@ import {
   TooltipPosition,
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon, DivideIcon } from '@patternfly/react-icons';
+import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -39,7 +39,7 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 // a cluster object exist, but have no initial values (user adds new cluster, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 const valuesHaveUpdate = (values, currentCluster) => {
-  if(!currentCluster) { return true; }
+  if (!currentCluster) { return true; }
 
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint =
@@ -48,10 +48,20 @@ const valuesHaveUpdate = (values, currentCluster) => {
     values.url !== existingEndpoint ||
     values.token !== rawToken;
 };
-const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
-  // Formik doesn't like addEditStatus destructured in the signature for some reason
-  const currentStatus = props.addEditStatus;
-  const currentCluster = props.currentCluster;
+const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+  const {
+    addEditStatus: currentStatus,
+    currentCluster,
+    checkConnection,
+    values,
+    touched,
+    errors,
+    handleSubmit,
+    handleChange,
+    setFieldTouched,
+    handleBlur,
+    onClose,
+  } = props;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
   const toggleHideToken = e => {
@@ -59,20 +69,16 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
     e.stopPropagation();
     setIsTokenHidden(!isTokenHidden);
   };
-  const formikHandleChange = (_val, e) => props.handleChange(e);
-  const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
-
-  const onClose = () => {
-    props.onClose();
-  };
+  const formikHandleChange = (_val, e) => handleChange(e);
+  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
 
   return (
-    <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
+    <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
       <FormGroup label="Cluster Name" isRequired fieldId={nameKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
@@ -87,7 +93,7 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(urlKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.url}
           name={urlKey}
           type="text"
@@ -103,7 +109,7 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
           value={values.token}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(tokenKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           name={tokenKey}
           id="token-input"
           type={isTokenHidden ? 'password' : 'text'}
@@ -119,7 +125,7 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
             isDisabled={isAddEditButtonDisabled(
               currentStatus, errors, touched, valuesHaveUpdate(values, currentCluster)
             )}
-            style={{marginRight: '10px'}}
+            style={{ marginRight: '10px' }}
           >
             {addEditButtonTextFn(currentStatus)}
           </Button>
@@ -130,11 +136,11 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
           <Button
-            style={{marginLeft: '10px', marginRight: '10px'}}
+            style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
               currentStatus, valuesHaveUpdate(values, currentCluster),
             )}
-            onClick={() => props.checkConnection(values.name)}
+            onClick={() => checkConnection(values.name)}
           >
             Check connection
           </Button>
@@ -160,8 +166,20 @@ const InnerAddEditClusterForm = ({ values, touched, errors, ...props }) => {
     </Form>
   );
 };
+interface IFormValues {
+  name: string;
+  url: string;
+  token: string;
+}
+interface IOtherProps {
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  currentCluster: any;
+  checkConnection: (name) => void;
+}
 
-const AddClusterForm: any = withFormik({
+const AddEditClusterForm: any = withFormik({
   mapPropsToValues: ({ initialClusterValues }) => {
     const values = {
       name: '',
@@ -169,7 +187,7 @@ const AddClusterForm: any = withFormik({
       token: '',
     };
 
-    if(initialClusterValues) {
+    if (initialClusterValues) {
       values.name = initialClusterValues.clusterName || '';
       values.url = initialClusterValues.clusterUrl || '';
       values.token = initialClusterValues.clusterSvcToken || '';
@@ -207,4 +225,4 @@ const AddClusterForm: any = withFormik({
   },
 })(InnerAddEditClusterForm);
 
-export default AddClusterForm;
+export default AddEditClusterForm;
