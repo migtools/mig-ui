@@ -26,9 +26,9 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
+import Q from 'q';
 
 function* addStorageRequest(action) {
-  // TODO: Need to improve this to fall into the failed create state with rollback
   const state = yield select();
   const { migMeta } = state;
   const { storageValues } = action;
@@ -57,14 +57,88 @@ function* addStorageRequest(action) {
   const migStorageResource = new MigResource(
     MigResourceKind.MigStorage, migMeta.namespace);
 
+  // Ensure that none of the objects that make up storage already exist
   try {
-    const storageAddResults = yield Promise.all([
+    const getResults = yield Q.allSettled([
+      client.get(migStorageResource, migStorage.metadata.name),
+      client.get(secretResource, storageSecret.metadata.name),
+    ]);
+
+    const alreadyExists = getResults.reduce((exists, res) => {
+      return res.value && res.value.status === 200 ?
+        [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
+        exists;
+    }, []);
+
+    if(alreadyExists.length > 0) {
+      throw new Error(alreadyExists.reduce((msg, v) => {
+        return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+      }, 'Some storage objects already exist '));
+    }
+  } catch (err) {
+    console.error(err.message);
+    yield put(StorageActions.setStorageAddEditStatus(createAddEditStatusWithMeta(
+      AddEditState.Critical,
+      AddEditMode.Add,
+      err.message,
+      '',
+    )));
+    return;
+  }
+
+  // None of the objects already exist, so try to create all of the objects
+  // If any of the objects actually fail creation, we need to rollback the others
+  // so the storage is created, or fails atomically
+  try {
+    const storageAddResults = yield Q.allSettled([
       client.create(secretResource, storageSecret),
       client.create(migStorageResource, migStorage),
     ]);
 
+    // If any of the attempted object creation promises have failed, we need to
+    // rollback those that succeeded so we don't have a halfway created "Storage"
+    // A rollback is only required if some objects have actually *succeeded*,
+    // as well as failed.
+    const isRollbackRequired =
+      storageAddResults.find(res => res.state === 'rejected') &&
+      storageAddResults.find(res => res.state === 'fulfilled');
+
+    if(isRollbackRequired) {
+      const kindToResourceMap = {
+        MigStorage: migStorageResource,
+        Secret: secretResource,
+      };
+
+      // The objects that need to be rolled back are those that were fulfilled
+      const rollbackObjs = storageAddResults.reduce((rollbackAccum, res) => {
+        return res.state === 'fulfilled' ?
+          [...rollbackAccum, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
+          rollbackAccum;
+      }, []);
+
+      const rollbackResults = yield Q.allSettled(rollbackObjs.map(r => {
+        return client.delete(kindToResourceMap[r.kind], r.name);
+      }));
+
+      // Something went wrong with rollback, not much we can do at this point
+      // except inform the user about what's gone wrong so they can take manual action
+      if(rollbackResults.find(res => res.state === 'rejected')) {
+        throw new Error(rollbackResults.reduce((msg, r) => {
+          const kind = r.reason.request.response.kind;
+          const name = r.reason.request.response.details.name;
+          return msg + `- kind: ${kind}, name: ${name}`;
+        }, 'Attempted to rollback objects, but failed '));
+      } else {
+        // One of the objects failed, but rollback was successful. Need to alert
+        // the user that something went wrong, but we were able to recover with
+        // a rollback
+        throw Error(storageAddResults.find(res => res.state === 'rejected').reason);
+      }
+    } // End rollback handling
+
     const storage = storageAddResults.reduce((accum, res) => {
-      accum[res.data.kind] = res.data;
+      const data = res.value.data;
+      accum[data.kind] = data;
       return accum;
     }, {});
 
@@ -76,11 +150,9 @@ function* addStorageRequest(action) {
     ));
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch (err) {
-    // TODO: Creation failed, should enter failed creation state here
-    // Also need to rollback the objects that were successfully created.
-    // Could use Promise.allSettled here as well.
     console.error('Storage failed creation with error: ', err);
     put(AlertActions.alertErrorTimeout('Storage failed creation'));
+    return;
   }
 }
 
