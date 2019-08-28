@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import moment from 'moment';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
@@ -7,7 +8,7 @@ const getCurrentPlan = state => state.plan.currentPlan;
 const getMigMeta = state => state.migMeta;
 
 
-const getPlansWithStatus = createSelector(
+const getPlansWithPlanStatus = createSelector(
   [planSelector],
   plans => {
 
@@ -147,6 +148,106 @@ const getCounts = createSelector(
     return counts;
   }
 );
+
+
+const getPlansWithStatus = createSelector(
+  [getPlansWithPlanStatus],
+  plans => {
+    const getMigrationStatus = (plan, migration) => {
+      const { MigPlan } = plan;
+      const status = {
+        progress: null,
+        start: 'TBD',
+        end: 'TBD',
+        moved: 0,
+        copied: 0,
+        stepName: 'Not started',
+        isFailed: false,
+        isSucceeded: false,
+      };
+      if (MigPlan.spec.persistentVolumes) {
+        status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
+        if (!migration.spec.stage) {
+          status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
+        }
+      }
+      if (migration.status) {
+        if (migration.status.startTimestamp) {
+          status.start = moment(migration.status.startTimestamp).format('LLL');
+        }
+        let endTime;
+        endTime = migration.status.conditions
+          .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
+          .map(c => c.lastTransitionTime)
+          .toString();
+        status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
+
+        if (migration.status.conditions.length) {
+          // For successful migrations, show green 100% progress
+          const succeededCondition = migration.status.conditions.find(c => {
+            return c.type === 'Succeeded';
+          });
+          if (succeededCondition) {
+            status.progress = 100;
+            status.isSucceeded = true;
+            status.stepName = 'Completed';
+            return status;
+          }
+
+          // For failed migrations, show red 100% progress
+          const failedCondition = migration.status.conditions.find(c => {
+            return c.type === 'Failed';
+          });
+          if (failedCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = failedCondition.reason;
+            return status;
+          }
+
+          // For running migrations, calculate percent progress
+          const runningCondition = migration.status.conditions.find(c => {
+            return c.type === 'Running';
+          });
+          if (runningCondition) {
+            status.stepName = runningCondition.reason;
+            // Match string in format 'Step: 16/26'. Capture both numbers.
+            const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
+            if (matches && matches.length === 3) {
+              const currentStep = parseInt(matches[1], 10);
+              const totalSteps = parseInt(matches[2], 10);
+              if (!isNaN(currentStep) && !isNaN(totalSteps)) {
+                status.progress = (currentStep / totalSteps) * 100;
+              }
+            }
+            return status;
+          }
+          // For running migrations, calculate percent progress
+          const planNotReadyCondition = migration.status.conditions.find(c => {
+            return c.type === 'PlanNotReady';
+          });
+          if (planNotReadyCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = planNotReadyCondition.message;
+            status.end = '--';
+            return status;
+          }
+
+        }
+      }
+      return status;
+    };
+    const plansWithMigrationStatus = plans.map(plan => {
+      const migrationsWithStatus = plan.Migrations.map(migration => {
+        const tableStatus = getMigrationStatus(plan, migration);
+        return { ...migration, tableStatus };
+      });
+      return { ...plan, Migrations: migrationsWithStatus };
+
+    });
+    return plansWithMigrationStatus;
+  });
 
 export default {
   getCurrentPlan,
