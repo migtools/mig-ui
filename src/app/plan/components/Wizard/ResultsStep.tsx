@@ -7,9 +7,10 @@ import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
-import { Card, CardHeader, CardBody, CardFooter, Button } from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter, Button, Tooltip, TooltipPosition } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 interface IProps {
   values: any;
   errors: any;
@@ -54,7 +55,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       case CurrentPlanState.Critical:
         return <StatusIcon isReady={false} />;
       case CurrentPlanState.TimedOut:
-        return <Button onClick={handlePollRestart} variant="link" icon={<StyledIcon />} />;
+        return <StyledIcon />;
       default:
         return null;
     }
@@ -136,6 +137,36 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return null;
     }
   }
+  function FooterText({ state }): any {
+    switch (state) {
+      case CurrentPlanState.Pending:
+        return null;
+      case CurrentPlanState.Ready:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
+      case CurrentPlanState.Critical:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
+      case CurrentPlanState.TimedOut:
+        return <Box>
+          <Button
+            style={{ marginRight: '10px' }}
+            onClick={onClose}
+            variant="primary">
+            Close
+            </Button>
+          <Button
+            style={{ marginLeft: '10px', marginRight: '10px' }}
+            onClick={handlePollRestart} disabled={isPollingStatus} variant="secondary" >Check Connection</Button>
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              Re-check plan status.
+            </div>}><OutlinedQuestionCircleIcon />
+          </Tooltip>
+        </Box>;
+      default:
+        return null;
+    }
+  }
   const StyledCard = styled(Card)`
     margin: auto;
     width: 50em;
@@ -145,15 +176,22 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     <StyledCard>
       <CardHeader>
         <HeaderIcon
-          state={currentPlanStatus.state} />
+          state={currentPlanStatus.state}
+        />
         <HeaderText
-          state={currentPlanStatus.state} />
+          state={currentPlanStatus.state}
+        />
       </CardHeader>
       <CardBody>
-        <BodyText state={currentPlanStatus.state} errorMessage={currentPlanStatus.errorMessage} />
+        <BodyText
+          state={currentPlanStatus.state}
+          errorMessage={currentPlanStatus.errorMessage}
+        />
       </CardBody>
       <CardFooter>
-        <Button onClick={onClose} variant="primary">Close</Button>
+        <FooterText
+          state={currentPlanStatus.state}
+        />
       </CardFooter>
     </StyledCard>
   );
