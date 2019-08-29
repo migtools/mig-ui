@@ -37,7 +37,6 @@ interface IProps {
   stagingSuccess: (plan) => void;
   isStaging?: boolean;
   isMigrating?: boolean;
-  isClosing?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
   planCloseAndDeleteRequest: (string) => void;
@@ -70,7 +69,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     storageAssociatedPlans,
     watchClusterAddEditStatus,
     watchStorageAddEditStatus,
-    isClosing,
     isMigrating,
     isStaging,
     migMeta,
@@ -125,7 +123,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             dataList={allClusters}
             id={DataListItems.ClusterList}
             associatedPlans={clusterAssociatedPlans}
-            isLoading={isMigrating || isStaging}
             migMeta={migMeta}
             removeCluster={removeCluster}
             isExpanded={expandedStateObj[DataListItems.ClusterList]}
@@ -137,7 +134,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             dataList={allStorage}
             id={DataListItems.StorageList}
             associatedPlans={storageAssociatedPlans}
-            isLoading={isMigrating || isStaging || isClosing}
             removeStorage={removeStorage}
             isExpanded={expandedStateObj[DataListItems.StorageList]}
             toggleExpanded={handleExpand}
@@ -156,7 +152,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             plansDisabled={isAddPlanDisabled}
             isLoading={isMigrating || isStaging}
             isExpanded={expandedStateObj[DataListItems.PlanList]}
-            isClosing={isClosing}
             toggleExpanded={handleExpand}
           />
         </PlanContext.Provider>
@@ -173,7 +168,7 @@ function mapStateToProps(state) {
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
-  const { isMigrating, isStaging, isClosing } = state.plan;
+  const { isMigrating, isStaging } = state.plan;
   const migMeta = state.migMeta;
   return {
     allClusters,
@@ -184,7 +179,6 @@ function mapStateToProps(state) {
     storageAssociatedPlans,
     isMigrating,
     isStaging,
-    isClosing,
     migMeta,
   };
 }

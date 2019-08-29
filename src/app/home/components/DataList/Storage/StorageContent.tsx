@@ -14,7 +14,6 @@ import { AddCircleOIcon } from '@patternfly/react-icons';
 
 const StorageContent = ({
   dataList,
-  isLoading,
   isExpanded,
   associatedPlans,
   removeStorage,
@@ -28,7 +27,6 @@ const StorageContent = ({
             return (
               <StorageItem
                 key={storageIndex}
-                isLoading
                 storage={storage}
                 storageIndex={storageIndex}
                 associatedPlans={associatedPlans}

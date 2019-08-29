@@ -18,7 +18,6 @@ const ClusterDataListItem = ({
   isExpanded,
   toggleExpanded,
   dataList,
-  isLoading,
   associatedPlans,
   migMeta,
   removeCluster,
@@ -50,7 +49,6 @@ const ClusterDataListItem = ({
         <ClusterContent
           associatedPlans={associatedPlans}
           dataList={dataList}
-          isLoading={isLoading}
           isExpanded={isExpanded}
           migMeta={migMeta}
           removeCluster={removeCluster}

@@ -10,7 +10,8 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 import theme from '../../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
-const PlanActions = ({ plan, isLoading, isClosing }) => {
+
+const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -28,11 +29,12 @@ const PlanActions = ({ plan, isLoading, isClosing }) => {
     <DropdownItem
       // @ts-ignore
       onClick={() => {
+        onPlanDelete(plan);
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
       }}
       key="deletePlan"
-      isDisabled={isClosing}
+      isDisabled={isDeleting}
     >
       Delete
     </DropdownItem>
@@ -41,7 +43,7 @@ const PlanActions = ({ plan, isLoading, isClosing }) => {
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} isClosing={isClosing} />
+        <PlanStatus plan={plan} isDeleting={isDeleting} />
       </Box>
       <Box mx={1}>
         <Button
@@ -52,7 +54,8 @@ const PlanActions = ({ plan, isLoading, isClosing }) => {
             hasRunningMigrations ||
             hasAttemptedMigration ||
             finalMigrationComplete ||
-            isLoading
+            isLoading ||
+            isDeleting
           }
           variant="primary"
           onClick={() => {
@@ -70,7 +73,8 @@ const PlanActions = ({ plan, isLoading, isClosing }) => {
             hasErrorCondition ||
             hasRunningMigrations ||
             finalMigrationComplete ||
-            isLoading
+            isLoading ||
+            isDeleting
           }
           variant="primary"
           onClick={toggleOpen}

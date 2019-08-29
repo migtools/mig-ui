@@ -3,19 +3,16 @@ import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
 import Loader from 'react-loader-spinner';
 import theme from '../../../../../theme';
-import { InProgressIcon, OutlinedCircleIcon } from '@patternfly/react-icons';
+import { OutlinedCircleIcon } from '@patternfly/react-icons';
 
 import * as React from 'react';
 
 interface IProps {
+  isDeleting: boolean;
   plan: any;
-  isClosing?: boolean;
 }
 
-const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
-  const InProgress = styled(InProgressIcon)`
-    color: ${theme.colors.medGray3};
-  `;
+const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
   const NotStarted = styled(OutlinedCircleIcon)`
     color: ${theme.colors.blue};
   `;
@@ -26,6 +23,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isClosing }) =>
   const Complete = styled(OutlinedCircleIcon)`
     color: ${theme.colors.statusGreen};
   `;
+
   const {
     hasFailedCondition,
     hasRunningMigrations,
@@ -33,9 +31,10 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isClosing }) =>
     hasSucceededStage,
     hasSucceededMigration,
   } = plan.PlanStatus;
+
   if (hasFailedCondition || hasNotReadyCondition) {
     return <Error />;
-  } else if (hasRunningMigrations || isClosing) {
+  } else if (hasRunningMigrations || isDeleting) {
     return (
       <Loader
         type="RevolvingDot"

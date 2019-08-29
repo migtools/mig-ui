@@ -16,7 +16,6 @@ import StorageContent from './StorageContent';
 const StorageDataListItem = ({
   id,
   dataList,
-  isLoading,
   associatedPlans,
   removeStorage,
   isExpanded,
@@ -52,7 +51,6 @@ const StorageDataListItem = ({
         <StorageContent
           associatedPlans={associatedPlans}
           dataList={dataList}
-          isLoading={isLoading}
           isExpanded={isExpanded}
           removeStorage={removeStorage}
           {...props}

@@ -14,7 +14,7 @@ import { useOpenModal } from '../../../duck/hooks';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { StorageContext } from '../../../duck/context';
 
-const StorageItem = ({ storage, storageIndex, isLoading, removeStorage, ...props }) => {
+const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const associatedPlanCount = props.associatedPlans[storage.MigStorage.metadata.name];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
   const [isAddEditModalOpen, toggleIsAddEditModalOpen] = useOpenModal(false);
