@@ -25,8 +25,6 @@ const getPlansWithPlanStatus = createSelector(
       const hasMigrationError = null;
       let latestType = null;
       let latestIsFailed = false;
-      let hasConflictCondition = null;
-      let conflictErrorMsg = null;
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
         const emptyStatusObject = {
           hasSucceededStage,
@@ -42,13 +40,10 @@ const getPlansWithPlanStatus = createSelector(
         };
         return { ...plan, PlanStatus: emptyStatusObject };
       }
-      hasClosedCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Closed');
-      hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
-      hasPlanError = !!plan.MigPlan.status.conditions.some(c => c.category === 'Critical');
-
-      hasConflictCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PlanConflict');
-      conflictErrorMsg = plan.MigPlan.status.conditions.find(c => c.type === 'PlanConflict').message;
-
+      hasClosedCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Closed').length;
+      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
+      hasPlanError = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
+        .length;
 
       if (plan.Migrations.length) {
         const latest = plan.Migrations[0];
@@ -98,8 +93,6 @@ const getPlansWithPlanStatus = createSelector(
         finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
         latestType,
-        hasConflictCondition,
-        conflictErrorMsg
       };
 
       return { ...plan, PlanStatus: statusObject };
