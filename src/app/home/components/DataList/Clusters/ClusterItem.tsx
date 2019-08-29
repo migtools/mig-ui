@@ -14,7 +14,7 @@ import AddEditClusterModal from '../../../../cluster/components/AddEditClusterMo
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { ClusterContext } from '../../../duck/context';
 
-const ClusterItem = ({ cluster, clusterIndex, isLoading, migMeta, removeCluster, ...props }) => {
+const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }) => {
   const clusterName = cluster.MigCluster.metadata.name;
   let clusterStatus = null;
   if (cluster.MigCluster.status) {

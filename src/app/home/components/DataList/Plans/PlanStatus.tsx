@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface IProps {
-  isClosing?: any;
+  isClosing: boolean;
   plan: any;
 }
 

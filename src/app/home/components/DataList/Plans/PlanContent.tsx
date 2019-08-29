@@ -23,7 +23,6 @@ interface IPlanContentProps {
   clusterList: any;
   storageList: any;
   isLoading: boolean;
-  isClosing: boolean;
   isExpanded: boolean;
   plansDisabled: boolean;
   toggleOpen: () => void;
@@ -64,7 +63,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 title: (
                   <Flex>
                     <Box m="0 5px 0 0">
-                      <PlanStatusIcon plan={plan} isClosing={this.props.isClosing} />
+                      <PlanStatusIcon plan={plan} />
                     </Box>
                     <Box m="auto 0 auto 0">
                       <span>{plan.MigPlan.metadata.name}</span>
@@ -115,7 +114,7 @@ class PlanContent extends React.Component<IPlanContentProps, any> {
                 ),
               },
               {
-                title: <PlanActions plan={plan} isClosing={this.props.isClosing} isLoading={this.props.isLoading} />,
+                title: <PlanActions plan={plan} isLoading={this.props.isLoading} />,
               },
             ],
           },
