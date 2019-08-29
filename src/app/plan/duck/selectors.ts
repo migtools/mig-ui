@@ -25,7 +25,6 @@ const getPlansWithPlanStatus = createSelector(
       const hasMigrationError = null;
       let latestType = null;
       let latestIsFailed = false;
-      let isDeleting = false;
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
         const emptyStatusObject = {
           hasSucceededStage,
@@ -38,7 +37,6 @@ const getPlansWithPlanStatus = createSelector(
           finalMigrationComplete,
           hasFailedCondition: hasMigrationError,
           latestType,
-          isDeleting,
         };
         return { ...plan, PlanStatus: emptyStatusObject };
       }
@@ -46,8 +44,6 @@ const getPlansWithPlanStatus = createSelector(
       hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
       hasPlanError = !!plan.MigPlan.status.conditions.filter(c => c.category === 'Critical')
         .length;
-
-      isDeleting = plan.MigPlan.spec.closed && !hasReadyCondition;
 
       if (plan.Migrations.length) {
         const latest = plan.Migrations[0];
@@ -85,11 +81,6 @@ const getPlansWithPlanStatus = createSelector(
           }
         }).length;
       }
-      hasSucceededMigration = !!plan.Migrations.filter(m => {
-        if (m.status && !m.spec.stage) {
-          return m.status.conditions.some(c => c.type === 'Succeeded');
-        }
-      }).length;
 
       const statusObject = {
         hasSucceededStage,
@@ -102,7 +93,6 @@ const getPlansWithPlanStatus = createSelector(
         finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
         latestType,
-        isDeleting
       };
 
       return { ...plan, PlanStatus: statusObject };

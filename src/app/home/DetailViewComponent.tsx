@@ -60,6 +60,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     allClusters,
     allStorage,
     removeStorage,
+    removePlan,
     removeCluster,
     planUpdateRequest,
     runStage,
@@ -124,7 +125,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             dataList={allClusters}
             id={DataListItems.ClusterList}
             associatedPlans={clusterAssociatedPlans}
-            isLoading={isMigrating || isStaging || isClosing}
+            isLoading={isMigrating || isStaging}
             migMeta={migMeta}
             removeCluster={removeCluster}
             isExpanded={expandedStateObj[DataListItems.ClusterList]}
@@ -153,8 +154,9 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             storageList={allStorage}
             onPlanSubmit={handlePlanSubmit}
             plansDisabled={isAddPlanDisabled}
-            isLoading={isMigrating || isStaging || isClosing}
+            isLoading={isMigrating || isStaging}
             isExpanded={expandedStateObj[DataListItems.PlanList]}
+            isClosing={isClosing}
             toggleExpanded={handleExpand}
           />
         </PlanContext.Provider>
