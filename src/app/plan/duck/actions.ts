@@ -1,5 +1,4 @@
 import { IMigPlan } from '../../../client/resources/conversions';
-import { PollingActionTypes } from '../../common/duck/actions';
 import { ICurrentPlanStatus } from './reducers';
 
 export const PlanActionTypes = {
@@ -35,7 +34,7 @@ export const PlanActionTypes = {
   INIT_MIGRATION: 'INIT_MIGRATION',
   PLAN_CLOSE_AND_DELETE_REQUEST: 'PLAN_CLOSE_AND_DELETE_REQUEST',
   PLAN_CLOSE_AND_DELETE_SUCCESS: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
-  PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
+  PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_FAILURE',
   PLAN_CLOSE_REQUEST: 'PLAN_CLOSE_REQUEST',
   PLAN_CLOSE_SUCCESS: 'PLAN_CLOSE_SUCCESS',
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',

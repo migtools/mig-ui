@@ -329,6 +329,14 @@ export const updateCurrentPlanStatus =
     };
   };
 
+export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    migPlanList: state.migPlanList.filter(
+      p => p.MigPlan.metadata.name !== action.planName),
+  }
+}
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
@@ -365,6 +373,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
     case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
     case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
+      return planCloseAndDeleteSuccess(state, action);
     default: return state;
   }
 };
