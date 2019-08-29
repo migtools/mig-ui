@@ -53,8 +53,6 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return <StatusIcon isReady={true} />;
       case CurrentPlanState.Critical:
         return <StatusIcon isReady={false} />;
-      case CurrentPlanState.TimedOut:
-        return <StyledIcon />;
       default:
         return null;
     }
