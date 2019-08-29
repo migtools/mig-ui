@@ -17,8 +17,6 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     hasPrevMigrations,
     latestType,
     latestIsFailed,
-    hasConflictCondition,
-    conflictErrorMsg,
   } = plan.PlanStatus;
 
   const getStatus = () => {
@@ -46,9 +44,6 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     }
     if (isClosing) {
       status.text = 'Closing';
-    }
-    if (hasConflictCondition) {
-      status.text = conflictErrorMsg || 'Conflicting plan';
     }
     return status;
   };
