@@ -1,11 +1,11 @@
 import React from 'react';
 
 interface IProps {
-  isClosing: boolean;
+  isDeleting: boolean;
   plan: any;
 }
 
-const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
+const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
   const {
     hasClosedCondition,
     hasReadyCondition,
@@ -22,16 +22,16 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
 
     if(latestIsFailed) {
       status.text = `${latestType} Failed`;
+    } else if (isDeleting) {
+      status.text = 'Deleting';
     } else if (hasClosedCondition) {
       status.text = 'Closed';
-    } else if (isClosing) {
-      status.text = 'Closing';
+    } else if (hasRunningMigrations) {
+      status.text = `${latestType} Running`;
     } else if (hasSucceededStage) {
       status.text = `Stage Succeeded`;
     } else if (hasSucceededMigration) {
       status.text = `Migration Succeeded`;
-    } else if (hasRunningMigrations) {
-      status.text = `${latestType} Running`;
     } else if (hasNotReadyCondition || !hasReadyCondition) {
       status.text = 'Not Ready';
     } else if (hasReadyCondition) {
