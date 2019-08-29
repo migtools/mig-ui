@@ -334,8 +334,8 @@ export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
     ...state,
     migPlanList: state.migPlanList.filter(
       p => p.MigPlan.metadata.name !== action.planName),
-  }
-}
+  };
+};
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {

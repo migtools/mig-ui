@@ -193,7 +193,7 @@ const PlanContent: React.FunctionComponent<IProps> = ({
       currentRows, planList, isLoading, newDeletingMap, handlePlanDelete,
     );
 
-    setIsDeletingMap(newDeletingMap)
+    setIsDeletingMap(newDeletingMap);
     setCurrentRows(newRows);
   }, [planList]);
 
@@ -254,6 +254,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
         )}
     </DataListContent>
   );
-}
+};
 
 export default PlanContent;
