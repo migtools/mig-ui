@@ -22,6 +22,7 @@ const PlanDataListItem = ({
   planList,
   plansDisabled,
   isExpanded,
+  isClosing,
   toggleExpanded,
 }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
@@ -66,6 +67,7 @@ const PlanDataListItem = ({
           storageList={storageList}
           isLoading={isLoading}
           isExpanded={isExpanded}
+          isClosing={isClosing}
           toggleOpen={toggleOpen}
         />
       </DataListItem>

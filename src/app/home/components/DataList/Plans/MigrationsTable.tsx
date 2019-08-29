@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, sortable, SortByDirection } from '@patternfly/react-table';
 import { EmptyState, ProgressVariant } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
+import moment from 'moment';
+import { MigrationIcon } from '@patternfly/react-icons';
 import { Progress, ProgressSize } from '@patternfly/react-core';
+import { any } from 'prop-types';
 
 interface IProps {
   migrations: any[];
