@@ -14,40 +14,56 @@ interface INamespaceTableProps {
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   const { setFieldValue, sourceClusterNamespaces, values } = props;
-  const [checkedNamespaceRows, setCheckedRows] = useState([]);
-
+  const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
+  const [selectAll, setSelectAll] = useState(0);
 
   useEffect(() => {
-    if (values.selectedNamespaces.length > 0) {
-      const checkedCopy = [];
-      values.selectedNamespaces.filter((item, itemIndex) => {
-        for (let i = 0; sourceClusterNamespaces.length > i; i++) {
-          if (item.metadata.name === sourceClusterNamespaces[i].metadata.name) {
-            checkedCopy[i] = true;
-          }
-        }
-      });
-      setCheckedRows(checkedCopy);
-    }
-  }, [sourceClusterNamespaces, values]);
+    const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
+      const keys = Object.keys(checkedNamespaceRows);
 
-  const selectRow = row => {
-    const index = row.index;
-    const checkedCopy = checkedNamespaceRows;
-    checkedCopy[index] = !checkedNamespaceRows[index];
-
-    setCheckedRows(checkedCopy);
-    const formValuesForNamespaces = sourceClusterNamespaces.filter((item, itemIndex) => {
-      for (let i = 0; checkedCopy.length > i; i++) {
-        if (itemIndex === i) {
-          if (checkedCopy[i]) {
-            return item;
-          }
+      for (const key of keys) {
+        if (item.metadata.uid === key) {
+          return item;
         }
       }
     });
     setFieldValue('selectedNamespaces', formValuesForNamespaces);
+  }, [checkedNamespaceRows]);
+
+  useEffect(() => {
+    if (values.selectedNamespaces.length > 0) {
+      const newSelected = Object.assign({}, checkedNamespaceRows);
+      values.selectedNamespaces.filter((item, itemIndex) => {
+        for (let i = 0; sourceClusterNamespaces.length > i; i++) {
+          if (item.metadata.uid === sourceClusterNamespaces[i].metadata.uid) {
+            newSelected[item.metadata.uid] = true;
+          }
+        }
+      });
+      setCheckedNamespaceRows(newSelected);
+    }
+  }, [sourceClusterNamespaces]);
+
+  const toggleSelectAll = () => {
+    const newSelected = {};
+
+    if (selectAll === 0) {
+      sourceClusterNamespaces.forEach(item => {
+        newSelected[item.metadata.uid] = true;
+      });
+    }
+    setSelectAll(selectAll === 0 ? 1 : 0);
+    setCheckedNamespaceRows(newSelected);
   };
+
+  const selectRow = rowId => {
+    const newSelected = Object.assign({}, checkedNamespaceRows);
+    newSelected[rowId] = !checkedNamespaceRows[rowId];
+    setCheckedNamespaceRows(newSelected);
+    setSelectAll(2);
+  };
+
+
   const StyledTextContent = styled(TextContent)`
       margin: 1em 0 1em 0;
     `;
@@ -68,15 +84,36 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
           data={sourceClusterNamespaces}
           columns={[
             {
-              Cell: row => {
+              id: 'checkbox',
+              accessor: '',
+              resizable: false,
+              width: 50,
+              Cell: ({ original }) => {
+                return (
+                  <div style={{ textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      onChange={() => selectRow(original.metadata.uid)}
+                      checked={checkedNamespaceRows[original.metadata.uid] === true}
+                    />
+                  </div>
+                );
+              },
+              Header: () => {
                 return (
                   <input
                     type="checkbox"
-                    onChange={() => selectRow(row)}
-                    checked={checkedNamespaceRows[row.index]}
+                    className="checkbox"
+                    checked={selectAll === 1}
+                    ref={input => {
+                      if (input) {
+                        input.indeterminate = selectAll === 2;
+                      }
+                    }}
+                    onChange={toggleSelectAll}
                   />
                 );
-              },
+              }
             },
             {
               Header: () => (
