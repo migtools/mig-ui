@@ -8,7 +8,6 @@ import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-cor
 
 const ClusterContent = ({
   dataList,
-  isLoading,
   isExpanded,
   associatedPlans,
   migMeta,
@@ -23,7 +22,6 @@ const ClusterContent = ({
             return (
               <ClusterItem
                 key={clusterIndex}
-                isLoading
                 cluster={cluster}
                 clusterIndex={clusterIndex}
                 migMeta={migMeta}
