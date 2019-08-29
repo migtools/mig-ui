@@ -99,7 +99,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                   </div>
                 );
               },
-              Header: x => {
+              Header: () => {
                 return (
                   <input
                     type="checkbox"
@@ -108,10 +108,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     ref={input => {
                       if (input) {
                         input.indeterminate = selectAll === 2;
-
                       }
                     }}
-                    onChange={() => toggleSelectAll()}
+                    onChange={toggleSelectAll}
                   />
                 );
               }
