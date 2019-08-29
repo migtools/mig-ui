@@ -12,39 +12,32 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     hasNotReadyCondition,
     hasRunningMigrations,
     hasSucceededMigration,
-    finalMigrationComplete,
     hasSucceededStage,
-    hasPrevMigrations,
     latestType,
     latestIsFailed,
   } = plan.PlanStatus;
 
   const getStatus = () => {
     const status = { text: 'Waiting for status...' };
-    if (hasReadyCondition || !hasPrevMigrations) {
-      status.text = 'Ready';
-    }
-    if (hasNotReadyCondition || !hasReadyCondition) {
-      status.text = 'Not Ready';
-    }
-    if (hasSucceededStage) {
-      status.text = `Stage Succeeded`;
-    }
-    if (hasSucceededMigration) {
-      status.text = `Migration Succeeded`;
-    }
-    if (latestIsFailed) {
+
+    if(latestIsFailed) {
       status.text = `${latestType} Failed`;
-    }
-    if (hasRunningMigrations) {
-      status.text = `${latestType} Running`;
-    }
-    if (hasClosedCondition) {
+    } else if (hasClosedCondition) {
       status.text = 'Closed';
-    }
-    if (isClosing) {
+    } else if (isClosing) {
       status.text = 'Closing';
+    } else if (hasSucceededStage) {
+      status.text = `Stage Succeeded`;
+    } else if (hasSucceededMigration) {
+      status.text = `Migration Succeeded`;
+    } else if (hasRunningMigrations) {
+      status.text = `${latestType} Running`;
+    } else if (hasNotReadyCondition || !hasReadyCondition) {
+      status.text = 'Not Ready';
+    } else if (hasReadyCondition) {
+      status.text = "Ready";
     }
+
     return status;
   };
   return (
