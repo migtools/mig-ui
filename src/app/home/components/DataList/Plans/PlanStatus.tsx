@@ -15,6 +15,8 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
     hasSucceededStage,
     latestType,
     latestIsFailed,
+    hasConflictCondition,
+    conflictErrorMsg,
   } = plan.PlanStatus;
 
   const getStatus = () => {
@@ -26,6 +28,8 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
       status.text = 'Deleting';
     } else if (hasClosedCondition) {
       status.text = 'Closed';
+    } else if (hasConflictCondition) {
+      status.text = conflictErrorMsg || 'Conflicting plan';
     } else if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
     } else if (hasSucceededStage) {
