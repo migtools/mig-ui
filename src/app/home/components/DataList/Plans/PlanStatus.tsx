@@ -35,7 +35,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isClosing }) => {
     } else if (hasNotReadyCondition || !hasReadyCondition) {
       status.text = 'Not Ready';
     } else if (hasReadyCondition) {
-      status.text = "Ready";
+      status.text = 'Ready';
     }
 
     return status;
