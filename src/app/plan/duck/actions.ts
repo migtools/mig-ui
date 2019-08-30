@@ -50,7 +50,8 @@ export const PlanActionTypes = {
   PLAN_POLL_START: 'PLAN_POLL_START',
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
-  SET_CURRENT_PLAN: 'SET_CURRENT_PLAN'
+  SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
+  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN'
 };
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
@@ -277,6 +278,11 @@ const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
   currentPlanStatus,
 });
 
+const setLockedPlan = (planName) => ({
+  type: PlanActionTypes.SET_LOCKED_PLAN,
+  planName
+});
+
 export const PlanActions = {
   updatePlans,
   addPlanSuccess,
@@ -324,5 +330,6 @@ export const PlanActions = {
   startPlanPolling,
   stopPlanPolling,
   resetCurrentPlan,
-  setCurrentPlan
+  setCurrentPlan,
+  setLockedPlan
 };

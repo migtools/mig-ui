@@ -7,11 +7,14 @@ const getCurrentPlan = state => state.plan.currentPlan;
 
 const getMigMeta = state => state.migMeta;
 
+const lockedPlansSelector = state => state.plan.lockedPlanList;
+
 const getPlansWithPlanStatus = createSelector(
-  [planSelector],
-  plans => {
+  [planSelector, lockedPlansSelector],
+  (plans, lockedPlans) => {
 
     const plansWithStatus = plans.map(plan => {
+      let isPlanLocked = null;
       let hasReadyCondition = null;
       let hasPlanError = null;
       let hasPrevMigrations = null;
@@ -26,6 +29,10 @@ const getPlansWithPlanStatus = createSelector(
       let latestIsFailed = false;
       let hasConflictCondition = null;
       let conflictErrorMsg = null;
+      //check to see if plan is locked
+      isPlanLocked = !!lockedPlans.some((lockedPlan) => lockedPlan === plan.MigPlan.metadata.name);
+      //
+
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
         const emptyStatusObject = {
           hasSucceededStage,
@@ -38,6 +45,7 @@ const getPlansWithPlanStatus = createSelector(
           finalMigrationComplete,
           hasFailedCondition: hasMigrationError,
           latestType,
+          isPlanLocked
         };
         return { ...plan, PlanStatus: emptyStatusObject };
       }
@@ -48,7 +56,7 @@ const getPlansWithPlanStatus = createSelector(
       hasConflictCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PlanConflict');
 
       const planConflictCond = plan.MigPlan.status.conditions.find(c => c.type === 'PlanConflict');
-      if(planConflictCond) {
+      if (planConflictCond) {
         conflictErrorMsg = planConflictCond.message;
       }
 
@@ -102,6 +110,7 @@ const getPlansWithPlanStatus = createSelector(
         latestType,
         hasConflictCondition,
         conflictErrorMsg,
+        isPlanLocked
       };
 
       return { ...plan, PlanStatus: statusObject };
@@ -161,7 +170,7 @@ const getCounts = createSelector(
 
 const getPlansWithStatus = createSelector(
   [getPlansWithPlanStatus],
-  plans => {
+  (plans) => {
     const getMigrationStatus = (plan, migration) => {
       const { MigPlan } = plan;
       const status = {

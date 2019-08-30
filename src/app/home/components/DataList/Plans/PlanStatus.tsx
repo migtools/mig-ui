@@ -16,11 +16,11 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     latestIsFailed,
     hasConflictCondition,
     conflictErrorMsg,
+    isPlanLocked
   } = plan.PlanStatus;
 
   const getStatus = () => {
     const status = { text: 'Waiting for status...' };
-
     if (latestIsFailed) {
       status.text = `${latestType} Failed`;
     } else if (hasClosedCondition) {
@@ -38,7 +38,9 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     } else if (hasReadyCondition) {
       status.text = 'Ready';
     }
-
+    if (isPlanLocked) {
+      status.text = 'Pending';
+    }
     return status;
   };
   return (

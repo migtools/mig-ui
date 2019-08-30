@@ -22,6 +22,7 @@ const PlanActions = ({ plan }) => {
     hasAttemptedMigration,
     hasSucceededMigration,
     finalMigrationComplete,
+    isPlanLocked
   } = plan.PlanStatus;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -33,6 +34,7 @@ const PlanActions = ({ plan }) => {
         setKebabIsOpen(false);
       }}
       key="deletePlan"
+      isDisabled={isPlanLocked}
     >
       Delete
     </DropdownItem>
@@ -51,7 +53,8 @@ const PlanActions = ({ plan }) => {
             hasErrorCondition ||
             hasRunningMigrations ||
             hasAttemptedMigration ||
-            finalMigrationComplete
+            finalMigrationComplete ||
+            isPlanLocked
           }
           variant="primary"
           onClick={() => {
@@ -68,7 +71,8 @@ const PlanActions = ({ plan }) => {
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            finalMigrationComplete
+            finalMigrationComplete ||
+            isPlanLocked
           }
           variant="primary"
           onClick={toggleOpen}
@@ -89,7 +93,7 @@ const PlanActions = ({ plan }) => {
         />
       </Box>
 
-      {/* {isLoading && (
+      {isPlanLocked && (
         <Box
           css={css`
             height: 100%;
@@ -100,7 +104,7 @@ const PlanActions = ({ plan }) => {
         >
           <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
         </Box>
-      )} */}
+      )}
     </Flex>
   );
 };

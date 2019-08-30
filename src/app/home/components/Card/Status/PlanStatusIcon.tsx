@@ -29,11 +29,12 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasNotReadyCondition,
     hasSucceededStage,
     hasSucceededMigration,
+    isPlanLocked
   } = plan.PlanStatus;
 
   if (hasFailedCondition || hasNotReadyCondition) {
     return <Error />;
-  } else if (hasRunningMigrations) {
+  } else if (hasRunningMigrations || isPlanLocked) {
     return (
       <Loader
         type="RevolvingDot"
