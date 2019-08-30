@@ -43,6 +43,7 @@
     "prettier": "^1.17.1",
     "redux-persist": "^5.10.0",
     "rimraf": "^2.6.3",
+    "sass-loader": "^7.3.1",
     "source-map-loader": "^0.2.4",
     "start-server-and-test": "^1.9.1",
     "style-loader": "^0.23.1",
@@ -61,8 +62,8 @@
   "dependencies": {
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.9",
-    "@patternfly/react-core": "^3.38.1",
-    "@patternfly/react-table": "^2.11.1",
+    "@patternfly/react-core": "^3.94.2",
+    "@patternfly/react-table": "^2.19.8",
     "@rebass/emotion": "^3.1.0",
     "@types/react": "^16.8.17",
     "axios": "^0.19.0",
@@ -91,6 +92,7 @@
     "redux-thunk": "^2.3.0",
     "reduxsauce": "^1.0.1",
     "reselect": "^4.0.0",
+    "sass": "^1.22.10",
     "uuid": "^3.3.2"
   }
 }
