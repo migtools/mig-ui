@@ -22,8 +22,6 @@ export const INITIAL_STATE = {
   migPlanList: [],
   planSearchText: '',
   sourceClusterNamespaces: [],
-  isStaging: false,
-  isMigrating: false,
   currentPlan: null,
   isClosing: false,
   isPollingStatus: false,
@@ -32,7 +30,8 @@ export const INITIAL_STATE = {
   currentPlanStatus: {
     state: CurrentPlanState.Pending,
     errorMessage: ''
-  } as ICurrentPlanStatus
+  } as ICurrentPlanStatus,
+  lockedPlanList: []
 };
 
 const sortPlans = planList =>
@@ -203,7 +202,6 @@ export const initStage =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isStaging: true,
     };
   };
 
@@ -218,7 +216,6 @@ export const initMigration =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isMigrating: true,
     };
   };
 export const stagingSuccess =
@@ -232,12 +229,11 @@ export const stagingSuccess =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isStaging: false,
     };
   };
 export const stagingFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stagingFailure>) => {
-    return { ...state, isStaging: false };
+    return { ...state };
   };
 
 export const migrationSuccess =
@@ -251,12 +247,11 @@ export const migrationSuccess =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isMigrating: false,
     };
   };
 export const migrationFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migrationFailure>) => {
-    return { ...state, isMigrating: false };
+    return { ...state };
   };
 
 
@@ -322,18 +317,39 @@ export const setCurrentPlan = (state = INITIAL_STATE, action) => {
     currentPlan: action.currentPlan
   };
 };
-export const updateCurrentPlanStatus =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
-    return {
-      ...state, currentPlanStatus: action.currentPlanStatus
-    };
+
+export const updateCurrentPlanStatus = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>) => {
+  return {
+    ...state, currentPlanStatus: action.currentPlanStatus
   };
+};
 
 export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
+  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
+
   return {
     ...state,
     migPlanList: state.migPlanList.filter(
       p => p.MigPlan.metadata.name !== action.planName),
+    lockedPlanList: filteredLockedPlans
+  };
+};
+
+export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
+  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
+
+  return {
+    ...state,
+    lockedPlanList: filteredLockedPlans
+  };
+};
+
+export const setLockedPlan = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    lockedPlanList: [...state.lockedPlanList, action.planName]
   };
 };
 
@@ -373,8 +389,11 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
     case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
     case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
+    case PlanActionTypes.SET_LOCKED_PLAN: return setLockedPlan(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
       return planCloseAndDeleteSuccess(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
+      return planCloseAndDeleteFailure(state, action);
     default: return state;
   }
 };

@@ -11,7 +11,7 @@ import theme from '../../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
 
-const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
+const PlanActions = ({ plan }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -22,6 +22,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
     hasAttemptedMigration,
     hasSucceededMigration,
     finalMigrationComplete,
+    isPlanLocked
   } = plan.PlanStatus;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -29,21 +30,23 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
     <DropdownItem
       // @ts-ignore
       onClick={() => {
-        onPlanDelete(plan);
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
       }}
       key="deletePlan"
-      isDisabled={isDeleting}
+      isDisabled={
+        hasRunningMigrations ||
+        isPlanLocked
+      }
     >
       Delete
-    </DropdownItem>
+    </DropdownItem >
   ];
 
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} isDeleting={isDeleting} />
+        <PlanStatus plan={plan} />
       </Box>
       <Box mx={1}>
         <Button
@@ -54,8 +57,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
             hasRunningMigrations ||
             hasAttemptedMigration ||
             finalMigrationComplete ||
-            isLoading ||
-            isDeleting
+            isPlanLocked
           }
           variant="primary"
           onClick={() => {
@@ -73,8 +75,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
             hasErrorCondition ||
             hasRunningMigrations ||
             finalMigrationComplete ||
-            isLoading ||
-            isDeleting
+            isPlanLocked
           }
           variant="primary"
           onClick={toggleOpen}
@@ -84,7 +85,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </Box>
 
-      <Box mx={1}>
+      <Box margin="auto 4px" >
         <Dropdown
           toggle={<KebabToggle
             onToggle={() => setKebabIsOpen(!kebabIsOpen)}
@@ -94,19 +95,6 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
           dropdownItems={kebabDropdownItems}
         />
       </Box>
-
-      {isLoading && (
-        <Box
-          css={css`
-            height: 100%;
-            text-align: center;
-            margin: auto 4px auto 4px;
-            width: 1em;
-          `}
-        >
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
-        </Box>
-      )}
     </Flex>
   );
 };

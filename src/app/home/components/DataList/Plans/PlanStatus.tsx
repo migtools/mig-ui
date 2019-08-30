@@ -1,11 +1,10 @@
 import React from 'react';
 
 interface IProps {
-  isDeleting: boolean;
   plan: any;
 }
 
-const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
+const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
   const {
     hasClosedCondition,
     hasReadyCondition,
@@ -17,15 +16,13 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
     latestIsFailed,
     hasConflictCondition,
     conflictErrorMsg,
+    isPlanLocked
   } = plan.PlanStatus;
 
   const getStatus = () => {
     const status = { text: 'Waiting for status...' };
-
-    if(latestIsFailed) {
+    if (latestIsFailed) {
       status.text = `${latestType} Failed`;
-    } else if (isDeleting) {
-      status.text = 'Deleting';
     } else if (hasClosedCondition) {
       status.text = 'Closed';
     } else if (hasConflictCondition) {
@@ -41,7 +38,9 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
     } else if (hasReadyCondition) {
       status.text = 'Ready';
     }
-
+    if (isPlanLocked) {
+      status.text = 'Pending';
+    }
     return status;
   };
   return (

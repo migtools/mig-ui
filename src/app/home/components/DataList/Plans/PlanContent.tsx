@@ -22,7 +22,6 @@ interface IProps {
   onPlanSubmit: () => void;
   clusterList: any;
   storageList: any;
-  isLoading: boolean;
   isExpanded: boolean;
   plansDisabled: boolean;
   toggleOpen: () => void;
@@ -49,7 +48,7 @@ const columns = [
 ];
 
 const buildNewRows = (
-  currentRows, planList, isLoading, isDeletingMap, handleDeletePlanFn,
+  currentRows, planList,
 ) => {
   const newRows = planList.map((plan, planIndex) => {
     const MigrationsIcon = styled(ServiceIcon)`
@@ -58,7 +57,6 @@ const buildNewRows = (
     const parentIndex = planIndex * 2;
     const planName = plan.MigPlan.metadata.name;
     const planKey = `${planName}-${planIndex}`;
-    const isDeleting = isDeletingMap[planName];
 
     //check previous expanded value
     let isOpenPrev = null;
@@ -81,7 +79,7 @@ const buildNewRows = (
             title: (
               <Flex>
                 <Box m="0 5px 0 0">
-                  <PlanStatusIcon plan={plan} isDeleting={isDeleting} />
+                  <PlanStatusIcon plan={plan} />
                 </Box>
                 <Box m="auto 0 auto 0">
                   <span>{plan.MigPlan.metadata.name}</span>
@@ -134,9 +132,6 @@ const buildNewRows = (
           {
             title: <PlanActions
               plan={plan}
-              isLoading={isLoading}
-              isDeleting={isDeleting}
-              onPlanDelete={handleDeletePlanFn}
             />,
           },
         ],
@@ -150,6 +145,7 @@ const buildNewRows = (
               <MigrationsTable
                 type="Migrations"
                 migrations={plan.Migrations}
+                isPlanLocked={plan.PlanStatus.isPlanLocked}
                 id="migrations-history-expansion-table"
               />
             ),
@@ -165,41 +161,23 @@ const buildNewRows = (
 
 const PlanContent: React.FunctionComponent<IProps> = ({
   planList,
-  isLoading,
   isExpanded,
   plansDisabled,
   toggleOpen,
 }) => {
   const [currentRows, setCurrentRows] = useState([]);
-  const [isDeletingMap, setIsDeletingMap] = useState({});
-
-  const handlePlanDelete = (plan) => {
-    setIsDeletingMap({...isDeletingMap, [plan.MigPlan.metadata.name]: true});
-  };
 
   useEffect(() => {
-    const newDeletingMap = planList.reduce((newMap, p) => {
-      newMap[p.MigPlan.metadata.name] = false;
-      return newMap;
-    }, {});
-
-    // Copy in deleting state from previous object to preserve anything
-    // that's still around and deleting
-    Object.keys(isDeletingMap).forEach(planName => {
-      newDeletingMap[planName] = planName in newDeletingMap && isDeletingMap[planName];
-    });
-
     const newRows = buildNewRows(
-      currentRows, planList, isLoading, newDeletingMap, handlePlanDelete,
+      currentRows, planList
     );
 
-    setIsDeletingMap(newDeletingMap);
     setCurrentRows(newRows);
   }, [planList]);
 
   const onExpand = (_event, rowIndex, colIndex, isOpen) => {
     const newRows = buildNewRows(
-      currentRows, planList, isLoading, isDeletingMap, handlePlanDelete,
+      currentRows, planList
     );
 
     if (!isOpen) {
