@@ -29,6 +29,8 @@ export const PlanActionTypes = {
   STOP_PV_POLLING: 'STOP_PV_POLLING',
   ADD_PLAN_REQUEST: 'ADD_PLAN_REQUEST',
   PLAN_UPDATE_REQUEST: 'PLAN_UPDATE_REQUEST',
+  PLAN_UPDATE_SUCCESS: 'PLAN_UPDATE_SUCCESS',
+  PLAN_UPDATE_FAILURE: 'PLAN_UPDATE_FAILURE',
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
@@ -166,6 +168,15 @@ const planUpdateRequest = (planValues) => ({
   planValues,
 });
 
+const planUpdateSuccess = () => ({
+  type: PlanActionTypes.PLAN_UPDATE_SUCCESS,
+});
+
+const planUpdateFailure = (error) => ({
+  type: PlanActionTypes.PLAN_UPDATE_FAILURE,
+  error
+});
+
 const addPlanRequest = () => ({
   type: PlanActionTypes.ADD_PLAN_REQUEST,
 });
@@ -292,6 +303,8 @@ export const PlanActions = {
   startPVPolling,
   stopPVPolling,
   planUpdateRequest,
+  planUpdateSuccess,
+  planUpdateFailure,
   addPlanRequest,
   initStage,
   initMigration,

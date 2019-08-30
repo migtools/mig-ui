@@ -220,11 +220,12 @@ export function createMigPlan(
 
 export function updateMigPlanFromValues(migPlan: any, planValues: any) {
   const updatedSpec = Object.assign({}, migPlan.spec);
-
-  updatedSpec.migStorageRef = {
-    name: planValues.selectedStorage,
-    namespace: migPlan.metadata.namespace,
-  };
+  if (planValues.selectedStorage) {
+    updatedSpec.migStorageRef = {
+      name: planValues.selectedStorage,
+      namespace: migPlan.metadata.namespace,
+    };
+  }
 
   if (updatedSpec.persistentVolumes) {
     updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
