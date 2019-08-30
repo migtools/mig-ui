@@ -66,6 +66,26 @@ function* getPlanSaga(planName) {
     throw err;
   }
 }
+function* patchPlanSaga(planValues) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  try {
+    const getPlanRes = yield call(getPlanSaga, planValues.planName);
+    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      getPlanRes.data.metadata.name,
+      updatedMigPlan
+    );
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
+    yield put(PlanActions.planUpdateSuccess());
+  } catch (err) {
+    yield put(PlanActions.planUpdateFailure(err));
+    throw err;
+  }
+}
+
 function* putPlanSaga(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
@@ -78,8 +98,10 @@ function* putPlanSaga(planValues) {
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
+    yield put(PlanActions.planUpdateSuccess());
     yield put(PlanActions.updatePlanList(putPlanResponse.data));
   } catch (err) {
+    yield put(PlanActions.planUpdateFailure(err));
     throw err;
   }
 }
@@ -192,7 +214,12 @@ function* planCloseSaga(action) {
       planClosed: true,
       persistentVolumes: []
     };
-    yield put(PlanActions.planUpdateRequest(updatedValues));
+    yield retry(
+      PlanUpdateTotalTries,
+      PlanUpdateRetryPeriodSeconds * 1000,
+      patchPlanSaga,
+      updatedValues,
+    );
     yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
   }
   catch (err) {
@@ -253,9 +280,6 @@ function* watchPlanCloseAndDelete() {
   yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
 }
 
-function* watchPlanClose() {
-  yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
-}
 
 function* watchClosedStatus() {
   while (true) {
@@ -282,8 +306,13 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
+
 function* watchGetPVResourcesRequest() {
   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
+}
+
+function* watchPlanClose() {
+  yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
 }
 
 export default {
