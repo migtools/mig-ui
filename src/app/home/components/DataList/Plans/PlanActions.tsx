@@ -85,7 +85,7 @@ const PlanActions = ({ plan }) => {
         <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </Box>
 
-      <Box mx={1}>
+      <Box margin="auto 4px" >
         <Dropdown
           toggle={<KebabToggle
             onToggle={() => setKebabIsOpen(!kebabIsOpen)}
@@ -95,19 +95,6 @@ const PlanActions = ({ plan }) => {
           dropdownItems={kebabDropdownItems}
         />
       </Box>
-
-      {isPlanLocked && (
-        <Box
-          css={css`
-            height: 100%;
-            text-align: center;
-            margin: auto 4px auto 4px;
-            width: 1em;
-          `}
-        >
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
-        </Box>
-      )}
     </Flex>
   );
 };
