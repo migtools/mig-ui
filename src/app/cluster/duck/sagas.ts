@@ -67,24 +67,42 @@ function* addClusterRequest(action) {
 
   // Ensure that none of objects that make up a cluster already exist
   try {
-    const getResults = yield Q.allSettled([
+    const alreadyExists = [];
+    Q.allSettled([
       client.get(clusterRegResource, clusterReg.metadata.name),
       client.get(secretResource, tokenSecret.metadata.name),
       client.get(migClusterResource, migCluster.metadata.name),
-    ]);
+    ]).spread((reg, secret, cluster) => {
 
-    const alreadyExists = getResults.reduce((exists, res) => {
-      return res.value && res.value.status === 200 ?
-        [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
-        exists;
-    }, []);
+      if (reg.state === "rejected") {
+        throw new Error("Failed to create registry object");
+      }
+      else {
+        reg.value && reg.value.status === 200 ?
+          [...alreadyExists, { kind: reg.value.data.kind, name: reg.value.data.metadata.name }] : alreadyExists
+      }
+      if (secret.state === "rejected") {
+        throw new Error("Failed to create secret object");
+      }
+      else {
+        secret.value && secret.value.status === 200 ?
+          [...alreadyExists, { kind: secret.value.data.kind, name: secret.value.data.metadata.name }] : alreadyExists
+      }
+      if (cluster.state === "rejected") {
+        throw new Error("Failed to create cluster object");
+      }
+      else {
+        cluster.value && cluster.value.status === 200 ?
+          [...alreadyExists, { kind: cluster.value.data.kind, name: cluster.value.data.metadata.name }] : alreadyExists
+      }
+    }).done();
 
-    if(alreadyExists.length > 0) {
+    if (alreadyExists.length > 0) {
       throw new Error(alreadyExists.reduce((msg, v) => {
         return msg + `- kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some cluster objects already exist '));
     }
-  } catch(err) {
+  } catch (err) {
     console.error(err.message);
     yield put(ClusterActions.setClusterAddEditStatus(createAddEditStatusWithMeta(
       AddEditState.Critical,
@@ -113,7 +131,7 @@ function* addClusterRequest(action) {
       clusterAddResults.find(res => res.state === 'rejected') &&
       clusterAddResults.find(res => res.state === 'fulfilled');
 
-    if(isRollbackRequired) {
+    if (isRollbackRequired) {
       const kindToResourceMap = {
         Cluster: clusterRegResource,
         MigCluster: migClusterResource,
@@ -133,7 +151,7 @@ function* addClusterRequest(action) {
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if(rollbackResults.find(res => res.state === 'rejected')) {
+      if (rollbackResults.find(res => res.state === 'rejected')) {
         throw new Error(rollbackResults.reduce((msg, r) => {
           const kind = r.reason.request.response.kind;
           const name = r.reason.request.response.details.name;
