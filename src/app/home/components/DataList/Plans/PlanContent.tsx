@@ -51,9 +51,13 @@ const buildNewRows = (
   currentRows, planList,
 ) => {
   const newRows = planList.map((plan, planIndex) => {
-    const MigrationsIcon = styled(ServiceIcon)`
-      color: ${() => (plan.Migrations.length > 0 ? theme.colors.blue : theme.colors.black)};
-    `;
+    const MigrationsIcon = () => {
+      if(plan.Migrations.length > 0) {
+        return <span className="pf-c-icon pf-m-info"><ServiceIcon /></span>;
+      } else {
+        return <span className="pf-c-icon"><ServiceIcon /></span>;
+      }
+    };
     const parentIndex = planIndex * 2;
     const planName = plan.MigPlan.metadata.name;
     const planKey = `${planName}-${planIndex}`;

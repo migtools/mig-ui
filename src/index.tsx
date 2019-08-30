@@ -11,6 +11,7 @@ const { persistor, store } = configureStore();
 import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
 import { setTokenExpiryHandler } from './client/client_factory';
+import './app.scss';
 
 import Loader from 'react-loader-spinner';
 
