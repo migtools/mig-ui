@@ -145,6 +145,7 @@ const buildNewRows = (
               <MigrationsTable
                 type="Migrations"
                 migrations={plan.Migrations}
+                isPlanLocked={plan.PlanStatus.isPlanLocked}
                 id="migrations-history-expansion-table"
               />
             ),

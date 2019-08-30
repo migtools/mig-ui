@@ -1,20 +1,25 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
 import { Table, TableHeader, TableBody, sortable, SortByDirection } from '@patternfly/react-table';
 import { EmptyState, ProgressVariant } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { Flex, Box } from '@rebass/emotion';
 import styled from '@emotion/styled';
+import { css } from '@emotion/core';
 import moment from 'moment';
 import { MigrationIcon } from '@patternfly/react-icons';
 import { Progress, ProgressSize } from '@patternfly/react-core';
-import { any } from 'prop-types';
+import Loader from 'react-loader-spinner';
+import theme from '../../../../../theme';
 
 interface IProps {
   migrations: any[];
   id: string;
   type: string;
+  isPlanLocked: boolean;
 }
-const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations }) => {
+const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked }) => {
   const [currentRows, setCurrentRows] = useState([]);
   const columns = [
     { title: 'Type' },
@@ -70,6 +75,21 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations }) => {
     setCurrentRows(mappedRows);
 
   }, [migrations]);
+
+  if (isPlanLocked) {
+    return (
+      <Flex>
+        <Box flex="1" m="auto"
+          css={css`
+            height: 100%;
+            text-align: center;
+          `}
+        >
+          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+        </Box>
+      </Flex>
+    );
+  }
 
   return (
     <React.Fragment>
