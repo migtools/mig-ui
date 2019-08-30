@@ -34,10 +34,13 @@ const PlanActions = ({ plan }) => {
         setKebabIsOpen(false);
       }}
       key="deletePlan"
-      isDisabled={isPlanLocked}
+      isDisabled={
+        hasRunningMigrations ||
+        isPlanLocked
+      }
     >
       Delete
-    </DropdownItem>
+    </DropdownItem >
   ];
 
   return (
