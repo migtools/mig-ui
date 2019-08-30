@@ -35,8 +35,6 @@ interface IProps {
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
-  isStaging?: boolean;
-  isMigrating?: boolean;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
   planCloseAndDeleteRequest: (string) => void;
@@ -69,8 +67,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     storageAssociatedPlans,
     watchClusterAddEditStatus,
     watchStorageAddEditStatus,
-    isMigrating,
-    isStaging,
     migMeta,
   } = props;
 
@@ -150,7 +146,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             storageList={allStorage}
             onPlanSubmit={handlePlanSubmit}
             plansDisabled={isAddPlanDisabled}
-            isLoading={isMigrating || isStaging}
             isExpanded={expandedStateObj[DataListItems.PlanList]}
             toggleExpanded={handleExpand}
           />
@@ -168,7 +163,6 @@ function mapStateToProps(state) {
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
-  const { isMigrating, isStaging } = state.plan;
   const migMeta = state.migMeta;
   return {
     allClusters,
@@ -177,8 +171,6 @@ function mapStateToProps(state) {
     plansWithStatus,
     clusterAssociatedPlans,
     storageAssociatedPlans,
-    isMigrating,
-    isStaging,
     migMeta,
   };
 }

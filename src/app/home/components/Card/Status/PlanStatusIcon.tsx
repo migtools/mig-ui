@@ -8,11 +8,10 @@ import { OutlinedCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
 interface IProps {
-  isDeleting: boolean;
   plan: any;
 }
 
-const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isDeleting }) => {
+const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   const NotStarted = styled(OutlinedCircleIcon)`
     color: ${theme.colors.blue};
   `;
@@ -34,7 +33,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan, isDeleting }) =
 
   if (hasFailedCondition || hasNotReadyCondition) {
     return <Error />;
-  } else if (hasRunningMigrations || isDeleting) {
+  } else if (hasRunningMigrations) {
     return (
       <Loader
         type="RevolvingDot"

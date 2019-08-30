@@ -22,8 +22,6 @@ export const INITIAL_STATE = {
   migPlanList: [],
   planSearchText: '',
   sourceClusterNamespaces: [],
-  isStaging: false,
-  isMigrating: false,
   currentPlan: null,
   isClosing: false,
   isPollingStatus: false,
@@ -203,7 +201,6 @@ export const initStage =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isStaging: true,
     };
   };
 
@@ -218,7 +215,6 @@ export const initMigration =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isMigrating: true,
     };
   };
 export const stagingSuccess =
@@ -232,12 +228,11 @@ export const stagingSuccess =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isStaging: false,
     };
   };
 export const stagingFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stagingFailure>) => {
-    return { ...state, isStaging: false };
+    return { ...state };
   };
 
 export const migrationSuccess =
@@ -251,12 +246,11 @@ export const migrationSuccess =
     return {
       ...state,
       migPlanList: sortedPlans,
-      isMigrating: false,
     };
   };
 export const migrationFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migrationFailure>) => {
-    return { ...state, isMigrating: false };
+    return { ...state };
   };
 
 

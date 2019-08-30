@@ -18,7 +18,6 @@ const PlanDataListItem = ({
   clusterList,
   storageList,
   onPlanSubmit,
-  isLoading,
   planList,
   plansDisabled,
   isExpanded,
@@ -53,7 +52,6 @@ const PlanDataListItem = ({
               storageList={storageList}
               isOpen={isOpen}
               onHandleWizardModalClose={toggleOpen}
-              isLoading={isLoading}
               onPlanSubmit={onPlanSubmit}
             />
           </DataListAction>
@@ -64,7 +62,6 @@ const PlanDataListItem = ({
           planList={planList}
           clusterList={clusterList}
           storageList={storageList}
-          isLoading={isLoading}
           isExpanded={isExpanded}
           toggleOpen={toggleOpen}
         />

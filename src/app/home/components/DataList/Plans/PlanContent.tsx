@@ -16,195 +16,156 @@ import styled from '@emotion/styled';
 import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
 import theme from '../../../../../theme';
 import PlanEmptyState from './PlanEmptyState';
-
 interface IProps {
   planList: any;
   onPlanSubmit: () => void;
   clusterList: any;
   storageList: any;
-  isLoading: boolean;
   isExpanded: boolean;
   plansDisabled: boolean;
   toggleOpen: () => void;
 }
 
-const columns = [
-  'Name',
+const PlanContent: React.FunctionComponent<IProps> = (
   {
-    title: 'Migrations',
-    cellTransforms: [compoundExpand],
-  },
-  {
-    title: 'Source',
-  },
-  {
-    title: 'Target',
-  },
-  'Repository',
-  {
-    title: 'Persistent Volumes',
-    cellTransforms: [compoundExpand],
-  },
-  'Last Status',
-];
-
-const buildNewRows = (
-  currentRows, planList, isLoading, isDeletingMap, handleDeletePlanFn,
+    planList,
+    isExpanded,
+    plansDisabled,
+    toggleOpen
+  }
 ) => {
-  const newRows = planList.map((plan, planIndex) => {
-    const MigrationsIcon = styled(ServiceIcon)`
-      color: ${() => (plan.Migrations.length > 0 ? theme.colors.blue : theme.colors.black)};
-    `;
-    const parentIndex = planIndex * 2;
-    const planName = plan.MigPlan.metadata.name;
-    const planKey = `${planName}-${planIndex}`;
-    const isDeleting = isDeletingMap[planName];
-
-    //check previous expanded value
-    let isOpenPrev = null;
-    if (currentRows.length > 0) {
-      const matchingIndex = currentRows.filter((_row, i) => i === parentIndex);
-      if (matchingIndex[0] && matchingIndex[0].cells.length > 0) {
-        isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
-      }
-    }
-
-    const migStorageName = plan.MigPlan.spec.migStorageRef ?
-      plan.MigPlan.spec.migStorageRef.name : 'N/A';
-
-    const pvCount = plan.MigPlan.spec.persistentVolumes ?
-      plan.MigPlan.spec.persistentVolumes.length : 0;
-    return [
-      {
-        cells: [
-          {
-            title: (
-              <Flex>
-                <Box m="0 5px 0 0">
-                  <PlanStatusIcon plan={plan} isDeleting={isDeleting} />
-                </Box>
-                <Box m="auto 0 auto 0">
-                  <span>{plan.MigPlan.metadata.name}</span>
-                </Box>
-              </Flex>
-            ),
-
-            props: { component: 'th' },
-          },
-          {
-            title: (
-              <React.Fragment>
-                <Flex>
-                  <Box m="0 5px 0 0" key={planKey + '-icon'}>
-                    <MigrationsIcon />
-                  </Box>
-                  <Box m="auto 0 auto 0" key={planKey + '-text'}>
-                    <span>{plan.Migrations.length || 0}</span>
-                  </Box>
-                </Flex>
-              </React.Fragment>
-            ),
-
-            props: {
-              isOpen: isOpenPrev || false,
-              ariaControls: 'migrations-history-expansion-table',
-            },
-          },
-          {
-            title: <span>{plan.MigPlan.spec.srcMigClusterRef.name}</span>,
-          },
-          {
-            title: <span>{plan.MigPlan.spec.destMigClusterRef.name}</span>,
-          },
-          {
-            title: <span>{migStorageName}</span>,
-          },
-          {
-            title: (
-              <Flex>
-                <Box m="0 5px 0 0">
-                  <DatabaseIcon />
-                </Box>
-                <Box m="auto 0 auto 0">
-                  <span>{pvCount}</span>
-                </Box>
-              </Flex>
-            ),
-          },
-          {
-            title: <PlanActions
-              plan={plan}
-              isLoading={isLoading}
-              isDeleting={isDeleting}
-              onPlanDelete={handleDeletePlanFn}
-            />,
-          },
-        ],
-      },
-      {
-        parent: parentIndex,
-        compoundParent: 1,
-        cells: [
-          {
-            title: (
-              <MigrationsTable
-                type="Migrations"
-                migrations={plan.Migrations}
-                id="migrations-history-expansion-table"
-              />
-            ),
-            props: { colSpan: 9, className: 'pf-m-no-padding' },
-          },
-        ],
-      },
-    ];
-  });
-
-  return flatten(newRows);
-};
-
-const PlanContent: React.FunctionComponent<IProps> = ({
-  planList,
-  isLoading,
-  isExpanded,
-  plansDisabled,
-  toggleOpen,
-}) => {
   const [currentRows, setCurrentRows] = useState([]);
-  const [isDeletingMap, setIsDeletingMap] = useState({});
-
-  const handlePlanDelete = (plan) => {
-    setIsDeletingMap({...isDeletingMap, [plan.MigPlan.metadata.name]: true});
-  };
+  const columns = [
+    'Name',
+    {
+      title: 'Migrations',
+      cellTransforms: [compoundExpand],
+    },
+    {
+      title: 'Source',
+    },
+    {
+      title: 'Target',
+    },
+    'Repository',
+    {
+      title: 'Persistent Volumes',
+      cellTransforms: [compoundExpand],
+    },
+    'Last Status',
+  ];
 
   useEffect(() => {
-    const newDeletingMap = planList.reduce((newMap, p) => {
-      newMap[p.MigPlan.metadata.name] = false;
-      return newMap;
-    }, {});
+    const mappedRows = planList.map((plan, planIndex) => {
+      const MigrationsIcon = styled(ServiceIcon)`
+          color: ${() => (plan.Migrations.length > 0 ? theme.colors.blue : theme.colors.black)};
+        `;
+      const parentIndex = planIndex * 2;
+      const planName = plan.MigPlan.metadata.name;
+      const planKey = `${planName}-${planIndex}`;
 
-    // Copy in deleting state from previous object to preserve anything
-    // that's still around and deleting
-    Object.keys(isDeletingMap).forEach(planName => {
-      newDeletingMap[planName] = planName in newDeletingMap && isDeletingMap[planName];
+      //check previous expanded value
+      let isOpenPrev = null;
+      if (currentRows.length > 0) {
+        const matchingIndex = currentRows.filter((row, i) => i === parentIndex);
+        if (matchingIndex[0] && matchingIndex[0].cells.length > 0) {
+          isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
+        }
+      }
+
+      const migStorageName = plan.MigPlan.spec.migStorageRef ?
+        plan.MigPlan.spec.migStorageRef.name : 'N/A';
+
+      const pvCount = plan.MigPlan.spec.persistentVolumes ?
+        plan.MigPlan.spec.persistentVolumes.length : 0;
+      return [
+        {
+          cells: [
+            {
+              title: (
+                <Flex>
+                  <Box m="0 5px 0 0">
+                    <PlanStatusIcon plan={plan} />
+                  </Box>
+                  <Box m="auto 0 auto 0">
+                    <span>{plan.MigPlan.metadata.name}</span>
+                  </Box>
+                </Flex>
+              ),
+
+              props: { component: 'th' },
+            },
+            {
+              title: (
+                <React.Fragment>
+                  <Flex>
+                    <Box m="0 5px 0 0" key={planKey + '-icon'}>
+                      <MigrationsIcon />
+                    </Box>
+                    <Box m="auto 0 auto 0" key={planKey + '-text'}>
+                      <span>{plan.Migrations.length || 0}</span>
+                    </Box>
+                  </Flex>
+                </React.Fragment>
+              ),
+
+              props: {
+                isOpen: isOpenPrev || false,
+                ariaControls: 'migrations-history-expansion-table',
+              },
+            },
+            {
+              title: <span>{plan.MigPlan.spec.srcMigClusterRef.name}</span>,
+            },
+            {
+              title: <span>{plan.MigPlan.spec.destMigClusterRef.name}</span>,
+            },
+            {
+              title: <span>{migStorageName}</span>,
+            },
+            {
+              title: (
+                <Flex>
+                  <Box m="0 5px 0 0">
+                    <DatabaseIcon />
+                  </Box>
+                  <Box m="auto 0 auto 0">
+                    <span>{pvCount}</span>
+                  </Box>
+                </Flex>
+              ),
+            },
+            {
+              title: <PlanActions plan={plan} />,
+            },
+          ],
+        },
+        {
+          parent: parentIndex,
+          compoundParent: 1,
+          cells: [
+            {
+              title: (
+                <MigrationsTable
+                  type="Migrations"
+                  migrations={plan.Migrations}
+                  id="migrations-history-expansion-table"
+                />
+              ),
+              props: { colSpan: 9, className: 'pf-m-no-padding' },
+            },
+          ],
+        },
+      ];
     });
-
-    const newRows = buildNewRows(
-      currentRows, planList, isLoading, newDeletingMap, handlePlanDelete,
-    );
-
-    setIsDeletingMap(newDeletingMap);
-    setCurrentRows(newRows);
+    setCurrentRows(flatten(mappedRows));
   }, [planList]);
 
-  const onExpand = (_event, rowIndex, colIndex, isOpen) => {
-    const newRows = buildNewRows(
-      currentRows, planList, isLoading, isDeletingMap, handlePlanDelete,
-    );
-
+  const onExpand = (rowIndex, colIndex, isOpen) => {
+    const rowsCopy = currentRows;
     if (!isOpen) {
       // close all expanded rows
-      newRows.forEach(row => {
+      rowsCopy.forEach(row => {
         //set all other expanded cells false in this row if we are expanding
         row.cells.forEach(cell => {
           if (cell.props) {
@@ -213,14 +174,13 @@ const PlanContent: React.FunctionComponent<IProps> = ({
         });
         row.isOpen = false;
       });
-      newRows[rowIndex].cells[colIndex].props.isOpen = true;
-      newRows[rowIndex].isOpen = true;
+      rowsCopy[rowIndex].cells[colIndex].props.isOpen = true;
+      rowsCopy[rowIndex].isOpen = true;
     } else {
-      newRows[rowIndex].cells[colIndex].props.isOpen = false;
-      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(cell => cell.props && cell.props.isOpen);
+      rowsCopy[rowIndex].cells[colIndex].props.isOpen = false;
+      rowsCopy[rowIndex].isOpen = rowsCopy[rowIndex].cells.some(cell => cell.props && cell.props.isOpen);
     }
-
-    setCurrentRows(newRows);
+    setCurrentRows(rowsCopy);
   };
 
   return (
@@ -255,5 +215,4 @@ const PlanContent: React.FunctionComponent<IProps> = ({
     </DataListContent>
   );
 };
-
 export default PlanContent;

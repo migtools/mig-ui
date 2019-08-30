@@ -11,7 +11,7 @@ import theme from '../../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
 
-const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
+const PlanActions = ({ plan }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -29,12 +29,10 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
     <DropdownItem
       // @ts-ignore
       onClick={() => {
-        onPlanDelete(plan);
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
       }}
       key="deletePlan"
-      isDisabled={isDeleting}
     >
       Delete
     </DropdownItem>
@@ -43,7 +41,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
   return (
     <Flex>
       <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} isDeleting={isDeleting} />
+        <PlanStatus plan={plan} />
       </Box>
       <Box mx={1}>
         <Button
@@ -53,9 +51,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
             hasErrorCondition ||
             hasRunningMigrations ||
             hasAttemptedMigration ||
-            finalMigrationComplete ||
-            isLoading ||
-            isDeleting
+            finalMigrationComplete
           }
           variant="primary"
           onClick={() => {
@@ -72,9 +68,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            finalMigrationComplete ||
-            isLoading ||
-            isDeleting
+            finalMigrationComplete
           }
           variant="primary"
           onClick={toggleOpen}
@@ -95,7 +89,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
         />
       </Box>
 
-      {isLoading && (
+      {/* {isLoading && (
         <Box
           css={css`
             height: 100%;
@@ -106,7 +100,7 @@ const PlanActions = ({ plan, isLoading, isDeleting, onPlanDelete }) => {
         >
           <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
         </Box>
-      )}
+      )} */}
     </Flex>
   );
 };
