@@ -72,11 +72,15 @@ function* patchPlanSaga(planValues) {
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
-    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const closedPlanSpecObj = {
+      spec: {
+        closed: true
+      }
+    };
     const patchPlanResponse = yield client.patch(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       getPlanRes.data.metadata.name,
-      updatedMigPlan
+      closedPlanSpecObj
     );
     yield put(PlanActions.updatePlanList(patchPlanResponse.data));
     yield put(PlanActions.planUpdateSuccess());
