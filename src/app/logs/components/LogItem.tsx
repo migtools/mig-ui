@@ -7,32 +7,30 @@ import 'react-table/react-table.css';
 
 const LogItem = ({ log }) => {
   const arrayOfLines = log.split(/\r?\n/);
-  const myData = arrayOfLines.map((item, index) => {
-    const rObj = {};
-    const slicedItem = item.slice(1, -1).replace(/['"]+/g, ' ');
-    rObj['value'] = slicedItem;
-    return rObj;
-  }
-  );
+  const myData = arrayOfLines.map((item, _) => ({value: item}));
   const columns = [{
-    Header: 'Value', accessor: 'value',
+    Header: '', accessor: 'value'
   }];
 
   const StyledBox = styled(Box)`
     height: 100%;
+    max-height: 100%;
     width: 100%;
   `;
+
   return (
     <StyledBox>
       <ReactTable
-        style
         filterable
         defaultFilterMethod={(filter, row) => {
           return row[filter.id].includes(filter.value);
         }
         }
+        defaultPageSize={200}
+        style={{ height: `${0.6 * window.innerHeight}px`, textAlign: 'left'}}
         columns={columns}
         data={myData}
+        className="-highlight"
       />
     </StyledBox>
   );
