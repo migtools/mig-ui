@@ -1,27 +1,41 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { TextArea } from '@patternfly/react-core';
-import theme from '../../../theme';
 import styled from '@emotion/styled';
 import { Box } from '@rebass/emotion';
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
 
 const LogItem = ({ log }) => {
+  const arrayOfLines = log.split(/\r?\n/);
+  const myData = arrayOfLines.map((item, index) => {
+    var rObj = {};
+    const slicedItem = item.slice(1, -1).replace(/['"]+/g, ' ');
+    rObj["value"] = slicedItem;
+    return rObj;
+  }
+  )
+  const columns = [{
+    Header: 'Value', accessor: 'value',
+  }]
 
-  const StyledTextArea = styled(TextArea)`
-    height: 100%;
-    width: 100%;
-    color: ${theme.colors.lightGray1};
-    background: #222;
-  `;
-
-  const SyledBox = styled(Box)`
+  const StyledBox = styled(Box)`
     height: 100%;
     width: 100%;
   `;
   return (
-    <SyledBox>
-      <StyledTextArea id="logArea" value={log} />
-    </SyledBox>
+    <StyledBox>
+      <ReactTable
+        style
+        filterable
+        defaultFilterMethod={(filter, row) => {
+          return row[filter.id].includes(filter.value)
+        }
+        }
+        columns={columns}
+        data={myData} // The data prop should be immutable and only change when you want to update the table
+      />
+
+    </StyledBox>
   );
 };
 
