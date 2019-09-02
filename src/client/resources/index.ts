@@ -5,8 +5,10 @@ export { ClusterRegistryResource, ClusterRegistryResourceKind } from './cluster_
 export {
   CoreNamespacedResource,
   CoreClusterResource,
+  ExtendedCoreNamespacedResource,
   CoreNamespacedResourceKind,
   CoreClusterResourceKind,
+  ExtendedCoreNamespacedResourceKind,
 } from './core';
 
 export {

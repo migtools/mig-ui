@@ -1,20 +1,27 @@
-import { all, takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind, CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
-import Q from 'q';
 import {
   AlertActions,
-  PollingActions
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
-
+import {
+  MigResource,
+  ExtendedCoreNamespacedResource,
+  CoreNamespacedResourceKind,
+  ExtendedCoreNamespacedResourceKind,
+  CoreClusterResource,
+  CoreClusterResourceKind,
+  CoreNamespacedResource,
+  MigResourceKind
+} from '../../../client/resources';
+import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
+import Q from 'q';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
-
 
 function* checkPVs(action) {
   const params = { ...action.params };

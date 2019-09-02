@@ -19,6 +19,9 @@ import {
   StorageContext,
 } from './duck/context';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
+import { StatusPollingInterval } from '../common/duck/sagas';
+import { PollingActions } from '../common/duck/actions';
+import { LogActions } from '../logs/duck';
 
 
 interface IProps {
@@ -110,7 +113,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   };
 
 
-
   return (
     <React.Fragment>
       <DataList aria-label="data-list-main-container">
@@ -137,8 +139,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
         </StorageContext.Provider>
         <PlanContext.Provider value={{
           handleStageTriggered,
-          handleDeletePlan
-        }}>
+          handleDeletePlan }}>
           <PlanDataListItem
             id={DataListItems.PlanList}
             planList={plansWithStatus}
