@@ -232,7 +232,9 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
       if (userPv) {
         v.selection.action = userPv.type;
-        v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+        if (userPv.type === "copy") {
+          v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+        }
       }
       return v;
     });

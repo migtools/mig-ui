@@ -42,7 +42,10 @@ const StorageClassTable = (props): any => {
     setStorageClassOptions(scs);
     // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
     const initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
-      assignedScs[pv.name] = scs.find(sc => sc.name === pv.selection.storageClass);
+      const suggestedStorageClass = scs.find(sc =>
+        sc.name === pv.selection.storageClass
+      );
+      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : scs[0];
       return assignedScs;
     }, {}) : {};
     setPvStorageClassAssignment(initialAssignedScs);
@@ -145,9 +148,10 @@ const StorageClassTable = (props): any => {
                     })}
                     name="storageClasses"
                     value={{
-                      label: currentStorageClass ? currentStorageClass.name + ':' + currentStorageClass.provisioner : null,
-                      value: currentStorageClass ? currentStorageClass.name : null,
+                      label: currentStorageClass ? currentStorageClass.name + ':' + currentStorageClass.provisioner : 'No storage class selected',
+                      value: currentStorageClass ? currentStorageClass.name : 'No storage class selected',
                     }}
+                    placeholder='Select a storage class...'
                   />
                 );
               },
