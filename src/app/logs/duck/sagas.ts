@@ -1,11 +1,8 @@
-import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import { select, call, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import {
-  AlertActions,
-} from '../../common/duck/actions';
+import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
-import planUtils from '../../plan/duck/utils';
 import {
   MigResource,
   ExtendedCoreNamespacedResource,
@@ -158,7 +155,7 @@ function* collectLogs(action) {
       resticPods.then(rp => cluster['restic'] = rp.data);
       return [veleroPods, resticPods];
     });
-    yield Q.allSettled(migrationPods.flat());
+    yield Q.allSettled(flatten(migrationPods));
 
     const logResults = yield remoteClusters.map(cluster => {
       const clusterType = cluster.isSource ? 'source' : 'target';
