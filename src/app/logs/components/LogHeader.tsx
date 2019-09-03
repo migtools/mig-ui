@@ -172,7 +172,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                   position={PopoverPosition.bottom}
                   bodyContent={
                     <Fragment>
-                      {migrations.length ?
+                      {(migrations && migrations.length) ?
                         <ReactJson src={migrations} enableClipboard={false} />
                         :
                         <EmptyState variant={EmptyStateVariant.small}>
