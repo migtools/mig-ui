@@ -104,7 +104,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           <TableBody />
         </Table>
       ) : (
-          <EmptyState variant="large">No migrations started</EmptyState>
+          <EmptyState variant="full">No migrations started</EmptyState>
         )}
     </React.Fragment>
   );
