@@ -145,8 +145,8 @@ const StorageClassTable = (props): any => {
                     })}
                     name="storageClasses"
                     value={{
-                      label: currentStorageClass.name + ':' + currentStorageClass.provisioner,
-                      value: currentStorageClass.name,
+                      label: currentStorageClass ? currentStorageClass.name + ':' + currentStorageClass.provisioner : null,
+                      value: currentStorageClass ? currentStorageClass.name : null,
                     }}
                   />
                 );
