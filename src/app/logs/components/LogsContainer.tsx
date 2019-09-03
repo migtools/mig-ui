@@ -7,13 +7,21 @@ import {
   FunctionComponent
 } from 'react';
 import { connect } from 'react-redux';
-import { Card } from '@patternfly/react-core';
 import { IMigrationLogs, ClusterKind, LogKind, ILog, IMigrationClusterLog } from '../duck/sagas';
 import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
 import { LogActions } from '../duck';
+import {
+  Card,
+  EmptyStateVariant,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
+  EmptyStateBody,
+} from '@patternfly/react-core';
+import { WarningTriangleIcon } from '@patternfly/react-icons';
 
 interface IProps {
   planName: string;
@@ -22,6 +30,7 @@ interface IProps {
   migrations: IMigMigration[];
   logs: IMigrationLogs;
   refreshLogs: (planName: string) => void;
+  logFetchErrorMsg: string;
 }
 
 const LogsContainer: FunctionComponent<IProps> = ({
@@ -30,7 +39,8 @@ const LogsContainer: FunctionComponent<IProps> = ({
   planName,
   plan,
   migrations,
-  logs
+  logs,
+  logFetchErrorMsg
 }) => {
   const [cluster, setCluster] = useState({
     label: 'host',
@@ -82,7 +92,19 @@ const LogsContainer: FunctionComponent<IProps> = ({
           .map((_, logPodIndex) =>
             downloadLogHandle(clName, logPodType, logPodIndex))));
   };
-
+  if (logFetchErrorMsg) {
+    return (
+      <EmptyState variant={EmptyStateVariant.small}>
+        <EmptyStateIcon icon={WarningTriangleIcon} />
+        <Title headingLevel="h5" size="sm">
+          Failed to fetch logs.
+        </Title>
+        <EmptyStateBody>
+          Please try your request again.
+        </EmptyStateBody>
+      </EmptyState>
+    )
+  }
   return (
     <Card>
       <LogHeader
@@ -119,6 +141,7 @@ export default connect(
     logs: state.logs.logs,
     migrations: state.logs.logs.migrations,
     isFetchingLogs: state.logs.isFetchingLogs,
+    logFetchErrorMsg: state.logs.logFetchErrorMsg,
   }),
   dispatch => ({
     refreshLogs: (planName) => dispatch(LogActions.logsFetchRequest(planName))

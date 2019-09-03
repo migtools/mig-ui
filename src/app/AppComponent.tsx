@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import HomeComponent from './home/HomeComponent';
 import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
@@ -19,6 +19,14 @@ import { Global, css } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
 import CertErrorComponent from './auth/CertErrorComponent';
+import { PollingContext } from './home/duck/context';
+import { StatusPollingInterval } from './common/duck/sagas';
+import { clusterOperations } from './cluster/duck';
+import { storageOperations } from './storage/duck';
+import { planOperations } from './plan/duck';
+import { ClusterActions } from './cluster/duck/actions';
+import { StorageActions } from './storage/duck/actions';
+import { PlanActions } from './plan/duck/actions';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -27,6 +35,16 @@ interface IProps {
   progressMessage: any;
   alertType: string;
   clearAlerts: () => void;
+  startPlanPolling: (params) => void;
+  stopPlanPolling: () => void;
+  startStoragePolling: (params) => void;
+  stopStoragePolling: () => void;
+  startClusterPolling: (params) => void;
+  stopClusterPolling: () => void;
+  updateClusters: (updatedClusters) => void;
+  updateStorages: (updatedStorages) => void;
+  updatePlans: (updatedPlans) => void;
+
 }
 const NotificationContainer = styled(Box)`
   position: fixed;
@@ -41,7 +59,84 @@ const AppComponent: React.SFC<IProps> = ({
   alertType,
   isLoggedIn,
   clearAlerts,
-}) => (
+  startPlanPolling,
+  stopPlanPolling,
+  startStoragePolling,
+  stopStoragePolling,
+  startClusterPolling,
+  stopClusterPolling,
+  updateClusters,
+  updateStorages,
+  updatePlans,
+}) => {
+  const handlePlanPoll = response => {
+    if (response && response.isSuccessful === true) {
+      updatePlans(response.updatedPlans);
+      return true;
+    }
+    return false;
+  };
+
+  const handleClusterPoll = response => {
+    if (response && response.isSuccessful === true) {
+      updateClusters(response.updatedClusters);
+      return true;
+    }
+    return false;
+  };
+
+  const handleStoragePoll = response => {
+    if (response && response.isSuccessful === true) {
+      updateStorages(response.updatedStorages);
+      return true;
+    }
+    return false;
+  };
+
+  const startDefaultPlanPolling = () => {
+    const planPollParams = {
+      asyncFetch: planOperations.fetchPlansGenerator,
+      callback: handlePlanPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startPlanPolling(planPollParams);
+  };
+
+  const startDefaultClusterPolling = () => {
+    const clusterPollParams = {
+      asyncFetch: clusterOperations.fetchClustersGenerator,
+      callback: handleClusterPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startClusterPolling(clusterPollParams);
+  };
+
+  const startDefaultStoragePolling = () => {
+    const storagePollParams = {
+      asyncFetch: storageOperations.fetchStorageGenerator,
+      callback: handleStoragePoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+    };
+    startStoragePolling(storagePollParams);
+  };
+
+  useEffect(() => {
+    startDefaultClusterPolling();
+    startDefaultStoragePolling();
+    startDefaultPlanPolling();
+
+  }, []);
+
+  return (
     <Flex flexDirection="column" width="100%">
       {progressMessage && (
         <NotificationContainer>
@@ -72,16 +167,36 @@ const AppComponent: React.SFC<IProps> = ({
       )}
 
       <Box>
-        <ThemeProvider theme={theme}>
-          <ConnectedRouter history={history}>
-            <Switch>
-              <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-              <PrivateRoute path="/logs/:planId" isLoggedIn={isLoggedIn} component={LogsComponent} />
-              <Route path="/login" component={LoginComponent} />
-              <Route path="/cert-error" component={CertErrorComponent} />
-            </Switch>
-          </ConnectedRouter>
-        </ThemeProvider>
+        <PollingContext.Provider value={{
+          startDefaultClusterPolling: () => startDefaultClusterPolling(),
+          startDefaultStoragePolling: () => startDefaultStoragePolling(),
+          startDefaultPlanPolling: () => startDefaultPlanPolling(),
+          stopClusterPolling: () => stopClusterPolling(),
+          stopStoragePolling: () => stopStoragePolling(),
+          stopPlanPolling: () => stopPlanPolling(),
+          startAllDefaultPolling: () => {
+            startDefaultClusterPolling();
+            startDefaultStoragePolling();
+            startDefaultPlanPolling();
+          },
+          stopAllPolling: () => {
+            stopClusterPolling();
+            stopStoragePolling();
+            stopPlanPolling();
+          }
+        }}>
+
+          <ThemeProvider theme={theme}>
+            <ConnectedRouter history={history}>
+              <Switch>
+                <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+                <PrivateRoute path="/logs/:planId" isLoggedIn={isLoggedIn} component={LogsComponent} />
+                <Route path="/login" component={LoginComponent} />
+                <Route path="/cert-error" component={CertErrorComponent} />
+              </Switch>
+            </ConnectedRouter>
+          </ThemeProvider>
+        </PollingContext.Provider>
 
       </Box>
       <Global
@@ -109,6 +224,7 @@ const AppComponent: React.SFC<IProps> = ({
       />
     </Flex>
   );
+}
 
 export default connect(
   state => ({
@@ -119,5 +235,14 @@ export default connect(
   }),
   dispatch => ({
     clearAlerts: () => dispatch(AlertActions.alertClear()),
+    startPlanPolling: params => dispatch(PlanActions.startPlanPolling(params)),
+    stopPlanPolling: () => dispatch(PlanActions.stopPlanPolling()),
+    startStoragePolling: params => dispatch(StorageActions.startStoragePolling(params)),
+    stopStoragePolling: () => dispatch(StorageActions.stopStoragePolling()),
+    startClusterPolling: params => dispatch(ClusterActions.startClusterPolling(params)),
+    stopClusterPolling: () => dispatch(ClusterActions.stopClusterPolling()),
+    updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
+    updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
+    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
   })
 )(AppComponent);
