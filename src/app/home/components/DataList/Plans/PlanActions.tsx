@@ -44,7 +44,6 @@ const PlanActions = ({ plan }) => {
     </DropdownItem>,
     <DropdownItem
       key="showLogs"
-      isDisabled={hasRunningMigrations}
       onClick={() => {
         setKebabIsOpen(false);
       }}
