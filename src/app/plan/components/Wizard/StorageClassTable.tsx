@@ -148,10 +148,12 @@ const StorageClassTable = (props): any => {
                     })}
                     name="storageClasses"
                     value={{
-                      label: currentStorageClass ? currentStorageClass.name + ':' + currentStorageClass.provisioner : 'No storage class selected',
-                      value: currentStorageClass ? currentStorageClass.name : 'No storage class selected',
+                      label: currentStorageClass ?
+                        currentStorageClass.name + ':' + currentStorageClass.provisioner : 'No storage class selected',
+                      value: currentStorageClass ?
+                        currentStorageClass.name : 'No storage class selected',
                     }}
-                    placeholder='Select a storage class...'
+                    placeholder="Select a storage class..."
                   />
                 );
               },
