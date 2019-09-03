@@ -7,6 +7,7 @@ import planReducer from './app/plan/duck';
 import { migMetaReducer } from './mig_meta';
 import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
+import logReducer from './app/logs/duck';
 
 const rootReducer = combineReducers({
   router: connectRouter(history),
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   cluster: clusterReducer,
   storage: storageReducer,
   plan: planReducer,
+  logs: logReducer,
   migMeta: migMetaReducer,
 });
 

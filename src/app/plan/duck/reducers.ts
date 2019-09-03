@@ -17,6 +17,7 @@ export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
   isFetchingPVResources: false,
+  isCheckingPlanStatus: false,
   isError: false,
   isFetching: false,
   migPlanList: [],

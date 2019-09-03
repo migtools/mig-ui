@@ -10,6 +10,7 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 import theme from '../../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
+import { Link } from 'react-router-dom';
 
 const PlanActions = ({ plan }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
@@ -40,7 +41,16 @@ const PlanActions = ({ plan }) => {
       }
     >
       Delete
-    </DropdownItem >
+    </DropdownItem>,
+    <DropdownItem
+      key="showLogs"
+      onClick={() => {
+        setKebabIsOpen(false);
+      }}
+    >
+      <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
+
+    </DropdownItem>,
   ];
 
   return (
@@ -95,6 +105,18 @@ const PlanActions = ({ plan }) => {
           dropdownItems={kebabDropdownItems}
         />
       </Box>
+      {hasRunningMigrations && (
+        <Box
+          css={css`
+            height: 100%;
+            text-align: center;
+            margin: auto 4px auto 4px;
+            width: 1em;
+          `}
+        >
+          <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
+        </Box>
+      )}
     </Flex>
   );
 };

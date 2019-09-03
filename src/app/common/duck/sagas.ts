@@ -1,14 +1,13 @@
 import { takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
-
 import {
   AlertActions,
   PollingActions,
   PollingActionTypes,
   AlertActionTypes
 } from '../../common/duck/actions';
-import { PlanActions, PlanActionTypes } from '../../plan/duck/actions';
-import { StorageActions, StorageActionTypes } from '../../storage/duck/actions';
-import { ClusterActions, ClusterActionTypes } from '../../cluster/duck/actions';
+import { PlanActionTypes } from '../../plan/duck/actions';
+import { StorageActionTypes } from '../../storage/duck/actions';
+import { ClusterActionTypes } from '../../cluster/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -112,6 +111,7 @@ function* watchAlerts() {
   yield takeLatest(AlertActionTypes.ALERT_ERROR_TIMEOUT, errorTimeoutSaga);
   yield takeLatest(AlertActionTypes.ALERT_SUCCESS_TIMEOUT, successTimeoutSaga);
 }
+
 export default {
   watchStoragePolling,
   watchClustersPolling,

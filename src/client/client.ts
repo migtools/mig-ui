@@ -1,16 +1,16 @@
 import { KubeResource } from './resources/common';
-import axios, { AxiosPromise, AxiosInstance } from 'axios';
+import axios, { AxiosPromise, AxiosInstance, ResponseType } from 'axios';
 import moment from 'moment';
 
 export type TokenExpiryHandler = (oldToken: object) => void;
 
 export interface IClusterClient {
-  list(resource: KubeResource): Promise<any>;
-  get(resource: KubeResource, name: string): Promise<any>;
-  put(resource: KubeResource, name: string, updatedObject: object): Promise<any>;
-  patch(resource: KubeResource, name: string, patch: object): Promise<any>;
-  create(resource: KubeResource, newObject: object): Promise<any>;
-  delete(resource: KubeResource, name: string): Promise<any>;
+  list(resource: KubeResource, params?: object): Promise<any>;
+  get(resource: KubeResource, name: string, params?: object): Promise<any>;
+  put(resource: KubeResource, name: string, updatedObject: object, params?: object): Promise<any>;
+  patch(resource: KubeResource, name: string, patch: object, params?: object): Promise<any>;
+  create(resource: KubeResource, newObject: object, params?: object): Promise<any>;
+  delete(resource: KubeResource, name: string, params?: object): Promise<any>;
   apiRoot: string;
   setTokenExpiryHandler: (TokenExpiryHandler, number) => void;
 }
@@ -31,7 +31,7 @@ export class ClusterClient {
   private tokenExpiryTime: number;
   private isOauth: boolean;
 
-  constructor(apiRoot: string, token: string, isOauth: boolean) {
+  constructor(apiRoot: string, token: string, isOauth: boolean, customResponseType: ResponseType = 'json') {
     this.apiRoot = apiRoot;
     this.token = token;
     this.isOauth = isOauth;
@@ -41,7 +41,8 @@ export class ClusterClient {
         Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/json',
       },
-      responseType: 'json',
+      transformResponse: undefined,
+      responseType: customResponseType,
     });
     this.patchRequester = axios.create({
       baseURL: this.apiRoot,
@@ -49,7 +50,7 @@ export class ClusterClient {
         Authorization: `Bearer ${this.token}`,
         'Content-Type': 'application/merge-patch+json',
       },
-      responseType: 'json',
+      responseType: customResponseType,
     });
   }
 
@@ -58,10 +59,10 @@ export class ClusterClient {
     this.tokenExpiryTime = tokenExpiryTime;
   }
 
-  public list = (resource: KubeResource): AxiosPromise<any> => {
+  public list = (resource: KubeResource, params?: object): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.requester.get(resource.listPath())
+      this.requester.get(resource.listPath(), { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {
@@ -72,10 +73,10 @@ export class ClusterClient {
         });
     });
   }
-  public get = (resource: KubeResource, name: string): AxiosPromise<any> => {
+  public get = (resource: KubeResource, name: string, params?: object): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.requester.get(resource.namedPath(name))
+      this.requester.get(resource.namedPath(name), { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {
@@ -86,10 +87,15 @@ export class ClusterClient {
         });
     });
   }
-  public put = (resource: KubeResource, name: string, updatedObject: object): AxiosPromise<any> => {
+  public put = (
+      resource: KubeResource,
+      name: string,
+      updatedObject: object,
+      params?: object
+    ): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.requester.put(resource.namedPath(name), updatedObject)
+      this.requester.put(resource.namedPath(name), updatedObject, { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {
@@ -100,10 +106,10 @@ export class ClusterClient {
         });
     });
   }
-  public patch = (resource: KubeResource, name: string, patch: object): AxiosPromise<any> => {
+  public patch = (resource: KubeResource, name: string, patch: object, params?: object): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.patchRequester.patch(resource.namedPath(name), patch)
+      this.patchRequester.patch(resource.namedPath(name), patch, { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {
@@ -114,10 +120,10 @@ export class ClusterClient {
         });
     });
   }
-  public create = (resource: KubeResource, newObject: object): AxiosPromise<any> => {
+  public create = (resource: KubeResource, newObject: object, params?: object): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.requester.post(resource.listPath(), newObject)
+      this.requester.post(resource.listPath(), newObject, { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {
@@ -128,10 +134,10 @@ export class ClusterClient {
         });
     });
   }
-  public delete = (resource: KubeResource, name: string): AxiosPromise<any> => {
+  public delete = (resource: KubeResource, name: string, params?: object): AxiosPromise<any> => {
     this.checkExpiry();
     return new Promise((resolve, reject) => {
-      this.requester.delete(resource.namedPath(name))
+      this.requester.delete(resource.namedPath(name), { params })
         .then(res => resolve(res))
         .catch(err => {
           if(err.response && err.response.status === 401 && this.isOauth) {

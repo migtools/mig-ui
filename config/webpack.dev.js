@@ -95,8 +95,15 @@ const webpackConfig = {
         use: 'ts-loader',
       },
       {
-        test: /\.css$/,
-        loaders: ['style-loader', 'css-loader'],
+        test: /\.s?[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
+          'sass-loader',
+        ],
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,

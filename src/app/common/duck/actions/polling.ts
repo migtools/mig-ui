@@ -15,5 +15,5 @@ const stopStatusPolling = () => ({
 
 export const PollingActions = {
   startStatusPolling,
-  stopStatusPolling
+  stopStatusPolling,
 };

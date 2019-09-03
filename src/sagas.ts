@@ -1,6 +1,7 @@
 import { all } from 'redux-saga/effects';
 import commonSagas from './app/common/duck/sagas';
 import planSagas from './app/plan/duck/sagas';
+import logSagas from './app/logs/duck/sagas';
 import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
 
@@ -18,6 +19,7 @@ export default function* rootSaga() {
     planSagas.watchClosedStatus(),
     planSagas.watchPlanStatus(),
     planSagas.watchGetPVResourcesRequest(),
+    logSagas.watchLogsPolling(),
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),

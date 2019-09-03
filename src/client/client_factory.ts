@@ -1,4 +1,5 @@
 import { ClusterClient, TokenExpiryHandler } from './client';
+import { ResponseType } from 'axios';
 
 export class ClientFactoryUnknownClusterError extends Error {
   constructor(clusterName: string) {
@@ -22,7 +23,7 @@ export class ClientFactoryMissingApiRoot extends Error {
 }
 
 export const ClientFactory = {
-  hostCluster: (state: any) => {
+  hostCluster: (state: any, customResponceType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -31,7 +32,7 @@ export const ClientFactory = {
     }
 
     const newClient = new ClusterClient(
-      state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/);
+      state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/, customResponceType);
 
     if(tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
@@ -39,9 +40,9 @@ export const ClientFactory = {
 
     return newClient;
   },
-  forCluster: (clusterName: string, state: any) => {
+  forCluster: (clusterName: string, state: any, customResponceType: ResponseType = 'json') => {
     const { clusterApi, accessToken } = getAuthForCluster(clusterName, state);
-    const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/);
+    const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/, customResponceType);
     return newClient;
   },
 };
