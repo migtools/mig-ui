@@ -103,7 +103,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
           Please try your request again.
         </EmptyStateBody>
       </EmptyState>
-    )
+    );
   }
   return (
     <Card>

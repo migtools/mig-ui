@@ -6,6 +6,7 @@ import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
 import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
+import RefreshRoute from './auth/RefreshRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
 import {
@@ -44,7 +45,7 @@ interface IProps {
   updateClusters: (updatedClusters) => void;
   updateStorages: (updatedStorages) => void;
   updatePlans: (updatedPlans) => void;
-
+  clusterList: any;
 }
 const NotificationContainer = styled(Box)`
   position: fixed;
@@ -68,6 +69,7 @@ const AppComponent: React.SFC<IProps> = ({
   updateClusters,
   updateStorages,
   updatePlans,
+  clusterList
 }) => {
   const handlePlanPoll = response => {
     if (response && response.isSuccessful === true) {
@@ -190,7 +192,11 @@ const AppComponent: React.SFC<IProps> = ({
             <ConnectedRouter history={history}>
               <Switch>
                 <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-                <PrivateRoute path="/logs/:planId" isLoggedIn={isLoggedIn} component={LogsComponent} />
+                <RefreshRoute exact path="/logs/:planId"
+                  clusterList={clusterList}
+                  isLoggedIn={isLoggedIn}
+                  component={LogsComponent}
+                />
                 <Route path="/login" component={LoginComponent} />
                 <Route path="/cert-error" component={CertErrorComponent} />
               </Switch>
@@ -224,7 +230,7 @@ const AppComponent: React.SFC<IProps> = ({
       />
     </Flex>
   );
-}
+};
 
 export default connect(
   state => ({
@@ -232,6 +238,7 @@ export default connect(
     errorMessage: state.common.errorText,
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
+    clusterList: state.cluster.clusterList
   }),
   dispatch => ({
     clearAlerts: () => dispatch(AlertActions.alertClear()),
@@ -244,5 +251,6 @@ export default connect(
     updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
     updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
+
   })
 )(AppComponent);
