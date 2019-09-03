@@ -21,6 +21,7 @@ const StyledPageHeader = styled(PageHeader)`
       text-decoration: none;
       .pf-c-page__header-brand-link {
         text-decoration: none;
+        cursor: default;
       }
     `;
 
