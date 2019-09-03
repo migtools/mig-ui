@@ -1,15 +1,13 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Title } from '@patternfly/react-core';
+import { Card, CardHeader, CardBody, CardFooter } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import CardStatus from './Status/CardStatus';
 import MigrationStatus from './Status/MigrationStatus';
-import FooterText from './FooterText';
 import HeaderText from './HeaderText';
-import { css } from '@emotion/core';
-import { Flex, Box, Text } from '@rebass/emotion';
+import FooterText from './FooterText';
 import StatusIcon from '../../../common/components/StatusIcon';
 
 interface IState {
@@ -46,32 +44,26 @@ class DashboardCard extends Component<IProps, IState> {
     const { isOpen } = this.state;
     if (isError) {
       return (
-        <Card style={{ minHeight: '100%', height: '16em' }}>
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-              margin: auto;
-            `}
-          >
-            <Box flex="1" m="auto">
-              <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
+        <Card>
+          <CardBody>
+            <div className="pf-l-flex pf-u-h-100 pf-m-align-items-center pf-m-justify-content-center">
+              <div className="pf-l-flex__item">
                 <StatusIcon isReady={false} />
+              </div>
+              <div className="pf-l-flex__item">
                 Failed to fetch
-              </Text>
-            </Box>
-          </Flex>
+              </div>
+            </div>
+          </CardBody>
         </Card>
       );
     }
     return (
-      <Card style={{ minHeight: '100%', height: '16em' }}>
+      <Card>
         {dataList && !isFetching ? (
           <React.Fragment>
             <CardHeader>
-              <Title size="md">
-                <HeaderText type={type} dataList={dataList} />
-              </Title>
+              <HeaderText type={type} dataList={dataList} />
             </CardHeader>
             <CardBody>
               {type === 'plans' ? (
@@ -85,18 +77,16 @@ class DashboardCard extends Component<IProps, IState> {
             </CardFooter>
           </React.Fragment>
         ) : (
-            <Flex
-              css={css`
-              height: 100%;
-              text-align: center;
-              margin: auto;
-            `}
-            >
-              <Box flex="1" m="auto">
-                <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-                <Text fontSize={[2, 3, 4]}> Loading </Text>
-              </Box>
-            </Flex>
+          <CardBody>
+            <div className="pf-l-flex pf-u-h-100 pf-m-align-items-center pf-m-justify-content-center pf-m-column pf-m-space-items-xs">
+              <div className="pf-l-flex__item">
+                <Loader type="ThreeDots" color={theme.colors.navy} height="40" width="60" />
+              </div>
+              <div className="pf-l-flex__item">
+                Loading...
+              </div>
+            </div>
+          </CardBody>
           )}
       </Card>
     );

@@ -24,30 +24,30 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   }
 
   return (
-    <React.Fragment>
-      <Grid>
-        <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
+    <dl className="pf-c-widget-description-list pf-m-inline">
+      <dt>
+        <span className="pf-c-widget-description-list__icon">
           <StatusIcon isReady={true} />
-        </GridItem>
-        <GridItem span={1} style={{ fontSize: '28px' }}>
+        </span>
+        <span className="pf-c-widget-description-list__num">
           {successList.length}
-        </GridItem>
-        <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
-          Connected
-        </GridItem>
-      </Grid>
-      <Grid>
-        <GridItem span={1} style={{ textAlign: 'center', margin: 'auto' }}>
+        </span>
+      </dt>
+      <dd>
+        Connected
+      </dd>
+      <dt>
+        <span className="pf-c-widget-description-list__icon">
           <StatusIcon isReady={false} />
-        </GridItem>
-        <GridItem span={1} style={{ fontSize: '28px' }}>
+        </span>
+        <span className="pf-c-widget-description-list__num">
           {failureList.length}
-        </GridItem>
-        <GridItem span={10} style={{ margin: 'auto 0 auto 0' }}>
-          Connection failed
-        </GridItem>
-      </Grid>
-    </React.Fragment>
+        </span>
+      </dt>
+      <dd>
+        Connection failed
+      </dd>
+    </dl>
   );
 };
 
