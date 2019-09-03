@@ -36,17 +36,13 @@ const StorageContent = ({
           })}
         </DataList>
       ) : (
-        <Flex alignItems="center" justifyContent="center">
-          <Box>
-            <EmptyState variant="large">
-              <EmptyStateIcon icon={AddCircleOIcon} />
-              <Title size="lg">Add replication repositories for the migration</Title>
-              <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
-                Add repository
-              </Button>
-            </EmptyState>
-          </Box>
-        </Flex>
+        <EmptyState variant="full">
+          <EmptyStateIcon icon={AddCircleOIcon} />
+          <Title size="lg">Add replication repositories for the migration</Title>
+          <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
+            Add repository
+          </Button>
+        </EmptyState>
       )}
       <AddEditStorageModal
         isOpen={isOpen}
