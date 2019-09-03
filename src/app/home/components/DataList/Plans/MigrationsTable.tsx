@@ -73,7 +73,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       ];
       return {
         cells: rowCells
-      }
+      };
     });
     setCurrentRows(mappedRows);
 
