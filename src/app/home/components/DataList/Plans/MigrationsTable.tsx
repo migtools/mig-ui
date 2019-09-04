@@ -39,7 +39,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       const type = migration.spec.stage ? 'Stage' : 'Migration';
       const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
         (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
-      return [
+      const rowCells = [
         {
           title: (
             <Flex>
@@ -71,6 +71,9 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           ),
         },
       ];
+      return {
+        cells: rowCells
+      };
     });
     setCurrentRows(mappedRows);
 
