@@ -46,26 +46,20 @@ class DashboardCard extends Component<IProps, IState> {
     const { isOpen } = this.state;
     if (isError) {
       return (
-        <Card style={{ minHeight: '100%', height: '16em' }}>
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-              margin: auto;
-            `}
-          >
-            <Box flex="1" m="auto">
-              <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
-                <StatusIcon isReady={false} />
-                Failed to fetch
-              </Text>
-            </Box>
-          </Flex>
+        <Card>
+          <div className="pf-l-flex">
+            <div className="pf-l-flex__item">
+              <StatusIcon isReady={false} />
+            </div>
+            <div className="pf-l-flex__item">
+              Failed to fetch
+            </div>
+          </div>
         </Card>
       );
     }
     return (
-      <Card style={{ minHeight: '100%', height: '16em' }}>
+      <Card>
         {dataList && !isFetching ? (
           <React.Fragment>
             <CardHeader>

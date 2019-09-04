@@ -3,7 +3,7 @@ node_js:
   - "10"
 cache: yarn
 git:
-  depth: 3
+  depth: 5
 jobs:
   include:
     - script: cypress install && yarn ci

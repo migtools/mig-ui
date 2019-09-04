@@ -11,8 +11,8 @@ const { persistor, store } = configureStore();
 import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
 import { setTokenExpiryHandler } from './client/client_factory';
-
 import Loader from 'react-loader-spinner';
+import './app.scss';
 
 const onBeforeLift = () => {
   // take some action before the gate lifts

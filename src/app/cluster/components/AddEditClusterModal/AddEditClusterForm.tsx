@@ -131,6 +131,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Button>
           <Tooltip
             position={TooltipPosition.top}
+            className="pf-c-icon pf-c-info"
             content={<div>
               Add or edit your cluster details
             </div>}><OutlinedQuestionCircleIcon />
@@ -146,6 +147,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Button>
           <Tooltip
             position={TooltipPosition.top}
+            className="pf-c-icon pf-c-info"
             content={<div>
               Re-check your cluster's connection state
             </div>}><OutlinedQuestionCircleIcon />

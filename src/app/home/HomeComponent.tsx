@@ -109,3 +109,4 @@ export default connect(
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
   })
 )(HomeComponent);
+

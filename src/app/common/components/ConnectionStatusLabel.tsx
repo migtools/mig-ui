@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
-import { Flex, Box, Text } from '@rebass/emotion';
-
 import Loader from 'react-loader-spinner';
 import {
   CheckCircleIcon,
@@ -28,7 +26,12 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       }
       case AddEditState.Fetching: {
         const WrappedLoader = () => (
-          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />
+          <Loader
+            type="RevolvingDot"
+            color={theme.colors.medGray3}
+            height="1em"
+            width="1em"
+          />
         );
 
         return styled(WrappedLoader)`
@@ -36,18 +39,31 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
         `;
       }
       case AddEditState.Critical: {
-        return styled(ExclamationCircleIcon)`
-          color: ${theme.colors.statusRed};
-        `;
+        const CriticalIcon = () => (
+          <span className="pf-c-icon pf-m-danger">
+            <ExclamationCircleIcon />
+          </span>
+        );
+
+        return CriticalIcon;
       }
       case AddEditState.Ready: {
-        return styled(CheckCircleIcon)`
-          color: ${theme.colors.statusGreen};
-        `;
+        const ReadyIcon = () => (
+          <span className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+        );
+
+        return ReadyIcon;
       }
       case AddEditState.Watching: {
         const WrappedLoader = () => (
-          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />
+          <Loader
+            type="RevolvingDot"
+            color={theme.colors.medGray3}
+            height="1em"
+            width="1em"
+          />
         );
 
         return styled(WrappedLoader)`
@@ -55,28 +71,36 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
         `;
       }
       case AddEditState.TimedOut: {
-        return styled(ExclamationCircleIcon)`
-          color: ${theme.colors.statusRed};
-        `;
+        const TimedOutIcon = () => (
+          <span className="pf-c-icon pf-m-danger">
+            <ExclamationCircleIcon />
+          </span>
+        );
+
+        return TimedOutIcon;
       }
       default: {
-        return styled(OutlinedCircleIcon)`
-          color: ${theme.colors.blue};
-        `;
+        const DefaultIcon = () => (
+          <span className="pf-c-icon pf-m-info">
+            <OutlinedCircleIcon />
+          </span>
+        );
+
+        return DefaultIcon;
       }
     }
   };
 
   const StatusIcon: any = getStatusIcon(status);
   return (
-    <Flex>
-      <Box>
+    <div className="pf-l-flex">
+      <div className="pf-l-flex__item">
         <StatusIcon />
-      </Box>
-      <Box>
-        <Text m="0 0 0 1em">{statusText}</Text>
-      </Box>
-    </Flex>
+      </div>
+      <div className="pf-l-flex__item">
+        {statusText}
+      </div>
+    </div>
   );
 };
 
