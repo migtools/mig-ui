@@ -78,7 +78,8 @@ class DashboardCard extends Component<IProps, IState> {
           </React.Fragment>
         ) : (
           <CardBody>
-            <div className="pf-l-flex pf-u-h-100 pf-m-align-items-center pf-m-justify-content-center pf-m-column pf-m-space-items-xs">
+            <div className="pf-l-flex pf-u-h-100 pf-m-align-items-center
+            pf-m-justify-content-center pf-m-column pf-m-space-items-xs">
               <div className="pf-l-flex__item">
                 <Loader type="ThreeDots" color={theme.colors.navy} height="40" width="60" />
               </div>
