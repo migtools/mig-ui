@@ -1,11 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
+  DataListAction,
   DataListItem,
   DataListCell,
   DataListItemCells,
   DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { LinkIcon } from '@patternfly/react-icons';
@@ -55,6 +60,33 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
     toggleIsAddEditOpen();
   };
 
+  const [kebabIsOpen, setKebabIsOpen] = useState(false);
+
+  const kebabDropdownItems = [
+    <DropdownItem
+      // @ts-ignore
+      onClick={() => {
+        setKebabIsOpen(false);
+        editCluster();
+      }}
+      isDisabled={isHostCluster}
+      key="editCluster"
+    >
+      Edit
+    </DropdownItem>,
+    <DropdownItem
+      // @ts-ignore
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      isDisabled={isHostCluster}
+      key="removeCluster"
+    >
+    Remove
+  </DropdownItem>,
+  ];
+
   return (
     <DataListItem key={clusterIndex} aria-labelledby="cluster-item">
       <DataListItemRow>
@@ -87,42 +119,35 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="actions" width={2}>
-              <Flex justifyContent="flex-end">
-                <Box mx={1}>
-                  <Button
-                    onClick={editCluster}
-                    variant="secondary"
-                    isDisabled={isHostCluster}
-                  >
-                    Edit
-                  </Button>
-                  <AddEditClusterModal
-                    isOpen={isAddEditOpen}
-                    onHandleClose={toggleIsAddEditOpen}
-                    initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
-                  />
-                </Box>
-                <Box mx={1}>
-                  <Button
-                    onClick={toggleConfirmOpen}
-                    variant="danger"
-                    isDisabled={isHostCluster}
-                    key="remove-action"
-                  >
-                    Remove
-                  </Button>
-                  <ConfirmModal
-                    message={removeMessage}
-                    isOpen={isConfirmOpen}
-                    onHandleClose={handleRemoveCluster}
-                    id="confirm-cluster-removal"
-                  />
-                </Box>
-              </Flex>
-            </DataListCell>,
           ]}
-        />
+        />,
+        <DataListAction
+          aria-labelledby="storage-item storage-item-actions-dropdown"
+          id="storage-item-actions-dropdown"
+          aria-label="Actions"
+        >
+          <Dropdown
+            toggle={<KebabToggle
+              onToggle={() => setKebabIsOpen(!kebabIsOpen)}
+            />}
+            isOpen={kebabIsOpen}
+            isPlain
+            dropdownItems={kebabDropdownItems}
+            position={DropdownPosition.right}
+          />
+
+          <AddEditClusterModal
+            isOpen={isAddEditOpen}
+            onHandleClose={toggleIsAddEditOpen}
+            initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
+          />
+          <ConfirmModal
+            message={removeMessage}
+            isOpen={isConfirmOpen}
+            onHandleClose={handleRemoveCluster}
+            id="confirm-cluster-removal"
+          />
+        </DataListAction>,
       </DataListItemRow>
     </DataListItem>
   );
