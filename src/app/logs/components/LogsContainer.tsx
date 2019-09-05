@@ -12,7 +12,6 @@ import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
-import { LogActions } from '../duck';
 import {
   Card,
   EmptyStateVariant,
@@ -30,12 +29,14 @@ interface IProps {
   migrations: IMigMigration[];
   logs: IMigrationLogs;
   refreshLogs: (planName: string) => void;
+  stopPolling: () => void;
   logFetchErrorMsg: string;
 }
 
 const LogsContainer: FunctionComponent<IProps> = ({
   isFetchingLogs,
   refreshLogs,
+  stopPolling,
   planName,
   plan,
   migrations,
@@ -57,6 +58,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
   const [log, setLog] = useState('');
 
   useEffect(() => {
+    stopPolling();
     refreshLogs(planName);
   }, []);
 
@@ -143,7 +145,5 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
     logFetchErrorMsg: state.logs.logFetchErrorMsg,
   }),
-  dispatch => ({
-    refreshLogs: (planName) => dispatch(LogActions.logsFetchRequest(planName))
-  })
+  null,
 )(LogsContainer);
