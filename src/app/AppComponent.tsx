@@ -131,13 +131,6 @@ const AppComponent: React.SFC<IProps> = ({
     startStoragePolling(storagePollParams);
   };
 
-  useEffect(() => {
-    startDefaultClusterPolling();
-    startDefaultStoragePolling();
-    startDefaultPlanPolling();
-
-  }, []);
-
   return (
     <Flex flexDirection="column" width="100%">
       {progressMessage && (

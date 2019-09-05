@@ -1,0 +1,45 @@
+@import '@patternfly/patternfly/sass-utilities/_all.scss';
+@import '@patternfly/patternfly/utilities/Sizing/sizing.scss';
+@import '@patternfly/patternfly/utilities/Spacing/spacing.scss';
+@import '@patternfly/patternfly/layouts/Flex/flex.scss';
+@import './widget-description-list';
+@import './icon';
+
+#root {
+  height: 100vh;
+}
+
+.pf-c-brand {
+  width: 100%;
+
+  @media screen and (min-width: $pf-global--breakpoint--md) {
+    width: 450px;
+  }
+}
+
+.pf-l-grid .pf-c-card {
+  height: 100%;
+}
+
+// shouldn't have to do this, not sure why hidden/visible isn't working
+$mig-ui-breakpoint-list: build-breakpoint-map("base", "sm", "md", "lg", "xl", "2xl", "3xl");
+
+.pf-c-data-list {
+  @each $breakpoint, $breakpoint-value in $mig-ui-breakpoint-list {
+    $breakpoint-name: if($breakpoint != "base", -on-#{$breakpoint}, "");
+
+    @include pf-apply-breakpoint($breakpoint, $mig-ui-breakpoint-list) {
+      // Hide
+      .pf-m-hidden#{$breakpoint-name} {
+        visibility: hidden;
+        display: none;
+      }
+
+      .pf-m-visible#{$breakpoint-name} {
+        visibility: visible;
+        display: flex;
+      }
+    }
+  }
+}
+
