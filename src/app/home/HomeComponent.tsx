@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import {
@@ -13,6 +13,7 @@ import DashboardCard from './components/Card/DashboardCard';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
+import { PollingContext } from '../home/duck/context';
 
 interface IProps {
   allClusters: any[];
@@ -40,6 +41,11 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     isPlanError,
     planStatusCounts
   } = props;
+
+  const pollingContext = useContext(PollingContext);
+  useEffect(() => {
+    pollingContext.startAllDefaultPolling();
+  }, []);
 
 
   return (
