@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
-import { Flex, Box, Text } from '@rebass/emotion';
 import {
+  Card,
   Page,
   PageSection,
   Grid,
@@ -74,7 +74,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     <Page header={HeaderComponent}>
       <PageSection>
         <Grid gutter="md">
-          <GridItem span={4}>
+          <GridItem md={6} lg={4}>
             <DashboardCard
               type="clusters"
               title="Clusters"
@@ -85,7 +85,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
 
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem md={6} lg={4}>
             <DashboardCard
               title="Replication Repositories"
               type="repositories"
@@ -95,7 +95,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               expandDetails={() => handleExpand(DataListItems.StorageList)}
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem md={6} lg={4}>
             <DashboardCard
               type="plans"
               title="Migration Plans"
@@ -106,15 +106,12 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               expandDetails={() => handleExpand(DataListItems.PlanList)}
             />
           </GridItem>
+          <GridItem span={12}>
+            <Card>
+              <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
+            </Card>
+          </GridItem>
         </Grid>
-      </PageSection>
-      <PageSection>
-        <Flex justifyContent="center">
-          <Box flex="0 0 100%">
-            <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
-
-          </Box>
-        </Flex>
       </PageSection>
       <PageSection>
         {/* <TODO: footer content */}
