@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Badge,
   Button,
   DataListItem,
   DataListToggle,
@@ -37,7 +38,15 @@ const PlanDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="plan-item" key="plans">
-                <span id="name">Plans</span>
+                <div className="pf-l-flex">
+                  <div className="pf-l-flex__item">
+                    <span id="plans">Plans</span>
+                  </div>
+                  <div className="pf-l-flex__item">
+                    <Badge isRead>7</Badge>
+                  </div>
+                </div>
+
               </DataListCell>,
             ]}
           />

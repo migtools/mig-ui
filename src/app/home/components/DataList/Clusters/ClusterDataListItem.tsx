@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Badge,
   Button,
   DataListItem,
   DataListCell,
@@ -35,7 +36,14 @@ const ClusterDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="cluster-item" key="clusters">
-                <span id="name">Clusters</span>
+                <div className="pf-l-flex">
+                  <div className="pf-l-flex__item">
+                    <span id="clusters">Clusters</span>
+                  </div>
+                  <div className="pf-l-flex__item">
+                    <Badge isRead>7</Badge>
+                  </div>
+                </div>
               </DataListCell>,
             ]}
           />
