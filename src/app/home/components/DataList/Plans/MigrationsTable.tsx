@@ -44,11 +44,11 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       const rowCells = [
         {
           title: (
-            <div className='pf-l-flex'>
-              <div className='pf-l-flex__item'>
+            <div className="pf-l-flex">
+              <div className="pf-l-flex__item">
                 <StatusIcon isReady={!migration.tableStatus.isFailed} />
               </div>
-              <div className='pf-l-flex__item'>
+              <div className="pf-l-flex__item">
                 {type}
               </div>
             </div>
