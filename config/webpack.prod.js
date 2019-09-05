@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+//devtool: 'source-map',
 const config = {
   entry: './src/index.tsx',
   output: {
@@ -11,7 +12,6 @@ const config = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
