@@ -22,6 +22,7 @@ import {
   EmptyStateBody,
 } from '@patternfly/react-core';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
+import { PollingContext } from '../../home/duck/context';
 
 interface IProps {
   planName: string;
@@ -55,9 +56,11 @@ const LogsContainer: FunctionComponent<IProps> = ({
     value: -1
   });
   const [log, setLog] = useState('');
+  const pollingContext = useContext(PollingContext);
 
   useEffect(() => {
     refreshLogs(planName);
+    pollingContext.stopAllPolling();
   }, []);
 
   const downloadLogHandle = (clusterType, podLogType, logIndex) => {
