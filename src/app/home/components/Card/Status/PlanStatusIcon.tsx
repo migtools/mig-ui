@@ -33,9 +33,13 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
       />
     );
   } else if (hasSucceededMigration || hasSucceededStage) {
-    return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
+    return (
+      <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>
+    );
   } else {
-    return <span className="pf-c-icon pf-m-info"><OutlinedCircleIcon /></span>;
+    return (
+      <span className="pf-c-icon pf-m-info"><OutlinedCircleIcon /></span>
+    );
   }
 };
 
