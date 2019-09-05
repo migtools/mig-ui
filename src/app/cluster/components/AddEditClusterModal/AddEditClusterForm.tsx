@@ -39,7 +39,9 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 // a cluster object exist, but have no initial values (user adds new cluster, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 const valuesHaveUpdate = (values, currentCluster) => {
-  if (!currentCluster) { return true; }
+  if (!currentCluster || currentCluster.MigCluster.spec.isHostCluster) {
+    return true;
+  }
 
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
