@@ -181,7 +181,6 @@ function* updateClusterRequest(action) {
 
   const updatePromises = [];
   if (urlUpdated) {
-    // const newClusterReg = update(clusterValues.url);
     const urlUpdatePatch = updateMigClusterUrl(clusterValues.url);
     const migClusterResource = new MigResource(
       MigResourceKind.MigCluster, migMeta.namespace);
