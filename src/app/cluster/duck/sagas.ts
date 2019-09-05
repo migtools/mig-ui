@@ -3,17 +3,14 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import {
-  ClusterRegistryResource,
-  ClusterRegistryResourceKind,
   CoreNamespacedResource,
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
 import {
-  createClusterRegistryObj,
   createTokenSecret,
   createMigCluster,
-  updateClusterRegistryObj,
   updateTokenSecret,
+  updateMigClusterUrl,
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
@@ -38,11 +35,6 @@ function* addClusterRequest(action) {
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.hostCluster(state);
 
-  const clusterReg = createClusterRegistryObj(
-    clusterValues.name,
-    migMeta.namespace,
-    clusterValues.url
-  );
   const tokenSecret = createTokenSecret(
     clusterValues.name,
     migMeta.configNamespace,
@@ -51,14 +43,10 @@ function* addClusterRequest(action) {
   const migCluster = createMigCluster(
     clusterValues.name,
     migMeta.namespace,
-    clusterReg,
+    clusterValues.url,
     tokenSecret
   );
 
-  const clusterRegResource = new ClusterRegistryResource(
-    ClusterRegistryResourceKind.Cluster,
-    migMeta.namespace
-  );
   const secretResource = new CoreNamespacedResource(
     CoreNamespacedResourceKind.Secret,
     migMeta.configNamespace
@@ -68,7 +56,6 @@ function* addClusterRequest(action) {
   // Ensure that none of objects that make up a cluster already exist
   try {
     const getResults = yield Q.allSettled([
-      client.get(clusterRegResource, clusterReg.metadata.name),
       client.get(secretResource, tokenSecret.metadata.name),
       client.get(migClusterResource, migCluster.metadata.name),
     ]);
@@ -100,7 +87,6 @@ function* addClusterRequest(action) {
   // so the clusters are created, or fail atomically
   try {
     const clusterAddResults = yield Q.allSettled([
-      client.create(clusterRegResource, clusterReg),
       client.create(secretResource, tokenSecret),
       client.create(migClusterResource, migCluster),
     ]);
@@ -115,7 +101,6 @@ function* addClusterRequest(action) {
 
     if(isRollbackRequired) {
       const kindToResourceMap = {
-        Cluster: clusterRegResource,
         MigCluster: migClusterResource,
         Secret: secretResource,
       };
@@ -182,7 +167,7 @@ function* updateClusterRequest(action) {
     return c.MigCluster.metadata.name === clusterValues.name;
   });
 
-  const currentUrl = currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const currentUrl = currentCluster.MigCluster.spec.url;
   const urlUpdated = clusterValues.url !== currentUrl;
 
   // NOTE: Need to decode the b64 token
@@ -196,14 +181,14 @@ function* updateClusterRequest(action) {
 
   const updatePromises = [];
   if (urlUpdated) {
-    const newClusterReg = updateClusterRegistryObj(clusterValues.url);
-    const clusterRegResource = new ClusterRegistryResource(
-      ClusterRegistryResourceKind.Cluster,
-      migMeta.namespace,
-    );
+    // const newClusterReg = update(clusterValues.url);
+    const urlUpdatePatch = updateMigClusterUrl(clusterValues.url);
+    const migClusterResource = new MigResource(
+      MigResourceKind.MigCluster, migMeta.namespace);
+
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
-      clusterRegResource, clusterValues.name, newClusterReg));
+      migClusterResource, clusterValues.name, urlUpdatePatch));
   }
 
   if (tokenUpdated) {

@@ -22,7 +22,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
   }
   const clusterUrl = cluster.MigCluster.spec.isHostCluster
     ? migMeta.clusterApi
-    : cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+    : cluster.MigCluster.spec.url;
 
   const clusterSvcToken =
     !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.saToken

@@ -57,7 +57,7 @@ function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
   if (!cluster) {
     throw new ClientFactoryUnknownClusterError(clusterName);
   }
-  const clusterApi = cluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const clusterApi = cluster.MigCluster.spec.url;
   const accessToken = atob(cluster.Secret.data.token || cluster.Secret.data.saToken);
 
   return { clusterApi, accessToken };

@@ -42,8 +42,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
   if (!currentCluster) { return true; }
 
   const rawToken = atob(currentCluster.Secret.data.saToken);
-  const existingEndpoint =
-    currentCluster.Cluster.spec.kubernetesApiEndpoints.serverEndpoints[0].serverAddress;
+  const existingEndpoint = currentCluster.MigCluster.spec.url;
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
     values.token !== rawToken;
