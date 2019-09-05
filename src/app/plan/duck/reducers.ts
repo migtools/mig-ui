@@ -85,7 +85,6 @@ export const addPlanSuccess =
     return {
       ...state,
       migPlanList: [...state.migPlanList, newPlan],
-      currentPlan: newPlan
     };
   };
 
@@ -93,7 +92,6 @@ export const addPlanFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanFailure>) => {
     return {
       ...state,
-      currentPlan: null
     };
   };
 
@@ -101,7 +99,6 @@ export const addPlanRequest =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
     return {
       ...state,
-      currentPlan: null
     };
   };
 

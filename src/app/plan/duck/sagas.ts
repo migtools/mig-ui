@@ -159,7 +159,28 @@ function* checkClosedStatus(action) {
     yield delay(PollingInterval);
   }
 }
-
+const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
+  const corePlan = (plan) => {
+    const { metadata } = plan;
+    if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+      delete metadata.annotations;
+      delete metadata.generation;
+      delete metadata.resourceVersion;
+    }
+    if (plan.status) {
+      for (let i = 0; plan.status.conditions.length > i; i++) {
+        delete plan.status.conditions[i].lastTransitionTime;
+      }
+    }
+  };
+  const currMigPlanCore = corePlan(currMigPlan);
+  const prevMigPlanCore = corePlan(prevMigPlan);
+  if (JSON.stringify(currMigPlanCore) !== JSON.stringify(prevMigPlanCore)) {
+    return true;
+  } else {
+    return false;
+  }
+};
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
   let tries = 0;
@@ -169,15 +190,21 @@ function* checkPlanStatus(action) {
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
-      const MigPlan = getPlanResponse.data;
-      yield put(PlanActions.setCurrentPlan(MigPlan));
+      const updatedPlan = getPlanResponse.data;
 
-      if (MigPlan.status && MigPlan.status.conditions) {
-        const hasReadyCondition = !!MigPlan.status.conditions.some(c => c.type === 'Ready');
-        const hasCriticalCondition = !!MigPlan.status.conditions.some(cond => {
+      //diff current plan before setting
+      const state = yield select();
+      const { currentPlan } = state.plan;
+      if (!currentPlan || isUpdatedPlan(updatedPlan, currentPlan)) {
+        yield put(PlanActions.setCurrentPlan(updatedPlan));
+      }
+
+      if (updatedPlan.status && updatedPlan.status.conditions) {
+        const hasReadyCondition = !!updatedPlan.status.conditions.some(c => c.type === 'Ready');
+        const hasCriticalCondition = !!updatedPlan.status.conditions.some(cond => {
           return cond.category === 'Critical';
         });
-        const hasConflictCondition = !!MigPlan.status.conditions.some(cond => {
+        const hasConflictCondition = !!updatedPlan.status.conditions.some(cond => {
           return cond.type === 'PlanConflict';
         });
         if (hasReadyCondition) {
@@ -185,7 +212,7 @@ function* checkPlanStatus(action) {
           yield put(PlanActions.stopPlanStatusPolling());
         }
         if (hasCriticalCondition) {
-          const criticalCond = MigPlan.status.conditions.find(cond => {
+          const criticalCond = updatedPlan.status.conditions.find(cond => {
             return cond.category === 'Critical';
           });
           yield put(PlanActions.updateCurrentPlanStatus(
@@ -196,7 +223,7 @@ function* checkPlanStatus(action) {
         }
 
         if (hasConflictCondition) {
-          const conflictCond = MigPlan.status.conditions.find(cond => {
+          const conflictCond = updatedPlan.status.conditions.find(cond => {
             return cond.type === 'PlanConflict';
           });
           yield put(PlanActions.updateCurrentPlanStatus(
