@@ -19,7 +19,6 @@ import PlanEmptyState from './PlanEmptyState';
 
 interface IProps {
   planList: any;
-  onPlanSubmit: () => void;
   clusterList: any;
   storageList: any;
   isExpanded: boolean;
