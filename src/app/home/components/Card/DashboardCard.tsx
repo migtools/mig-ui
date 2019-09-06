@@ -8,8 +8,6 @@ import {
   CardFooter,
   Title
 } from '@patternfly/react-core';
-// import { PatternFlyThemeProvider, StyledConstants, StyledBox, StyledText } from '@patternfly/react-styled-system';
-// import { TimesIcon } from '@patternfly/react-icons';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import CardStatus from './Status/CardStatus';
@@ -20,9 +18,6 @@ import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import StatusIcon from '../../../common/components/StatusIcon';
 
-interface IState {
-  isOpen: boolean;
-}
 interface IProps {
   title: string;
   dataList: any[];
@@ -43,8 +38,6 @@ const DashboardCard: React.FunctionComponent<IProps> = (
     expandDetails
   }
 ) => {
-  const [isOpen, toggleOpen] = useState(false);
-
   if (isError) {
     return (
       <Card style={{ minHeight: '100%', height: '16em' }}>
@@ -95,6 +88,6 @@ const DashboardCard: React.FunctionComponent<IProps> = (
         )}
     </Card>
   );
-}
+};
 
 export default DashboardCard;

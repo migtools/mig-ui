@@ -32,7 +32,7 @@ export enum DataListItems {
   ClusterList = 'clusterList',
   StorageList = 'storageList',
   PlanList = 'planList',
-};
+}
 
 const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   const {
