@@ -73,6 +73,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
   },
 
   handleSubmit: () => {
+    return null;
   },
   validateOnBlur: false,
 })(WizardComponent);
