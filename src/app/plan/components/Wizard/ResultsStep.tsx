@@ -157,7 +157,8 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             position={TooltipPosition.top}
             content={<div>
               Re-check plan status.
-            </div>}><OutlinedQuestionCircleIcon />
+            </div>}>
+            <span className="pf-c-icon"><OutlinedQuestionCircleIcon /></span>
           </Tooltip>
         </Box>;
       default:
