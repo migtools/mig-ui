@@ -1,7 +1,5 @@
 export { MigResource, MigResourceKind } from './mig';
 
-export { ClusterRegistryResource, ClusterRegistryResourceKind } from './cluster_registry';
-
 export {
   CoreNamespacedResource,
   CoreClusterResource,

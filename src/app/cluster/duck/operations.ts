@@ -1,63 +1,16 @@
 import { ClusterActions } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import ConnectionState from '../../common/connection_state';
 
 import {
-  ClusterRegistryResource,
-  ClusterRegistryResourceKind,
   CoreNamespacedResource,
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
-import {
-  updateClusterRegistryObj,
-  updateTokenSecret,
-} from '../../../client/resources/conversions';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import {
   AlertActions
 } from '../../common/duck/actions';
 import { select } from 'redux-saga/effects';
-
-
-const updateCluster = clusterValues => {
-  return async (dispatch, getState) => {
-    try {
-      const state = getState();
-      const { migMeta } = state;
-      const client: IClusterClient = ClientFactory.hostCluster(state);
-
-      const clusterReg = updateClusterRegistryObj(clusterValues.url);
-      const tokenSecret = updateTokenSecret(clusterValues.token);
-      const clusterRegResource = new ClusterRegistryResource(
-        ClusterRegistryResourceKind.Cluster,
-        migMeta.namespace
-      );
-      const secretResource = new CoreNamespacedResource(
-        CoreNamespacedResourceKind.Secret,
-        migMeta.configNamespace
-      );
-
-      const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
-
-      const arr = await Promise.all([
-        client.patch(clusterRegResource, clusterValues.name, clusterReg),
-        client.patch(secretResource, clusterValues.name, tokenSecret),
-        client.get(migClusterResource, clusterValues.name),
-      ]);
-      const cluster = arr.reduce((accum, res) => {
-        accum[res.data.kind] = res.data;
-        return accum;
-      }, {});
-      cluster.status = clusterValues.connectionStatus;
-
-      dispatch(ClusterActions.updateClusterSuccess(cluster));
-      dispatch(AlertActions.alertSuccessTimeout(`Successfully updated cluster "${clusterValues.name}"!`));
-    } catch (err) {
-      dispatch(AlertActions.alertErrorTimeout(err));
-    }
-  };
-};
 
 const removeCluster = name => {
   return async (dispatch, getState) => {
@@ -66,18 +19,13 @@ const removeCluster = name => {
       const { migMeta } = state;
       const client: IClusterClient = ClientFactory.hostCluster(state);
 
-      const clusterRegResource = new ClusterRegistryResource(
-        ClusterRegistryResourceKind.Cluster,
-        migMeta.namespace
-      );
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
         migMeta.configNamespace
       );
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
 
-      const arr = await Promise.all([
-        client.delete(clusterRegResource, name),
+      await Promise.all([
         client.delete(secretResource, name),
         client.delete(migClusterResource, name),
       ]);
@@ -95,17 +43,11 @@ function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Arra
   const refs: Array<Promise<any>> = [];
 
   migClusters.forEach(cluster => {
-    const clusterRef = cluster.spec.clusterRef;
     const secretRef = cluster.spec.serviceAccountSecretRef;
-    const clusterRegResource = new ClusterRegistryResource(
-      ClusterRegistryResourceKind.Cluster,
-      clusterRef.namespace
-    );
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
       secretRef.namespace
     );
-    refs.push(client.get(clusterRegResource, clusterRef.name));
     refs.push(client.get(secretResource, secretRef.name));
   });
 
@@ -119,9 +61,6 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
     };
 
     if (!mc.spec.isHostCluster) {
-      fullCluster['Cluster'] = refs.find(
-        i => i.data.kind === 'Cluster' && i.data.metadata.name === mc.spec.clusterRef.name
-      ).data;
       fullCluster['Secret'] = refs.find(
         i => i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
       ).data;
@@ -150,5 +89,4 @@ function* fetchClustersGenerator() {
 export default {
   fetchClustersGenerator,
   removeCluster,
-  updateCluster,
 };
