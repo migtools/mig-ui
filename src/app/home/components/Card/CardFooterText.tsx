@@ -7,7 +7,7 @@ const expandRefs = {
   'plans': '#plan-toggle',
 };
 
-const FooterText = ({ type, dataList, expandDetails, ...props }) => {
+const FooterText = ({ type, dataList, expandDetails }) => {
   const clusterText =
     dataList.length === 1
       ? `View ${dataList.length} Cluster`

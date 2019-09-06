@@ -69,16 +69,12 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     watchClusterAddEditStatus,
     watchStorageAddEditStatus,
     migMeta,
+    handleExpandDetails,
+    expanded
   } = props;
 
   const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
-  const [expandedStateObj, setExpandedStateObj] = useState(
-    {
-      'clusterList': false,
-      'storageList': false,
-      'planList': false,
-    },
-  );
+
   useEffect(() => {
     if (allClusters.length > 1 && allStorage.length > 0) {
       setAddPlanDisabled(false);
@@ -88,15 +84,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   }, [allClusters, allStorage]);
 
 
-  const handleExpand = (id: string) => {
-    const expanded = !expandedStateObj[id];
-    const newExpanded = Object.assign({}, expandedStateObj);
-    Object.values(DataListItems).map(
-      expandItem => newExpanded[expandItem] = false
-    );
-    newExpanded[id] = expanded;
-    setExpandedStateObj(newExpanded);
-  };
 
   const handleStageTriggered = plan => {
     runStage(plan);
@@ -117,8 +104,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             associatedPlans={clusterAssociatedPlans}
             migMeta={migMeta}
             removeCluster={removeCluster}
-            isExpanded={expandedStateObj[DataListItems.ClusterList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.ClusterList]}
+            toggleExpanded={handleExpandDetails}
           />
         </ClusterContext.Provider>
         <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
@@ -127,8 +114,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             id={DataListItems.StorageList}
             associatedPlans={storageAssociatedPlans}
             removeStorage={removeStorage}
-            isExpanded={expandedStateObj[DataListItems.StorageList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.StorageList]}
+            toggleExpanded={handleExpandDetails}
           />
         </StorageContext.Provider>
         <PlanContext.Provider value={{
@@ -141,8 +128,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             clusterList={allClusters}
             storageList={allStorage}
             plansDisabled={isAddPlanDisabled}
-            isExpanded={expandedStateObj[DataListItems.PlanList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.PlanList]}
+            toggleExpanded={handleExpandDetails}
           />
         </PlanContext.Provider>
       </DataList>
