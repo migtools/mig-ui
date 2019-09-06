@@ -34,7 +34,6 @@ interface IProps {
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
-  planUpdateRequest: (planValues) => void;
   runStage: (plan) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
@@ -62,7 +61,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     removeStorage,
     removePlan,
     removeCluster,
-    planUpdateRequest,
     runStage,
     planCloseAndDeleteRequest,
     plansWithStatus,
@@ -100,10 +98,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     setExpandedStateObj(newExpanded);
   };
 
-  const handlePlanSubmit = planWizardValues => {
-    planUpdateRequest(planWizardValues);
-  };
-
   const handleStageTriggered = plan => {
     runStage(plan);
   };
@@ -139,13 +133,13 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
         </StorageContext.Provider>
         <PlanContext.Provider value={{
           handleStageTriggered,
-          handleDeletePlan }}>
+          handleDeletePlan
+        }}>
           <PlanDataListItem
             id={DataListItems.PlanList}
             planList={plansWithStatus}
             clusterList={allClusters}
             storageList={allStorage}
-            onPlanSubmit={handlePlanSubmit}
             plansDisabled={isAddPlanDisabled}
             isExpanded={expandedStateObj[DataListItems.PlanList]}
             toggleExpanded={handleExpand}
@@ -180,7 +174,6 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    planUpdateRequest: planValues => dispatch(PlanActions.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),

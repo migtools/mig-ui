@@ -17,7 +17,6 @@ const PlanDataListItem = ({
   id,
   clusterList,
   storageList,
-  onPlanSubmit,
   planList,
   plansDisabled,
   isExpanded,
@@ -52,12 +51,10 @@ const PlanDataListItem = ({
               storageList={storageList}
               isOpen={isOpen}
               onHandleWizardModalClose={toggleOpen}
-              onPlanSubmit={onPlanSubmit}
             />
           </DataListAction>
         </DataListItemRow>
         <PlanContent
-          onPlanSubmit={onPlanSubmit}
           plansDisabled={plansDisabled}
           planList={planList}
           clusterList={clusterList}
