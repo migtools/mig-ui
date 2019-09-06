@@ -127,9 +127,9 @@ const StorageClassTable = (props): any => {
               Cell: row => {
                 const currentStorageClass = pvStorageClassAssignment[row.original.name];
                 const storageClassOptionsWithNone = storageClassOptions.map(sc => {
-                  return { value: sc.name, label: sc.name + ':' + sc.provisioner }
+                  return { value: sc.name, label: sc.name + ':' + sc.provisioner };
                 });
-                storageClassOptionsWithNone.push({ value: '', label: 'None' })
+                storageClassOptionsWithNone.push({ value: '', label: 'None' });
                 return (
                   <Select
                     onChange={(option: any) => handleStorageClassChange(row, option)}
