@@ -234,9 +234,9 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
         v.selection.action = userPv.type;
         const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
         if (selectedStorageClassObj) {
-          v.selection.StorageClass = selectedStorageClassObj.name;
+          v.selection.storageClass = selectedStorageClassObj.name;
         } else {
-          v.selection.StorageClass = '';
+          v.selection.storageClass = '';
         }
       }
       return v;

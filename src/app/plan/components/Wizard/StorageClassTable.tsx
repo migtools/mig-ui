@@ -38,14 +38,15 @@ const StorageClassTable = (props): any => {
       c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
     );
 
-    const scs = destCluster.MigCluster.spec.storageClasses || [];
-    setStorageClassOptions(scs);
+    const destStorageClasses = destCluster.MigCluster.spec.storageClasses || [];
+
+    setStorageClassOptions(destStorageClasses);
     // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
     const initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
-      const suggestedStorageClass = scs.find(sc =>
+      const suggestedStorageClass = destStorageClasses.find(sc =>
         sc.name === pv.selection.storageClass
       );
-      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : scs[0];
+      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : destStorageClasses[0];
       return assignedScs;
     }, {}) : {};
     setPvStorageClassAssignment(initialAssignedScs);
@@ -67,21 +68,6 @@ const StorageClassTable = (props): any => {
         <Box flex="1" m="auto">
           <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
           <Text fontSize={[2, 3, 4]}> Discovering storage classes.</Text>
-        </Box>
-      </Flex>
-    );
-  }
-
-  if (storageClassOptions.length === 0) {
-    return (
-      <Flex
-        css={css`
-          height: 100%;
-          text-align: center;
-        `}
-      >
-        <Box flex="1" m="auto">
-          <Text fontSize={[2, 3, 4]}>No StorageClasses available for selection in target cluster</Text>
         </Box>
       </Flex>
     );
@@ -140,18 +126,22 @@ const StorageClassTable = (props): any => {
               style: { overflow: 'visible' },
               Cell: row => {
                 const currentStorageClass = pvStorageClassAssignment[row.original.name];
+                const storageClassOptionsWithNone = storageClassOptions.map(sc => {
+                  return { value: sc.name, label: sc.name + ':' + sc.provisioner }
+                });
+                storageClassOptionsWithNone.push({ value: '', label: 'None' })
                 return (
                   <Select
                     onChange={(option: any) => handleStorageClassChange(row, option)}
-                    options={storageClassOptions.map(sc => {
-                      return { value: sc.name, label: sc.name + ':' + sc.provisioner };
-                    })}
+                    options={
+                      storageClassOptionsWithNone
+                    }
                     name="storageClasses"
                     value={{
                       label: currentStorageClass ?
-                        currentStorageClass.name + ':' + currentStorageClass.provisioner : 'No storage class selected',
+                        currentStorageClass.name + ':' + currentStorageClass.provisioner : 'None',
                       value: currentStorageClass ?
-                        currentStorageClass.name : 'No storage class selected',
+                        currentStorageClass.name : '',
                     }}
                     placeholder="Select a storage class..."
                   />
