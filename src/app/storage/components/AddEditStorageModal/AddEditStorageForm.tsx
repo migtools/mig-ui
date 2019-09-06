@@ -196,7 +196,10 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
             position={TooltipPosition.top}
             content={<div>
               Add or edit your storage details
-            </div>}><OutlinedQuestionCircleIcon />
+            </div>}>
+            <span className="pf-c-icon">
+              <OutlinedQuestionCircleIcon />
+            </span>
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}

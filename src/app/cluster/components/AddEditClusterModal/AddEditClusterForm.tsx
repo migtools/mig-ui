@@ -9,7 +9,7 @@ import {
   Tooltip,
   TooltipPosition,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, DivideIcon } from '@patternfly/react-icons';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
@@ -133,7 +133,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             position={TooltipPosition.top}
             content={<div>
               Add or edit your cluster details
-            </div>}><OutlinedQuestionCircleIcon />
+            </div>}>
+            <span className="pf-c-icon">
+              <OutlinedQuestionCircleIcon />
+            </span>
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
@@ -148,7 +151,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             position={TooltipPosition.top}
             content={<div>
               Re-check your cluster's connection state
-            </div>}><OutlinedQuestionCircleIcon />
+            </div>}>
+            <span className="pf-c-icon">
+              <OutlinedQuestionCircleIcon />
+            </span>
           </Tooltip>
         </Box>
         <Box m="0 0 1em 0 ">

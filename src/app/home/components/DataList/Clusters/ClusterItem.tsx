@@ -61,8 +61,14 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
         <DataListItemCells
           dataListCells={[
             <DataListCell key="name" width={1}>
-              <StatusIcon isReady={clusterStatus} />
-              <span id="cluster-name">{clusterName}</span>
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
+                  <StatusIcon isReady={clusterStatus} />
+                </div>
+                <div className="pf-l-flex__item">
+                  <span id="cluster-name">{clusterName}</span>
+                </div>
+              </div>
             </DataListCell>,
             <DataListCell key="url" width={2}>
               <a target="_blank" href={clusterUrl}>
@@ -70,7 +76,16 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
               </a>
             </DataListCell>,
             <DataListCell key="count" width={2}>
-              <LinkIcon /> {associatedPlanCount} associated migration {planText}
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
+                  <span className="pf-c-icon">
+                    <LinkIcon />
+                  </span>
+                </div>
+                <div className="pf-l-flex__item">
+                  {associatedPlanCount} associated migration {planText}
+                </div>
+              </div>
             </DataListCell>,
             <DataListCell key="actions" width={2}>
               <Flex justifyContent="flex-end">

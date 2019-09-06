@@ -117,7 +117,9 @@ class TargetsTable extends React.Component<IProps, IState> {
                   aria-label="Edit"
                   variant="link"
                 >
-                  {this.state.editableList[row.index] ? <TimesIcon /> : <EditAltIcon />}
+                  <div className="pf-c-icon">
+                    {this.state.editableList[row.index] ? <TimesIcon /> : <EditAltIcon />}
+                  </div>
                 </Button>
               ),
             },

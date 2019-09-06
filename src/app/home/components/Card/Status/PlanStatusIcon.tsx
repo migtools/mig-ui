@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import styled from '@emotion/styled';
 import Loader from 'react-loader-spinner';
 import theme from '../../../../../theme';
 import { OutlinedCircleIcon } from '@patternfly/react-icons';
@@ -12,17 +11,6 @@ interface IProps {
 }
 
 const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
-  const NotStarted = styled(OutlinedCircleIcon)`
-    color: ${theme.colors.blue};
-  `;
-  const Error = styled(OutlinedCircleIcon)`
-    color: ${theme.colors.statusRed};
-  `;
-
-  const Complete = styled(OutlinedCircleIcon)`
-    color: ${theme.colors.statusGreen};
-  `;
-
   const {
     hasFailedCondition,
     hasRunningMigrations,
@@ -33,7 +21,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   } = plan.PlanStatus;
 
   if (hasFailedCondition || hasNotReadyCondition) {
-    return <Error />;
+    return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
   } else if (hasRunningMigrations || isPlanLocked) {
     return (
       <Loader
@@ -45,9 +33,9 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
       />
     );
   } else if (hasSucceededMigration || hasSucceededStage) {
-    return <Complete />;
+    return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
   } else {
-    return <NotStarted />;
+    return <span className="pf-c-icon pf-m-info"><OutlinedCircleIcon /></span>;
   }
 };
 
