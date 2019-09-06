@@ -232,8 +232,11 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
       if (userPv) {
         v.selection.action = userPv.type;
-        if (userPv.type === 'copy') {
-          v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+        if (selectedStorageClassObj) {
+          v.selection.StorageClass = selectedStorageClassObj.name;
+        } else {
+          v.selection.StorageClass = '';
         }
       }
       return v;
