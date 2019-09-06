@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
 import { Flex, Box, Text } from '@rebass/emotion';
 import {
@@ -27,6 +27,12 @@ interface IProps {
   isPlanError: boolean;
   planStatusCounts: any;
 }
+export const DataItemsLength = 3;
+export enum DataListItems {
+  ClusterList = 'clusterList',
+  StorageList = 'storageList',
+  PlanList = 'planList',
+}
 
 const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   const {
@@ -46,7 +52,23 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
+  const [expandedStateObj, setExpandedStateObj] = useState(
+    {
+      'clusterList': false,
+      'storageList': false,
+      'planList': false,
+    },
+  );
 
+  const handleExpand = (id: string) => {
+    const expanded = !expandedStateObj[id];
+    const newExpanded = Object.assign({}, expandedStateObj);
+    Object.values(DataListItems).map(
+      expandItem => newExpanded[expandItem] = false
+    );
+    newExpanded[id] = expanded;
+    setExpandedStateObj(newExpanded);
+  };
 
   return (
     <Page header={HeaderComponent}>
@@ -59,6 +81,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               dataList={allClusters}
               isFetching={isFetchingClusters}
               isError={isClusterError}
+              expandDetails={() => handleExpand(DataListItems.ClusterList)}
+
             />
           </GridItem>
           <GridItem span={4}>
@@ -68,6 +92,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               dataList={allStorage}
               isFetching={isFetchingStorage}
               isError={isStorageError}
+              expandDetails={() => handleExpand(DataListItems.StorageList)}
             />
           </GridItem>
           <GridItem span={4}>
@@ -78,6 +103,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               dataList={allPlans}
               isFetching={isFetchingPlans}
               isError={isPlanError}
+              expandDetails={() => handleExpand(DataListItems.PlanList)}
             />
           </GridItem>
         </Grid>
@@ -85,7 +111,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
       <PageSection>
         <Flex justifyContent="center">
           <Box flex="0 0 100%">
-            <DetailViewComponent />
+            <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
+
           </Box>
         </Flex>
       </PageSection>
