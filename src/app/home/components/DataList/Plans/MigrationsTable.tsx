@@ -99,7 +99,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       {migrations.length > 0 ? (
         <Table
           aria-label="migrations-history-table"
-          //@ts-ignore
           cells={columns}
           rows={currentRows}
         >
