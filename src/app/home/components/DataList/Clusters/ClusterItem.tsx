@@ -122,8 +122,8 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
           ]}
         />,
         <DataListAction
-          aria-labelledby="storage-item storage-item-actions-dropdown"
-          id="storage-item-actions-dropdown"
+          aria-labelledby="cluster-item cluster-item-actions-dropdown"
+          id="cluster-item-actions-dropdown"
           aria-label="Actions"
         >
           <Dropdown

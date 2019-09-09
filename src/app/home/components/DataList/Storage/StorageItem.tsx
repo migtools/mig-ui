@@ -119,7 +119,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             <DataListCell key="url" width={2}>
               <a target="_blank" href={storage.MigStorage.spec.bucketName}>
                 {storage.MigStorage.spec.bucketName}
-                https://update_this_link
               </a>
             </DataListCell>,
             <DataListCell key="count" width={2}>
@@ -137,8 +136,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           ]}
         />
         <DataListAction
-          // className={css(DataListActionVisibility.visibleOnMd, DataListActionVisibility.hidden)}
-          className="pf-m-hidden-on-lg"
           aria-labelledby="storage-item storage-item-actions-dropdown"
           id="storage-item-actions-dropdown"
           aria-label="Actions"
