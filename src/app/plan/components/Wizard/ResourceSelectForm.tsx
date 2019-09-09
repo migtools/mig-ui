@@ -3,7 +3,12 @@ import { jsx } from '@emotion/core';
 import { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
-import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
+import {
+  Form,
+  FormGroup,
+  Grid,
+  GridItem
+} from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
 import Loader from 'react-loader-spinner';
@@ -141,73 +146,77 @@ const ResourceSelectForm = props => {
     setFieldTouched('targetCluster');
   };
   return (
-    <Box>
-      <Flex>
-        <Box>
-          <TextContent>
-            <TextList component="dl">
-              <TextListItem component="dt">Source Cluster</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="sourceCluster"
-                onChange={handleSourceChange}
-                options={srcClusterOptions}
-                value={selectedSrcCluster}
-              />
-              {errors.sourceCluster && touched.sourceCluster && (
-                <div id="feedback">{errors.sourceCluster}</div>
-              )}
-              <TextListItem component="dt">Target Cluster</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="targetCluster"
-                onChange={handleTargetChange}
-                options={targetClusterOptions}
-                value={selectedTargetCluster}
-              />
-              {errors.targetCluster && touched.targetCluster && (
-                <div id="feedback">{errors.targetCluster}</div>
-              )}
-            </TextList>
-          </TextContent>
-        </Box>
-        <Box mx="3em">
-          <TextContent>
-            <TextList component="dl">
-              <TextListItem component="dt">Replication Repository</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="selectedStorage"
-                onChange={handleStorageChange}
-                options={storageOptions}
-                value={selectedStorage}
-              />
-              {errors.selectedStorage && touched.selectedStorage && (
-                <div id="feedback">{errors.selectedStorage}</div>
-              )}
-            </TextList>
-          </TextContent>
-        </Box>
-      </Flex>
+    <Grid gutter="md">
+      <GridItem>
+        <Form>
+          <Grid md={6} gutter="md">
+            <GridItem>
+              <FormGroup
+                label="Source Cluster"
+                isRequired
+                fieldId="sourceCluster"
+              >
+                <Select
+                  name="sourceCluster"
+                  onChange={handleSourceChange}
+                  options={srcClusterOptions}
+                  value={selectedSrcCluster}
+                />
+                {errors.sourceCluster && touched.sourceCluster && (
+                  <div id="feedback">{errors.sourceCluster}</div>
+                )}
+              </FormGroup>
+            </GridItem>
 
+            <GridItem>
+              <FormGroup
+                label="Target Cluster"
+                isRequired
+                fieldId="targetCluster"
+              >
+                <Select
+                  name="targetCluster"
+                  onChange={handleTargetChange}
+                  options={targetClusterOptions}
+                  value={selectedTargetCluster}
+                />
+                {errors.targetCluster && touched.targetCluster && (
+                  <div id="feedback">{errors.targetCluster}</div>
+                )}
+              </FormGroup>
+            </GridItem>
+
+            <GridItem>
+              <FormGroup
+                label="Replication Repository"
+                isRequired
+                fieldId="selectedStorage"
+              >
+                <Select
+                  name="selectedStorage"
+                  onChange={handleStorageChange}
+                  options={storageOptions}
+                  value={selectedStorage}
+                />
+                {errors.selectedStorage && touched.selectedStorage && (
+                  <div id="feedback">{errors.selectedStorage}</div>
+                )}
+              </FormGroup>
+            </GridItem>
+          </Grid>
+         </Form>
+      </GridItem>
       {isFetchingNamespaceList ? (
-        <Flex
-          css={css`
-            height: 100%;
-            text-align: center;
-          `}
-        >
-          <Box flex="1" m="auto">
-            <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-            <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
-          </Box>
-        </Flex>
+        <GridItem>
+          <div className="pf-l-flex pf-m-column pf-m-align-items-center pf-u-mt-2xl">
+            <div className="pf-l-flex__item">
+              <Loader type="ThreeDots" color={theme.colors.navy} height="40" width="100" />
+            </div>
+            <div className="pf-l-flex__item">
+              <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
+            </div>
+          </div>
+        </GridItem>
       ) : (
         <NamespaceTable
           setFieldValue={setFieldValue}
@@ -215,7 +224,7 @@ const ResourceSelectForm = props => {
           sourceClusterNamespaces={sourceClusterNamespaces}
         />
       )}
-    </Box>
+    </Grid>
   );
 };
 
