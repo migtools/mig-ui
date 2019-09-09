@@ -67,7 +67,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
 
   const kebabDropdownItems = [
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         setKebabIsOpen(false);
         editStorage();
@@ -84,7 +83,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       />
     </DropdownItem>,
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         setKebabIsOpen(false);
         toggleConfirmOpen();

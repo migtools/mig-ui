@@ -64,7 +64,6 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
 
   const kebabDropdownItems = [
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         setKebabIsOpen(false);
         editCluster();
@@ -75,7 +74,6 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
       Edit
     </DropdownItem>,
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         setKebabIsOpen(false);
         toggleConfirmOpen();

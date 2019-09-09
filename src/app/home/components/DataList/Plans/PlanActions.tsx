@@ -29,7 +29,6 @@ const PlanActions = ({ plan }) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);

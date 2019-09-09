@@ -7,7 +7,6 @@ import {
   Table,
   TableHeader,
   TableBody,
-  //@ts-ignore
   compoundExpand,
 } from '@patternfly/react-table';
 import MigrationsTable from './MigrationsTable';
@@ -51,7 +50,7 @@ const buildNewRows = (
 ) => {
   const newRows = planList.map((plan, planIndex) => {
     const MigrationsIcon = () => {
-      if(plan.Migrations.length > 0) {
+      if (plan.Migrations.length > 0) {
         return <span className="pf-c-icon pf-m-info"><ServiceIcon /></span>;
       } else {
         return <span className="pf-c-icon"><ServiceIcon /></span>;
@@ -218,7 +217,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
                 aria-label="migrations-history-table"
                 onExpand={onExpand}
                 rows={currentRows}
-                //@ts-ignore
                 cells={columns}
               >
                 <TableHeader />
