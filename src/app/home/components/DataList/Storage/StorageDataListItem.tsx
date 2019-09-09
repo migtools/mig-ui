@@ -21,6 +21,7 @@ const StorageDataListItem = ({
   removeStorage,
   isExpanded,
   toggleExpanded,
+  storageCount,
   ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -40,7 +41,7 @@ const StorageDataListItem = ({
                     <span id="repos">Repositories</span>
                   </div>
                   <div className="pf-l-flex__item">
-                    <Badge isRead>7</Badge>
+                    <Badge isRead>{storageCount}</Badge>
                   </div>
                 </div>
 

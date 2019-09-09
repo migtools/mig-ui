@@ -22,6 +22,7 @@ const PlanDataListItem = ({
   plansDisabled,
   isExpanded,
   toggleExpanded,
+  planCount
 }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (planList) {
@@ -43,7 +44,7 @@ const PlanDataListItem = ({
                     <span id="plans">Plans</span>
                   </div>
                   <div className="pf-l-flex__item">
-                    <Badge isRead>7</Badge>
+                    <Badge isRead>{planCount}</Badge>
                   </div>
                 </div>
 

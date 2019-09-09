@@ -22,6 +22,7 @@ const ClusterDataListItem = ({
   associatedPlans,
   migMeta,
   removeCluster,
+  clusterCount,
   ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -41,7 +42,7 @@ const ClusterDataListItem = ({
                     <span id="clusters">Clusters</span>
                   </div>
                   <div className="pf-l-flex__item">
-                    <Badge isRead>7</Badge>
+                    <Badge isRead>{clusterCount}</Badge>
                   </div>
                 </div>
               </DataListCell>,

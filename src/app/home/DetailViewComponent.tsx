@@ -106,6 +106,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             removeCluster={removeCluster}
             isExpanded={expanded[DataListItems.ClusterList]}
             toggleExpanded={handleExpandDetails}
+            clusterCount={allClusters.length}
           />
         </ClusterContext.Provider>
         <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
@@ -116,6 +117,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             removeStorage={removeStorage}
             isExpanded={expanded[DataListItems.StorageList]}
             toggleExpanded={handleExpandDetails}
+            storageCount={allStorage.length}
           />
         </StorageContext.Provider>
         <PlanContext.Provider value={{
@@ -130,6 +132,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             plansDisabled={isAddPlanDisabled}
             isExpanded={expanded[DataListItems.PlanList]}
             toggleExpanded={handleExpandDetails}
+            planCount={plansWithStatus.length}
           />
         </PlanContext.Provider>
       </DataList>
