@@ -2,10 +2,13 @@
 import { jsx } from '@emotion/core';
 import { useState } from 'react';
 import {
+  Alert,
   Button,
-  TextInput,
+  Grid,
+  GridItem,
   Form,
   FormGroup,
+  TextInput,
   Tooltip,
   TooltipPosition,
 } from '@patternfly/react-core';
@@ -25,7 +28,7 @@ import {
 } from '../../../common/add_edit_state';
 import { Flex, Box } from '@rebass/emotion';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { ConnectedIcon } from '@patternfly/react-icons';
 
 const nameKey = 'name';
 const s3UrlKey = 's3Url';
@@ -89,147 +92,161 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
   };
 
   return (
-    <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
-      <FormGroup label="Repository Name" isRequired fieldId={nameKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(nameKey)}
-          onBlur={props.handleBlur}
-          value={values.name}
-          name={nameKey}
-          type="text"
-          id="storage-name-input"
-          isDisabled={currentStatus.mode === AddEditMode.Edit}
-        />
-        {errors.name && touched.name && (
-          <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="S3 Bucket Name" isRequired fieldId={bucketNameKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(bucketNameKey)}
-          onBlur={props.handleBlur}
-          value={values.bucketName}
-          name={bucketNameKey}
-          type="text"
-          id="storage-bucket-name-input"
-        />
-        {errors.bucketName && touched.bucketName && (
-          <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="S3 Bucket Region" fieldId={bucketRegionKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(bucketRegionKey)}
-          onBlur={props.handleBlur}
-          value={values.bucketRegion}
-          name={bucketRegionKey}
-          type="text"
-          id="storage-bucket-region-input"
-        />
-        {errors.bucketRegion && touched.bucketRegion && (
-          <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="S3 Endpoint" fieldId={s3UrlKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(s3UrlKey)}
-          onBlur={props.handleBlur}
-          value={values.s3Url}
-          name={s3UrlKey}
-          type="text"
-          id="storage-s3-url-input"
-        />
-        {errors.s3Url && touched.s3Url && (
-          <FormErrorDiv id="feedback-s3-url">{errors.s3Url}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="S3 Provider Access Key" isRequired fieldId={accessKeyKey}>
-        <HideWrapper onClick={handleAccessKeyHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
-        </HideWrapper>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(accessKeyKey)}
-          onBlur={props.handleBlur}
-          value={values.accessKey}
-          name={accessKeyKey}
-          type={isAccessKeyHidden ? 'password' : 'text'}
-          id="storage-access-key-input"
-        />
-        {errors.accessKey && touched.accessKey && (
-          <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="S3 Provider Secret Access Key" isRequired fieldId={secretKey}>
-        <HideWrapper onClick={handleSecretHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
-        </HideWrapper>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(secretKey)}
-          onBlur={props.handleBlur}
-          value={values.secret}
-          name={secretKey}
-          type={isSecretHidden ? 'password' : 'text'}
-          id="storage-secret-input"
-        />
-        {errors.secret && touched.secret && (
-          <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <Flex flexDirection="column">
-        <Box m="0 0 1em 0 ">
-          <Button
-            type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
-            )}
-            style={{ marginRight: '10px' }}
+    <Grid gutter="lg">
+      <GridItem>
+        <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
+          <FormGroup
+            label="Repository Name"
+            isRequired
+            fieldId={nameKey}
+            // error should be handled here
+            // helperTextInvalid="..."
           >
-            {addEditButtonTextFn(currentStatus)}
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>
-              Add or edit your storage details
-            </div>}>
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-          <Button
-            style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus, valuesHaveUpdate(values, currentStorage),
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(nameKey)}
+              onBlur={props.handleBlur}
+              value={values.name}
+              name={nameKey}
+              type="text"
+              id="storage-name-input"
+              isDisabled={currentStatus.mode === AddEditMode.Edit}
+            />
+            {errors.name && touched.name && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-name">
+                {errors.name}
+              </div>
             )}
-            onClick={() => checkConnection(values.name)}
+          </FormGroup>
+          <FormGroup
+            label="S3 Bucket Name"
+            isRequired
+            fieldId={bucketNameKey}
+            // error should be handled here
+            // helperTextInvalid="..."
           >
-            Check Connection
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>
-              Re-check your storage connection state
-            </div>}><OutlinedQuestionCircleIcon />
-          </Tooltip>
-        </Box>
-        <Box m="0 0 1em 0 ">
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(bucketNameKey)}
+              onBlur={props.handleBlur}
+              value={values.bucketName}
+              name={bucketNameKey}
+              type="text"
+              id="storage-bucket-name-input"
+            />
+            {errors.bucketName && touched.bucketName && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-bucket-name">
+                {errors.bucketName}
+              </div>
+            )}
+          </FormGroup>
+          <FormGroup
+            label="S3 Bucket Region"
+            fieldId={bucketRegionKey}
+            // error should be handled here
+            // helperTextInvalid="..."
+          >
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(bucketRegionKey)}
+              onBlur={props.handleBlur}
+              value={values.bucketRegion}
+              name={bucketRegionKey}
+              type="text"
+              id="storage-bucket-region-input"
+            />
+            {errors.bucketRegion && touched.bucketRegion && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-bucket-name">
+                {errors.bucketName}
+              </div>
+            )}
+          </FormGroup>
+          <FormGroup label="S3 Endpoint" fieldId={s3UrlKey}>
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(s3UrlKey)}
+              onBlur={props.handleBlur}
+              value={values.s3Url}
+              name={s3UrlKey}
+              type="text"
+              id="storage-s3-url-input"
+            />
+            {errors.s3Url && touched.s3Url && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-s3-url">
+                {errors.s3Url}
+              </div>
+            )}
+          </FormGroup>
+          <FormGroup label="S3 Provider Access Key" isRequired fieldId={accessKeyKey}>
+            <HideWrapper onClick={handleAccessKeyHiddenToggle}>
+              <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
+            </HideWrapper>
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(accessKeyKey)}
+              onBlur={props.handleBlur}
+              value={values.accessKey}
+              name={accessKeyKey}
+              type={isAccessKeyHidden ? 'password' : 'text'}
+              id="storage-access-key-input"
+            />
+            {errors.accessKey && touched.accessKey && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-access-key">
+                {errors.accessKey}
+              </div>
+            )}
+          </FormGroup>
+          <FormGroup label="S3 Provider Secret Access Key" isRequired fieldId={secretKey}>
+            <HideWrapper onClick={handleSecretHiddenToggle}>
+              <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
+            </HideWrapper>
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(secretKey)}
+              onBlur={props.handleBlur}
+              value={values.secret}
+              name={secretKey}
+              type={isSecretHidden ? 'password' : 'text'}
+              id="storage-secret-input"
+            />
+            {errors.secret && touched.secret && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" aria-live="polite" id="feedback-secret-key">
+                {errors.secret}
+              </div>
+            )}
+          </FormGroup>
+        </Form>
+      </GridItem>
+      <GridItem>
+        <Grid gutter="md">
+          <GridItem>
+            {/* disable while validating, enable after complete */}
+            <Button variant="link" isInline icon={<ConnectedIcon />}>
+              Check connection
+            </Button>
+          </GridItem>
+
+          {/* dont wrap any of the following with GridItem */}
+          {/* show while validating, hide after validation is complete */}
           <ConnectionStatusLabel
             status={currentStatus}
             statusText={currentStatusFn(currentStatus)}
           />
-        </Box>
-        <Box m="auto 0 0 0 ">
-          <Button variant="primary" onClick={onClose}>
-            Close
-          </Button>
-        </Box>
-      </Flex>
-    </Form>
+          {/* if ready */}
+          <Alert variant="success" isInline title="Connection successful" />
+          {/* if timed out */}
+          <Alert variant="warning" isInline title="Timed out" />
+          {/* if critical */}
+          <Alert variant="danger" isInline title="Connection unsuccessful" />
+        </Grid>
+      </GridItem>
+    </Grid>
   );
 };
 

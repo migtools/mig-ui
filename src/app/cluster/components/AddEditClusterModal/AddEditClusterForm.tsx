@@ -1,15 +1,21 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
+  Alert,
   Button,
-  TextInput,
+  Grid,
+  GridItem,
   Form,
   FormGroup,
+  TextInput,
   Tooltip,
   TooltipPosition,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import {
+  OutlinedQuestionCircleIcon,
+  ConnectedIcon,
+} from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
@@ -74,52 +80,105 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
 
   return (
-    <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-      <FormGroup label="Cluster Name" isRequired fieldId={nameKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(nameKey)}
-          onBlur={handleBlur}
-          value={values.name}
-          name={nameKey}
-          type="text"
-          id="cluster-name-input"
-          isDisabled={currentStatus.mode === AddEditMode.Edit}
-        />
-        {errors.name && touched.name && (
-          <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <FormGroup label="Url" isRequired fieldId={urlKey}>
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(urlKey)}
-          onBlur={handleBlur}
-          value={values.url}
-          name={urlKey}
-          type="text"
-          id="url-input"
-        />
-        {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
-      </FormGroup>
-      <FormGroup label="Service account token" isRequired fieldId={tokenKey}>
-        <HideWrapper onClick={toggleHideToken}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
-        </HideWrapper>
-        <TextInput
-          value={values.token}
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(tokenKey)}
-          onBlur={handleBlur}
-          name={tokenKey}
-          id="token-input"
-          type={isTokenHidden ? 'password' : 'text'}
-        />
-        {errors.token && touched.token && (
-          <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
-        )}
-      </FormGroup>
-      <Flex flexDirection="column">
+    <Grid gutter="lg">
+      <GridItem>
+        <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
+          <FormGroup
+            label="Cluster Name"
+            isRequired
+            fieldId={nameKey}
+            // error should be handled here
+            // helperTextInvalid="Not a valid name..."
+          >
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(nameKey)}
+              onBlur={handleBlur}
+              value={values.name}
+              name={nameKey}
+              type="text"
+              id="cluster-name-input"
+              isDisabled={currentStatus.mode === AddEditMode.Edit}
+            />
+            {errors.name && touched.name && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" id="feedback-name" aria-live="polite">
+                {errors.name}
+              </div>
+            )}
+          </FormGroup>
+          <FormGroup
+            label="Url"
+            isRequired fieldId={urlKey}
+            // error should be handled here
+            // helperTextInvalid="Not a valid URL..."
+          >
+            <TextInput
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(urlKey)}
+              onBlur={handleBlur}
+              value={values.url}
+              name={urlKey}
+              type="url"
+              id="url-input"
+            />
+            {errors.url && touched.url && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" id="feedback-url" aria-live="polite">{errors.url}</div>
+            )}
+          </FormGroup>
+          <FormGroup
+            label="Service account token"
+            isRequired
+            fieldId={tokenKey}
+            // error should be handled here
+            // helperTextInvalid="Invalid token..."
+          >
+            <HideWrapper onClick={toggleHideToken}>
+              <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
+            </HideWrapper>
+            <TextInput
+              value={values.token}
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(tokenKey)}
+              onBlur={handleBlur}
+              name={tokenKey}
+              id="token-input"
+              type={isTokenHidden ? 'password' : 'text'}
+            />
+            {errors.token && touched.token && (
+              // temporarily add error text styling
+              <div className="pf-c-form__helper-text pf-m-error" id="feedback-token" aria-live="polite">
+                {errors.token}
+              </div>
+            )}
+          </FormGroup>
+        </Form>
+      </GridItem>
+      <GridItem>
+        <Grid gutter="md">
+          <GridItem>
+            {/* disable while validating, enable after complete */}
+            <Button variant="link" isInline icon={<ConnectedIcon />}>
+              Check connection
+            </Button>
+          </GridItem>
+
+          {/* dont wrap any of the following with GridItem */}
+          {/* show while validating, hide after validation is complete */}
+          <ConnectionStatusLabel
+            status={currentStatus}
+            statusText={currentStatusFn(currentStatus)}
+          />
+          {/* if ready */}
+          <Alert variant="success" isInline title="Connection successful" />
+          {/* if timed out */}
+          <Alert variant="warning" isInline title="Timed out" />
+          {/* if critical */}
+          <Alert variant="danger" isInline title="Connection unsuccessful" />
+        </Grid>
+      </GridItem>
+      {/* <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
             type="submit"
@@ -169,8 +228,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             Close
           </Button>
         </Box>
-      </Flex>
-    </Form>
+      </Flex> */}
+    </Grid>
   );
 };
 interface IFormValues {

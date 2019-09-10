@@ -3,7 +3,10 @@ import { jsx } from '@emotion/core';
 import { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm from './AddEditClusterForm';
-import { Modal } from '@patternfly/react-core';
+import {
+  Button,
+  Modal
+} from '@patternfly/react-core';
 import { ClusterActions } from '../../duck/actions';
 import {
   defaultAddEditStatus,
@@ -66,7 +69,21 @@ const AddEditClusterModal = ({
   });
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={onClose}
+      title={modalTitle}
+      actions={[
+        <Button key="confirm" variant="primary" onClick={this.handleModalToggle}>
+          Add/Update cluster
+        </Button>,
+        <Button key="cancel" variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      ]}
+      isFooterLeftAligned
+    >
       <AddEditClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}

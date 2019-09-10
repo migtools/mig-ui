@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
 import Loader from 'react-loader-spinner';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -83,13 +84,11 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
 
   const StatusIcon: any = getStatusIcon(status);
   return (
-    <div className="pf-l-flex">
-      <div className="pf-l-flex__item">
-        <StatusIcon />
-      </div>
-      <div className="pf-l-flex__item">
-        {statusText}
-      </div>
+    <div className="pf-c-loader">
+      {/* <span className="pf-c-loader__icon"><StatusIcon /></span> */}
+      {/* <span className="pf-c-loader__text">{statusText}</span> */}
+      <span className="pf-c-loader__icon"><Spinner size="md" /></span>
+      <span className="pf-c-loader__text">Validating connection...</span>
     </div>
   );
 };

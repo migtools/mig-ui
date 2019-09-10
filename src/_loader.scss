@@ -1,0 +1,12 @@
+.pf-c-loader {
+  --pf-c-loader--item__Height: #{pf-size-prem(34px)};
+  --pf-c-loader--item__MarginLeft: var(--pf-global--spacer--md);
+
+  display: flex;
+  height: var(--pf-c-loader--item__Height);
+  align-items: center;
+
+  > * + * {
+    margin-left: var(--pf-c-loader--item__MarginLeft);
+  }
+}

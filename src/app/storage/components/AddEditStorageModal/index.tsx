@@ -4,7 +4,10 @@ import { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
 import { StorageActions } from '../../duck/actions';
-import { Modal } from '@patternfly/react-core';
+import {
+  Button,
+  Modal
+} from '@patternfly/react-core';
 import { PollingContext } from '../../../home/duck/context';
 import {
   AddEditMode,
@@ -67,7 +70,21 @@ const AddEditStorageModal = ({
   });
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={onClose}
+      title={modalTitle}
+      actions={[
+        <Button key="confirm" variant="primary" onClick={this.handleModalToggle}>
+          Add/Update repository
+        </Button>,
+        <Button key="cancel" variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      ]}
+      isFooterLeftAligned
+    >
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
