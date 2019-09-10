@@ -19,7 +19,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
         Not started
       </dd>
       <dt>
-        <span className="pf-c-icon pf-c-widget-description-list__icon">
+        <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-info">
           <ResourcesAlmostFullIcon />
         </span>
         <span className="pf-c-widget-description-list__num">
@@ -30,7 +30,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
         In progress
       </dd>
       <dt>
-        <span className="pf-c-icon pf-c-widget-description-list__icon">
+        <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-success">
           <ResourcesFullIcon />
         </span>
         <span className="pf-c-widget-description-list__num">
