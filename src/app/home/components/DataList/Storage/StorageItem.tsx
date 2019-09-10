@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import {
-  Button,
   DataListAction,
   DataListItem,
   DataListCell,
@@ -13,7 +12,6 @@ import {
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
-import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { StorageContext } from '../../../duck/context';
@@ -107,27 +105,31 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             <DataListCell key={name} width={1}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <StatusIcon isReady={storageStatus} />
-                </div>
-                <div className="pf-l-flex__item">
                   <span id="simple-item1">{name}</span>
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="url" width={2}>
-              <a target="_blank" href={storage.MigStorage.spec.bucketName}>
-                {storage.MigStorage.spec.bucketName}
-              </a>
+            <DataListCell key="url" width={3}>
+              {s3Url &&
+                <a target="_blank" href={s3Url}>
+                  {s3Url}
+                </a>
+              }
             </DataListCell>,
             <DataListCell key="count" width={2}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <span className="pf-c-icon">
-                    <LinkIcon />
-                  </span>
+                  {associatedPlanCount} associated migration {planText}
+                </div>
+              </div>
+            </DataListCell>,
+            <DataListCell key="connection" width={1}>
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
+                  <StatusIcon isReady={storageStatus} />
                 </div>
                 <div className="pf-l-flex__item">
-                  {associatedPlanCount} associated migration {planText}
+                  <span id="storage-status-text">{storageStatus ? `Connected` : `Connection Failed`}</span>
                 </div>
               </div>
             </DataListCell>,
