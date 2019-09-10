@@ -60,19 +60,19 @@ const DashboardCard: React.FunctionComponent<IProps> = (
             {type === 'plans' ? (
               <MigrationStatus planStatusCounts={planStatusCounts} />
             ) : (
-              <CardStatus dataList={dataList} type={type} />
-            )}
+                <CardStatus dataList={dataList} type={type} />
+              )}
           </CardBody>
           <CardFooter>
-            <CardFooterText dataList={dataList} type={type} expandDetails={expandDetails} />
+            <CardFooterText type={type} expandDetails={expandDetails} />
           </CardFooter>
         </React.Fragment>
       ) : (
-        <CardBody>
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-          Loading
+          <CardBody>
+            <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+            Loading
         </CardBody>
-      )}
+        )}
     </Card>
   );
 };
