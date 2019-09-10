@@ -8,9 +8,9 @@ const expandRefs = {
 };
 
 const FooterText = ({ type, expandDetails }) => {
-  const clusterText = "View Clusters";
-  const storageText = "View repositories";
-  const planText = "View Plans";
+  const clusterText = 'View Clusters';
+  const storageText = 'View repositories';
+  const planText = 'View Plans';
   return (
     <a href={expandRefs[type]} onClick={expandDetails}>
       {type === 'clusters' && clusterText}
