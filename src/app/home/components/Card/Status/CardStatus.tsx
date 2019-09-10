@@ -23,12 +23,12 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   }
 
   return (
-    <dl className="pf-c-description-list pf-m-inline">
+    <dl className="pf-c-widget-description-list pf-m-inline">
       <dt>
-        <span className="pf-c-description-list__icon">
+        <span className="pf-c-widget-description-list__icon">
           <StatusIcon isReady={true} />
         </span>
-        <span className="pf-c-description-list__num">
+        <span className="pf-c-widget-description-list__num">
           {successList.length}
         </span>
       </dt>
@@ -36,10 +36,10 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
         Connected
       </dd>
       <dt>
-        <span className="pf-c-description-list__icon">
+        <span className="pf-c-widget-description-list__icon">
           <StatusIcon isReady={false} />
         </span>
-        <span className="pf-c-description-list__num">
+        <span className="pf-c-widget-description-list__num">
           {failureList.length}
         </span>
       </dt>

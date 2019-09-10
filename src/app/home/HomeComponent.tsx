@@ -73,8 +73,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <Page header={HeaderComponent}>
       <PageSection>
-        <Grid gutter="md">
-          <GridItem md={6} lg={4}>
+        <Grid gutter="lg" md={6} lg={4}>
+          <GridItem>
             <DashboardCard
               type="clusters"
               title="Clusters"
@@ -85,7 +85,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
 
             />
           </GridItem>
-          <GridItem md={6} lg={4}>
+          <GridItem>
             <DashboardCard
               title="Replication Repositories"
               type="repositories"
@@ -95,7 +95,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               expandDetails={() => handleExpand(DataListItems.StorageList)}
             />
           </GridItem>
-          <GridItem md={6} lg={4}>
+          <GridItem>
             <DashboardCard
               type="plans"
               title="Migration Plans"

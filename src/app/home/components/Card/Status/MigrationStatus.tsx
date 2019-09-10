@@ -5,9 +5,9 @@ import React from 'react';
 const MigrationStatus = ({ planStatusCounts }) => {
   const { notStarted, inProgress, completed } = planStatusCounts;
   return (
-    <dl className="pf-c-description-list pf-m-inline">
+    <dl className="pf-c-widget-description-list pf-m-inline">
       <dt>
-        <span className="pf-c-description-list__num">
+        <span className="pf-c-widget-description-list__num">
           {notStarted.length}
         </span>
       </dt>
@@ -15,7 +15,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
         Not started
       </dd>
       <dt>
-        <span className="pf-c-description-list__num">
+        <span className="pf-c-widget-description-list__num">
           {inProgress.length}
         </span>
       </dt>
@@ -23,7 +23,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
         In progress
       </dd>
       <dt>
-        <span className="pf-c-description-list__num">
+        <span className="pf-c-widget-description-list__num">
           {completed.length}
         </span>
       </dt>

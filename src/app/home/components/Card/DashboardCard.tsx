@@ -5,8 +5,7 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
-  Title
+  CardFooter
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
@@ -38,44 +37,42 @@ const DashboardCard: React.FunctionComponent<IProps> = (
 ) => {
   if (isError) {
     return (
-      <Card style={{ minHeight: '100%', height: '16em' }}>
+      <Card>
         <div className="pf-l-flex">
           <div className="pf-l-flex__item">
             <StatusIcon isReady={false} />
           </div>
           <div className="pf-l-flex__item">
             Failed to fetch
-            </div>
+          </div>
         </div>
       </Card>
     );
   }
   return (
-    <Card style={{ minHeight: '100%', height: '16em' }}>
+    <Card>
       {dataList && !isFetching ? (
         <React.Fragment>
           <CardHeader>
-            <Title size="md">
-              <HeaderText type={type} dataList={dataList} />
-            </Title>
+            <HeaderText type={type} dataList={dataList} />
           </CardHeader>
           <CardBody>
             {type === 'plans' ? (
               <MigrationStatus planStatusCounts={planStatusCounts} />
             ) : (
-                <CardStatus dataList={dataList} type={type} />
-              )}
+              <CardStatus dataList={dataList} type={type} />
+            )}
           </CardBody>
           <CardFooter>
             <CardFooterText dataList={dataList} type={type} expandDetails={expandDetails} />
           </CardFooter>
         </React.Fragment>
       ) : (
-          <CardBody>
-            <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-            Loading
-          </CardBody>
-        )}
+        <CardBody>
+          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
+          Loading
+        </CardBody>
+      )}
     </Card>
   );
 };
