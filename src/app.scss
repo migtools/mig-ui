@@ -9,6 +9,18 @@
   height: 100vh;
 }
 
+// PF overrides
+// need to be update upstream
+.pf-c-page {
+  --pf-c-page--BackgroundColor: var(--pf-color-black-200);
+}
+
+.pf-c-page__header {
+  --pf-c-page__header--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
+
+  background: var(--pf-c-page__header--BackgroundColor);
+}
+
 .pf-c-brand {
   width: 100%;
 
