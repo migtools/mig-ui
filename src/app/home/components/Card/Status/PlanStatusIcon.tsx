@@ -3,6 +3,7 @@ import { jsx } from '@emotion/core';
 import Loader from 'react-loader-spinner';
 import theme from '../../../../../theme';
 import { OutlinedCircleIcon } from '@patternfly/react-icons';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 import * as React from 'react';
 
@@ -23,15 +24,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   if (hasFailedCondition || hasNotReadyCondition) {
     return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
   } else if (hasRunningMigrations || isPlanLocked) {
-    return (
-      <Loader
-        type="RevolvingDot"
-        color={theme.colors.medGray3}
-        height="1em"
-        width="1em"
-        style={{ display: 'inline' }}
-      />
-    );
+    return <Spinner size="xl" />;
   } else if (hasSucceededMigration || hasSucceededStage) {
     return <span className="pf-c-icon pf-m-success"><OutlinedCircleIcon /></span>;
   } else {

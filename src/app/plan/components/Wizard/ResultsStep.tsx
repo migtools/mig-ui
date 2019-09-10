@@ -7,10 +7,20 @@ import styled from '@emotion/styled';
 import theme from '../../../../theme';
 import { Flex, Box, Text } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
-import { Card, CardHeader, CardBody, CardFooter, Button, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Tooltip,
+  TooltipPosition
+} from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+
 interface IProps {
   values: any;
   errors: any;
@@ -41,14 +51,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
 
     switch (state) {
       case CurrentPlanState.Pending:
-        return <StyledLoaderWrapper>
-          <Loader
-            type="RevolvingDot"
-            color={theme.colors.medGray3}
-            height="1em"
-            width="1em"
-          />
-        </StyledLoaderWrapper>;
+        return <Spinner size="xl" />;
       case CurrentPlanState.Ready:
         return <StatusIcon isReady={true} />;
       case CurrentPlanState.Critical:

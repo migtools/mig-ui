@@ -13,8 +13,7 @@ import {
   ProgressVariant
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import Loader from 'react-loader-spinner';
-import theme from '../../../../../theme';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   migrations: any[];
@@ -40,18 +39,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
         (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
       const rowCells = [
-        {
-          title: (
-            <div className="pf-l-flex">
-              <div className="pf-l-flex__item">
-                <StatusIcon isReady={!migration.tableStatus.isFailed} />
-              </div>
-              <div className="pf-l-flex__item">
-                {type}
-              </div>
-            </div>
-          ),
-        },
+        { title: type },
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
         { title: migration.tableStatus.moved },
@@ -83,11 +71,9 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
 
   if (isPlanLocked) {
     return (
-      <div className="pf-l-flex pf-u-h-100 pf-m-align-content-center pf-m-justify-content-center">
-        <div className="pf-l-flex__item">
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="60" />
-        </div>
-      </div>
+      <EmptyState variant="full">
+        <Spinner size="xl" />
+      </EmptyState>
     );
   }
 

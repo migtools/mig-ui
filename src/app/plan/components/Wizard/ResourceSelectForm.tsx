@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import {
+  EmptyState,
+  EmptyStateBody,
   Form,
   FormGroup,
   Grid,
@@ -12,6 +14,7 @@ import {
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
 import Loader from 'react-loader-spinner';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { css } from '@emotion/core';
 
 const ResourceSelectForm = props => {
@@ -208,14 +211,12 @@ const ResourceSelectForm = props => {
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
-          <div className="pf-l-flex pf-m-column pf-m-align-items-center pf-u-mt-2xl">
-            <div className="pf-l-flex__item">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="40" width="100" />
-            </div>
-            <div className="pf-l-flex__item">
-              <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
-            </div>
-          </div>
+          <EmptyState variant="full">
+            <Spinner size="xl" />
+            <EmptyStateBody>
+              Discovering namespaces
+            </EmptyStateBody>
+          </EmptyState>
         </GridItem>
       ) : (
         <NamespaceTable

@@ -77,14 +77,7 @@ const buildNewRows = (
         cells: [
           {
             title: (
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
-                  <PlanStatusIcon plan={plan} />
-                </div>
-                <div className="pf-l-flex__item">
-                  <span>{plan.MigPlan.metadata.name}</span>
-                </div>
-              </div>
+              <span>{plan.MigPlan.metadata.name}</span>
             ),
 
             props: { component: 'th' },

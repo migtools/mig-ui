@@ -6,7 +6,9 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Title
+  EmptyState,
+  EmptyStateBody,
+  Title,
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
@@ -15,6 +17,7 @@ import MigrationStatus from './Status/MigrationStatus';
 import CardFooterText from './CardFooterText';
 import HeaderText from './HeaderText';
 import StatusIcon from '../../../common/components/StatusIcon';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   title: string;
@@ -72,8 +75,12 @@ const DashboardCard: React.FunctionComponent<IProps> = (
         </React.Fragment>
       ) : (
         <CardBody>
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-          Loading
+          <EmptyState variant="full">
+            <Spinner size="xl" />
+            <EmptyStateBody>
+              Loading
+            </EmptyStateBody>
+          </EmptyState>
         </CardBody>
       )}
     </Card>
