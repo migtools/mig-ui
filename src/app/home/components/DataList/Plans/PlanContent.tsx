@@ -11,9 +11,7 @@ import {
   TableBody,
   compoundExpand,
 } from '@patternfly/react-table';
-import styled from '@emotion/styled';
 import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
-import theme from '../../../../../theme';
 import PlanEmptyState from './PlanEmptyState';
 
 interface IProps {
@@ -40,7 +38,6 @@ const columns = [
   'Repository',
   {
     title: 'Persistent Volumes',
-    // cellTransforms: [compoundExpand],
   },
   'Last Status',
   ''
@@ -232,11 +229,11 @@ const PlanContent: React.FunctionComponent<IProps> = ({
           </DataListItem>
         </DataList>
       ) : (
-        <PlanEmptyState
-          toggleOpen={toggleOpen}
-          plansDisabled={plansDisabled}
-        />
-      )}
+          <PlanEmptyState
+            toggleOpen={toggleOpen}
+            plansDisabled={plansDisabled}
+          />
+        )}
     </DataListContent>
   );
 };

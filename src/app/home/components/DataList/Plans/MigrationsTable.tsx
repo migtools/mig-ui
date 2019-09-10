@@ -15,8 +15,6 @@ import {
 import StatusIcon from '../../../../common/components/StatusIcon';
 import Loader from 'react-loader-spinner';
 import theme from '../../../../../theme';
-// import moment from 'moment';
-// import { MigrationIcon } from '@patternfly/react-icons';
 
 interface IProps {
   migrations: any[];

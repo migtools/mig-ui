@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { PlanContext } from '../../../duck/context';
 import {
   Dropdown,
@@ -21,7 +21,6 @@ const PlanActions = ({ plan }) => {
     hasErrorCondition,
     hasRunningMigrations,
     hasAttemptedMigration,
-    hasSucceededMigration,
     finalMigrationComplete,
     isPlanLocked
   } = plan.PlanStatus;
@@ -46,7 +45,6 @@ const PlanActions = ({ plan }) => {
       Stage
     </DropdownItem>,
     <DropdownItem
-      // @ts-ignore
       onClick={toggleOpen}
       key="migratePlan"
       isDisabled={
@@ -62,7 +60,6 @@ const PlanActions = ({ plan }) => {
       <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
     </DropdownItem>,
     <DropdownItem
-      // @ts-ignore
       onClick={() => {
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
