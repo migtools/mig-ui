@@ -10,7 +10,6 @@ import {
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
-import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 
 const PlanActions = ({ plan, history }) => {
@@ -27,8 +26,6 @@ const PlanActions = ({ plan, history }) => {
   } = plan.PlanStatus;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
-
-  // const logsLink = <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
 
   const kebabDropdownItems = [
     <DropdownItem
