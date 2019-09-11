@@ -11,8 +11,9 @@ import {
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-const PlanActions = ({ plan }) => {
+const PlanActions = ({ plan, history }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -26,6 +27,9 @@ const PlanActions = ({ plan }) => {
   } = plan.PlanStatus;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
+
+  // const logsLink = <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
+
   const kebabDropdownItems = [
     <DropdownItem
       onClick={() => {
@@ -76,9 +80,10 @@ const PlanActions = ({ plan }) => {
       key="showLogs"
       onClick={() => {
         setKebabIsOpen(false);
+        history.push('/logs/' + plan.MigPlan.metadata.name);
       }}
     >
-      <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
+      logs
 
     </DropdownItem>,
   ];
@@ -100,4 +105,4 @@ const PlanActions = ({ plan }) => {
   );
 };
 
-export default PlanActions;
+export default withRouter(PlanActions);
