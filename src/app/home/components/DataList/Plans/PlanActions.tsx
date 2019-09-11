@@ -26,10 +26,10 @@ const PlanActions = ({ plan, history }) => {
   } = plan.PlanStatus;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
-
   const kebabDropdownItems = [
     <DropdownItem
       onClick={() => {
+        setKebabIsOpen(false);
         planContext.handleStageTriggered(plan);
       }}
       key="stagePlan"
@@ -46,7 +46,10 @@ const PlanActions = ({ plan, history }) => {
       Stage
     </DropdownItem>,
     <DropdownItem
-      onClick={toggleOpen}
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleOpen();
+      }}
       key="migratePlan"
       isDisabled={
         hasClosedCondition ||
@@ -58,7 +61,6 @@ const PlanActions = ({ plan, history }) => {
       }
     >
       Migrate
-      <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
@@ -97,6 +99,7 @@ const PlanActions = ({ plan, history }) => {
           dropdownItems={kebabDropdownItems}
           position={DropdownPosition.right}
         />
+        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </div>
     </div>
   );
