@@ -131,23 +131,16 @@ class MigTargetForm extends React.Component<IProps, IState> {
         </TextContent>
         {/* values.targetCluster !== null && */}
         {this.state.isLoading ? (
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-            `}
-          >
-            <Bullseye>
-              <EmptyState variant="small">
-                <div className="pf-c-empty-state__icon">
-                  <Spinner size="xl" />
-                </div>
-                <Title headingLevel="h2" size="xl">
-                  Loading...
-                </Title>
-              </EmptyState>
-            </Bullseye>
-          </Flex>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
         ) : (
           <Box mt={20}>
             <TargetsTable values={values} />
