@@ -10,14 +10,14 @@ const expandRefs = {
 const FooterText = ({ type, dataList, expandDetails }) => {
   const clusterText =
     dataList.length === 1
-      ? `View ${dataList.length} Cluster`
-      : `View all ${dataList.length} Clusters`;
+      ? `View cluster`
+      : `View clusters`;
   const storageText =
     dataList.length === 1
-      ? `View ${dataList.length} Repository`
-      : `View all ${dataList.length} Repositories`;
+      ? `View repository`
+      : `View repositories`;
   const planText =
-    dataList.length === 1 ? `View ${dataList.length} Plan` : `View all ${dataList.length} Plans`;
+    dataList.length === 1 ? `View plan` : `View plans`;
   return (
     <a href={expandRefs[type]} onClick={expandDetails}>
       {type === 'clusters' && clusterText}
