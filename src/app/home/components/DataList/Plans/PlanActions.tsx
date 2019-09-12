@@ -82,8 +82,7 @@ const PlanActions = ({ plan, history }) => {
         history.push('/logs/' + plan.MigPlan.metadata.name);
       }}
     >
-      logs
-
+      Logs
     </DropdownItem>,
   ];
 

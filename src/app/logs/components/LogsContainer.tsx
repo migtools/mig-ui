@@ -21,6 +21,7 @@ import {
   Title,
   EmptyStateBody,
 } from '@patternfly/react-core';
+import JSZip from 'jszip';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import { PollingContext } from '../../home/duck/context';
 
@@ -64,36 +65,40 @@ const LogsContainer: FunctionComponent<IProps> = ({
   }, []);
 
   const downloadLogHandle = (clusterType, podLogType, logIndex) => {
-    const element = document.createElement('a');
-    const podName = logs[clusterType][podLogType][logIndex].podName;
-    const file = new Blob([logs[clusterType][podLogType][logIndex].log], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${clusterType}-${podName}.log`;
-    document.body.appendChild(element);
-    element.click();
+    const archive = new JSZip();
+    includeLog(archive, clusterType, podLogType, logIndex);
+    downloadArchive(`${clusterType}-${podLogType}`, archive);
   };
 
-  const downloadJsonHandle = (resource: IMigPlan | IMigMigration) => {
+  const includeLog = (archive, clusterType, podLogType, logIndex) => {
+    const podName = logs[clusterType][podLogType][logIndex].podName;
+    const name = `${clusterType}/${podName}.log`;
+    archive.file(name, logs[clusterType][podLogType][logIndex].log);
+  };
+
+  const downloadArchive = async (name, data) => {
     const element = document.createElement('a');
-    const file = new Blob([JSON.stringify(resource, null, 2)], { type: 'application/json' });
+    const content = await data.generateAsync({ type: 'blob' });
+    const file = new Blob([content], { type: 'application/zip' });
     element.href = URL.createObjectURL(file);
-    element.download = `${resource.metadata.name}.json`;
+    element.download = `${name}.zip`;
     document.body.appendChild(element);
     element.click();
   };
 
   const downloadAllHandle = () => {
-    downloadJsonHandle(plan);
-    migrations.map(migration => {
-      downloadJsonHandle(migration);
-    });
+    const archive = new JSZip();
+    archive.file(`plan/${plan.metadata.name}.json`, JSON.stringify(plan, null, 2));
+    migrations.map(
+      mig => archive.file(`migrations/${mig.metadata.name}.json`, JSON.stringify(mig, null, 2)));
     Object.keys(logs)
       .filter(clName => Object.values(ClusterKind).includes(clName))
       .map((clName) => Object.keys(logs[clName])
         .filter(pType => Object.values(LogKind).includes(pType))
         .map(logPodType => logs[clName][logPodType]
           .map((_, logPodIndex) =>
-            downloadLogHandle(clName, logPodType, logPodIndex))));
+            includeLog(archive, clName, logPodType, logPodIndex))));
+    downloadArchive(`${plan.metadata.name}`, archive);
   };
   if (logFetchErrorMsg) {
     return (
