@@ -8,7 +8,7 @@ const PlanEmptyState = ({ toggleOpen, plansDisabled }) => {
   return (
     <EmptyState variant="full">
       <EmptyStateIcon icon={AddCircleOIcon} />
-      <Title size="lg">No currently started plans</Title>
+      <Title size="lg">No migration plans exist</Title>
       <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="primary">
         Add plan
       </Button>
