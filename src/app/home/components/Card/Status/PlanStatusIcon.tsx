@@ -1,7 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import Loader from 'react-loader-spinner';
-import theme from '../../../../../theme';
 import { OutlinedCircleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 

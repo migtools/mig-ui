@@ -13,9 +13,6 @@ import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import Select from 'react-select';
 import TargetsTable from './TargetsTable';
 import { Box, Flex, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
-import Loader from 'react-loader-spinner';
-import { css } from '@emotion/core';
 
 interface IProps {
   values: any;
@@ -142,10 +139,10 @@ class MigTargetForm extends React.Component<IProps, IState> {
             </EmptyState>
           </Bullseye>
         ) : (
-          <Box mt={20}>
-            <TargetsTable values={values} />
-          </Box>
-        )}
+            <Box mt={20}>
+              <TargetsTable values={values} />
+            </Box>
+          )}
       </Box>
     );
   }

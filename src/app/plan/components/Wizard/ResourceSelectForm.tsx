@@ -14,9 +14,7 @@ import {
 } from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
-import Loader from 'react-loader-spinner';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { css } from '@emotion/core';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);

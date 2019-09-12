@@ -1,11 +1,8 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React from 'react';
-import { css } from '@emotion/core';
-import Loader from 'react-loader-spinner';
 import styled from '@emotion/styled';
-import theme from '../../../../theme';
-import { Flex, Box, Text } from '@rebass/emotion';
+import { Box } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
 import {
   Button,

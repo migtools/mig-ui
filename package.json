@@ -81,7 +81,6 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-json-view": "^1.19.1",
-    "react-loader-spinner": "^2.3.0",
     "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",
     "react-select": "^2.4.2",
