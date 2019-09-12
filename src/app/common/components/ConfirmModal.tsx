@@ -17,13 +17,14 @@ const ConfirmModal: React.FunctionComponent<IProps> = ({ isOpen, onHandleClose, 
       isSmall
       title="Confirmation"
       isOpen={isOpen}
+      isFooterLeftAligned
       onClose={() => onHandleClose(false)}
       actions={[
-        <Button key="cancel" variant="secondary" onClick={() => onHandleClose(false)}>
-          Cancel
-        </Button>,
         <Button key="confirm" variant="primary" onClick={() => onHandleClose(true)}>
           Confirm
+        </Button>,
+        <Button key="cancel" variant="secondary" onClick={() => onHandleClose(false)}>
+          Cancel
         </Button>,
       ]}
     >
