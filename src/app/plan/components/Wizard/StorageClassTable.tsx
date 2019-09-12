@@ -7,7 +7,12 @@ import Select from 'react-select';
 import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
-import Loader from 'react-loader-spinner';
+import {
+  Bullseye,
+  EmptyState,
+  Title,
+} from '@patternfly/react-core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 
@@ -59,17 +64,16 @@ const StorageClassTable = (props): any => {
 
   if (isFetchingPVList) {
     return (
-      <Flex
-        css={css`
-          height: 100%;
-          text-align: center;
-        `}
-      >
-        <Box flex="1" m="auto">
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-          <Text fontSize={[2, 3, 4]}> Discovering storage classes.</Text>
-        </Box>
-      </Flex>
+      <Bullseye>
+        <EmptyState variant="small">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+          <Title headingLevel="h2" size="xl">
+            Discovering storage classes...
+          </Title>
+        </EmptyState>
+      </Bullseye>
     );
   }
 

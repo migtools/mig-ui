@@ -12,7 +12,7 @@
 // PF overrides
 // need to be update upstream
 .pf-c-page {
-  --pf-c-page--BackgroundColor: var(--pf-color-black-200);
+  --pf-c-page--BackgroundColor: var(--pf-global--BackgroundColor--300);
 }
 
 .pf-c-page__header {
