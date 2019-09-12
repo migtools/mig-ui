@@ -144,14 +144,14 @@ function* checkClosedStatus(action) {
         const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
         if (hasClosedCondition) {
           yield put(PlanActions.planCloseSuccess());
-          yield put(PlanActions.stopClosedStatusPolling());
+          yield put(PlanActions.stopClosedStatusPolling(action.planName));
         }
       }
     } else {
       planClosed = true;
       yield put(PlanActions.planCloseFailure('Failed to close plan'));
       yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
-      yield put(PlanActions.stopClosedStatusPolling());
+      yield put(PlanActions.stopClosedStatusPolling(action.planName));
       break;
     }
 
