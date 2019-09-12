@@ -11,9 +11,8 @@ const { persistor, store } = configureStore();
 import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
 import { setTokenExpiryHandler } from './client/client_factory';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import './app.scss';
-
-import Loader from 'react-loader-spinner';
 
 const onBeforeLift = () => {
   // take some action before the gate lifts
@@ -44,7 +43,7 @@ setTokenExpiryHandler(_old_token => {
 render(
   <Provider store={store}>
     <PersistGate
-      loading={<Loader type="Puff" color="#00BFFF" height="100" width="100" />}
+      loading={<Spinner size="xl" />}
       onBeforeLift={onBeforeLift}
       persistor={persistor}
     >

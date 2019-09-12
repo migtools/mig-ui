@@ -1,6 +1,5 @@
 import React from 'react';
-import Loader from 'react-loader-spinner';
-import theme from '../../../../../theme';
+import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 
 interface IProps {
   plan: any;
@@ -48,11 +47,9 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
   return (
     <React.Fragment>
       <div className="pf-l-flex pf-m-nowrap">
-        {hasRunningMigrations && (
-          <div className="pf-l-flex__item">
-            <Loader type="RevolvingDot" color={theme.colors.navy} height="1em" width="1em" />
-          </div>
-        )}
+        <div className="pf-l-flex__item">
+          <PlanStatusIcon plan={plan} />
+        </div>
         <div className="pf-l-flex__item">
           {getStatus().text}
         </div>

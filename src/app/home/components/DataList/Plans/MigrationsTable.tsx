@@ -7,14 +7,15 @@ import {
   TableHeader,
 } from '@patternfly/react-table';
 import {
+  Bullseye,
   EmptyState,
+  Title,
   Progress,
   ProgressSize,
   ProgressVariant
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import Loader from 'react-loader-spinner';
-import theme from '../../../../../theme';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   migrations: any[];
@@ -40,18 +41,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
         (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
       const rowCells = [
-        {
-          title: (
-            <div className="pf-l-flex">
-              <div className="pf-l-flex__item">
-                <StatusIcon isReady={!migration.tableStatus.isFailed} />
-              </div>
-              <div className="pf-l-flex__item">
-                {type}
-              </div>
-            </div>
-          ),
-        },
+        { title: type },
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
         { title: migration.tableStatus.moved },
@@ -83,11 +73,17 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
 
   if (isPlanLocked) {
     return (
-      <div className="pf-l-flex pf-u-h-100 pf-m-align-content-center pf-m-justify-content-center">
-        <div className="pf-l-flex__item">
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="60" />
-        </div>
-      </div>
+      <Bullseye>
+        <EmptyState variant="small">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+
+          {/* <Title headingLevel="h2" size="xl">
+          TODO: ** need to evaluate what text to show here **
+          </Title> */}
+        </EmptyState>
+      </Bullseye>
     );
   }
 
@@ -104,7 +100,13 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           <TableBody />
         </Table>
       ) : (
-          <EmptyState variant="full">No migrations started</EmptyState>
+          <Bullseye>
+            <EmptyState variant="small">
+              <Title headingLevel="h2" size="xl">
+                No migrations started
+            </Title>
+            </EmptyState>
+          </Bullseye>
         )}
     </React.Fragment>
   );
