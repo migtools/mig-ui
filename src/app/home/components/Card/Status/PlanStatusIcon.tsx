@@ -24,7 +24,9 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   if (hasFailedCondition || hasNotReadyCondition) {
     return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
   } else if (hasRunningMigrations || isPlanLocked) {
-    return <Spinner size="xl" />;
+    return (
+      <Spinner size="md" />
+    );
   } else if (hasSucceededMigration || hasSucceededStage) {
     return <span className="pf-c-icon pf-m-success"><OutlinedCircleIcon /></span>;
   } else {
