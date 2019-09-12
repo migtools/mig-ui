@@ -9,6 +9,7 @@ import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
 import {
+  Bullseye,
   TextContent,
   Popover,
   PopoverPosition,
@@ -130,12 +131,23 @@ const VolumesTable = (props): any => {
   }
   if (isFetchingPVList) {
     return (
-      <EmptyState variant="full">
-        <Spinner size="xl" />
-        <EmptyStateBody>
-          Discovering persistent volumes attached to source projects.
-        </EmptyStateBody>
-      </EmptyState>
+      <Flex
+        css={css`
+          height: 100%;
+          text-align: center;
+        `}
+      >
+        <Bullseye>
+          <EmptyState variant="small">
+            <div className="pf-c-empty-state__icon">
+              <Spinner size="xl" />
+            </div>
+            <Title headingLevel="h2" size="xl">
+              Discovering persistent volumes attached to source projects...
+            </Title>
+          </EmptyState>
+        </Bullseye>
+      </Flex>
      );
   }
 

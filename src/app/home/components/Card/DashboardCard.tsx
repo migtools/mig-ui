@@ -2,12 +2,12 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import {
+  Bullseye,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   EmptyState,
-  EmptyStateBody,
   Title,
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
@@ -26,6 +26,7 @@ interface IProps {
   type?: string;
   isError: boolean;
   planStatusCounts?: any;
+  loadingTitle: string;
   expandDetails?: (string) => void;
 }
 
@@ -36,7 +37,8 @@ const DashboardCard: React.FunctionComponent<IProps> = (
     type,
     isError,
     planStatusCounts,
-    expandDetails
+    expandDetails,
+    loadingTitle,
   }
 ) => {
   if (isError) {
@@ -75,12 +77,16 @@ const DashboardCard: React.FunctionComponent<IProps> = (
         </React.Fragment>
       ) : (
         <CardBody>
-          <EmptyState variant="full">
-            <Spinner size="xl" />
-            <EmptyStateBody>
-              Loading
-            </EmptyStateBody>
-          </EmptyState>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                {loadingTitle}
+              </Title>
+            </EmptyState>
+          </Bullseye>
         </CardBody>
       )}
     </Card>

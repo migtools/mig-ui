@@ -7,7 +7,9 @@ import {
   TableHeader,
 } from '@patternfly/react-table';
 import {
+  Bullseye,
   EmptyState,
+  Title,
   Progress,
   ProgressSize,
   ProgressVariant
@@ -71,9 +73,16 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
 
   if (isPlanLocked) {
     return (
-      <EmptyState variant="full">
-        <Spinner size="xl" />
-      </EmptyState>
+      <Bullseye>
+        <EmptyState variant="small">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+          <Title headingLevel="h2" size="xl">
+            Plan is loading...
+          </Title>
+        </EmptyState>
+      </Bullseye>
     );
   }
 
@@ -90,7 +99,13 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           <TableBody />
         </Table>
       ) : (
-          <EmptyState variant="full">No migrations started</EmptyState>
+        <Bullseye>
+          <EmptyState variant="small">
+            <Title headingLevel="h2" size="xl">
+              No migrations started
+            </Title>
+          </EmptyState>
+        </Bullseye>
         )}
     </React.Fragment>
   );

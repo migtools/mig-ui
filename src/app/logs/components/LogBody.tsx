@@ -4,10 +4,11 @@ import theme from '../../../theme';
 import { Box, Flex, Text } from '@rebass/emotion';
 import { css } from '@emotion/core';
 import {
+  Bullseye,
   Button,
   CardBody,
   EmptyState,
-  EmptyStateBody,
+  Title
 } from '@patternfly/react-core';
 import LogItem from './LogItem';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
@@ -23,12 +24,16 @@ const LogBody = ({
     <CardBody style={{ minHeight: `${window.innerHeight * 0.6}px`, textAlign: 'center'}}>
       <Flex css={css`height: 100%; text-align: center; align-items: center`}>
       {isFetchingLogs ? (
-        <EmptyState variant="full">
-          <Spinner size="xl" />
-          <EmptyStateBody>
-            Loading
-          </EmptyStateBody>
-        </EmptyState>)
+        <Bullseye>
+          <EmptyState variant="small">
+            <div className="pf-c-empty-state__icon">
+              <Spinner size="xl" />
+            </div>
+            <Title headingLevel="h2" size="xl">
+              Loading...
+            </Title>
+          </EmptyState>
+        </Bullseye>)
         : log === '' ? (
           <Box flex="1" m="auto">
             <Text fontSize={[2, 3, 4]}>Select pod to display logs</Text>

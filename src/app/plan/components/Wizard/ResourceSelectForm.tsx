@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import {
+  Bullseye,
   EmptyState,
-  EmptyStateBody,
   Form,
   FormGroup,
   Grid,
-  GridItem
+  GridItem,
+  Title,
 } from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
@@ -211,12 +212,16 @@ const ResourceSelectForm = props => {
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
-          <EmptyState variant="full">
-            <Spinner size="xl" />
-            <EmptyStateBody>
-              Discovering namespaces
-            </EmptyStateBody>
-          </EmptyState>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
         </GridItem>
       ) : (
         <NamespaceTable

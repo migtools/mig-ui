@@ -8,8 +8,9 @@ import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import {
+  Bullseye,
   EmptyState,
-  EmptyStateBody,
+  Title,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -63,12 +64,23 @@ const StorageClassTable = (props): any => {
 
   if (isFetchingPVList) {
     return (
-      <EmptyState variant="full">
-        <Spinner size="xl" />
-        <EmptyStateBody>
-          Discovering storage classes.
-        </EmptyStateBody>
-      </EmptyState>
+      <Flex
+        css={css`
+          height: 100%;
+          text-align: center;
+        `}
+      >
+        <Bullseye>
+          <EmptyState variant="small">
+            <div className="pf-c-empty-state__icon">
+              <Spinner size="xl" />
+            </div>
+            <Title headingLevel="h2" size="xl">
+              Discovering storage classes...
+            </Title>
+          </EmptyState>
+        </Bullseye>
+      </Flex>
     );
   }
 

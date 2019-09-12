@@ -2,19 +2,20 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import {
+  Bullseye,
   EmptyState,
-  EmptyStateBody,
+  Title,
   TextContent,
   TextList,
   TextListItem
 } from '@patternfly/react-core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import Select from 'react-select';
 import TargetsTable from './TargetsTable';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
 import { css } from '@emotion/core';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   values: any;
@@ -130,12 +131,23 @@ class MigTargetForm extends React.Component<IProps, IState> {
         </TextContent>
         {/* values.targetCluster !== null && */}
         {this.state.isLoading ? (
-          <EmptyState variant="full">
-            <Spinner size="xl" />
-            <EmptyStateBody>
-              Loading
-            </EmptyStateBody>
-          </EmptyState>
+          <Flex
+            css={css`
+              height: 100%;
+              text-align: center;
+            `}
+          >
+            <Bullseye>
+              <EmptyState variant="small">
+                <div className="pf-c-empty-state__icon">
+                  <Spinner size="xl" />
+                </div>
+                <Title headingLevel="h2" size="xl">
+                  Loading...
+                </Title>
+              </EmptyState>
+            </Bullseye>
+          </Flex>
         ) : (
           <Box mt={20}>
             <TargetsTable values={values} />

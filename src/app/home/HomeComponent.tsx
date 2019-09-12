@@ -82,7 +82,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingClusters}
               isError={isClusterError}
               expandDetails={() => handleExpand(DataListItems.ClusterList)}
-
+              loadingTitle="Loading clusters..."
             />
           </GridItem>
           <GridItem>
@@ -93,6 +93,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingStorage}
               isError={isStorageError}
               expandDetails={() => handleExpand(DataListItems.StorageList)}
+              loadingTitle="Loading repositories..."
             />
           </GridItem>
           <GridItem>
@@ -104,6 +105,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingPlans}
               isError={isPlanError}
               expandDetails={() => handleExpand(DataListItems.PlanList)}
+              loadingTitle="Loading migration plans..."
             />
           </GridItem>
           <GridItem span={12}>
