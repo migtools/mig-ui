@@ -5,7 +5,8 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter
+  CardFooter,
+  Title
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import Loader from 'react-loader-spinner';
@@ -54,7 +55,9 @@ const DashboardCard: React.FunctionComponent<IProps> = (
       {dataList && !isFetching ? (
         <React.Fragment>
           <CardHeader>
-            <HeaderText type={type} dataList={dataList} />
+            <Title size="xl" headingLevel="h2">
+              <HeaderText type={type} dataList={dataList} />
+            </Title>
           </CardHeader>
           <CardBody>
             {type === 'plans' ? (

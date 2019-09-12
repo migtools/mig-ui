@@ -18,7 +18,7 @@ import {
   ClusterContext,
   StorageContext,
 } from './duck/context';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
+import { createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../common/add_edit_state';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { PollingActions } from '../common/duck/actions';
 import { LogActions } from '../logs/duck';
@@ -35,6 +35,7 @@ interface IProps {
   removePlan: (id) => void;
   removeCluster: (id) => void;
   runStage: (plan) => void;
+  runMigration: (plan, disableQuiesce) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
   migMeta: string;
@@ -62,6 +63,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     removePlan,
     removeCluster,
     runStage,
+    runMigration,
     planCloseAndDeleteRequest,
     plansWithStatus,
     clusterAssociatedPlans,
@@ -87,6 +89,9 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 
   const handleStageTriggered = plan => {
     runStage(plan);
+  };
+  const handleRunMigration = (plan, disableQuiesce) => {
+    runMigration(plan, disableQuiesce);
   };
 
   const handleDeletePlan = plan => {
@@ -122,7 +127,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
         </StorageContext.Provider>
         <PlanContext.Provider value={{
           handleStageTriggered,
-          handleDeletePlan
+          handleDeletePlan,
+          handleRunMigration
         }}>
           <PlanDataListItem
             id={DataListItems.PlanList}
@@ -165,6 +171,7 @@ const mapDispatchToProps = dispatch => {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
+    runMigration: (plan, disableQuiesce) => dispatch(planOperations.runMigration(plan, disableQuiesce)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),

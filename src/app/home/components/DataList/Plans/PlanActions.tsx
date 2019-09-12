@@ -10,9 +10,9 @@ import {
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-const PlanActions = ({ plan }) => {
+const PlanActions = ({ plan, history }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -29,6 +29,7 @@ const PlanActions = ({ plan }) => {
   const kebabDropdownItems = [
     <DropdownItem
       onClick={() => {
+        setKebabIsOpen(false);
         planContext.handleStageTriggered(plan);
       }}
       key="stagePlan"
@@ -45,7 +46,10 @@ const PlanActions = ({ plan }) => {
       Stage
     </DropdownItem>,
     <DropdownItem
-      onClick={toggleOpen}
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleOpen();
+      }}
       key="migratePlan"
       isDisabled={
         hasClosedCondition ||
@@ -57,7 +61,6 @@ const PlanActions = ({ plan }) => {
       }
     >
       Migrate
-      <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
@@ -76,9 +79,10 @@ const PlanActions = ({ plan }) => {
       key="showLogs"
       onClick={() => {
         setKebabIsOpen(false);
+        history.push('/logs/' + plan.MigPlan.metadata.name);
       }}
     >
-      <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
+      logs
 
     </DropdownItem>,
   ];
@@ -95,9 +99,10 @@ const PlanActions = ({ plan }) => {
           dropdownItems={kebabDropdownItems}
           position={DropdownPosition.right}
         />
+        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
       </div>
     </div>
   );
 };
 
-export default PlanActions;
+export default withRouter(PlanActions);
