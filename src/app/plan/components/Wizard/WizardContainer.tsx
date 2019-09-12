@@ -28,7 +28,8 @@ export interface IOtherProps {
   isPollingPlans: boolean;
   currentPlan: any;
   currentPlanStatus: any;
-  startPlanStatusPolling: () => void;
+  startPlanStatusPolling: (planName) => void;
+  planUpdateRequest: (values) => void;
   resetCurrentPlan: () => void;
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
@@ -71,9 +72,8 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     return errors;
   },
 
-  handleSubmit: (values, formikBag: any) => {
-    formikBag.setSubmitting(false);
-    formikBag.props.onPlanSubmit(values);
+  handleSubmit: () => {
+    return null;
   },
   validateOnBlur: false,
 })(WizardComponent);
@@ -123,6 +123,7 @@ const mapDispatchToProps = dispatch => {
     pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
+    planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
   };
 };

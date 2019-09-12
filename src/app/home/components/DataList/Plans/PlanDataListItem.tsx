@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Badge,
   Button,
   DataListItem,
   DataListToggle,
@@ -17,11 +18,11 @@ const PlanDataListItem = ({
   id,
   clusterList,
   storageList,
-  onPlanSubmit,
   planList,
   plansDisabled,
   isExpanded,
   toggleExpanded,
+  planCount
 }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (planList) {
@@ -38,7 +39,15 @@ const PlanDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="plan-item" key="plans">
-                <span id="name">Plans</span>
+                <div className="pf-l-flex">
+                  <div className="pf-l-flex__item">
+                    <span id="plans">Plans</span>
+                  </div>
+                  <div className="pf-l-flex__item">
+                    <Badge isRead>{planCount}</Badge>
+                  </div>
+                </div>
+
               </DataListCell>,
             ]}
           />
@@ -52,12 +61,10 @@ const PlanDataListItem = ({
               storageList={storageList}
               isOpen={isOpen}
               onHandleWizardModalClose={toggleOpen}
-              onPlanSubmit={onPlanSubmit}
             />
           </DataListAction>
         </DataListItemRow>
         <PlanContent
-          onPlanSubmit={onPlanSubmit}
           plansDisabled={plansDisabled}
           planList={planList}
           clusterList={clusterList}

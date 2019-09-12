@@ -31,46 +31,10 @@ export function tokenFromSecret(secret: any) {
   return atob(secret.data.token);
 }
 
-export function createClusterRegistryObj(name: string, namespace: string, serverAddress: string) {
-  return {
-    apiVersion: 'clusterregistry.k8s.io/v1alpha1',
-    kind: 'Cluster',
-    metadata: {
-      name,
-      namespace,
-    },
-    spec: {
-      kubernetesApiEndpoints: {
-        serverEndpoints: [
-          {
-            clientCIDR: '0.0.0.0',
-            serverAddress,
-          },
-        ],
-      },
-    },
-  };
-}
-
-export function updateClusterRegistryObj(serverAddress: string) {
-  return {
-    spec: {
-      kubernetesApiEndpoints: {
-        serverEndpoints: [
-          {
-            clientCIDR: '0.0.0.0',
-            serverAddress,
-          },
-        ],
-      },
-    },
-  };
-}
-
 export function createMigCluster(
   name: string,
   namespace: string,
-  clusterRegistryObj: any,
+  clusterUrl: string,
   tokenSecret: any
 ) {
   return {
@@ -82,14 +46,21 @@ export function createMigCluster(
     },
     spec: {
       isHostCluster: false,
-      clusterRef: {
-        name: clusterRegistryObj.metadata.name,
-        namespace: clusterRegistryObj.metadata.namespace,
-      },
+      url: clusterUrl,
       serviceAccountSecretRef: {
         name: tokenSecret.metadata.name,
         namespace: tokenSecret.metadata.namespace,
       },
+    },
+  };
+}
+
+export function updateMigClusterUrl(
+  clusterUrl: string,
+) {
+  return {
+    spec: {
+      url: clusterUrl,
     },
   };
 }
@@ -232,8 +203,11 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
       if (userPv) {
         v.selection.action = userPv.type;
-        if (userPv.type === 'copy') {
-          v.selection.storageClass = planValues[pvStorageClassAssignmentKey][v.name].name;
+        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+        if (selectedStorageClassObj) {
+          v.selection.storageClass = selectedStorageClassObj.name;
+        } else {
+          v.selection.storageClass = '';
         }
       }
       return v;
@@ -312,6 +286,5 @@ export function createMigMigration(
 export type IMigPlan = ReturnType<typeof createMigPlan>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
-export type IClusterRegistryObj = ReturnType<typeof createClusterRegistryObj>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;
 export type IStorageSecret = ReturnType<typeof createStorageSecret>;

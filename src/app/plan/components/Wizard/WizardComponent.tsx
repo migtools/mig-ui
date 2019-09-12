@@ -37,6 +37,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
+    planUpdateRequest,
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
@@ -199,7 +200,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       }
     }
     if (curr.id === stepId.Results) {
-      props.handleSubmit();
+      //update plan & start status polling on results page
+      planUpdateRequest(props.values);
+      startPlanStatusPolling(props.values.planName);
     }
   };
   const handleClose = () => {

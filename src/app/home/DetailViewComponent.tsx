@@ -18,7 +18,7 @@ import {
   ClusterContext,
   StorageContext,
 } from './duck/context';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../common/add_edit_state';
+import { createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../common/add_edit_state';
 import { StatusPollingInterval } from '../common/duck/sagas';
 import { PollingActions } from '../common/duck/actions';
 import { LogActions } from '../logs/duck';
@@ -34,8 +34,8 @@ interface IProps {
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
-  planUpdateRequest: (planValues) => void;
   runStage: (plan) => void;
+  runMigration: (plan, disableQuiesce) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
   migMeta: string;
@@ -62,8 +62,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     removeStorage,
     removePlan,
     removeCluster,
-    planUpdateRequest,
     runStage,
+    runMigration,
     planCloseAndDeleteRequest,
     plansWithStatus,
     clusterAssociatedPlans,
@@ -71,16 +71,12 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     watchClusterAddEditStatus,
     watchStorageAddEditStatus,
     migMeta,
+    handleExpandDetails,
+    expanded
   } = props;
 
   const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
-  const [expandedStateObj, setExpandedStateObj] = useState(
-    {
-      'clusterList': false,
-      'storageList': false,
-      'planList': false,
-    },
-  );
+
   useEffect(() => {
     if (allClusters.length > 1 && allStorage.length > 0) {
       setAddPlanDisabled(false);
@@ -90,22 +86,12 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   }, [allClusters, allStorage]);
 
 
-  const handleExpand = (id: string) => {
-    const expanded = !expandedStateObj[id];
-    const newExpanded = Object.assign({}, expandedStateObj);
-    Object.values(DataListItems).map(
-      expandItem => newExpanded[expandItem] = false
-    );
-    newExpanded[id] = expanded;
-    setExpandedStateObj(newExpanded);
-  };
-
-  const handlePlanSubmit = planWizardValues => {
-    planUpdateRequest(planWizardValues);
-  };
 
   const handleStageTriggered = plan => {
     runStage(plan);
+  };
+  const handleRunMigration = (plan, disableQuiesce) => {
+    runMigration(plan, disableQuiesce);
   };
 
   const handleDeletePlan = plan => {
@@ -123,8 +109,9 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             associatedPlans={clusterAssociatedPlans}
             migMeta={migMeta}
             removeCluster={removeCluster}
-            isExpanded={expandedStateObj[DataListItems.ClusterList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.ClusterList]}
+            toggleExpanded={handleExpandDetails}
+            clusterCount={allClusters.length}
           />
         </ClusterContext.Provider>
         <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
@@ -133,22 +120,25 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             id={DataListItems.StorageList}
             associatedPlans={storageAssociatedPlans}
             removeStorage={removeStorage}
-            isExpanded={expandedStateObj[DataListItems.StorageList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.StorageList]}
+            toggleExpanded={handleExpandDetails}
+            storageCount={allStorage.length}
           />
         </StorageContext.Provider>
         <PlanContext.Provider value={{
           handleStageTriggered,
-          handleDeletePlan }}>
+          handleDeletePlan,
+          handleRunMigration
+        }}>
           <PlanDataListItem
             id={DataListItems.PlanList}
             planList={plansWithStatus}
             clusterList={allClusters}
             storageList={allStorage}
-            onPlanSubmit={handlePlanSubmit}
             plansDisabled={isAddPlanDisabled}
-            isExpanded={expandedStateObj[DataListItems.PlanList]}
-            toggleExpanded={handleExpand}
+            isExpanded={expanded[DataListItems.PlanList]}
+            toggleExpanded={handleExpandDetails}
+            planCount={plansWithStatus.length}
           />
         </PlanContext.Provider>
       </DataList>
@@ -180,8 +170,8 @@ const mapDispatchToProps = dispatch => {
   return {
     removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
     removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    planUpdateRequest: planValues => dispatch(PlanActions.planUpdateRequest(planValues)),
     runStage: plan => dispatch(planOperations.runStage(plan)),
+    runMigration: (plan, disableQuiesce) => dispatch(planOperations.runMigration(plan, disableQuiesce)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),

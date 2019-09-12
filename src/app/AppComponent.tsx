@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import HomeComponent from './home/HomeComponent';
 import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
@@ -15,8 +15,7 @@ import {
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
-import { Flex, Box } from '@rebass/emotion';
-import { Global, css } from '@emotion/core';
+import { Global } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
 import CertErrorComponent from './auth/CertErrorComponent';
@@ -47,10 +46,14 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   clusterList: any;
 }
-const NotificationContainer = styled(Box)`
+const NotificationContainer = styled.div`
   position: fixed;
   z-index: 9999999;
-  align-self: center;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
 `;
 
 const AppComponent: React.SFC<IProps> = ({
@@ -132,7 +135,7 @@ const AppComponent: React.SFC<IProps> = ({
   };
 
   return (
-    <Flex flexDirection="column" width="100%">
+    <React.Fragment>
       {progressMessage && (
         <NotificationContainer>
           <Alert
@@ -161,57 +164,40 @@ const AppComponent: React.SFC<IProps> = ({
         </NotificationContainer>
       )}
 
-      <Box>
-        <PollingContext.Provider value={{
-          startDefaultClusterPolling: () => startDefaultClusterPolling(),
-          startDefaultStoragePolling: () => startDefaultStoragePolling(),
-          startDefaultPlanPolling: () => startDefaultPlanPolling(),
-          stopClusterPolling: () => stopClusterPolling(),
-          stopStoragePolling: () => stopStoragePolling(),
-          stopPlanPolling: () => stopPlanPolling(),
-          startAllDefaultPolling: () => {
-            startDefaultClusterPolling();
-            startDefaultStoragePolling();
-            startDefaultPlanPolling();
-          },
-          stopAllPolling: () => {
-            stopClusterPolling();
-            stopStoragePolling();
-            stopPlanPolling();
-          }
-        }}>
-
-          <ThemeProvider theme={theme}>
-            <ConnectedRouter history={history}>
-              <Switch>
-                <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-                <RefreshRoute exact path="/logs/:planId"
-                  clusterList={clusterList}
-                  isLoggedIn={isLoggedIn}
-                  component={LogsComponent}
-                />
-                <Route path="/login" component={LoginComponent} />
-                <Route path="/cert-error" component={CertErrorComponent} />
-              </Switch>
-            </ConnectedRouter>
-          </ThemeProvider>
-        </PollingContext.Provider>
-
-      </Box>
-      <Global
-        styles={css`
-        body html,
-        body,
-        #root,
-        #root > div {
-          margin: 0;
-          padding: 0;
-          min-height: 100vh;
-          max-width: 100vw;
-          background-color: #ededed;
+      <PollingContext.Provider value={{
+        startDefaultClusterPolling: () => startDefaultClusterPolling(),
+        startDefaultStoragePolling: () => startDefaultStoragePolling(),
+        startDefaultPlanPolling: () => startDefaultPlanPolling(),
+        stopClusterPolling: () => stopClusterPolling(),
+        stopStoragePolling: () => stopStoragePolling(),
+        stopPlanPolling: () => stopPlanPolling(),
+        startAllDefaultPolling: () => {
+          startDefaultClusterPolling();
+          startDefaultStoragePolling();
+          startDefaultPlanPolling();
+        },
+        stopAllPolling: () => {
+          stopClusterPolling();
+          stopStoragePolling();
+          stopPlanPolling();
         }
-      `}
-      />
+      }}>
+
+        <ThemeProvider theme={theme}>
+          <ConnectedRouter history={history}>
+            <Switch>
+              <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+              <RefreshRoute exact path="/logs/:planId"
+                clusterList={clusterList}
+                isLoggedIn={isLoggedIn}
+                component={LogsComponent}
+              />
+              <Route path="/login" component={LoginComponent} />
+              <Route path="/cert-error" component={CertErrorComponent} />
+            </Switch>
+          </ConnectedRouter>
+        </ThemeProvider>
+      </PollingContext.Provider>
       <Global
         styles={{
           'body.noScroll': {
@@ -221,7 +207,7 @@ const AppComponent: React.SFC<IProps> = ({
           },
         }}
       />
-    </Flex>
+    </React.Fragment>
   );
 };
 

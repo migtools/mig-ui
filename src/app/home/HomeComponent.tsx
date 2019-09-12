@@ -1,7 +1,7 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
-import { Flex, Box, Text } from '@rebass/emotion';
 import {
+  Card,
   Page,
   PageSection,
   Grid,
@@ -27,6 +27,12 @@ interface IProps {
   isPlanError: boolean;
   planStatusCounts: any;
 }
+export const DataItemsLength = 3;
+export enum DataListItems {
+  ClusterList = 'clusterList',
+  StorageList = 'storageList',
+  PlanList = 'planList',
+}
 
 const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   const {
@@ -46,31 +52,50 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
+  const [expandedStateObj, setExpandedStateObj] = useState(
+    {
+      'clusterList': false,
+      'storageList': false,
+      'planList': false,
+    },
+  );
 
+  const handleExpand = (id: string) => {
+    const expanded = !expandedStateObj[id];
+    const newExpanded = Object.assign({}, expandedStateObj);
+    Object.values(DataListItems).map(
+      expandItem => newExpanded[expandItem] = false
+    );
+    newExpanded[id] = expanded;
+    setExpandedStateObj(newExpanded);
+  };
 
   return (
     <Page header={HeaderComponent}>
       <PageSection>
-        <Grid gutter="md">
-          <GridItem span={4}>
+        <Grid gutter="lg" md={6} lg={4}>
+          <GridItem>
             <DashboardCard
               type="clusters"
               title="Clusters"
               dataList={allClusters}
               isFetching={isFetchingClusters}
               isError={isClusterError}
+              expandDetails={() => handleExpand(DataListItems.ClusterList)}
+
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem>
             <DashboardCard
               title="Replication Repositories"
               type="repositories"
               dataList={allStorage}
               isFetching={isFetchingStorage}
               isError={isStorageError}
+              expandDetails={() => handleExpand(DataListItems.StorageList)}
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem>
             <DashboardCard
               type="plans"
               title="Migration Plans"
@@ -78,20 +103,19 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               dataList={allPlans}
               isFetching={isFetchingPlans}
               isError={isPlanError}
+              expandDetails={() => handleExpand(DataListItems.PlanList)}
             />
+          </GridItem>
+          <GridItem span={12}>
+            <Card>
+              <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
+            </Card>
           </GridItem>
         </Grid>
       </PageSection>
-      <PageSection>
-        <Flex justifyContent="center">
-          <Box flex="0 0 100%">
-            <DetailViewComponent />
-          </Box>
-        </Flex>
-      </PageSection>
-      <PageSection>
-        {/* <TODO: footer content */}
-      </PageSection>
+      {/* <PageSection>
+        <TODO: footer content
+      </PageSection> */}
     </Page>
   );
 };

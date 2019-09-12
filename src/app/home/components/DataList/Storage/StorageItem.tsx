@@ -1,11 +1,15 @@
-import React, { useContext } from 'react';
-import { Flex, Box } from '@rebass/emotion';
+import React, { useState, useContext } from 'react';
 import {
   Button,
+  DataListAction,
   DataListItem,
   DataListCell,
   DataListItemCells,
   DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
@@ -28,14 +32,14 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
     typeof storage.Secret === 'undefined'
       ? null
       : storage.Secret.data['aws-access-key-id']
-      ? atob(storage.Secret.data['aws-access-key-id'])
-      : '';
+        ? atob(storage.Secret.data['aws-access-key-id'])
+        : '';
   const secret =
     typeof storage.Secret === 'undefined'
       ? null
       : storage.Secret.data['aws-secret-access-key']
-      ? atob(storage.Secret.data['aws-secret-access-key'])
-      : '';
+        ? atob(storage.Secret.data['aws-secret-access-key'])
+        : '';
 
   let storageStatus = null;
   if (storage.MigStorage.status) {
@@ -58,6 +62,29 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
     storageContext.watchStorageAddEditStatus(name);
     toggleIsAddEditModalOpen();
   };
+
+  const [kebabIsOpen, setKebabIsOpen] = useState(false);
+
+  const kebabDropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        editStorage();
+      }}
+      key="editStorage"
+    >
+      Edit
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      key="removeStorage"
+    >
+      Remove
+    </DropdownItem>,
+  ];
 
   return (
     <DataListItem key={storageIndex} aria-labelledby="">
@@ -91,35 +118,36 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="actions" width={2}>
-              <Flex justifyContent="flex-end">
-                <Box mx={1}>
-                  <Button onClick={editStorage} variant="secondary">
-                    Edit
-                  </Button>
-                  <AddEditStorageModal
-                    isOpen={isAddEditModalOpen}
-                    onHandleClose={toggleIsAddEditModalOpen}
-                    initialStorageValues={{
-                      name, bucketName, bucketRegion, accessKey, secret, s3Url,
-                    }}
-                  />
-                </Box>
-                <Box mx={1}>
-                  <Button onClick={toggleConfirmOpen} variant="danger" key="remove-action">
-                    Remove
-                  </Button>
-                  <ConfirmModal
-                    message={removeMessage}
-                    isOpen={isConfirmOpen}
-                    onHandleClose={handleRemoveStorage}
-                    id="confirm-storage-removal"
-                  />
-                </Box>
-              </Flex>
-            </DataListCell>,
           ]}
         />
+        <DataListAction
+          aria-labelledby="storage-item storage-item-actions-dropdown"
+          id="storage-item-actions-dropdown"
+          aria-label="Actions"
+        >
+          <Dropdown
+            toggle={<KebabToggle
+              onToggle={() => setKebabIsOpen(!kebabIsOpen)}
+            />}
+            isOpen={kebabIsOpen}
+            isPlain
+            dropdownItems={kebabDropdownItems}
+            position={DropdownPosition.right}
+          />
+          <AddEditStorageModal
+            isOpen={isAddEditModalOpen}
+            onHandleClose={toggleIsAddEditModalOpen}
+            initialStorageValues={{
+              name, bucketName, bucketRegion, accessKey, secret, s3Url,
+            }}
+          />
+          <ConfirmModal
+            message={removeMessage}
+            isOpen={isConfirmOpen}
+            onHandleClose={handleRemoveStorage}
+            id="confirm-storage-removal"
+          />
+        </DataListAction>
       </DataListItemRow>
     </DataListItem>
   );

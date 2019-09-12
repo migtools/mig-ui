@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Badge,
   Button,
   DataListItem,
   DataListCell,
@@ -20,6 +21,7 @@ const StorageDataListItem = ({
   removeStorage,
   isExpanded,
   toggleExpanded,
+  storageCount,
   ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -34,7 +36,15 @@ const StorageDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="storage-item" key="storage">
-                <span id="name">Repositories</span>
+                <div className="pf-l-flex">
+                  <div className="pf-l-flex__item">
+                    <span id="repos">Repositories</span>
+                  </div>
+                  <div className="pf-l-flex__item">
+                    <Badge isRead>{storageCount}</Badge>
+                  </div>
+                </div>
+
               </DataListCell>,
             ]}
           />
