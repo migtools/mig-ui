@@ -36,7 +36,9 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
       </dd>
       <dt>
         <span className="pf-c-widget-description-list__icon">
-          <StatusIcon isReady={false} />
+          {failureList.length > 0 &&
+            <StatusIcon isReady={false} />
+          }
         </span>
         <span className="pf-c-widget-description-list__num">
           {failureList.length}

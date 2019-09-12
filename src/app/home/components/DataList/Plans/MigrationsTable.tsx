@@ -5,6 +5,7 @@ import {
   Table,
   TableBody,
   TableHeader,
+  cellWidth
 } from '@patternfly/react-table';
 import {
   Bullseye,
@@ -32,7 +33,10 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     { title: 'End Time' },
     'PVs Moved',
     'PVs Copied',
-    'Status',
+    {
+      title: 'Status',
+      transforms: [cellWidth('30')]
+    },
   ];
 
   useEffect(() => {
