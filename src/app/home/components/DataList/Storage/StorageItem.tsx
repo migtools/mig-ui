@@ -74,13 +74,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       key="editStorage"
     >
       Edit
-      <AddEditStorageModal
-        isOpen={isAddEditModalOpen}
-        onHandleClose={toggleIsAddEditModalOpen}
-        initialStorageValues={{
-          name, bucketName, bucketRegion, accessKey, secret, s3Url,
-        }}
-      />
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
@@ -90,12 +83,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       key="removeStorage"
     >
       Remove
-    <ConfirmModal
-        message={removeMessage}
-        isOpen={isConfirmOpen}
-        onHandleClose={handleRemoveStorage}
-        id="confirm-storage-removal"
-      />
     </DropdownItem>,
   ];
 

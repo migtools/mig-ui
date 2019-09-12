@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useEffect } from 'react';
+import React from 'react';
 import HomeComponent from './home/HomeComponent';
 import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
@@ -15,7 +15,6 @@ import {
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
-import { Flex, Box } from '@rebass/emotion';
 import { Global } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
@@ -47,10 +46,14 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   clusterList: any;
 }
-const NotificationContainer = styled(Box)`
+const NotificationContainer = styled.div`
   position: fixed;
   z-index: 9999999;
-  align-self: center;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25%;
 `;
 
 const AppComponent: React.SFC<IProps> = ({
