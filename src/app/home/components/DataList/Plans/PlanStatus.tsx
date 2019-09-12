@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 
 interface IProps {
   plan: any;
@@ -47,11 +47,9 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
   return (
     <React.Fragment>
       <div className="pf-l-flex pf-m-nowrap">
-        {hasRunningMigrations && (
-          <div className="pf-l-flex__item">
-            <Spinner size="md" />
-          </div>
-        )}
+        <div className="pf-l-flex__item">
+          <PlanStatusIcon plan={plan} />
+        </div>
         <div className="pf-l-flex__item">
           {getStatus().text}
         </div>

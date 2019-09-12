@@ -4,7 +4,6 @@ import { DataList, DataListContent, DataListItem } from '@patternfly/react-core'
 import PlanActions from './PlanActions';
 import PlanStatus from './PlanStatus';
 import MigrationsTable from './MigrationsTable';
-import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 import {
   Table,
   TableHeader,
@@ -78,9 +77,6 @@ const buildNewRows = (
           {
             title: (
               <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
-                  <PlanStatusIcon plan={plan} />
-                </div>
                 <div className="pf-l-flex__item">
                   <span>{plan.MigPlan.metadata.name}</span>
                 </div>
