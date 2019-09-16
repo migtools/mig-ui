@@ -11,8 +11,6 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { FormikProps } from 'formik';
-import { IFormValues } from './WizardContainer';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
@@ -52,10 +50,10 @@ const StorageClassTable = (props: IProps) => {
     props.setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
   };
 
-  const handleCopyMethodChange = (row, option) => {
-    const pvName = row.original.name;
+  const handleCopyMethodChange = (selectedPV, option) => {
+    const pvName = selectedPV.name;
     const selectedCmName = option.value;
-    const newCm = copyMethodOptions.find(cm => cm.name === selectedCmName);
+    const newCm = selectedPV.supported.copyMethods.find(cm => cm === selectedCmName);
     const updatedAssignment = {
       ...pvCopyMethodAssignment,
       [pvName]: newCm,
@@ -84,19 +82,23 @@ const StorageClassTable = (props: IProps) => {
       return assignedScs;
     }, {}) : {};
 
-    const initialAssignedCms = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
-      const suggestedStorageClass = destStorageClasses.find(sc =>
-        sc.name === pv.selection.storageClass
-      );
-      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : destStorageClasses[0];
-      return assignedScs;
-    }, {}) : {};
-
     setPvStorageClassAssignment(initialAssignedScs);
     props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
 
-    props.setFieldValue(pvCopyMethodAssignmentKey, initialAssignedCms);
 
+    const initialAssignedCms = migPlanPvs ? migPlanPvs.reduce((assignedCms, pv) => {
+      const supportedCopyMethods = pv.supported.copyMethods || [];
+
+      const suggestedCopyMethod = supportedCopyMethods.find(cm =>
+        cm === pv.selection.copyMethod
+      );
+
+      assignedCms[pv.name] = suggestedCopyMethod ? suggestedCopyMethod : supportedCopyMethods[0];
+      return assignedCms;
+    }, {}) : {};
+
+    setPvCopyMethodAssignment(initialAssignedCms);
+    props.setFieldValue(pvCopyMethodAssignmentKey, initialAssignedCms);
 
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
@@ -170,22 +172,26 @@ const StorageClassTable = (props: IProps) => {
               width: 500,
               style: { overflow: 'visible' },
               Cell: row => {
+                // const supportedCopyMethods = pv.supported.copyMethods || [];
+                const migPlanPvs = currentPlan.spec.persistentVolumes;
+                const currentPV = migPlanPvs.find(pv => pv.name === row.original.name)
                 const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
-                const copyMethodOptionsMapped = copyMethodOptions.map(cm => {
-                  return { value: cm.name, label: cm.name };
+
+                const copyMethodOptionsMapped = currentPV.supported.copyMethods.map(cm => {
+                  return { value: cm, label: cm };
                 });
                 return (
                   <Select
-                    onChange={(option: any) => handleStorageClassChange(row, option)}
+                    onChange={(option) => handleCopyMethodChange(currentPV, option)}
                     options={
                       copyMethodOptionsMapped
                     }
                     name="copyMethods"
                     value={{
                       label: currentCopyMethod ?
-                        currentCopyMethod.name : 'None',
+                        currentCopyMethod : 'None',
                       value: currentCopyMethod ?
-                        currentCopyMethod.name : '',
+                        currentCopyMethod : '',
                     }}
                     placeholder="Select a copy method..."
                   />
