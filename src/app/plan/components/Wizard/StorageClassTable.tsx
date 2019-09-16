@@ -174,7 +174,7 @@ const StorageClassTable = (props: IProps) => {
               Cell: row => {
                 // const supportedCopyMethods = pv.supported.copyMethods || [];
                 const migPlanPvs = currentPlan.spec.persistentVolumes;
-                const currentPV = migPlanPvs.find(pv => pv.name === row.original.name)
+                const currentPV = migPlanPvs.find(pv => pv.name === row.original.name);
                 const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
 
                 const copyMethodOptionsMapped = currentPV.supported.copyMethods.map(cm => {

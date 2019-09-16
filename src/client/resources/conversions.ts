@@ -1,4 +1,7 @@
-import { pvStorageClassAssignmentKey, pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
+import {
+  pvStorageClassAssignmentKey,
+  pvCopyMethodAssignmentKey
+} from '../../app/plan/components/Wizard/StorageClassTable';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
