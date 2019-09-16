@@ -5,25 +5,39 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
-import { Flex, Box, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Bullseye,
   EmptyState,
   Title,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { FormikProps } from 'formik';
+import { IFormValues } from './WizardContainer';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
+export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
 
-const StorageClassTable = (props): any => {
-  const { currentPlan, clusterList, values, isFetchingPVList } = props;
-  const migPlanPvs = currentPlan.spec.persistentVolumes;
+interface IProps {
+  values: any;
+  currentPlan: any;
+  clusterList: any;
+  isFetchingPVList: any;
+  setFieldValue: any;
+
+}
+const StorageClassTable = (props: IProps) => {
+
+  const { currentPlan,
+    clusterList,
+    values,
+    isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
+  const [copyMethodOptions, setCopyMethodOptions] = useState([]);
   // Create a bit of state that will hold the storage class assignments
   // for each of the pvs. This will get set on the plan values.
   const [pvStorageClassAssignment, setPvStorageClassAssignment] = useState({});
+  const [pvCopyMethodAssignment, setPvCopyMethodAssignment] = useState({});
 
   const handleStorageClassChange = (row, option) => {
     const pvName = row.original.name;
@@ -38,7 +52,22 @@ const StorageClassTable = (props): any => {
     props.setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
   };
 
+  const handleCopyMethodChange = (row, option) => {
+    const pvName = row.original.name;
+    const selectedCmName = option.value;
+    const newCm = copyMethodOptions.find(cm => cm.name === selectedCmName);
+    const updatedAssignment = {
+      ...pvCopyMethodAssignment,
+      [pvName]: newCm,
+    };
+
+    setPvCopyMethodAssignment(updatedAssignment);
+    props.setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
+  };
+
   useEffect(() => {
+    const migPlanPvs = currentPlan.spec.persistentVolumes;
+
     const destCluster = clusterList.find(
       c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
     );
@@ -54,8 +83,20 @@ const StorageClassTable = (props): any => {
       assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : destStorageClasses[0];
       return assignedScs;
     }, {}) : {};
+
+    const initialAssignedCms = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
+      const suggestedStorageClass = destStorageClasses.find(sc =>
+        sc.name === pv.selection.storageClass
+      );
+      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : destStorageClasses[0];
+      return assignedScs;
+    }, {}) : {};
+
     setPvStorageClassAssignment(initialAssignedScs);
     props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
+
+    props.setFieldValue(pvCopyMethodAssignmentKey, initialAssignedCms);
+
 
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
@@ -113,6 +154,43 @@ const StorageClassTable = (props): any => {
               ),
               accessor: 'type',
               width: 180,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Copy Method
+                </div>
+              ),
+              accessor: '',
+              width: 500,
+              style: { overflow: 'visible' },
+              Cell: row => {
+                const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
+                const copyMethodOptionsMapped = copyMethodOptions.map(cm => {
+                  return { value: cm.name, label: cm.name };
+                });
+                return (
+                  <Select
+                    onChange={(option: any) => handleStorageClassChange(row, option)}
+                    options={
+                      copyMethodOptionsMapped
+                    }
+                    name="copyMethods"
+                    value={{
+                      label: currentCopyMethod ?
+                        currentCopyMethod.name : 'None',
+                      value: currentCopyMethod ?
+                        currentCopyMethod.name : '',
+                    }}
+                    placeholder="Select a copy method..."
+                  />
+                );
+              },
             },
             {
               Header: () => (
