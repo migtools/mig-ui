@@ -13,7 +13,6 @@ import {
   KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
@@ -81,7 +80,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
       isDisabled={isHostCluster}
       key="removeCluster"
     >
-    Remove
+      Remove
   </DropdownItem>,
   ];
 
@@ -93,14 +92,11 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             <DataListCell key="name" width={1}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <StatusIcon isReady={clusterStatus} />
-                </div>
-                <div className="pf-l-flex__item">
                   <span id="cluster-name">{clusterName}</span>
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="url" width={2}>
+            <DataListCell key="url" width={3}>
               <a target="_blank" href={clusterUrl}>
                 {clusterUrl}
               </a>
@@ -108,15 +104,21 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             <DataListCell key="count" width={2}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <span className="pf-c-icon">
-                    <LinkIcon />
-                  </span>
-                </div>
-                <div className="pf-l-flex__item">
                   {associatedPlanCount} associated migration {planText}
                 </div>
               </div>
             </DataListCell>,
+            <DataListCell key="connection" width={1}>
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
+                  <StatusIcon isReady={clusterStatus} />
+                </div>
+                <div className="pf-l-flex__item">
+                  <span id="cluster-status-text">{clusterStatus ? `Connected` : `Connection Failed`}</span>
+                </div>
+              </div>
+            </DataListCell>,
+
           ]}
         />,
         <DataListAction
@@ -137,7 +139,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
           <AddEditClusterModal
             isOpen={isAddEditOpen}
             onHandleClose={toggleIsAddEditOpen}
-            initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
+            initialClusterValues={{ clusterName, clusterUrl, clusterSvcToken }}
           />
           <ConfirmModal
             message={removeMessage}

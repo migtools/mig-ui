@@ -2,19 +2,20 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import {
+  Bullseye,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
-  Title
+  EmptyState,
+  Title,
 } from '@patternfly/react-core';
-import theme from '../../../../theme';
-import Loader from 'react-loader-spinner';
 import CardStatus from './Status/CardStatus';
 import MigrationStatus from './Status/MigrationStatus';
 import CardFooterText from './CardFooterText';
 import HeaderText from './HeaderText';
 import StatusIcon from '../../../common/components/StatusIcon';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   title: string;
@@ -23,6 +24,7 @@ interface IProps {
   type?: string;
   isError: boolean;
   planStatusCounts?: any;
+  loadingTitle: string;
   expandDetails?: (string) => void;
 }
 
@@ -33,7 +35,8 @@ const DashboardCard: React.FunctionComponent<IProps> = (
     type,
     isError,
     planStatusCounts,
-    expandDetails
+    expandDetails,
+    loadingTitle,
   }
 ) => {
   if (isError) {
@@ -63,19 +66,27 @@ const DashboardCard: React.FunctionComponent<IProps> = (
             {type === 'plans' ? (
               <MigrationStatus planStatusCounts={planStatusCounts} />
             ) : (
-              <CardStatus dataList={dataList} type={type} />
-            )}
+                <CardStatus dataList={dataList} type={type} />
+              )}
           </CardBody>
           <CardFooter>
             <CardFooterText dataList={dataList} type={type} expandDetails={expandDetails} />
           </CardFooter>
         </React.Fragment>
       ) : (
-        <CardBody>
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-          Loading
-        </CardBody>
-      )}
+          <CardBody>
+            <Bullseye>
+              <EmptyState variant="small">
+                <div className="pf-c-empty-state__icon">
+                  <Spinner size="xl" />
+                </div>
+                <Title headingLevel="h2" size="xl">
+                  {loadingTitle}
+                </Title>
+              </EmptyState>
+            </Bullseye>
+          </CardBody>
+        )}
     </Card>
   );
 };

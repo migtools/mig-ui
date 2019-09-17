@@ -4,15 +4,17 @@ import { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
 import {
+  Bullseye,
+  EmptyState,
   Form,
   FormGroup,
   Grid,
-  GridItem
+  GridItem,
+  Title,
 } from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
-import Loader from 'react-loader-spinner';
-import { css } from '@emotion/core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
@@ -208,14 +210,16 @@ const ResourceSelectForm = props => {
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
-          <div className="pf-l-flex pf-m-column pf-m-align-items-center pf-u-mt-2xl">
-            <div className="pf-l-flex__item">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="40" width="100" />
-            </div>
-            <div className="pf-l-flex__item">
-              <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
-            </div>
-          </div>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
         </GridItem>
       ) : (
         <NamespaceTable

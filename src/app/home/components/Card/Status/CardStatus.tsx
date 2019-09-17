@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
 import StatusIcon from '../../../../common/components/StatusIcon';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
@@ -11,7 +10,7 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
   if (type === 'repositories') {
     successList = dataList.filter(item =>
       item.MigStorage.status && item.MigStorage.status.conditions.filter(c => c.type === 'Ready').length !== 0
-      );
+    );
     successfulNames = successList.map(item => item.MigStorage.metadata.name);
     failureList = dataList.filter(item => !successfulNames.includes(item.MigStorage.metadata.name));
   } else if (type === 'clusters') {
