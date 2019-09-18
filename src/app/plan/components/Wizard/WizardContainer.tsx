@@ -50,7 +50,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       selectedNamespaces: [],
       selectedStorage: null,
       persistentVolumes: [],
-    }
+    };
     if (plan && isEdit) {
       values.planName = plan.MigPlan.metadata.name || '';
       values.sourceCluster = plan.MigPlan.spec.srcMigClusterRef.name || null;
@@ -60,7 +60,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       values.persistentVolumes = plan.MigPlan.spec.persistentVolumes || [];
     }
 
-    return values
+    return values;
   },
 
   validate: values => {
