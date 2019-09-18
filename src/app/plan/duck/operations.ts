@@ -142,7 +142,7 @@ const runMigration = (plan, disableQuiesce) => {
   };
 };
 
-const addPlan = migPlan => {
+const addPlan = (migPlan) => {
   return async (dispatch, getState) => {
     try {
       /**
@@ -204,6 +204,7 @@ const addPlan = migPlan => {
 
       dispatch(PlanActions.startPVPolling(pvParams));
       dispatch(PlanActions.addPlanSuccess(createPlanRes.data));
+
     } catch (err) {
       dispatch(AlertActions.alertErrorTimeout('Failed to add plan'));
     }

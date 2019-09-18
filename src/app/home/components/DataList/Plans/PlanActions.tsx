@@ -102,7 +102,6 @@ const PlanActions = ({ plan, history }) => {
       Logs
     </DropdownItem>,
   ];
-  console.log('render plan actions', plan)
   return (
     <div className="pf-l-flex pf-m-nowrap">
       <div className="pf-l-flex__item pf-m-align-right">
@@ -121,7 +120,7 @@ const PlanActions = ({ plan, history }) => {
           storageList={planContext.storageList}
           isOpen={isWizardOpen}
           onHandleWizardModalClose={toggleWizardOpen}
-          plan={plan}
+          editPlanObj={plan.MigPlan}
           isEdit={true}
         />
 

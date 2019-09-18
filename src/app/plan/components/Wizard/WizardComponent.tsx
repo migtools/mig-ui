@@ -38,14 +38,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     getPVResourcesRequest,
     startPlanStatusPolling,
     planUpdateRequest,
-    isPollingStorage,
-    isPollingClusters,
-    isPollingPlans,
     pvResourceList,
     addPlan,
+    setCurrentPlan,
     resetCurrentPlan,
     onHandleWizardModalClose,
-    isEdit
+    isEdit,
+    editPlanObj
   } = props;
 
   enum stepId {
@@ -120,6 +119,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
+            isEdit={isEdit}
             values={values}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
@@ -196,7 +196,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
 
-      if (!currentPlan) {
+      if (!currentPlan && !isEdit) {
         addPlan({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
@@ -204,6 +204,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           selectedStorage: props.values.selectedStorage,
           namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
         });
+      }
+      if (isEdit) {
+        setCurrentPlan(editPlanObj);
       }
     }
     if (curr.id === stepId.Results) {
