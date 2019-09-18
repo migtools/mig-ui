@@ -14,6 +14,7 @@ const getPlansWithPlanStatus = createSelector(
   (plans, lockedPlans) => {
 
     const plansWithStatus = plans.map(plan => {
+
       let isPlanLocked = null;
       let hasReadyCondition = null;
       let hasPlanError = null;

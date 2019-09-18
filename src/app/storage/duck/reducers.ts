@@ -1,6 +1,7 @@
 import { fetchingAddEditStatus } from '../../common/add_edit_state';
 import { StorageActionTypes } from './actions';
 import { defaultAddEditStatus } from '../../common/add_edit_state';
+import moment from 'moment';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -10,6 +11,13 @@ export const INITIAL_STATE = {
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
 };
+
+const sortStorageList = storageList =>
+  storageList.sort((left, right) => {
+    return moment
+      .utc(right.MigStorage.metadata.creationTimestamp)
+      .diff(moment.utc(left.MigStorage.metadata.creationTimestamp));
+  });
 
 export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
@@ -75,10 +83,34 @@ export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const updateStorages = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    migStorageList: action.updatedStorages,
-  };
+  const updatedStorageList = action.updatedStorages.map(storage => {
+    const { metadata } = storage.MigStorage;
+    if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+      delete metadata.annotations;
+      delete metadata.generation;
+      delete metadata.resourceVersion;
+    }
+    if (storage.MigStorage.status) {
+      for (let i = 0; storage.MigStorage.status.conditions.length > i; i++) {
+        delete storage.MigStorage.status.conditions[i].lastTransitionTime;
+      }
+    }
+    return storage;
+  });
+
+  const sortedList = sortStorageList(updatedStorageList);
+
+  if (JSON.stringify(sortedList) === JSON.stringify(state.migStorageList)) {
+    return {
+      ...state
+    };
+  } else if
+    (JSON.stringify(sortedList) !== JSON.stringify(state.migStorageList)) {
+    return {
+      ...state,
+      migStorageList: sortedList,
+    };
+  }
 };
 
 export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {

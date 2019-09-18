@@ -98,7 +98,6 @@ export const addPlanFailure =
 export const addPlanRequest =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
     return {
-      ...state,
     };
   };
 
@@ -175,18 +174,38 @@ export const updatePlanMigrations =
 
 export const updatePlans =
   (state = INITIAL_STATE, action) => {
-    const updatedPlanList = action.updatedPlans.map(p => {
+    const updatedPlanList = action.updatedPlans.map(plan => {
       //filter migrations
-      p.Migrations = sortMigrations(p.Migrations);
-      return p;
+      plan.Migrations = sortMigrations(plan.Migrations);
+      const { metadata } = plan.MigPlan;
+      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+        delete metadata.annotations;
+        delete metadata.generation;
+        delete metadata.resourceVersion;
+      }
+      if (plan.MigPlan.status) {
+        for (let i = 0; plan.MigPlan.status.conditions.length > i; i++) {
+          delete plan.MigPlan.status.conditions[i].lastTransitionTime;
+        }
+      }
+      return plan;
     });
 
     const sortedList = sortPlans(updatedPlanList);
 
-    return {
-      ...state,
-      migPlanList: sortedList,
-    };
+    if (JSON.stringify(sortedList) === JSON.stringify(state.migPlanList)) {
+      return {
+        ...state
+      };
+    } else if
+      (JSON.stringify(sortedList) !== JSON.stringify(state.migPlanList)) {
+
+      return {
+        ...state,
+        migPlanList: sortedList,
+      };
+    }
+
   };
 
 export const initStage =

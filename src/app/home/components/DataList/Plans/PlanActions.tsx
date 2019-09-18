@@ -103,7 +103,7 @@ const PlanActions = ({ plan, history }) => {
       Logs
     </DropdownItem>,
   ];
-
+  console.log('render plan actions', plan)
   return (
     <div className="pf-l-flex pf-m-nowrap">
       <div className="pf-l-flex__item pf-m-align-right">
