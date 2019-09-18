@@ -12,7 +12,7 @@ import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 import { withRouter } from 'react-router-dom';
 
-const PlanActions = ({ plan, history }) => {
+const PlanActions = ({ plan, history, toggleWizardOpen }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -25,8 +25,24 @@ const PlanActions = ({ plan, history }) => {
     isPlanLocked
   } = plan.PlanStatus;
 
+  const editPlan = () => {
+    const name = plan.MigPlan.metadata.name;
+    // planContext.watchPlanAddEditStatus(name);
+    toggleWizardOpen();
+  };
+
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        editPlan();
+      }}
+      key="editPlan"
+    >
+      Edit
+    </DropdownItem>,
+
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
