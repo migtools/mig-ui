@@ -13,8 +13,9 @@ import MigrateModal from '../../../../plan/components/MigrateModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 
-const PlanActions = ({ plan, history, toggleWizardOpen, isWizardOpen }) => {
+const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
     hasClosedCondition,
@@ -121,6 +122,8 @@ const PlanActions = ({ plan, history, toggleWizardOpen, isWizardOpen }) => {
           storageList={planContext.storageList}
           isOpen={isWizardOpen}
           onHandleWizardModalClose={toggleWizardOpen}
+          plan={plan}
+          isEdit={true}
         />
 
         <MigrateModal
