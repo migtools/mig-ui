@@ -97,6 +97,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isFetchingNamespaceList={isFetchingNamespaceList}
             fetchNamespacesForCluster={fetchNamespacesForCluster}
             sourceClusterNamespaces={sourceClusterNamespaces}
+            isEdit={isEdit}
           />
         ),
         enableNext:

@@ -55,7 +55,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       values.planName = plan.MigPlan.metadata.name || '';
       values.sourceCluster = plan.MigPlan.spec.srcMigClusterRef.name || null;
       values.targetCluster = plan.MigPlan.spec.destMigClusterRef.name || null;
-      values.selectedNamespaces = plan.MigPlan.spec.selectedNamespaces || [];
+      values.selectedNamespaces = plan.MigPlan.spec.namespaces || [];
       values.selectedStorage = plan.MigPlan.spec.migStorageRef.name || null;
       values.persistentVolumes = plan.MigPlan.spec.persistentVolumes || [];
     }
