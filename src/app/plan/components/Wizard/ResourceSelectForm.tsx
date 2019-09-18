@@ -33,7 +33,13 @@ const ResourceSelectForm = props => {
     isFetchingNamespaceList,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
+    isEdit
   } = props;
+  useEffect(() => {
+    if (isEdit) {
+      fetchNamespacesForCluster(values.sourceCluster);
+    }
+  }, [])
 
   useEffect(() => {
     // ***
@@ -106,10 +112,13 @@ const ResourceSelectForm = props => {
       const existingStorageSelection = storageList.find(
         c => c.MigStorage.metadata.name === values.selectedStorage
       );
-      setSelectedStorage({
-        label: existingStorageSelection.MigStorage.metadata.name,
-        value: existingStorageSelection.MigStorage.metadata.name,
-      });
+      if (existingStorageSelection) {
+        setSelectedStorage({
+          label: existingStorageSelection.MigStorage.metadata.name,
+          value: existingStorageSelection.MigStorage.metadata.name,
+        });
+
+      }
     }
   }, [values]);
 
@@ -224,6 +233,7 @@ const ResourceSelectForm = props => {
             setFieldValue={setFieldValue}
             values={values}
             sourceClusterNamespaces={sourceClusterNamespaces}
+            isEdit={isEdit}
           />
         )}
     </Grid>
