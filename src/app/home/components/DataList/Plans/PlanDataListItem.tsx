@@ -59,6 +59,7 @@ const PlanDataListItem = ({
               planList={planList}
               clusterList={clusterList}
               storageList={storageList}
+              isEdit={false}
               isOpen={isWizardOpen}
               onHandleWizardModalClose={toggleWizardOpen}
             />
@@ -71,8 +72,6 @@ const PlanDataListItem = ({
           storageList={storageList}
           isExpanded={isExpanded}
           toggleWizardOpen={toggleWizardOpen}
-          isWizardOpen={isWizardOpen}
-
         />
       </DataListItem>
     );

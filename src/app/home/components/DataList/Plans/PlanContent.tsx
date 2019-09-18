@@ -20,7 +20,6 @@ interface IProps {
   isExpanded: boolean;
   plansDisabled: boolean;
   toggleWizardOpen: () => void;
-  isWizardOpen: boolean;
 }
 
 const columns = [
@@ -49,7 +48,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
   isExpanded,
   plansDisabled,
   toggleWizardOpen,
-  isWizardOpen
 }) => {
   const buildNewRows = (
   ) => {
@@ -139,8 +137,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
             {
               title: <PlanActions
                 plan={plan}
-                isWizardOpen={isWizardOpen}
-                toggleWizardOpen={toggleWizardOpen}
               />,
 
               props: {

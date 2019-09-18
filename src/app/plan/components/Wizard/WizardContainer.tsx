@@ -37,17 +37,31 @@ export interface IOtherProps {
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
+  plan?: any;
+  isEdit: boolean;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
-  mapPropsToValues: () => ({
-    planName: '',
-    sourceCluster: null,
-    targetCluster: null,
-    selectedNamespaces: [],
-    selectedStorage: null,
-    persistentVolumes: [],
-  }),
+  mapPropsToValues: ({ plan, isEdit }) => {
+    const values = {
+      planName: '',
+      sourceCluster: null,
+      targetCluster: null,
+      selectedNamespaces: [],
+      selectedStorage: null,
+      persistentVolumes: [],
+    }
+    if (plan && isEdit) {
+      values.planName = plan.MigPlan.metadata.name || '';
+      // values.sourceCluster = initialPlanValues.sourceCluster || null;
+      // values.targetCluster = initialPlanValues.targetCluster || null;
+      // values.selectedNamespaces = initialPlanValues.selectedNamespaces || [];
+      // values.selectedStorage = initialPlanValues.selectedStorage || null;
+      // values.persistentVolumes = initialPlanValues.persistentVolumes || [];
+    }
+
+    return values
+  },
 
   validate: values => {
     const errors: any = {};
