@@ -53,11 +53,11 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     }
     if (plan && isEdit) {
       values.planName = plan.MigPlan.metadata.name || '';
-      // values.sourceCluster = initialPlanValues.sourceCluster || null;
-      // values.targetCluster = initialPlanValues.targetCluster || null;
-      // values.selectedNamespaces = initialPlanValues.selectedNamespaces || [];
-      // values.selectedStorage = initialPlanValues.selectedStorage || null;
-      // values.persistentVolumes = initialPlanValues.persistentVolumes || [];
+      values.sourceCluster = plan.MigPlan.spec.srcMigClusterRef.name || null;
+      values.targetCluster = plan.MigPlan.spec.destMigClusterRef.name || null;
+      values.selectedNamespaces = plan.MigPlan.spec.selectedNamespaces || [];
+      values.selectedStorage = plan.MigPlan.spec.migStorageRef.name || null;
+      values.persistentVolumes = plan.MigPlan.spec.persistentVolumes || [];
     }
 
     return values

@@ -44,7 +44,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pvResourceList,
     addPlan,
     resetCurrentPlan,
-    onHandleWizardModalClose
+    onHandleWizardModalClose,
+    isEdit
   } = props;
 
   enum stepId {
@@ -77,7 +78,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldTouched={setFieldTouched}
           />
         ),
-        enableNext: !errors.planName && touched.planName === true,
+        enableNext: !errors.planName && (touched.planName === true || isEdit === true),
       },
       {
         id: stepId.MigrationSource,

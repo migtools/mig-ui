@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState, useEffect } from 'react';
-import { Box, Flex, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Bullseye,
   EmptyState,
