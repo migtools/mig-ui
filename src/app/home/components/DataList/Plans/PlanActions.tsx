@@ -28,7 +28,6 @@ const PlanActions = ({ plan, history }) => {
   } = plan.PlanStatus;
 
   const editPlan = () => {
-    const name = plan.MigPlan.metadata.name;
     // planContext.watchPlanAddEditStatus(name);
     toggleWizardOpen();
   };

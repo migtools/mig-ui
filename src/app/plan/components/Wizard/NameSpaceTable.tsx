@@ -24,20 +24,22 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
 
   useEffect(() => {
-    const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
-      const keys = Object.keys(checkedNamespaceRows);
+    if (sourceClusterNamespaces.length > 0) {
+      const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
+        const keys = Object.keys(checkedNamespaceRows);
 
-      for (const key of keys) {
-        if (item.metadata.uid === key) {
-          return item;
+        for (const key of keys) {
+          if (item.metadata.uid === key) {
+            return item;
+          }
         }
-      }
-    });
-    setFieldValue('selectedNamespaces', formValuesForNamespaces);
+      });
+      setFieldValue('selectedNamespaces', formValuesForNamespaces);
+    }
   }, [checkedNamespaceRows]);
 
   useEffect(() => {
-    if (values.selectedNamespaces.length > 0) {
+    if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
       const newSelected = Object.assign({}, checkedNamespaceRows);
       values.selectedNamespaces.filter((item, itemIndex) => {
         for (let i = 0; sourceClusterNamespaces.length > i; i++) {

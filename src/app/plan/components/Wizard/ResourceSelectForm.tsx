@@ -39,7 +39,7 @@ const ResourceSelectForm = props => {
     if (isEdit) {
       fetchNamespacesForCluster(values.sourceCluster);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     // ***
