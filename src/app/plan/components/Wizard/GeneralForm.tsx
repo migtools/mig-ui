@@ -18,6 +18,7 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   errors,
   touched,
   setFieldTouched,
+  isEdit
 }) => {
   const onHandleChange = (val, e) => {
     handleChange(e);
@@ -41,6 +42,7 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
               type="text"
               isValid={!errors.planName && touched.planName}
               id="planName"
+              isDisabled={isEdit}
             />
           </FormGroup>
         </GridItem>
