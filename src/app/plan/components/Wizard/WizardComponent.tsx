@@ -107,7 +107,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           touched.targetCluster === true &&
           !errors.sourceCluster &&
           touched.sourceCluster === true &&
-          !errors.selectedNamespaces,
+          !errors.selectedNamespaces ||
+          (isEdit &&
+            !errors.selectedStorage &&
+            !errors.targetCluster &&
+            !errors.sourceCluster &&
+            !errors.selectedNamespaces),
         canJumpTo: stepIdReached >= stepId.MigrationSource,
       },
       {
