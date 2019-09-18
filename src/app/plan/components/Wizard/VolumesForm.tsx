@@ -18,7 +18,8 @@ const VolumesForm = props => {
     currentPlan,
     getPVResourcesRequest,
     pvResourceList,
-    isFetchingPVResources
+    isFetchingPVResources,
+    isEdit
   } = props;
 
   return (
@@ -32,6 +33,7 @@ const VolumesForm = props => {
       </GridItem>
       <GridItem>
         <VolumesTable
+          isEdit={isEdit}
           isPVError={isPVError}
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
@@ -41,7 +43,7 @@ const VolumesForm = props => {
           pvResourceList={pvResourceList}
           isFetchingPVResources={isFetchingPVResources}
         />
-       </GridItem>
+      </GridItem>
     </Grid>
   );
 };

@@ -31,18 +31,19 @@ export interface IOtherProps {
   startPlanStatusPolling: (planName) => void;
   planUpdateRequest: (values) => void;
   resetCurrentPlan: () => void;
+  setCurrentPlan: (plan) => void;
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
   addPlan: (planValues) => void;
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
-  plan?: any;
+  editPlanObj?: any;
   isEdit: boolean;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
-  mapPropsToValues: ({ plan, isEdit }) => {
+  mapPropsToValues: ({ editPlanObj, isEdit }) => {
     const values = {
       planName: '',
       sourceCluster: null,
@@ -51,13 +52,13 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       selectedStorage: null,
       persistentVolumes: [],
     };
-    if (plan && isEdit) {
-      values.planName = plan.MigPlan.metadata.name || '';
-      values.sourceCluster = plan.MigPlan.spec.srcMigClusterRef.name || null;
-      values.targetCluster = plan.MigPlan.spec.destMigClusterRef.name || null;
-      values.selectedNamespaces = plan.MigPlan.spec.namespaces || [];
-      values.selectedStorage = plan.MigPlan.spec.migStorageRef.name || null;
-      values.persistentVolumes = plan.MigPlan.spec.persistentVolumes || [];
+    if (editPlanObj && isEdit) {
+      values.planName = editPlanObj.metadata.name || '';
+      values.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
+      values.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
+      values.selectedNamespaces = editPlanObj.spec.namespaces || [];
+      values.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
+      values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
     }
 
     return values;
@@ -130,7 +131,7 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    addPlan: plan => dispatch(planOperations.addPlan(plan)),
+    addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
@@ -139,6 +140,7 @@ const mapDispatchToProps = dispatch => {
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
+    setCurrentPlan: (plan) => dispatch(PlanActions.setCurrentPlan(plan)),
   };
 };
 
