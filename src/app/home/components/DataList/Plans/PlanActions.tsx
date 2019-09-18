@@ -11,9 +11,10 @@ import {
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 import { withRouter } from 'react-router-dom';
+import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 
-const PlanActions = ({ plan, history, toggleWizardOpen }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+const PlanActions = ({ plan, history, toggleWizardOpen, isWizardOpen }) => {
+  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
     hasClosedCondition,
@@ -64,7 +65,7 @@ const PlanActions = ({ plan, history, toggleWizardOpen }) => {
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleOpen();
+        toggleMigrateModalOpen();
       }}
       key="migratePlan"
       isDisabled={
@@ -114,7 +115,19 @@ const PlanActions = ({ plan, history, toggleWizardOpen }) => {
           dropdownItems={kebabDropdownItems}
           position={DropdownPosition.right}
         />
-        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
+        <WizardContainer
+          planList={planContext.planList}
+          clusterList={planContext.clusterList}
+          storageList={planContext.storageList}
+          isOpen={isWizardOpen}
+          onHandleWizardModalClose={toggleWizardOpen}
+        />
+
+        <MigrateModal
+          plan={plan}
+          isOpen={isMigrateModalOpen}
+          onHandleClose={toggleMigrateModalOpen}
+        />
       </div>
     </div>
   );

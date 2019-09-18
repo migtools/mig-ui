@@ -71,6 +71,8 @@ const PlanDataListItem = ({
           storageList={storageList}
           isExpanded={isExpanded}
           toggleWizardOpen={toggleWizardOpen}
+          isWizardOpen={isWizardOpen}
+
         />
       </DataListItem>
     );

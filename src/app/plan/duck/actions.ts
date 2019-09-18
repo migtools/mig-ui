@@ -1,5 +1,6 @@
 import { IMigPlan } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
@@ -51,8 +52,26 @@ export const PlanActionTypes = {
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
   SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
-  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN'
+  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN',
+  SET_PLAN_ADD_EDIT_STATUS: 'SET_PLAN_ADD_EDIT_STATUS',
+  WATCH_PLAN_ADD_EDIT_STATUS: 'SET_PLAN_ADD_EDIT_STATUS',
 };
+
+const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
+  type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
+  currentPlanStatus,
+});
+
+const setPlanAddEditStatus = (status: IAddEditStatus) => ({
+  type: PlanActionTypes.SET_PLAN_ADD_EDIT_STATUS,
+  status,
+});
+
+const watchPlanAddEditStatus = (planName) => ({
+  type: PlanActionTypes.WATCH_PLAN_ADD_EDIT_STATUS,
+  planName,
+});
+
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
   type: PlanActionTypes.UPDATE_PLANS,
@@ -274,10 +293,6 @@ const setCurrentPlan = (currentPlan) => ({
   currentPlan
 });
 
-const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
-  type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
-  currentPlanStatus,
-});
 
 const setLockedPlan = (planName) => ({
   type: PlanActionTypes.SET_LOCKED_PLAN,
@@ -332,5 +347,7 @@ export const PlanActions = {
   stopPlanPolling,
   resetCurrentPlan,
   setCurrentPlan,
-  setLockedPlan
+  setLockedPlan,
+  setPlanAddEditStatus,
+  watchPlanAddEditStatus
 };

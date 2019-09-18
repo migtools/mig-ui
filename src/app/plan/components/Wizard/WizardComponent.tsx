@@ -57,10 +57,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   }
 
   useEffect(() => {
-    if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
+    if (isOpen) {
       pollingContext.stopAllPolling();
     }
-  });
+  }, [isOpen]);
 
   useEffect(() => {
     const steps = [
