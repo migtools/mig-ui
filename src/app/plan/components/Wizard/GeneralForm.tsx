@@ -1,6 +1,5 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Box, Text } from '@rebass/emotion';
 import {
   Form,
   FormGroup,
@@ -8,7 +7,6 @@ import {
   GridItem,
   TextInput
 } from '@patternfly/react-core';
-import FormErrorDiv from '../../../common/components/FormErrorDiv';
 interface IProps {
   component: React.ReactNode;
 }
@@ -20,7 +18,6 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   errors,
   touched,
   setFieldTouched,
-  ...rest
 }) => {
   const onHandleChange = (val, e) => {
     handleChange(e);

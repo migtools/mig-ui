@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState, useEffect } from 'react';
-import { Box, Flex, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Bullseye,
   EmptyState,
@@ -206,7 +204,7 @@ const ResourceSelectForm = props => {
               </FormGroup>
             </GridItem>
           </Grid>
-         </Form>
+        </Form>
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
@@ -222,12 +220,12 @@ const ResourceSelectForm = props => {
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespaceTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
-      )}
+          <NamespaceTable
+            setFieldValue={setFieldValue}
+            values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        )}
     </Grid>
   );
 };
