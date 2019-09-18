@@ -76,13 +76,13 @@ const VolumesTable = (props): any => {
         mappedPVs = discoveredPersistentVolumes.map(planVolume => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
-            // if (isEdit) {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            pvAction = rowVal.selection.action;
-            // } else {
-            //   const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            //   pvAction = rowVal.type;
-            // }
+            if (rowVal && rowVal.selection) {
+              pvAction = rowVal.selection.action;
+            }
+            else {
+              pvAction = rowVal.type;
+            }
           }
           return {
             name: planVolume.name,

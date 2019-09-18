@@ -75,6 +75,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             handleBlur={handleBlur}
             handleChange={handleChange}
             setFieldTouched={setFieldTouched}
+            isEdit={isEdit}
           />
         ),
         enableNext: !errors.planName && (touched.planName === true || isEdit === true),
