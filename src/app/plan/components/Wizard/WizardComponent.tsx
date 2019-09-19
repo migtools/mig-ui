@@ -140,6 +140,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         name: 'Storage Class',
         component: (
           <StorageClassForm
+            isEdit={isEdit}
             values={values}
             errors={errors}
             touched={touched}
