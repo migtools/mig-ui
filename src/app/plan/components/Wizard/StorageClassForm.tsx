@@ -1,7 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
-import { Box } from '@rebass/emotion';
 import {
   Grid,
   GridItem,
@@ -10,12 +8,8 @@ import {
   TextVariants
 } from '@patternfly/react-core';
 import StorageClassTable from './StorageClassTable';
-import styled from '@emotion/styled';
 const StorageClassForm = props => {
-  const { setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
-  const StyledTextContent = styled(TextContent)`
-    margin: 1em 0 1em 0;
-  `;
+  const { isEdit, setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
   return (
     <Grid gutter="md">
       <GridItem>
@@ -27,6 +21,7 @@ const StorageClassForm = props => {
       </GridItem>
       <GridItem>
         <StorageClassTable
+          isEdit={isEdit}
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}

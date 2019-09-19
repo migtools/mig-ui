@@ -5,8 +5,6 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
 import { css } from '@emotion/core';
-import { Flex, Box, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Bullseye,
   EmptyState,
@@ -16,9 +14,8 @@ import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 
-const StorageClassTable = (props): any => {
-  const { currentPlan, clusterList, values, isFetchingPVList } = props;
-  const migPlanPvs = currentPlan.spec.persistentVolumes;
+const StorageClassTable = (props) => {
+  const { isEdit, currentPlan, clusterList, values, isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
   // Create a bit of state that will hold the storage class assignments
@@ -28,7 +25,14 @@ const StorageClassTable = (props): any => {
   const handleStorageClassChange = (row, option) => {
     const pvName = row.original.name;
     const selectedScName = option.value;
-    const newSc = storageClassOptions.find(sc => sc.name === selectedScName);
+    let newSc;
+    if (selectedScName === '') {
+      newSc = '';
+    } else {
+      newSc = storageClassOptions.find(sc =>
+        sc.name === selectedScName
+      );
+    }
     const updatedAssignment = {
       ...pvStorageClassAssignment,
       [pvName]: newSc,
@@ -47,15 +51,21 @@ const StorageClassTable = (props): any => {
 
     setStorageClassOptions(destStorageClasses);
     // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
-    const initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
-      const suggestedStorageClass = destStorageClasses.find(sc =>
-        sc.name === pv.selection.storageClass
-      );
-      assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : destStorageClasses[0];
-      return assignedScs;
-    }, {}) : {};
-    setPvStorageClassAssignment(initialAssignedScs);
-    props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
+    const migPlanPvs = currentPlan.spec.persistentVolumes;
+    let initialAssignedScs;
+    if (values.pvStorageClassAssignment) {
+      setPvStorageClassAssignment(values.pvStorageClassAssignment);
+    } else {
+      initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
+        const suggestedStorageClass = destStorageClasses.find(sc =>
+          sc.name === pv.selection.storageClass
+        );
+        assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : "";
+        return assignedScs;
+      }, {}) : {};
+      setPvStorageClassAssignment(initialAssignedScs);
+      props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
+    }
 
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
@@ -136,7 +146,7 @@ const StorageClassTable = (props): any => {
                 storageClassOptionsWithNone.push({ value: '', label: 'None' });
                 return (
                   <Select
-                    onChange={(option: any) => handleStorageClassChange(row, option)}
+                    onChange={(option) => handleStorageClassChange(row, option)}
                     options={
                       storageClassOptionsWithNone
                     }
