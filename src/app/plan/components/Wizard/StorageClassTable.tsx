@@ -60,7 +60,7 @@ const StorageClassTable = (props) => {
         const suggestedStorageClass = destStorageClasses.find(sc =>
           sc.name === pv.selection.storageClass
         );
-        assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : "";
+        assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
         return assignedScs;
       }, {}) : {};
       setPvStorageClassAssignment(initialAssignedScs);
