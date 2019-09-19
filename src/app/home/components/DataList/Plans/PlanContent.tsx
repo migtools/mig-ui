@@ -49,8 +49,14 @@ const PlanContent: React.FunctionComponent<IProps> = ({
   plansDisabled,
   toggleWizardOpen,
 }) => {
+<<<<<<< HEAD
   const buildNewRows = (
   ) => {
+=======
+  const [currentRows, setCurrentRows] = useState([]);
+
+  const buildNewRows = () => {
+>>>>>>> linting
     const newRows = planList.map((plan, planIndex) => {
       const MigrationsIcon = () => {
         if (plan.Migrations.length > 0) {
@@ -167,18 +173,25 @@ const PlanContent: React.FunctionComponent<IProps> = ({
 
     return flatten(newRows);
   };
-  const [currentRows, setCurrentRows] = useState([]);
 
   useEffect(() => {
+<<<<<<< HEAD
     const newRows = buildNewRows(
     );
+=======
+    const newRows = buildNewRows();
+>>>>>>> linting
 
     setCurrentRows(newRows);
   }, [planList]);
 
   const onExpand = (_event, rowIndex, colIndex, isOpen) => {
+<<<<<<< HEAD
     const newRows = buildNewRows(
     );
+=======
+    const newRows = buildNewRows();
+>>>>>>> linting
 
     if (!isOpen) {
       // close all expanded rows
