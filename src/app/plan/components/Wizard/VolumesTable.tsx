@@ -3,11 +3,11 @@ import { jsx } from '@emotion/core';
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-import Select from 'react-select';
 import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
+import { CubeIcon } from '@patternfly/react-icons';
 import {
   Bullseye,
   TextContent,
@@ -19,13 +19,24 @@ import {
   EmptyStateVariant,
   EmptyStateIcon,
   EmptyStateBody,
+  SelectDirection,
+  Dropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownSeparator,
+  DropdownPosition,
+  DropdownDirection,
+  KebabToggle,
+  Select,
+  SelectOption,
+  SelectVariant,
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 
 const VolumesTable = (props): any => {
   const {
@@ -39,10 +50,31 @@ const VolumesTable = (props): any => {
     pvResourceList
   } = props;
   const [rows, setRows] = useState([]);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isToggleIcon, setToggleIcon] = useState(false);
+  const [selected, setSelected] = useState(null);
 
-  const handleTypeChange = (row, option) => {
-    updateTableData(row.index, option.value);
+  const onToggle = isOpen => {
+    setDropdownOpen(isOpen);
   };
+  const onSelect = (row, selection) => {
+    setDropdownOpen(!isDropdownOpen);
+    updateTableData(row.index, selection);
+    setSelected(selection);
+  };
+
+  // const onSelect = (selection, isPlaceholder) => {
+  //   if (isPlaceholder) this.clearSelection();
+  //   else {
+  //     this.setState({
+  //       selected: selection,
+  //       isExpanded: false
+  //     });
+  //     console.log('selected:', selection);
+  //   }
+  // };
+
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   const updateTableData = (rowIndex, updatedValue) => {
     const rowsCopy = [...rows];
@@ -141,7 +173,7 @@ const VolumesTable = (props): any => {
           </Title>
         </EmptyState>
       </Bullseye>
-     );
+    );
   }
 
   return (
@@ -240,18 +272,26 @@ const VolumesTable = (props): any => {
           style: { overflow: 'visible' },
           Cell: row => (
             <Select
-              onChange={(option: any) => handleTypeChange(row, option)}
-              options={row.original.supportedActions.map((a: string) => {
-                // NOTE: Each PV may not support all actions (any at all even),
-                // we need to inspect the PV to determine this
-                return { value: a, label: capitalize(a) };
-              })}
+              toggleIcon={isToggleIcon && <CubeIcon />}
+              variant={SelectVariant.single}
+              aria-label="Select Input"
+              onToggle={onToggle}
+              onSelect={(selection) => onSelect(row, selection)}
+              selections={selected}
+              isExpanded={isDropdownOpen}
+              ariaLabelledBy="action-select"
+              direction={SelectDirection.down}
               name="persistentVolumes"
-              value={{
-                label: capitalize(row.original.type),
-                value: row.original.type,
-              }}
-            />
+            >
+              {row.original.supportedActions.map((a: string, index) => (
+                <SelectOption
+                  key={index}
+                  value={a}
+                >
+                  {capitalize(a)}
+                </SelectOption>
+              ))}
+            </Select>
           ),
         },
         {
