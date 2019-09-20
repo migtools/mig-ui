@@ -36,7 +36,6 @@ import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
-<<<<<<< HEAD
 const capitalize = (s: string) => {
   if (s.charAt(0)) {
     return s.charAt(0).toUpperCase() + s.slice(1);
@@ -44,9 +43,7 @@ const capitalize = (s: string) => {
     return s;
   }
 };
-=======
 
->>>>>>> swap-dropdowns
 
 const VolumesTable = (props): any => {
   const {
