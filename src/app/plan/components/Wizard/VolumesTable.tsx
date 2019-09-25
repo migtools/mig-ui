@@ -59,6 +59,7 @@ const VolumesTable = (props): any => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isToggleIcon, setToggleIcon] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [expandedDropdownMap, setExpandedDropdownMap] = useState({});
 
   const columns = [
     'PV Name',
@@ -69,6 +70,13 @@ const VolumesTable = (props): any => {
     'Type',
     'Details'
   ];
+
+  const onToggle = (isOpen, index) => {
+    const newSelected = Object.assign({}, expandedDropdownMap);
+    newSelected[index] = !expandedDropdownMap[index];
+    setExpandedDropdownMap(newSelected);
+  };
+
 
   const buildNewRows = () => {
     if (currentPlan) {
@@ -94,7 +102,7 @@ const VolumesTable = (props): any => {
           const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
             return { value: action }
           });
-          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
+          // pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
 
           const rowCells = [
             { title: planVolume.name },
@@ -106,15 +114,12 @@ const VolumesTable = (props): any => {
               title: (
                 <Select
                   selections={selected}
-                  isExpanded={isDropdownOpen}
+                  isExpanded={expandedDropdownMap[pvIndex] === true}
                   onToggle={(isOpen) => {
                     onToggle(isOpen, pvIndex)
-                    setDropdownOpen(x);
-                    console.log('on toggle', x)
                   }}
                   onSelect={(e, selection) => {
-                    console.log('on select', e)
-                    onSelect(e, selection, isPlaceholder)
+                    onSelect(e, selection)
                   }}
                 >
                   {pfSelectOptionsWithPlaceholder.map((action, index) => {
@@ -124,7 +129,7 @@ const VolumesTable = (props): any => {
                         key={index}
                         value={action.value}
                       >
-                        {/* {capitalize(action.value)} */}
+                        {capitalize(action.value)}
                       </SelectOption>
                     )
                   })}
@@ -169,34 +174,11 @@ const VolumesTable = (props): any => {
     return [];
   };
 
-  const onToggle = (isOpen, index) => {
-    const newRows = buildNewRows();
-
-    if (!isOpen) {
-      // close all expanded rows
-      newRows.forEach(row => {
-        //set all other expanded cells false in this row if we are expanding
-        row.cells.forEach(cell => {
-          if (cell.props) {
-            cell.props.isOpen = false;
-          }
-        });
-        row.isOpen = false;
-      });
-      newRows[rowIndex].cells[colIndex].props.isOpen = true;
-      newRows[rowIndex].isOpen = true;
-    } else {
-      newRows[rowIndex].cells[colIndex].props.isOpen = false;
-      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(cell => cell.props && cell.props.isOpen);
-    }
-
-    setCurrentRows(newRows);
-  };
 
   useEffect(() => {
     const newRows = buildNewRows();
     setRows(newRows);
-  }, [currentPlan, isFetchingPVList, isDropdownOpen]);
+  }, [currentPlan, isFetchingPVList, expandedDropdownMap]);
   // useEffect(() => {
   // }, [currentPlan, isFetchingPVList]); // Only re-run the effect if fetching value changes
 
@@ -434,25 +416,18 @@ const VolumesTable = (props): any => {
   //   setSelected(selection);
   // };
 
-  const onToggle = isOpen => {
-    console.log('toggling', isOpen)
-    setDropdownOpen(isOpen);
-  };
 
   const clearSelection = () => {
     setDropdownOpen(false);
     setSelected(null);
   };
 
-  const onSelect = (event, selection, isPlaceholder) => {
-    console.log('selection', event, selection, isPlaceholder)
-    if (isPlaceholder) {
-      clearSelection();
-    } else {
-      setDropdownOpen(!isDropdownOpen);
-      // updateTableData(row.index, selection);
-      setSelected(selection);
-    }
+  const onSelect = (event, selection) => {
+    console.log('selection', selection)
+    setDropdownOpen(!isDropdownOpen);
+    // updateTableData(row.index, selection);
+    setSelected(selection);
+    //   updateTableData(row.index, selection);
   }
 
 
