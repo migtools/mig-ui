@@ -68,7 +68,7 @@ const StorageClassTable = (props) => {
     }
 
     if (values.persistentVolumes.length) {
-      setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
+      setRows(values.persistentVolumes.filter(v => v.selection.action === 'copy'));
     }
   }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
 

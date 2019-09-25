@@ -73,6 +73,14 @@ const VolumesTable = (props): any => {
     }
     newSelectedActionMap[index] = pvObj;
     setSelectedActionMap(newSelectedActionMap);
+    const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+      if (pv.name === pvName) {
+        pv.selection.action = selection
+      }
+      return pv;
+    })
+    setFieldValue('persistentVolumes', updatedPVFormValues);
+
   }
 
   const onToggle = (isOpen, index) => {
@@ -165,6 +173,7 @@ const VolumesTable = (props): any => {
             },
             { title: '' }
           ];
+
           return {
             cells: rowCells
           };
@@ -181,6 +190,7 @@ const VolumesTable = (props): any => {
             { title: pvAction },
             { title: '' }
           ];
+
           return {
             cells: rowCells
           };
