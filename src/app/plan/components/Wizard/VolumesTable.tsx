@@ -79,7 +79,7 @@ const VolumesTable = (props): any => {
       getPVResources(discoveredPersistentVolumes, values.sourceCluster);
       let mappedPVs;
       if (values.persistentVolumes) {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+        mappedPVs = discoveredPersistentVolumes.map((planVolume, pvIndex) => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
@@ -87,7 +87,8 @@ const VolumesTable = (props): any => {
               pvAction = rowVal.selection.action;
             }
             else {
-              pvAction = rowVal.type;
+              pvAction = 'copy'; // Default to copy
+              // pvAction = rowVal.type;
             }
           }
           const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
@@ -106,7 +107,8 @@ const VolumesTable = (props): any => {
                 <Select
                   selections={selected}
                   isExpanded={isDropdownOpen}
-                  onToggle={(x) => {
+                  onToggle={(isOpen) => {
+                    onToggle(isOpen, pvIndex)
                     setDropdownOpen(x);
                     console.log('on toggle', x)
                   }}
@@ -165,6 +167,30 @@ const VolumesTable = (props): any => {
       return mappedPVs;
     }
     return [];
+  };
+
+  const onToggle = (isOpen, index) => {
+    const newRows = buildNewRows();
+
+    if (!isOpen) {
+      // close all expanded rows
+      newRows.forEach(row => {
+        //set all other expanded cells false in this row if we are expanding
+        row.cells.forEach(cell => {
+          if (cell.props) {
+            cell.props.isOpen = false;
+          }
+        });
+        row.isOpen = false;
+      });
+      newRows[rowIndex].cells[colIndex].props.isOpen = true;
+      newRows[rowIndex].isOpen = true;
+    } else {
+      newRows[rowIndex].cells[colIndex].props.isOpen = false;
+      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(cell => cell.props && cell.props.isOpen);
+    }
+
+    setCurrentRows(newRows);
   };
 
   useEffect(() => {
