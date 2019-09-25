@@ -32,16 +32,6 @@ import theme from '../../../../theme';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { isPlaceholder } from '@babel/types';
-
-const capitalize = (s: string) => {
-  if (s.charAt(0)) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  } else {
-    return s;
-  }
-};
-
 
 const VolumesTable = (props): any => {
   const {
@@ -55,11 +45,6 @@ const VolumesTable = (props): any => {
     pvResourceList,
     isEdit
   } = props;
-  const [rows, setRows] = useState([]);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isToggleIcon, setToggleIcon] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [expandedDropdownMap, setExpandedDropdownMap] = useState({});
 
   const columns = [
     'PV Name',
@@ -70,11 +55,30 @@ const VolumesTable = (props): any => {
     'Type',
     'Details'
   ];
+  const [rows, setRows] = useState([]);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isToggleIcon, setToggleIcon] = useState(false);
+  const [selectedActionMap, setSelectedActionMap] = useState({});
+  const [expandedDropdownMap, setExpandedDropdownMap] = useState({});
+
+  const onSelect = (selection, index, pvName) => {
+    const newExpandedMap = Object.assign({}, expandedDropdownMap);
+    newExpandedMap[index] = !expandedDropdownMap[index];
+    setExpandedDropdownMap(newExpandedMap);
+
+    const newSelectedActionMap = Object.assign({}, selectedActionMap);
+    const pvObj = {
+      action: selection,
+      name: pvName
+    }
+    newSelectedActionMap[index] = pvObj;
+    setSelectedActionMap(newSelectedActionMap);
+  }
 
   const onToggle = (isOpen, index) => {
-    const newSelected = Object.assign({}, expandedDropdownMap);
-    newSelected[index] = !expandedDropdownMap[index];
-    setExpandedDropdownMap(newSelected);
+    const newExpandedMap = Object.assign({}, expandedDropdownMap);
+    newExpandedMap[index] = !expandedDropdownMap[index];
+    setExpandedDropdownMap(newExpandedMap);
   };
 
 
@@ -91,18 +95,40 @@ const VolumesTable = (props): any => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
+
+            // //set initial pv map
+            const newSelectedActionMap = Object.assign({}, selectedActionMap);
+
             if (rowVal && rowVal.selection) {
-              pvAction = rowVal.selection.action;
+              const pvObj = {
+                action: rowVal.selection.action,
+                name: planVolume.name
+              }
+              newSelectedActionMap[pvIndex] = pvObj;
+              // newSelectedActionMap[pvIndex].action = rowVal.selection.action;
+              // newSelectedActionMap[pvIndex].name = planVolume.name;
+              setSelectedActionMap(newSelectedActionMap);
             }
             else {
-              pvAction = 'copy'; // Default to copy
-              // pvAction = rowVal.type;
+              const pvObj = {
+                action: "copy",
+                name: planVolume.name
+              }
+              newSelectedActionMap[pvIndex] = pvObj;
+              setSelectedActionMap(newSelectedActionMap);
             }
           }
-          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
+          const pfSelectOptions = planVolume.supported.actions.map((action) => {
             return { value: action }
           });
-          // pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
+
+
+          let selectedValue;
+          selectedValue = 'copy';
+          if (selectedActionMap[pvIndex] && selectedActionMap[pvIndex].action) {
+            selectedValue = selectedActionMap[pvIndex].action
+          }
+          const expandedValue = expandedDropdownMap[pvIndex] === true;
 
           const rowCells = [
             { title: planVolume.name },
@@ -113,17 +139,16 @@ const VolumesTable = (props): any => {
             {
               title: (
                 <Select
-                  selections={selected}
-                  isExpanded={expandedDropdownMap[pvIndex] === true}
+                  selections={selectedValue}
+                  isExpanded={expandedValue}
                   onToggle={(isOpen) => {
                     onToggle(isOpen, pvIndex)
                   }}
                   onSelect={(e, selection) => {
-                    onSelect(e, selection)
+                    onSelect(selection, pvIndex, planVolume.name)
                   }}
                 >
-                  {pfSelectOptionsWithPlaceholder.map((action, index) => {
-                    // console.log('supported Actions', row.original.supportedActions, action)
+                  {pfSelectOptions.map((action, index) => {
                     return (
                       <SelectOption
                         key={index}
@@ -135,10 +160,10 @@ const VolumesTable = (props): any => {
                   })}
                 </Select>
 
-              )
+              ),
+
             },
             { title: '' }
-            // { title: pfSelectOptionsWithPlaceholder }
           ];
           return {
             cells: rowCells
@@ -146,11 +171,7 @@ const VolumesTable = (props): any => {
         });
       } else {
         mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          const pvAction = 'copy'; // Default to copy
-          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
-            return { value: action }
-          });
-          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
+          const pvAction = 'copy';
           const rowCells = [
             { title: planVolume.name },
             { title: planVolume.pvc.namespace },
@@ -159,7 +180,6 @@ const VolumesTable = (props): any => {
             { title: planVolume.pvc.name },
             { title: pvAction },
             { title: '' }
-            // { pfSelectOptionsWithPlaceholder }
           ];
           return {
             cells: rowCells
@@ -167,8 +187,6 @@ const VolumesTable = (props): any => {
 
         });
       }
-      setFieldValue('persistentVolumes', mappedPVs);
-      // setRows(mappedPVs);
       return mappedPVs;
     }
     return [];
@@ -178,9 +196,10 @@ const VolumesTable = (props): any => {
   useEffect(() => {
     const newRows = buildNewRows();
     setRows(newRows);
+
+
+
   }, [currentPlan, isFetchingPVList, expandedDropdownMap]);
-  // useEffect(() => {
-  // }, [currentPlan, isFetchingPVList]); // Only re-run the effect if fetching value changes
 
   // columns={[
   //   {
@@ -351,7 +370,7 @@ const VolumesTable = (props): any => {
   //   },
   // ]}
 
-  // const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   // const updateTableData = (rowIndex, updatedValue) => {
   //   const rowsCopy = [...rows];
@@ -407,27 +426,6 @@ const VolumesTable = (props): any => {
         </EmptyState>
       </Bullseye>
     );
-  }
-
-
-  // const onSelect = (e, row, selection) => {
-  //   setDropdownOpen(!isDropdownOpen);
-  //   updateTableData(row.index, selection);
-  //   setSelected(selection);
-  // };
-
-
-  const clearSelection = () => {
-    setDropdownOpen(false);
-    setSelected(null);
-  };
-
-  const onSelect = (event, selection) => {
-    console.log('selection', selection)
-    setDropdownOpen(!isDropdownOpen);
-    // updateTableData(row.index, selection);
-    setSelected(selection);
-    //   updateTableData(row.index, selection);
   }
 
 
