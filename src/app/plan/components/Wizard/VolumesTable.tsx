@@ -69,6 +69,111 @@ const VolumesTable = (props): any => {
     'Type',
     'Details'
   ];
+
+  const buildNewRows = () => {
+    if (currentPlan) {
+      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
+      const getPVResources = (pvList = [], clusterName = '') => {
+        getPVResourcesRequest(pvList, clusterName);
+      };
+      getPVResources(discoveredPersistentVolumes, values.sourceCluster);
+      let mappedPVs;
+      if (values.persistentVolumes) {
+        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+          let pvAction = 'copy'; // Default to copy
+          if (values.persistentVolumes.length !== 0) {
+            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
+            if (rowVal && rowVal.selection) {
+              pvAction = rowVal.selection.action;
+            }
+            else {
+              pvAction = rowVal.type;
+            }
+          }
+          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
+            return { value: action }
+          });
+          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
+
+          const rowCells = [
+            { title: planVolume.name },
+            { title: planVolume.pvc.namespace },
+            { title: planVolume.selection.storageClass || 'None' },
+            { title: planVolume.capacity },
+            { title: planVolume.pvc.name },
+            {
+              title: (
+                <Select
+                  selections={selected}
+                  isExpanded={isDropdownOpen}
+                  onToggle={(x) => {
+                    setDropdownOpen(x);
+                    console.log('on toggle', x)
+                  }}
+                  onSelect={(e, selection) => {
+                    console.log('on select', e)
+                    onSelect(e, selection, isPlaceholder)
+                  }}
+                >
+                  {pfSelectOptionsWithPlaceholder.map((action, index) => {
+                    // console.log('supported Actions', row.original.supportedActions, action)
+                    return (
+                      <SelectOption
+                        key={index}
+                        value={action.value}
+                      >
+                        {/* {capitalize(action.value)} */}
+                      </SelectOption>
+                    )
+                  })}
+                </Select>
+
+              )
+            },
+            { title: '' }
+            // { title: pfSelectOptionsWithPlaceholder }
+          ];
+          return {
+            cells: rowCells
+          };
+        });
+      } else {
+        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+          const pvAction = 'copy'; // Default to copy
+          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
+            return { value: action }
+          });
+          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
+          const rowCells = [
+            { title: planVolume.name },
+            { title: planVolume.pvc.namespace },
+            { title: planVolume.selection.storageClass || '' },
+            { title: planVolume.capacity },
+            { title: planVolume.pvc.name },
+            { title: pvAction },
+            { title: '' }
+            // { pfSelectOptionsWithPlaceholder }
+          ];
+          return {
+            cells: rowCells
+          };
+
+        });
+      }
+      setFieldValue('persistentVolumes', mappedPVs);
+      // setRows(mappedPVs);
+      return mappedPVs;
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    const newRows = buildNewRows();
+    setRows(newRows);
+  }, [currentPlan, isFetchingPVList, isDropdownOpen]);
+  // useEffect(() => {
+  // }, [currentPlan, isFetchingPVList]); // Only re-run the effect if fetching value changes
+
   // columns={[
   //   {
   //     Header: () => (
@@ -254,97 +359,6 @@ const VolumesTable = (props): any => {
 
 
 
-  useEffect(() => {
-    if (currentPlan) {
-      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
-      const getPVResources = (pvList = [], clusterName = '') => {
-        getPVResourcesRequest(pvList, clusterName);
-      };
-      getPVResources(discoveredPersistentVolumes, values.sourceCluster);
-      let mappedPVs;
-      if (values.persistentVolumes) {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          let pvAction = 'copy'; // Default to copy
-          if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            if (rowVal && rowVal.selection) {
-              pvAction = rowVal.selection.action;
-            }
-            else {
-              pvAction = rowVal.type;
-            }
-          }
-          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
-            return { value: action }
-          });
-          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
-
-          const rowCells = [
-            { title: planVolume.name },
-            { title: planVolume.pvc.namespace },
-            { title: planVolume.selection.storageClass || 'None' },
-            { title: planVolume.capacity },
-            { title: planVolume.pvc.name },
-            {
-              title: (
-                <Select
-                  selections={selected}
-                  isExpanded={isDropdownOpen}
-                  onToggle={onToggle}
-                  onSelect={(e, selection) => {
-                    console.log('on select', e)
-                    onSelect(e, selection, isPlaceholder)
-                  }}
-                >
-                  {pfSelectOptionsWithPlaceholder.map((action, index) => {
-                    // console.log('supported Actions', row.original.supportedActions, action)
-                    return (
-                      <SelectOption
-                        key={index}
-                        value={action.value}
-                      >
-                        {/* {capitalize(action.value)} */}
-                      </SelectOption>
-                    )
-                  })}
-                </Select>
-
-              )
-            },
-            { title: '' }
-            // { title: pfSelectOptionsWithPlaceholder }
-          ]
-          return {
-            cells: rowCells
-          }
-        });
-      } else {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          const pvAction = 'copy'; // Default to copy
-          const pfSelectOptionsWithPlaceholder = planVolume.supported.actions.map((action, index) => {
-            return { value: action }
-          });
-          pfSelectOptionsWithPlaceholder.push({ value: 'Choose action...', isPlaceholder: true })
-          const rowCells = [
-            { title: planVolume.name },
-            { title: planVolume.pvc.namespace },
-            { title: planVolume.selection.storageClass || '' },
-            { title: planVolume.capacity },
-            { title: planVolume.pvc.name },
-            { title: pvAction },
-            { title: '' }
-            // { pfSelectOptionsWithPlaceholder }
-          ]
-          return {
-            cells: rowCells
-          }
-
-        });
-      }
-      setFieldValue('persistentVolumes', mappedPVs);
-      setRows(mappedPVs);
-    }
-  }, [currentPlan, isFetchingPVList]); // Only re-run the effect if fetching value changes
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
