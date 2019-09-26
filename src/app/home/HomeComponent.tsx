@@ -73,8 +73,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <Page header={HeaderComponent}>
       <PageSection>
-        <Grid gutter="lg" md={6} lg={4}>
-          <GridItem>
+        <Grid gutter="lg">
+          <GridItem md={6} xl={3}>
             <DashboardCard
               type="clusters"
               title="Clusters"
@@ -85,7 +85,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               loadingTitle="Loading clusters..."
             />
           </GridItem>
-          <GridItem>
+          <GridItem md={6} xl={3}>
             <DashboardCard
               title="Replication Repositories"
               type="repositories"
@@ -96,7 +96,7 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               loadingTitle="Loading repositories..."
             />
           </GridItem>
-          <GridItem>
+          <GridItem md={12} xl={6}>
             <DashboardCard
               type="plans"
               title="Migration Plans"

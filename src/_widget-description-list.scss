@@ -1,6 +1,5 @@
 // Description list
 .pf-c-widget-description-list {
-
   // Item
   --pf-c-widget-description-list--dt--item--MarginLeft: var(--pf-global--spacer--md);
 
@@ -25,18 +24,13 @@
   }
 
   &.pf-m-inline {
+    grid-template-rows: auto;
+    grid-template-columns: max-content auto;
     grid-column-gap: var(--pf-c-widget-description-list--m-inline--GridColumnGap);
     grid-row-gap: var(--pf-c-widget-description-list--m-inline--GridRowGap);
     align-items: baseline;
     word-break: break-word;
-    grid-template-rows: auto;
-    grid-template-columns: 1fr;
-
-    @media screen and (min-width: $pf-global--breakpoint--md) {
-      grid-template-columns: max-content auto;
-    }
   }
-
 }
 
 // Icon
@@ -51,8 +45,5 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  @media screen and (min-width: $pf-global--breakpoint--md) {
-    max-width: pf-size-prem(100px);
-  }
+  max-width: pf-size-prem(100px);
 }
