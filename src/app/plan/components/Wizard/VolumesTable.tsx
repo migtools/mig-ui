@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React, { useState, useEffect } from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
 import { css } from '@emotion/core';
 import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
@@ -11,7 +9,6 @@ import {
   Table,
   TableBody,
   TableHeader,
-  cellWidth
 } from '@patternfly/react-table';
 import {
   Bullseye,
@@ -26,7 +23,6 @@ import {
   EmptyStateBody,
   Select,
   SelectOption,
-  SelectVariant,
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
 import ReactJson from 'react-json-view';
@@ -56,8 +52,6 @@ const VolumesTable = (props): any => {
     'Details'
   ];
   const [rows, setRows] = useState([]);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isToggleIcon, setToggleIcon] = useState(false);
   const [selectedActionMap, setSelectedActionMap] = useState({});
   const [expandedDropdownMap, setExpandedDropdownMap] = useState({});
 
@@ -269,9 +263,6 @@ const VolumesTable = (props): any => {
   useEffect(() => {
     const newRows = buildNewRows();
     setRows(newRows);
-
-
-
   }, [currentPlan, isFetchingPVList, expandedDropdownMap]);
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -320,7 +311,7 @@ const VolumesTable = (props): any => {
 
   return (
     <Table
-      aria-label="migrations-history-table"
+      aria-label="volumes-table"
       cells={columns}
       rows={rows}
       className="pf-m-vertical-align-content-center"
