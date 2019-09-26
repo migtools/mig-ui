@@ -29,7 +29,7 @@ import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
-const VolumesTable = (props): any => {
+const VolumesTable = (props) => {
   const {
     setFieldValue,
     currentPlan,
