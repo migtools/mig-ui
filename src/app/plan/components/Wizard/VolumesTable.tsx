@@ -157,6 +157,9 @@ const VolumesTable = (props): any => {
             return { value: action }
           });
 
+          const matchingPVResource = pvResourceList.find(
+            pvResource => pvResource.metadata.name === planVolume.name
+          );
 
 
           const rowCells = [
@@ -192,7 +195,46 @@ const VolumesTable = (props): any => {
               ),
 
             },
-            { title: '' }
+            {
+              title: (
+                <Popover
+                  css={css`
+                  overflow-y: scroll;
+                  max-height: 20rem;
+                  width: 40rem;
+            `}
+                  position={PopoverPosition.bottom}
+                  bodyContent={
+                    <React.Fragment>
+                      {matchingPVResource ?
+                        <ReactJson src={matchingPVResource} enableClipboard={false} /> :
+                        <EmptyState variant={EmptyStateVariant.small}>
+                          <EmptyStateIcon icon={WarningTriangleIcon} />
+                          <Title headingLevel="h5" size="sm">
+                            No PV data found
+                  </Title>
+                          <EmptyStateBody>
+                            Unable to retrieve PV data
+                  </EmptyStateBody>
+                        </EmptyState>
+                      }
+                    </React.Fragment>
+                  }
+                  aria-label="pv-details"
+                  closeBtnAriaLabel="close-pv-details"
+                  maxWidth="200rem"
+                >
+                  <Flex>
+                    <Box>
+                      <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
+                        View JSON
+                </Button>
+                    </Box>
+                  </Flex>
+                </Popover>
+
+              )
+            }
           ];
 
           return {
@@ -232,191 +274,7 @@ const VolumesTable = (props): any => {
 
   }, [currentPlan, isFetchingPVList, expandedDropdownMap]);
 
-  // columns={[
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         PV Name
-  //       </div>
-  //     ),
-  //     accessor: 'name',
-  //     width: 180,
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Project
-  //       </div>
-  //     ),
-  //     accessor: 'project',
-  //     width: 150,
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Storage Class
-  //       </div>
-  //     ),
-  //     accessor: 'storageClass',
-  //     width: 150,
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Size
-  //       </div>
-  //     ),
-  //     accessor: 'size',
-  //     width: 75,
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Claim
-  //       </div>
-  //     ),
-  //     accessor: 'claim',
-  //     width: 180,
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Type
-  //       </div>
-  //     ),
-  //     accessor: 'type',
-  //     width: 120,
-  //     style: { overflow: 'visible' },
-  //     Cell: row => (
-  //       <Select
-  //         selections={selected}
-  //         isExpanded={isDropdownOpen}
-  //         onToggle={onToggle}
-  //         onSelect={(e, selection) => {
-  //           console.log('on select', e)
-  //           onSelect(e, row, selection)
-  //         }}
-  //       >
-  //         {row.original.supportedActions.map((action, index) => {
-  //           // console.log('supported Actions', row.original.supportedActions, action)
-  //           return (
-  //             <SelectOption
-  //               key={index}
-  //               value={action.value}
-  //             >
-  //               {/* {capitalize(action.value)} */}
-  //             </SelectOption>
-  //           )
-  //         })}
-  //       </Select>
-  //     ),
-  //   },
-  //   {
-  //     Header: () => (
-  //       <div
-  //         style={{
-  //           textAlign: 'left',
-  //           fontWeight: 600,
-  //         }}
-  //       >
-  //         Details
-  //       </div>
-  //     ),
-  //     accessor: 'details',
-  //     width: 200,
-  //     resizable: false,
-  //     textAlign: 'left',
-  //     Cell: row => {
-  //       const matchingPVResource = pvResourceList.find(
-  //         pvResource => pvResource.metadata.name === row.original.name
-  //       );
-  //       return (
-  //         <Popover
-  //           css={css`
-  //                 overflow-y: scroll;
-  //                 max-height: 20rem;
-  //                 width: 40rem;
-  //           `}
-  //           position={PopoverPosition.bottom}
-  //           bodyContent={
-  //             <React.Fragment>
-  //               {matchingPVResource ?
-  //                 <ReactJson src={matchingPVResource} enableClipboard={false} /> :
-  //                 <EmptyState variant={EmptyStateVariant.small}>
-  //                   <EmptyStateIcon icon={WarningTriangleIcon} />
-  //                   <Title headingLevel="h5" size="sm">
-  //                     No PV data found
-  //                 </Title>
-  //                   <EmptyStateBody>
-  //                     Unable to retrieve PV data
-  //                 </EmptyStateBody>
-  //                 </EmptyState>
-  //               }
-  //             </React.Fragment>
-  //           }
-  //           aria-label="pv-details"
-  //           closeBtnAriaLabel="close-pv-details"
-  //           maxWidth="200rem"
-  //         >
-  //           <Flex>
-  //             <Box>
-  //               <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
-  //                 View JSON
-  //               </Button>
-  //             </Box>
-  //           </Flex>
-  //         </Popover>
-  //       );
-  //     },
-  //   },
-  // ]}
-
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-  // const updateTableData = (rowIndex, updatedValue) => {
-  //   const rowsCopy = [...rows];
-  //   if (currentPlan !== null && values.persistentVolumes) {
-  //     const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
-
-  //     rowsCopy[rowIndex] = updatedRow;
-  //   }
-
-  //   setRows(rowsCopy);
-  //   setFieldValue('persistentVolumes', rowsCopy);
-  // };
-
-
-
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
