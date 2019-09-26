@@ -161,6 +161,33 @@ const StorageClassTable = (props) => {
             if (newSelectedStorageClassMap[pvIndex] && newSelectedStorageClassMap[pvIndex].storageClass) {
               selectedValue = newSelectedStorageClassMap[pvIndex].storageClass
             }
+            const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+              if (pv.name === planVolume.name) {
+                pv.selection.action = planVolume.selection.storageClass;
+              }
+              return pv;
+
+            })
+            setFieldValue('persistentVolumes', updatedPVFormValues);
+
+          } else {
+            const pvObj = {
+              storageClass: storageClassOptionsWithNone[0].value,
+              name: planVolume.name
+            }
+            newSelectedStorageClassMap[pvIndex] = pvObj;
+            setSelectedStorageClassMap(newSelectedStorageClassMap);
+
+            if (newSelectedStorageClassMap[pvIndex] && newSelectedStorageClassMap[pvIndex].storageClass) {
+              selectedValue = newSelectedStorageClassMap[pvIndex].storageClass
+            }
+            const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+              if (pv.name === planVolume.name) {
+                pv.selection.action = planVolume.selection.storageClass;
+              }
+              return pv;
+            })
+            setFieldValue('persistentVolumes', updatedPVFormValues);
 
           }
 
