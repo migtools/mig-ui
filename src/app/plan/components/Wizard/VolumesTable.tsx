@@ -91,6 +91,8 @@ const VolumesTable = (props): any => {
 
 
   const buildNewRows = () => {
+    let selectedValue;
+    let expandedValue;
     if (currentPlan) {
       const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
       const getPVResources = (pvList = [], clusterName = '') => {
@@ -107,15 +109,26 @@ const VolumesTable = (props): any => {
             // //set initial pv map
             const newSelectedActionMap = Object.assign({}, selectedActionMap);
 
-            if (rowVal && rowVal.selection) {
+            if (rowVal && rowVal.selection && rowVal.selection.action) {
               const pvObj = {
                 action: rowVal.selection.action,
                 name: planVolume.name
               }
               newSelectedActionMap[pvIndex] = pvObj;
-              // newSelectedActionMap[pvIndex].action = rowVal.selection.action;
-              // newSelectedActionMap[pvIndex].name = planVolume.name;
               setSelectedActionMap(newSelectedActionMap);
+              selectedValue = 'copy';
+              if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
+                selectedValue = newSelectedActionMap[pvIndex].action
+              }
+              expandedValue = expandedDropdownMap[pvIndex] === true;
+              const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+                if (pv.name === planVolume.name) {
+                  pv.selection.action = rowVal.selection.action;
+                }
+                return pv;
+              })
+              setFieldValue('persistentVolumes', updatedPVFormValues);
+
             }
             else {
               const pvObj = {
@@ -124,6 +137,20 @@ const VolumesTable = (props): any => {
               }
               newSelectedActionMap[pvIndex] = pvObj;
               setSelectedActionMap(newSelectedActionMap);
+              selectedValue = 'copy';
+              if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
+                selectedValue = newSelectedActionMap[pvIndex].action
+              }
+              expandedValue = expandedDropdownMap[pvIndex] === true;
+
+              const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+                if (pv.name === planVolume.name) {
+                  pv.selection.action = "copy";
+                }
+                return pv;
+              })
+              setFieldValue('persistentVolumes', updatedPVFormValues);
+
             }
           }
           const pfSelectOptions = planVolume.supported.actions.map((action) => {
@@ -131,12 +158,6 @@ const VolumesTable = (props): any => {
           });
 
 
-          let selectedValue;
-          selectedValue = 'copy';
-          if (selectedActionMap[pvIndex] && selectedActionMap[pvIndex].action) {
-            selectedValue = selectedActionMap[pvIndex].action
-          }
-          const expandedValue = expandedDropdownMap[pvIndex] === true;
 
           const rowCells = [
             { title: planVolume.name },
