@@ -14,6 +14,7 @@ import {
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { isPlaceholder } from '@babel/types';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
@@ -72,7 +73,14 @@ const ResourceSelectForm = props => {
           });
         }
       }
+      sourceOptions.push({
+        value: 'Choose...', isPlaceholder: true
+      });
       setSrcClusterOptions(sourceOptions);
+
+      targetOptions.push({
+        value: 'Choose...', isPlaceholder: true
+      });
       setTargetClusterOptions(targetOptions);
 
       if (values.sourceCluster !== null) {
@@ -96,6 +104,9 @@ const ResourceSelectForm = props => {
       myOptions.push({
         value: 'N/A',
       });
+      myOptions.push({
+        value: 'Choose...', isPlaceholder: true
+      });
       setSrcClusterOptions(myOptions);
     }
 
@@ -110,6 +121,9 @@ const ResourceSelectForm = props => {
         value: storageList[i].MigStorage.metadata.name,
       });
     }
+    newStorageOptions.push({
+      value: 'Choose...', isPlaceholder: true
+    });
     setStorageOptions(newStorageOptions);
 
     if (values.selectedStorage !== null) {
@@ -124,38 +138,58 @@ const ResourceSelectForm = props => {
       }
     }
   }, [values]);
-
-  const handleStorageChange = option => {
-    setFieldValue('selectedStorage', option);
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === option);
-
-    setSelectedStorage(
-      matchingStorage.MigStorage.metadata.name,
-    );
-
-    setFieldTouched('selectedStorage');
+  const clearSelection = () => {
+    setIsSrcOpen(false);
+    setIsTargetOpen(false);
     setIsStorageOpen(false);
   };
 
-  const handleSourceChange = option => {
-    setFieldValue('sourceCluster', option);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
-    setSelectedSrcCluster(
-      matchingCluster.MigCluster.metadata.name,
-    );
-    setFieldTouched('sourceCluster');
-    fetchNamespacesForCluster(matchingCluster.MigCluster.metadata.name);
-    setIsSrcOpen(false);
+
+  const handleStorageChange = (option, isPlaceholder) => {
+    if (isPlaceholder) {
+      clearSelection();
+    } else {
+      setFieldValue('selectedStorage', option);
+      const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === option);
+
+      setSelectedStorage(
+        matchingStorage.MigStorage.metadata.name,
+      );
+
+      setFieldTouched('selectedStorage');
+      setIsStorageOpen(false);
+
+    }
   };
 
-  const handleTargetChange = option => {
-    setFieldValue('targetCluster', option);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
-    setSelectedTargetCluster(
-      matchingCluster.MigCluster.metadata.name,
-    );
-    setFieldTouched('targetCluster');
-    setIsTargetOpen(false);
+  const handleSourceChange = (option, isPlaceholder) => {
+    if (isPlaceholder) {
+      clearSelection();
+    } else {
+      setFieldValue('sourceCluster', option);
+      const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
+      setSelectedSrcCluster(
+        matchingCluster.MigCluster.metadata.name,
+      );
+      setFieldTouched('sourceCluster');
+      fetchNamespacesForCluster(matchingCluster.MigCluster.metadata.name);
+      setIsSrcOpen(false);
+    }
+  };
+
+  const handleTargetChange = (option, isPlaceholder) => {
+    if (isPlaceholder) {
+      clearSelection();
+    }
+    else {
+      setFieldValue('targetCluster', option);
+      const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
+      setSelectedTargetCluster(
+        matchingCluster.MigCluster.metadata.name,
+      );
+      setFieldTouched('targetCluster');
+      setIsTargetOpen(false);
+    }
   };
   return (
     <Grid gutter="md">
@@ -174,8 +208,8 @@ const ResourceSelectForm = props => {
                   onToggle={(isOpen) => {
                     setIsSrcOpen(isOpen);
                   }}
-                  onSelect={(e, selection) => {
-                    handleSourceChange(selection);
+                  onSelect={(e, selection, isPlaceholder) => {
+                    handleSourceChange(selection, isPlaceholder);
                   }}
                 >
                   {srcClusterOptions.map((action, index) => {
@@ -183,6 +217,7 @@ const ResourceSelectForm = props => {
                       <SelectOption
                         key={index}
                         value={action.value}
+                        isPlaceholder={action.isPlaceholder}
                       >
                         {capitalize(action.value)}
                       </SelectOption>
@@ -207,8 +242,8 @@ const ResourceSelectForm = props => {
                   onToggle={(isOpen) => {
                     setIsTargetOpen(isOpen);
                   }}
-                  onSelect={(e, selection) => {
-                    handleTargetChange(selection);
+                  onSelect={(e, selection, isPlaceholder) => {
+                    handleTargetChange(selection, isPlaceholder);
                   }}
                 >
                   {targetClusterOptions.map((action, index) => {
@@ -216,6 +251,7 @@ const ResourceSelectForm = props => {
                       <SelectOption
                         key={index}
                         value={action.value}
+                        isPlaceholder={action.isPlaceholder}
                       >
                         {capitalize(action.value)}
                       </SelectOption>
@@ -240,8 +276,8 @@ const ResourceSelectForm = props => {
                   onToggle={(isOpen) => {
                     setIsStorageOpen(isOpen);
                   }}
-                  onSelect={(e, selection) => {
-                    handleStorageChange(selection);
+                  onSelect={(e, selection, isPlaceholder) => {
+                    handleStorageChange(selection, isPlaceholder);
                   }}
                 >
                   {storageOptions.map((action, index) => {
@@ -249,6 +285,7 @@ const ResourceSelectForm = props => {
                       <SelectOption
                         key={index}
                         value={action.value}
+                        isPlaceholder={action.isPlaceholder}
                       >
                         {capitalize(action.value)}
                       </SelectOption>
