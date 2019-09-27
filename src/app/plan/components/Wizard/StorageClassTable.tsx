@@ -163,7 +163,7 @@ const StorageClassTable = (props) => {
             }
             const updatedPVFormValues = values.persistentVolumes.map((pv) => {
               if (pv.name === planVolume.name) {
-                pv.selection.action = planVolume.selection.storageClass;
+                pv.selection.storageClass = planVolume.selection.storageClass;
               }
               return pv;
 
@@ -183,7 +183,7 @@ const StorageClassTable = (props) => {
             }
             const updatedPVFormValues = values.persistentVolumes.map((pv) => {
               if (pv.name === planVolume.name) {
-                pv.selection.action = planVolume.selection.storageClass;
+                pv.selection.storageClass = planVolume.selection.storageClass;
               }
               return pv;
             })
