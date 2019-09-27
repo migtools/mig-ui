@@ -171,10 +171,20 @@ const StorageClassTable = (props) => {
             setFieldValue('persistentVolumes', updatedPVFormValues);
 
           } else {
-            const pvObj = {
-              storageClass: storageClassOptionsWithNone[0].value,
-              name: planVolume.name
+            let pvObj;
+            if (planVolume.selection.storageClass === '') {
+              pvObj = {
+                storageClass: '',
+                name: planVolume.name
+              }
+
+            } else {
+              pvObj = {
+                storageClass: storageClassOptionsWithNone[0].value,
+                name: planVolume.name
+              }
             }
+
             newSelectedStorageClassMap[pvIndex] = pvObj;
             setSelectedStorageClassMap(newSelectedStorageClassMap);
 
