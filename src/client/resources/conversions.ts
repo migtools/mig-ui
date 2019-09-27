@@ -201,13 +201,11 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
       if (userPv) {
         v.selection.action = userPv.selection.action;
-        v.selection.storageClass = userPv.selection.storageClass;
-        // const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        // if (selectedStorageClassObj) {
-        //   v.selection.storageClass = selectedStorageClassObj.name;
-        // } else {
-        //   v.selection.storageClass = '';
-        // }
+        if (userPv.selection.storageClass === 'none') {
+          v.selection.storageClass = '';
+        } else {
+          v.selection.storageClass = userPv.selection.storageClass;
+        }
       }
       return v;
     });
