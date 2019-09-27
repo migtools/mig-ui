@@ -63,8 +63,8 @@ const StorageClassTable = (props) => {
   const onSelect = (selection, index, pvName) => {
     const selectedScName = selection;
     let newSc;
-    if (selectedScName === '') {
-      newSc = '';
+    if (selectedScName === 'none') {
+      newSc = 'none';
     } else {
       newSc = storageClassOptions.find(sc =>
         sc.name === selectedScName
@@ -126,7 +126,7 @@ const StorageClassTable = (props) => {
     //   setPvStorageClassAssignment(initialAssignedScs);
     //   props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
     // }
-    let selectedValue = '';
+    let selectedValue = 'none';
     let expandedValue;
     if (values.persistentVolumes.length) {
       // setRows(values.persistentVolumes.filter(v => v.selection.action === 'copy'));
@@ -145,7 +145,7 @@ const StorageClassTable = (props) => {
           const storageClassOptionsWithNone = destStorageClasses.map(sc => {
             return { value: sc.name, provisioner: sc.provisioner };
           });
-          storageClassOptionsWithNone.push({ value: '' });
+          storageClassOptionsWithNone.push({ value: 'none' });
           expandedValue = expandedDropdownMap[pvIndex] === true;
 
           const newSelectedStorageClassMap = Object.assign({}, selectedStorageClassMap);
@@ -172,17 +172,9 @@ const StorageClassTable = (props) => {
 
           } else {
             let pvObj;
-            if (planVolume.selection.storageClass === '') {
-              pvObj = {
-                storageClass: '',
-                name: planVolume.name
-              }
-
-            } else {
-              pvObj = {
-                storageClass: storageClassOptionsWithNone[0].value,
-                name: planVolume.name
-              }
+            pvObj = {
+              storageClass: storageClassOptionsWithNone[0].value,
+              name: planVolume.name
             }
 
             newSelectedStorageClassMap[pvIndex] = pvObj;
@@ -224,8 +216,8 @@ const StorageClassTable = (props) => {
                         key={index}
                         value={action.value}
                       >
-                        {action.value ?
-                          action.value + ':' + action.provisioner : ''}
+                        {action.value !== 'none' ?
+                          action.value + ':' + action.provisioner : 'None'}
 
                       </SelectOption>
                     )
