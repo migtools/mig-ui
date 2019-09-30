@@ -100,10 +100,14 @@ const ResourceSelectForm = props => {
     const newStorageOptions = [];
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
-      newStorageOptions.push({
-        label: storageList[i].MigStorage.metadata.name,
-        value: storageList[i].MigStorage.metadata.name,
-      });
+      if (
+        storageList[i].StorageStatus.hasReadyCondition
+      ) {
+        newStorageOptions.push({
+          label: storageList[i].MigStorage.metadata.name,
+          value: storageList[i].MigStorage.metadata.name,
+        });
+      }
     }
     setStorageOptions(newStorageOptions);
 
