@@ -1,18 +1,39 @@
 import { createSelector } from 'reselect';
 
-const clusterSelector = state => state.cluster.clusterList.map(c => c);
+const clusterSelectorWithStatus = state => state.cluster.clusterList.map(cluster => {
+  let hasReadyCondition = null;
+  let hasCriticalCondition = null;
+
+  if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
+
+    const emptyStatusObject = {
+      hasReadyCondition,
+      hasCriticalCondition
+    };
+    return { ...cluster, ClusterStatus: emptyStatusObject };
+  }
+  hasReadyCondition = !!cluster.MigCluster.status.conditions.some(c => c.type === 'Ready');
+  hasCriticalCondition = !!cluster.MigCluster.status.conditions.some(c => c.type === 'Critical');
+  const statusObject = {
+    hasReadyCondition,
+    hasCriticalCondition
+  };
+
+  return { ...cluster, ClusterStatus: statusObject };
+
+});
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
 const getAllClusters = createSelector(
-  [clusterSelector],
+  [clusterSelectorWithStatus],
   clusters => {
     return clusters;
   }
 );
 
 const getAssociatedPlans = createSelector(
-  [clusterSelector, planSelector],
+  [clusterSelectorWithStatus, planSelector],
   (clusterList, plans) => {
     return clusterList.reduce((associatedPlans, cluster) => {
       const clusterName = cluster.MigCluster.metadata.name;

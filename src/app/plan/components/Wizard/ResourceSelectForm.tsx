@@ -46,7 +46,9 @@ const ResourceSelectForm = props => {
       const targetOptions = [];
       const clusterLen = clusterList.length;
       for (let i = 0; i < clusterLen; i++) {
-        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster) {
+        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
+        ) {
           targetOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
             value: clusterList[i].MigCluster.metadata.name,
@@ -55,6 +57,7 @@ const ResourceSelectForm = props => {
         if (
           !clusterList[i].MigCluster.spec.isHostCluster &&
           clusterList[i].MigCluster.metadata.name !== values.targetCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
         ) {
           sourceOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -206,7 +209,7 @@ const ResourceSelectForm = props => {
               </FormGroup>
             </GridItem>
           </Grid>
-         </Form>
+        </Form>
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
@@ -222,12 +225,12 @@ const ResourceSelectForm = props => {
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespaceTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
-      )}
+          <NamespaceTable
+            setFieldValue={setFieldValue}
+            values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        )}
     </Grid>
   );
 };
