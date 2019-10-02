@@ -9,57 +9,14 @@ import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import {
   MigResource,
-  ExtendedCoreNamespacedResource,
-  CoreNamespacedResourceKind,
-  ExtendedCoreNamespacedResourceKind,
   CoreClusterResource,
   CoreClusterResourceKind,
-  CoreNamespacedResource,
   MigResourceKind
 } from '../../../client/resources';
-import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import Q from 'q';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
-
-function* checkPVs(action) {
-  const params = { ...action.params };
-  let pvsFound = false;
-  let tries = 0;
-  const TicksUntilTimeout = 20;
-
-  while (!pvsFound) {
-    if (tries < TicksUntilTimeout) {
-      tries += 1;
-      const plansRes = yield call(params.asyncFetch);
-      const pollingStatus = params.callback(plansRes);
-      switch (pollingStatus) {
-        case 'SUCCESS':
-          pvsFound = true;
-          yield put({ type: PlanActionTypes.STOP_PV_POLLING });
-          break;
-        case 'FAILURE':
-          pvsFound = true;
-          PlanActions.stopPVPolling();
-          yield put({ type: PlanActionTypes.PV_FETCH_FAILURE, });
-          yield put({ type: PlanActionTypes.STOP_PV_POLLING });
-          break;
-        default:
-          break;
-      }
-      yield delay(params.delay);
-    } else {
-      // PV discovery timed out, alert and stop polling
-      pvsFound = true; // No PVs timed out
-      PlanActions.stopPVPolling();
-      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
-      yield put({ type: PlanActionTypes.PV_FETCH_SUCCESS, });
-      yield put({ type: PlanActionTypes.STOP_PV_POLLING });
-      break;
-    }
-  }
-}
 
 function* getPlanSaga(planName) {
   const state = yield select();
@@ -346,12 +303,12 @@ function* watchPlanStatus() {
   }
 }
 
-function* watchPVPolling() {
-  while (true) {
-    const data = yield take(PlanActionTypes.START_PV_POLLING);
-    yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
-  }
-}
+// function* watchPVPolling() {
+//   while (true) {
+//     const data = yield take(PlanActionTypes.START_PV_POLLING);
+//     yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
+//   }
+// }
 
 function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
@@ -368,7 +325,7 @@ function* watchPlanClose() {
 
 export default {
   watchPlanUpdate,
-  watchPVPolling,
+  // watchPVPolling,
   watchPlanCloseAndDelete,
   watchPlanClose,
   watchClosedStatus,

@@ -39,11 +39,10 @@ const VolumesTable = (props): any => {
     currentPlan,
     values,
     isPVError,
-    isFetchingPVList,
     getPVResourcesRequest,
     isFetchingPVResources,
     pvResourceList,
-    isEdit
+    isPollingStatus
   } = props;
   const [rows, setRows] = useState([]);
 
@@ -113,7 +112,7 @@ const VolumesTable = (props): any => {
       setFieldValue('persistentVolumes', mappedPVs);
       setRows(mappedPVs);
     }
-  }, [currentPlan, isFetchingPVList]); // Only re-run the effect if fetching value changes
+  }, [currentPlan, isPollingStatus]); // Only re-run the effect if fetching value changes
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
@@ -141,7 +140,7 @@ const VolumesTable = (props): any => {
       </Box>
     );
   }
-  if (isFetchingPVList) {
+  if (isPollingStatus) {
     return (
       <Bullseye>
         <EmptyState variant="large">

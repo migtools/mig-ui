@@ -17,6 +17,7 @@ export interface IOtherProps {
   planList: any[];
   storageList: any[];
   isFetchingPVList: boolean;
+  isPVPolling: boolean;
   isPollingStatus: boolean;
   isPVError: boolean;
   isCheckingPlanStatus: boolean;
@@ -29,6 +30,7 @@ export interface IOtherProps {
   currentPlan: any;
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
+  startPVPolling: (planName) => void;
   planUpdateRequest: (values) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
@@ -40,6 +42,7 @@ export interface IOtherProps {
   onHandleWizardModalClose: () => void;
   editPlanObj?: any;
   isEdit: boolean;
+  pvFetchRequest: () => void;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
@@ -115,13 +118,13 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
+    isPVPolling: state.plan.isPVPolling,
     isPollingPlans: state.plan.isPolling,
     isPollingClusters: state.cluster.isPolling,
     isPollingStorage: state.storage.isPolling,
     isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
-    isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlan(state),
@@ -132,10 +135,11 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
+    startPVPolling: (pvParams) => dispatch(PlanActions.startPVPolling(pvParams)),
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
-    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
+    pvFetchRequest: () => dispatch(PlanActions.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),

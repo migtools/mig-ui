@@ -18,6 +18,7 @@ export interface ICurrentPlanStatus {
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
+  isPVPolling: false,
   isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
@@ -313,6 +314,20 @@ export const getPVResourcesFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.getPVResourcesFailure>) => {
     return { ...state, isFetchingPVResources: false };
   };
+
+export const startPVPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPVPolling: true
+  };
+};
+
+export const stopPVPolling = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPVPolling: false
+  };
+};
 
 export const startPlanPolling = (state = INITIAL_STATE, action) => {
   return {

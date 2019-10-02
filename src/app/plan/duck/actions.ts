@@ -174,9 +174,9 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const startPVPolling = (params) => ({
+const startPVPolling = (planName) => ({
   type: PlanActionTypes.START_PV_POLLING,
-  params,
+  planName,
 });
 
 const stopPVPolling = () => ({

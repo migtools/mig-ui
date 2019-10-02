@@ -20,8 +20,6 @@ import { PollingActions } from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
-const pvFetchRequest = PlanActions.pvFetchRequest;
-
 const PlanMigrationPollingInterval = 5000;
 
 const runStage = plan => {
@@ -146,10 +144,6 @@ const addPlan = (migPlan) => {
   return async (dispatch, getState) => {
     try {
       /**
-       * Trigger the pv fetch request to initiate loading screen for the VolumesTable component
-       */
-      dispatch(pvFetchRequest());
-      /**
        * Create the plan object. Blocks all code in this function until createPlanRes
        */
       const { migMeta } = getState();
@@ -169,41 +163,6 @@ const addPlan = (migPlan) => {
         migPlanObj
       );
 
-      /**
-       * Begin PV polling when adding a plan.
-       * This is triggered when the user navigates to the pv discovery part of the plan
-       * because the discovery is dependent on the creation of a plan
-       */
-
-      const getPVs = (updatedPlansPollingResponse, newObjectRes) => {
-        const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
-          p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
-        );
-
-        const pvSearchStatus = matchingPlan ? planUtils.getPlanPVsAndCheckConditions(matchingPlan) : null;
-        if (pvSearchStatus.success) {
-          dispatch(PlanActions.updatePlanList(matchingPlan.MigPlan));
-          dispatch(PlanActions.setCurrentPlan(matchingPlan.MigPlan));
-          dispatch(PlanActions.pvFetchSuccess());
-          return 'SUCCESS';
-        } else if (pvSearchStatus.error) {
-          dispatch(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
-          return 'FAILURE';
-        }
-      };
-
-      const pvPollingCallback = updatedPlansPollingResponse => {
-        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          return getPVs(updatedPlansPollingResponse, createPlanRes);
-        }
-      };
-      const pvParams = {
-        asyncFetch: fetchPlansGenerator,
-        delay: PlanMigrationPollingInterval,
-        callback: pvPollingCallback,
-      };
-
-      dispatch(PlanActions.startPVPolling(pvParams));
       dispatch(PlanActions.addPlanSuccess(createPlanRes.data));
 
     } catch (err) {
@@ -288,7 +247,6 @@ function* fetchPlansGenerator() {
 }
 
 export default {
-  pvFetchRequest,
   fetchPlans,
   addPlan,
   removePlan,

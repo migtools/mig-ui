@@ -29,6 +29,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     storageList,
     isOpen,
     isFetchingPVList,
+    isPVPolling,
     isFetchingNamespaceList,
     isPVError,
     isPollingStatus,
@@ -44,7 +45,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetCurrentPlan,
     onHandleWizardModalClose,
     isEdit,
-    editPlanObj
+    editPlanObj,
+    startPVPolling,
+    pvFetchRequest
   } = props;
 
   enum stepId {
@@ -125,11 +128,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
-            isFetchingPVResources={isFetchingPVResources}
+            planUpdateRequest={planUpdateRequest}
+            isPollingStatus={isPollingStatus}
+            startPlanStatusPolling={startPlanStatusPolling}
           />
         ),
         enableNext: !isFetchingPVList && !isPVError,

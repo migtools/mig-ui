@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Box } from '@rebass/emotion';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   GridItem,
@@ -9,18 +9,28 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import VolumesTable from './VolumesTable';
+
 const VolumesForm = props => {
   const {
     setFieldValue,
     values,
     isPVError,
-    isFetchingPVList,
     currentPlan,
     getPVResourcesRequest,
     pvResourceList,
     isFetchingPVResources,
-    isEdit
+    isEdit,
+    planUpdateRequest,
+    startPlanStatusPolling,
+    isPollingStatus
   } = props;
+
+  useEffect(() => {
+    planUpdateRequest(values);
+    startPlanStatusPolling(values.planName);
+    // startPVPolling(values);
+    // pvFetchRequest();
+  }, []); // Only re-run the effect if fetching value changes
 
   return (
     <Grid gutter="md">
@@ -35,13 +45,13 @@ const VolumesForm = props => {
         <VolumesTable
           isEdit={isEdit}
           isPVError={isPVError}
-          isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}
           currentPlan={currentPlan}
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
           isFetchingPVResources={isFetchingPVResources}
+          isPollingStatus={isPollingStatus}
         />
       </GridItem>
     </Grid>

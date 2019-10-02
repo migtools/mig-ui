@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const getPlanPVsAndCheckConditions = plan => {
+const getPlanStatus = plan => {
   const statusObj = { success: null, error: null, errorText: null };
   const PvsDiscoveredType = 'PvsDiscovered';
   const NamespaceLimitErrorType = 'NamespaceLimitExceeded';
@@ -20,16 +20,6 @@ const getPlanPVsAndCheckConditions = plan => {
     }
   }
 
-  return statusObj;
-};
-const getPlanStatus = plan => {
-  const statusObj = { success: null, error: null };
-  if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) { return statusObj; }
-
-  const hasReadyCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'Ready');
-  if (hasReadyCondition) {
-    statusObj.success = hasReadyCondition;
-  }
   return statusObj;
 };
 
@@ -90,7 +80,6 @@ const groupPlan: any = (plan, response) => {
 };
 
 export default {
-  getPlanPVsAndCheckConditions,
   getPlanStatus,
   getMigrationStatus,
   groupPlan,
