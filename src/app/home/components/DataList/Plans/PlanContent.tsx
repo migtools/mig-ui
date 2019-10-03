@@ -10,7 +10,7 @@ import {
   TableBody,
   compoundExpand,
 } from '@patternfly/react-table';
-import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
+import { MigrationIcon } from '@patternfly/react-icons';
 import PlanEmptyState from './PlanEmptyState';
 
 interface IProps {
@@ -36,9 +36,9 @@ const columns = [
   },
   'Repository',
   {
-    title: 'Persistent Volumes',
+    title: 'PVs',
   },
-  'Last Status',
+  'Last state',
   ''
 ];
 
@@ -47,10 +47,11 @@ const buildNewRows = (
 ) => {
   const newRows = planList.map((plan, planIndex) => {
     const MigrationsIcon = () => {
-      if (plan.Migrations.length > 0) {
-        return <span className="pf-c-icon pf-m-info"><ServiceIcon /></span>;
+      const migrationCount = plan.Migrations.length || 0;
+      if (migrationCount > 0) {
+        return <span className="pf-c-icon pf-m-info"><MigrationIcon /> {migrationCount}</span>;
       } else {
-        return <span className="pf-c-icon"><ServiceIcon /></span>;
+        return <span className="pf-c-icon"><MigrationIcon /> {migrationCount}</span>;
       }
     };
     const parentIndex = planIndex * 2;
@@ -91,9 +92,6 @@ const buildNewRows = (
                 <div className="pf-l-flex__item" key={planKey + '-icon'}>
                   <MigrationsIcon />
                 </div>
-                <div className="pf-l-flex__item" key={planKey + '-text'}>
-                  <span>{plan.Migrations.length || 0}</span>
-                </div>
               </div>
             ),
 
@@ -114,9 +112,6 @@ const buildNewRows = (
           {
             title: (
               <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
-                  <DatabaseIcon />
-                </div>
                 <div className="pf-l-flex__item">
                   <span>{pvCount}</span>
                 </div>
