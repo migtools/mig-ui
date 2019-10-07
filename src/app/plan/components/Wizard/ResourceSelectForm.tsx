@@ -217,9 +217,7 @@ const ResourceSelectForm = props => {
                         key={index}
                         value={action.value}
                         isPlaceholder={action.isPlaceholder}
-                      >
-                        {capitalize(action.value)}
-                      </SelectOption>
+                      />
                     );
                   })}
                 </Select>
@@ -251,9 +249,7 @@ const ResourceSelectForm = props => {
                         key={index}
                         value={action.value}
                         isPlaceholder={action.isPlaceholder}
-                      >
-                        {capitalize(action.value)}
-                      </SelectOption>
+                      />
                     );
                   })}
                 </Select>
@@ -285,9 +281,7 @@ const ResourceSelectForm = props => {
                         key={index}
                         value={action.value}
                         isPlaceholder={action.isPlaceholder}
-                      >
-                        {capitalize(action.value)}
-                      </SelectOption>
+                      />
                     );
                   })}
                 </Select>

@@ -114,7 +114,7 @@ const VolumesTable = (props) => {
               if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
                 selectedValue = newSelectedActionMap[pvIndex].action;
               }
-              expandedValue = expandedDropdownMap[pvIndex] === true;
+              // expandedValue = expandedDropdownMap[pvIndex] === true;
               const updatedPVFormValues = values.persistentVolumes.map((pv) => {
                 if (pv.name === planVolume.name) {
                   pv.selection.action = rowVal.selection.action;
@@ -135,7 +135,7 @@ const VolumesTable = (props) => {
               if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
                 selectedValue = newSelectedActionMap[pvIndex].action;
               }
-              expandedValue = expandedDropdownMap[pvIndex] === true;
+              // expandedValue = expandedDropdownMap[pvIndex] === true;
 
               const updatedPVFormValues = values.persistentVolumes.map((pv) => {
                 if (pv.name === planVolume.name) {
@@ -147,6 +147,8 @@ const VolumesTable = (props) => {
 
             }
           }
+          expandedValue = expandedDropdownMap[pvIndex] === true;
+
           const pfSelectOptions = planVolume.supported.actions.map((action) => {
             return { value: action };
           });
