@@ -131,12 +131,7 @@ const VolumesTable = (props) => {
             if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
               selectedValue = newSelectedActionMap[pvIndex].action;
             }
-            // const updatedPVFormValues = values.persistentVolumes.map((pv) => {
-            //   if (pv.name === planVolume.name) {
-            //     pv.selection.action = 'copy';
-            //   }
-            //   return pv;
-            // });
+
             setFieldValue('persistentVolumes', discoveredPersistentVolumes);
 
           }
