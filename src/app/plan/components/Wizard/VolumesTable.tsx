@@ -96,56 +96,49 @@ const VolumesTable = (props) => {
       let mappedPVs;
       if (values.persistentVolumes) {
         mappedPVs = discoveredPersistentVolumes.map((planVolume, pvIndex) => {
-          const pvAction = 'copy'; // Default to copy
-          if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
 
-            // //set initial pv map
-            const newSelectedActionMap = Object.assign({}, selectedActionMap);
+          const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
+          const newSelectedActionMap = Object.assign({}, selectedActionMap);
 
-            if (rowVal && rowVal.selection && rowVal.selection.action) {
-              const pvObj = {
-                action: rowVal.selection.action,
-                name: planVolume.name
-              };
-              newSelectedActionMap[pvIndex] = pvObj;
-              setSelectedActionMap(newSelectedActionMap);
-              selectedValue = 'copy';
-              if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
-                selectedValue = newSelectedActionMap[pvIndex].action;
-              }
-              // expandedValue = expandedDropdownMap[pvIndex] === true;
-              const updatedPVFormValues = values.persistentVolumes.map((pv) => {
-                if (pv.name === planVolume.name) {
-                  pv.selection.action = rowVal.selection.action;
-                }
-                return pv;
-              });
-              setFieldValue('persistentVolumes', updatedPVFormValues);
-
+          if (rowVal && rowVal.selection && rowVal.selection.action) {
+            const pvObj = {
+              action: rowVal.selection.action,
+              name: planVolume.name
+            };
+            newSelectedActionMap[pvIndex] = pvObj;
+            setSelectedActionMap(newSelectedActionMap);
+            selectedValue = 'copy';
+            if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
+              selectedValue = newSelectedActionMap[pvIndex].action;
             }
-            else {
-              const pvObj = {
-                action: 'copy',
-                name: planVolume.name
-              };
-              newSelectedActionMap[pvIndex] = pvObj;
-              setSelectedActionMap(newSelectedActionMap);
-              selectedValue = 'copy';
-              if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
-                selectedValue = newSelectedActionMap[pvIndex].action;
+            const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+              if (pv.name === planVolume.name) {
+                pv.selection.action = rowVal.selection.action;
               }
-              // expandedValue = expandedDropdownMap[pvIndex] === true;
+              return pv;
+            });
+            setFieldValue('persistentVolumes', updatedPVFormValues);
 
-              const updatedPVFormValues = values.persistentVolumes.map((pv) => {
-                if (pv.name === planVolume.name) {
-                  pv.selection.action = 'copy';
-                }
-                return pv;
-              });
-              setFieldValue('persistentVolumes', updatedPVFormValues);
-
+          }
+          else {
+            const pvObj = {
+              action: 'copy',
+              name: planVolume.name
+            };
+            newSelectedActionMap[pvIndex] = pvObj;
+            setSelectedActionMap(newSelectedActionMap);
+            selectedValue = 'copy';
+            if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
+              selectedValue = newSelectedActionMap[pvIndex].action;
             }
+            // const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+            //   if (pv.name === planVolume.name) {
+            //     pv.selection.action = 'copy';
+            //   }
+            //   return pv;
+            // });
+            setFieldValue('persistentVolumes', discoveredPersistentVolumes);
+
           }
           expandedValue = expandedDropdownMap[pvIndex] === true;
 
