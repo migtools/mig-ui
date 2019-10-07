@@ -14,7 +14,6 @@ import {
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { isPlaceholder } from '@babel/types';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);

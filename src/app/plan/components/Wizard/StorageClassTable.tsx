@@ -79,23 +79,23 @@ const StorageClassTable = (props) => {
     const pvObj = {
       storageClass: selection,
       name: pvName
-    }
+    };
     newSelectedStorageClassMap[index] = pvObj;
     setSelectedStorageClassMap(newSelectedStorageClassMap);
 
     const updatedPVFormValues = values.persistentVolumes.map((pv) => {
       if (pv.name === pvName) {
-        pv.selection.storageClass = selection
+        pv.selection.storageClass = selection;
       }
       return pv;
-    })
+    });
     setFieldValue('persistentVolumes', updatedPVFormValues);
 
     const newExpandedMap = Object.assign({}, expandedDropdownMap);
     newExpandedMap[index] = !expandedDropdownMap[index];
     setExpandedDropdownMap(newExpandedMap);
 
-  }
+  };
 
   const onToggle = (isOpen, index) => {
     const newExpandedMap = Object.assign({}, expandedDropdownMap);
@@ -154,12 +154,12 @@ const StorageClassTable = (props) => {
             const pvObj = {
               storageClass: planVolume.selection.storageClass,
               name: planVolume.name
-            }
+            };
             newSelectedStorageClassMap[pvIndex] = pvObj;
             setSelectedStorageClassMap(newSelectedStorageClassMap);
 
             if (newSelectedStorageClassMap[pvIndex] && newSelectedStorageClassMap[pvIndex].storageClass) {
-              selectedValue = newSelectedStorageClassMap[pvIndex].storageClass
+              selectedValue = newSelectedStorageClassMap[pvIndex].storageClass;
             }
             const updatedPVFormValues = values.persistentVolumes.map((pv) => {
               if (pv.name === planVolume.name) {
@@ -167,7 +167,7 @@ const StorageClassTable = (props) => {
               }
               return pv;
 
-            })
+            });
             setFieldValue('persistentVolumes', updatedPVFormValues);
 
           } else {
@@ -175,20 +175,20 @@ const StorageClassTable = (props) => {
             pvObj = {
               storageClass: storageClassOptionsWithNone[0].value,
               name: planVolume.name
-            }
+            };
 
             newSelectedStorageClassMap[pvIndex] = pvObj;
             setSelectedStorageClassMap(newSelectedStorageClassMap);
 
             if (newSelectedStorageClassMap[pvIndex] && newSelectedStorageClassMap[pvIndex].storageClass) {
-              selectedValue = newSelectedStorageClassMap[pvIndex].storageClass
+              selectedValue = newSelectedStorageClassMap[pvIndex].storageClass;
             }
             const updatedPVFormValues = values.persistentVolumes.map((pv) => {
               if (pv.name === planVolume.name) {
                 pv.selection.storageClass = planVolume.selection.storageClass;
               }
               return pv;
-            })
+            });
             setFieldValue('persistentVolumes', updatedPVFormValues);
 
           }
@@ -204,10 +204,10 @@ const StorageClassTable = (props) => {
                     selectedValue}
                   isExpanded={expandedValue}
                   onToggle={(isOpen) => {
-                    onToggle(isOpen, pvIndex)
+                    onToggle(isOpen, pvIndex);
                   }}
                   onSelect={(e, selection) => {
-                    onSelect(selection, pvIndex, planVolume.name)
+                    onSelect(selection, pvIndex, planVolume.name);
                   }}
                 >
                   {storageClassOptionsWithNone.map((action, index) => {
@@ -220,7 +220,7 @@ const StorageClassTable = (props) => {
                           action.value + ':' + action.provisioner : 'None'}
 
                       </SelectOption>
-                    )
+                    );
                   })}
                 </Select>
 
@@ -232,11 +232,11 @@ const StorageClassTable = (props) => {
           return {
             cells: rowCells
           };
-        })
+        });
       return storageClassRows;
     }
     return [];
-  }
+  };
   useEffect(() => {
     const newRows = buildNewRows();
     setRows(newRows);

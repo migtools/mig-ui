@@ -64,18 +64,18 @@ const VolumesTable = (props) => {
     const pvObj = {
       action: selection,
       name: pvName
-    }
+    };
     newSelectedActionMap[index] = pvObj;
     setSelectedActionMap(newSelectedActionMap);
     const updatedPVFormValues = values.persistentVolumes.map((pv) => {
       if (pv.name === pvName) {
-        pv.selection.action = selection
+        pv.selection.action = selection;
       }
       return pv;
-    })
+    });
     setFieldValue('persistentVolumes', updatedPVFormValues);
 
-  }
+  };
 
   const onToggle = (isOpen, index) => {
     const newExpandedMap = Object.assign({}, expandedDropdownMap);
@@ -96,7 +96,7 @@ const VolumesTable = (props) => {
       let mappedPVs;
       if (values.persistentVolumes) {
         mappedPVs = discoveredPersistentVolumes.map((planVolume, pvIndex) => {
-          let pvAction = 'copy'; // Default to copy
+          const pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
 
@@ -107,12 +107,12 @@ const VolumesTable = (props) => {
               const pvObj = {
                 action: rowVal.selection.action,
                 name: planVolume.name
-              }
+              };
               newSelectedActionMap[pvIndex] = pvObj;
               setSelectedActionMap(newSelectedActionMap);
               selectedValue = 'copy';
               if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
-                selectedValue = newSelectedActionMap[pvIndex].action
+                selectedValue = newSelectedActionMap[pvIndex].action;
               }
               expandedValue = expandedDropdownMap[pvIndex] === true;
               const updatedPVFormValues = values.persistentVolumes.map((pv) => {
@@ -120,35 +120,35 @@ const VolumesTable = (props) => {
                   pv.selection.action = rowVal.selection.action;
                 }
                 return pv;
-              })
+              });
               setFieldValue('persistentVolumes', updatedPVFormValues);
 
             }
             else {
               const pvObj = {
-                action: "copy",
+                action: 'copy',
                 name: planVolume.name
-              }
+              };
               newSelectedActionMap[pvIndex] = pvObj;
               setSelectedActionMap(newSelectedActionMap);
               selectedValue = 'copy';
               if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
-                selectedValue = newSelectedActionMap[pvIndex].action
+                selectedValue = newSelectedActionMap[pvIndex].action;
               }
               expandedValue = expandedDropdownMap[pvIndex] === true;
 
               const updatedPVFormValues = values.persistentVolumes.map((pv) => {
                 if (pv.name === planVolume.name) {
-                  pv.selection.action = "copy";
+                  pv.selection.action = 'copy';
                 }
                 return pv;
-              })
+              });
               setFieldValue('persistentVolumes', updatedPVFormValues);
 
             }
           }
           const pfSelectOptions = planVolume.supported.actions.map((action) => {
-            return { value: action }
+            return { value: action };
           });
 
           const matchingPVResource = pvResourceList.find(
@@ -168,10 +168,10 @@ const VolumesTable = (props) => {
                   selections={selectedValue}
                   isExpanded={expandedValue}
                   onToggle={(isOpen) => {
-                    onToggle(isOpen, pvIndex)
+                    onToggle(isOpen, pvIndex);
                   }}
                   onSelect={(e, selection) => {
-                    onSelect(selection, pvIndex, planVolume.name)
+                    onSelect(selection, pvIndex, planVolume.name);
                   }}
                 >
                   {pfSelectOptions.map((action, index) => {
@@ -182,7 +182,7 @@ const VolumesTable = (props) => {
                       >
                         {capitalize(action.value)}
                       </SelectOption>
-                    )
+                    );
                   })}
                 </Select>
 
