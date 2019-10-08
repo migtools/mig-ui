@@ -67,7 +67,9 @@ const VolumesTable = (props) => {
     };
     newSelectedActionMap[index] = pvObj;
     setSelectedActionMap(newSelectedActionMap);
-    const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+
+    const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
+    const updatedPVFormValues = discoveredPersistentVolumes.map((pv) => {
       if (pv.name === pvName) {
         pv.selection.action = selection;
       }
@@ -111,7 +113,7 @@ const VolumesTable = (props) => {
             if (newSelectedActionMap[pvIndex] && newSelectedActionMap[pvIndex].action) {
               selectedValue = newSelectedActionMap[pvIndex].action;
             }
-            const updatedPVFormValues = values.persistentVolumes.map((pv) => {
+            const updatedPVFormValues = discoveredPersistentVolumes.map((pv) => {
               if (pv.name === planVolume.name) {
                 pv.selection.action = rowVal.selection.action;
               }
