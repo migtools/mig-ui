@@ -43,11 +43,6 @@ const ResourceSelectForm = props => {
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-  useEffect(() => {
-    if (isEdit) {
-      fetchNamespacesForCluster(values.sourceCluster);
-    }
-  }, []);
 
   useEffect(() => {
     // ***

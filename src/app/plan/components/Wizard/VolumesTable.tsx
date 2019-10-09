@@ -39,7 +39,6 @@ const VolumesTable = (props) => {
     getPVResourcesRequest,
     isFetchingPVResources,
     pvResourceList,
-    isEdit
   } = props;
 
   const columns = [

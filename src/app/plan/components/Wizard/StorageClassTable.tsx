@@ -19,7 +19,6 @@ import {
 
 const StorageClassTable = (props) => {
   const {
-    isEdit,
     currentPlan,
     clusterList,
     values,
@@ -40,25 +39,6 @@ const StorageClassTable = (props) => {
     'Storage Class'
   ];
 
-  // const handleStorageClassChange = (row, option) => {
-  //   const pvName = row.original.name;
-  //   const selectedScName = option.value;
-  //   let newSc;
-  //   if (selectedScName === '') {
-  //     newSc = '';
-  //   } else {
-  //     newSc = storageClassOptions.find(sc =>
-  //       sc.name === selectedScName
-  //     );
-  //   }
-  //   const updatedAssignment = {
-  //     ...pvStorageClassAssignment,
-  //     [pvName]: newSc,
-  //   };
-
-  //   setPvStorageClassAssignment(updatedAssignment);
-  //   props.setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
-  // };
 
   const onSelect = (selection, index, pvName) => {
     const selectedScName = selection;
@@ -70,10 +50,6 @@ const StorageClassTable = (props) => {
         sc.name === selectedScName
       );
     }
-    // const updatedAssignment = {
-    //   ...pvStorageClassAssignment,
-    //   [pvName]: newSc,
-    // };
 
     const newSelectedStorageClassMap = Object.assign({}, selectedStorageClassMap);
     const pvObj = {
@@ -104,32 +80,9 @@ const StorageClassTable = (props) => {
   };
 
   const buildNewRows = () => {
-    // const destCluster = clusterList.find(
-    //   c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
-    // );
-
-    // const destStorageClasses = destCluster.MigCluster.spec.storageClasses || [];
-    // setStorageClassOptions(destStorageClasses);
-    // // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
-    // const migPlanPvs = currentPlan.spec.persistentVolumes;
-    // let initialAssignedScs;
-    // if (values.pvStorageClassAssignment) {
-    //   setPvStorageClassAssignment(values.pvStorageClassAssignment);
-    // } else {
-    //   initialAssignedScs = migPlanPvs ? migPlanPvs.reduce((assignedScs, pv) => {
-    //     const suggestedStorageClass = destStorageClasses.find(sc =>
-    //       sc.name === pv.selection.storageClass
-    //     );
-    //     assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
-    //     return assignedScs;
-    //   }, {}) : {};
-    //   setPvStorageClassAssignment(initialAssignedScs);
-    //   props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
-    // }
     let selectedValue = 'none';
     let expandedValue;
     if (values.persistentVolumes.length) {
-      // setRows(values.persistentVolumes.filter(v => v.selection.action === 'copy'));
       const storageClassRows = values.persistentVolumes
         .filter(v => v.selection.action === 'copy')
         .map((planVolume, pvIndex) => {
