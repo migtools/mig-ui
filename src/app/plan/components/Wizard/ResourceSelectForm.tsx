@@ -1,8 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { useState, useEffect } from 'react';
-import { Box, Flex, Text } from '@rebass/emotion';
-import theme from '../../../../theme';
 import {
   Bullseye,
   EmptyState,
@@ -11,8 +9,9 @@ import {
   Grid,
   GridItem,
   Title,
+  Select,
+  SelectOption,
 } from '@patternfly/react-core';
-import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -20,10 +19,14 @@ const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
   const [targetClusterOptions, setTargetClusterOptions] = useState([]);
   const [storageOptions, setStorageOptions] = useState([]);
+  const [selectedSrcCluster, setSelectedSrcCluster] = useState('');
+  const [selectedTargetCluster, setSelectedTargetCluster] = useState('');
+  const [selectedStorage, setSelectedStorage] = useState('');
 
-  const [selectedSrcCluster, setSelectedSrcCluster] = useState(null);
-  const [selectedTargetCluster, setSelectedTargetCluster] = useState(null);
-  const [selectedStorage, setSelectedStorage] = useState(null);
+  const [isSrcOpen, setIsSrcOpen] = useState(false);
+  const [isStorageOpen, setIsStorageOpen] = useState(false);
+  const [isTargetOpen, setIsTargetOpen] = useState(false);
+
   const {
     clusterList,
     storageList,
@@ -35,7 +38,16 @@ const ResourceSelectForm = props => {
     isFetchingNamespaceList,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
+    isEdit
   } = props;
+
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  useEffect(() => {
+    if (isEdit) {
+      fetchNamespacesForCluster(values.sourceCluster);
+    }
+  }, []);
 
   useEffect(() => {
     // ***
@@ -48,7 +60,6 @@ const ResourceSelectForm = props => {
       for (let i = 0; i < clusterLen; i++) {
         if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster) {
           targetOptions.push({
-            label: clusterList[i].MigCluster.metadata.name,
             value: clusterList[i].MigCluster.metadata.name,
           });
         }
@@ -57,48 +68,46 @@ const ResourceSelectForm = props => {
           clusterList[i].MigCluster.metadata.name !== values.targetCluster
         ) {
           sourceOptions.push({
-            label: clusterList[i].MigCluster.metadata.name,
             value: clusterList[i].MigCluster.metadata.name,
           });
         }
       }
       setSrcClusterOptions(sourceOptions);
+
       setTargetClusterOptions(targetOptions);
 
       if (values.sourceCluster !== null) {
         const existingSrcCluster = clusterList.find(
           c => c.MigCluster.metadata.name === values.sourceCluster
         );
-        setSelectedSrcCluster({
-          label: existingSrcCluster.MigCluster.metadata.name,
-          value: existingSrcCluster.MigCluster.metadata.name,
-        });
+        setSelectedSrcCluster(
+          existingSrcCluster.MigCluster.metadata.name,
+        );
       }
       if (values.targetCluster !== null) {
         const existingTargetCluster = clusterList.find(
           c => c.MigCluster.metadata.name === values.targetCluster
         );
-        setSelectedTargetCluster({
-          label: existingTargetCluster.MigCluster.metadata.name,
-          value: existingTargetCluster.MigCluster.metadata.name,
-        });
+        setSelectedTargetCluster(
+          existingTargetCluster.MigCluster.metadata.name,
+        );
       }
     } else {
       const myOptions: any = [];
       myOptions.push({
-        label: 'No Valid Clusters Found',
         value: 'N/A',
       });
       setSrcClusterOptions(myOptions);
     }
+
     // ***
     // * Populate storage dropdown
     // ***
+
     const newStorageOptions = [];
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
       newStorageOptions.push({
-        label: storageList[i].MigStorage.metadata.name,
         value: storageList[i].MigStorage.metadata.name,
       });
     }
@@ -108,44 +117,52 @@ const ResourceSelectForm = props => {
       const existingStorageSelection = storageList.find(
         c => c.MigStorage.metadata.name === values.selectedStorage
       );
-      setSelectedStorage({
-        label: existingStorageSelection.MigStorage.metadata.name,
-        value: existingStorageSelection.MigStorage.metadata.name,
-      });
+      if (existingStorageSelection) {
+        setSelectedStorage(
+          existingStorageSelection.MigStorage.metadata.name,
+        );
+
+      }
     }
   }, [values]);
+  const clearSelection = () => {
+    setIsSrcOpen(false);
+    setIsTargetOpen(false);
+    setIsStorageOpen(false);
+  };
 
-  const handleStorageChange = option => {
-    setFieldValue('selectedStorage', option.value);
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === option.value);
 
-    setSelectedStorage({
-      label: matchingStorage.MigStorage.metadata.name,
-      value: matchingStorage.MigStorage.metadata.name,
-    });
+  const handleStorageChange = (option) => {
+    setFieldValue('selectedStorage', option);
+    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === option);
+
+    setSelectedStorage(
+      matchingStorage.MigStorage.metadata.name,
+    );
 
     setFieldTouched('selectedStorage');
+    setIsStorageOpen(false);
   };
 
-  const handleSourceChange = option => {
-    setFieldValue('sourceCluster', option.value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option.value);
-    setSelectedSrcCluster({
-      label: matchingCluster.MigCluster.metadata.name,
-      value: matchingCluster.MigCluster.metadata.name,
-    });
+  const handleSourceChange = (option) => {
+    setFieldValue('sourceCluster', option);
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
+    setSelectedSrcCluster(
+      matchingCluster.MigCluster.metadata.name,
+    );
     setFieldTouched('sourceCluster');
     fetchNamespacesForCluster(matchingCluster.MigCluster.metadata.name);
+    setIsSrcOpen(false);
   };
 
-  const handleTargetChange = option => {
-    setFieldValue('targetCluster', option.value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option.value);
-    setSelectedTargetCluster({
-      label: matchingCluster.MigCluster.metadata.name,
-      value: matchingCluster.MigCluster.metadata.name,
-    });
+  const handleTargetChange = (option) => {
+    setFieldValue('targetCluster', option);
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option);
+    setSelectedTargetCluster(
+      matchingCluster.MigCluster.metadata.name,
+    );
     setFieldTouched('targetCluster');
+    setIsTargetOpen(false);
   };
   return (
     <Grid gutter="md">
@@ -159,11 +176,25 @@ const ResourceSelectForm = props => {
                 fieldId="sourceCluster"
               >
                 <Select
-                  name="sourceCluster"
-                  onChange={handleSourceChange}
-                  options={srcClusterOptions}
-                  value={selectedSrcCluster}
-                />
+                  placeholderText='Choose...'
+                  selections={selectedSrcCluster}
+                  isExpanded={isSrcOpen}
+                  onToggle={(isOpen) => {
+                    setIsSrcOpen(isOpen);
+                  }}
+                  onSelect={(e, selection, ) => {
+                    handleSourceChange(selection);
+                  }}
+                >
+                  {srcClusterOptions.map((action, index) => {
+                    return (
+                      <SelectOption
+                        key={index}
+                        value={action.value}
+                      />
+                    );
+                  })}
+                </Select>
                 {errors.sourceCluster && touched.sourceCluster && (
                   <div id="feedback">{errors.sourceCluster}</div>
                 )}
@@ -177,11 +208,25 @@ const ResourceSelectForm = props => {
                 fieldId="targetCluster"
               >
                 <Select
-                  name="targetCluster"
-                  onChange={handleTargetChange}
-                  options={targetClusterOptions}
-                  value={selectedTargetCluster}
-                />
+                  placeholderText='Choose...'
+                  selections={selectedTargetCluster}
+                  isExpanded={isTargetOpen}
+                  onToggle={(isOpen) => {
+                    setIsTargetOpen(isOpen);
+                  }}
+                  onSelect={(e, selection, ) => {
+                    handleTargetChange(selection);
+                  }}
+                >
+                  {targetClusterOptions.map((action, index) => {
+                    return (
+                      <SelectOption
+                        key={index}
+                        value={action.value}
+                      />
+                    );
+                  })}
+                </Select>
                 {errors.targetCluster && touched.targetCluster && (
                   <div id="feedback">{errors.targetCluster}</div>
                 )}
@@ -195,18 +240,32 @@ const ResourceSelectForm = props => {
                 fieldId="selectedStorage"
               >
                 <Select
-                  name="selectedStorage"
-                  onChange={handleStorageChange}
-                  options={storageOptions}
-                  value={selectedStorage}
-                />
+                  placeholderText='Choose...'
+                  selections={selectedStorage}
+                  isExpanded={isStorageOpen}
+                  onToggle={(isOpen) => {
+                    setIsStorageOpen(isOpen);
+                  }}
+                  onSelect={(e, selection, ) => {
+                    handleStorageChange(selection);
+                  }}
+                >
+                  {storageOptions.map((action, index) => {
+                    return (
+                      <SelectOption
+                        key={index}
+                        value={action.value}
+                      />
+                    );
+                  })}
+                </Select>
                 {errors.selectedStorage && touched.selectedStorage && (
                   <div id="feedback">{errors.selectedStorage}</div>
                 )}
               </FormGroup>
             </GridItem>
           </Grid>
-         </Form>
+        </Form>
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
@@ -222,12 +281,12 @@ const ResourceSelectForm = props => {
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespaceTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
-      )}
+          <NamespaceTable
+            setFieldValue={setFieldValue}
+            values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        )}
     </Grid>
   );
 };

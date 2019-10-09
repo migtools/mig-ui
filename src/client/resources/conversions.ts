@@ -1,5 +1,3 @@
-import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
-
 export function createTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
@@ -202,12 +200,11 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
     updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
       const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
       if (userPv) {
-        v.selection.action = userPv.type;
-        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        if (selectedStorageClassObj) {
-          v.selection.storageClass = selectedStorageClassObj.name;
-        } else {
+        v.selection.action = userPv.selection.action;
+        if (userPv.selection.storageClass === 'none') {
           v.selection.storageClass = '';
+        } else {
+          v.selection.storageClass = userPv.selection.storageClass;
         }
       }
       return v;
