@@ -120,12 +120,6 @@ const ResourceSelectForm = props => {
       }
     }
   }, [values]);
-  const clearSelection = () => {
-    setIsSrcOpen(false);
-    setIsTargetOpen(false);
-    setIsStorageOpen(false);
-  };
-
 
   const handleStorageChange = (option) => {
     setFieldValue('selectedStorage', option);
