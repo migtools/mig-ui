@@ -171,7 +171,7 @@ const ResourceSelectForm = props => {
                 fieldId="sourceCluster"
               >
                 <Select
-                  placeholderText='Choose...'
+                  placeholderText="Choose..."
                   selections={selectedSrcCluster}
                   isExpanded={isSrcOpen}
                   onToggle={(isOpen) => {
@@ -203,7 +203,7 @@ const ResourceSelectForm = props => {
                 fieldId="targetCluster"
               >
                 <Select
-                  placeholderText='Choose...'
+                  placeholderText="Choose..."
                   selections={selectedTargetCluster}
                   isExpanded={isTargetOpen}
                   onToggle={(isOpen) => {
@@ -235,7 +235,7 @@ const ResourceSelectForm = props => {
                 fieldId="selectedStorage"
               >
                 <Select
-                  placeholderText='Choose...'
+                  placeholderText="Choose..."
                   selections={selectedStorage}
                   isExpanded={isStorageOpen}
                   onToggle={(isOpen) => {
