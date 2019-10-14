@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { OutlinedCircleIcon } from '@patternfly/react-icons';
+import { OutlinedCircleIcon, ResourcesAlmostEmptyIcon, ResourcesFullIcon } from '@patternfly/react-icons';
+
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 import * as React from 'react';
@@ -20,13 +21,15 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   } = plan.PlanStatus;
 
   if (hasFailedCondition || hasNotReadyCondition) {
-    return <span className="pf-c-icon pf-m-danger"><OutlinedCircleIcon /></span>;
+    return <span className="pf-c-icon pf-m-danger"><ResourcesFullIcon /></span>;
   } else if (hasRunningMigrations || isPlanLocked) {
     return (
       <Spinner size="md" />
     );
-  } else if (hasSucceededMigration || hasSucceededStage) {
-    return <span className="pf-c-icon pf-m-success"><OutlinedCircleIcon /></span>;
+  } else if (hasSucceededMigration) {
+    return <span className="pf-c-icon pf-m-success"><ResourcesFullIcon /></span>;
+  } else if (hasSucceededStage) {
+    return <span className="pf-c-icon pf-m-success"><ResourcesAlmostEmptyIcon /></span>;
   } else {
     return <span className="pf-c-icon pf-m-info"><OutlinedCircleIcon /></span>;
   }

@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import StatusIcon from '../../../../common/components/StatusIcon';
+import styled from '@emotion/styled';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];
@@ -25,28 +26,44 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
     <dl className="pf-c-widget-description-list pf-m-inline">
       <dt>
         <span className="pf-c-widget-description-list__icon">
-          <StatusIcon isReady={true} />
+          {successList.length > 0 ?
+            <StatusIcon isReady={true} /> :
+            <StatusIcon
+              isReady={true}
+              isDisabled={true}
+            />
+          }
         </span>
-        <span className="pf-c-widget-description-list__num">
+        <span className={successList.length > 0 ?
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {successList.length}
         </span>
       </dt>
-      <dd>
+      <dd className={successList.length > 0 ? '' : 'disabled'}>
         Connected
       </dd>
       <dt>
         <span className="pf-c-widget-description-list__icon">
-          {failureList.length > 0 &&
-            <StatusIcon isReady={false} />
+          {failureList.length > 0 ?
+            <StatusIcon isReady={false} /> :
+            <StatusIcon
+              isReady={false}
+              isDisabled={true}
+            />
           }
         </span>
-        <span className="pf-c-widget-description-list__num">
+        <span className={failureList.length > 0 ?
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {failureList.length}
         </span>
+
       </dt>
-      <dd>
+      <dd className={failureList.length > 0 ? '' : 'disabled'}>
         Connection failed
       </dd>
+
     </dl>
   );
 };
