@@ -29,8 +29,8 @@ const MigrationStatus = ({ planStatusCounts }) => {
         </span>
 
         <span className={notStarted.length > 0 ?
-          "pf-c-widget-description-list__num" :
-          "pf-c-widget-description-list__num disabled"}>
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {notStarted.length}
         </span>
       </dt>
@@ -42,8 +42,8 @@ const MigrationStatus = ({ planStatusCounts }) => {
           {inProgress.length > 0 ? <ResourcesAlmostFullIcon /> : <DisabledAlmostFullIcon />}
         </span>
         <span className={inProgress.length > 0 ?
-          "pf-c-widget-description-list__num" :
-          "pf-c-widget-description-list__num disabled"}>
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {inProgress.length}
         </span>
       </dt>
@@ -55,8 +55,8 @@ const MigrationStatus = ({ planStatusCounts }) => {
           {completed.length > 0 ? <ResourcesFullIcon /> : <DisabledFullIcon />}
         </span>
         <span className={completed.length > 0 ?
-          "pf-c-widget-description-list__num" :
-          "pf-c-widget-description-list__num disabled"}>
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {completed.length}
         </span>
       </dt>

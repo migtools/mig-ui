@@ -35,8 +35,8 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
           }
         </span>
         <span className={successList.length > 0 ?
-          "pf-c-widget-description-list__num" :
-          "pf-c-widget-description-list__num disabled"}>
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {successList.length}
         </span>
       </dt>
@@ -54,8 +54,8 @@ const CardStatusComponent = ({ type, dataList, ...props }) => {
           }
         </span>
         <span className={failureList.length > 0 ?
-          "pf-c-widget-description-list__num" :
-          "pf-c-widget-description-list__num disabled"}>
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
           {failureList.length}
         </span>
 
