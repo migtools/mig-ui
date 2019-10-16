@@ -46,7 +46,9 @@ const ResourceSelectForm = props => {
       const targetOptions = [];
       const clusterLen = clusterList.length;
       for (let i = 0; i < clusterLen; i++) {
-        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster) {
+        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
+        ) {
           targetOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
             value: clusterList[i].MigCluster.metadata.name,
@@ -55,6 +57,7 @@ const ResourceSelectForm = props => {
         if (
           !clusterList[i].MigCluster.spec.isHostCluster &&
           clusterList[i].MigCluster.metadata.name !== values.targetCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
         ) {
           sourceOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -97,10 +100,14 @@ const ResourceSelectForm = props => {
     const newStorageOptions = [];
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
-      newStorageOptions.push({
-        label: storageList[i].MigStorage.metadata.name,
-        value: storageList[i].MigStorage.metadata.name,
-      });
+      if (
+        storageList[i].StorageStatus.hasReadyCondition
+      ) {
+        newStorageOptions.push({
+          label: storageList[i].MigStorage.metadata.name,
+          value: storageList[i].MigStorage.metadata.name,
+        });
+      }
     }
     setStorageOptions(newStorageOptions);
 
@@ -206,7 +213,7 @@ const ResourceSelectForm = props => {
               </FormGroup>
             </GridItem>
           </Grid>
-         </Form>
+        </Form>
       </GridItem>
       {isFetchingNamespaceList ? (
         <GridItem>
@@ -222,12 +229,12 @@ const ResourceSelectForm = props => {
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespaceTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
-      )}
+          <NamespaceTable
+            setFieldValue={setFieldValue}
+            values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        )}
     </Grid>
   );
 };
