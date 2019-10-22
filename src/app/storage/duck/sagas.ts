@@ -34,12 +34,39 @@ function* addStorageRequest(action) {
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.hostCluster(state);
 
+  //
+  //
+  //
+  //
+  //
+  // if isSharedSecret not checked / not amazon
+  //create vsl storage secret 
+  // json blob for gcp or azure:w
+  const vslstorageSecret = createVSLStorageSecret(
+    storageValues.name,
+    migMeta.configNamespace,
+    storageValues.jsonBlob
+  );
+
+  //create bsl storage secret 
   const storageSecret = createStorageSecret(
     storageValues.name,
     migMeta.configNamespace,
     storageValues.secret,
     storageValues.accessKey,
   );
+
+  // storage values can contain multiple types 
+  // volume snapshot provider
+  // isSharedCreds
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
 
   const migStorage = createMigStorage(
     storageValues.name,
@@ -70,7 +97,7 @@ function* addStorageRequest(action) {
         exists;
     }, []);
 
-    if(alreadyExists.length > 0) {
+    if (alreadyExists.length > 0) {
       throw new Error(alreadyExists.reduce((msg, v) => {
         return msg + `- kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some storage objects already exist '));
@@ -103,7 +130,7 @@ function* addStorageRequest(action) {
       storageAddResults.find(res => res.state === 'rejected') &&
       storageAddResults.find(res => res.state === 'fulfilled');
 
-    if(isRollbackRequired) {
+    if (isRollbackRequired) {
       const kindToResourceMap = {
         MigStorage: migStorageResource,
         Secret: secretResource,
@@ -122,7 +149,7 @@ function* addStorageRequest(action) {
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if(rollbackResults.find(res => res.state === 'rejected')) {
+      if (rollbackResults.find(res => res.state === 'rejected')) {
         throw new Error(rollbackResults.reduce((msg, r) => {
           const kind = r.reason.request.response.kind;
           const name = r.reason.request.response.details.name;
@@ -181,7 +208,7 @@ function* updateStorageRequest(action) {
   const currentRegion =
     currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
   const regionUpdated = storageValues.bucketRegion !== currentRegion;
-  const currentS3Url=
+  const currentS3Url =
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
   const migStorageUpdated = bucketNameUpdated || regionUpdated || s3UrlUpdated;

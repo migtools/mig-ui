@@ -181,6 +181,9 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
         )}
       </FormGroup>
+      {/* 
+      add checkbox and blob text area TODO
+      */}
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -268,6 +271,7 @@ const AddEditStorageForm: any = withFormik({
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
       values.s3Url = initialStorageValues.s3Url || '';
+      //add blob here TODO
     }
 
     return values;
