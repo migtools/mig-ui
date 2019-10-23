@@ -36,7 +36,8 @@ const bucketNameKey = 'bucketName';
 const bucketRegionKey = 'bucketRegion';
 const accessKeyKey = 'accessKey';
 const secretKey = 'secret';
-const vslConfigKey = 'vslConfigKey';
+const vslConfigKey = 'vslConfig';
+const vslBlobKey = 'vslBlob';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -110,6 +111,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
   const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
 
   const handleSharedCredsChange = (checked, event) => {
+    setFieldValue('isSharedCred', checked);
     setIsSharedCred(checked);
   };
 
@@ -117,10 +119,6 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
     setFieldValue('volumeSnapshotProvider', option.value);
     setSelectedProvider(
       option
-      //   {
-      //   label: matchingStorage.MigStorage.metadata.name,
-      //   value: matchingStorage.MigStorage.metadata.name,
-      // }
     );
     setFieldTouched('volumeSnapshotProvider');
   };
@@ -223,6 +221,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <Checkbox
           label="Use BSL credentials for VSL"
           isChecked={isSharedCred}
+          // onChange={formikHandleChange}
           onChange={handleSharedCredsChange}
           aria-label="shared-creds-checkbox"
           id="shared-creds-checkbox"
@@ -250,6 +249,13 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
                 value={values.vslBlob}
                 onChange={formikHandleChange}
                 aria-label="vsl-blob-text-area"
+                onInput={formikSetFieldTouched(vslConfigKey)}
+                onBlur={handleBlur}
+                // value={values.secret}
+                name={vslBlobKey}
+                type={isSecretHidden ? 'password' : 'text'}
+                id="storage-vsl-blob-input"
+
               />
               {errors.secret && touched.secret && (
                 <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
@@ -342,7 +348,8 @@ const AddEditStorageForm: any = withFormik({
       secret: '',
       s3Url: '',
       vslBlob: '',
-      volumeSnapshotProvider: ''
+      volumeSnapshotProvider: '',
+      isSharedCred: true
     };
 
     if (initialStorageValues) {
@@ -354,6 +361,7 @@ const AddEditStorageForm: any = withFormik({
       values.s3Url = initialStorageValues.s3Url || '';
       values.vslBlob = initialStorageValues.vslBlob || '';
       values.volumeSnapshotProvider = initialStorageValues.volumeSnapshotProvider || '';
+      values.isSharedCred = initialStorageValues.isSharedCred || true;
     }
 
     return values;

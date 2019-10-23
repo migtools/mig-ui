@@ -73,8 +73,12 @@ export function createMigStorage(
   bucketName: string,
   bucketRegion: string,
   s3Url: string,
+  bslProvider: string,
+  vslProvider: string,
+  vslBlob: string,
+  bslSecret: any,
+  vslSecret: any,
   namespace: string,
-  tokenSecret: any
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -84,22 +88,31 @@ export function createMigStorage(
       namespace,
     },
     spec: {
-      backupStorageProvider: 'aws',
-      volumeSnapshotProvider: 'aws',
+      backupStorageProvider: bslProvider,
+      volumeSnapshotProvider: vslProvider,
       backupStorageConfig: {
         awsBucketName: bucketName,
         awsRegion: bucketRegion,
         awsS3Url: s3Url,
+        // awsS3ForcePathStyle: bool
+        // awsPublicUrl: string
+        // awsKmsKeyId: string
+        // awsSignatureVersion: string
+        // gcpBucket: string
+        // azureResourceGroup: string
+        // azureStorageAccount: string
         credsSecretRef: {
-          name: tokenSecret.metadata.name,
-          namespace: tokenSecret.metadata.namespace,
+          name: bslSecret.metadata.name,
+          namespace: bslSecret.metadata.namespace,
         },
       },
       volumeSnapshotConfig: {
         awsRegion: bucketRegion,
+        // azureApiTimeout: metav1.duration,
+        // azureResourceGroup string:
         credsSecretRef: {
-          name: tokenSecret.metadata.name,
-          namespace: tokenSecret.metadata.namespace,
+          name: vslSecret.metadata.name,
+          namespace: vslSecret.metadata.namespace,
         },
       },
     },
@@ -139,6 +152,27 @@ export function createStorageSecret(
     data: {
       'aws-access-key-id': encodedAccessKey,
       'aws-secret-access-key': encodedSecretKey,
+    },
+    kind: 'Secret',
+    metadata: {
+      name,
+      namespace,
+    },
+    type: 'Opaque',
+  };
+}
+
+export function createVSLSecret(
+  name: string,
+  namespace: string,
+  blob: string
+) {
+  // btoa => to base64, atob => from base64
+  const encodedKey = btoa(blob);
+  return {
+    apiVersion: 'v1',
+    data: {
+      encodedKey
     },
     kind: 'Secret',
     metadata: {
