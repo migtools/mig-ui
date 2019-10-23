@@ -405,13 +405,13 @@ const AddEditStorageForm: any = withFormik({
       errors.secret = 'Required';
     }
 
-    if (!values.vslBlob) {
-      errors.vslBlob = 'Required';
-    }
+    // if (!values.vslBlob) {
+    //   errors.vslBlob = 'Required';
+    // }
 
-    if (!values.volumeSnapshotProvider) {
-      errors.volumeSnapshotProvider = 'Required';
-    }
+    // if (!values.volumeSnapshotProvider) {
+    //   errors.volumeSnapshotProvider = 'Required';
+    // }
 
     return errors;
   },

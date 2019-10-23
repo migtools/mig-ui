@@ -75,7 +75,6 @@ export function createMigStorage(
   s3Url: string,
   bslProvider: string,
   vslProvider: string,
-  vslBlob: string,
   bslSecret: any,
   vslSecret: any,
   namespace: string,

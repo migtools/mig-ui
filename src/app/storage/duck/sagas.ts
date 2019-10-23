@@ -54,7 +54,6 @@ function* addStorageRequest(action) {
       'aws',
       //
       storageValues.volumeSnapshotProvider,
-      storageValues.vslBlob,
       bslSecret,
       //pass in bsl secret as vsl if shared
       bslSecret,
@@ -76,7 +75,6 @@ function* addStorageRequest(action) {
       'aws',
       //
       storageValues.volumeSnapshotProvider,
-      storageValues.vslBlob,
       bslSecret,
       vslSecret,
       migMeta.namespace,
@@ -93,11 +91,20 @@ function* addStorageRequest(action) {
 
   // Ensure that none of the objects that make up storage already exist
   try {
-    const getResults = yield Q.allSettled([
-      client.get(migStorageResource, migStorage.metadata.name),
-      client.get(secretResource, bslSecret.metadata.name),
-      client.get(secretResource, vslSecret.metadata.name),
-    ]);
+    let getResults;
+    if (storageValues.isSharedCred) {
+      getResults = yield Q.allSettled([
+        client.get(migStorageResource, migStorage.metadata.name),
+        client.get(secretResource, bslSecret.metadata.name),
+      ]);
+    } else {
+      getResults = yield Q.allSettled([
+        client.get(migStorageResource, migStorage.metadata.name),
+        client.get(secretResource, bslSecret.metadata.name),
+        client.get(secretResource, vslSecret.metadata.name),
+      ]);
+
+    }
 
     const alreadyExists = getResults.reduce((exists, res) => {
       return res.value && res.value.status === 200 ?
@@ -125,11 +132,22 @@ function* addStorageRequest(action) {
   // If any of the objects actually fail creation, we need to rollback the others
   // so the storage is created, or fails atomically
   try {
-    const storageAddResults = yield Q.allSettled([
-      client.create(secretResource, bslSecret),
-      client.create(secretResource, vslSecret),
-      client.create(migStorageResource, migStorage),
-    ]);
+    let storageAddResults;
+    if (storageValues.isSharedCred) {
+
+      storageAddResults = yield Q.allSettled([
+        client.create(secretResource, bslSecret),
+        // client.create(secretResource, vslSecret),
+        client.create(migStorageResource, migStorage),
+      ]);
+    } else {
+      storageAddResults = yield Q.allSettled([
+        client.create(secretResource, bslSecret),
+        client.create(secretResource, vslSecret),
+        client.create(migStorageResource, migStorage),
+      ]);
+
+    }
 
     // If any of the attempted object creation promises have failed, we need to
     // rollback those that succeeded so we don't have a halfway created "Storage"
