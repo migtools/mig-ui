@@ -42,11 +42,11 @@ function* addStorageRequest(action) {
   // if isSharedSecret not checked / not amazon
   //create vsl storage secret 
   // json blob for gcp or azure:w
-  const vslstorageSecret = createVSLStorageSecret(
-    storageValues.name,
-    migMeta.configNamespace,
-    storageValues.jsonBlob
-  );
+  // const vslstorageSecret = createVSLStorageSecret(
+  //   storageValues.name,
+  //   migMeta.configNamespace,
+  //   storageValues.jsonBlob
+  // );
 
   //create bsl storage secret 
   const storageSecret = createStorageSecret(

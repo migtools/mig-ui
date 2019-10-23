@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   TextInput,
@@ -8,7 +8,10 @@ import {
   FormGroup,
   Tooltip,
   TooltipPosition,
+  TextArea,
+  Checkbox
 } from '@patternfly/react-core';
+import Select from 'react-select';
 import { withFormik, FormikProps } from 'formik';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
@@ -23,9 +26,9 @@ import {
   isAddEditButtonDisabled,
   isCheckConnectionButtonDisabled,
 } from '../../../common/add_edit_state';
-import { Flex, Box } from '@rebass/emotion';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { Box, Flex, Text } from '@rebass/emotion';
 
 const nameKey = 'name';
 const s3UrlKey = 's3Url';
@@ -33,6 +36,7 @@ const bucketNameKey = 'bucketName';
 const bucketRegionKey = 'bucketRegion';
 const accessKeyKey = 'accessKey';
 const secretKey = 'secret';
+const vslConfigKey = 'vslConfigKey';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -65,10 +69,31 @@ const valuesHaveUpdate = (values, currentStorage) => {
 };
 
 const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) => {
-  const { addEditStatus: currentStatus, currentStorage, checkConnection, values, touched, errors } = props;
+  const {
+    addEditStatus: currentStatus,
+    currentStorage,
+    checkConnection,
+    values,
+    touched,
+    errors,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    onClose,
+    handleSubmit,
+    handleBlur
+  } = props;
 
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
+  const [isSharedCred, setIsSharedCred] = useState(true);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [providerOptions, setproviderOptions] = useState([
+    { label: 'aws', value: 'aws' },
+    { label: 'gcp', value: 'gcp' },
+    { label: 'azure', value: 'azure' }
+  ]);
+
   const handleAccessKeyHiddenToggle = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -81,20 +106,33 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
     setIsSecretHidden(!isSecretHidden);
   };
 
-  const formikHandleChange = (_val, e) => props.handleChange(e);
-  const formikSetFieldTouched = key => () => props.setFieldTouched(key, true, true);
+  const formikHandleChange = (_val, e) => handleChange(e);
+  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
 
-  const onClose = () => {
-    props.onClose();
+  const handleSharedCredsChange = (checked, event) => {
+    setIsSharedCred(checked);
   };
 
+  const handleProviderChange = option => {
+    setFieldValue('volumeSnapshotProvider', option.value);
+    setSelectedProvider(
+      option
+      //   {
+      //   label: matchingStorage.MigStorage.metadata.name,
+      //   value: matchingStorage.MigStorage.metadata.name,
+      // }
+    );
+    setFieldTouched('volumeSnapshotProvider');
+  };
+
+
   return (
-    <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
+    <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
       <FormGroup label="Repository Name" isRequired fieldId={nameKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
@@ -109,7 +147,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(bucketNameKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.bucketName}
           name={bucketNameKey}
           type="text"
@@ -123,7 +161,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(bucketRegionKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.bucketRegion}
           name={bucketRegionKey}
           type="text"
@@ -137,7 +175,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(s3UrlKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.s3Url}
           name={s3UrlKey}
           type="text"
@@ -154,7 +192,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(accessKeyKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.accessKey}
           name={accessKeyKey}
           type={isAccessKeyHidden ? 'password' : 'text'}
@@ -171,7 +209,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}
-          onBlur={props.handleBlur}
+          onBlur={handleBlur}
           value={values.secret}
           name={secretKey}
           type={isSecretHidden ? 'password' : 'text'}
@@ -181,9 +219,47 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
         )}
       </FormGroup>
-      {/* 
-      add checkbox and blob text area TODO
-      */}
+      <FormGroup label="VSL Provider Configuration" isRequired fieldId={vslConfigKey}>
+        <Checkbox
+          label="Use BSL credentials for VSL"
+          isChecked={isSharedCred}
+          onChange={handleSharedCredsChange}
+          aria-label="shared-creds-checkbox"
+          id="shared-creds-checkbox"
+          name="shared-creds-checkbox"
+        />
+        {!isSharedCred &&
+          <Flex flexDirection="column">
+            <Box
+              m="0 0 1em 0 "
+              flex="auto"
+              width={1 / 2}
+            >
+              <Select
+                name="provider"
+                onChange={handleProviderChange}
+                options={providerOptions}
+                value={selectedProvider}
+              />
+            </Box>
+            <Box
+              m="0 0 1em 0 "
+              flex="auto"
+            >
+              <TextArea
+                value={values.vslBlob}
+                onChange={formikHandleChange}
+                aria-label="vsl-blob-text-area"
+              />
+              {errors.secret && touched.secret && (
+                <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
+              )}
+            </Box>
+          </Flex>
+        }
+
+      </FormGroup>
+
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -243,6 +319,9 @@ interface IFormValues {
   accessKey: string;
   secret: string;
   s3Url: string;
+  isSharedSecret?: boolean;
+  vslBlob?: string;
+  volumeSnapshotProvider: string
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -262,6 +341,8 @@ const AddEditStorageForm: any = withFormik({
       accessKey: '',
       secret: '',
       s3Url: '',
+      vslBlob: '',
+      volumeSnapshotProvider: ''
     };
 
     if (initialStorageValues) {
@@ -271,7 +352,8 @@ const AddEditStorageForm: any = withFormik({
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
       values.s3Url = initialStorageValues.s3Url || '';
-      //add blob here TODO
+      values.vslBlob = initialStorageValues.vslBlob || '';
+      values.volumeSnapshotProvider = initialStorageValues.volumeSnapshotProvider || '';
     }
 
     return values;
@@ -315,11 +397,20 @@ const AddEditStorageForm: any = withFormik({
       errors.secret = 'Required';
     }
 
+    if (!values.vslBlob) {
+      errors.vslBlob = 'Required';
+    }
+
+    if (!values.volumeSnapshotProvider) {
+      errors.volumeSnapshotProvider = 'Required';
+    }
+
     return errors;
   },
 
   handleSubmit: (values, formikBag: any) => {
     // Formik will set isSubmitting to true, so we need to flip this back off
+    console.log('add vals', values)
     formikBag.setSubmitting(false);
     formikBag.props.onAddEditSubmit(values);
   },
