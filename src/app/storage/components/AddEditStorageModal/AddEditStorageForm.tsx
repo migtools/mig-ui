@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
+import GCPForm from './ProviderForms/GCPForm';
 
 
 
@@ -35,6 +36,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
       switch (provider.value) {
         case 'aws':
           return <AWSForm provider={provider.value} {...props} />;
+        case 'gcp':
+          return <GCPForm provider={provider.value} {...props} />;
         default:
           return null;
       }

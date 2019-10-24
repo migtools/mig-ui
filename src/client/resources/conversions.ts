@@ -162,7 +162,7 @@ export function createStorageSecret(
   bslProvider: string,
   secretKey?: any,
   accessKey?: string,
-  gcpBlob?: string,
+  gcpBlob?: any,
 ) {
 
   switch (bslProvider) {
@@ -183,11 +183,11 @@ export function createStorageSecret(
         type: 'Opaque',
       };
     case 'gcp':
-      const encodedGPCreds = btoa(gcpBlob);
+      const data = btoa(gcpBlob);
       return {
         apiVersion: 'v1',
         data: {
-          encodedGPCreds
+          'gcp-credentials': data
         },
         kind: 'Secret',
         metadata: {
