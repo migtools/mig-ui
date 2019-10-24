@@ -54,4 +54,6 @@ $mig-ui-breakpoint-list: build-breakpoint-map("base", "sm", "md", "lg", "xl", "2
     }
   }
 }
-
+.storage-modal-modifier{
+  min-height: 20em;
+}
