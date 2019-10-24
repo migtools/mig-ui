@@ -1,7 +1,4 @@
-import {
-  pvStorageClassAssignmentKey,
-  pvCopyMethodAssignmentKey
-} from '../../app/plan/components/Wizard/StorageClassTable';
+import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
@@ -70,52 +67,74 @@ export function updateMigClusterUrl(
 
 export function createMigStorage(
   name: string,
-  bucketName: string,
-  bucketRegion: string,
-  s3Url: string,
   bslProvider: string,
-  vslProvider: string,
-  bslSecret: any,
-  vslSecret: any,
   namespace: string,
+  tokenSecret: any,
+  awsBucketName?: string,
+  awsBucketRegion?: string,
+  s3Url?: string,
+  gcpBucket?: string
 ) {
-  return {
-    apiVersion: 'migration.openshift.io/v1alpha1',
-    kind: 'MigStorage',
-    metadata: {
-      name,
-      namespace,
-    },
-    spec: {
-      backupStorageProvider: bslProvider,
-      volumeSnapshotProvider: vslProvider,
-      backupStorageConfig: {
-        awsBucketName: bucketName,
-        awsRegion: bucketRegion,
-        awsS3Url: s3Url,
-        // awsS3ForcePathStyle: bool
-        // awsPublicUrl: string
-        // awsKmsKeyId: string
-        // awsSignatureVersion: string
-        // gcpBucket: string
-        // azureResourceGroup: string
-        // azureStorageAccount: string
-        credsSecretRef: {
-          name: bslSecret.metadata.name,
-          namespace: bslSecret.metadata.namespace,
+  switch (bslProvider) {
+    case 'aws':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
         },
-      },
-      volumeSnapshotConfig: {
-        awsRegion: bucketRegion,
-        // azureApiTimeout: metav1.duration,
-        // azureResourceGroup string:
-        credsSecretRef: {
-          name: vslSecret.metadata.name,
-          namespace: vslSecret.metadata.namespace,
+        spec: {
+          backupStorageProvider: 'aws',
+          volumeSnapshotProvider: 'aws',
+          backupStorageConfig: {
+            awsBucketName: awsBucketName,
+            awsRegion: awsBucketRegion,
+            awsS3Url: s3Url,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+          volumeSnapshotConfig: {
+            awsRegion: awsBucketRegion,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
         },
-      },
-    },
-  };
+      };
+    case 'gcp':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
+        },
+        spec: {
+          backupStorageProvider: 'gcp',
+          volumeSnapshotProvider: 'gcp',
+          backupStorageConfig: {
+            gcpBucket: gcpBucket,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+          volumeSnapshotConfig: {
+            //gcp specific config
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+        },
+      };
+
+
+  }
 }
 
 export function updateMigStorage(
@@ -140,46 +159,46 @@ export function updateMigStorage(
 export function createStorageSecret(
   name: string,
   namespace: string,
-  secretKey: any,
-  accessKey: string
+  bslProvider: string,
+  secretKey?: any,
+  accessKey?: string,
+  gcpBlob?: string,
 ) {
-  // btoa => to base64, atob => from base64
-  const encodedAccessKey = btoa(accessKey);
-  const encodedSecretKey = btoa(secretKey);
-  return {
-    apiVersion: 'v1',
-    data: {
-      'aws-access-key-id': encodedAccessKey,
-      'aws-secret-access-key': encodedSecretKey,
-    },
-    kind: 'Secret',
-    metadata: {
-      name,
-      namespace,
-    },
-    type: 'Opaque',
-  };
-}
 
-export function createVSLSecret(
-  name: string,
-  namespace: string,
-  blob: string
-) {
+  switch (bslProvider) {
+    case 'aws':
+      const encodedAccessKey = btoa(accessKey);
+      const encodedSecretKey = btoa(secretKey);
+      return {
+        apiVersion: 'v1',
+        data: {
+          'aws-access-key-id': encodedAccessKey,
+          'aws-secret-access-key': encodedSecretKey,
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
+    case 'gcp':
+      const encodedGPCreds = btoa(gcpBlob);
+      return {
+        apiVersion: 'v1',
+        data: {
+          encodedGPCreds
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
+
+  }
   // btoa => to base64, atob => from base64
-  const encodedKey = btoa(blob);
-  return {
-    apiVersion: 'v1',
-    data: {
-      encodedKey
-    },
-    kind: 'Secret',
-    metadata: {
-      name,
-      namespace,
-    },
-    type: 'Opaque',
-  };
 }
 
 export function updateStorageSecret(secretKey: any, accessKey: string) {
@@ -240,16 +259,10 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       if (userPv) {
         v.selection.action = userPv.type;
         const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        const selectedCopyMethodObj = planValues[pvCopyMethodAssignmentKey][v.name];
         if (selectedStorageClassObj) {
           v.selection.storageClass = selectedStorageClassObj.name;
         } else {
           v.selection.storageClass = '';
-        }
-        if (selectedCopyMethodObj) {
-          v.selection.copyMethod = selectedCopyMethodObj;
-        } else {
-          v.selection.copyMethod = '';
         }
       }
       return v;

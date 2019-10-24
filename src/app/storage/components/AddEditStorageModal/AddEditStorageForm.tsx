@@ -34,7 +34,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
     } else {
       switch (provider.value) {
         case 'aws':
-          return <AWSForm {...props} />;
+          return <AWSForm provider={provider.value} {...props} />;
         default:
           return null;
       }

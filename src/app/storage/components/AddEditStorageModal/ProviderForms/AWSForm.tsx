@@ -36,16 +36,16 @@ const valuesHaveUpdate = (values, currentStorage) => {
     if (!currentStorage) { return true; }
 
     const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-    const existingBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-    const existingBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
+    const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+    const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
     const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
     const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
     const existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
 
     const valuesUpdatedObject =
         values.name !== existingMigStorageName ||
-        values.bucketName !== existingBucketName ||
-        values.bucketRegion !== existingBucketRegion ||
+        values.awsBucketName !== existingAWSBucketName ||
+        values.bucketRegion !== existingAWSBucketRegion ||
         values.s3Url !== existingBucketUrl ||
         values.accessKey !== existingAccessKeyId ||
         values.secret !== existingSecretAccessKey;
@@ -55,8 +55,8 @@ const valuesHaveUpdate = (values, currentStorage) => {
 
 interface IFormValues {
     name: string;
-    bucketName: string;
-    bucketRegion: string;
+    awsBucketName: string;
+    awsBucketRegion: string;
     accessKey: string;
     secret: string;
     s3Url: string;
@@ -72,6 +72,7 @@ interface IOtherProps {
     initialStorageValues: any;
     checkConnection: (name) => void;
     currentStorage: any;
+    provider: string;
 }
 
 const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -93,8 +94,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     } = props
     const nameKey = 'name';
     const s3UrlKey = 's3Url';
-    const bucketNameKey = 'bucketName';
-    const bucketRegionKey = 'bucketRegion';
+    const awsBucketNameKey = 'awsBucketName';
+    const awsBucketRegionKey = 'awsBucketRegion';
     const accessKeyKey = 'accessKey';
     const secretKey = 'secret';
     const vslConfigKey = 'vslConfig';
@@ -135,32 +136,32 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Bucket Name" isRequired fieldId={bucketNameKey}>
+            <FormGroup label="S3 Bucket Name" isRequired fieldId={awsBucketNameKey}>
                 <TextInput
                     onChange={formikHandleChange}
-                    onInput={formikSetFieldTouched(bucketNameKey)}
+                    onInput={formikSetFieldTouched(awsBucketNameKey)}
                     onBlur={handleBlur}
-                    value={values.bucketName}
-                    name={bucketNameKey}
+                    value={values.awsBucketName}
+                    name={awsBucketNameKey}
                     type="text"
                     id="storage-bucket-name-input"
                 />
-                {errors.bucketName && touched.bucketName && (
-                    <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
+                {errors.awsBucketName && touched.awsBucketName && (
+                    <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Bucket Region" fieldId={bucketRegionKey}>
+            <FormGroup label="S3 Bucket Region" fieldId={awsBucketRegionKey}>
                 <TextInput
                     onChange={formikHandleChange}
-                    onInput={formikSetFieldTouched(bucketRegionKey)}
+                    onInput={formikSetFieldTouched(awsBucketRegionKey)}
                     onBlur={handleBlur}
-                    value={values.bucketRegion}
-                    name={bucketRegionKey}
+                    value={values.awsBucketRegion}
+                    name={awsBucketRegionKey}
                     type="text"
                     id="storage-bucket-region-input"
                 />
-                {errors.bucketRegion && touched.bucketRegion && (
-                    <FormErrorDiv id="feedback-bucket-name">{errors.bucketName}</FormErrorDiv>
+                {errors.awsBucketRegion && touched.awsBucketRegion && (
+                    <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
                 )}
             </FormGroup>
             <FormGroup label="S3 Endpoint" fieldId={s3UrlKey}>
@@ -274,15 +275,15 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
 
 const AWSForm: any = withFormik({
-    mapPropsToValues: ({ initialStorageValues }) => {
+    mapPropsToValues: ({ initialStorageValues, provider }) => {
         const values = {
             name: '',
-            bucketName: '',
-            bucketRegion: '',
+            awsBucketName: '',
+            awsBucketRegion: '',
             accessKey: '',
             secret: '',
             s3Url: '',
-            bslProvider: '',
+            bslProvider: provider,
             // vslBlob: '',
             // volumeSnapshotProvider: '',
             // isSharedCred: true
@@ -290,12 +291,12 @@ const AWSForm: any = withFormik({
 
         if (initialStorageValues) {
             values.name = initialStorageValues.name || '';
-            values.bucketName = initialStorageValues.bucketName || '';
-            values.bucketRegion = initialStorageValues.bucketRegion || '';
+            values.awsBucketName = initialStorageValues.awsBucketName || '';
+            values.awsBucketRegion = initialStorageValues.awsBucketRegion || '';
             values.accessKey = initialStorageValues.accessKey || '';
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
-            values.bslProvider = initialStorageValues.bslProvider || '';
+            values.bslProvider = initialStorageValues.bslProvider || provider;
             // values.vslBlob = initialStorageValues.vslBlob || '';
             // values.volumeSnapshotProvider = initialStorageValues.volumeSnapshotProvider || '';
             // values.isSharedCred = initialStorageValues.isSharedCred || true;
@@ -313,17 +314,17 @@ const AWSForm: any = withFormik({
             errors.name = utils.DNS1123Error(values.name);
         }
 
-        if (!values.bucketName) {
-            errors.bucketName = 'Required';
+        if (!values.awsBucketName) {
+            errors.awsBucketName = 'Required';
         }
 
-        const bucketNameError = storageUtils.testS3Name(values.bucketName);
-        if (bucketNameError !== '') {
-            errors.bucketName = bucketNameError;
+        const awsBucketNameError = storageUtils.testS3Name(values.awsBucketName);
+        if (awsBucketNameError !== '') {
+            errors.awsBucketName = awsBucketNameError;
         }
 
-        if (!values.bucketName) {
-            errors.bucketName = 'Required';
+        if (!values.awsBucketName) {
+            errors.awsBucketName = 'Required';
         }
 
         if (values.s3Url !== '') {

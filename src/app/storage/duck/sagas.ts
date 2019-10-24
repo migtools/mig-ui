@@ -7,7 +7,6 @@ import {
   CoreNamespacedResourceKind,
 } from '../../../client/resources';
 import {
-  createVSLSecret,
   createStorageSecret,
   createMigStorage,
   updateMigStorage,
@@ -35,52 +34,25 @@ function* addStorageRequest(action) {
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.hostCluster(state);
 
-  //create bsl storage secret 
-  const bslSecret = createStorageSecret(
+  const storageSecret = createStorageSecret(
     storageValues.name,
     migMeta.configNamespace,
+    storageValues.bslProvider,
     storageValues.secret,
     storageValues.accessKey,
+    storageValues.gcpBlob
   );
-  let migStorage;
-  let vslSecret;
-  if (storageValues.isSharedCred) {
-    migStorage = createMigStorage(
-      storageValues.name,
-      storageValues.bucketName,
-      storageValues.bucketRegion,
-      storageValues.s3Url,
-      //temp hardcode bsl provider
-      'aws',
-      //
-      storageValues.volumeSnapshotProvider,
-      bslSecret,
-      //pass in bsl secret as vsl if shared
-      bslSecret,
-      migMeta.namespace,
-    );
-  } else {
-    //create vsl secret if creds arent shared
-    vslSecret = createVSLSecret(
-      storageValues.name,
-      migMeta.configNamespace,
-      storageValues.vslBlob,
-    );
-    migStorage = createMigStorage(
-      storageValues.name,
-      storageValues.bucketName,
-      storageValues.bucketRegion,
-      storageValues.s3Url,
-      //temp hardcode bsl provider
-      'aws',
-      //
-      storageValues.volumeSnapshotProvider,
-      bslSecret,
-      vslSecret,
-      migMeta.namespace,
-    );
-  }
 
+  const migStorage = createMigStorage(
+    storageValues.name,
+    storageValues.bslProvider,
+    migMeta.namespace,
+    storageSecret,
+    storageValues.awsBucketName,
+    storageValues.awsBucketRegion,
+    storageValues.s3Url,
+    storageValues.gcpBucket
+  );
 
   const secretResource = new CoreNamespacedResource(
     CoreNamespacedResourceKind.Secret,
@@ -91,20 +63,10 @@ function* addStorageRequest(action) {
 
   // Ensure that none of the objects that make up storage already exist
   try {
-    let getResults;
-    if (storageValues.isSharedCred) {
-      getResults = yield Q.allSettled([
-        client.get(migStorageResource, migStorage.metadata.name),
-        client.get(secretResource, bslSecret.metadata.name),
-      ]);
-    } else {
-      getResults = yield Q.allSettled([
-        client.get(migStorageResource, migStorage.metadata.name),
-        client.get(secretResource, bslSecret.metadata.name),
-        client.get(secretResource, vslSecret.metadata.name),
-      ]);
-
-    }
+    const getResults = yield Q.allSettled([
+      client.get(migStorageResource, migStorage.metadata.name),
+      client.get(secretResource, storageSecret.metadata.name),
+    ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
       return res.value && res.value.status === 200 ?
@@ -132,22 +94,10 @@ function* addStorageRequest(action) {
   // If any of the objects actually fail creation, we need to rollback the others
   // so the storage is created, or fails atomically
   try {
-    let storageAddResults;
-    if (storageValues.isSharedCred) {
-
-      storageAddResults = yield Q.allSettled([
-        client.create(secretResource, bslSecret),
-        // client.create(secretResource, vslSecret),
-        client.create(migStorageResource, migStorage),
-      ]);
-    } else {
-      storageAddResults = yield Q.allSettled([
-        client.create(secretResource, bslSecret),
-        client.create(secretResource, vslSecret),
-        client.create(migStorageResource, migStorage),
-      ]);
-
-    }
+    const storageAddResults = yield Q.allSettled([
+      client.create(secretResource, storageSecret),
+      client.create(migStorageResource, migStorage),
+    ]);
 
     // If any of the attempted object creation promises have failed, we need to
     // rollback those that succeeded so we don't have a halfway created "Storage"
