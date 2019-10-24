@@ -22,8 +22,9 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const [isAddEditModalOpen, toggleIsAddEditModalOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
   const name = storage.MigStorage.metadata.name;
-  const bucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const bucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
+  const provider = storage.MigStorage.spec.backupStorageProvider;
+  const awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
   const accessKey =
@@ -140,7 +141,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
             initialStorageValues={{
-              name, bucketName, bucketRegion, accessKey, secret, s3Url,
+              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider
             }}
           />
           <ConfirmModal

@@ -41,7 +41,12 @@ const AddEditStorageForm = (props: IOtherProps) => {
     }
   }
 
-  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState(
+    (props.initialStorageValues && props.initialStorageValues.provider) ? {
+      label: props.initialStorageValues.provider,
+      value: props.initialStorageValues.provider
+    } : null
+  );
   const [providerOptions, setproviderOptions] = useState([
     { label: 'aws', value: 'aws' },
     { label: 'gcp', value: 'gcp' },
@@ -75,6 +80,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
           onChange={handleProviderChange}
           options={providerOptions}
           value={selectedProvider}
+          isDisabled={(props.initialStorageValues && props.initialStorageValues.provider) !== (null || undefined)}
         />
       </Box>
       <DynamicForm provider={selectedProvider} {...props} />
