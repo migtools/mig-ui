@@ -26,6 +26,8 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
   const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
+  const gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
+  // const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.gcp;
 
   const accessKey =
     typeof storage.Secret === 'undefined'
@@ -38,6 +40,13 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       ? null
       : storage.Secret.data['aws-secret-access-key']
         ? atob(storage.Secret.data['aws-secret-access-key'])
+        : '';
+
+  const gcpBlob =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['gcp-credentials']
+        ? atob(storage.Secret.data['gcp-credentials'])
         : '';
 
   let storageStatus = null;
@@ -141,7 +150,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
             initialStorageValues={{
-              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider
+              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider, gcpBucket, gcpBlob
             }}
           />
           <ConfirmModal

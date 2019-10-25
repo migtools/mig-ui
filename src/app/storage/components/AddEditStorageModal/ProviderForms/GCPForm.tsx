@@ -37,7 +37,8 @@ const valuesHaveUpdate = (values, currentStorage) => {
 
     const existingMigStorageName = currentStorage.MigStorage.metadata.name;
     const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
-    const existingGCPBlob = atob(currentStorage.Secret.data);
+    const existingGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+    // const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
 
     const valuesUpdatedObject =
         values.name !== existingMigStorageName ||
