@@ -3,7 +3,7 @@ import moment from 'moment';
 const getPlanPVsAndCheckConditions = plan => {
   const statusObj = { success: null, error: null, errorText: null };
   const PvsDiscoveredType = 'PvsDiscovered';
-  const NamespaceLimitErrorType = "NamespaceLimitExceeded";
+  const NamespaceLimitErrorType = 'NamespaceLimitExceeded';
   if (plan.MigPlan.status && plan.MigPlan.status.conditions) {
     const maxNamespaceError = !!plan.MigPlan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
     if (maxNamespaceError) {
