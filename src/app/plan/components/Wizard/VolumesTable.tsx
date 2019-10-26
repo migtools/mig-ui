@@ -123,7 +123,7 @@ const VolumesTable = (props): any => {
         <StyledTextContent>
           <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
             <StatusIcon isReady={false} />
-            Unable to find PVs
+            PV Discovery Error
           </Text>
         </StyledTextContent>
       </Box>

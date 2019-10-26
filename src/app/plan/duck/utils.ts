@@ -1,14 +1,22 @@
 import moment from 'moment';
 
-const getPlanPVs = plan => {
-  const statusObj = { success: null, error: null };
+const getPlanPVsAndCheckConditions = plan => {
+  const statusObj = { success: null, error: null, errorText: null };
   const PvsDiscoveredType = 'PvsDiscovered';
-
+  const NamespaceLimitErrorType = "NamespaceLimitExceeded";
   if (plan.MigPlan.status && plan.MigPlan.status.conditions) {
-    const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
+    const maxNamespaceError = !!plan.MigPlan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
+    if (maxNamespaceError) {
+      statusObj.error = maxNamespaceError;
+      statusObj.errorText = 'Namespace limit Exceeded.';
+    }
+    else {
+      const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
 
-    if (pvsDiscovered) {
-      statusObj.success = pvsDiscovered;
+      if (pvsDiscovered) {
+        statusObj.success = pvsDiscovered;
+      }
+
     }
   }
 
@@ -82,7 +90,7 @@ const groupPlan: any = (plan, response) => {
 };
 
 export default {
-  getPlanPVs,
+  getPlanPVsAndCheckConditions,
   getPlanStatus,
   getMigrationStatus,
   groupPlan,
