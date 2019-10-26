@@ -124,7 +124,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isFetchingPVResources={isFetchingPVResources}
           />
         ),
-        enableNext: !isFetchingPVList,
+        enableNext: !isFetchingPVList && !isPVError,
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -168,16 +168,16 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     setUpdatedSteps(steps);
 
   }, [
-      currentPlan,
-      values,
-      isPVError,
-      isFetchingPVList,
-      isPollingStatus,
-      isFetchingNamespaceList,
-      pvResourceList,
-      errors,
-      touched
-    ]);
+    currentPlan,
+    values,
+    isPVError,
+    isFetchingPVList,
+    isPollingStatus,
+    isFetchingNamespaceList,
+    pvResourceList,
+    errors,
+    touched
+  ]);
 
 
   const onMove = (curr, prev) => {

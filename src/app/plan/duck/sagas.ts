@@ -42,6 +42,7 @@ function* checkPVs(action) {
         case 'FAILURE':
           pvsFound = true;
           PlanActions.stopPVPolling();
+          yield put({ type: PlanActionTypes.PV_FETCH_FAILURE, });
           yield put({ type: PlanActionTypes.STOP_PV_POLLING });
           break;
         default:
