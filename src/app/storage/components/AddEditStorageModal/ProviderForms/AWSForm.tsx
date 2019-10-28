@@ -60,9 +60,6 @@ interface IFormValues {
     accessKey: string;
     secret: string;
     s3Url: string;
-    // isSharedSecret?: boolean;
-    // vslBlob?: string;
-    // volumeSnapshotProvider: string
     bslProvider: string
 }
 interface IOtherProps {
@@ -284,9 +281,6 @@ const AWSForm: any = withFormik({
             secret: '',
             s3Url: '',
             bslProvider: provider,
-            // vslBlob: '',
-            // volumeSnapshotProvider: '',
-            // isSharedCred: true
         };
 
         if (initialStorageValues) {
@@ -297,9 +291,6 @@ const AWSForm: any = withFormik({
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
             values.bslProvider = initialStorageValues.bslProvider || provider;
-            // values.vslBlob = initialStorageValues.vslBlob || '';
-            // values.volumeSnapshotProvider = initialStorageValues.volumeSnapshotProvider || '';
-            // values.isSharedCred = initialStorageValues.isSharedCred || true;
         }
 
         return values;
