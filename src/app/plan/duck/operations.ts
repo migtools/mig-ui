@@ -180,13 +180,14 @@ const addPlan = migPlan => {
           p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
         );
 
-        const pvSearchStatus = matchingPlan ? planUtils.getPlanPVs(matchingPlan) : null;
+        const pvSearchStatus = matchingPlan ? planUtils.getPlanPVsAndCheckConditions(matchingPlan) : null;
         if (pvSearchStatus.success) {
           dispatch(PlanActions.updatePlanList(matchingPlan.MigPlan));
           dispatch(PlanActions.setCurrentPlan(matchingPlan.MigPlan));
           dispatch(PlanActions.pvFetchSuccess());
           return 'SUCCESS';
         } else if (pvSearchStatus.error) {
+          dispatch(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
           return 'FAILURE';
         }
       };
