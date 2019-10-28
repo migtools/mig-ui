@@ -21,7 +21,6 @@ interface IOtherProps {
 
 const AddEditStorageForm = (props: IOtherProps) => {
   const DynamicForm = ({ provider }) => {
-    console.log('provider', provider)
     if (provider === null) {
       return (
         <Flex>
@@ -42,7 +41,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
           return null;
       }
     }
-  }
+  };
 
   const [selectedProvider, setSelectedProvider] = useState(
     (props.initialStorageValues && props.initialStorageValues.provider) ? {

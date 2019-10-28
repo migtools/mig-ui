@@ -80,7 +80,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         handleSubmit,
         handleBlur
 
-    } = props
+    } = props;
     const nameKey = 'name';
     const gcpBucketKey = 'gcpBucket';
     const gcpBlobKey = 'gcpBlob';
@@ -251,7 +251,6 @@ const GCPForm: any = withFormik({
 
     handleSubmit: (values, formikBag: any) => {
         // Formik will set isSubmitting to true, so we need to flip this back off
-        console.log('add vals', values)
         formikBag.setSubmitting(false);
         formikBag.props.onAddEditSubmit(values);
     },

@@ -89,7 +89,7 @@ export function createMigStorage(
           backupStorageProvider: 'aws',
           volumeSnapshotProvider: 'aws',
           backupStorageConfig: {
-            awsBucketName: awsBucketName,
+            awsBucketName,
             awsRegion: awsBucketRegion,
             awsS3Url: s3Url,
             credsSecretRef: {
@@ -118,7 +118,7 @@ export function createMigStorage(
           backupStorageProvider: 'gcp',
           volumeSnapshotProvider: 'gcp',
           backupStorageConfig: {
-            gcpBucket: gcpBucket,
+            gcpBucket,
             credsSecretRef: {
               name: tokenSecret.metadata.name,
               namespace: tokenSecret.metadata.namespace,

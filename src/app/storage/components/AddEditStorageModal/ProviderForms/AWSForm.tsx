@@ -60,7 +60,7 @@ interface IFormValues {
     accessKey: string;
     secret: string;
     s3Url: string;
-    bslProvider: string
+    bslProvider: string;
 }
 interface IOtherProps {
     onAddEditSubmit: any;
@@ -88,7 +88,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         handleSubmit,
         handleBlur
 
-    } = props
+    } = props;
     const nameKey = 'name';
     const s3UrlKey = 's3Url';
     const awsBucketNameKey = 'awsBucketName';
@@ -339,7 +339,6 @@ const AWSForm: any = withFormik({
 
     handleSubmit: (values, formikBag: any) => {
         // Formik will set isSubmitting to true, so we need to flip this back off
-        console.log('add vals', values)
         formikBag.setSubmitting(false);
         formikBag.props.onAddEditSubmit(values);
     },
