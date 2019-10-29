@@ -10,7 +10,7 @@ import { RedoIcon } from '@patternfly/react-icons';
 import { Card, CardHeader, CardBody, CardFooter, Button, Tooltip, TooltipPosition } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { OutlinedQuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 interface IProps {
   values: any;
   errors: any;
@@ -53,6 +53,10 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return <StatusIcon isReady={true} />;
       case CurrentPlanState.Critical:
         return <StatusIcon isReady={false} />;
+      case CurrentPlanState.Warn:
+        return <span className="pf-c-icon pf-m-warning">
+          <WarningTriangleIcon />
+        </span>;
       default:
         return null;
     }
@@ -87,6 +91,14 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
           {` `}
           has been validated.
         </StyledValidationText>;
+      case CurrentPlanState.Warn:
+        return <StyledValidationText>
+          <StyledPlanName>
+            {currentPlan.metadata.name}
+          </StyledPlanName>
+          {` `}
+          has been validated with warning condition(s). See warning message.
+        </StyledValidationText>;
       case CurrentPlanState.Critical:
         return <StyledValidationText>
           Failed to validate migration plan
@@ -109,7 +121,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return null;
     }
   }
-  function BodyText({ state, errorMessage }): any {
+  function BodyText({ state, errorMessage, warnMessage }): any {
     const StyledBodyText = styled.span`
       font-size: 1.0em;
       font-weight: 300;
@@ -122,6 +134,13 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         return <StyledBodyText>
           This might take a few minutes.
         </StyledBodyText>;
+      case CurrentPlanState.Warn:
+        return <React.Fragment>
+          <StyledBodyText>
+            {warnMessage}
+          </StyledBodyText>
+
+        </React.Fragment>;
       case CurrentPlanState.Ready:
         return <StyledBodyText>
           Select an action from the Migration Plans section of the dashboard to start the migration
@@ -138,6 +157,8 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     switch (state) {
       case CurrentPlanState.Pending:
         return null;
+      case CurrentPlanState.Warn:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
       case CurrentPlanState.Ready:
         return <Button onClick={onClose} variant="primary">Close</Button>;
       case CurrentPlanState.Critical:
@@ -184,6 +205,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
         <BodyText
           state={currentPlanStatus.state}
           errorMessage={currentPlanStatus.errorMessage}
+          warnMessage={currentPlanStatus.warnMessage}
         />
       </CardBody>
       <CardFooter>
