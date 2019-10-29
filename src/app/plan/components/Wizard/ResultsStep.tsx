@@ -56,7 +56,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       case CurrentPlanState.Warn:
         return <span className="pf-c-icon pf-m-warning">
           <WarningTriangleIcon />
-        </span>
+        </span>;
       default:
         return null;
     }
@@ -140,7 +140,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             {warnMessage}
           </StyledBodyText>
 
-        </React.Fragment>
+        </React.Fragment>;
       case CurrentPlanState.Ready:
         return <StyledBodyText>
           Select an action from the Migration Plans section of the dashboard to start the migration
