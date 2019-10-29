@@ -157,6 +157,8 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     switch (state) {
       case CurrentPlanState.Pending:
         return null;
+      case CurrentPlanState.Warn:
+        return <Button onClick={onClose} variant="primary">Close</Button>;
       case CurrentPlanState.Ready:
         return <Button onClick={onClose} variant="primary">Close</Button>;
       case CurrentPlanState.Critical:
