@@ -29,6 +29,8 @@ const getPlansWithPlanStatus = createSelector(
       let latestIsFailed = false;
       let hasConflictCondition = null;
       let conflictErrorMsg = null;
+      let hasPVWarnCondition = null;
+      let hasPODWarnCondition = null;
       //check to see if plan is locked
       isPlanLocked = !!lockedPlans.some((lockedPlan) => lockedPlan === plan.MigPlan.metadata.name);
       //
@@ -37,6 +39,8 @@ const getPlansWithPlanStatus = createSelector(
         const emptyStatusObject = {
           hasSucceededStage,
           hasPrevMigrations,
+          hasPVWarnCondition,
+          hasPODWarnCondition,
           hasClosedCondition,
           hasReadyCondition,
           hasNotReadyCondition: hasPlanError,
@@ -54,6 +58,8 @@ const getPlansWithPlanStatus = createSelector(
       hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
       hasPlanError = plan.MigPlan.status.conditions.filter(c => c.category === 'Critical') > 0;
       hasConflictCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PlanConflict');
+      hasPODWarnCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PodLimitExceeded');
+      hasPVWarnCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PVLimitExceeded');
 
       const planConflictCond = plan.MigPlan.status.conditions.find(c => c.type === 'PlanConflict');
       if (planConflictCond) {
@@ -110,7 +116,9 @@ const getPlansWithPlanStatus = createSelector(
         latestType,
         hasConflictCondition,
         conflictErrorMsg,
-        isPlanLocked
+        isPlanLocked,
+        hasPODWarnCondition,
+        hasPVWarnCondition
       };
 
       return { ...plan, PlanStatus: statusObject };

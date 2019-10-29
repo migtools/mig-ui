@@ -6,11 +6,13 @@ export enum CurrentPlanState {
   Critical = 'Critical',
   Ready = 'Ready',
   TimedOut = 'Timedout',
+  Warn = 'Warn'
 }
 
 export interface ICurrentPlanStatus {
   state: CurrentPlanState;
   errorMessage?: string;
+  warnMessage?: string;
 }
 
 export const INITIAL_STATE = {
