@@ -97,7 +97,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Repository Name" isRequired fieldId={nameKey}>
+            <FormGroup label="Repository name" isRequired fieldId={nameKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -112,7 +112,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="GCP Bucket Name" isRequired fieldId={gcpBucketKey}>
+            <FormGroup label="GCP bucket name" isRequired fieldId={gcpBucketKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(gcpBucketKey)}
@@ -126,7 +126,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-bucket-name">{errors.gcpBucket}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="GCP Credential JSON Blob" isRequired fieldId={gcpBlobKey}>
+            <FormGroup label="GCP credential JSON blob" isRequired fieldId={gcpBlobKey}>
                 <HideWrapper onClick={handleBlobHiddenToggle}>
                     <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
                 </HideWrapper>

@@ -5,11 +5,8 @@ import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
+import { css } from '@emotion/core';
 
-
-
-
-// export default AddEditStorageForm;
 interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
@@ -25,9 +22,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
       return (
         <Flex>
           <Box>
-            <Text>
-              Please select a storage provider type.
-            </Text>
+            <Text />
           </Box>
         </Flex>
       );
@@ -56,17 +51,10 @@ const AddEditStorageForm = (props: IOtherProps) => {
   ]);
 
 
-  // const handleSharedCredsChange = (checked, event) => {
-  //   setFieldValue('isSharedCred', checked);
-  //   setIsSharedCred(checked);
-  // };
-
   const handleProviderChange = option => {
-    // setFieldValue('volumeSnapshotProvider', option.value);
     setSelectedProvider(
       option
     );
-    // setFieldTouched('volumeSnapshotProvider');
   };
   return (
     <Flex flexDirection="column">
@@ -75,8 +63,15 @@ const AddEditStorageForm = (props: IOtherProps) => {
         flex="auto"
         width={1 / 2}
         height={1}
-        minHeight={10}
+        minHeight={11}
       >
+        <Text css={css`
+        font-weight: 550;
+        font-size: 14px;
+        margin-bottom: 5px;
+        `}>
+          Storage provider type
+        </Text>
         <Select
           name="provider"
           onChange={handleProviderChange}

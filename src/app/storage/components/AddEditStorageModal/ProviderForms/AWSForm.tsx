@@ -118,7 +118,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Repository Name" isRequired fieldId={nameKey}>
+            <FormGroup label="Repository name" isRequired fieldId={nameKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -133,7 +133,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Bucket Name" isRequired fieldId={awsBucketNameKey}>
+            <FormGroup label="S3 bucket name" isRequired fieldId={awsBucketNameKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(awsBucketNameKey)}
@@ -147,7 +147,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Bucket Region" fieldId={awsBucketRegionKey}>
+            <FormGroup label="S3 bucket region" fieldId={awsBucketRegionKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(awsBucketRegionKey)}
@@ -161,7 +161,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Endpoint" fieldId={s3UrlKey}>
+            <FormGroup label="S3 endpoint" fieldId={s3UrlKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(s3UrlKey)}
@@ -175,7 +175,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-s3-url">{errors.s3Url}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Provider Access Key" isRequired fieldId={accessKeyKey}>
+            <FormGroup label="S3 provider access key" isRequired fieldId={accessKeyKey}>
                 <HideWrapper onClick={handleAccessKeyHiddenToggle}>
                     <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
                 </HideWrapper>
@@ -192,7 +192,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="S3 Provider Secret Access Key" isRequired fieldId={secretKey}>
+            <FormGroup label="S3 provider secret access key" isRequired fieldId={secretKey}>
                 <HideWrapper onClick={handleSecretHiddenToggle}>
                     <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
                 </HideWrapper>
