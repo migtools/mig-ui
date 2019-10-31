@@ -332,7 +332,7 @@ const AddEditStorageForm: any = withFormik({
     }
 
     if (!commonUtils.testB64(values.s3CustomCABundle)) {
-      errors.s3CustomCABundle = 'CA bundle must be a valid base64-encoded string.'
+      errors.s3CustomCABundle = 'CA bundle must be a valid base64-encoded string.';
     }
 
     return errors;
