@@ -46,6 +46,7 @@ function* addStorageRequest(action) {
     storageValues.bucketName,
     storageValues.bucketRegion,
     storageValues.s3Url,
+    storageValues.s3CustomCABundle,
     migMeta.namespace,
     storageSecret,
   );
@@ -184,7 +185,9 @@ function* updateStorageRequest(action) {
   const currentS3Url=
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
-  const migStorageUpdated = bucketNameUpdated || regionUpdated || s3UrlUpdated;
+  const currentS3CustomCABundle = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
+  const s3CustomCABundleUpdated = storageValues.s3CustomCABundle !== currentS3CustomCABundle;
+  const migStorageUpdated = bucketNameUpdated || regionUpdated || s3UrlUpdated || s3CustomCABundleUpdated;
 
   // Check to see if any fields on the kube secret were updated
   // NOTE: Need to decode the b64 token off a k8s secret
@@ -202,7 +205,7 @@ function* updateStorageRequest(action) {
   const updatePromises = [];
   if (migStorageUpdated) {
     const updatedMigStorage = updateMigStorage(
-      storageValues.bucketName, storageValues.bucketRegion, storageValues.s3Url);
+      storageValues.bucketName, storageValues.bucketRegion, storageValues.s3Url, storageValues.s3CustomCABundle);
     const migStorageResource = new MigResource(
       MigResourceKind.MigStorage, migMeta.namespace);
 

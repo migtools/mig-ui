@@ -70,6 +70,7 @@ export function createMigStorage(
   bucketName: string,
   bucketRegion: string,
   s3Url: string,
+  s3CustomCABundle: string,
   namespace: string,
   tokenSecret: any
 ) {
@@ -87,6 +88,7 @@ export function createMigStorage(
         awsBucketName: bucketName,
         awsRegion: bucketRegion,
         awsS3Url: s3Url,
+        s3CustomCABundle: s3CustomCABundle,
         credsSecretRef: {
           name: tokenSecret.metadata.name,
           namespace: tokenSecret.metadata.namespace,
@@ -107,6 +109,7 @@ export function updateMigStorage(
   bucketName: string,
   bucketRegion: string,
   s3Url: string,
+  s3CustomCABundle: string,
 ) {
   return {
     spec: {
@@ -114,6 +117,7 @@ export function updateMigStorage(
         awsBucketName: bucketName,
         awsRegion: bucketRegion,
         awsS3Url: s3Url,
+        s3CustomCABundle: s3CustomCABundle,
       },
       volumeSnapshotConfig: {
         awsRegion: bucketRegion,

@@ -33,6 +33,7 @@ const bucketNameKey = 'bucketName';
 const bucketRegionKey = 'bucketRegion';
 const accessKeyKey = 'accessKey';
 const secretKey = 'secret';
+const s3CustomCABundleKey = 's3CustomCABundle';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -50,6 +51,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
   const existingBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
   const existingBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
   const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
+  const existingS3CustomCABundle = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle || '';
   const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
   const existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
 
@@ -58,6 +60,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
     values.bucketName !== existingBucketName ||
     values.bucketRegion !== existingBucketRegion ||
     values.s3Url !== existingBucketUrl ||
+    values.s3CustomCABundle !== existingS3CustomCABundle ||
     values.accessKey !== existingAccessKeyId ||
     values.secret !== existingSecretAccessKey;
 
@@ -181,6 +184,20 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
         )}
       </FormGroup>
+      <FormGroup label="S3 Custom CA Bundle" isRequired fieldId={s3CustomCABundleKey}>
+        <TextInput
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(s3CustomCABundleKey)}
+          onBlur={props.handleBlur}
+          value={values.s3CustomCABundle}
+          name={s3CustomCABundleKey}
+          type="text"
+          id="storage-s3-custom-ca-bundle-input"
+        />
+        {errors.s3CustomCABundle && touched.s3CustomCABundle && (
+          <FormErrorDiv id="feedback-s3-custom-ca-bundle">{errors.s3CustomCABundle}</FormErrorDiv>
+        )}
+      </FormGroup>
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -240,6 +257,7 @@ interface IFormValues {
   accessKey: string;
   secret: string;
   s3Url: string;
+  s3CustomCABundle: string;
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -259,6 +277,7 @@ const AddEditStorageForm: any = withFormik({
       accessKey: '',
       secret: '',
       s3Url: '',
+      s3CustomCABundle: '',
     };
 
     if (initialStorageValues) {
@@ -268,6 +287,7 @@ const AddEditStorageForm: any = withFormik({
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
       values.s3Url = initialStorageValues.s3Url || '';
+      values.s3CustomCABundle = initialStorageValues.s3CustomCABundle || '';
     }
 
     return values;
@@ -309,6 +329,10 @@ const AddEditStorageForm: any = withFormik({
 
     if (!values.secret) {
       errors.secret = 'Required';
+    }
+
+    if (!commonUtils.testB64(values.s3CustomCABundle)) {
+      errors.s3CustomCABundle = 'CA bundle must be a valid base64-encoded string.'
     }
 
     return errors;

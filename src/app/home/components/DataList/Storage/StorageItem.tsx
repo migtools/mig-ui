@@ -25,6 +25,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const bucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
   const bucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
+  const s3CustomCABundle = storage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
 
   const accessKey =
     typeof storage.Secret === 'undefined'
@@ -140,7 +141,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
             initialStorageValues={{
-              name, bucketName, bucketRegion, accessKey, secret, s3Url,
+              name, bucketName, bucketRegion, accessKey, secret, s3Url, s3CustomCABundle
             }}
           />
           <ConfirmModal

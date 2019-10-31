@@ -9,6 +9,7 @@ describe('Storage functionality test', () => {
     const bucketRegion = 'us-east-1';
     const accessKey = 'accessKey';
     const secret = 'secret';
+    const s3CustomCABundle = 'dGVzdA==';
 
     it('adds storage with valid data', () => {
       cy.get('#add-repo-btn').then(() => {
@@ -21,6 +22,7 @@ describe('Storage functionality test', () => {
             cy.get('#bucketRegion').type(bucketRegion);
             cy.get('#accessKey').type(accessKey);
             cy.get('#secret').type(secret);
+            cy.get('#s3CustomCABundle').type(s3CustomCABundle);
             cy.get('#check-connection-btn').click();
             cy.get('#submit-cluster-btn').click();
           });
@@ -38,6 +40,7 @@ describe('Storage functionality test', () => {
             cy.get('#bucketRegion').type(bucketRegion);
             cy.get('#accessKey').type(accessKey);
             cy.get('#secret').type(secret);
+            cy.get('#s3CustomCABundle').type(s3CustomCABundle);
             cy.get('#check-connection-btn').should('be.disabled');
             cy.get('#submit-cluster-btn').should('be.disabled');
           });
