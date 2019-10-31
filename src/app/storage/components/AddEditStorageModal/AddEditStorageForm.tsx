@@ -184,7 +184,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="S3 Custom CA Bundle" isRequired fieldId={s3CustomCABundleKey}>
+      <FormGroup label="S3 Custom CA Bundle" fieldId={s3CustomCABundleKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(s3CustomCABundleKey)}
