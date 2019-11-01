@@ -78,7 +78,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
       <Box>
         <TextContent>
           <TextList component="dl">
-            <TextListItem component="dt">Replication Repository</TextListItem>
+            <TextListItem component="dt">Replication repository</TextListItem>
             <Select
               name="selectedStorage"
               onChange={option => {
@@ -97,7 +97,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
             {errors.targetCluster && touched.targetCluster && (
               <div id="feedback">{errors.targetCluster}</div>
             )}
-            <TextListItem component="dt">Target Cluster</TextListItem>
+            <TextListItem component="dt">Target cluster</TextListItem>
             <Select
               name="targetCluster"
               onChange={option => {

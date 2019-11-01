@@ -34,7 +34,7 @@ const columns = [
   {
     title: 'Target',
   },
-  'Repository',
+  'Replication repository',
   {
     title: 'PVs',
   },

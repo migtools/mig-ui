@@ -90,7 +90,7 @@ const InnerAddEditStorageForm = (props: IOtherProps & FormikProps<IFormValues>) 
 
   return (
     <Form onSubmit={props.handleSubmit} style={{ marginTop: '24px' }}>
-      <FormGroup label="Repository Name" isRequired fieldId={nameKey}>
+      <FormGroup label="Replication repository Name" isRequired fieldId={nameKey}>
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}

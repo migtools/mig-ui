@@ -50,7 +50,7 @@ const StorageDataListItem = ({
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button onClick={toggleOpen} variant="secondary" id="add-repo-btn">
-              Add repository
+              Add replication repository
             </Button>
             <AddEditStorageModal
               isOpen={isOpen}

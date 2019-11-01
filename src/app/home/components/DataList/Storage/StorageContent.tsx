@@ -36,14 +36,14 @@ const StorageContent = ({
           })}
         </DataList>
       ) : (
-        <EmptyState variant="full">
-          <EmptyStateIcon icon={AddCircleOIcon} />
-          <Title size="lg">Add replication repositories for the migration</Title>
-          <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
-            Add repository
+          <EmptyState variant="full">
+            <EmptyStateIcon icon={AddCircleOIcon} />
+            <Title size="lg">Add replication repositories for the migration</Title>
+            <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
+              Add repository
           </Button>
-        </EmptyState>
-      )}
+          </EmptyState>
+        )}
       <AddEditStorageModal
         isOpen={isOpen}
         onHandleClose={toggleOpen}

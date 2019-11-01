@@ -89,7 +89,7 @@ const ResourceSelectForm = props => {
     } else {
       const myOptions: any = [];
       myOptions.push({
-        label: 'No Valid Clusters Found',
+        label: 'No valid clusters found',
         value: 'N/A',
       });
       setSrcClusterOptions(myOptions);
@@ -161,7 +161,7 @@ const ResourceSelectForm = props => {
           <Grid md={6} gutter="md">
             <GridItem>
               <FormGroup
-                label="Source Cluster"
+                label="Source cluster"
                 isRequired
                 fieldId="sourceCluster"
               >
@@ -179,7 +179,7 @@ const ResourceSelectForm = props => {
 
             <GridItem>
               <FormGroup
-                label="Target Cluster"
+                label="Target cluster"
                 isRequired
                 fieldId="targetCluster"
               >
@@ -197,7 +197,7 @@ const ResourceSelectForm = props => {
 
             <GridItem>
               <FormGroup
-                label="Replication Repository"
+                label="Replication repository"
                 isRequired
                 fieldId="selectedStorage"
               >
