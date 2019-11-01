@@ -14,8 +14,8 @@ const FooterText = ({ type, dataList, expandDetails }) => {
       : `View clusters`;
   const storageText =
     dataList.length === 1
-      ? `View repository`
-      : `View repositories`;
+      ? `View replication repository`
+      : `View replication repositories`;
   const planText =
     dataList.length === 1 ? `View plan` : `View plans`;
   return (
