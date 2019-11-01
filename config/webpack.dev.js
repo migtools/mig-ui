@@ -30,8 +30,8 @@ if (!fs.existsSync(configPath)) {
   console.error('ERROR: config/config.dev.json is missing');
   console.error(
     'Copy config/config.dev.json.example to config/config.dev.json' +
-      ' and optionally configure your dev settings. A valid clusterUrl is ' +
-      ' required for start:remote.'
+    ' and optionally configure your dev settings. A valid clusterUrl is ' +
+    ' required for start:remote.'
   );
   process.exit(1);
 }
@@ -110,7 +110,7 @@ const webpackConfig = {
         use: {
           loader: 'file-loader',
           options: {
-            name: 'fonts/[name].[ext]',
+            name: '[name].[ext]',
             // Limit at 50k. larger files emited into separate files
             limit: 5000,
           },
