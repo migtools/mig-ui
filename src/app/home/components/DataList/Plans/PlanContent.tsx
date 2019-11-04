@@ -54,10 +54,11 @@ const PlanContent: React.FunctionComponent<IProps> = ({
   const buildNewRows = () => {
     const newRows = planList.map((plan, planIndex) => {
       const MigrationsIcon = () => {
-        if (plan.Migrations.length > 0) {
-          return <span className="pf-c-icon pf-m-info"><ServiceIcon /></span>;
+        const migrationCount = plan.Migrations.length || 0;
+        if (migrationCount > 0) {
+          return <span className="pf-c-icon pf-m-info"><MigrationIcon /> {migrationCount}</span>;
         } else {
-          return <span className="pf-c-icon"><ServiceIcon /></span>;
+          return <span className="pf-c-icon"><MigrationIcon /> {migrationCount}</span>;
         }
       };
       const parentIndex = planIndex * 2;
