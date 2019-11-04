@@ -99,9 +99,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
                   <div className="pf-l-flex__item" key={planKey + '-icon'}>
                     <MigrationsIcon />
                   </div>
-                  <div className="pf-l-flex__item" key={planKey + '-text'}>
-                    <span>{plan.Migrations.length || 0}</span>
-                  </div>
                 </div>
               ),
 
@@ -122,9 +119,6 @@ const PlanContent: React.FunctionComponent<IProps> = ({
             {
               title: (
                 <div className="pf-l-flex">
-                  <div className="pf-l-flex__item">
-                    <DatabaseIcon />
-                  </div>
                   <div className="pf-l-flex__item">
                     <span>{pvCount}</span>
                   </div>
