@@ -36,15 +36,6 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   };
 
   function HeaderIcon({ state }) {
-    const StyledIcon = styled(RedoIcon)`
-      height: 1.3em;
-      width: 1.3em;
-    `;
-    const StyledLoaderWrapper = styled.span`
-      display: inline-block;
-      margin-right: 0.75rem;
-    `;
-
     switch (state) {
       case CurrentPlanState.Pending:
         return <Spinner size="xl" />;
