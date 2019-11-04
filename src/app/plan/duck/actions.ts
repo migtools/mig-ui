@@ -174,15 +174,6 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const startPVPolling = (planName) => ({
-  type: PlanActionTypes.START_PV_POLLING,
-  planName,
-});
-
-const stopPVPolling = () => ({
-  type: PlanActionTypes.STOP_PV_POLLING,
-});
-
 const planUpdateRequest = (planValues) => ({
   type: PlanActionTypes.PLAN_UPDATE_REQUEST,
   planValues,
@@ -322,8 +313,6 @@ export const PlanActions = {
   namespaceFetchRequest,
   namespaceFetchSuccess,
   namespaceFetchFailure,
-  startPVPolling,
-  stopPVPolling,
   planUpdateRequest,
   planUpdateSuccess,
   planUpdateFailure,

@@ -46,8 +46,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     onHandleWizardModalClose,
     isEdit,
     editPlanObj,
-    startPVPolling,
-    pvFetchRequest
   } = props;
 
   enum stepId {

@@ -30,7 +30,6 @@ export interface IOtherProps {
   currentPlan: any;
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
-  startPVPolling: (planName) => void;
   planUpdateRequest: (values) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
@@ -135,7 +134,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
-    startPVPolling: (pvParams) => dispatch(PlanActions.startPVPolling(pvParams)),
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },

@@ -315,20 +315,6 @@ export const getPVResourcesFailure =
     return { ...state, isFetchingPVResources: false };
   };
 
-export const startPVPolling = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    isPVPolling: true
-  };
-};
-
-export const stopPVPolling = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    isPVPolling: false
-  };
-};
-
 export const startPlanPolling = (state = INITIAL_STATE, action) => {
   return {
     ...state,
