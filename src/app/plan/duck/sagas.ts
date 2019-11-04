@@ -303,13 +303,6 @@ function* watchPlanStatus() {
   }
 }
 
-// function* watchPVPolling() {
-//   while (true) {
-//     const data = yield take(PlanActionTypes.START_PV_POLLING);
-//     yield race([call(checkPVs, data), take(PlanActionTypes.STOP_PV_POLLING)]);
-//   }
-// }
-
 function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
@@ -325,7 +318,6 @@ function* watchPlanClose() {
 
 export default {
   watchPlanUpdate,
-  // watchPVPolling,
   watchPlanCloseAndDelete,
   watchPlanClose,
   watchClosedStatus,

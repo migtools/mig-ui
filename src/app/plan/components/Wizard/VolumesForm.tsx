@@ -28,8 +28,6 @@ const VolumesForm = props => {
   useEffect(() => {
     planUpdateRequest(values);
     startPlanStatusPolling(values.planName);
-    // startPVPolling(values);
-    // pvFetchRequest();
   }, []); // Only re-run the effect if fetching value changes
 
   return (

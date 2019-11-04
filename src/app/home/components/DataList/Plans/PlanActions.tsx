@@ -28,7 +28,6 @@ const PlanActions = ({ plan, history }) => {
   } = plan.PlanStatus;
 
   const editPlan = () => {
-    // planContext.watchPlanAddEditStatus(name);
     toggleWizardOpen();
   };
 
