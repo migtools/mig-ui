@@ -29,11 +29,12 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
         const keys = Object.keys(checkedNamespaceRows);
 
         for (const key of keys) {
-          if (item.metadata.uid === key) {
+          if (item.metadata.uid === key && checkedNamespaceRows[key]) {
             return item;
           }
         }
-      });
+      }).map((namespace) => namespace.metadata.name);
+
       setFieldValue('selectedNamespaces', formValuesForNamespaces);
     }
   }, [checkedNamespaceRows]);

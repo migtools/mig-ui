@@ -26,6 +26,8 @@ const VolumesForm = props => {
   } = props;
 
   useEffect(() => {
+    //kick off pv discovery once volumes form is reached with current selected namespaces
+
     planUpdateRequest(values);
     startPlanStatusPolling(values.planName);
   }, []); // Only re-run the effect if fetching value changes

@@ -373,30 +373,27 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       namespace: migPlan.metadata.namespace,
     };
   }
+  if (planValues.selectedNamespaces.length !== migPlan.spec.namespaces.length) {
+    //rerun pv discovery
+    updatedSpec.persistentVolumes = [];
+    updatedSpec.namespaces = planValues.selectedNamespaces;
+  } else {
+    if (updatedSpec.persistentVolumes) {
+      updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
+        const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
+        if (userPv) {
+          v.selection.action = userPv.type;
+          const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+          if (selectedStorageClassObj) {
+            v.selection.storageClass = selectedStorageClassObj.name;
+          } else {
+            v.selection.storageClass = '';
+          }
+        }
+        return v;
+      });
+    }
 
-  if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-      const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      if (userPv) {
-        //set action type
-        v.selection.action = userPv.type;
-        //set storage class
-        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        if (selectedStorageClassObj) {
-          v.selection.storageClass = selectedStorageClassObj.name;
-        } else {
-          v.selection.storageClass = '';
-        }
-        //set copy method 
-        const selectedCopyMethod = planValues[pvCopyMethodAssignmentKey][v.name];
-        if (selectedCopyMethod) {
-          v.selection.copyMethod = selectedCopyMethod;
-        } else {
-          v.selection.copyMethod = '';
-        }
-      }
-      return v;
-    });
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;
