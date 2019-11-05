@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
+import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
 
 interface IOtherProps {
@@ -32,6 +33,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
           return <AWSForm provider={provider.value} {...props} />;
         case 'gcp':
           return <GCPForm provider={provider.value} {...props} />;
+        case 'azure':
+          return <AzureForm provider={provider.value} {...props} />;
         default:
           return null;
       }
