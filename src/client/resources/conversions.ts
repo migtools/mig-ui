@@ -36,9 +36,11 @@ export function createMigCluster(
   name: string,
   namespace: string,
   clusterUrl: string,
-  tokenSecret: any,
   isAzure: boolean,
-  azureResourceGroup: string
+  azureResourceGroup: string,
+  insecure: boolean,
+  caBundle: string,
+  tokenSecret: any,
 ) {
   let specObject;
   if (isAzure) {
@@ -46,6 +48,8 @@ export function createMigCluster(
       azureResourceGroup,
       isHostCluster: false,
       url: clusterUrl,
+      insecure,
+      caBundle: caBundle || null,
       serviceAccountSecretRef: {
         name: tokenSecret.metadata.name,
         namespace: tokenSecret.metadata.namespace,
@@ -74,12 +78,16 @@ export function createMigCluster(
   };
 }
 
-export function updateMigClusterUrl(
+export function updateMigCluster(
   clusterUrl: string,
+  insecure: boolean,
+  caBundle: string,
 ) {
   return {
     spec: {
       url: clusterUrl,
+      insecure,
+      caBundle: caBundle || null,
     },
   };
 }

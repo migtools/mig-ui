@@ -31,6 +31,8 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
   const clusterUrl = cluster.MigCluster.spec.isHostCluster
     ? migMeta.clusterApi
     : cluster.MigCluster.spec.url;
+  const clusterInsecure = cluster.MigCluster.spec.insecure;
+  const clusterCABundle = cluster.MigCluster.spec.caBundle;
 
   const clusterSvcToken =
     !cluster.MigCluster.spec.isHostCluster && cluster.Secret.data.saToken
@@ -143,7 +145,14 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
           <AddEditClusterModal
             isOpen={isAddEditOpen}
             onHandleClose={toggleIsAddEditOpen}
-            initialClusterValues={{ clusterName, clusterUrl, clusterSvcToken, clusterIsAzure }}
+            initialClusterValues={{
+              clusterName,
+              clusterUrl,
+              clusterInsecure,
+              clusterCABundle,
+              clusterSvcToken,
+              clusterIsAzure
+            }}
           />
           <ConfirmModal
             message={removeMessage}

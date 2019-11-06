@@ -1,6 +1,7 @@
 import { push } from 'connected-react-router';
 import { AuthActions } from '../../auth/duck/actions';
 
+const Base64Validator = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 const URLValidator =
   /(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
@@ -40,10 +41,13 @@ const testDNS1123 = value => DNS1123Validator.test(value);
 
 const testURL = value => URLValidator.test(value) || IPValidator(value);
 
+const testB64 = value => Base64Validator.test(value);
+
 export default {
   testDNS1123,
   DNS1123Error,
   isSelfSignedCertError,
   handleSelfSignedCertError,
   testURL,
+  testB64,
 };

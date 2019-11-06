@@ -3,12 +3,12 @@ import { jsx } from '@emotion/core';
 import { useState } from 'react';
 import {
   Button,
+  Checkbox,
   TextInput,
   Form,
   FormGroup,
   Tooltip,
   TooltipPosition,
-  Checkbox
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -31,6 +31,8 @@ const urlKey = 'url';
 const tokenKey = 'token';
 const isAzureKey = 'isAzure';
 const azureResourceGroupKey = 'azureResourceGroup';
+const insecureKey = 'insecure';
+const caBundleKey = 'caBundle';
 
 const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -46,11 +48,15 @@ const valuesHaveUpdate = (values, currentCluster) => {
     return true;
   }
 
+  const insecure = currentCluster.MigCluster.spec.insecure;
+  const caBundle = currentCluster.MigCluster.spec.caBundle;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
-    values.token !== rawToken;
+    values.token !== rawToken ||
+    values.insecure !== insecure ||
+    values.caBundle !== caBundle;
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
@@ -133,7 +139,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onBlur={handleBlur}
         />
       </FormGroup>
-      {values.isAzure &&
+      {
+        values.isAzure &&
         <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
           <TextInput
             value={values.azureResourceGroup}
@@ -151,6 +158,29 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
 
       }
 
+      <FormGroup label="CA Bundle" fieldId={caBundleKey}>
+        <TextInput
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(caBundleKey)}
+          onBlur={handleBlur}
+          value={values.caBundle}
+          name={caBundleKey}
+          type="text"
+          id="ca-bundle-input"
+        />
+        {errors.caBundle && touched.caBundle && <FormErrorDiv id="feedback-ca-bundle">{errors.caBundle}</FormErrorDiv>}
+      </FormGroup>
+      <FormGroup fieldId={insecureKey}>
+        <Checkbox
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(insecureKey)}
+          onBlur={handleBlur}
+          isChecked={values.insecure}
+          name={insecureKey}
+          label="Disable SSL verification"
+          id="insecure-input"
+        />
+      </FormGroup>
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -202,7 +232,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Button>
         </Box>
       </Flex>
-    </Form>
+    </Form >
   );
 };
 interface IFormValues {
@@ -211,6 +241,8 @@ interface IFormValues {
   token: string;
   isAzure: boolean;
   azureResourceGroup?: string;
+  insecure: boolean;
+  caBundle: string;
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -227,7 +259,9 @@ const AddEditClusterForm: any = withFormik({
       url: '',
       token: '',
       isAzure: false,
-      azureResourceGroup: ''
+      azureResourceGroup: '',
+      insecure: false,
+      caBundle: '',
     };
 
     if (initialClusterValues) {
@@ -236,6 +270,8 @@ const AddEditClusterForm: any = withFormik({
       values.token = initialClusterValues.clusterSvcToken || '';
       values.isAzure = initialClusterValues.isAzure || false;
       values.azureResourceGroup = initialClusterValues.azureResourceGroup || null;
+      values.insecure = initialClusterValues.clusterInsecure || false;
+      values.caBundle = initialClusterValues.clusterCABundle || '';
     }
 
     return values;
@@ -262,6 +298,9 @@ const AddEditClusterForm: any = withFormik({
 
     if (values.isAzure && !values.azureResourceGroup) {
       errors.azureResourceGroupi = 'Required';
+    }
+    if (!utils.testB64(values.caBundle)) {
+      errors.caBundle = 'CA bundle must be a valid base64-encoded string.';
     }
 
     return errors;

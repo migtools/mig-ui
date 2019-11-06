@@ -10,7 +10,7 @@ import {
   createTokenSecret,
   createMigCluster,
   updateTokenSecret,
-  updateMigClusterUrl,
+  updateMigCluster,
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
@@ -44,9 +44,11 @@ function* addClusterRequest(action) {
     clusterValues.name,
     migMeta.namespace,
     clusterValues.url,
-    tokenSecret,
     clusterValues.isAzure,
-    clusterValues.azureResourceGroup
+    clusterValues.azureResourceGroup,
+    clusterValues.insecure,
+    clusterValues.caBundle,
+    tokenSecret
   );
 
   const secretResource = new CoreNamespacedResource(
@@ -176,14 +178,21 @@ function* updateClusterRequest(action) {
   const currentToken = atob(currentCluster.Secret.data.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
 
-  if (!urlUpdated && !tokenUpdated) {
+  const currentInsecure = currentCluster.MigCluster.spec.insecure;
+  const insecureUpdated = clusterValues.insecure !== currentInsecure;
+
+  const currentCABundle = currentCluster.MigCluster.spec.caBundle;
+  const caBundleUpdated = clusterValues.caBundle !== currentCABundle;
+
+  if (!urlUpdated && !tokenUpdated && !insecureUpdated && !caBundleUpdated) {
     console.warn('A cluster update was requested, but nothing was changed');
     return;
   }
 
   const updatePromises = [];
-  if (urlUpdated) {
-    const urlUpdatePatch = updateMigClusterUrl(clusterValues.url);
+  if (urlUpdated || insecureUpdated || caBundleUpdated) {
+    const urlUpdatePatch = updateMigCluster(
+      clusterValues.url, clusterValues.insecure, clusterValues.caBundle);
     const migClusterResource = new MigResource(
       MigResourceKind.MigCluster, migMeta.namespace);
 
