@@ -20,7 +20,7 @@ interface INamespaceTableProps {
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   const { setFieldValue, sourceClusterNamespaces, values } = props;
-  const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
+  const [checkedNamespaceRows, setCheckedNamespaceRows] = useState(sourceClusterNamespaces.map(ns => ns.metadata.uid));
   const [selectAll, setSelectAll] = useState(0);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
       const keys = Object.keys(checkedNamespaceRows);
 
       for (const key of keys) {
-        if (item.metadata.uid === key) {
+        if (item.metadata.uid === key && checkedNamespaceRows[key]) {
           return item;
         }
       }
@@ -69,10 +69,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setSelectAll(2);
   };
 
-
-  const StyledTextContent = styled(TextContent)`
-      margin: 1em 0 1em 0;
-    `;
 
   if (values.sourceCluster !== null) {
     return (
