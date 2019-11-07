@@ -40,7 +40,8 @@ function* addStorageRequest(action) {
     storageValues.bslProvider,
     storageValues.secret,
     storageValues.accessKey,
-    storageValues.gcpBlob
+    storageValues.gcpBlob,
+    storageValues.azureBlob,
   );
 
   const migStorage = createMigStorage(
@@ -51,7 +52,9 @@ function* addStorageRequest(action) {
     storageValues.awsBucketName,
     storageValues.awsBucketRegion,
     storageValues.s3Url,
-    storageValues.gcpBucket
+    storageValues.gcpBucket,
+    storageValues.azureResourceGroup,
+    storageValues.azureStorageAccount,
   );
 
   const secretResource = new CoreNamespacedResource(

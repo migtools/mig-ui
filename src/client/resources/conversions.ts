@@ -74,7 +74,9 @@ export function createMigStorage(
   awsBucketName?: string,
   awsBucketRegion?: string,
   s3Url?: string,
-  gcpBucket?: string
+  gcpBucket?: string,
+  azureResourceGroup?: string,
+  azureStorageAccount?: string,
 ) {
   switch (bslProvider) {
     case 'aws':
@@ -134,6 +136,39 @@ export function createMigStorage(
         },
       };
 
+    case 'azure':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
+        },
+        spec: {
+          backupStorageProvider: 'azure',
+          volumeSnapshotProvider: 'azure',
+          backupStorageConfig: {
+            azureResourceGroup,
+            azureStorageAccount,
+            azureStorageContainer: 'velero',
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+          volumeSnapshotConfig: {
+            //azure specific config
+            azureApiTimeout: '30s',
+            azureResourceGroup: 'Velero_Backups',
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+            volumeSnapshotProvider: 'azure'
+          },
+        },
+      };
+
 
   }
 }
@@ -164,6 +199,7 @@ export function createStorageSecret(
   secretKey?: any,
   accessKey?: string,
   gcpBlob?: any,
+  azureBlob?: any,
 ) {
 
   switch (bslProvider) {
@@ -183,12 +219,28 @@ export function createStorageSecret(
         },
         type: 'Opaque',
       };
+
     case 'gcp':
-      const data = btoa(gcpBlob);
+      const gcpCred = btoa(gcpBlob);
       return {
         apiVersion: 'v1',
         data: {
-          'gcp-credentials': data
+          'gcp-credentials': gcpCred
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
+
+    case 'azure':
+      const azureCred = btoa(azureBlob);
+      return {
+        apiVersion: 'v1',
+        data: {
+          'azure-credentials': azureCred
         },
         kind: 'Secret',
         metadata: {

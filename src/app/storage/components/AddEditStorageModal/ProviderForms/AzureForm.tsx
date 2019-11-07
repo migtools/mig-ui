@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
 import { Flex, Box } from '@rebass/emotion';
 import {
     Button,
@@ -147,7 +146,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                 <HideWrapper onClick={handleBlobHiddenToggle}>
                     <KeyDisplayIcon id="azureBlobIcon" isHidden={isBlobHidden} />
                 </HideWrapper>
-                <TextInput
+                <TextArea
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureBlobKey)}
                     onBlur={handleBlur}
