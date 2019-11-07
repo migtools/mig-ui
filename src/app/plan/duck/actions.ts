@@ -34,6 +34,8 @@ export const PlanActionTypes = {
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
+  PLAN_RECONCILE_POLL: 'PLAN_RECONCILE_POLL',
+  PLAN_RECONCILE_POLL_STOP: 'PLAN_RECONCILE_POLL_STOP',
   PLAN_CLOSE_AND_DELETE_REQUEST: 'PLAN_CLOSE_AND_DELETE_REQUEST',
   PLAN_CLOSE_AND_DELETE_SUCCESS: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
   PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_FAILURE',
@@ -192,6 +194,15 @@ const initMigration = (planName: string) => ({
   planName,
 });
 
+const planReconcilePolling = (planValues) => ({
+  type: PlanActionTypes.PLAN_RECONCILE_POLL,
+  planValues,
+});
+
+const stopPlanReconcilePolling = () => ({
+  type: PlanActionTypes.PLAN_RECONCILE_POLL_STOP,
+});
+
 const planCloseAndDeleteRequest = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST,
   planName,
@@ -315,6 +326,8 @@ export const PlanActions = {
   addPlanRequest,
   initStage,
   initMigration,
+  planReconcilePolling,
+  stopPlanReconcilePolling,
   planCloseAndDeleteRequest,
   planCloseAndDeleteSuccess,
   planCloseAndDeleteFailure,

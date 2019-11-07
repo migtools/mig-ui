@@ -38,6 +38,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     getPVResourcesRequest,
     startPlanStatusPolling,
     planUpdateRequest,
+    isReconciling,
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
@@ -55,6 +56,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     MigrationTarget,
     Results,
   }
+
+  const secondarySteps = [stepId.StorageClass];
 
   useEffect(() => {
     if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
@@ -124,7 +127,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isFetchingPVResources={isFetchingPVResources}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError,
+        enableNext: !isFetchingPVList && !isPVError && !isReconciling,
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -158,6 +161,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             currentPlan={currentPlan}
             currentPlanStatus={currentPlanStatus}
             isPollingStatus={isPollingStatus}
+            isReconciling={isReconciling}
             startPlanStatusPolling={startPlanStatusPolling}
             onClose={handleClose}
           />
@@ -174,6 +178,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isFetchingPVList,
     isPollingStatus,
     isFetchingNamespaceList,
+    isReconciling,
     pvResourceList,
     errors,
     touched
@@ -199,12 +204,17 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         });
       }
     }
-    if (curr.id === stepId.Results) {
-      //update plan & start status polling on results page
+
+    if (currentPlan && prev.prevId < curr.id && !secondarySteps.includes(curr.id)) {
       planUpdateRequest(props.values);
+    }
+
+    //start status polling on results page
+    if (curr.id === stepId.Results) {
       startPlanStatusPolling(props.values.planName);
     }
   };
+
   const handleClose = () => {
     onHandleWizardModalClose();
     setStepIdReached(stepId.General);

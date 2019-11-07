@@ -36,7 +36,8 @@ const VolumesTable = (props): any => {
     isFetchingPVList,
     getPVResourcesRequest,
     isFetchingPVResources,
-    pvResourceList
+    pvResourceList,
+    isReconciling,
   } = props;
   const [rows, setRows] = useState([]);
 
@@ -101,7 +102,7 @@ const VolumesTable = (props): any => {
       setFieldValue('persistentVolumes', mappedPVs);
       setRows(mappedPVs);
     }
-  }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
+  }, [isFetchingPVList, isReconciling]); // Only re-run the effect if fetching value changes
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
@@ -129,7 +130,7 @@ const VolumesTable = (props): any => {
       </Box>
     );
   }
-  if (isFetchingPVList) {
+  if (isFetchingPVList || isReconciling) {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -141,7 +142,7 @@ const VolumesTable = (props): any => {
           </Title>
         </EmptyState>
       </Bullseye>
-     );
+    );
   }
 
   return (

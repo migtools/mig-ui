@@ -13,6 +13,7 @@ export interface IFormValues {
   selectedNamespaces: any[];
 }
 export interface IOtherProps {
+  isReconciling: boolean;
   clusterList: any[];
   planList: any[];
   storageList: any[];
@@ -100,6 +101,7 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
+    isReconciling: state.plan.isReconciling,
     isPollingPlans: state.plan.isPolling,
     isPollingClusters: state.cluster.isPolling,
     isPollingStorage: state.storage.isPolling,
@@ -120,7 +122,6 @@ const mapDispatchToProps = dispatch => {
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
-    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),

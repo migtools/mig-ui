@@ -25,12 +25,21 @@ interface IProps {
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
   isPollingStatus: boolean;
+  isReconciling: boolean;
 }
 
 
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
-  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling, onClose } = props;
+  const {
+    values,
+    currentPlan,
+    currentPlanStatus,
+    isPollingStatus,
+    isReconciling,
+    startPlanStatusPolling,
+    onClose } = props;
+
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
   };
@@ -172,7 +181,9 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             </Button>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
-            onClick={handlePollRestart} disabled={isPollingStatus} variant="secondary" >Check Connection</Button>
+            onClick={handlePollRestart}
+            disabled={isPollingStatus || isReconciling}
+            variant="secondary" >Check Connection</Button>
           <Tooltip
             position={TooltipPosition.top}
             content={<div>

@@ -1,4 +1,5 @@
 import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
+import deepEqual from 'deep-equal';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
@@ -17,7 +18,7 @@ export function createTokenSecret(name: string, namespace: string, rawToken: str
   };
 }
 
-export function updateTokenSecret(rawToken: string) {
+export function patchTokenSecret(rawToken: string) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
   return {
@@ -55,7 +56,7 @@ export function createMigCluster(
   };
 }
 
-export function updateMigClusterUrl(
+export function patchMigClusterUrl(
   clusterUrl: string,
 ) {
   return {
@@ -103,7 +104,7 @@ export function createMigStorage(
   };
 }
 
-export function updateMigStorage(
+export function patchMigStorage(
   bucketName: string,
   bucketRegion: string,
   s3Url: string,
@@ -146,7 +147,7 @@ export function createStorageSecret(
   };
 }
 
-export function updateStorageSecret(secretKey: any, accessKey: string) {
+export function patchStorageSecret(secretKey: any, accessKey: string) {
   // btoa => to base64, atob => from base64
   const encodedAccessKey = btoa(accessKey);
   const encodedSecretKey = btoa(secretKey);
@@ -158,74 +159,103 @@ export function updateStorageSecret(secretKey: any, accessKey: string) {
   };
 }
 
-export function createMigPlan(
-  name: string,
-  namespace: string,
-  sourceClusterObj: any,
-  destinationClusterObj: any,
-  storageObj: any
-) {
-  return {
-    apiVersion: 'migration.openshift.io/v1alpha1',
-    kind: 'MigPlan',
-    metadata: {
-      name,
-      namespace,
-    },
-    spec: {
-      srcMigClusterRef: {
-        name: sourceClusterObj,
-        namespace,
-      },
-      destMigClusterRef: {
-        name: destinationClusterObj,
-        namespace,
-      },
-      migStorageRef: {
-        name: storageObj,
-        namespace,
-      },
-    },
-  };
+export function updatePlanNamespaces(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!planValues.selectedNamespaces) {
+    return false;
+  }
+
+  const updatedNamespaces = planValues.selectedNamespaces.map(ns => ns.metadata.name);
+  if (deepEqual(migPlan.spec.namespaces, updatedNamespaces)) {
+    return false;
+  }
+
+  migPlan.spec.namespaces = updatedNamespaces;
+  return true;
 }
 
-export function updateMigPlanFromValues(migPlan: any, planValues: any) {
-  const updatedSpec = Object.assign({}, migPlan.spec);
-  if (planValues.selectedStorage) {
-    updatedSpec.migStorageRef = {
-      name: planValues.selectedStorage,
-      namespace: migPlan.metadata.namespace,
+export function updatePlanSourceCluster(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!planValues.sourceCluster) {
+    return false;
+  }
+
+  return true;
+}
+
+export function updatePlanDestinationCluster(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!planValues.destinationCluster) {
+    return false;
+  }
+
+  return true;
+}
+
+export function updatePlanStorage(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!planValues.selectedStorage || migPlan.spec.migStorageRef.name === planValues.selectedStorage) {
+    return false;
+  }
+
+  migPlan.spec.migStorageRef = {
+    name: planValues.selectedStorage,
+    namespace: migPlan.metadata.namespace,
+  };
+
+  return true;
+}
+
+export function updatePlanPersistentVolumes(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!migPlan.spec.persistentVolumes || !planValues[pvStorageClassAssignmentKey]) {
+    return false;
+  }
+
+  migPlan.spec.persistentVolumes = migPlan.spec.persistentVolumes.map(v => {
+    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
+    if (userPv) {
+      v.selection.action = userPv.type;
+      const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+      if (selectedStorageClassObj) {
+        v.selection.storageClass = selectedStorageClassObj.name;
+      } else {
+        v.selection.storageClass = '';
+      }
+    }
+    return v;
+  });
+
+  return true;
+}
+
+export function updatePlanClosure(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
+  if (!planValues.planClosed || migPlan.spec.closed) {
+    return false;
+  }
+
+  migPlan.spec.closed = true;
+
+  return true;
+}
+
+export function updateMigPlanFromValues(migPlan: ReturnType<typeof createMigPlan>, planValues: any) {
+
+  const updated = [
+    updatePlanNamespaces(migPlan, planValues),
+    updatePlanSourceCluster(migPlan, planValues),
+    updatePlanDestinationCluster(migPlan, planValues),
+    updatePlanStorage(migPlan, planValues),
+    updatePlanPersistentVolumes(migPlan, planValues),
+    updatePlanClosure(migPlan, planValues),
+  ];
+
+  if (updated.some((update) => update)) {
+    return {
+      apiVersion: migPlan.apiVersion,
+      kind: migPlan.kind,
+      metadata: migPlan.metadata,
+      spec: migPlan.spec,
     };
   }
-
-  if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-      const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      if (userPv) {
-        v.selection.action = userPv.type;
-        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        if (selectedStorageClassObj) {
-          v.selection.storageClass = selectedStorageClassObj.name;
-        } else {
-          v.selection.storageClass = '';
-        }
-      }
-      return v;
-    });
-  }
-  if (planValues.planClosed) {
-    updatedSpec.closed = true;
-  }
-
-  return {
-    apiVersion: 'migration.openshift.io/v1alpha1',
-    kind: 'MigPlan',
-    metadata: migPlan.metadata,
-    spec: updatedSpec,
-  };
 }
 
-export function createInitialMigPlan(
+export function createMigPlan(
   name: string,
   namespace: string,
   sourceClusterObj: any,
@@ -239,6 +269,7 @@ export function createInitialMigPlan(
     metadata: {
       name,
       namespace,
+      resourceVersion: '',
     },
     spec: {
       srcMigClusterRef: {
@@ -254,6 +285,8 @@ export function createInitialMigPlan(
         namespace,
       },
       namespaces,
+      persistentVolumes: [],
+      closed: false,
     },
   };
 }

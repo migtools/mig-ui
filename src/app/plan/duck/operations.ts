@@ -6,7 +6,7 @@ import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/re
 
 import {
   createMigMigration,
-  createInitialMigPlan,
+  createMigPlan,
   updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import {
@@ -155,7 +155,7 @@ const addPlan = migPlan => {
       const { migMeta } = getState();
       const client: IClusterClient = ClientFactory.hostCluster(getState());
 
-      const migPlanObj = createInitialMigPlan(
+      const migPlanObj = createMigPlan(
         migPlan.planName,
         migMeta.namespace,
         migPlan.sourceCluster,
@@ -209,10 +209,6 @@ const addPlan = migPlan => {
       dispatch(AlertActions.alertErrorTimeout('Failed to add plan'));
     }
   };
-};
-
-const removePlan = id => {
-  throw new Error('NOT IMPLEMENTED');
 };
 
 const fetchPlans = () => {
@@ -290,7 +286,6 @@ export default {
   pvFetchRequest,
   fetchPlans,
   addPlan,
-  removePlan,
   fetchNamespacesForCluster,
   runStage,
   runMigration,

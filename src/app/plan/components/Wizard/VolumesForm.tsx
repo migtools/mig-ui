@@ -18,7 +18,8 @@ const VolumesForm = props => {
     currentPlan,
     getPVResourcesRequest,
     pvResourceList,
-    isFetchingPVResources
+    isFetchingPVResources,
+    isReconciling,
   } = props;
 
   return (
@@ -40,8 +41,9 @@ const VolumesForm = props => {
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
           isFetchingPVResources={isFetchingPVResources}
+          isReconciling={isReconciling}
         />
-       </GridItem>
+      </GridItem>
     </Grid>
   );
 };

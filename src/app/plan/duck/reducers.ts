@@ -29,6 +29,7 @@ export const INITIAL_STATE = {
   isClosing: false,
   isPollingStatus: false,
   isPolling: false,
+  isReconciling: false,
   pvResourceList: [],
   currentPlanStatus: {
     state: CurrentPlanState.Pending,
@@ -76,6 +77,14 @@ export const pvFetchSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchSuccess>) => {
     return { ...state, isPVError: false, isFetchingPVList: false };
   };
+
+export const planReconcilePolling =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.planReconcilePolling>) =>
+    ({ ...state, isReconciling: true });
+
+export const stopPlanReconcilePolling =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopPlanReconcilePolling>) =>
+    ({ ...state, isReconciling: false });
 
 export const addPlanSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
@@ -370,6 +379,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
     case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
     case PlanActionTypes.PV_FETCH_SUCCESS: return pvFetchSuccess(state, action);
+    case PlanActionTypes.PLAN_RECONCILE_POLL: return planReconcilePolling(state, action);
+    case PlanActionTypes.PLAN_RECONCILE_POLL_STOP: return stopPlanReconcilePolling(state, action);
     case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
     case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
     case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);

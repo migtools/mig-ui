@@ -9,8 +9,8 @@ import {
 import {
   createStorageSecret,
   createMigStorage,
-  updateMigStorage,
-  updateStorageSecret,
+  patchMigStorage,
+  patchStorageSecret,
 } from '../../../client/resources/conversions';
 import { StorageActions, StorageActionTypes } from './actions';
 import { AlertActions } from '../../common/duck/actions';
@@ -70,7 +70,7 @@ function* addStorageRequest(action) {
         exists;
     }, []);
 
-    if(alreadyExists.length > 0) {
+    if (alreadyExists.length > 0) {
       throw new Error(alreadyExists.reduce((msg, v) => {
         return msg + `- kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some storage objects already exist '));
@@ -103,7 +103,7 @@ function* addStorageRequest(action) {
       storageAddResults.find(res => res.state === 'rejected') &&
       storageAddResults.find(res => res.state === 'fulfilled');
 
-    if(isRollbackRequired) {
+    if (isRollbackRequired) {
       const kindToResourceMap = {
         MigStorage: migStorageResource,
         Secret: secretResource,
@@ -122,7 +122,7 @@ function* addStorageRequest(action) {
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if(rollbackResults.find(res => res.state === 'rejected')) {
+      if (rollbackResults.find(res => res.state === 'rejected')) {
         throw new Error(rollbackResults.reduce((msg, r) => {
           const kind = r.reason.request.response.kind;
           const name = r.reason.request.response.details.name;
@@ -181,7 +181,7 @@ function* updateStorageRequest(action) {
   const currentRegion =
     currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
   const regionUpdated = storageValues.bucketRegion !== currentRegion;
-  const currentS3Url=
+  const currentS3Url =
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
   const migStorageUpdated = bucketNameUpdated || regionUpdated || s3UrlUpdated;
@@ -201,7 +201,7 @@ function* updateStorageRequest(action) {
 
   const updatePromises = [];
   if (migStorageUpdated) {
-    const updatedMigStorage = updateMigStorage(
+    const updatedMigStorage = patchMigStorage(
       storageValues.bucketName, storageValues.bucketRegion, storageValues.s3Url);
     const migStorageResource = new MigResource(
       MigResourceKind.MigStorage, migMeta.namespace);
@@ -212,7 +212,7 @@ function* updateStorageRequest(action) {
   }
 
   if (kubeSecretUpdated) {
-    const updatedSecret = updateStorageSecret(storageValues.secret, storageValues.accessKey);
+    const updatedSecret = patchStorageSecret(storageValues.secret, storageValues.accessKey);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret, migMeta.configNamespace);
 
