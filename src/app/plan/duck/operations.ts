@@ -20,7 +20,6 @@ import { PollingActions } from '../../common/duck/actions';
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
 /* tslint:enable */
-const pvFetchRequest = PlanActions.pvFetchRequest;
 
 const PlanMigrationPollingInterval = 5000;
 
@@ -142,75 +141,6 @@ const runMigration = (plan, disableQuiesce) => {
   };
 };
 
-const addPlan = migPlan => {
-  return async (dispatch, getState) => {
-    try {
-      /**
-       * Trigger the pv fetch request to initiate loading screen for the VolumesTable component
-       */
-      dispatch(pvFetchRequest());
-      /**
-       * Create the plan object. Blocks all code in this function until createPlanRes
-       */
-      const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
-
-      const migPlanObj = createMigPlan(
-        migPlan.planName,
-        migMeta.namespace,
-        migPlan.sourceCluster,
-        migPlan.targetCluster,
-        migPlan.selectedStorage,
-        migPlan.namespaces
-      );
-
-      const createPlanRes = await client.create(
-        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        migPlanObj
-      );
-
-      /**
-       * Begin PV polling when adding a plan.
-       * This is triggered when the user navigates to the pv discovery part of the plan
-       * because the discovery is dependent on the creation of a plan
-       */
-
-      const getPVs = (updatedPlansPollingResponse, newObjectRes) => {
-        const matchingPlan = updatedPlansPollingResponse.updatedPlans.find(
-          p => p.MigPlan.metadata.name === newObjectRes.data.metadata.name
-        );
-
-        const pvSearchStatus = matchingPlan ? planUtils.getPlanPVsAndCheckConditions(matchingPlan) : null;
-        if (pvSearchStatus.success) {
-          dispatch(PlanActions.updatePlanList(matchingPlan.MigPlan));
-          dispatch(PlanActions.setCurrentPlan(matchingPlan.MigPlan));
-          dispatch(PlanActions.pvFetchSuccess());
-          return 'SUCCESS';
-        } else if (pvSearchStatus.error) {
-          dispatch(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
-          return 'FAILURE';
-        }
-      };
-
-      const pvPollingCallback = updatedPlansPollingResponse => {
-        if (updatedPlansPollingResponse && updatedPlansPollingResponse.isSuccessful === true) {
-          return getPVs(updatedPlansPollingResponse, createPlanRes);
-        }
-      };
-      const pvParams = {
-        asyncFetch: fetchPlansGenerator,
-        delay: PlanMigrationPollingInterval,
-        callback: pvPollingCallback,
-      };
-
-      dispatch(PlanActions.startPVPolling(pvParams));
-      dispatch(PlanActions.addPlanSuccess(createPlanRes.data));
-    } catch (err) {
-      dispatch(AlertActions.alertErrorTimeout('Failed to add plan'));
-    }
-  };
-};
-
 const fetchPlans = () => {
   return async (dispatch, getState) => {
     dispatch(PlanActions.migPlanFetchRequest());
@@ -236,6 +166,7 @@ const fetchPlans = () => {
     }
   };
 };
+
 function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
@@ -283,9 +214,7 @@ function* fetchPlansGenerator() {
 }
 
 export default {
-  pvFetchRequest,
   fetchPlans,
-  addPlan,
   fetchNamespacesForCluster,
   runStage,
   runMigration,

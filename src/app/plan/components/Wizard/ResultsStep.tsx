@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Box } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
@@ -44,16 +44,12 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     startPlanStatusPolling(values.planName);
   };
 
-  function HeaderIcon({ state }) {
-    const StyledIcon = styled(RedoIcon)`
-      height: 1.3em;
-      width: 1.3em;
-    `;
-    const StyledLoaderWrapper = styled.span`
-      display: inline-block;
-      margin-right: 0.75rem;
-    `;
+  // Update status on component load
+  useEffect(() => {
+    handlePollRestart();
+  }, [isReconciling]);
 
+  function HeaderIcon({ state }) {
     switch (state) {
       case CurrentPlanState.Pending:
         return <Spinner size="xl" />;

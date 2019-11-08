@@ -17,7 +17,7 @@ import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 
 const StorageClassTable = (props): any => {
-  const { currentPlan, clusterList, values, isFetchingPVList } = props;
+  const { currentPlan, clusterList, values, isFetchingPVList, isReconciling } = props;
   const migPlanPvs = currentPlan.spec.persistentVolumes;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
@@ -60,9 +60,9 @@ const StorageClassTable = (props): any => {
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
     }
-  }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
+  }, [isFetchingPVList, isReconciling]); // Only re-run the effect if fetching value changes
 
-  if (isFetchingPVList) {
+  if (isFetchingPVList || isReconciling) {
     return (
       <Bullseye>
         <EmptyState variant="small">

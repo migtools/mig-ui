@@ -1,12 +1,14 @@
 import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import { updateMigPlanFromValues } from '../../../client/resources/conversions';
+import { createMigPlan, updateMigPlanFromValues, IMigPlan } from '../../../client/resources/conversions';
 import {
   AlertActions,
 } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
+import planOperations from './operations';
+import planUtils from './utils';
 import {
   MigResource,
   ExtendedCoreNamespacedResource,
@@ -19,79 +21,119 @@ import {
 } from '../../../client/resources';
 import Q from 'q';
 
-const PlanUpdateTotalTries = 6;
-const PlanUpdateRetryPeriodSeconds = 5;
+const PlanOperationTotalTries = 6;
+const PlanOperationRetryPeriod = 5;
+const ReconcileTimeouts = 3;
 
 function* checkPVs(action) {
-  const params = { ...action.params };
-  let pvsFound = false;
-  let tries = 0;
-  const TicksUntilTimeout = 20;
-
-  while (!pvsFound) {
-    if (tries < TicksUntilTimeout) {
-      tries += 1;
-      const plansRes = yield call(params.asyncFetch);
-      const pollingStatus = params.callback(plansRes);
-      switch (pollingStatus) {
-        case 'SUCCESS':
-          pvsFound = true;
-          yield put(PlanActions.stopPVPolling());
-          break;
-        case 'FAILURE':
-          pvsFound = true;
-          yield put(PlanActions.pvFetchFailure());
-          yield put(PlanActions.stopPVPolling());
-          break;
-        default:
-          break;
-      }
-      yield delay(params.delay);
-    } else {
-      // PV discovery timed out, alert and stop polling
-      pvsFound = true; // No PVs timed out
-      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+  let plan = yield call(getPlan, action.planName);
+  let timedOut;
+  for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true, plan = yield waitForReconcileCycle(plan)) {
+    timedOut = false;
+    const pvSearchStatus = planUtils.getPlanPVsAndCheckConditions(plan);
+    if (pvSearchStatus.success) {
+      yield put(PlanActions.updatePlanList(plan));
+      yield put(PlanActions.setCurrentPlan(plan));
       yield put(PlanActions.pvFetchSuccess());
-      yield put(PlanActions.stopPVPolling());
-      break;
+      return 'SUCCESS';
+    } else if (pvSearchStatus.error) {
+      yield put(PlanActions.pvFetchFailure());
+      yield put(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
+      return 'FAILURE';
     }
   }
+
+  // PV discovery timed out, alert and stop polling
+  if (timedOut) {
+    yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+  }
+  yield put(PlanActions.pvFetchSuccess());
+  yield put(PlanActions.stopPVPolling());
 }
 
-function* getPlanSaga(planName) {
+function* getPlan(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    return yield client.get(
+    const planReponse = yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       planName
     );
+    return planReponse.data;
   } catch (err) {
     throw err;
   }
 }
 
-function* putPlanSaga(planValues) {
+function* createPlan(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
-    const getPlanRes = yield call(getPlanSaga, planValues.planName);
-    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const migPlanObj = createMigPlan(
+      planValues.planName,
+      migMeta.namespace,
+      planValues.sourceCluster,
+      planValues.targetCluster,
+      planValues.selectedStorage,
+      planValues.selectedNamespaces.map(ns => ns.metadata.name),
+    );
+
+    let createdPlan = yield client.create(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      migPlanObj
+    );
+    createdPlan = yield waitForReconcileCycle(createdPlan.data);
+
+    yield put(PlanActions.startPVPolling(planValues.planName));
+    yield put(PlanActions.setCurrentPlan(createdPlan));
+    yield put(PlanActions.updatePlanList(createdPlan));
+    yield put(PlanActions.planCreateSuccess(createdPlan));
+  } catch (err) {
+    yield put(PlanActions.planCreateFailure(err));
+    throw err;
+  }
+}
+
+function* planCreateRetry(action) {
+  try {
+    yield retry(
+      PlanOperationTotalTries,
+      PlanOperationRetryPeriod * 1000,
+      createPlan,
+      action.planValues,
+    );
+  } catch (error) {
+    yield put(AlertActions.alertErrorTimeout('Failed to create plan'));
+  }
+}
+
+function* putPlan(planValues) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.hostCluster(state);
+  try {
+    const existingPlan = yield call(getPlan, planValues.planName);
+    const updatedMigPlan = updateMigPlanFromValues(existingPlan, planValues);
     if (!updatedMigPlan) {
       return;
     }
 
-    yield client.put(
+    let updatedPlan = yield client.put(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       planValues.planName,
       updatedMigPlan
     );
 
-    const updatedPlan = yield waitForReconcileCycle(planValues.planName);
-    yield put(PlanActions.planUpdateSuccess());
+
+    updatedPlan = yield waitForReconcileCycle(updatedPlan.data);
+    if (!updatedMigPlan.spec.closed) {
+      yield put(PlanActions.setCurrentPlan(updatedPlan));
+    }
+
     yield put(PlanActions.updatePlanList(updatedPlan));
+    yield put(PlanActions.planUpdateSuccess());
   } catch (err) {
     yield put(PlanActions.planUpdateFailure(err));
     throw err;
@@ -101,9 +143,9 @@ function* putPlanSaga(planValues) {
 function* planUpdateRetry(action) {
   try {
     yield retry(
-      PlanUpdateTotalTries,
-      PlanUpdateRetryPeriodSeconds * 1000,
-      putPlanSaga,
+      PlanOperationTotalTries,
+      PlanOperationRetryPeriod * 1000,
+      putPlan,
       action.planValues,
     );
   } catch (error) {
@@ -112,127 +154,75 @@ function* planUpdateRetry(action) {
 }
 
 function* checkClosedStatus(action) {
-  const reconcileTimeouts = 3;
-  for (let tries = 0; tries < reconcileTimeouts; tries++) {
-    const closedPlan = yield waitForReconcileCycle(action.planName);
+  let timedOut;
+  for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true) {
+    timedOut = false;
+    const closedPlan = yield call(getPlan, action.planName);
 
-    if (closedPlan.status && closedPlan.status.conditions) {
-      const hasClosedCondition = !!closedPlan.status.conditions.some(c => c.type === 'Closed');
-      if (hasClosedCondition) {
-        yield put(PlanActions.planCloseSuccess());
-        yield put(PlanActions.stopClosedStatusPolling(action.planName));
-        return;
-      }
+    const hasClosedCondition = !closedPlan.status
+      || !closedPlan.status.conditions
+      || !!closedPlan.status.conditions.some(c => c.type === 'Closed');
+
+    if (hasClosedCondition) {
+      yield put(PlanActions.planCloseSuccess());
+      break;
     }
+
+    yield waitForReconcileCycle(closedPlan);
   }
-  yield put(PlanActions.planCloseFailure('Failed to close plan'));
-  yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+
+  if (timedOut) {
+    yield put(PlanActions.planCloseFailure('Failed to close plan'));
+    yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+  }
+
   yield put(PlanActions.stopClosedStatusPolling(action.planName));
 }
 
-const isPlanUpdated = (currMigPlan, prevMigPlan) => {
-  const corePlan = (plan) => {
-    const { metadata } = plan;
-    if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
-      delete metadata.annotations;
-      delete metadata.generation;
-      delete metadata.resourceVersion;
-    }
-    if (plan.status) {
-      for (let i = 0; plan.status.conditions.length > i; i++) {
-        delete plan.status.conditions[i].lastTransitionTime;
-      }
-    }
-    return plan;
-  };
-  const currMigPlanCore = corePlan(currMigPlan);
-  const prevMigPlanCore = corePlan(prevMigPlan);
-
-  if (JSON.stringify(currMigPlanCore) !== JSON.stringify(prevMigPlanCore)) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-function* waitForReconcileCycle(planName) {
-  let getPlanResponse = yield call(getPlanSaga, planName);
-
-  yield put(PlanActions.planReconcilePolling(getPlanResponse.data));
+function* waitForReconcileCycle(plan: IMigPlan) {
+  yield put(PlanActions.planReconcilePolling(plan));
   yield take(PlanActionTypes.PLAN_RECONCILE_POLL_STOP);
 
-  getPlanResponse = yield call(getPlanSaga, planName);
-
-  return getPlanResponse.data;
-}
-
-function* updateCurrentPlan(plan) {
-  //diff current plan before setting
-  const state = yield select();
-  const { currentPlan } = state.plan;
-  if (!currentPlan || isPlanUpdated(plan, currentPlan)) {
-    yield put(PlanActions.setCurrentPlan(plan));
-  }
+  return yield call(getPlan, plan.metadata.name);
 }
 
 function* checkPlanStatus(action) {
-  const reconcileTimeouts = 3;
-  for (let tries = 0; tries < reconcileTimeouts; tries++) {
-    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
-    const updatedPlan = yield waitForReconcileCycle(action.planName);
-    yield updateCurrentPlan(updatedPlan);
+  let timedOut;
+  yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
 
-    if (!updatedPlan.status || !updatedPlan.status.conditions) {
+  let plan = yield call(getPlan, action.planName);
+  for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true, plan = yield waitForReconcileCycle(plan)) {
+    timedOut = false;
+    if (!plan.status || !plan.status.conditions) {
       continue;
     }
-    const hasReadyCondition = !!updatedPlan.status.conditions.some(c => c.type === 'Ready');
-    const hasWarnCondition = !!updatedPlan.status.conditions.some(cond => {
-      return cond.category === 'Warn';
-    });
-    const hasCriticalCondition = !!updatedPlan.status.conditions.some(cond => {
-      return cond.category === 'Critical';
-    });
-    const hasConflictCondition = !!updatedPlan.status.conditions.some(cond => {
-      return cond.type === 'PlanConflict';
-    });
-    if (hasReadyCondition) {
-      if (hasWarnCondition) {
-        const warnCondition = updatedPlan.status.conditions.find(cond => {
-          return cond.category === 'Warn';
-        });
-        yield put(PlanActions.updateCurrentPlanStatus(
-          { state: CurrentPlanState.Warn, warnMessage: warnCondition.message }));
-      } else {
-        yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
-      }
-      yield put(PlanActions.stopPlanStatusPolling());
-    }
-    if (hasCriticalCondition) {
-      const criticalCond = updatedPlan.status.conditions.find(cond => {
-        return cond.category === 'Critical';
-      });
+
+    const readyCondition = plan.status.conditions.find(cond => cond.type === 'Ready');
+    const warningCondition = plan.status.conditions.find(cond => cond.category === 'Warn');
+    const criticalCondition = plan.status.conditions.find(cond => cond.category === 'Critical');
+    const conflictCondition = plan.status.conditions.find(cond => cond.type === 'PlanConflict');
+    if (criticalCondition) {
       yield put(PlanActions.updateCurrentPlanStatus(
-        { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
+        { state: CurrentPlanState.Critical, errorMessage: criticalCondition.message }
       ));
-
-      yield put(PlanActions.stopPlanStatusPolling());
-    }
-
-    if (hasConflictCondition) {
-      const conflictCond = updatedPlan.status.conditions.find(cond => {
-        return cond.type === 'PlanConflict';
-      });
+    } else if (conflictCondition) {
       yield put(PlanActions.updateCurrentPlanStatus(
-        { state: CurrentPlanState.Critical, errorMessage: conflictCond.message }
+        { state: CurrentPlanState.Critical, errorMessage: conflictCondition.message }
       ));
-
-      yield put(PlanActions.stopPlanStatusPolling());
+    } else if (warningCondition && readyCondition) {
+      yield put(PlanActions.updateCurrentPlanStatus(
+        { state: CurrentPlanState.Warn, warnMessage: warningCondition.message }));
+    } else if (readyCondition) {
+      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
+    } else {
+      continue;
     }
-    return;
+    break;
   }
 
-  // TimedOut
-  yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+  if (timedOut) {
+    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+  }
   yield put(PlanActions.stopPlanStatusPolling());
 }
 
@@ -242,8 +232,8 @@ function* planReconcileWatch(plan) {
   const planResourceVersion = plan.planValues.metadata.resourceVersion;
   try {
     for (let requestNumber = 0; requestNumber < retries; requestNumber++) {
-      const updatedPlan = yield call(getPlanSaga, plan.planValues.metadata.name);
-      if (updatedPlan.data.metadata.resourceVersion !== planResourceVersion) {
+      const updatedPlan = yield call(getPlan, plan.planValues.metadata.name);
+      if (updatedPlan.metadata.resourceVersion !== planResourceVersion) {
         break;
       }
       yield delay(pollingInterval);
@@ -261,9 +251,9 @@ function* planCloseSaga(action) {
       planClosed: true,
     };
     yield retry(
-      PlanUpdateTotalTries,
-      PlanUpdateRetryPeriodSeconds * 1000,
-      putPlanSaga,
+      PlanOperationTotalTries,
+      PlanOperationRetryPeriod * 1000,
+      putPlan,
       updatedValues,
     );
     yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
@@ -349,8 +339,12 @@ function* watchPVPolling() {
   }
 }
 
+function* watchPlanCreate() {
+  yield takeEvery(PlanActionTypes.PLAN_CREATE_REQUEST, planCreateRetry);
+}
+
 function* watchPlanReconcilePolling() {
-  yield takeLatest(PlanActionTypes.PLAN_RECONCILE_POLL, planReconcileWatch);
+  yield takeEvery(PlanActionTypes.PLAN_RECONCILE_POLL, planReconcileWatch);
 }
 
 function* watchPlanUpdate() {
@@ -367,6 +361,7 @@ function* watchPlanClose() {
 }
 
 export default {
+  watchPlanCreate,
   watchPlanUpdate,
   watchPVPolling,
   watchPlanReconcilePolling,

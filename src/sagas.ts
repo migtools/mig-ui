@@ -14,6 +14,7 @@ export default function* rootSaga() {
     commonSagas.watchAlerts(),
     planSagas.watchPVPolling(),
     planSagas.watchPlanReconcilePolling(),
+    planSagas.watchPlanCreate(),
     planSagas.watchPlanUpdate(),
     planSagas.watchPlanCloseAndDelete(),
     planSagas.watchPlanClose(),

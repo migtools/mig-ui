@@ -65,10 +65,6 @@ export const migPlanFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchFailure>) => {
     return { ...state, isError: true, isFetching: false };
   };
-export const pvFetchRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchRequest>) => {
-    return { ...state, isPVError: false, isFetchingPVList: true };
-  };
 export const pvFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchFailure>) => {
     return { ...state, isPVError: true, isFetchingPVList: false };
@@ -86,8 +82,8 @@ export const stopPlanReconcilePolling =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopPlanReconcilePolling>) =>
     ({ ...state, isReconciling: false });
 
-export const addPlanSuccess =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
+export const planCreateSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.planCreateSuccess>) => {
     const newPlan = {
       MigPlan: action.newPlan,
       Migrations: [],
@@ -96,20 +92,6 @@ export const addPlanSuccess =
     return {
       ...state,
       migPlanList: [...state.migPlanList, newPlan],
-    };
-  };
-
-export const addPlanFailure =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanFailure>) => {
-    return {
-      ...state,
-    };
-  };
-
-export const addPlanRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
-    return {
-      ...state,
     };
   };
 
@@ -369,7 +351,6 @@ export const setLockedPlan = (state = INITIAL_STATE, action) => {
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
     case PlanActionTypes.INIT_STAGE: return initStage(state, action);
     case PlanActionTypes.INIT_MIGRATION: return initMigration(state, action);
     case PlanActionTypes.MIG_PLAN_FETCH_REQUEST: return migPlanFetchRequest(state, action);
@@ -382,9 +363,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PLAN_RECONCILE_POLL: return planReconcilePolling(state, action);
     case PlanActionTypes.PLAN_RECONCILE_POLL_STOP: return stopPlanReconcilePolling(state, action);
     case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
-    case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
-    case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
-    case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
+    case PlanActionTypes.PLAN_CREATE_SUCCESS: return planCreateSuccess(state, action);
     case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
     case PlanActionTypes.STAGING_SUCCESS: return stagingSuccess(state, action);
     case PlanActionTypes.STAGING_FAILURE: return stagingFailure(state, action);

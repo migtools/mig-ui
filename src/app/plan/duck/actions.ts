@@ -3,8 +3,9 @@ import { ICurrentPlanStatus } from './reducers';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
-  ADD_PLAN_SUCCESS: 'ADD_PLAN_SUCCESS',
-  ADD_PLAN_FAILURE: 'ADD_PLAN_FAILURE',
+  PLAN_CREATE_REQUEST: 'PLAN_CREATE_REQUEST',
+  PLAN_CREATE_SUCCESS: 'PLAN_CREATE_SUCCESS',
+  PLAN_CREATE_FAILURE: 'PLAN_CREATE_FAILURE',
   UPDATE_PLAN_RESULTS: 'UPDATE_PLAN_RESULTS',
   REMOVE_PLAN_SUCCESS: 'REMOVE_PLAN_SUCCESS',
   UPDATE_STAGE_PROGRESS: 'UPDATE_STAGE_PROGRESS',
@@ -21,13 +22,11 @@ export const PlanActionTypes = {
   NAMESPACE_FETCH_REQUEST: 'NAMESPACE_FETCH_REQUEST',
   NAMESPACE_FETCH_SUCCESS: 'NAMESPACE_FETCH_SUCCESS',
   NAMESPACE_FETCH_FAILURE: 'NAMESPACE_FETCH_FAILURE',
-  PV_FETCH_REQUEST: 'PV_FETCH_REQUEST',
   PV_FETCH_FAILURE: 'PV_FETCH_FAILURE',
   PV_FETCH_SUCCESS: 'PV_FETCH_SUCCESS',
   SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS: 'SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS',
   START_PV_POLLING: 'START_PV_POLLING',
   STOP_PV_POLLING: 'STOP_PV_POLLING',
-  ADD_PLAN_REQUEST: 'ADD_PLAN_REQUEST',
   PLAN_UPDATE_REQUEST: 'PLAN_UPDATE_REQUEST',
   PLAN_UPDATE_SUCCESS: 'PLAN_UPDATE_SUCCESS',
   PLAN_UPDATE_FAILURE: 'PLAN_UPDATE_FAILURE',
@@ -59,16 +58,6 @@ export const PlanActionTypes = {
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
   type: PlanActionTypes.UPDATE_PLANS,
   updatedPlans,
-});
-
-const addPlanSuccess = (newPlan: IMigPlan) => ({
-  type: PlanActionTypes.ADD_PLAN_SUCCESS,
-  newPlan,
-});
-
-const addPlanFailure = (error) => ({
-  type: PlanActionTypes.ADD_PLAN_FAILURE,
-  error,
 });
 
 const removePlanSuccess = (id) => ({
@@ -126,10 +115,6 @@ const migPlanFetchFailure = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_FAILURE,
 });
 
-const pvFetchRequest = () => ({
-  type: PlanActionTypes.PV_FETCH_REQUEST,
-});
-
 const pvFetchFailure = () => ({
   type: PlanActionTypes.PV_FETCH_FAILURE,
 });
@@ -157,9 +142,9 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const startPVPolling = (params) => ({
+const startPVPolling = (planName: string) => ({
   type: PlanActionTypes.START_PV_POLLING,
-  params,
+  planName,
 });
 
 const stopPVPolling = () => ({
@@ -180,9 +165,21 @@ const planUpdateFailure = (error) => ({
   error
 });
 
-const addPlanRequest = () => ({
-  type: PlanActionTypes.ADD_PLAN_REQUEST,
+const planCreateRequest = (planValues) => ({
+  type: PlanActionTypes.PLAN_CREATE_REQUEST,
+  planValues,
 });
+
+const planCreateSuccess = (newPlan: IMigPlan) => ({
+  type: PlanActionTypes.PLAN_CREATE_SUCCESS,
+  newPlan,
+});
+
+const planCreateFailure = (error) => ({
+  type: PlanActionTypes.PLAN_CREATE_FAILURE,
+  error,
+});
+
 
 const initStage = (planName: string) => ({
   type: PlanActionTypes.INIT_STAGE,
@@ -297,8 +294,8 @@ const setLockedPlan = (planName) => ({
 
 export const PlanActions = {
   updatePlans,
-  addPlanSuccess,
-  addPlanFailure,
+  planCreateSuccess,
+  planCreateFailure,
   removePlanSuccess,
   updateStageProgress,
   stagingSuccess,
@@ -311,7 +308,6 @@ export const PlanActions = {
   migPlanFetchRequest,
   migPlanFetchSuccess,
   migPlanFetchFailure,
-  pvFetchRequest,
   pvFetchFailure,
   pvFetchSuccess,
   sourceClusterNamespacesFetchSuccess,
@@ -323,7 +319,7 @@ export const PlanActions = {
   planUpdateRequest,
   planUpdateSuccess,
   planUpdateFailure,
-  addPlanRequest,
+  planCreateRequest,
   initStage,
   initMigration,
   planReconcilePolling,

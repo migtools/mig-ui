@@ -4,14 +4,14 @@ const getPlanPVsAndCheckConditions = plan => {
   const statusObj = { success: null, error: null, errorText: null };
   const PvsDiscoveredType = 'PvsDiscovered';
   const NamespaceLimitErrorType = 'NamespaceLimitExceeded';
-  if (plan.MigPlan.status && plan.MigPlan.status.conditions) {
-    const maxNamespaceError = !!plan.MigPlan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
+  if (plan.status && plan.status.conditions) {
+    const maxNamespaceError = !!plan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
     if (maxNamespaceError) {
       statusObj.error = maxNamespaceError;
       statusObj.errorText = 'Namespace limit Exceeded.';
     }
     else {
-      const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
+      const pvsDiscovered = !!plan.status.conditions.some(c => c.type === PvsDiscoveredType);
 
       if (pvsDiscovered) {
         statusObj.success = pvsDiscovered;

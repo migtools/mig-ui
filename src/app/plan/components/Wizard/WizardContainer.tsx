@@ -31,10 +31,10 @@ export interface IOtherProps {
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
   planUpdateRequest: (values) => void;
+  planCreateRequest: (values) => void;
   resetCurrentPlan: () => void;
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
-  addPlan: (planValues) => void;
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
@@ -118,13 +118,13 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    addPlan: plan => dispatch(planOperations.addPlan(plan)),
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
+    planCreateRequest: (values) => dispatch(PlanActions.planCreateRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
   };
 };

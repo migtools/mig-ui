@@ -38,12 +38,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     getPVResourcesRequest,
     startPlanStatusPolling,
     planUpdateRequest,
+    planCreateRequest,
     isReconciling,
     isPollingStorage,
     isPollingClusters,
     isPollingPlans,
     pvResourceList,
-    addPlan,
     resetCurrentPlan,
     onHandleWizardModalClose
   } = props;
@@ -57,8 +57,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     Results,
   }
 
-  const secondarySteps = [stepId.StorageClass];
-
   useEffect(() => {
     if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
       pollingContext.stopAllPolling();
@@ -66,6 +64,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   });
 
   useEffect(() => {
+    const isUpdating = isReconciling || isFetchingPVList;
     const steps = [
       {
         id: stepId.General,
@@ -109,7 +108,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           !errors.sourceCluster &&
           touched.sourceCluster === true &&
           !errors.selectedNamespaces,
-        canJumpTo: stepIdReached >= stepId.MigrationSource,
+        canJumpTo: stepIdReached >= stepId.MigrationSource && !isUpdating,
+        hideCancelButton: isUpdating,
+        hideBackButton: isUpdating,
       },
       {
         id: stepId.PersistentVolumes,
@@ -125,10 +126,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
             isFetchingPVResources={isFetchingPVResources}
+            isReconciling={isReconciling}
           />
         ),
         enableNext: !isFetchingPVList && !isPVError && !isReconciling,
-        canJumpTo: stepIdReached >= stepId.PersistentVolumes,
+        canJumpTo: stepIdReached >= stepId.PersistentVolumes && !isUpdating,
+        hideCancelButton: isUpdating,
+        hideBackButton: isUpdating,
       },
       {
         id: stepId.StorageClass,
@@ -144,11 +148,14 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
             isFetchingPVList={isFetchingPVList}
+            isReconciling={isReconciling}
             clusterList={clusterList}
           />
         ),
-        canJumpTo: stepIdReached >= stepId.StorageClass,
-        nextButtonText: 'Finish'
+        canJumpTo: stepIdReached >= stepId.StorageClass && !isUpdating,
+        hideCancelButton: isUpdating,
+        hideBackButton: isUpdating,
+        nextButtonText: 'Finish',
       },
       {
         id: stepId.Results,
@@ -190,28 +197,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setStepIdReached(curr.id);
     }
 
-    if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
-      // We must create the plan here so that the controller can evaluate the
-      // requested namespaces and discover related PVs
-
-      if (!currentPlan) {
-        addPlan({
-          planName: props.values.planName,
-          sourceCluster: props.values.sourceCluster,
-          targetCluster: props.values.targetCluster,
-          selectedStorage: props.values.selectedStorage,
-          namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
-        });
-      }
-    }
-
-    if (currentPlan && prev.prevId < curr.id && !secondarySteps.includes(curr.id)) {
+    if (!currentPlan && curr.id > stepId.MigrationSource) {
+      planCreateRequest(props.values);
+    } else if (currentPlan && prev.prevId < curr.id) {
       planUpdateRequest(props.values);
-    }
-
-    //start status polling on results page
-    if (curr.id === stepId.Results) {
-      startPlanStatusPolling(props.values.planName);
     }
   };
 

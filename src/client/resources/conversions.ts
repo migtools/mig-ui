@@ -1,5 +1,4 @@
 import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
-import deepEqual from 'deep-equal';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
@@ -165,26 +164,37 @@ export function updatePlanNamespaces(migPlan: ReturnType<typeof createMigPlan>, 
   }
 
   const updatedNamespaces = planValues.selectedNamespaces.map(ns => ns.metadata.name);
-  if (deepEqual(migPlan.spec.namespaces, updatedNamespaces)) {
-    return false;
+  if (updatedNamespaces.length !== migPlan.spec.namespaces.length) {
+    migPlan.spec.namespaces = updatedNamespaces;
+    return true;
   }
 
-  migPlan.spec.namespaces = updatedNamespaces;
-  return true;
+  for (const updatedNamespace of updatedNamespaces) {
+    if (!migPlan.spec.namespaces.includes(updatedNamespace)) {
+      migPlan.spec.namespaces = updatedNamespaces;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function updatePlanSourceCluster(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
-  if (!planValues.sourceCluster) {
+  if (!planValues.sourceCluster || planValues.sourceCluster === migPlan.spec.srcMigClusterRef.name) {
     return false;
   }
+
+  migPlan.spec.srcMigClusterRef.name = planValues.sourceCluster;
 
   return true;
 }
 
 export function updatePlanDestinationCluster(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
-  if (!planValues.destinationCluster) {
+  if (!planValues.destinationCluster || planValues.destinationCluster === migPlan.spec.destMigClusterRef.name) {
     return false;
   }
+
+  migPlan.spec.destMigClusterRef.name = planValues.destinationCluster;
 
   return true;
 }
@@ -203,25 +213,37 @@ export function updatePlanStorage(migPlan: ReturnType<typeof createMigPlan>, pla
 }
 
 export function updatePlanPersistentVolumes(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
-  if (!migPlan.spec.persistentVolumes || !planValues[pvStorageClassAssignmentKey]) {
+  if (!planValues.persistentVolumes || !planValues[pvStorageClassAssignmentKey]) {
     return false;
   }
 
-  migPlan.spec.persistentVolumes = migPlan.spec.persistentVolumes.map(v => {
-    const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-    if (userPv) {
-      v.selection.action = userPv.type;
-      const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-      if (selectedStorageClassObj) {
-        v.selection.storageClass = selectedStorageClassObj.name;
-      } else {
-        v.selection.storageClass = '';
-      }
+  let updated = false;
+  migPlan.spec.persistentVolumes = migPlan.spec.persistentVolumes.map(specVolume => {
+    const userPv = planValues.persistentVolumes.find(upv => upv.name === specVolume.name);
+    if (specVolume.selection.action !== userPv.type) {
+      specVolume.selection.action = userPv.type;
+      updated = true;
     }
-    return v;
+
+    const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][specVolume.name];
+    if (!selectedStorageClassObj || (selectedStorageClassObj.name === 'None' && !specVolume.selection.storageClass)) {
+      return specVolume;
+    }
+
+    let updatedStorageClass = '';
+    if (selectedStorageClassObj.name !== 'None') {
+      updatedStorageClass = selectedStorageClassObj.name;
+    }
+
+    if (specVolume.selection.storageClass !== updatedStorageClass) {
+      specVolume.selection.storageClass = updatedStorageClass;
+      updated = true;
+    }
+
+    return specVolume;
   });
 
-  return true;
+  return updated;
 }
 
 export function updatePlanClosure(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {

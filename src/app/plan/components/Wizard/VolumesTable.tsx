@@ -62,47 +62,32 @@ const VolumesTable = (props): any => {
   };
 
   useEffect(() => {
-    if (currentPlan) {
-      const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
-      getPVResources(discoveredPersistentVolumes, values.sourceCluster);
-      let mappedPVs;
-      if (values.persistentVolumes) {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          let pvAction = 'copy'; // Default to copy
-          if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            pvAction = rowVal.type;
-          }
-          return {
-            name: planVolume.name,
-            project: planVolume.pvc.namespace,
-            storageClass: planVolume.storageClass || 'None',
-            size: planVolume.capacity,
-            claim: planVolume.pvc.name,
-            type: pvAction,
-            details: '',
-            supportedActions: planVolume.supported.actions,
-          };
-        });
-      } else {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
-          const pvAction = 'copy'; // Default to copy
-          return {
-            name: planVolume.name,
-            project: planVolume.pvc.namespace,
-            storageClass: planVolume.selection.storageClass || '',
-            size: planVolume.capacity,
-            claim: planVolume.pvc.name,
-            type: pvAction,
-            details: '',
-            supportedActions: planVolume.supported.actions,
-          };
-        });
-      }
-      setFieldValue('persistentVolumes', mappedPVs);
-      setRows(mappedPVs);
+    if (!currentPlan) {
+      return;
     }
-  }, [isFetchingPVList, isReconciling]); // Only re-run the effect if fetching value changes
+
+    const discoveredPersistentVolumes = currentPlan.spec.persistentVolumes || [];
+    getPVResources(discoveredPersistentVolumes, values.sourceCluster);
+
+    const mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+      const existingVolume = values.persistentVolumes.find(v => v.name === planVolume.name);
+      const pvAction = existingVolume ? existingVolume.type : planVolume.selection.action;
+      const targetStorageClass = existingVolume ? planVolume.storageClass : planVolume.selection.storageClass;
+      return {
+        name: planVolume.name,
+        project: planVolume.pvc.namespace,
+        storageClass: targetStorageClass || 'None',
+        size: planVolume.capacity,
+        claim: planVolume.pvc.name,
+        type: pvAction || 'copy',
+        details: '',
+        supportedActions: planVolume.supported.actions,
+      };
+    });
+
+    setFieldValue('persistentVolumes', mappedPVs);
+    setRows(mappedPVs);
+  }, [currentPlan]); // Update PV list if the plan was changed
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
@@ -130,6 +115,7 @@ const VolumesTable = (props): any => {
       </Box>
     );
   }
+
   if (isFetchingPVList || isReconciling) {
     return (
       <Bullseye>
