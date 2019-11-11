@@ -14,11 +14,9 @@ const VolumesForm = props => {
     setFieldValue,
     values,
     isPVError,
-    isFetchingPVList,
     currentPlan,
     getPVResourcesRequest,
     pvResourceList,
-    isFetchingPVResources,
     isReconciling,
   } = props;
 
@@ -34,13 +32,11 @@ const VolumesForm = props => {
       <GridItem>
         <VolumesTable
           isPVError={isPVError}
-          isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}
           currentPlan={currentPlan}
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
-          isFetchingPVResources={isFetchingPVResources}
           isReconciling={isReconciling}
         />
       </GridItem>

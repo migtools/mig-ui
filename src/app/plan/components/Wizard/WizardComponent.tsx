@@ -28,7 +28,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     currentPlanStatus,
     storageList,
     isOpen,
-    isFetchingPVList,
     isFetchingNamespaceList,
     isPVError,
     isPollingStatus,
@@ -64,7 +63,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   });
 
   useEffect(() => {
-    const isUpdating = isReconciling || isFetchingPVList;
     const steps = [
       {
         id: stepId.General,
@@ -79,6 +77,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldTouched={setFieldTouched}
           />
         ),
+        canJumpTo: !isReconciling,
         enableNext: !errors.planName && touched.planName === true,
       },
       {
@@ -108,9 +107,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           !errors.sourceCluster &&
           touched.sourceCluster === true &&
           !errors.selectedNamespaces,
-        canJumpTo: stepIdReached >= stepId.MigrationSource && !isUpdating,
-        hideCancelButton: isUpdating,
-        hideBackButton: isUpdating,
+        canJumpTo: stepIdReached >= stepId.MigrationSource && !isReconciling,
+        hideCancelButton: isReconciling,
+        hideBackButton: isReconciling,
       },
       {
         id: stepId.PersistentVolumes,
@@ -121,7 +120,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
@@ -129,10 +127,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isReconciling={isReconciling}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError && !isReconciling,
-        canJumpTo: stepIdReached >= stepId.PersistentVolumes && !isUpdating,
-        hideCancelButton: isUpdating,
-        hideBackButton: isUpdating,
+        enableNext: !isPVError && !isReconciling,
+        canJumpTo: stepIdReached >= stepId.PersistentVolumes && !isReconciling,
+        hideCancelButton: isReconciling,
+        hideBackButton: isReconciling,
       },
       {
         id: stepId.StorageClass,
@@ -147,14 +145,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
             isReconciling={isReconciling}
             clusterList={clusterList}
           />
         ),
-        canJumpTo: stepIdReached >= stepId.StorageClass && !isUpdating,
-        hideCancelButton: isUpdating,
-        hideBackButton: isUpdating,
+        canJumpTo: stepIdReached >= stepId.StorageClass && !isReconciling,
+        hideCancelButton: isReconciling,
+        hideBackButton: isReconciling,
         nextButtonText: 'Finish',
       },
       {
@@ -182,7 +179,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     currentPlan,
     values,
     isPVError,
-    isFetchingPVList,
     isPollingStatus,
     isFetchingNamespaceList,
     isReconciling,

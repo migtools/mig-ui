@@ -33,9 +33,7 @@ const VolumesTable = (props): any => {
     currentPlan,
     values,
     isPVError,
-    isFetchingPVList,
     getPVResourcesRequest,
-    isFetchingPVResources,
     pvResourceList,
     isReconciling,
   } = props;
@@ -116,7 +114,7 @@ const VolumesTable = (props): any => {
     );
   }
 
-  if (isFetchingPVList || isReconciling) {
+  if (isReconciling) {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -290,7 +288,7 @@ const VolumesTable = (props): any => {
               >
                 <Flex>
                   <Box>
-                    <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
+                    <Button isDisabled={isReconciling} variant="link" icon={<BlueprintIcon />}>
                       View JSON
                     </Button>
                   </Box>

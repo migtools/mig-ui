@@ -24,31 +24,37 @@ import Q from 'q';
 const PlanOperationTotalTries = 6;
 const PlanOperationRetryPeriod = 5;
 const ReconcileTimeouts = 3;
+const ReconcilePollPeriod = 2000;
 
 function* checkPVs(action) {
-  let plan = yield call(getPlan, action.planName);
-  let timedOut;
-  for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true, plan = yield waitForReconcileCycle(plan)) {
-    timedOut = false;
-    const pvSearchStatus = planUtils.getPlanPVsAndCheckConditions(plan);
-    if (pvSearchStatus.success) {
-      yield put(PlanActions.updatePlanList(plan));
-      yield put(PlanActions.setCurrentPlan(plan));
-      yield put(PlanActions.pvFetchSuccess());
-      return 'SUCCESS';
-    } else if (pvSearchStatus.error) {
-      yield put(PlanActions.pvFetchFailure());
-      yield put(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
-      return 'FAILURE';
+  try {
+    let timedOut = false;
+    let plan = yield call(getPlan, action.planName);
+    for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true) {
+      timedOut = false;
+      const pvSearchStatus = planUtils.getPlanPVsAndCheckConditions(plan);
+      if (pvSearchStatus.success) {
+        yield put(PlanActions.updatePlanList(plan));
+        yield put(PlanActions.setCurrentPlan(plan));
+        yield put(PlanActions.pvFetchSuccess());
+        break;
+      } else if (pvSearchStatus.error) {
+        yield put(AlertActions.alertErrorTimeout(pvSearchStatus.errorText));
+        yield put(PlanActions.pvFetchFailure());
+        break;
+      }
+      plan = yield waitForReconcileCycle(plan);
     }
-  }
 
-  // PV discovery timed out, alert and stop polling
-  if (timedOut) {
-    yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+    if (timedOut) {
+      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+    }
+  } catch (err) {
+    yield put(PlanActions.pvFetchFailure());
+    yield put(AlertActions.alertError(err));
+  } finally {
+    yield put(PlanActions.stopPVPolling());
   }
-  yield put(PlanActions.pvFetchSuccess());
-  yield put(PlanActions.stopPVPolling());
 }
 
 function* getPlan(planName) {
@@ -155,28 +161,35 @@ function* planUpdateRetry(action) {
 
 function* checkClosedStatus(action) {
   let timedOut;
-  for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true) {
-    timedOut = false;
-    const closedPlan = yield call(getPlan, action.planName);
+  try {
+    for (let tries = 0; tries < ReconcileTimeouts; tries++ , timedOut = true) {
+      timedOut = false;
+      const closedPlan = yield call(getPlan, action.planName);
 
-    const hasClosedCondition = !closedPlan.status
-      || !closedPlan.status.conditions
-      || !!closedPlan.status.conditions.some(c => c.type === 'Closed');
+      const hasClosedCondition = !closedPlan.status
+        || !closedPlan.status.conditions
+        || !!closedPlan.status.conditions.some(c => c.type === 'Closed');
 
-    if (hasClosedCondition) {
-      yield put(PlanActions.planCloseSuccess());
-      break;
+      if (hasClosedCondition) {
+        yield put(PlanActions.planCloseSuccess());
+        break;
+      }
+
+      yield waitForReconcileCycle(closedPlan);
     }
 
-    yield waitForReconcileCycle(closedPlan);
-  }
+    if (timedOut) {
+      yield put(PlanActions.planCloseFailure('Failed to close plan'));
+      yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+    }
 
-  if (timedOut) {
+  } catch (err) {
     yield put(PlanActions.planCloseFailure('Failed to close plan'));
-    yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
+    yield put(AlertActions.alertError(err));
+  } finally {
+    yield put(PlanActions.stopClosedStatusPolling(action.planName));
   }
 
-  yield put(PlanActions.stopClosedStatusPolling(action.planName));
 }
 
 function* waitForReconcileCycle(plan: IMigPlan) {
@@ -227,7 +240,6 @@ function* checkPlanStatus(action) {
 }
 
 function* planReconcileWatch(plan) {
-  const pollingInterval = 2000;
   const retries = 10;
   const planResourceVersion = plan.planValues.metadata.resourceVersion;
   try {
@@ -236,32 +248,32 @@ function* planReconcileWatch(plan) {
       if (updatedPlan.metadata.resourceVersion !== planResourceVersion) {
         break;
       }
-      yield delay(pollingInterval);
+      yield delay(ReconcilePollPeriod);
     }
   } catch (err) {
     yield put(AlertActions.alertError('Error during plan reconcile' + err));
+  } finally {
+    yield put(PlanActions.stopPlanReconcilePolling());
   }
-  yield put(PlanActions.stopPlanReconcilePolling());
 }
 
 function* planCloseSaga(action) {
+  const updatedValues = {
+    planName: action.planName,
+    planClosed: true,
+  };
   try {
-    const updatedValues = {
-      planName: action.planName,
-      planClosed: true,
-    };
     yield retry(
       PlanOperationTotalTries,
       PlanOperationRetryPeriod * 1000,
       putPlan,
       updatedValues,
     );
-    yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
-  }
-  catch (err) {
+  } catch (err) {
     yield put(PlanActions.planCloseFailure(err));
     yield put(AlertActions.alertErrorTimeout('Plan close request failed'));
-
+  } finally {
+    yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
   }
 }
 

@@ -17,7 +17,6 @@ export interface ICurrentPlanStatus {
 
 export const INITIAL_STATE = {
   isPVError: false,
-  isFetchingPVList: false,
   isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
@@ -61,17 +60,20 @@ export const migPlanFetchSuccess =
     const sortedList = sortPlans(action.migPlanList);
     return { ...state, migPlanList: sortedList, isFetching: false };
   };
+
 export const migPlanFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchFailure>) => {
     return { ...state, isError: true, isFetching: false };
   };
+
 export const pvFetchFailure =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchFailure>) => {
-    return { ...state, isPVError: true, isFetchingPVList: false };
+  (state = INITIAL_STATE, action) => {
+    return { ...state, isPVError: true };
   };
+
 export const pvFetchSuccess =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchSuccess>) => {
-    return { ...state, isPVError: false, isFetchingPVList: false };
+  (state = INITIAL_STATE, action) => {
+    return { ...state, isPVError: false };
   };
 
 export const planReconcilePolling =

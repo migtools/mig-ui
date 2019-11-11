@@ -17,7 +17,6 @@ export interface IOtherProps {
   clusterList: any[];
   planList: any[];
   storageList: any[];
-  isFetchingPVList: boolean;
   isPollingStatus: boolean;
   isPVError: boolean;
   isCheckingPlanStatus: boolean;
@@ -108,7 +107,6 @@ const mapStateToProps = state => {
     isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
-    isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlan(state),

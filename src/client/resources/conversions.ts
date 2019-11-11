@@ -190,11 +190,11 @@ export function updatePlanSourceCluster(migPlan: ReturnType<typeof createMigPlan
 }
 
 export function updatePlanDestinationCluster(migPlan: ReturnType<typeof createMigPlan>, planValues: any): boolean {
-  if (!planValues.destinationCluster || planValues.destinationCluster === migPlan.spec.destMigClusterRef.name) {
+  if (!planValues.targetCluster || planValues.targetCluster === migPlan.spec.destMigClusterRef.name) {
     return false;
   }
 
-  migPlan.spec.destMigClusterRef.name = planValues.destinationCluster;
+  migPlan.spec.destMigClusterRef.name = planValues.targetCluster;
 
   return true;
 }

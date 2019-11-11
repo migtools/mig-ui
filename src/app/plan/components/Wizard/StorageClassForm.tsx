@@ -9,7 +9,7 @@ import {
 } from '@patternfly/react-core';
 import StorageClassTable from './StorageClassTable';
 const StorageClassForm = props => {
-  const { setFieldValue, values, currentPlan, clusterList, isFetchingPVList, isReconciling } = props;
+  const { setFieldValue, values, currentPlan, clusterList, isReconciling } = props;
   return (
     <Grid gutter="md">
       <GridItem>
@@ -21,7 +21,6 @@ const StorageClassForm = props => {
       </GridItem>
       <GridItem>
         <StorageClassTable
-          isFetchingPVList={isFetchingPVList}
           isReconciling={isReconciling}
           setFieldValue={setFieldValue}
           values={values}
