@@ -36,8 +36,33 @@ export function createMigCluster(
   name: string,
   namespace: string,
   clusterUrl: string,
-  tokenSecret: any
+  tokenSecret: any,
+  isAzure: boolean,
+  azureResourceGroup: string
 ) {
+  let specObject;
+  if (isAzure) {
+    specObject = {
+      azureResourceGroup,
+      isHostCluster: false,
+      url: clusterUrl,
+      serviceAccountSecretRef: {
+        name: tokenSecret.metadata.name,
+        namespace: tokenSecret.metadata.namespace,
+      },
+    };
+  } else {
+    specObject = {
+      isHostCluster: false,
+      url: clusterUrl,
+      serviceAccountSecretRef: {
+        name: tokenSecret.metadata.name,
+        namespace: tokenSecret.metadata.namespace,
+      },
+    };
+  }
+
+
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigCluster',
@@ -45,14 +70,7 @@ export function createMigCluster(
       name,
       namespace,
     },
-    spec: {
-      isHostCluster: false,
-      url: clusterUrl,
-      serviceAccountSecretRef: {
-        name: tokenSecret.metadata.name,
-        namespace: tokenSecret.metadata.namespace,
-      },
-    },
+    spec: specObject,
   };
 }
 
