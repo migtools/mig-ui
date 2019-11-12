@@ -27,7 +27,8 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
   const gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
-  // const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.gcp;
+  const azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+  const azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
 
   const accessKey =
     typeof storage.Secret === 'undefined'
@@ -47,6 +48,12 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       ? null
       : storage.Secret.data['gcp-credentials']
         ? atob(storage.Secret.data['gcp-credentials'])
+        : '';
+  const azureBlob =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['azure-credentials']
+        ? atob(storage.Secret.data['azure-credentials'])
         : '';
 
   let storageStatus = null;
@@ -150,7 +157,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
             initialStorageValues={{
-              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider, gcpBucket, gcpBlob
+              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider, gcpBucket, gcpBlob, azureResourceGroup, azureStorageAccount, azureBlob
             }}
           />
           <ConfirmModal

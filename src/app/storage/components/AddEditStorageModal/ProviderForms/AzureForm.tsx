@@ -8,11 +8,8 @@ import {
     Tooltip,
     TooltipPosition,
     TextArea,
-    Checkbox
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
-import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../common/components/HideWrapper';
 import {
     AddEditMode,
     addEditStatusText,
@@ -24,8 +21,6 @@ import ConnectionStatusLabel from '../../../../common/components/ConnectionStatu
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
-import storageUtils from '../../../duck/utils';
-import commonUtils from '../../../../common/duck/utils';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -76,7 +71,6 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         errors,
         handleChange,
         setFieldTouched,
-        setFieldValue,
         onClose,
         handleSubmit,
         handleBlur
@@ -86,13 +80,6 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     const azureResourceGroupKey = 'azureResourceGroup';
     const azureStorageAccountKey = 'azureStorageAccount';
     const azureBlobKey = 'azureBlob';
-
-    const handleBlobHiddenToggle = e => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsBlobHidden(!isBlobHidden);
-    };
-    const [isBlobHidden, setIsBlobHidden] = useState(true);
 
     const formikHandleChange = (_val, e) => handleChange(e);
     const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
@@ -143,16 +130,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                 )}
             </FormGroup>
             <FormGroup label="Azure credential JSON blob" isRequired fieldId={azureBlobKey}>
-                <HideWrapper onClick={handleBlobHiddenToggle}>
-                    <KeyDisplayIcon id="azureBlobIcon" isHidden={isBlobHidden} />
-                </HideWrapper>
                 <TextArea
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureBlobKey)}
                     onBlur={handleBlur}
                     value={values.azureBlob}
                     name={azureBlobKey}
-                    type={isBlobHidden ? 'password' : 'text'}
+                    type='text'
                     id="storage-blob-input"
                 />
                 {errors.azureBlob && touched.azureBlob && (
@@ -258,11 +242,6 @@ const AzureForm: any = withFormik({
         if (!values.azureStorageAccount) {
             errors.azureStorageAccount = 'Required';
         }
-
-        // const gcpBucketNameError = storageUtils.testS3Name(values.gcpBucket);
-        // if (gcpBucketNameError !== '') {
-        //     errors.gcpBucket = gcpBucketNameError;
-        // }
 
         if (!values.azureBlob) {
             errors.azureBlop = 'Required';
