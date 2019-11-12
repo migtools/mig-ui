@@ -192,22 +192,46 @@ export function createMigStorage(
 }
 
 export function updateMigStorage(
+  bslProvider: string,
   bucketName: string,
   bucketRegion: string,
   s3Url: string,
+  gcpBucket: string,
+  azureResourceGroup: string,
+  azureStorageAccount: string
 ) {
-  return {
-    spec: {
-      backupStorageConfig: {
-        awsBucketName: bucketName,
-        awsRegion: bucketRegion,
-        awsS3Url: s3Url,
-      },
-      volumeSnapshotConfig: {
-        awsRegion: bucketRegion,
-      },
-    },
-  };
+  switch (bslProvider) {
+    case 'aws':
+      return {
+        spec: {
+          backupStorageConfig: {
+            awsBucketName: bucketName,
+            awsRegion: bucketRegion,
+            awsS3Url: s3Url,
+          },
+          volumeSnapshotConfig: {
+            awsRegion: bucketRegion,
+          },
+        },
+      };
+    case 'gcp':
+      return {
+        spec: {
+          backupStorageConfig: {
+            gcpBucket: gcpBucket
+          },
+        },
+      };
+    case 'azure':
+      return {
+        spec: {
+          backupStorageConfig: {
+            azureResourceGroup,
+            azureStorageAccount
+          },
+        },
+      };
+  }
 }
 
 export function createStorageSecret(
@@ -272,16 +296,40 @@ export function createStorageSecret(
   // btoa => to base64, atob => from base64
 }
 
-export function updateStorageSecret(secretKey: any, accessKey: string) {
-  // btoa => to base64, atob => from base64
-  const encodedAccessKey = btoa(accessKey);
-  const encodedSecretKey = btoa(secretKey);
-  return {
-    data: {
-      'aws-access-key-id': encodedAccessKey,
-      'aws-secret-access-key': encodedSecretKey,
-    },
-  };
+export function updateStorageSecret(
+  bslProvider: string,
+  secretKey: any,
+  accessKey: string,
+  gcpBlob: any,
+  azureBlob: any
+) {
+  switch (bslProvider) {
+    case 'aws':
+
+      // btoa => to base64, atob => from base64
+      const encodedAccessKey = btoa(accessKey);
+      const encodedSecretKey = btoa(secretKey);
+      return {
+        data: {
+          'aws-access-key-id': encodedAccessKey,
+          'aws-secret-access-key': encodedSecretKey,
+        },
+      };
+    case 'gcp':
+      const gcpCred = btoa(gcpBlob);
+      return {
+        data: {
+          'gcp-credentials': gcpCred
+        },
+      };
+    case 'azure':
+      const azureCred = btoa(azureBlob);
+      return {
+        data: {
+          'azure-credentials': azureCred
+        },
+      }
+  }
 }
 
 export function createMigPlan(
