@@ -225,7 +225,7 @@ function* updateStorageRequest(action) {
     gcpBucketNameUpdated ||
     //Azure 
     azureResourceGroupUpdated ||
-    azureStorageAccountUpdated
+    azureStorageAccountUpdated;
 
 
   // Check to see if any fields on the kube secret were updated

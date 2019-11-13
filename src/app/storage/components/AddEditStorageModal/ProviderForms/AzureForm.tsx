@@ -136,7 +136,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     onBlur={handleBlur}
                     value={values.azureBlob}
                     name={azureBlobKey}
-                    type='text'
+                    type="text"
                     id="storage-blob-input"
                 />
                 {errors.azureBlob && touched.azureBlob && (

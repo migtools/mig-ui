@@ -218,7 +218,7 @@ export function updateMigStorage(
       return {
         spec: {
           backupStorageConfig: {
-            gcpBucket: gcpBucket
+            gcpBucket
           },
         },
       };
@@ -331,7 +331,7 @@ export function updateStorageSecret(
         data: {
           'azure-credentials': azureCred
         },
-      }
+      };
   }
 }
 

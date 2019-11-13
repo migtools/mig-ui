@@ -157,7 +157,18 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
             initialStorageValues={{
-              name, awsBucketName, awsBucketRegion, accessKey, secret, s3Url, provider, gcpBucket, gcpBlob, azureResourceGroup, azureStorageAccount, azureBlob
+              name,
+              awsBucketName,
+              awsBucketRegion,
+              accessKey,
+              secret,
+              s3Url,
+              provider,
+              gcpBucket,
+              gcpBlob,
+              azureResourceGroup,
+              azureStorageAccount,
+              azureBlob
             }}
           />
           <ConfirmModal
