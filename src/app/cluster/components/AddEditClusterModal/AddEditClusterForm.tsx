@@ -122,7 +122,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="Is this an azure cluster?" isRequired fieldId={tokenKey}>
+      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
         <Checkbox
           label="Azure cluster"
           aria-label="Azure cluster"
@@ -137,7 +137,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         )}
       </FormGroup>
       {values.isAzure &&
-        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
+        <FormGroup label="Azure resource group" fieldId={azureResourceGroupKey}>
           <TextInput
             value={values.azureResourceGroup}
             onChange={formikHandleChange}
@@ -147,8 +147,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             id="token-input"
             type="text"
           />
-          {errors.isAzure && touched.isAzure && (
-            <FormErrorDiv id="feedback-token">{errors.isAzure}</FormErrorDiv>
+          {errors.azureResourceGroup && touched.azureResourceGroup && (
+            <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
           )}
         </FormGroup>
 
@@ -229,7 +229,7 @@ const AddEditClusterForm: any = withFormik({
       name: '',
       url: '',
       token: '',
-      isAzure: null,
+      isAzure: false,
       azureResourceGroup: ''
     };
 
@@ -237,7 +237,7 @@ const AddEditClusterForm: any = withFormik({
       values.name = initialClusterValues.clusterName || '';
       values.url = initialClusterValues.clusterUrl || '';
       values.token = initialClusterValues.clusterSvcToken || '';
-      values.isAzure = initialClusterValues.isAzure || null;
+      values.isAzure = initialClusterValues.isAzure || false;
       values.azureResourceGroup = initialClusterValues.azureResourceGroup || null;
     }
 
@@ -263,9 +263,9 @@ const AddEditClusterForm: any = withFormik({
       errors.token = 'Required';
     }
 
-    if (!values.isAzure) {
-      errors.isAzure = 'Required';
-    }
+    // if (!values.isAzure) {
+    //   errors.isAzure = 'Required';
+    // }
 
     // if (!values.azureResourceGroup) {
     //   errors.azureResourceGroupi = 'Required';
