@@ -186,12 +186,12 @@ function* updateStorageRequest(action) {
   const currentBucketName =
     currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
 
-  const bucketNameUpdated = storageValues.bucketName !== currentBucketName;
+  const bucketNameUpdated = storageValues.awsBucketName !== currentBucketName;
 
   const currentRegion =
     currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
 
-  const regionUpdated = storageValues.bucketRegion !== currentRegion;
+  const regionUpdated = storageValues.awsBucketRegion !== currentRegion;
 
   const currentS3Url =
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
@@ -231,13 +231,13 @@ function* updateStorageRequest(action) {
   // Check to see if any fields on the kube secret were updated
   // NOTE: Need to decode the b64 token off a k8s secret
   //AW S
-  let currentAccessKey = null;
+  let currentAccessKey;
   if (currentStorage.Secret.data[accessKeyIdSecretField]) {
     currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
   }
   const accessKeyUpdated = storageValues.accessKey !== currentAccessKey;
 
-  let currentSecret = null;
+  let currentSecret;
   if (currentStorage.Secret.data[secretAccessKeySecretField]) {
     currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
   }
@@ -245,7 +245,7 @@ function* updateStorageRequest(action) {
   const secretUpdated = storageValues.secret !== currentSecret;
   //
   //GCP
-  let currentGCPBlob = null;
+  let currentGCPBlob;
   if (currentStorage.Secret.data['gcp-credentials']) {
     currentGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
   }
@@ -253,7 +253,7 @@ function* updateStorageRequest(action) {
   const gcpBlobUpdated = storageValues.gcpBlob !== currentGCPBlob;
   //
   // AZURE
-  let currentAzureBlob = null;
+  let currentAzureBlob;
   if (currentStorage.Secret.data['azure-credentials']) {
     currentAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
   }
@@ -271,8 +271,8 @@ function* updateStorageRequest(action) {
   if (migStorageUpdated) {
     const updatedMigStorage = updateMigStorage(
       storageValues.bslProvider,
-      storageValues.bucketName,
-      storageValues.bucketRegion,
+      storageValues.awsBucketName,
+      storageValues.awsBucketRegion,
       storageValues.s3Url,
       storageValues.gcpBucket,
       storageValues.azureResourceGroup,
