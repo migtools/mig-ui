@@ -229,6 +229,9 @@ export function updateMigStorage(
             azureResourceGroup,
             azureStorageAccount
           },
+          volumeSnapshotConfig: {
+            azureResourceGroup,
+          },
         },
       };
   }
