@@ -15,16 +15,16 @@ import {
 
 const AddEditStorageModal = ({
   addEditStatus,
-  initialStorageValues,
   isOpen,
   isPolling,
   storageList,
   checkConnection,
+  currentStorage,
   ...props
 }) => {
+
+
   const pollingContext = useContext(PollingContext);
-  const [currentStorageName, setCurrentStorageName] =
-    useState(initialStorageValues ? initialStorageValues.name : null);
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
@@ -34,7 +34,6 @@ const AddEditStorageModal = ({
       }
       case AddEditMode.Add: {
         props.addStorage(storageValues);
-        setCurrentStorageName(storageValues.name);
         break;
       }
       default: {
@@ -53,7 +52,6 @@ const AddEditStorageModal = ({
   const onClose = () => {
     props.cancelAddEditWatch();
     props.resetAddEditState();
-    setCurrentStorageName(null);
     props.onHandleClose();
     pollingContext.startAllDefaultPolling();
   };
@@ -62,17 +60,19 @@ const AddEditStorageModal = ({
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
     'Edit repository' : 'Add repository';
 
-  const currentStorage = storageList.find(s => {
-    return s.MigStorage.metadata.name === currentStorageName;
-  });
+  // if (currentStorage) {
+  //   const testVar = storageList.find(s => {
+  //     return s.MigStorage.metadata.name === currentStorage.MigStorage.metadata.name;
+  //   });
+  //   console.log('testVar', testVar)
 
+  // }
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="storage-modal-modifier">
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
         addEditStatus={addEditStatus}
-        initialStorageValues={initialStorageValues}
         currentStorage={currentStorage}
         checkConnection={checkConnection}
       />

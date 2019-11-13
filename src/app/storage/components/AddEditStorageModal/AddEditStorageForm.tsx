@@ -12,12 +12,47 @@ interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
-  initialStorageValues: any;
   checkConnection: (name) => void;
   currentStorage: any;
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
+  const { currentStorage: storage } = props;
+  const name = storage.MigStorage.metadata.name;
+  const provider = storage.MigStorage.spec.backupStorageProvider;
+  const awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
+  const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
+  const gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
+  const azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+  const azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+
+  const accessKey =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['aws-access-key-id']
+        ? atob(storage.Secret.data['aws-access-key-id'])
+        : '';
+  const secret =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['aws-secret-access-key']
+        ? atob(storage.Secret.data['aws-secret-access-key'])
+        : '';
+
+  const gcpBlob =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['gcp-credentials']
+        ? atob(storage.Secret.data['gcp-credentials'])
+        : '';
+  const azureBlob =
+    typeof storage.Secret === 'undefined'
+      ? null
+      : storage.Secret.data['azure-credentials']
+        ? atob(storage.Secret.data['azure-credentials'])
+        : '';
+
   const DynamicForm = ({ provider }) => {
     if (provider === null) {
       return (
@@ -30,11 +65,39 @@ const AddEditStorageForm = (props: IOtherProps) => {
     } else {
       switch (provider.value) {
         case 'aws':
-          return <AWSForm provider={provider.value} {...props} />;
+          return <AWSForm provider={provider.value}
+            initialStorageValues={
+              {
+                name,
+                awsBucketName,
+                awsBucketRegion,
+                accessKey,
+                secret,
+                s3Url
+              }
+            }
+            {...props} />;
         case 'gcp':
-          return <GCPForm provider={provider.value} {...props} />;
+          return <GCPForm provider={provider.value}
+            initialStorageValues={
+              {
+                name,
+                gcpBucket,
+                gcpBlob
+              }
+            }
+            {...props} />;
         case 'azure':
-          return <AzureForm provider={provider.value} {...props} />;
+          return <AzureForm provider={provider.value}
+            initialStorageValues={
+              {
+                name,
+                azureResourceGroup,
+                azureStorageAccount,
+                azureBlob
+              }
+            }
+            {...props} />;
         default:
           return null;
       }
@@ -42,9 +105,9 @@ const AddEditStorageForm = (props: IOtherProps) => {
   };
 
   const [selectedProvider, setSelectedProvider] = useState(
-    (props.initialStorageValues && props.initialStorageValues.provider) ? {
-      label: props.initialStorageValues.provider,
-      value: props.initialStorageValues.provider
+    (storage && provider) ? {
+      label: provider,
+      value: provider
     } : null
   );
   const [providerOptions, setproviderOptions] = useState([
@@ -80,7 +143,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
           onChange={handleProviderChange}
           options={providerOptions}
           value={selectedProvider}
-          isDisabled={(props.initialStorageValues && props.initialStorageValues.provider) !== (null || undefined)}
+          isDisabled={(storage && provider) !== (null || undefined)}
         />
       </Box>
       <DynamicForm provider={selectedProvider} {...props} />

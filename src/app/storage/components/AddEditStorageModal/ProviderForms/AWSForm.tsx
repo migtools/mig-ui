@@ -290,7 +290,7 @@ const AWSForm: any = withFormik({
             values.accessKey = initialStorageValues.accessKey || '';
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
-            values.bslProvider = initialStorageValues.bslProvider || provider;
+            // values.bslProvider = provider;
         }
 
         return values;

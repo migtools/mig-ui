@@ -22,39 +22,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const [isAddEditModalOpen, toggleIsAddEditModalOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
   const name = storage.MigStorage.metadata.name;
-  const provider = storage.MigStorage.spec.backupStorageProvider;
-  const awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
-  const gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
-  const azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
-  const azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
-
-  const accessKey =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-access-key-id']
-        ? atob(storage.Secret.data['aws-access-key-id'])
-        : '';
-  const secret =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-secret-access-key']
-        ? atob(storage.Secret.data['aws-secret-access-key'])
-        : '';
-
-  const gcpBlob =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['gcp-credentials']
-        ? atob(storage.Secret.data['gcp-credentials'])
-        : '';
-  const azureBlob =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['azure-credentials']
-        ? atob(storage.Secret.data['azure-credentials'])
-        : '';
 
   let storageStatus = null;
   if (storage.MigStorage.status) {
@@ -156,20 +124,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           <AddEditStorageModal
             isOpen={isAddEditModalOpen}
             onHandleClose={toggleIsAddEditModalOpen}
-            initialStorageValues={{
-              name,
-              awsBucketName,
-              awsBucketRegion,
-              accessKey,
-              secret,
-              s3Url,
-              provider,
-              gcpBucket,
-              gcpBlob,
-              azureResourceGroup,
-              azureStorageAccount,
-              azureBlob
-            }}
+            currentStorage={storage}
           />
           <ConfirmModal
             message={removeMessage}
