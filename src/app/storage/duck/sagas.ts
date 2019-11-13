@@ -182,7 +182,6 @@ function* updateStorageRequest(action) {
   });
 
   // Check to see if any fields on the MigStorage were updated
-
   //AWS
   const currentBucketName =
     currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
@@ -231,22 +230,33 @@ function* updateStorageRequest(action) {
 
   // Check to see if any fields on the kube secret were updated
   // NOTE: Need to decode the b64 token off a k8s secret
-  //AWS
-  const currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
-
+  //AW S
+  let currentAccessKey = null;
+  if (currentStorage.Secret.data[accessKeyIdSecretField]) {
+    currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
+  }
   const accessKeyUpdated = storageValues.accessKey !== currentAccessKey;
 
-  const currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
+  let currentSecret = null;
+  if (currentStorage.Secret.data[secretAccessKeySecretField]) {
+    currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
+  }
 
   const secretUpdated = storageValues.secret !== currentSecret;
   //
   //GCP
-  const currentGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+  let currentGCPBlob = null;
+  if (currentStorage.Secret.data['gcp-credentials']) {
+    currentGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+  }
 
   const gcpBlobUpdated = storageValues.gcpBlob !== currentGCPBlob;
   //
   // AZURE
-  const currentAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+  let currentAzureBlob = null;
+  if (currentStorage.Secret.data['azure-credentials']) {
+    currentAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+  }
   const azureBlobUpdated = storageValues.azureBlob !== currentAzureBlob;
   //
 
