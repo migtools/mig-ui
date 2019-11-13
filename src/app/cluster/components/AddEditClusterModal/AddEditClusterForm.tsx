@@ -262,13 +262,13 @@ const AddEditClusterForm: any = withFormik({
     if (!values.token) {
       errors.token = 'Required';
     }
-    //TODO: resource group required if azure cluster is checkedf
+    //TODO: resource group required if azure cluster is checked
 
     // if (!values.isAzure) {
     //   errors.isAzure = 'Required';
     // }
 
-    // if (!values.azureResourceGroup) {:w
+    // if (!values.azureResourceGroup) {
 
     //   errors.azureResourceGroupi = 'Required';
     // }
