@@ -38,7 +38,6 @@ const valuesHaveUpdate = (values, currentStorage) => {
     const existingMigStorageName = currentStorage.MigStorage.metadata.name;
     const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
     const existingGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
-    // const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
 
     const valuesUpdatedObject =
         values.name !== existingMigStorageName ||
@@ -196,14 +195,6 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     );
 };
-
-
-// valuesHaveUpdate - returns true if the formik values hold values that differ
-// from a matching existing repository. This is different from props.dirty, which returns
-// true when the form values differ from the initial values. It's possible to have
-// a storage object exist, but have no initial values (user adds new storage, then updates
-// while keeping the modal open). props.dirty is not sufficient for this case.
-
 
 const GCPForm: any = withFormik({
     mapPropsToValues: ({ initialStorageValues, provider }) => {
