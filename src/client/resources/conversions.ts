@@ -182,7 +182,6 @@ export function createMigStorage(
               name: tokenSecret.metadata.name,
               namespace: tokenSecret.metadata.namespace,
             },
-            volumeSnapshotProvider: 'azure'
           },
         },
       };
