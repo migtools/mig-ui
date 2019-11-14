@@ -1,22 +1,21 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState } from 'react';
+import React from 'react';
 import {
+  Bullseye,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
-  Title
+  EmptyState,
+  Title,
 } from '@patternfly/react-core';
-import theme from '../../../../theme';
-import Loader from 'react-loader-spinner';
 import CardStatus from './Status/CardStatus';
 import MigrationStatus from './Status/MigrationStatus';
 import CardFooterText from './CardFooterText';
 import HeaderText from './HeaderText';
-import { css } from '@emotion/core';
-import { Flex, Box, Text } from '@rebass/emotion';
 import StatusIcon from '../../../common/components/StatusIcon';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   title: string;
@@ -25,6 +24,7 @@ interface IProps {
   type?: string;
   isError: boolean;
   planStatusCounts?: any;
+  loadingTitle: string;
   expandDetails?: (string) => void;
 }
 
@@ -35,29 +35,30 @@ const DashboardCard: React.FunctionComponent<IProps> = (
     type,
     isError,
     planStatusCounts,
-    expandDetails
+    expandDetails,
+    loadingTitle,
   }
 ) => {
   if (isError) {
     return (
-      <Card style={{ minHeight: '100%', height: '16em' }}>
+      <Card>
         <div className="pf-l-flex">
           <div className="pf-l-flex__item">
             <StatusIcon isReady={false} />
           </div>
           <div className="pf-l-flex__item">
             Failed to fetch
-            </div>
+          </div>
         </div>
       </Card>
     );
   }
   return (
-    <Card style={{ minHeight: '100%', height: '16em' }}>
+    <Card>
       {dataList && !isFetching ? (
         <React.Fragment>
           <CardHeader>
-            <Title size="md">
+            <Title size="xl" headingLevel="h2">
               <HeaderText type={type} dataList={dataList} />
             </Title>
           </CardHeader>
@@ -73,18 +74,18 @@ const DashboardCard: React.FunctionComponent<IProps> = (
           </CardFooter>
         </React.Fragment>
       ) : (
-          <Flex
-            css={css`
-              height: 100%;
-              text-align: center;
-              margin: auto;
-            `}
-          >
-            <Box flex="1" m="auto">
-              <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-              <Text fontSize={[2, 3, 4]}> Loading </Text>
-            </Box>
-          </Flex>
+          <CardBody>
+            <Bullseye>
+              <EmptyState variant="small">
+                <div className="pf-c-empty-state__icon">
+                  <Spinner size="xl" />
+                </div>
+                <Title headingLevel="h2" size="xl">
+                  {loadingTitle}
+                </Title>
+              </EmptyState>
+            </Bullseye>
+          </CardBody>
         )}
     </Card>
   );

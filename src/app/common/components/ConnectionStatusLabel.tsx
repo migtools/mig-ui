@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import styled from '@emotion/styled';
-import Loader from 'react-loader-spinner';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -10,6 +9,8 @@ import {
 import theme from '../../../theme';
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+
 
 interface IProps {
   status: any;
@@ -26,7 +27,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       }
       case AddEditState.Fetching: {
         const WrappedLoader = () => (
-          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />
+          <Spinner size="md" />
         );
 
         return styled(WrappedLoader)`
@@ -53,7 +54,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       }
       case AddEditState.Watching: {
         const WrappedLoader = () => (
-          <Loader type="RevolvingDot" color={theme.colors.medGray3} height="1em" width="1em" />
+          <Spinner size="md" />
         );
 
         return styled(WrappedLoader)`

@@ -1,17 +1,22 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
-import { Table, TableHeader, TableBody, sortable, SortByDirection } from '@patternfly/react-table';
-import { EmptyState, ProgressVariant } from '@patternfly/react-core';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  cellWidth
+} from '@patternfly/react-table';
+import {
+  Bullseye,
+  EmptyState,
+  Title,
+  Progress,
+  ProgressSize,
+  ProgressVariant
+} from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import { Flex, Box } from '@rebass/emotion';
-import styled from '@emotion/styled';
-import { css } from '@emotion/core';
-import moment from 'moment';
-import { MigrationIcon } from '@patternfly/react-icons';
-import { Progress, ProgressSize } from '@patternfly/react-core';
-import Loader from 'react-loader-spinner';
-import theme from '../../../../../theme';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {
   migrations: any[];
@@ -21,35 +26,26 @@ interface IProps {
 }
 const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked }) => {
   const [currentRows, setCurrentRows] = useState([]);
+
   const columns = [
     { title: 'Type' },
     { title: 'Start Time' },
     { title: 'End Time' },
     'PVs Moved',
     'PVs Copied',
-    'Status',
+    {
+      title: 'Status',
+      transforms: [cellWidth('30')]
+    },
   ];
 
   useEffect(() => {
     const mappedRows = migrations.map((migration, migrationIndex) => {
-      const StyledBox = styled(Box)`
-          position: absolute;
-          left: 40px;
-        `;
       const type = migration.spec.stage ? 'Stage' : 'Migration';
       const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
         (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
       const rowCells = [
-        {
-          title: (
-            <Flex>
-              <StyledBox>
-                <StatusIcon isReady={!migration.tableStatus.isFailed} />
-              </StyledBox>
-              <Box>{type}</Box>
-            </Flex>
-          ),
-        },
+        { title: type },
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
         { title: migration.tableStatus.moved },
@@ -81,16 +77,17 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
 
   if (isPlanLocked) {
     return (
-      <Flex>
-        <Box flex="1" m="auto"
-          css={css`
-            height: 100%;
-            text-align: center;
-          `}
-        >
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-        </Box>
-      </Flex>
+      <Bullseye>
+        <EmptyState variant="small">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+
+          {/* <Title headingLevel="h2" size="xl">
+          TODO: ** need to evaluate what text to show here **
+          </Title> */}
+        </EmptyState>
+      </Bullseye>
     );
   }
 
@@ -99,15 +96,21 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       {migrations.length > 0 ? (
         <Table
           aria-label="migrations-history-table"
-          //@ts-ignore
           cells={columns}
           rows={currentRows}
+          className="pf-m-vertical-align-content-center"
         >
           <TableHeader />
           <TableBody />
         </Table>
       ) : (
-          <EmptyState variant="full">No migrations started</EmptyState>
+          <Bullseye>
+            <EmptyState variant="small">
+              <Title headingLevel="h2" size="xl">
+                No migrations started
+            </Title>
+            </EmptyState>
+          </Bullseye>
         )}
     </React.Fragment>
   );

@@ -1,20 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
+  DataListAction,
   DataListItem,
   DataListCell,
   DataListItemCells,
   DataListItemRow,
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import { LinkIcon } from '@patternfly/react-icons';
 import { useOpenModal } from '../../../duck/hooks';
 import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { ClusterContext } from '../../../duck/context';
 
 const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }) => {
+  let clusterIsAzure = null;
+  if (cluster.MigCluster.spec.azureResourceGroup) {
+    clusterIsAzure = true;
+  }
   const clusterName = cluster.MigCluster.metadata.name;
   let clusterStatus = null;
   if (cluster.MigCluster.status) {
@@ -55,6 +63,31 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
     toggleIsAddEditOpen();
   };
 
+  const [kebabIsOpen, setKebabIsOpen] = useState(false);
+
+  const kebabDropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        editCluster();
+      }}
+      isDisabled={isHostCluster}
+      key="editCluster"
+    >
+      Edit
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      isDisabled={isHostCluster}
+      key="removeCluster"
+    >
+      Remove
+  </DropdownItem>,
+  ];
+
   return (
     <DataListItem key={clusterIndex} aria-labelledby="cluster-item">
       <DataListItemRow>
@@ -63,14 +96,11 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             <DataListCell key="name" width={1}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <StatusIcon isReady={clusterStatus} />
-                </div>
-                <div className="pf-l-flex__item">
                   <span id="cluster-name">{clusterName}</span>
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="url" width={2}>
+            <DataListCell key="url" width={3}>
               <a target="_blank" href={clusterUrl}>
                 {clusterUrl}
               </a>
@@ -78,51 +108,50 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             <DataListCell key="count" width={2}>
               <div className="pf-l-flex">
                 <div className="pf-l-flex__item">
-                  <span className="pf-c-icon">
-                    <LinkIcon />
-                  </span>
-                </div>
-                <div className="pf-l-flex__item">
                   {associatedPlanCount} associated migration {planText}
                 </div>
               </div>
             </DataListCell>,
-            <DataListCell key="actions" width={2}>
-              <Flex justifyContent="flex-end">
-                <Box mx={1}>
-                  <Button
-                    onClick={editCluster}
-                    variant="secondary"
-                    isDisabled={isHostCluster}
-                  >
-                    Edit
-                  </Button>
-                  <AddEditClusterModal
-                    isOpen={isAddEditOpen}
-                    onHandleClose={toggleIsAddEditOpen}
-                    initialClusterValues={{clusterName, clusterUrl, clusterSvcToken}}
-                  />
-                </Box>
-                <Box mx={1}>
-                  <Button
-                    onClick={toggleConfirmOpen}
-                    variant="danger"
-                    isDisabled={isHostCluster}
-                    key="remove-action"
-                  >
-                    Remove
-                  </Button>
-                  <ConfirmModal
-                    message={removeMessage}
-                    isOpen={isConfirmOpen}
-                    onHandleClose={handleRemoveCluster}
-                    id="confirm-cluster-removal"
-                  />
-                </Box>
-              </Flex>
+            <DataListCell key="connection" width={1}>
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
+                  <StatusIcon isReady={clusterStatus} />
+                </div>
+                <div className="pf-l-flex__item">
+                  <span id="cluster-status-text">{clusterStatus ? `Connected` : `Connection Failed`}</span>
+                </div>
+              </div>
             </DataListCell>,
+
           ]}
-        />
+        />,
+        <DataListAction
+          aria-labelledby="cluster-item cluster-item-actions-dropdown"
+          id="cluster-item-actions-dropdown"
+          aria-label="Actions"
+        >
+          <Dropdown
+            toggle={<KebabToggle
+              onToggle={() => setKebabIsOpen(!kebabIsOpen)}
+            />}
+            isOpen={kebabIsOpen}
+            isPlain
+            dropdownItems={kebabDropdownItems}
+            position={DropdownPosition.right}
+          />
+
+          <AddEditClusterModal
+            isOpen={isAddEditOpen}
+            onHandleClose={toggleIsAddEditOpen}
+            initialClusterValues={{ clusterName, clusterUrl, clusterSvcToken, clusterIsAzure }}
+          />
+          <ConfirmModal
+            message={removeMessage}
+            isOpen={isConfirmOpen}
+            onHandleClose={handleRemoveCluster}
+            id="confirm-cluster-removal"
+          />
+        </DataListAction>,
       </DataListItemRow>
     </DataListItem>
   );

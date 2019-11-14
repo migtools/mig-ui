@@ -12,11 +12,11 @@ const HeaderText = ({ type, dataList, ...props }) => {
       ? `${dataList.length} Migration Plan`
       : `${dataList.length} Migration Plans`;
   return (
-    <span>
+    <React.Fragment>
       {type === 'clusters' && clusterText}
       {type === 'repositories' && storageText}
       {type === 'plans' && planText}
-    </span>
+    </React.Fragment>
   );
 };
 

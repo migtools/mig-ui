@@ -3,11 +3,18 @@ import { jsx } from '@emotion/core';
 import { useState, useEffect } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import theme from '../../../../theme';
-import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
+import {
+  Bullseye,
+  EmptyState,
+  Form,
+  FormGroup,
+  Grid,
+  GridItem,
+  Title,
+} from '@patternfly/react-core';
 import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
-import Loader from 'react-loader-spinner';
-import { css } from '@emotion/core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
@@ -39,7 +46,9 @@ const ResourceSelectForm = props => {
       const targetOptions = [];
       const clusterLen = clusterList.length;
       for (let i = 0; i < clusterLen; i++) {
-        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster) {
+        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
+        ) {
           targetOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
             value: clusterList[i].MigCluster.metadata.name,
@@ -48,6 +57,7 @@ const ResourceSelectForm = props => {
         if (
           !clusterList[i].MigCluster.spec.isHostCluster &&
           clusterList[i].MigCluster.metadata.name !== values.targetCluster
+          && clusterList[i].ClusterStatus.hasReadyCondition
         ) {
           sourceOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -90,10 +100,14 @@ const ResourceSelectForm = props => {
     const newStorageOptions = [];
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
-      newStorageOptions.push({
-        label: storageList[i].MigStorage.metadata.name,
-        value: storageList[i].MigStorage.metadata.name,
-      });
+      if (
+        storageList[i].StorageStatus.hasReadyCondition
+      ) {
+        newStorageOptions.push({
+          label: storageList[i].MigStorage.metadata.name,
+          value: storageList[i].MigStorage.metadata.name,
+        });
+      }
     }
     setStorageOptions(newStorageOptions);
 
@@ -141,81 +155,87 @@ const ResourceSelectForm = props => {
     setFieldTouched('targetCluster');
   };
   return (
-    <Box>
-      <Flex>
-        <Box>
-          <TextContent>
-            <TextList component="dl">
-              <TextListItem component="dt">Source Cluster</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="sourceCluster"
-                onChange={handleSourceChange}
-                options={srcClusterOptions}
-                value={selectedSrcCluster}
-              />
-              {errors.sourceCluster && touched.sourceCluster && (
-                <div id="feedback">{errors.sourceCluster}</div>
-              )}
-              <TextListItem component="dt">Target Cluster</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="targetCluster"
-                onChange={handleTargetChange}
-                options={targetClusterOptions}
-                value={selectedTargetCluster}
-              />
-              {errors.targetCluster && touched.targetCluster && (
-                <div id="feedback">{errors.targetCluster}</div>
-              )}
-            </TextList>
-          </TextContent>
-        </Box>
-        <Box mx="3em">
-          <TextContent>
-            <TextList component="dl">
-              <TextListItem component="dt">Replication Repository</TextListItem>
-              <Select
-                css={css`
-                  width: 20em;
-                `}
-                name="selectedStorage"
-                onChange={handleStorageChange}
-                options={storageOptions}
-                value={selectedStorage}
-              />
-              {errors.selectedStorage && touched.selectedStorage && (
-                <div id="feedback">{errors.selectedStorage}</div>
-              )}
-            </TextList>
-          </TextContent>
-        </Box>
-      </Flex>
+    <Grid gutter="md">
+      <GridItem>
+        <Form>
+          <Grid md={6} gutter="md">
+            <GridItem>
+              <FormGroup
+                label="Source Cluster"
+                isRequired
+                fieldId="sourceCluster"
+              >
+                <Select
+                  name="sourceCluster"
+                  onChange={handleSourceChange}
+                  options={srcClusterOptions}
+                  value={selectedSrcCluster}
+                />
+                {errors.sourceCluster && touched.sourceCluster && (
+                  <div id="feedback">{errors.sourceCluster}</div>
+                )}
+              </FormGroup>
+            </GridItem>
 
+            <GridItem>
+              <FormGroup
+                label="Target Cluster"
+                isRequired
+                fieldId="targetCluster"
+              >
+                <Select
+                  name="targetCluster"
+                  onChange={handleTargetChange}
+                  options={targetClusterOptions}
+                  value={selectedTargetCluster}
+                />
+                {errors.targetCluster && touched.targetCluster && (
+                  <div id="feedback">{errors.targetCluster}</div>
+                )}
+              </FormGroup>
+            </GridItem>
+
+            <GridItem>
+              <FormGroup
+                label="Replication Repository"
+                isRequired
+                fieldId="selectedStorage"
+              >
+                <Select
+                  name="selectedStorage"
+                  onChange={handleStorageChange}
+                  options={storageOptions}
+                  value={selectedStorage}
+                />
+                {errors.selectedStorage && touched.selectedStorage && (
+                  <div id="feedback">{errors.selectedStorage}</div>
+                )}
+              </FormGroup>
+            </GridItem>
+          </Grid>
+        </Form>
+      </GridItem>
       {isFetchingNamespaceList ? (
-        <Flex
-          css={css`
-            height: 100%;
-            text-align: center;
-          `}
-        >
-          <Box flex="1" m="auto">
-            <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-            <Text fontSize={[2, 3, 4]}> Discovering namespaces</Text>
-          </Box>
-        </Flex>
+        <GridItem>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        </GridItem>
       ) : (
-        <NamespaceTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
-      )}
-    </Box>
+          <NamespaceTable
+            setFieldValue={setFieldValue}
+            values={values}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        )}
+    </Grid>
   );
 };
 

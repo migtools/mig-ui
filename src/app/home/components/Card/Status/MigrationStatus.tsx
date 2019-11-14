@@ -1,35 +1,70 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React from 'react';
-import { Flex, Box } from '@rebass/emotion';
+import { ResourcesAlmostEmptyIcon, ResourcesAlmostFullIcon, ResourcesFullIcon } from '@patternfly/react-icons';
+import styled from '@emotion/styled';
 
 const MigrationStatus = ({ planStatusCounts }) => {
   const { notStarted, inProgress, completed } = planStatusCounts;
+
+  const DisabledEmptyIcon = styled(ResourcesAlmostEmptyIcon)`
+    color: #D2D2D2;
+  `;
+
+  const DisabledAlmostFullIcon = styled(ResourcesAlmostFullIcon)`
+    color: #D2D2D2;
+  `;
+  const DisabledFullIcon = styled(ResourcesFullIcon)`
+    color: #D2D2D2;
+  `;
+  const DisabledWrapper = styled(ResourcesFullIcon)`
+    color: #D2D2D2;
+  `;
+
+
   return (
-    <React.Fragment>
-      <Flex>
-        <Box m="0 .5em 0 0" style={{ fontSize: '28px' }}>
-          <div style={{ marginLeft: '1em' }}>{notStarted.length}</div>
-        </Box>
-        <Box style={{ margin: 'auto 0 auto 0' }}>Not started</Box>
-      </Flex>
-      <Flex>
-        <Box m="0 .5em 0 0" style={{ fontSize: '28px' }}>
-          <div style={{ marginLeft: '1em' }}>{inProgress.length}</div>
-        </Box>
-        <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
-          In progress
-        </Box>
-      </Flex>
-      <Flex>
-        <Box m="0 .5em 0 0" style={{ fontSize: '28px' }}>
-          <div style={{ marginLeft: '1em' }}>{completed.length}</div>
-        </Box>
-        <Box span={10} style={{ margin: 'auto 0 auto 0' }}>
-          Complete
-        </Box>
-      </Flex>
-    </React.Fragment>
+    <dl className="pf-c-widget-description-list pf-m-inline">
+      <dt>
+        <span className="pf-c-icon pf-c-widget-description-list__icon">
+          {notStarted.length > 0 ? <ResourcesAlmostEmptyIcon /> : <DisabledEmptyIcon />}
+        </span>
+
+        <span className={notStarted.length > 0 ?
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
+          {notStarted.length}
+        </span>
+      </dt>
+      <dd className={notStarted.length > 0 ? '' : 'disabled'}>
+        Not started
+      </dd>
+      <dt>
+        <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-info">
+          {inProgress.length > 0 ? <ResourcesAlmostFullIcon /> : <DisabledAlmostFullIcon />}
+        </span>
+        <span className={inProgress.length > 0 ?
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
+          {inProgress.length}
+        </span>
+      </dt>
+      <dd className={inProgress.length > 0 ? '' : 'disabled'}>
+        In progress
+      </dd>
+      <dt>
+        <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-success">
+          {completed.length > 0 ? <ResourcesFullIcon /> : <DisabledFullIcon />}
+        </span>
+        <span className={completed.length > 0 ?
+          'pf-c-widget-description-list__num' :
+          'pf-c-widget-description-list__num disabled'}>
+          {completed.length}
+        </span>
+      </dt>
+      <dd className={completed.length > 0 ? '' : 'disabled'}>
+        Complete
+      </dd>
+    </dl>
   );
 };
+
 export default MigrationStatus;

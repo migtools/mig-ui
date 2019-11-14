@@ -2,22 +2,27 @@
 import { jsx } from '@emotion/core';
 import React from 'react';
 import { Box } from '@rebass/emotion';
-import { TextContent, TextList, TextListItem } from '@patternfly/react-core';
+import {
+  Grid,
+  GridItem,
+  Text,
+  TextContent,
+  TextVariants
+} from '@patternfly/react-core';
 import StorageClassTable from './StorageClassTable';
 import styled from '@emotion/styled';
 const StorageClassForm = props => {
   const { setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
-  const StyledTextContent = styled(TextContent)`
-    margin: 1em 0 1em 0;
-  `;
   return (
-    <React.Fragment>
-      <Box>
-        <StyledTextContent>
-          <TextList component="dl">
-            <TextListItem component="dt">Select storage class for copied PVs:</TextListItem>
-          </TextList>
-        </StyledTextContent>
+    <Grid gutter="md">
+      <GridItem>
+        <TextContent>
+          <Text component={TextVariants.p}>
+            Select storage class for copied PVs:
+          </Text>
+        </TextContent>
+      </GridItem>
+      <GridItem>
         <StorageClassTable
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
@@ -25,8 +30,8 @@ const StorageClassForm = props => {
           currentPlan={currentPlan}
           clusterList={clusterList}
         />
-      </Box>
-    </React.Fragment>
+      </GridItem>
+    </Grid>
   );
 };
 export default StorageClassForm;

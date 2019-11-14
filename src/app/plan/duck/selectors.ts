@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
@@ -183,36 +183,37 @@ const getPlansWithStatus = createSelector(
       const { MigPlan } = plan;
       const status = {
         progress: null,
-        start: 'TBD',
-        end: 'TBD',
+        start: 'In progress',
+        end: 'In progress',
         moved: 0,
         copied: 0,
         stepName: 'Not started',
         isFailed: false,
         isSucceeded: false,
       };
+      const zone = moment.tz.guess();
 
-      const succeededCondition = migration.status.conditions.find(c => {
-        return c.type === 'Succeeded';
-      });
+      if (migration.status && migration.status.conditions) {
+        const succeededCondition = migration.status.conditions.find(c => {
+          return c.type === 'Succeeded';
+        });
 
-      if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
-        status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
-        if (!migration.spec.stage) {
-          status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
+        if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
+          status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
+          if (!migration.spec.stage) {
+            status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
+          }
         }
-      }
 
-      if (migration.status) {
         if (migration.status.startTimestamp) {
-          status.start = moment(migration.status.startTimestamp).format('LLL');
+          status.start = moment.tz(migration.status.startTimestamp, zone).format(`DD MMM YYYY, h:mm:ss z`);
         }
         let endTime;
         endTime = migration.status.conditions
           .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
           .map(c => c.lastTransitionTime)
           .toString();
-        status.end = endTime ? moment(endTime).format('LLL') : 'TBD';
+        status.end = endTime ? moment.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`) : 'In progress';
 
         if (migration.status.conditions.length) {
           // For successful migrations, show green 100% progress

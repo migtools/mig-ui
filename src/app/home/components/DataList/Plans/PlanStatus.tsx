@@ -1,4 +1,5 @@
 import React from 'react';
+import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
 
 interface IProps {
   plan: any;
@@ -44,9 +45,16 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     return status;
   };
   return (
-    <div>
-      <div>{getStatus().text}</div>
-    </div>
+    <React.Fragment>
+      <div className="pf-l-flex pf-m-nowrap">
+        <div className="pf-l-flex__item">
+          <PlanStatusIcon plan={plan} />
+        </div>
+        <div className="pf-l-flex__item">
+          {getStatus().text}
+        </div>
+      </div>
+    </React.Fragment>
   );
 };
 

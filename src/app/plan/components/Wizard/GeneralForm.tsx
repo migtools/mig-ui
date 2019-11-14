@@ -2,11 +2,11 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Box, Text } from '@rebass/emotion';
 import {
-  TextInput,
-  TextContent,
-  TextList,
-  TextListItem,
-  TextArea,
+  Form,
+  FormGroup,
+  Grid,
+  GridItem,
+  TextInput
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 interface IProps {
@@ -27,13 +27,15 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
   };
 
   return (
-    <React.Fragment>
-      <Box>
-        <TextContent>
-          <TextList component="dl">
-            <TextListItem component="dt">Plan Name</TextListItem>
+    <Form>
+      <Grid lg={10} xl={6}>
+        <GridItem>
+          <FormGroup
+            label="Plan Name"
+            isRequired
+            fieldId="planName"
+          >
             <TextInput
-              style={{width: '20em'}}
               onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}
               onBlur={handleBlur}
@@ -43,13 +45,10 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
               isValid={!errors.planName && touched.planName}
               id="planName"
             />
-          </TextList>
-          {errors.planName && touched.planName && (
-            <FormErrorDiv id="feedback">{errors.planName}</FormErrorDiv>
-          )}
-        </TextContent>
-      </Box>
-    </React.Fragment>
+          </FormGroup>
+        </GridItem>
+      </Grid>
+    </Form>
   );
 };
 

@@ -9,6 +9,7 @@ import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
 import {
+  Bullseye,
   TextContent,
   Popover,
   PopoverPosition,
@@ -18,12 +19,11 @@ import {
   EmptyStateVariant,
   EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateSecondaryActions
 } from '@patternfly/react-core';
 import theme from '../../../../theme';
-import Loader from 'react-loader-spinner';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -131,21 +131,17 @@ const VolumesTable = (props): any => {
   }
   if (isFetchingPVList) {
     return (
-      <Flex
-        css={css`
-          height: 100%;
-          text-align: center;
-        `}
-      >
-        <Box flex="1" m="auto">
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100" width="100" />
-          <Text fontSize={[2, 3, 4]}>
-            {' '}
-            Discovering persistent volumes attached to source projects.
-          </Text>
-        </Box>
-      </Flex>
-    );
+      <Bullseye>
+        <EmptyState variant="large">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+          <Title headingLevel="h2" size="xl">
+            Discovering persistent volumes attached to source projects...
+          </Title>
+        </EmptyState>
+      </Bullseye>
+     );
   }
 
   return (

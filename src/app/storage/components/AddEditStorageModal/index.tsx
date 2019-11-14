@@ -5,47 +5,48 @@ import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
 import { StorageActions } from '../../duck/actions';
 import { Modal } from '@patternfly/react-core';
-import { PollingContext } from '../../../home/duck/context';
+import { PollingContext, StorageContext } from '../../../home/duck/context';
 import {
   AddEditMode,
   defaultAddEditStatus,
   createAddEditStatus,
   AddEditState,
- } from '../../../common/add_edit_state';
+} from '../../../common/add_edit_state';
 
 const AddEditStorageModal = ({
   addEditStatus,
-  initialStorageValues,
   isOpen,
   isPolling,
   storageList,
   checkConnection,
+  isLoadingStorage,
+  initialStorageValues,
   ...props
 }) => {
+
   const pollingContext = useContext(PollingContext);
-  const [currentStorageName, setCurrentStorageName] =
-    useState(initialStorageValues ? initialStorageValues.name : null);
+  const storageContext = useContext(StorageContext);
 
   const onAddEditSubmit = (storageValues) => {
-    switch(addEditStatus.mode) {
+    switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
         props.updateStorage(storageValues);
         break;
       }
       case AddEditMode.Add: {
         props.addStorage(storageValues);
-        setCurrentStorageName(storageValues.name);
+        storageContext.setCurrentStorage(storageValues.name);
         break;
       }
       default: {
         console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`, );
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
       }
     }
   };
 
   useEffect(() => {
-    if(isOpen && isPolling) {
+    if (isOpen && isPolling) {
       pollingContext.stopAllPolling();
     }
   });
@@ -53,7 +54,6 @@ const AddEditStorageModal = ({
   const onClose = () => {
     props.cancelAddEditWatch();
     props.resetAddEditState();
-    setCurrentStorageName(null);
     props.onHandleClose();
     pollingContext.startAllDefaultPolling();
   };
@@ -62,19 +62,14 @@ const AddEditStorageModal = ({
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
     'Edit repository' : 'Add repository';
 
-  const currentStorage = storageList.find(s => {
-    return s.MigStorage.metadata.name === currentStorageName;
-  });
-
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
+    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="storage-modal-modifier">
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
         addEditStatus={addEditStatus}
-        initialStorageValues={initialStorageValues}
-        currentStorage={currentStorage}
         checkConnection={checkConnection}
+        storageList={storageList}
       />
     </Modal>
   );
@@ -86,6 +81,7 @@ export default connect(
       addEditStatus: state.storage.addEditStatus,
       isPolling: state.storage.isPolling,
       storageList: state.storage.migStorageList,
+      isLoadingStorage: state.storage.isLoadingStorage
     };
   },
   dispatch => ({
@@ -96,7 +92,7 @@ export default connect(
     resetAddEditState: () => {
       dispatch(StorageActions.setStorageAddEditStatus(defaultAddEditStatus()));
     },
-    checkConnection: (storageName : string) => {
+    checkConnection: (storageName: string) => {
       dispatch(StorageActions.setStorageAddEditStatus(createAddEditStatus(
         AddEditState.Fetching, AddEditMode.Edit,
       )));

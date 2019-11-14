@@ -1,18 +1,18 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { PlanContext } from '../../../duck/context';
-import { Button, Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  KebabToggle
+} from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import { Flex, Box } from '@rebass/emotion';
-import PlanStatus from './PlanStatus';
 import MigrateModal from '../../../../plan/components/MigrateModal';
-import theme from '../../../../../theme';
-import Loader from 'react-loader-spinner';
-import { css } from '@emotion/core';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-const PlanActions = ({ plan }) => {
+const PlanActions = ({ plan, history }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -21,7 +21,6 @@ const PlanActions = ({ plan }) => {
     hasErrorCondition,
     hasRunningMigrations,
     hasAttemptedMigration,
-    hasSucceededMigration,
     finalMigrationComplete,
     isPlanLocked
   } = plan.PlanStatus;
@@ -29,7 +28,41 @@ const PlanActions = ({ plan }) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
     <DropdownItem
-      // @ts-ignore
+      onClick={() => {
+        setKebabIsOpen(false);
+        planContext.handleStageTriggered(plan);
+      }}
+      key="stagePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        hasAttemptedMigration ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
+    >
+      Stage
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleOpen();
+      }}
+      key="migratePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
+    >
+      Migrate
+    </DropdownItem>,
+    <DropdownItem
       onClick={() => {
         planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
@@ -46,56 +79,16 @@ const PlanActions = ({ plan }) => {
       key="showLogs"
       onClick={() => {
         setKebabIsOpen(false);
+        history.push('/logs/' + plan.MigPlan.metadata.name);
       }}
     >
-      <Link to={'/logs/' + plan.MigPlan.metadata.name}>Logs</Link>
-
+      Logs
     </DropdownItem>,
   ];
 
   return (
-    <Flex>
-      <Box m="auto auto auto 0">
-        <PlanStatus plan={plan} />
-      </Box>
-      <Box mx={1}>
-        <Button
-          isDisabled={
-            hasClosedCondition ||
-            !hasReadyCondition ||
-            hasErrorCondition ||
-            hasRunningMigrations ||
-            hasAttemptedMigration ||
-            finalMigrationComplete ||
-            isPlanLocked
-          }
-          variant="primary"
-          onClick={() => {
-            planContext.handleStageTriggered(plan);
-          }}
-        >
-          Stage
-        </Button>
-      </Box>
-      <Box mx={1}>
-        <Button
-          isDisabled={
-            hasClosedCondition ||
-            !hasReadyCondition ||
-            hasErrorCondition ||
-            hasRunningMigrations ||
-            finalMigrationComplete ||
-            isPlanLocked
-          }
-          variant="primary"
-          onClick={toggleOpen}
-        >
-          Migrate
-        </Button>
-        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
-      </Box>
-
-      <Box margin="auto 4px" >
+    <div className="pf-l-flex pf-m-nowrap">
+      <div className="pf-l-flex__item pf-m-align-right">
         <Dropdown
           toggle={<KebabToggle
             onToggle={() => setKebabIsOpen(!kebabIsOpen)}
@@ -103,22 +96,12 @@ const PlanActions = ({ plan }) => {
           isOpen={kebabIsOpen}
           isPlain
           dropdownItems={kebabDropdownItems}
+          position={DropdownPosition.right}
         />
-      </Box>
-      {hasRunningMigrations && (
-        <Box
-          css={css`
-            height: 100%;
-            text-align: center;
-            margin: auto 4px auto 4px;
-            width: 1em;
-          `}
-        >
-          <Loader type="ThreeDots" color={theme.colors.navy} height="100%" width="100%" />
-        </Box>
-      )}
-    </Flex>
+        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
+      </div>
+    </div>
   );
 };
 
-export default PlanActions;
+export default withRouter(PlanActions);

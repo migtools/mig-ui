@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
-import { Flex, Box } from '@rebass/emotion';
-import { DataList, DataListContent, DataListItem, DataListItemRow } from '@patternfly/react-core';
+import { DataList, DataListContent, DataListItem } from '@patternfly/react-core';
 import PlanActions from './PlanActions';
+import PlanStatus from './PlanStatus';
+import MigrationsTable from './MigrationsTable';
 import {
   Table,
   TableHeader,
   TableBody,
-  //@ts-ignore
   compoundExpand,
 } from '@patternfly/react-table';
-import MigrationsTable from './MigrationsTable';
-import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
-import styled from '@emotion/styled';
-import { ServiceIcon, DatabaseIcon } from '@patternfly/react-icons';
-import theme from '../../../../../theme';
+import { MigrationIcon } from '@patternfly/react-icons';
 import PlanEmptyState from './PlanEmptyState';
 
 interface IProps {
@@ -40,10 +36,10 @@ const columns = [
   },
   'Repository',
   {
-    title: 'Persistent Volumes',
-    cellTransforms: [compoundExpand],
+    title: 'PVs',
   },
-  'Last Status',
+  'Last state',
+  ''
 ];
 
 const buildNewRows = (
@@ -51,10 +47,11 @@ const buildNewRows = (
 ) => {
   const newRows = planList.map((plan, planIndex) => {
     const MigrationsIcon = () => {
-      if(plan.Migrations.length > 0) {
-        return <span className="pf-c-icon pf-m-info"><ServiceIcon /></span>;
+      const migrationCount = plan.Migrations.length || 0;
+      if (migrationCount > 0) {
+        return <span className="pf-c-icon pf-m-info"><MigrationIcon /> {migrationCount}</span>;
       } else {
-        return <span className="pf-c-icon"><ServiceIcon /></span>;
+        return <span className="pf-c-icon"><MigrationIcon /> {migrationCount}</span>;
       }
     };
     const parentIndex = planIndex * 2;
@@ -80,30 +77,22 @@ const buildNewRows = (
         cells: [
           {
             title: (
-              <Flex>
-                <Box m="0 5px 0 0">
-                  <PlanStatusIcon plan={plan} />
-                </Box>
-                <Box m="auto 0 auto 0">
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
                   <span>{plan.MigPlan.metadata.name}</span>
-                </Box>
-              </Flex>
+                </div>
+              </div>
             ),
 
             props: { component: 'th' },
           },
           {
             title: (
-              <React.Fragment>
-                <Flex>
-                  <Box m="0 5px 0 0" key={planKey + '-icon'}>
-                    <MigrationsIcon />
-                  </Box>
-                  <Box m="auto 0 auto 0" key={planKey + '-text'}>
-                    <span>{plan.Migrations.length || 0}</span>
-                  </Box>
-                </Flex>
-              </React.Fragment>
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item" key={planKey + '-icon'}>
+                  <MigrationsIcon />
+                </div>
+              </div>
             ),
 
             props: {
@@ -122,20 +111,26 @@ const buildNewRows = (
           },
           {
             title: (
-              <Flex>
-                <Box m="0 5px 0 0">
-                  <DatabaseIcon />
-                </Box>
-                <Box m="auto 0 auto 0">
+              <div className="pf-l-flex">
+                <div className="pf-l-flex__item">
                   <span>{pvCount}</span>
-                </Box>
-              </Flex>
+                </div>
+              </div>
             ),
+          },
+          {
+            title: <PlanStatus
+              plan={plan}
+            />,
           },
           {
             title: <PlanActions
               plan={plan}
             />,
+
+            props: {
+              className: 'pf-c-table__action',
+            }
           },
         ],
       },
@@ -207,24 +202,21 @@ const PlanContent: React.FunctionComponent<IProps> = ({
   return (
     <DataListContent
       noPadding
-      aria-label="plan-items-content-containter"
+      aria-label="plan-items-content-container"
       isHidden={!isExpanded}
     >
       {planList.length > 0 ? (
         <DataList aria-label="plan-item-list">
           <DataListItem key="id" aria-labelledby="simple-item1">
-            <DataListItemRow>
-              <Table
-                aria-label="migrations-history-table"
-                onExpand={onExpand}
-                rows={currentRows}
-                //@ts-ignore
-                cells={columns}
-              >
-                <TableHeader />
-                <TableBody />
-              </Table>
-            </DataListItemRow>
+            <Table
+              aria-label="migrations-history-table"
+              onExpand={onExpand}
+              rows={currentRows}
+              cells={columns}
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
           </DataListItem>
         </DataList>
       ) : (

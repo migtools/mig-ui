@@ -219,8 +219,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isOpen={isOpen}
           onNext={onMove}
           onBack={onMove}
-          title="Migration Plan Wizard"
-          description="Create a migration plan"
+          title="Create a migration plan"
           onClose={handleClose}
           steps={updatedSteps}
           isFullWidth

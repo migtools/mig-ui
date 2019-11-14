@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
-import { Flex, Box, Text } from '@rebass/emotion';
 import {
+  Card,
   Page,
   PageSection,
   Grid,
@@ -73,8 +73,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <Page header={HeaderComponent}>
       <PageSection>
-        <Grid gutter="md">
-          <GridItem span={4}>
+        <Grid gutter="lg" md={6} lg={4}>
+          <GridItem>
             <DashboardCard
               type="clusters"
               title="Clusters"
@@ -82,10 +82,10 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingClusters}
               isError={isClusterError}
               expandDetails={() => handleExpand(DataListItems.ClusterList)}
-
+              loadingTitle="Loading clusters..."
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem>
             <DashboardCard
               title="Replication Repositories"
               type="repositories"
@@ -93,9 +93,10 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingStorage}
               isError={isStorageError}
               expandDetails={() => handleExpand(DataListItems.StorageList)}
+              loadingTitle="Loading repositories..."
             />
           </GridItem>
-          <GridItem span={4}>
+          <GridItem>
             <DashboardCard
               type="plans"
               title="Migration Plans"
@@ -104,21 +105,19 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
               isFetching={isFetchingPlans}
               isError={isPlanError}
               expandDetails={() => handleExpand(DataListItems.PlanList)}
+              loadingTitle="Loading migration plans..."
             />
+          </GridItem>
+          <GridItem span={12}>
+            <Card>
+              <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
+            </Card>
           </GridItem>
         </Grid>
       </PageSection>
-      <PageSection>
-        <Flex justifyContent="center">
-          <Box flex="0 0 100%">
-            <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
-
-          </Box>
-        </Flex>
-      </PageSection>
-      <PageSection>
-        {/* <TODO: footer content */}
-      </PageSection>
+      {/* <PageSection>
+        <TODO: footer content
+      </PageSection> */}
     </Page>
   );
 };

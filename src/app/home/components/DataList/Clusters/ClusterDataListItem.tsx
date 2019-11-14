@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Badge,
   Button,
   DataListItem,
   DataListCell,
@@ -21,6 +22,7 @@ const ClusterDataListItem = ({
   associatedPlans,
   migMeta,
   removeCluster,
+  clusterCount,
   ...props }) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
@@ -35,7 +37,14 @@ const ClusterDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="cluster-item" key="clusters">
-                <span id="name">Clusters</span>
+                <div className="pf-l-flex">
+                  <div className="pf-l-flex__item">
+                    <span id="clusters">Clusters</span>
+                  </div>
+                  <div className="pf-l-flex__item">
+                    <Badge isRead>{clusterCount}</Badge>
+                  </div>
+                </div>
               </DataListCell>,
             ]}
           />

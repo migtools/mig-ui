@@ -262,7 +262,12 @@ export const closedStatusPollStart =
 
 export const closedStatusPollStop =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
-    return { ...state, isClosing: false };
+    const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
+    return {
+      ...state,
+      isClosing: false,
+      lockedPlanList: filteredLockedPlans
+    };
   };
 
 export const planStatusPollStart =
