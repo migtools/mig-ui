@@ -9,8 +9,6 @@ import {
   DataListItemCells,
   DataListAction,
 } from '@patternfly/react-core';
-import { useOpenModal } from '../../../duck/hooks';
-import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
 import { StorageContext, ModalContext } from '../../../duck/context';

@@ -1,8 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { ModalContext } from '../../../../home/duck/context';
 import StorageItem from './StorageItem';
-import { Flex, Box } from '@rebass/emotion';
-import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import {
   DataList,
   DataListContent,
@@ -19,7 +17,6 @@ const StorageContent = ({
   associatedPlans,
   removeStorage,
 }) => {
-  const [isOpen, toggleOpen] = useState(false);
   const modalContext = useContext(ModalContext);
 
   return (
@@ -43,14 +40,12 @@ const StorageContent = ({
             <EmptyStateIcon icon={AddCircleOIcon} />
             <Title size="lg">Add replication repositories for the migration</Title>
             <Button onClick={() => {
-              console.log('open modal')
-              modalContext.setIsModalOpen(true)
+              modalContext.setIsModalOpen(true);
             }} variant="primary">
               Add repository
           </Button>
           </EmptyState>
         )}
-      }
     </DataListContent>
   );
 };

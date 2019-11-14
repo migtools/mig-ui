@@ -69,7 +69,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       Remove
     </DropdownItem>,
   ];
-  console.log('modalContext', modalContext)
+
   return (
     <DataListItem key={storageIndex} aria-labelledby="">
       <DataListItemRow>
