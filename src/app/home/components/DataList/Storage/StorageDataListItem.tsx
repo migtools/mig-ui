@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, createContext } from 'react';
 import {
   Badge,
   Button,
@@ -13,6 +13,8 @@ import { useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
+import { ModalContext } from '../../../duck/context';
+
 
 const StorageDataListItem = ({
   id,
@@ -23,49 +25,56 @@ const StorageDataListItem = ({
   toggleExpanded,
   storageCount,
   ...props }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   if (dataList) {
     return (
-      <DataListItem aria-labelledby="storage-container-item" isExpanded={isExpanded}>
-        <DataListItemRow>
-          <DataListToggle
-            onClick={() => toggleExpanded(id)}
-            isExpanded={isExpanded}
-            id="storage-toggle"
-          />
-          <DataListItemCells
-            dataListCells={[
-              <DataListCell id="storage-item" key="storage">
-                <div className="pf-l-flex">
-                  <div className="pf-l-flex__item">
-                    <span id="repos">Repositories</span>
-                  </div>
-                  <div className="pf-l-flex__item">
-                    <Badge isRead>{storageCount}</Badge>
-                  </div>
-                </div>
-
-              </DataListCell>,
-            ]}
-          />
-          <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
-            <Button onClick={toggleOpen} variant="secondary" id="add-repo-btn">
-              Add repository
-            </Button>
-            <AddEditStorageModal
-              isOpen={isOpen}
-              onHandleClose={toggleOpen}
+      <ModalContext.Provider value={{ setIsModalOpen, isModalOpen }}>
+        <DataListItem aria-labelledby="storage-container-item" isExpanded={isExpanded}>
+          <DataListItemRow>
+            <DataListToggle
+              onClick={() => toggleExpanded(id)}
+              isExpanded={isExpanded}
+              id="storage-toggle"
             />
-          </DataListAction>
-        </DataListItemRow>
-        <StorageContent
-          associatedPlans={associatedPlans}
-          dataList={dataList}
-          isExpanded={isExpanded}
-          removeStorage={removeStorage}
-          {...props}
-        />
-      </DataListItem>
+            <DataListItemCells
+              dataListCells={[
+                <DataListCell id="storage-item" key="storage">
+                  <div className="pf-l-flex">
+                    <div className="pf-l-flex__item">
+                      <span id="repos">Repositories</span>
+                    </div>
+                    <div className="pf-l-flex__item">
+                      <Badge isRead>{storageCount}</Badge>
+                    </div>
+                  </div>
+
+                </DataListCell>,
+              ]}
+            />
+            <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
+              <Button onClick={() => setIsModalOpen(true)} variant="secondary" id="add-repo-btn">
+                Add repository
+            </Button>
+              {/* {isModalOpen &&
+                <AddEditStorageModal
+                  isOpen={isModalOpen}
+                  onHandleClose={() => setIsModalOpen(false)}
+                />
+              } */}
+            </DataListAction>
+
+          </DataListItemRow>
+          <StorageContent
+            associatedPlans={associatedPlans}
+            dataList={dataList}
+            isExpanded={isExpanded}
+            removeStorage={removeStorage}
+            {...props}
+          />
+        </DataListItem>
+      </ModalContext.Provider>
     );
   }
   return null;

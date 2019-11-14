@@ -7,102 +7,72 @@ import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
   checkConnection: (name) => void;
+  isLoadingStorage: boolean;
   currentStorage: any;
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
-  const { currentStorage: storage } = props;
-  const name = storage.MigStorage.metadata.name;
-  const provider = storage.MigStorage.spec.backupStorageProvider;
-  const awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
-  const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
-  const gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
-  const azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
-  const azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+  const { currentStorage: storage, isLoadingStorage } = props;
 
-  const accessKey =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-access-key-id']
-        ? atob(storage.Secret.data['aws-access-key-id'])
-        : '';
-  const secret =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-secret-access-key']
-        ? atob(storage.Secret.data['aws-secret-access-key'])
-        : '';
+  let
+    name,
+    provider,
+    awsBucketName,
+    awsBucketRegion,
+    s3Url,
+    accessKey,
+    secret,
+    gcpBucket,
+    azureResourceGroup,
+    azureStorageAccount,
+    azureBlob,
+    gcpBlob;
+  if (storage) {
+    name = storage.MigStorage.metadata.name;
+    provider = storage.MigStorage.spec.backupStorageProvider;
+    awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
+    awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
+    s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
+    gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
+    azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+    azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+    accessKey =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['aws-access-key-id']
+          ? atob(storage.Secret.data['aws-access-key-id'])
+          : '';
+    secret =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['aws-secret-access-key']
+          ? atob(storage.Secret.data['aws-secret-access-key'])
+          : '';
 
-  const gcpBlob =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['gcp-credentials']
-        ? atob(storage.Secret.data['gcp-credentials'])
-        : '';
-  const azureBlob =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['azure-credentials']
-        ? atob(storage.Secret.data['azure-credentials'])
-        : '';
+    gcpBlob =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['gcp-credentials']
+          ? atob(storage.Secret.data['gcp-credentials'])
+          : '';
+    azureBlob =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['azure-credentials']
+          ? atob(storage.Secret.data['azure-credentials'])
+          : '';
 
-  const DynamicForm = ({ provider }) => {
-    if (provider === null) {
-      return (
-        <Flex>
-          <Box>
-            <Text />
-          </Box>
-        </Flex>
-      );
-    } else {
-      switch (provider.value) {
-        case 'aws':
-          return <AWSForm provider={provider.value}
-            initialStorageValues={
-              {
-                name,
-                awsBucketName,
-                awsBucketRegion,
-                accessKey,
-                secret,
-                s3Url
-              }
-            }
-            {...props} />;
-        case 'gcp':
-          return <GCPForm provider={provider.value}
-            initialStorageValues={
-              {
-                name,
-                gcpBucket,
-                gcpBlob
-              }
-            }
-            {...props} />;
-        case 'azure':
-          return <AzureForm provider={provider.value}
-            initialStorageValues={
-              {
-                name,
-                azureResourceGroup,
-                azureStorageAccount,
-                azureBlob
-              }
-            }
-            {...props} />;
-        default:
-          return null;
-      }
-    }
-  };
+  }
+
+
+
 
   const [selectedProvider, setSelectedProvider] = useState(
     (storage && provider) ? {
@@ -122,6 +92,11 @@ const AddEditStorageForm = (props: IOtherProps) => {
       option
     );
   };
+
+  if (isLoadingStorage) {
+    return <Spinner size="md" />
+  }
+
   return (
     <Flex flexDirection="column">
       <Box
@@ -146,7 +121,45 @@ const AddEditStorageForm = (props: IOtherProps) => {
           isDisabled={(storage && provider) !== (null || undefined)}
         />
       </Box>
-      <DynamicForm provider={selectedProvider} {...props} />
+      {(selectedProvider && selectedProvider.value) === 'aws' &&
+        <AWSForm provider={provider.value}
+          initialStorageValues={
+            {
+              name,
+              awsBucketName,
+              awsBucketRegion,
+              accessKey,
+              secret,
+              s3Url
+            }
+          }
+          {...props} />
+      }
+      {(selectedProvider && selectedProvider.value) === 'azure' &&
+        <AzureForm
+          provider={provider.value}
+          currentStorage={storage}
+          initialStorageValues={
+            {
+              name,
+              azureResourceGroup,
+              azureStorageAccount,
+              azureBlob
+            }
+          }
+          {...props} />
+      }
+      {(selectedProvider && selectedProvider.value) === 'gcp' &&
+        <GCPForm provider={provider.value}
+          initialStorageValues={
+            {
+              name,
+              gcpBucket,
+              gcpBlob
+            }
+          }
+          {...props} />
+      }
     </Flex>
   );
 };

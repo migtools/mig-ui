@@ -14,12 +14,11 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import { useOpenModal } from '../../../duck/hooks';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-import { StorageContext } from '../../../duck/context';
+import { StorageContext, ModalContext } from '../../../duck/context';
 
 const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const associatedPlanCount = props.associatedPlans[storage.MigStorage.metadata.name];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
-  const [isAddEditModalOpen, toggleIsAddEditModalOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
   const name = storage.MigStorage.metadata.name;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
@@ -40,10 +39,12 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   };
 
   const storageContext = useContext(StorageContext);
+  const modalContext = useContext(ModalContext);
 
   const editStorage = () => {
     storageContext.watchStorageAddEditStatus(name);
-    toggleIsAddEditModalOpen();
+    modalContext.setIsModalOpen(true);
+    // toggleIsAddEditModalOpen(!isAddEditModalOpen);
   };
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -121,17 +122,21 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             dropdownItems={kebabDropdownItems}
             position={DropdownPosition.right}
           />
-          <AddEditStorageModal
-            isOpen={isAddEditModalOpen}
-            onHandleClose={toggleIsAddEditModalOpen}
-            currentStorage={storage}
-          />
-          <ConfirmModal
-            message={removeMessage}
-            isOpen={isConfirmOpen}
-            onHandleClose={handleRemoveStorage}
-            id="confirm-storage-removal"
-          />
+          {modalContext.isModalOpen &&
+            <AddEditStorageModal
+              isOpen={modalContext.isModalOpen}
+              onHandleClose={() => modalContext.setIsModalOpen(false)}
+              currentStorage={storage}
+            />
+          }
+          {isConfirmOpen &&
+            <ConfirmModal
+              message={removeMessage}
+              isOpen={isConfirmOpen}
+              onHandleClose={handleRemoveStorage}
+              id="confirm-storage-removal"
+            />
+          }
         </DataListAction>
       </DataListItemRow>
     </DataListItem>

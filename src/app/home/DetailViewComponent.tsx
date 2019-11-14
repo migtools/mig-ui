@@ -77,6 +77,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 
   const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
 
+
+
   useEffect(() => {
     if (allClusters.length > 1 && allStorage.length > 0) {
       setAddPlanDisabled(false);

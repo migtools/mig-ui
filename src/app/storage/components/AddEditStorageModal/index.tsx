@@ -20,11 +20,15 @@ const AddEditStorageModal = ({
   storageList,
   checkConnection,
   currentStorage,
+  isLoadingStorage,
   ...props
 }) => {
 
-
   const pollingContext = useContext(PollingContext);
+
+  console.log('storageIndex', currentStorage)
+  const [currentStorageName, setCurrentStorageName] =
+    useState(currentStorage ? currentStorage.MigStorage.metadata.name : null);
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
@@ -60,21 +64,20 @@ const AddEditStorageModal = ({
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
     'Edit repository' : 'Add repository';
 
-  // if (currentStorage) {
-  //   const testVar = storageList.find(s => {
-  //     return s.MigStorage.metadata.name === currentStorage.MigStorage.metadata.name;
-  //   });
-  //   console.log('testVar', testVar)
+  //TODO: this is super hacky - stores value name in ui state so it isnt lost on rerender
+  const currentStorageFixMe = storageList.find(s => {
+    return s.MigStorage.metadata.name === currentStorageName;
+  });
 
-  // }
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="storage-modal-modifier">
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
         addEditStatus={addEditStatus}
-        currentStorage={currentStorage}
+        currentStorage={currentStorageFixMe}
         checkConnection={checkConnection}
+        isLoadingStorage={isLoadingStorage}
       />
     </Modal>
   );
@@ -86,6 +89,7 @@ export default connect(
       addEditStatus: state.storage.addEditStatus,
       isPolling: state.storage.isPolling,
       storageList: state.storage.migStorageList,
+      isLoadingStorage: state.storage.isLoadingStorage
     };
   },
   dispatch => ({
