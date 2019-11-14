@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
@@ -8,6 +8,7 @@ import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { FormikProps } from 'formik';
 
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -19,7 +20,7 @@ interface IOtherProps {
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
-  const { currentStorage: storage, isLoadingStorage } = props;
+  const { currentStorage: storage, isLoadingStorage, addEditStatus } = props;
 
   let
     name,
@@ -34,7 +35,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
     azureStorageAccount,
     azureBlob,
     gcpBlob;
-  if (storage) {
+  if (storage && addEditStatus.mode === 'edit') {
     name = storage.MigStorage.metadata.name;
     provider = storage.MigStorage.spec.backupStorageProvider;
     awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
@@ -72,13 +73,20 @@ const AddEditStorageForm = (props: IOtherProps) => {
   }
 
 
+  // useEffect(() => {
+  //   if (provider)
+  //     handleProviderChange({
+  //       label: provider,
+  //       value: provider
 
+  //     })
+  // }), [provider];
 
   const [selectedProvider, setSelectedProvider] = useState(
     (storage && provider) ? {
       label: provider,
       value: provider
-    } : null
+    } : {}
   );
   const [providerOptions, setproviderOptions] = useState([
     { label: 'aws', value: 'aws' },
@@ -121,8 +129,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
           isDisabled={(storage && provider) !== (null || undefined)}
         />
       </Box>
-      {(selectedProvider && selectedProvider.value) === 'aws' &&
-        <AWSForm provider={provider.value}
+      {(selectedProvider && selectedProvider.value === 'aws') &&
+        <AWSForm provider={selectedProvider.value}
           initialStorageValues={
             {
               name,
@@ -135,9 +143,9 @@ const AddEditStorageForm = (props: IOtherProps) => {
           }
           {...props} />
       }
-      {(selectedProvider && selectedProvider.value) === 'azure' &&
+      {(selectedProvider && selectedProvider.value === 'azure') &&
         <AzureForm
-          provider={provider.value}
+          provider={selectedProvider.value}
           currentStorage={storage}
           initialStorageValues={
             {
@@ -149,8 +157,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
           }
           {...props} />
       }
-      {(selectedProvider && selectedProvider.value) === 'gcp' &&
-        <GCPForm provider={provider.value}
+      {(selectedProvider && selectedProvider.value === 'gcp') &&
+        <GCPForm provider={selectedProvider.value}
           initialStorageValues={
             {
               name,

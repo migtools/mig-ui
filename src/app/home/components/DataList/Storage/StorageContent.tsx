@@ -47,11 +47,6 @@ const StorageContent = ({
           </Button>
           </EmptyState>
         )}
-      {/* {modalContext.isModalOpen &&
-        <AddEditStorageModal
-          isOpen={modalContext.isModalOpen}
-          onHandleClose={() => modalContext.setIsModalOpen(false)}
-        /> */}
       }
     </DataListContent>
   );

@@ -57,12 +57,6 @@ const StorageDataListItem = ({
               <Button onClick={() => setIsModalOpen(true)} variant="secondary" id="add-repo-btn">
                 Add repository
             </Button>
-              {/* {isModalOpen &&
-                <AddEditStorageModal
-                  isOpen={isModalOpen}
-                  onHandleClose={() => setIsModalOpen(false)}
-                />
-              } */}
             </DataListAction>
 
           </DataListItemRow>
