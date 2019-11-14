@@ -39,8 +39,16 @@ const valuesHaveUpdate = (values, currentStorage) => {
     const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
     const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
     const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
-    const existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
-    const existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+    let existingAccessKeyId;
+    if (currentStorage.Secret.data['aws-access-key-id']) {
+        existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
+    }
+
+    let existingSecretAccessKey;
+    if (currentStorage.Secret.data['aws-secret-access-key-id']) {
+        existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+    }
+
 
     const valuesUpdatedObject =
         values.name !== existingMigStorageName ||
@@ -290,7 +298,7 @@ const AWSForm: any = withFormik({
             values.accessKey = initialStorageValues.accessKey || '';
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
-            values.bslProvider = initialStorageValues.bslProvider || provider;
+            // values.bslProvider = provider;
         }
 
         return values;

@@ -1,50 +1,86 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
+import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { FormikProps } from 'formik';
+import { StorageContext, ModalContext } from '../../../home/duck/context';
 
 interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
-  initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: any;
+  isLoadingStorage: boolean;
+  storageList: any;
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
-  const DynamicForm = ({ provider }) => {
-    if (provider === null) {
-      return (
-        <Flex>
-          <Box>
-            <Text />
-          </Box>
-        </Flex>
-      );
-    } else {
-      switch (provider.value) {
-        case 'aws':
-          return <AWSForm provider={provider.value} {...props} />;
-        case 'gcp':
-          return <GCPForm provider={provider.value} {...props} />;
-        case 'azure':
-          return <AzureForm provider={provider.value} {...props} />;
-        default:
-          return null;
-      }
-    }
-  };
+  const { storageList, isLoadingStorage, addEditStatus } = props;
+  const storageContext = useContext(StorageContext);
+  const storage = storageList.find(
+    (storageItem) =>
+      storageItem.MigStorage.metadata.name === storageContext.currentStorage);
+
+  let name;
+  let provider;
+  let awsBucketName;
+  let awsBucketRegion;
+  let s3Url;
+  let accessKey;
+  let secret;
+  let gcpBucket;
+  let azureResourceGroup;
+  let azureStorageAccount;
+  let azureBlob;
+  let gcpBlob;
+  if (storage) {
+    name = storage.MigStorage.metadata.name;
+    provider = storage.MigStorage.spec.backupStorageProvider;
+    awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
+    awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
+    s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
+    gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
+    azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+    azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+    accessKey =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['aws-access-key-id']
+          ? atob(storage.Secret.data['aws-access-key-id'])
+          : '';
+    secret =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['aws-secret-access-key']
+          ? atob(storage.Secret.data['aws-secret-access-key'])
+          : '';
+
+    gcpBlob =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['gcp-credentials']
+          ? atob(storage.Secret.data['gcp-credentials'])
+          : '';
+    azureBlob =
+      typeof storage.Secret === 'undefined'
+        ? null
+        : storage.Secret.data['azure-credentials']
+          ? atob(storage.Secret.data['azure-credentials'])
+          : '';
+
+
+  }
 
   const [selectedProvider, setSelectedProvider] = useState(
-    (props.initialStorageValues && props.initialStorageValues.provider) ? {
-      label: props.initialStorageValues.provider,
-      value: props.initialStorageValues.provider
+    (provider) ? {
+      label: provider,
+      value: provider
     } : null
   );
   const [providerOptions, setproviderOptions] = useState([
@@ -59,6 +95,11 @@ const AddEditStorageForm = (props: IOtherProps) => {
       option
     );
   };
+
+  if (isLoadingStorage) {
+    return <Spinner size="md" />;
+  }
+
   return (
     <Flex flexDirection="column">
       <Box
@@ -80,10 +121,25 @@ const AddEditStorageForm = (props: IOtherProps) => {
           onChange={handleProviderChange}
           options={providerOptions}
           value={selectedProvider}
-          isDisabled={(props.initialStorageValues && props.initialStorageValues.provider) !== (null || undefined)}
+          isDisabled={(provider) !== (null || undefined)}
         />
       </Box>
-      <DynamicForm provider={selectedProvider} {...props} />
+      {(selectedProvider && selectedProvider.value === 'aws') &&
+        <AWSForm provider={selectedProvider.value}
+          initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret }}
+          {...props} />
+      }
+      {(selectedProvider && selectedProvider.value === 'azure') &&
+        <AzureForm
+          provider={selectedProvider.value}
+          initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
+          {...props} />
+      }
+      {(selectedProvider && selectedProvider.value === 'gcp') &&
+        <GCPForm provider={selectedProvider.value}
+          initialStorageValues={{ name, gcpBucket, gcpBlob }}
+          {...props} />
+      }
     </Flex>
   );
 };

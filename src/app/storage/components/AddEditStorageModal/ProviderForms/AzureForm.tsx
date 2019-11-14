@@ -32,7 +32,11 @@ const valuesHaveUpdate = (values, currentStorage) => {
     const existingMigStorageName = currentStorage.MigStorage.metadata.name;
     const existingAzureStorageAccount = currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
     const existingAzureResourceGroup = currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
-    const existingAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+
+    let existingAzureBlob;
+    if (currentStorage.Secret.data['azure-credentials']) {
+        existingAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+    }
 
     const valuesUpdatedObject =
         values.name !== existingMigStorageName ||
