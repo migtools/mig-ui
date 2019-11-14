@@ -37,17 +37,24 @@ function* addStorageRequest(action) {
   const storageSecret = createStorageSecret(
     storageValues.name,
     migMeta.configNamespace,
+    storageValues.bslProvider,
     storageValues.secret,
     storageValues.accessKey,
+    storageValues.gcpBlob,
+    storageValues.azureBlob,
   );
 
   const migStorage = createMigStorage(
     storageValues.name,
-    storageValues.bucketName,
-    storageValues.bucketRegion,
-    storageValues.s3Url,
+    storageValues.bslProvider,
     migMeta.namespace,
     storageSecret,
+    storageValues.awsBucketName,
+    storageValues.awsBucketRegion,
+    storageValues.s3Url,
+    storageValues.gcpBucket,
+    storageValues.azureResourceGroup,
+    storageValues.azureStorageAccount,
   );
 
   const secretResource = new CoreNamespacedResource(
@@ -70,7 +77,7 @@ function* addStorageRequest(action) {
         exists;
     }, []);
 
-    if(alreadyExists.length > 0) {
+    if (alreadyExists.length > 0) {
       throw new Error(alreadyExists.reduce((msg, v) => {
         return msg + `- kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some storage objects already exist '));
@@ -103,7 +110,7 @@ function* addStorageRequest(action) {
       storageAddResults.find(res => res.state === 'rejected') &&
       storageAddResults.find(res => res.state === 'fulfilled');
 
-    if(isRollbackRequired) {
+    if (isRollbackRequired) {
       const kindToResourceMap = {
         MigStorage: migStorageResource,
         Secret: secretResource,
@@ -122,7 +129,7 @@ function* addStorageRequest(action) {
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if(rollbackResults.find(res => res.state === 'rejected')) {
+      if (rollbackResults.find(res => res.state === 'rejected')) {
         throw new Error(rollbackResults.reduce((msg, r) => {
           const kind = r.reason.request.response.kind;
           const name = r.reason.request.response.details.name;
@@ -175,24 +182,85 @@ function* updateStorageRequest(action) {
   });
 
   // Check to see if any fields on the MigStorage were updated
+  //AWS
   const currentBucketName =
     currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const bucketNameUpdated = storageValues.bucketName !== currentBucketName;
+
+  const bucketNameUpdated = storageValues.awsBucketName !== currentBucketName;
+
   const currentRegion =
     currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
-  const regionUpdated = storageValues.bucketRegion !== currentRegion;
-  const currentS3Url=
+
+  const regionUpdated = storageValues.awsBucketRegion !== currentRegion;
+
+  const currentS3Url =
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
+
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
-  const migStorageUpdated = bucketNameUpdated || regionUpdated || s3UrlUpdated;
+  //
+  //GCP
+  const currentGCPBucketName =
+    currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
+
+  const gcpBucketNameUpdated = storageValues.gcpBucket !== currentGCPBucketName;
+  //
+  //Azure
+  const currentAzureResourceGroup =
+    currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+
+  const azureResourceGroupUpdated = storageValues.azureResourceGroup !== currentAzureResourceGroup;
+
+  const currentAzureStorageAccount =
+    currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+
+  const azureStorageAccountUpdated = storageValues.azureStorageAccount !== currentAzureStorageAccount;
+  //
+
+  const migStorageUpdated =
+    //AWS
+    bucketNameUpdated ||
+    regionUpdated ||
+    s3UrlUpdated ||
+    //GCP
+    gcpBucketNameUpdated ||
+    //Azure 
+    azureResourceGroupUpdated ||
+    azureStorageAccountUpdated;
+
 
   // Check to see if any fields on the kube secret were updated
   // NOTE: Need to decode the b64 token off a k8s secret
-  const currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
+  //AW S
+  let currentAccessKey;
+  if (currentStorage.Secret.data[accessKeyIdSecretField]) {
+    currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
+  }
   const accessKeyUpdated = storageValues.accessKey !== currentAccessKey;
-  const currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
+
+  let currentSecret;
+  if (currentStorage.Secret.data[secretAccessKeySecretField]) {
+    currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
+  }
+
   const secretUpdated = storageValues.secret !== currentSecret;
-  const kubeSecretUpdated = accessKeyUpdated || secretUpdated;
+  //
+  //GCP
+  let currentGCPBlob;
+  if (currentStorage.Secret.data['gcp-credentials']) {
+    currentGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+  }
+
+  const gcpBlobUpdated = storageValues.gcpBlob !== currentGCPBlob;
+  //
+  // AZURE
+  let currentAzureBlob;
+  if (currentStorage.Secret.data['azure-credentials']) {
+    currentAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+  }
+  const azureBlobUpdated = storageValues.azureBlob !== currentAzureBlob;
+  //
+
+  const kubeSecretUpdated = accessKeyUpdated || secretUpdated || gcpBlobUpdated || azureBlobUpdated;
 
   if (!migStorageUpdated && !kubeSecretUpdated) {
     console.warn('A storage update was requested, but nothing was changed');
@@ -202,7 +270,14 @@ function* updateStorageRequest(action) {
   const updatePromises = [];
   if (migStorageUpdated) {
     const updatedMigStorage = updateMigStorage(
-      storageValues.bucketName, storageValues.bucketRegion, storageValues.s3Url);
+      storageValues.bslProvider,
+      storageValues.awsBucketName,
+      storageValues.awsBucketRegion,
+      storageValues.s3Url,
+      storageValues.gcpBucket,
+      storageValues.azureResourceGroup,
+      storageValues.azureStorageAccount,
+    );
     const migStorageResource = new MigResource(
       MigResourceKind.MigStorage, migMeta.namespace);
 
@@ -212,7 +287,13 @@ function* updateStorageRequest(action) {
   }
 
   if (kubeSecretUpdated) {
-    const updatedSecret = updateStorageSecret(storageValues.secret, storageValues.accessKey);
+    const updatedSecret = updateStorageSecret(
+      storageValues.bslProvider,
+      storageValues.secret,
+      storageValues.accessKey,
+      storageValues.gcpBlob,
+      storageValues.azureBlob,
+    );
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret, migMeta.configNamespace);
 

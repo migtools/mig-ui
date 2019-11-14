@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import { ModalContext } from '../../../../home/duck/context';
 import StorageItem from './StorageItem';
-import { Flex, Box } from '@rebass/emotion';
-import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import {
   DataList,
   DataListContent,
@@ -18,7 +17,8 @@ const StorageContent = ({
   associatedPlans,
   removeStorage,
 }) => {
-  const [isOpen, toggleOpen] = useState(false);
+  const modalContext = useContext(ModalContext);
+
   return (
     <DataListContent noPadding aria-label="storage-items-content-container" isHidden={!isExpanded}>
       {dataList.length > 0 ? (
@@ -36,18 +36,16 @@ const StorageContent = ({
           })}
         </DataList>
       ) : (
-        <EmptyState variant="full">
-          <EmptyStateIcon icon={AddCircleOIcon} />
-          <Title size="lg">Add replication repositories for the migration</Title>
-          <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
-            Add repository
+          <EmptyState variant="full">
+            <EmptyStateIcon icon={AddCircleOIcon} />
+            <Title size="lg">Add replication repositories for the migration</Title>
+            <Button onClick={() => {
+              modalContext.setIsModalOpen(true);
+            }} variant="primary">
+              Add repository
           </Button>
-        </EmptyState>
-      )}
-      <AddEditStorageModal
-        isOpen={isOpen}
-        onHandleClose={toggleOpen}
-      />
+          </EmptyState>
+        )}
     </DataListContent>
   );
 };

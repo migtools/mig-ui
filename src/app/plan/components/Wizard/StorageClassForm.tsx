@@ -13,9 +13,6 @@ import StorageClassTable from './StorageClassTable';
 import styled from '@emotion/styled';
 const StorageClassForm = props => {
   const { setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
-  const StyledTextContent = styled(TextContent)`
-    margin: 1em 0 1em 0;
-  `;
   return (
     <Grid gutter="md">
       <GridItem>

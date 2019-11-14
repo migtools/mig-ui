@@ -44,7 +44,9 @@ function* addClusterRequest(action) {
     clusterValues.name,
     migMeta.namespace,
     clusterValues.url,
-    tokenSecret
+    tokenSecret,
+    clusterValues.isAzure,
+    clusterValues.azureResourceGroup
   );
 
   const secretResource = new CoreNamespacedResource(
@@ -66,12 +68,12 @@ function* addClusterRequest(action) {
         exists;
     }, []);
 
-    if(alreadyExists.length > 0) {
+    if (alreadyExists.length > 0) {
       throw new Error(alreadyExists.reduce((msg, v) => {
         return msg + `- kind: "${v.kind}", name: "${v.name}"`;
       }, 'Some cluster objects already exist '));
     }
-  } catch(err) {
+  } catch (err) {
     console.error(err.message);
     yield put(ClusterActions.setClusterAddEditStatus(createAddEditStatusWithMeta(
       AddEditState.Critical,
@@ -99,7 +101,7 @@ function* addClusterRequest(action) {
       clusterAddResults.find(res => res.state === 'rejected') &&
       clusterAddResults.find(res => res.state === 'fulfilled');
 
-    if(isRollbackRequired) {
+    if (isRollbackRequired) {
       const kindToResourceMap = {
         MigCluster: migClusterResource,
         Secret: secretResource,
@@ -118,7 +120,7 @@ function* addClusterRequest(action) {
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if(rollbackResults.find(res => res.state === 'rejected')) {
+      if (rollbackResults.find(res => res.state === 'rejected')) {
         throw new Error(rollbackResults.reduce((msg, r) => {
           const kind = r.reason.request.response.kind;
           const name = r.reason.request.response.details.name;
