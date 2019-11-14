@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
 import { StorageActions } from '../../duck/actions';
 import { Modal } from '@patternfly/react-core';
-import { PollingContext } from '../../../home/duck/context';
+import { PollingContext, StorageContext } from '../../../home/duck/context';
 import {
   AddEditMode,
   defaultAddEditStatus,
@@ -25,8 +25,7 @@ const AddEditStorageModal = ({
 }) => {
 
   const pollingContext = useContext(PollingContext);
-
-  console.log('storageName from current storage', initialStorageValues)
+  const storageContext = useContext(StorageContext);
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
@@ -36,6 +35,7 @@ const AddEditStorageModal = ({
       }
       case AddEditMode.Add: {
         props.addStorage(storageValues);
+        storageContext.setCurrentStorage(storageValues.name);
         break;
       }
       default: {

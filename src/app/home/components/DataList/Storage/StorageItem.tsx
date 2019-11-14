@@ -128,8 +128,8 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             <AddEditStorageModal
               isOpen={modalContext.isModalOpen}
               onHandleClose={() => {
-                modalContext.setIsModalOpen(false)
-                storageContext.setCurrentStorage(null)
+                modalContext.setIsModalOpen(false);
+                storageContext.setCurrentStorage(null);
               }
               }
             />

@@ -180,9 +180,7 @@ function* updateStorageRequest(action) {
   const currentStorage = state.storage.migStorageList.find(c => {
     return c.MigStorage.metadata.name === storageValues.name;
   });
-  console.log('currentStorage', currentStorage)
-  console.log('storageValues.name', storageValues.name)
-  console.log('action', action)
+
   // Check to see if any fields on the MigStorage were updated
   //AWS
   const currentBucketName =

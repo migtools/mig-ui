@@ -22,25 +22,24 @@ interface IOtherProps {
 
 const AddEditStorageForm = (props: IOtherProps) => {
   const { storageList, isLoadingStorage, addEditStatus } = props;
-  const storageContext = useContext(StorageContext)
-  console.log('current', storageContext.currentStorage)
-  const storage = storageList.find((storageItem) => storageItem.MigStorage.metadata.name === storageContext.currentStorage)
+  const storageContext = useContext(StorageContext);
+  const storage = storageList.find(
+    (storageItem) =>
+      storageItem.MigStorage.metadata.name === storageContext.currentStorage);
 
-  let
-    name,
-    provider,
-    awsBucketName,
-    awsBucketRegion,
-    s3Url,
-    accessKey,
-    secret,
-    gcpBucket,
-    azureResourceGroup,
-    azureStorageAccount,
-    azureBlob,
-    gcpBlob;
+  let name;
+  let provider;
+  let awsBucketName;
+  let awsBucketRegion;
+  let s3Url;
+  let accessKey;
+  let secret;
+  let gcpBucket;
+  let azureResourceGroup;
+  let azureStorageAccount;
+  let azureBlob;
+  let gcpBlob;
   if (storage) {
-
     name = storage.MigStorage.metadata.name;
     provider = storage.MigStorage.spec.backupStorageProvider;
     awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
@@ -98,7 +97,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
   };
 
   if (isLoadingStorage) {
-    return <Spinner size="md" />
+    return <Spinner size="md" />;
   }
 
   return (
