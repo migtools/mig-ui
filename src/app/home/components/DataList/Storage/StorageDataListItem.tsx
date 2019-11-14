@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Badge,
   Button,
@@ -13,7 +13,7 @@ import { useOpenModal } from '../../../duck/hooks';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
-import { ModalContext } from '../../../duck/context';
+import { StorageContext, ModalContext } from '../../../duck/context';
 
 
 const StorageDataListItem = ({
@@ -27,6 +27,8 @@ const StorageDataListItem = ({
   ...props }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const storageContext = useContext(StorageContext);
 
   if (dataList) {
     return (
@@ -67,6 +69,17 @@ const StorageDataListItem = ({
             removeStorage={removeStorage}
             {...props}
           />
+          {isModalOpen &&
+            <AddEditStorageModal
+              isOpen={isModalOpen}
+              onHandleClose={() => {
+                setIsModalOpen(false);
+                storageContext.setCurrentStorage(null);
+              }
+              }
+            />
+          }
+
         </DataListItem>
       </ModalContext.Provider>
     );

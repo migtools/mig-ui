@@ -11,7 +11,6 @@ import {
   KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import { useOpenModal } from '../../../duck/hooks';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { StorageContext, ModalContext } from '../../../duck/context';
@@ -46,7 +45,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
     storageContext.watchStorageAddEditStatus(name);
     storageContext.setCurrentStorage(name);
     modalContext.setIsModalOpen(true);
-    // toggleIsAddEditModalOpen(!isAddEditModalOpen);
   };
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -71,7 +69,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
       Remove
     </DropdownItem>,
   ];
-
+  console.log('modalContext', modalContext)
   return (
     <DataListItem key={storageIndex} aria-labelledby="">
       <DataListItemRow>
@@ -124,16 +122,6 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             dropdownItems={kebabDropdownItems}
             position={DropdownPosition.right}
           />
-          {modalContext.isModalOpen &&
-            <AddEditStorageModal
-              isOpen={modalContext.isModalOpen}
-              onHandleClose={() => {
-                modalContext.setIsModalOpen(false);
-                storageContext.setCurrentStorage(null);
-              }
-              }
-            />
-          }
           {isConfirmOpen &&
             <ConfirmModal
               message={removeMessage}

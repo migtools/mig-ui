@@ -42,7 +42,10 @@ const StorageContent = ({
           <EmptyState variant="full">
             <EmptyStateIcon icon={AddCircleOIcon} />
             <Title size="lg">Add replication repositories for the migration</Title>
-            <Button onClick={() => modalContext.setIsModalOpen(true)} variant="primary">
+            <Button onClick={() => {
+              console.log('open modal')
+              modalContext.setIsModalOpen(true)
+            }} variant="primary">
               Add repository
           </Button>
           </EmptyState>

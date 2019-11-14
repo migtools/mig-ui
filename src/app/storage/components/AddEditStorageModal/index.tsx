@@ -69,7 +69,6 @@ const AddEditStorageModal = ({
         onClose={onClose}
         addEditStatus={addEditStatus}
         checkConnection={checkConnection}
-        isLoadingStorage={isLoadingStorage}
         storageList={storageList}
       />
     </Modal>

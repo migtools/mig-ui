@@ -1,27 +1,24 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { FormikProps } from 'formik';
-import { StorageContext, ModalContext } from '../../../home/duck/context';
+import { StorageContext } from '../../../home/duck/context';
 
 interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
   checkConnection: (name) => void;
-  isLoadingStorage: boolean;
   storageList: any;
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
-  const { storageList, isLoadingStorage, addEditStatus } = props;
+  const { storageList } = props;
   const storageContext = useContext(StorageContext);
   const storage = storageList.find(
     (storageItem) =>
@@ -95,10 +92,6 @@ const AddEditStorageForm = (props: IOtherProps) => {
       option
     );
   };
-
-  if (isLoadingStorage) {
-    return <Spinner size="md" />;
-  }
 
   return (
     <Flex flexDirection="column">
