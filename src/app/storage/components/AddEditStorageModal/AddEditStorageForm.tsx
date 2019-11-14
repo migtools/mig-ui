@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
@@ -9,6 +9,7 @@ import AzureForm from './ProviderForms/AzureForm';
 import { css } from '@emotion/core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { FormikProps } from 'formik';
+import { StorageContext, ModalContext } from '../../../home/duck/context';
 
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -16,11 +17,14 @@ interface IOtherProps {
   addEditStatus: any;
   checkConnection: (name) => void;
   isLoadingStorage: boolean;
-  currentStorage: any;
+  storageList: any;
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
-  const { currentStorage: storage, isLoadingStorage, addEditStatus } = props;
+  const { storageList, isLoadingStorage, addEditStatus } = props;
+  const storageContext = useContext(StorageContext)
+  console.log('current', storageContext.currentStorage)
+  const storage = storageList.find((storageItem) => storageItem.MigStorage.metadata.name === storageContext.currentStorage)
 
   let
     name,
@@ -35,7 +39,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
     azureStorageAccount,
     azureBlob,
     gcpBlob;
-  if (storage && addEditStatus.mode === 'edit') {
+  if (storage) {
+
     name = storage.MigStorage.metadata.name;
     provider = storage.MigStorage.spec.backupStorageProvider;
     awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
@@ -70,23 +75,14 @@ const AddEditStorageForm = (props: IOtherProps) => {
           ? atob(storage.Secret.data['azure-credentials'])
           : '';
 
+
   }
 
-
-  // useEffect(() => {
-  //   if (provider)
-  //     handleProviderChange({
-  //       label: provider,
-  //       value: provider
-
-  //     })
-  // }), [provider];
-
   const [selectedProvider, setSelectedProvider] = useState(
-    (storage && provider) ? {
+    (provider) ? {
       label: provider,
       value: provider
-    } : {}
+    } : null
   );
   const [providerOptions, setproviderOptions] = useState([
     { label: 'aws', value: 'aws' },
@@ -126,46 +122,23 @@ const AddEditStorageForm = (props: IOtherProps) => {
           onChange={handleProviderChange}
           options={providerOptions}
           value={selectedProvider}
-          isDisabled={(storage && provider) !== (null || undefined)}
+          isDisabled={(provider) !== (null || undefined)}
         />
       </Box>
       {(selectedProvider && selectedProvider.value === 'aws') &&
         <AWSForm provider={selectedProvider.value}
-          initialStorageValues={
-            {
-              name,
-              awsBucketName,
-              awsBucketRegion,
-              accessKey,
-              secret,
-              s3Url
-            }
-          }
+          initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret }}
           {...props} />
       }
       {(selectedProvider && selectedProvider.value === 'azure') &&
         <AzureForm
           provider={selectedProvider.value}
-          currentStorage={storage}
-          initialStorageValues={
-            {
-              name,
-              azureResourceGroup,
-              azureStorageAccount,
-              azureBlob
-            }
-          }
+          initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
           {...props} />
       }
       {(selectedProvider && selectedProvider.value === 'gcp') &&
         <GCPForm provider={selectedProvider.value}
-          initialStorageValues={
-            {
-              name,
-              gcpBucket,
-              gcpBlob
-            }
-          }
+          initialStorageValues={{ name, gcpBucket, gcpBlob }}
           {...props} />
       }
     </Flex>

@@ -76,6 +76,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   } = props;
 
   const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
+  const [currentStorage, setCurrentStorage] = useState(null);
 
 
 
@@ -116,7 +117,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             clusterCount={allClusters.length}
           />
         </ClusterContext.Provider>
-        <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
+        <StorageContext.Provider value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}>
           <StorageDataListItem
             dataList={allStorage}
             id={DataListItems.StorageList}

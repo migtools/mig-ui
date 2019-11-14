@@ -19,14 +19,14 @@ const AddEditStorageModal = ({
   isPolling,
   storageList,
   checkConnection,
-  currentStorage,
   isLoadingStorage,
+  initialStorageValues,
   ...props
 }) => {
 
   const pollingContext = useContext(PollingContext);
 
-  console.log('storageIndex', currentStorage)
+  console.log('storageName from current storage', initialStorageValues)
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
@@ -68,10 +68,9 @@ const AddEditStorageModal = ({
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
         addEditStatus={addEditStatus}
-        currentStorage={currentStorage}
         checkConnection={checkConnection}
         isLoadingStorage={isLoadingStorage}
-        {...props}
+        storageList={storageList}
       />
     </Modal>
   );

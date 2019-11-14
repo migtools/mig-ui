@@ -23,6 +23,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const name = storage.MigStorage.metadata.name;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
+
   let storageStatus = null;
   if (storage.MigStorage.status) {
     storageStatus = storage.MigStorage.status.conditions.filter(c => c.type === 'Ready').length > 0;
@@ -43,6 +44,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
 
   const editStorage = () => {
     storageContext.watchStorageAddEditStatus(name);
+    storageContext.setCurrentStorage(name);
     modalContext.setIsModalOpen(true);
     // toggleIsAddEditModalOpen(!isAddEditModalOpen);
   };
@@ -125,8 +127,11 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           {modalContext.isModalOpen &&
             <AddEditStorageModal
               isOpen={modalContext.isModalOpen}
-              onHandleClose={() => modalContext.setIsModalOpen(false)}
-              currentStorage={storage}
+              onHandleClose={() => {
+                modalContext.setIsModalOpen(false)
+                storageContext.setCurrentStorage(null)
+              }
+              }
             />
           }
           {isConfirmOpen &&
