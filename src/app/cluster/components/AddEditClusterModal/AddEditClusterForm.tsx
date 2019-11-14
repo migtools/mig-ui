@@ -132,12 +132,9 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onChange={formikHandleChange}
           onBlur={handleBlur}
         />
-        {errors.isAzure && touched.isAzure && (
-          <FormErrorDiv id="feedback-token">{errors.isAzure}</FormErrorDiv>
-        )}
       </FormGroup>
       {values.isAzure &&
-        <FormGroup label="Azure resource group" fieldId={azureResourceGroupKey}>
+        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
           <TextInput
             value={values.azureResourceGroup}
             onChange={formikHandleChange}
@@ -262,16 +259,10 @@ const AddEditClusterForm: any = withFormik({
     if (!values.token) {
       errors.token = 'Required';
     }
-    //TODO: resource group required if azure cluster is checked
 
-    // if (!values.isAzure) {
-    //   errors.isAzure = 'Required';
-    // }
-
-    // if (!values.azureResourceGroup) {
-
-    //   errors.azureResourceGroupi = 'Required';
-    // }
+    if (values.isAzure && !values.azureResourceGroup) {
+      errors.azureResourceGroupi = 'Required';
+    }
 
     return errors;
   },
