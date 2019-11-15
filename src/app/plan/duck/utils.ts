@@ -1,28 +1,5 @@
 import moment from 'moment';
 
-// const getPlanStatus = plan => {
-//   const statusObj = { success: null, error: null, errorText: null };
-//   const PvsDiscoveredType = 'PvsDiscovered';
-//   const NamespaceLimitErrorType = 'NamespaceLimitExceeded';
-//   if (plan.MigPlan.status && plan.MigPlan.status.conditions) {
-//     const maxNamespaceError = !!plan.MigPlan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
-//     if (maxNamespaceError) {
-//       statusObj.error = maxNamespaceError;
-//       statusObj.errorText = 'Namespace limit Exceeded.';
-//     }
-//     else {
-//       const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);
-
-//       if (pvsDiscovered) {
-//         statusObj.success = pvsDiscovered;
-//       }
-
-//     }
-//   }
-
-//   return statusObj;
-// };
-
 const getMigrationStatus = (plan, newResObject) => {
   const matchingMigration = plan.Migrations.find(
     s => s.metadata.name === newResObject.data.metadata.name
@@ -80,7 +57,6 @@ const groupPlan: any = (plan, response) => {
 };
 
 export default {
-  // getPlanStatus,
   getMigrationStatus,
   groupPlan,
   groupPlans,

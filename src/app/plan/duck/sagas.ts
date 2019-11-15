@@ -55,20 +55,34 @@ function* patchPlanSaga(planValues) {
   }
 }
 
-function* putPlanSaga(planValues) {
+function* putPlanSaga(planValues, isRerunPVDiscovery) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.hostCluster(state);
   try {
+    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
-    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
+    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, isRerunPVDiscovery);
     const putPlanResponse = yield client.put(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
+    //plan list was updating before status from controller was being set after update
+    //added delay to fix
+
+    yield delay(5000);
     yield put(PlanActions.planUpdateSuccess());
-    yield put(PlanActions.updatePlanList(putPlanResponse.data));
+    if (isRerunPVDiscovery) {
+      yield put(PlanActions.pvUpdateRequest(null));
+      yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+    } else {
+      const getPlanResponse = yield call(getPlanSaga, planValues.planName);
+      const updatedPlan = getPlanResponse.data;
+      yield put(PlanActions.updatePlanList(updatedPlan));
+      yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+
+    }
   } catch (err) {
     yield put(PlanActions.planUpdateFailure(err));
     throw err;
@@ -77,14 +91,16 @@ function* putPlanSaga(planValues) {
 
 function* planUpdateRetry(action) {
   try {
+    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
     yield retry(
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
       putPlanSaga,
       action.planValues,
+      action.isRerunPVDiscovery
     );
   } catch (error) {
-    yield put(AlertActions.alertErrorTimeout('Failed to update plan'));
+    yield put(PlanActions.planUpdateFailure(error));
   }
 }
 
@@ -125,12 +141,9 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
       delete metadata.generation;
       delete metadata.resourceVersion;
     }
-    if (plan.status) {
-      for (let i = 0; plan.status.conditions.length > i; i++) {
-        delete plan.status.conditions[i].lastTransitionTime;
-      }
-    }
   };
+
+
   const currMigPlanCore = corePlan(currMigPlan);
   const prevMigPlanCore = corePlan(prevMigPlan);
   if (JSON.stringify(currMigPlanCore) !== JSON.stringify(prevMigPlanCore)) {
@@ -139,6 +152,57 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
     return false;
   }
 };
+
+function* checkUpdatedPVs() {
+  let pvUpdateComplete = false;
+  let tries = 0;
+  const TicksUntilTimeout = 10;
+  while (!pvUpdateComplete) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      const state = yield select();
+      const { currentPlan } = state.plan;
+
+      const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+      const updatedPlan = getPlanResponse.data;
+
+      if (updatedPlan && updatedPlan.status && updatedPlan.status.conditions) {
+        const isUpdatedPVList = () => {
+          const updatedPVDiscoveryCondition = updatedPlan.status.conditions.find(cond => {
+            return cond.type === 'PvsDiscovered';
+          });
+
+          //conditions undefined for current plan! error?
+          const oldPVDiscoveryCondition = currentPlan.status.conditions.find(cond => {
+            return cond.type === 'PvsDiscovered';
+          });
+          if (JSON.stringify(updatedPVDiscoveryCondition.lastTransitionTime)
+            !== JSON.stringify(oldPVDiscoveryCondition.lastTransitionTime)) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+
+        if (isUpdatedPVList()) {
+          yield put(PlanActions.setCurrentPlan(updatedPlan));
+          yield put(PlanActions.pvUpdateSuccess());
+          yield put(PlanActions.updatePlanList(updatedPlan));
+          yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+
+          pvUpdateComplete = true;
+        }
+      } else {
+        //TODO: handle timeout case here
+        pvUpdateComplete = true;
+        break;
+      }
+
+      const PollingInterval = 5000;
+      yield delay(PollingInterval);
+    }
+  }
+}
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
   let tries = 0;
@@ -156,7 +220,6 @@ function* checkPlanStatus(action) {
       if (!currentPlan || isUpdatedPlan(updatedPlan, currentPlan)) {
         yield put(PlanActions.setCurrentPlan(updatedPlan));
       }
-
       if (updatedPlan.status && updatedPlan.status.conditions) {
         const hasReadyCondition = !!updatedPlan.status.conditions.some(c => c.type === 'Ready');
         const hasWarnCondition = !!updatedPlan.status.conditions.some(cond => {
@@ -307,6 +370,10 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
+function* watchPVUpdate() {
+  yield takeEvery(PlanActionTypes.PV_UPDATE_REQUEST, checkUpdatedPVs);
+}
+
 
 function* watchGetPVResourcesRequest() {
   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
@@ -322,5 +389,6 @@ export default {
   watchPlanClose,
   watchClosedStatus,
   watchPlanStatus,
-  watchGetPVResourcesRequest
+  watchGetPVResourcesRequest,
+  watchPVUpdate
 };

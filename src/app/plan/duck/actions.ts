@@ -22,9 +22,6 @@ export const PlanActionTypes = {
   NAMESPACE_FETCH_REQUEST: 'NAMESPACE_FETCH_REQUEST',
   NAMESPACE_FETCH_SUCCESS: 'NAMESPACE_FETCH_SUCCESS',
   NAMESPACE_FETCH_FAILURE: 'NAMESPACE_FETCH_FAILURE',
-  PV_FETCH_REQUEST: 'PV_FETCH_REQUEST',
-  PV_FETCH_FAILURE: 'PV_FETCH_FAILURE',
-  PV_FETCH_SUCCESS: 'PV_FETCH_SUCCESS',
   SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS: 'SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS',
   START_PV_POLLING: 'START_PV_POLLING',
   STOP_PV_POLLING: 'STOP_PV_POLLING',
@@ -55,6 +52,8 @@ export const PlanActionTypes = {
   SET_LOCKED_PLAN: 'SET_LOCKED_PLAN',
   SET_PLAN_ADD_EDIT_STATUS: 'SET_PLAN_ADD_EDIT_STATUS',
   WATCH_PLAN_ADD_EDIT_STATUS: 'SET_PLAN_ADD_EDIT_STATUS',
+  PV_UPDATE_REQUEST: 'PV_UPDATE_REQUEST',
+  PV_UPDATE_SUCCESS: 'PV_UPDATE_SUCCESS',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -143,18 +142,6 @@ const migPlanFetchFailure = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_FAILURE,
 });
 
-const pvFetchRequest = () => ({
-  type: PlanActionTypes.PV_FETCH_REQUEST,
-});
-
-const pvFetchFailure = () => ({
-  type: PlanActionTypes.PV_FETCH_FAILURE,
-});
-
-const pvFetchSuccess = () => ({
-  type: PlanActionTypes.PV_FETCH_SUCCESS,
-});
-
 const sourceClusterNamespacesFetchSuccess = (sourceClusterNamespaces: any[]) => ({
   type: PlanActionTypes.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS,
   sourceClusterNamespaces,
@@ -174,9 +161,19 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const planUpdateRequest = (planValues) => ({
+const pvUpdateRequest = (currentPlan) => ({
+  type: PlanActionTypes.PV_UPDATE_REQUEST,
+  currentPlan
+});
+
+const pvUpdateSuccess = () => ({
+  type: PlanActionTypes.PV_UPDATE_SUCCESS,
+});
+
+const planUpdateRequest = (planValues, isRerunPVDiscovery?) => ({
   type: PlanActionTypes.PLAN_UPDATE_REQUEST,
   planValues,
+  isRerunPVDiscovery
 });
 
 const planUpdateSuccess = () => ({
@@ -306,13 +303,12 @@ export const PlanActions = {
   migPlanFetchRequest,
   migPlanFetchSuccess,
   migPlanFetchFailure,
-  pvFetchRequest,
-  pvFetchFailure,
-  pvFetchSuccess,
   sourceClusterNamespacesFetchSuccess,
   namespaceFetchRequest,
   namespaceFetchSuccess,
   namespaceFetchFailure,
+  pvUpdateRequest,
+  pvUpdateSuccess,
   planUpdateRequest,
   planUpdateSuccess,
   planUpdateFailure,

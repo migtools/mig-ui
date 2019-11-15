@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   Grid,
   GridItem,
@@ -16,21 +16,25 @@ const VolumesForm = props => {
     values,
     isPVError,
     currentPlan,
+    currentPlanStatus,
     getPVResourcesRequest,
     pvResourceList,
     isFetchingPVResources,
     isEdit,
     planUpdateRequest,
-    startPlanStatusPolling,
-    isPollingStatus
+    isPollingStatus,
   } = props;
 
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
-
-    planUpdateRequest(values);
-    startPlanStatusPolling(values.planName);
-  }, []); // Only re-run the effect if fetching value changes
+    let isRerunPVDiscovery = null;
+    if (currentPlan) {
+      isRerunPVDiscovery = true;
+      planUpdateRequest(values, isRerunPVDiscovery);
+    } else {
+      planUpdateRequest(values, isRerunPVDiscovery);
+    }
+  }, []);
 
   return (
     <Grid gutter="md">
@@ -48,6 +52,7 @@ const VolumesForm = props => {
           setFieldValue={setFieldValue}
           values={values}
           currentPlan={currentPlan}
+          currentPlanStatus={currentPlanStatus}
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
           isFetchingPVResources={isFetchingPVResources}

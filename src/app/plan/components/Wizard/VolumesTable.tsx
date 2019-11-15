@@ -42,7 +42,8 @@ const VolumesTable = (props): any => {
     getPVResourcesRequest,
     isFetchingPVResources,
     pvResourceList,
-    isPollingStatus
+    isPollingStatus,
+    currentPlanStatus
   } = props;
   const [rows, setRows] = useState([]);
 
@@ -80,7 +81,10 @@ const VolumesTable = (props): any => {
               pvAction = rowVal.selection.action;
             }
             else {
-              pvAction = rowVal.type;
+              if (rowVal && rowVal.type) {
+                pvAction = rowVal.type;
+
+              }
             }
           }
           return {
@@ -140,7 +144,8 @@ const VolumesTable = (props): any => {
       </Box>
     );
   }
-  if (isPollingStatus) {
+  if (isPollingStatus ||
+    (currentPlanStatus.state === 'Pending')) {
     return (
       <Bullseye>
         <EmptyState variant="large">

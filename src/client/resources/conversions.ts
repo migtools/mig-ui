@@ -365,7 +365,7 @@ export function createMigPlan(
   };
 }
 
-export function updateMigPlanFromValues(migPlan: any, planValues: any) {
+export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPVDiscovery) {
   const updatedSpec = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
@@ -373,7 +373,7 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (planValues.selectedNamespaces.length !== migPlan.spec.namespaces.length) {
+  if (isRerunPVDiscovery) {
     //rerun pv discovery
     updatedSpec.persistentVolumes = [];
     updatedSpec.namespaces = planValues.selectedNamespaces;
@@ -383,6 +383,13 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
         const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
         if (userPv) {
           v.selection.action = userPv.type;
+          const selectedCopyMethodObj = planValues[pvCopyMethodAssignmentKey][v.name];
+          if (selectedCopyMethodObj) {
+            v.selection.copyMethod = selectedCopyMethodObj;
+          } else {
+            // v.selection.copyMethod = 'filesystem';
+          }
+
           const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
           if (selectedStorageClassObj) {
             v.selection.storageClass = selectedStorageClassObj.name;

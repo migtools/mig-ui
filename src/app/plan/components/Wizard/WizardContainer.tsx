@@ -30,7 +30,7 @@ export interface IOtherProps {
   currentPlan: any;
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
-  planUpdateRequest: (values) => void;
+  planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
   fetchNamespacesForCluster: () => void;
@@ -41,7 +41,7 @@ export interface IOtherProps {
   onHandleWizardModalClose: () => void;
   editPlanObj?: any;
   isEdit: boolean;
-  pvFetchRequest: () => void;
+  updateCurrentPlanStatus: any;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
@@ -137,12 +137,13 @@ const mapDispatchToProps = dispatch => {
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
-    pvFetchRequest: () => dispatch(PlanActions.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
-    planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
+    planUpdateRequest: (values, isRerunPVDiscovery) =>
+      dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
     setCurrentPlan: (plan) => dispatch(PlanActions.setCurrentPlan(plan)),
+    updateCurrentPlanStatus: (status) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
   };
 };
 

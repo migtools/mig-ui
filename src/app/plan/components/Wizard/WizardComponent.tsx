@@ -8,6 +8,7 @@ import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
+import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -29,11 +30,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     storageList,
     isOpen,
     isFetchingPVList,
-    isPVPolling,
     isFetchingNamespaceList,
     isPVError,
     isPollingStatus,
-    isFetchingPVResources,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
     getPVResourcesRequest,
@@ -46,6 +45,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     onHandleWizardModalClose,
     isEdit,
     editPlanObj,
+    updateCurrentPlanStatus,
   } = props;
 
   enum stepId {
@@ -129,12 +129,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
-            planUpdateRequest={planUpdateRequest}
             isPollingStatus={isPollingStatus}
+            planUpdateRequest={planUpdateRequest}
             startPlanStatusPolling={startPlanStatusPolling}
+            currentPlanStatus={currentPlanStatus}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError,
+        enableNext: !isFetchingPVList && !isPVError && currentPlanStatus.state !== 'Pending',
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -178,22 +179,29 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     setUpdatedSteps(steps);
 
-  }, [
-    currentPlan,
-    values,
-    isPVError,
-    isFetchingPVList,
-    isPollingStatus,
-    isFetchingNamespaceList,
-    pvResourceList,
-    errors,
-    touched
-  ]);
+  },
+    //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
+    [
+      currentPlan,
+      values,
+      isPVError,
+      isFetchingPVList,
+      isPollingStatus,
+      isFetchingNamespaceList,
+      pvResourceList,
+      errors,
+      touched,
+      currentPlanStatus
+    ]);
 
 
   const onMove = (curr, prev) => {
     if (stepIdReached < curr.id) {
       setStepIdReached(curr.id);
+    }
+
+    if (curr.id === stepId.MigrationSource && isEdit) {
+      setCurrentPlan(editPlanObj);
     }
 
     if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
@@ -206,17 +214,14 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           sourceCluster: props.values.sourceCluster,
           targetCluster: props.values.targetCluster,
           selectedStorage: props.values.selectedStorage,
-          namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
+          namespaces: props.values.selectedNamespaces,
         });
-      }
-      if (isEdit) {
-        setCurrentPlan(editPlanObj);
       }
     }
     if (curr.id === stepId.Results) {
+      updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
-      planUpdateRequest(props.values);
-      startPlanStatusPolling(props.values.planName);
+      planUpdateRequest(props.values, false);
     }
   };
   const handleClose = () => {

@@ -65,18 +65,6 @@ export const migPlanFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchFailure>) => {
     return { ...state, isError: true, isFetching: false };
   };
-export const pvFetchRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchRequest>) => {
-    return { ...state, isPVError: false, isFetchingPVList: true };
-  };
-export const pvFetchFailure =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchFailure>) => {
-    return { ...state, isPVError: true, isFetchingPVList: false };
-  };
-export const pvFetchSuccess =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchSuccess>) => {
-    return { ...state, isPVError: false, isFetchingPVList: false };
-  };
 
 export const addPlanSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
@@ -177,38 +165,18 @@ export const updatePlanMigrations =
 
 export const updatePlans =
   (state = INITIAL_STATE, action) => {
-    const updatedPlanList = action.updatedPlans.map(plan => {
+    const updatedPlanList = action.updatedPlans.map(p => {
       //filter migrations
-      plan.Migrations = sortMigrations(plan.Migrations);
-      const { metadata } = plan.MigPlan;
-      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
-        delete metadata.annotations;
-        delete metadata.generation;
-        delete metadata.resourceVersion;
-      }
-      if (plan.MigPlan.status) {
-        for (let i = 0; plan.MigPlan.status.conditions.length > i; i++) {
-          delete plan.MigPlan.status.conditions[i].lastTransitionTime;
-        }
-      }
-      return plan;
+      p.Migrations = sortMigrations(p.Migrations);
+      return p;
     });
 
     const sortedList = sortPlans(updatedPlanList);
 
-    if (JSON.stringify(sortedList) === JSON.stringify(state.migPlanList)) {
-      return {
-        ...state
-      };
-    } else if
-      (JSON.stringify(sortedList) !== JSON.stringify(state.migPlanList)) {
-
-      return {
-        ...state,
-        migPlanList: sortedList,
-      };
-    }
-
+    return {
+      ...state,
+      migPlanList: sortedList,
+    };
   };
 
 export const initStage =
@@ -389,9 +357,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.NAMESPACE_FETCH_REQUEST: return namespaceFetchRequest(state, action);
     case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
     case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
-    case PlanActionTypes.PV_FETCH_SUCCESS: return pvFetchSuccess(state, action);
-    case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
-    case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
     case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
     case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
     case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
@@ -416,7 +381,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
     case PlanActionTypes.SET_LOCKED_PLAN: return setLockedPlan(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
-      return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
     default: return state;
