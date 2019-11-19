@@ -1,5 +1,6 @@
 import { ClusterActionTypes } from './actions';
 import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
+import moment from 'moment';
 
 export const INITIAL_STATE = {
   isPolling: false,
@@ -9,6 +10,13 @@ export const INITIAL_STATE = {
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
 };
+
+const sortClusters = clusterList =>
+  clusterList.sort((left, right) => {
+    return moment
+      .utc(right.MigCluster.metadata.creationTimestamp)
+      .diff(moment.utc(left.MigCluster.metadata.creationTimestamp));
+  });
 
 export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
   return { ...state, clusterList: action.clusterList, isFetching: false };
@@ -62,10 +70,35 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
 };
 
 export const updateClusters = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    clusterList: action.updatedClusters,
-  };
+  const updatedClusterList = action.updatedClusters.map(cluster => {
+    const { metadata } = cluster.MigCluster;
+    if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+      delete metadata.annotations;
+      delete metadata.generation;
+      delete metadata.resourceVersion;
+    }
+    if (cluster.MigCluster.status) {
+      for (let i = 0; cluster.MigCluster.status.conditions.length > i; i++) {
+        delete cluster.MigCluster.status.conditions[i].lastTransitionTime;
+      }
+    }
+    return cluster;
+  });
+
+  const sortedList = sortClusters(updatedClusterList);
+
+  if (JSON.stringify(sortedList) === JSON.stringify(state.clusterList)) {
+    return {
+      ...state
+    };
+  } else if
+    (JSON.stringify(sortedList) !== JSON.stringify(state.clusterList)) {
+
+    return {
+      ...state,
+      clusterList: sortedList,
+    };
+  }
 };
 
 export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
