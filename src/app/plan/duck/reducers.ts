@@ -177,18 +177,31 @@ export const updatePlanMigrations =
 
 export const updatePlans =
   (state = INITIAL_STATE, action) => {
-    const updatedPlanList = action.updatedPlans.map(p => {
-      //filter migrations
-      p.Migrations = sortMigrations(p.Migrations);
-      return p;
+    const updatedPlanList = action.updatedPlans.map(plan => {
+      plan.Migrations = sortMigrations(plan.Migrations);
+      const { metadata } = plan.MigPlan;
+      if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+        delete metadata.annotations;
+        delete metadata.generation;
+        delete metadata.resourceVersion;
+      }
+      return plan;
     });
 
     const sortedList = sortPlans(updatedPlanList);
 
-    return {
-      ...state,
-      migPlanList: sortedList,
-    };
+    if (JSON.stringify(sortedList) === JSON.stringify(state.migPlanList)) {
+      return {
+        ...state
+      };
+    } else if
+      (JSON.stringify(sortedList) !== JSON.stringify(state.migPlanList)) {
+
+      return {
+        ...state,
+        migPlanList: sortedList,
+      };
+    }
   };
 
 export const initStage =
