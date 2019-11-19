@@ -16,12 +16,9 @@ export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
 
 const StorageClassTable = (props) => {
-  const { isEdit, currentPlan, clusterList, values, isFetchingPVList } = props;
+  const { currentPlan, clusterList, values, isFetchingPVList } = props;
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
-  const [copyMethodOptions, setCopyMethodOptions] = useState([]);
-  // Create a bit of state that will hold the storage class assignments
-  // for each of the pvs. This will get set on the plan values.
   const [pvStorageClassAssignment, setPvStorageClassAssignment] = useState({});
   const [pvCopyMethodAssignment, setPvCopyMethodAssignment] = useState({});
 
@@ -171,7 +168,6 @@ const StorageClassTable = (props) => {
               width: 500,
               style: { overflow: 'visible' },
               Cell: row => {
-                // const supportedCopyMethods = pv.supported.copyMethods || [];
                 const migPlanPvs = currentPlan.spec.persistentVolumes;
                 const currentPV = migPlanPvs.find(pv => pv.name === row.original.name);
                 const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
