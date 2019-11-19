@@ -375,7 +375,7 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPV
   }
   if (isRerunPVDiscovery) {
     //rerun pv discovery
-    updatedSpec.persistentVolumes = [];
+    // updatedSpec.persistentVolumes = [];
     updatedSpec.namespaces = planValues.selectedNamespaces;
   } else {
     if (updatedSpec.persistentVolumes) {

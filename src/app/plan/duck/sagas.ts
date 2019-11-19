@@ -154,7 +154,7 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
 function* checkUpdatedPVs() {
   let pvUpdateComplete = false;
   let tries = 0;
-  const TicksUntilTimeout = 5;
+  const TicksUntilTimeout = 240;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -185,17 +185,15 @@ function* checkUpdatedPVs() {
       }
     }
     else {
+      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
       //failed to update
-      //     yield put(PlanActions.setCurrentPlan(updatedPlan));
-      //     yield put(PlanActions.pvUpdateSuccess());
-      //     yield put(PlanActions.updatePlanList(updatedPlan));
-      //     yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-      // //TODO: handle timeout case here
+      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+
       pvUpdateComplete = true;
       break;
     }
 
-    const PollingInterval = 5000;
+    const PollingInterval = 1000;
     yield delay(PollingInterval);
   }
 }
