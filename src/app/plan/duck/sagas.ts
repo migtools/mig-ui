@@ -105,13 +105,17 @@ function* putPlanSaga(planValues) {
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
     const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues);
-    const putPlanResponse = yield client.put(
+    yield client.put(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       getPlanRes.data.metadata.name,
       updatedMigPlan
     );
+    yield delay(5000);
     yield put(PlanActions.planUpdateSuccess());
-    yield put(PlanActions.updatePlanList(putPlanResponse.data));
+    const getPlanResponse = yield call(getPlanSaga, planValues.planName);
+    const updatedPlan = getPlanResponse.data;
+    yield put(PlanActions.updatePlanList(updatedPlan));
+    yield put(PlanActions.startPlanStatusPolling(planValues.planName));
   } catch (err) {
     yield put(PlanActions.planUpdateFailure(err));
     throw err;

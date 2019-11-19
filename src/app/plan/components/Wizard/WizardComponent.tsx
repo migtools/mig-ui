@@ -8,6 +8,7 @@ import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
+import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -44,7 +45,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pvResourceList,
     addPlan,
     resetCurrentPlan,
-    onHandleWizardModalClose
+    onHandleWizardModalClose,
+    updateCurrentPlanStatus
   } = props;
 
   enum stepId {
@@ -176,7 +178,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isFetchingNamespaceList,
     pvResourceList,
     errors,
-    touched
+    touched,
+    currentPlanStatus
   ]);
 
 
@@ -200,9 +203,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       }
     }
     if (curr.id === stepId.Results) {
-      //update plan & start status polling on results page
+      updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       planUpdateRequest(props.values);
-      startPlanStatusPolling(props.values.planName);
     }
   };
   const handleClose = () => {

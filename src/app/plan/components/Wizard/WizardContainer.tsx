@@ -37,6 +37,7 @@ export interface IOtherProps {
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
+  updateCurrentPlanStatus: any;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
@@ -125,6 +126,7 @@ const mapDispatchToProps = dispatch => {
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
     planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
+    updateCurrentPlanStatus: (status) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
   };
 };
 
