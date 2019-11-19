@@ -375,7 +375,6 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPV
   }
   if (isRerunPVDiscovery) {
     //rerun pv discovery
-    // updatedSpec.persistentVolumes = [];
     updatedSpec.namespaces = planValues.selectedNamespaces;
   } else {
     if (updatedSpec.persistentVolumes) {
@@ -386,8 +385,6 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPV
           const selectedCopyMethodObj = planValues[pvCopyMethodAssignmentKey][v.name];
           if (selectedCopyMethodObj) {
             v.selection.copyMethod = selectedCopyMethodObj;
-          } else {
-            // v.selection.copyMethod = 'filesystem';
           }
 
           const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
