@@ -55,39 +55,6 @@ function* patchPlanSaga(planValues) {
   }
 }
 
-function* putPlanSaga(planValues, isRerunPVDiscovery) {
-  const state = yield select();
-  const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
-  try {
-    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
-    const getPlanRes = yield call(getPlanSaga, planValues.planName);
-    const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, isRerunPVDiscovery);
-    const putPlanResponse = yield client.put(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      getPlanRes.data.metadata.name,
-      updatedMigPlan
-    );
-    //plan list was updating before status from controller was being set after update
-    //added delay to fix
-
-    yield delay(5000);
-    yield put(PlanActions.planUpdateSuccess());
-    if (isRerunPVDiscovery) {
-      yield put(PlanActions.pvUpdateRequest(null));
-      yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
-    } else {
-      const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-      const updatedPlan = getPlanResponse.data;
-      yield put(PlanActions.updatePlanList(updatedPlan));
-      yield put(PlanActions.startPlanStatusPolling(planValues.planName));
-
-    }
-  } catch (err) {
-    yield put(PlanActions.planUpdateFailure(err));
-    throw err;
-  }
-}
 
 function* planUpdateRetry(action) {
   try {
@@ -95,7 +62,39 @@ function* planUpdateRetry(action) {
     yield retry(
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
-      putPlanSaga,
+      function* (planValues, isRerunPVDiscovery) {
+        const state = yield select();
+        const migMeta = state.migMeta;
+        const client: IClusterClient = ClientFactory.hostCluster(state);
+        try {
+          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+          const getPlanRes = yield call(getPlanSaga, planValues.planName);
+          const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, isRerunPVDiscovery);
+          yield client.patch(
+            new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+            getPlanRes.data.metadata.name,
+            updatedMigPlan
+          );
+          //plan list was updating before status from controller was being set after update
+          //added delay to fix
+
+          yield delay(5000);
+          yield put(PlanActions.planUpdateSuccess());
+          if (isRerunPVDiscovery) {
+            yield put(PlanActions.pvUpdateRequest());
+            yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+          } else {
+            const getPlanResponse = yield call(getPlanSaga, planValues.planName);
+            const updatedPlan = getPlanResponse.data;
+            yield put(PlanActions.updatePlanList(updatedPlan));
+            yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+
+          }
+        } catch (err) {
+          yield put(PlanActions.planUpdateFailure(err));
+          throw err;
+        }
+      },
       action.planValues,
       action.isRerunPVDiscovery
     );
