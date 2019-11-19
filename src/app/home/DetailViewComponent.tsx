@@ -19,15 +19,12 @@ import {
   StorageContext,
 } from './duck/context';
 import { createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../common/add_edit_state';
-import { StatusPollingInterval } from '../common/duck/sagas';
-import { PollingActions } from '../common/duck/actions';
-import { LogActions } from '../logs/duck';
 
 
 interface IProps {
-  allClusters: any[];
-  allStorage: any[];
-  plansWithStatus: any[];
+  clusterList: any[];
+  storageList: any[];
+  planList: any[];
   clusterAssociatedPlans: any;
   storageAssociatedPlans: any;
   migStorageList: any[];
@@ -57,15 +54,15 @@ enum DataListItems {
 
 const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   const {
-    allClusters,
-    allStorage,
+    clusterList,
+    storageList,
     removeStorage,
     removePlan,
     removeCluster,
     runStage,
     runMigration,
     planCloseAndDeleteRequest,
-    plansWithStatus,
+    planList,
     clusterAssociatedPlans,
     storageAssociatedPlans,
     watchClusterAddEditStatus,
@@ -81,12 +78,12 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 
 
   useEffect(() => {
-    if (allClusters.length > 1 && allStorage.length > 0) {
+    if (clusterList.length > 1 && storageList.length > 0) {
       setAddPlanDisabled(false);
     } else {
       setAddPlanDisabled(true);
     }
-  }, [allClusters, allStorage]);
+  }, [clusterList, storageList]);
 
 
 
@@ -107,41 +104,44 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
       <DataList aria-label="data-list-main-container">
         <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
           <ClusterDataListItem
-            dataList={allClusters}
+            dataList={clusterList}
             id={DataListItems.ClusterList}
             associatedPlans={clusterAssociatedPlans}
             migMeta={migMeta}
             removeCluster={removeCluster}
             isExpanded={expanded[DataListItems.ClusterList]}
             toggleExpanded={handleExpandDetails}
-            clusterCount={allClusters.length}
+            clusterCount={clusterList.length}
           />
         </ClusterContext.Provider>
         <StorageContext.Provider value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}>
           <StorageDataListItem
-            dataList={allStorage}
+            dataList={storageList}
             id={DataListItems.StorageList}
             associatedPlans={storageAssociatedPlans}
             removeStorage={removeStorage}
             isExpanded={expanded[DataListItems.StorageList]}
             toggleExpanded={handleExpandDetails}
-            storageCount={allStorage.length}
+            storageCount={storageList.length}
           />
         </StorageContext.Provider>
         <PlanContext.Provider value={{
           handleStageTriggered,
           handleDeletePlan,
-          handleRunMigration
+          handleRunMigration,
+          planList,
+          clusterList,
+          storageList,
         }}>
           <PlanDataListItem
             id={DataListItems.PlanList}
-            planList={plansWithStatus}
-            clusterList={allClusters}
-            storageList={allStorage}
+            planList={planList}
+            clusterList={clusterList}
+            storageList={storageList}
             plansDisabled={isAddPlanDisabled}
             isExpanded={expanded[DataListItems.PlanList]}
             toggleExpanded={handleExpandDetails}
-            planCount={plansWithStatus.length}
+            planCount={planList.length}
           />
         </PlanContext.Provider>
       </DataList>
@@ -150,19 +150,19 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 };
 
 function mapStateToProps(state) {
-  const allClusters = clusterSelectors.getAllClusters(state);
-  const allStorage = storageSelectors.getAllStorage(state);
-  const plansWithStatus = planSelectors.getPlansWithStatus(state);
+  const clusterList = clusterSelectors.getAllClusters(state);
+  const storageList = storageSelectors.getAllStorage(state);
+  const planList = planSelectors.getPlansWithStatus(state);
   const clusterAssociatedPlans = clusterSelectors.getAssociatedPlans(state);
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
   const migMeta = state.migMeta;
   return {
-    allClusters,
-    allStorage,
+    clusterList,
+    storageList,
     migStorageList,
-    plansWithStatus,
+    planList,
     clusterAssociatedPlans,
     storageAssociatedPlans,
     migMeta,
@@ -193,7 +193,7 @@ const mapDispatchToProps = dispatch => {
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
       ));
       dispatch(StorageActions.watchStorageAddEditStatus(storageName));
-    }
+    },
   };
 };
 

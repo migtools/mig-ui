@@ -135,9 +135,8 @@ function* checkClosedStatus(action) {
 const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   const corePlan = (plan) => {
     const { metadata } = plan;
-    if (metadata.annotations || metadata.generation || metadata.resourceVersion) {
+    if (metadata.annotations || metadata.resourceVersion) {
       delete metadata.annotations;
-      delete metadata.generation;
       delete metadata.resourceVersion;
     }
   };
@@ -155,7 +154,7 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
 function* checkUpdatedPVs() {
   let pvUpdateComplete = false;
   let tries = 0;
-  const TicksUntilTimeout = 10;
+  const TicksUntilTimeout = 5;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -165,22 +164,14 @@ function* checkUpdatedPVs() {
       const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
       const updatedPlan = getPlanResponse.data;
 
-      if (updatedPlan && updatedPlan.status && updatedPlan.status.conditions) {
+      if (updatedPlan) {
         const isUpdatedPVList = () => {
-          const updatedPVDiscoveryCondition = updatedPlan.status.conditions.find(cond => {
-            return cond.type === 'PvsDiscovered';
-          });
 
-          //conditions undefined for current plan! error?
-          const oldPVDiscoveryCondition = currentPlan.status.conditions.find(cond => {
-            return cond.type === 'PvsDiscovered';
-          });
-          if (JSON.stringify(updatedPVDiscoveryCondition.lastTransitionTime)
-            !== JSON.stringify(oldPVDiscoveryCondition.lastTransitionTime)) {
-            return true;
-          } else {
-            return false;
-          }
+          const updatedGeneration = updatedPlan.metadata.generation;
+          const oldGeneration = currentPlan.metadata.generation;
+
+          //Generation check incremented twice: once for ui change, once for controller change. 
+          return updatedGeneration >= oldGeneration + 2;
         };
 
         if (isUpdatedPVList()) {
@@ -191,15 +182,21 @@ function* checkUpdatedPVs() {
 
           pvUpdateComplete = true;
         }
-      } else {
-        //TODO: handle timeout case here
-        pvUpdateComplete = true;
-        break;
       }
-
-      const PollingInterval = 5000;
-      yield delay(PollingInterval);
     }
+    else {
+      //failed to update
+      //     yield put(PlanActions.setCurrentPlan(updatedPlan));
+      //     yield put(PlanActions.pvUpdateSuccess());
+      //     yield put(PlanActions.updatePlanList(updatedPlan));
+      //     yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+      // //TODO: handle timeout case here
+      pvUpdateComplete = true;
+      break;
+    }
+
+    const PollingInterval = 5000;
+    yield delay(PollingInterval);
   }
 }
 function* checkPlanStatus(action) {
