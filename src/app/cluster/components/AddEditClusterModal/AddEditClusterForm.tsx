@@ -8,6 +8,7 @@ import {
   FormGroup,
   Tooltip,
   TooltipPosition,
+  Checkbox
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -28,6 +29,8 @@ import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLa
 const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
+const isAzureKey = 'isAzure';
+const azureResourceGroupKey = 'azureResourceGroup';
 
 const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -119,6 +122,35 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
+      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
+        <Checkbox
+          label="Azure cluster"
+          aria-label="Azure cluster"
+          id="azure-cluster-checkbox"
+          name={isAzureKey}
+          isChecked={values.isAzure}
+          onChange={formikHandleChange}
+          onBlur={handleBlur}
+        />
+      </FormGroup>
+      {values.isAzure &&
+        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
+          <TextInput
+            value={values.azureResourceGroup}
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(azureResourceGroupKey)}
+            onBlur={handleBlur}
+            name={azureResourceGroupKey}
+            id="token-input"
+            type="text"
+          />
+          {errors.azureResourceGroup && touched.azureResourceGroup && (
+            <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
+          )}
+        </FormGroup>
+
+      }
+
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -177,6 +209,8 @@ interface IFormValues {
   name: string;
   url: string;
   token: string;
+  isAzure: boolean;
+  azureResourceGroup?: string;
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -192,12 +226,16 @@ const AddEditClusterForm: any = withFormik({
       name: '',
       url: '',
       token: '',
+      isAzure: false,
+      azureResourceGroup: ''
     };
 
     if (initialClusterValues) {
       values.name = initialClusterValues.clusterName || '';
       values.url = initialClusterValues.clusterUrl || '';
       values.token = initialClusterValues.clusterSvcToken || '';
+      values.isAzure = initialClusterValues.isAzure || false;
+      values.azureResourceGroup = initialClusterValues.azureResourceGroup || null;
     }
 
     return values;
@@ -220,6 +258,10 @@ const AddEditClusterForm: any = withFormik({
 
     if (!values.token) {
       errors.token = 'Required';
+    }
+
+    if (values.isAzure && !values.azureResourceGroup) {
+      errors.azureResourceGroupi = 'Required';
     }
 
     return errors;

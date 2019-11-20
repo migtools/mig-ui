@@ -11,33 +11,17 @@ import {
   KebabToggle,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import { useOpenModal } from '../../../duck/hooks';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-import { StorageContext } from '../../../duck/context';
+import { StorageContext, ModalContext } from '../../../duck/context';
 
 const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const associatedPlanCount = props.associatedPlans[storage.MigStorage.metadata.name];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
-  const [isAddEditModalOpen, toggleIsAddEditModalOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
   const name = storage.MigStorage.metadata.name;
-  const bucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const bucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
-  const accessKey =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-access-key-id']
-        ? atob(storage.Secret.data['aws-access-key-id'])
-        : '';
-  const secret =
-    typeof storage.Secret === 'undefined'
-      ? null
-      : storage.Secret.data['aws-secret-access-key']
-        ? atob(storage.Secret.data['aws-secret-access-key'])
-        : '';
 
   let storageStatus = null;
   if (storage.MigStorage.status) {
@@ -55,10 +39,12 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   };
 
   const storageContext = useContext(StorageContext);
+  const modalContext = useContext(ModalContext);
 
   const editStorage = () => {
     storageContext.watchStorageAddEditStatus(name);
-    toggleIsAddEditModalOpen();
+    storageContext.setCurrentStorage(name);
+    modalContext.setIsModalOpen(true);
   };
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -136,19 +122,14 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
             dropdownItems={kebabDropdownItems}
             position={DropdownPosition.right}
           />
-          <AddEditStorageModal
-            isOpen={isAddEditModalOpen}
-            onHandleClose={toggleIsAddEditModalOpen}
-            initialStorageValues={{
-              name, bucketName, bucketRegion, accessKey, secret, s3Url,
-            }}
-          />
-          <ConfirmModal
-            message={removeMessage}
-            isOpen={isConfirmOpen}
-            onHandleClose={handleRemoveStorage}
-            id="confirm-storage-removal"
-          />
+          {isConfirmOpen &&
+            <ConfirmModal
+              message={removeMessage}
+              isOpen={isConfirmOpen}
+              onHandleClose={handleRemoveStorage}
+              id="confirm-storage-removal"
+            />
+          }
         </DataListAction>
       </DataListItemRow>
     </DataListItem>

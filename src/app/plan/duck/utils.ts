@@ -8,7 +8,7 @@ const getPlanPVsAndCheckConditions = plan => {
     const maxNamespaceError = !!plan.MigPlan.status.conditions.some(c => c.type === NamespaceLimitErrorType);
     if (maxNamespaceError) {
       statusObj.error = maxNamespaceError;
-      statusObj.errorText = 'Namespace limit Exceeded.';
+      statusObj.errorText = 'Namespace limit exceeded.';
     }
     else {
       const pvsDiscovered = !!plan.MigPlan.status.conditions.some(c => c.type === PvsDiscoveredType);

@@ -19,6 +19,10 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { ClusterContext } from '../../../duck/context';
 
 const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }) => {
+  let clusterIsAzure = null;
+  if (cluster.MigCluster.spec.azureResourceGroup) {
+    clusterIsAzure = true;
+  }
   const clusterName = cluster.MigCluster.metadata.name;
   let clusterStatus = null;
   if (cluster.MigCluster.status) {
@@ -139,7 +143,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
           <AddEditClusterModal
             isOpen={isAddEditOpen}
             onHandleClose={toggleIsAddEditOpen}
-            initialClusterValues={{ clusterName, clusterUrl, clusterSvcToken }}
+            initialClusterValues={{ clusterName, clusterUrl, clusterSvcToken, clusterIsAzure }}
           />
           <ConfirmModal
             message={removeMessage}
