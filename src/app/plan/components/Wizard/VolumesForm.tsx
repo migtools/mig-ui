@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Box } from '@rebass/emotion';
+import { useEffect } from 'react';
 import {
   Grid,
   GridItem,
@@ -9,17 +9,32 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import VolumesTable from './VolumesTable';
+
 const VolumesForm = props => {
   const {
     setFieldValue,
     values,
     isPVError,
-    isFetchingPVList,
     currentPlan,
+    currentPlanStatus,
     getPVResourcesRequest,
     pvResourceList,
-    isFetchingPVResources
+    isFetchingPVResources,
+    isEdit,
+    planUpdateRequest,
+    isPollingStatus,
   } = props;
+
+  useEffect(() => {
+    //kick off pv discovery once volumes form is reached with current selected namespaces
+    let isRerunPVDiscovery = null;
+    if (currentPlan) {
+      isRerunPVDiscovery = true;
+      planUpdateRequest(values, isRerunPVDiscovery);
+    } else {
+      planUpdateRequest(values, isRerunPVDiscovery);
+    }
+  }, []);
 
   return (
     <Grid gutter="md">
@@ -32,16 +47,18 @@ const VolumesForm = props => {
       </GridItem>
       <GridItem>
         <VolumesTable
+          isEdit={isEdit}
           isPVError={isPVError}
-          isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}
           currentPlan={currentPlan}
+          currentPlanStatus={currentPlanStatus}
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
           isFetchingPVResources={isFetchingPVResources}
+          isPollingStatus={isPollingStatus}
         />
-       </GridItem>
+      </GridItem>
     </Grid>
   );
 };

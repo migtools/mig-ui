@@ -365,7 +365,7 @@ export function createMigPlan(
   };
 }
 
-export function updateMigPlanFromValues(migPlan: any, planValues: any) {
+export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPVDiscovery) {
   const updatedSpec = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
@@ -373,30 +373,43 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any) {
       namespace: migPlan.metadata.namespace,
     };
   }
+  if (planValues.sourceCluster) {
+    updatedSpec.srcMigClusterRef = {
+      name: planValues.sourceCluster,
+      namespace: migPlan.metadata.namespace,
+    };
+  }
+  if (planValues.targetCluster) {
+    updatedSpec.destMigClusterRef = {
+      name: planValues.targetCluster,
+      namespace: migPlan.metadata.namespace,
+    };
+  }
+  if (isRerunPVDiscovery) {
+    //rerun pv discovery
+    updatedSpec.namespaces = planValues.selectedNamespaces;
+  } else {
+    if (updatedSpec.persistentVolumes) {
+      updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
+        const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
+        if (userPv) {
+          v.selection.action = userPv.type;
+          const selectedCopyMethodObj = planValues[pvCopyMethodAssignmentKey][v.name];
+          if (selectedCopyMethodObj) {
+            v.selection.copyMethod = selectedCopyMethodObj;
+          }
 
-  if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-      const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
-      if (userPv) {
-        //set action type
-        v.selection.action = userPv.type;
-        //set storage class
-        const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
-        if (selectedStorageClassObj) {
-          v.selection.storageClass = selectedStorageClassObj.name;
-        } else {
-          v.selection.storageClass = '';
+          const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+          if (selectedStorageClassObj) {
+            v.selection.storageClass = selectedStorageClassObj.name;
+          } else {
+            v.selection.storageClass = '';
+          }
         }
-        //set copy method 
-        const selectedCopyMethod = planValues[pvCopyMethodAssignmentKey][v.name];
-        if (selectedCopyMethod) {
-          v.selection.copyMethod = selectedCopyMethod;
-        } else {
-          v.selection.copyMethod = '';
-        }
-      }
-      return v;
-    });
+        return v;
+      });
+    }
+
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;

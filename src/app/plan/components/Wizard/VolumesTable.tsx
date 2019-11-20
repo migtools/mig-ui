@@ -25,7 +25,13 @@ import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const capitalize = (s: string) => {
+  if (s.charAt(0)) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  } else {
+    return s;
+  }
+};
 
 const VolumesTable = (props): any => {
   const {
@@ -33,10 +39,11 @@ const VolumesTable = (props): any => {
     currentPlan,
     values,
     isPVError,
-    isFetchingPVList,
     getPVResourcesRequest,
     isFetchingPVResources,
-    pvResourceList
+    pvResourceList,
+    isPollingStatus,
+    currentPlanStatus
   } = props;
   const [rows, setRows] = useState([]);
 
@@ -70,12 +77,20 @@ const VolumesTable = (props): any => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
-            pvAction = rowVal.type;
+            if (rowVal && rowVal.selection) {
+              pvAction = rowVal.selection.action;
+            }
+            else {
+              if (rowVal && rowVal.type) {
+                pvAction = rowVal.type;
+
+              }
+            }
           }
           return {
             name: planVolume.name,
             project: planVolume.pvc.namespace,
-            storageClass: planVolume.storageClass || 'None',
+            storageClass: planVolume.selection.storageClass || 'None',
             size: planVolume.capacity,
             claim: planVolume.pvc.name,
             type: pvAction,
@@ -101,7 +116,7 @@ const VolumesTable = (props): any => {
       setFieldValue('persistentVolumes', mappedPVs);
       setRows(mappedPVs);
     }
-  }, [isFetchingPVList]); // Only re-run the effect if fetching value changes
+  }, [currentPlan, isPollingStatus]); // Only re-run the effect if fetching value changes
 
   const StyledTextContent = styled(TextContent)`
     margin: 1em 0 1em 0;
@@ -129,7 +144,8 @@ const VolumesTable = (props): any => {
       </Box>
     );
   }
-  if (isFetchingPVList) {
+  if (isPollingStatus ||
+    (currentPlanStatus.state === 'Pending')) {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -141,7 +157,7 @@ const VolumesTable = (props): any => {
           </Title>
         </EmptyState>
       </Bullseye>
-     );
+    );
   }
 
   return (

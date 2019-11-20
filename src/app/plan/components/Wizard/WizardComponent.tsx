@@ -8,6 +8,7 @@ import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
+import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -32,19 +33,20 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isFetchingNamespaceList,
     isPVError,
     isPollingStatus,
-    isFetchingPVResources,
     fetchNamespacesForCluster,
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
+    stopPlanStatusPolling,
     planUpdateRequest,
-    isPollingStorage,
-    isPollingClusters,
-    isPollingPlans,
     pvResourceList,
     addPlan,
+    setCurrentPlan,
     resetCurrentPlan,
-    onHandleWizardModalClose
+    onHandleWizardModalClose,
+    isEdit,
+    editPlanObj,
+    updateCurrentPlanStatus,
   } = props;
 
   enum stepId {
@@ -57,10 +59,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   }
 
   useEffect(() => {
-    if (props.isOpen && (isPollingPlans || isPollingClusters || isPollingStorage)) {
+    if (isOpen) {
       pollingContext.stopAllPolling();
     }
-  });
+  }, [isOpen]);
 
   useEffect(() => {
     const steps = [
@@ -75,9 +77,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             handleBlur={handleBlur}
             handleChange={handleChange}
             setFieldTouched={setFieldTouched}
+            isEdit={isEdit}
           />
         ),
-        enableNext: !errors.planName && touched.planName === true,
+        enableNext: !errors.planName && (touched.planName === true || isEdit === true),
       },
       {
         id: stepId.MigrationSource,
@@ -96,6 +99,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isFetchingNamespaceList={isFetchingNamespaceList}
             fetchNamespacesForCluster={fetchNamespacesForCluster}
             sourceClusterNamespaces={sourceClusterNamespaces}
+            isEdit={isEdit}
           />
         ),
         enableNext:
@@ -105,7 +109,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           touched.targetCluster === true &&
           !errors.sourceCluster &&
           touched.sourceCluster === true &&
-          !errors.selectedNamespaces,
+          !errors.selectedNamespaces ||
+          (isEdit &&
+            !errors.selectedStorage &&
+            !errors.targetCluster &&
+            !errors.sourceCluster &&
+            !errors.selectedNamespaces),
         canJumpTo: stepIdReached >= stepId.MigrationSource,
       },
       {
@@ -113,18 +122,21 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
+            isEdit={isEdit}
             values={values}
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
-            isFetchingPVResources={isFetchingPVResources}
+            isPollingStatus={isPollingStatus}
+            planUpdateRequest={planUpdateRequest}
+            startPlanStatusPolling={startPlanStatusPolling}
+            currentPlanStatus={currentPlanStatus}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError,
+        enableNext: !isFetchingPVList && !isPVError && currentPlanStatus.state !== 'Pending',
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -132,6 +144,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         name: 'Storage Class',
         component: (
           <StorageClassForm
+            isEdit={isEdit}
             values={values}
             errors={errors}
             touched={touched}
@@ -167,17 +180,20 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     setUpdatedSteps(steps);
 
-  }, [
-    currentPlan,
-    values,
-    isPVError,
-    isFetchingPVList,
-    isPollingStatus,
-    isFetchingNamespaceList,
-    pvResourceList,
-    errors,
-    touched
-  ]);
+  },
+    //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
+    [
+      currentPlan,
+      values,
+      isPVError,
+      isFetchingPVList,
+      isPollingStatus,
+      isFetchingNamespaceList,
+      pvResourceList,
+      errors,
+      touched,
+      currentPlanStatus
+    ]);
 
 
   const onMove = (curr, prev) => {
@@ -185,24 +201,28 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setStepIdReached(curr.id);
     }
 
+    if (curr.id === stepId.MigrationSource && isEdit) {
+      setCurrentPlan(editPlanObj);
+    }
+
     if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
 
-      if (!currentPlan) {
+      if (!currentPlan && !isEdit) {
         addPlan({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
           targetCluster: props.values.targetCluster,
           selectedStorage: props.values.selectedStorage,
-          namespaces: props.values.selectedNamespaces.map(ns => ns.metadata.name),
+          namespaces: props.values.selectedNamespaces,
         });
       }
     }
     if (curr.id === stepId.Results) {
+      updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
-      planUpdateRequest(props.values);
-      startPlanStatusPolling(props.values.planName);
+      planUpdateRequest(props.values, false);
     }
   };
   const handleClose = () => {
@@ -211,6 +231,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
+    stopPlanStatusPolling();
   };
   return (
     <React.Fragment>

@@ -4,45 +4,54 @@ import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import {
-  Grid,
   GridItem,
   Text,
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
 import { css } from '@emotion/core';
-import styled from '@emotion/styled';
 interface INamespaceTableProps {
+  isEdit: boolean;
   values: any;
   sourceClusterNamespaces: any;
   setFieldValue: (fieldName, fieldValue) => void;
 }
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
-  const { setFieldValue, sourceClusterNamespaces, values } = props;
+  const { isEdit, setFieldValue, sourceClusterNamespaces, values } = props;
   const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
   const [selectAll, setSelectAll] = useState(0);
 
-  useEffect(() => {
-    const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
-      const keys = Object.keys(checkedNamespaceRows);
 
-      for (const key of keys) {
-        if (item.metadata.uid === key) {
-          return item;
+  useEffect(() => {
+    if (sourceClusterNamespaces.length > 0) {
+      const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
+        const keys = Object.keys(checkedNamespaceRows);
+
+        for (const key of keys) {
+          if (item.metadata.uid === key && checkedNamespaceRows[key]) {
+            return item;
+          }
         }
-      }
-    });
-    setFieldValue('selectedNamespaces', formValuesForNamespaces);
+      }).map((namespace) => namespace.metadata.name);
+
+      setFieldValue('selectedNamespaces', formValuesForNamespaces);
+    }
   }, [checkedNamespaceRows]);
 
   useEffect(() => {
-    if (values.selectedNamespaces.length > 0) {
+    if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
       const newSelected = Object.assign({}, checkedNamespaceRows);
       values.selectedNamespaces.filter((item, itemIndex) => {
         for (let i = 0; sourceClusterNamespaces.length > i; i++) {
-          if (item.metadata.uid === sourceClusterNamespaces[i].metadata.uid) {
-            newSelected[item.metadata.uid] = true;
+          if (item.metadata && item.metadata.uid) {
+            if (item.metadata.uid === sourceClusterNamespaces[i].metadata.uid) {
+              newSelected[item.metadata.uid] = true;
+            }
+          } else {
+            if (item === sourceClusterNamespaces[i].metadata.name) {
+              newSelected[sourceClusterNamespaces[i].metadata.uid] = true;
+            }
           }
         }
       });
@@ -69,10 +78,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setSelectAll(2);
   };
 
-
-  const StyledTextContent = styled(TextContent)`
-      margin: 1em 0 1em 0;
-    `;
 
   if (values.sourceCluster !== null) {
     return (

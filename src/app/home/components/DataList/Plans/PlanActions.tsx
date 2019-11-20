@@ -11,9 +11,11 @@ import {
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 import { withRouter } from 'react-router-dom';
+import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 
 const PlanActions = ({ plan, history }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
     hasClosedCondition,
@@ -25,8 +27,22 @@ const PlanActions = ({ plan, history }) => {
     isPlanLocked
   } = plan.PlanStatus;
 
+  const editPlan = () => {
+    toggleWizardOpen();
+  };
+
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        editPlan();
+      }}
+      key="editPlan"
+    >
+      Edit
+    </DropdownItem>,
+
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
@@ -48,7 +64,7 @@ const PlanActions = ({ plan, history }) => {
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleOpen();
+        toggleMigrateModalOpen();
       }}
       key="migratePlan"
       isDisabled={
@@ -85,7 +101,6 @@ const PlanActions = ({ plan, history }) => {
       Logs
     </DropdownItem>,
   ];
-
   return (
     <div className="pf-l-flex pf-m-nowrap">
       <div className="pf-l-flex__item pf-m-align-right">
@@ -98,7 +113,21 @@ const PlanActions = ({ plan, history }) => {
           dropdownItems={kebabDropdownItems}
           position={DropdownPosition.right}
         />
-        <MigrateModal plan={plan} isOpen={isOpen} onHandleClose={toggleOpen} />
+        <WizardContainer
+          planList={planContext.planList}
+          clusterList={planContext.clusterList}
+          storageList={planContext.storageList}
+          isOpen={isWizardOpen}
+          onHandleWizardModalClose={toggleWizardOpen}
+          editPlanObj={plan.MigPlan}
+          isEdit={true}
+        />
+
+        <MigrateModal
+          plan={plan}
+          isOpen={isMigrateModalOpen}
+          onHandleClose={toggleMigrateModalOpen}
+        />
       </div>
     </div>
   );
