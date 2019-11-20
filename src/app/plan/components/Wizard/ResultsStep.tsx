@@ -30,7 +30,14 @@ interface IProps {
 
 
 const ResultsStep: React.FunctionComponent<IProps> = props => {
-  const { values, currentPlan, currentPlanStatus, isPollingStatus, startPlanStatusPolling, onClose } = props;
+  const { values,
+    currentPlan,
+    currentPlanStatus,
+    isPollingStatus,
+    startPlanStatusPolling,
+    onClose
+  } = props;
+
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);
   };

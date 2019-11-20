@@ -37,6 +37,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
+    stopPlanStatusPolling,
     planUpdateRequest,
     pvResourceList,
     addPlan,
@@ -230,6 +231,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
+    stopPlanStatusPolling();
   };
   return (
     <React.Fragment>

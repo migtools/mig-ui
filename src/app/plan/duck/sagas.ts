@@ -42,17 +42,13 @@ function* patchPlanSaga(planValues) {
         closed: true
       }
     };
-    yield client.patch(
+    const patchPlanResponse = yield client.patch(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
       getPlanRes.data.metadata.name,
       closedPlanSpecObj
     );
-    yield delay(5000);
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
     yield put(PlanActions.planUpdateSuccess());
-    const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-    const updatedPlan = getPlanResponse.data;
-    yield put(PlanActions.updatePlanList(updatedPlan));
-    yield put(PlanActions.startPlanStatusPolling(planValues.planName));
   } catch (err) {
     yield put(PlanActions.planUpdateFailure(err));
     throw err;
@@ -80,8 +76,7 @@ function* planUpdateRetry(action) {
               JSON.stringify(planValues.selectedNamespaces) ||
               JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
               JSON.stringify(planValues.targetCluster) ||
-              JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
-              JSON.stringify(planValues.sourceCluster)
+              JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !== JSON.stringify(planValues.sourceCluster)
             ) {
               yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
