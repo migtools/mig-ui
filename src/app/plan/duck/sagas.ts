@@ -222,6 +222,9 @@ function* checkPlanStatus(action) {
       }
       if (updatedPlan.status && updatedPlan.status.conditions) {
         const hasReadyCondition = !!updatedPlan.status.conditions.some(c => c.type === 'Ready');
+        const hasErrorCondition = !!updatedPlan.status.conditions.some(cond => {
+          return cond.category === 'Error';
+        });
         const hasWarnCondition = !!updatedPlan.status.conditions.some(cond => {
           return cond.category === 'Warn';
         });
@@ -249,6 +252,16 @@ function* checkPlanStatus(action) {
           });
           yield put(PlanActions.updateCurrentPlanStatus(
             { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
+          ));
+
+          yield put(PlanActions.stopPlanStatusPolling());
+        }
+        if (hasErrorCondition) {
+          const errorCond = updatedPlan.status.conditions.find(cond => {
+            return cond.category === 'Error';
+          });
+          yield put(PlanActions.updateCurrentPlanStatus(
+            { state: CurrentPlanState.Critical, errorMessage: errorCond.message }
           ));
 
           yield put(PlanActions.stopPlanStatusPolling());
