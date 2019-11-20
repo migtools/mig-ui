@@ -17,6 +17,7 @@ export interface IOtherProps {
   planList: any[];
   storageList: any[];
   isFetchingPVList: boolean;
+  isPVPolling: boolean;
   isPollingStatus: boolean;
   isPVError: boolean;
   isCheckingPlanStatus: boolean;
@@ -29,25 +30,42 @@ export interface IOtherProps {
   currentPlan: any;
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
-  planUpdateRequest: (values) => void;
+  stopPlanStatusPolling: () => void;
+  planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
+  setCurrentPlan: (plan) => void;
   fetchNamespacesForCluster: () => void;
   getPVResourcesRequest: () => void;
   addPlan: (planValues) => void;
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
+  editPlanObj?: any;
+  isEdit: boolean;
+  updateCurrentPlanStatus: any;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
-  mapPropsToValues: () => ({
-    planName: '',
-    sourceCluster: null,
-    targetCluster: null,
-    selectedNamespaces: [],
-    selectedStorage: null,
-    persistentVolumes: [],
-  }),
+  mapPropsToValues: ({ editPlanObj, isEdit }) => {
+    const values = {
+      planName: '',
+      sourceCluster: null,
+      targetCluster: null,
+      selectedNamespaces: [],
+      selectedStorage: null,
+      persistentVolumes: [],
+    };
+    if (editPlanObj && isEdit) {
+      values.planName = editPlanObj.metadata.name || '';
+      values.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
+      values.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
+      values.selectedNamespaces = editPlanObj.spec.namespaces || [];
+      values.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
+      values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
+    }
+
+    return values;
+  },
 
   validate: values => {
     const errors: any = {};
@@ -100,13 +118,13 @@ const mapStateToProps = state => {
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
+    isPVPolling: state.plan.isPVPolling,
     isPollingPlans: state.plan.isPolling,
     isPollingClusters: state.cluster.isPolling,
     isPollingStorage: state.storage.isPolling,
     isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
     sourceClusterNamespaces: filteredSourceClusterNamespaces,
-    isFetchingPVList: state.plan.isFetchingPVList,
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlan(state),
@@ -116,15 +134,18 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    addPlan: plan => dispatch(planOperations.addPlan(plan)),
+    addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
     fetchNamespacesForCluster: clusterName => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
-    pvFetchRequest: () => dispatch(planOperations.pvFetchRequest()),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
-    planUpdateRequest: (values) => dispatch(PlanActions.planUpdateRequest(values)),
+    stopPlanStatusPolling: () => dispatch(PlanActions.stopPlanStatusPolling()),
+    planUpdateRequest: (values, isRerunPVDiscovery) =>
+      dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
+    setCurrentPlan: (plan) => dispatch(PlanActions.setCurrentPlan(plan)),
+    updateCurrentPlanStatus: (status) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
   };
 };
 
