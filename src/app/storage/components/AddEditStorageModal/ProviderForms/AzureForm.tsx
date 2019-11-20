@@ -119,7 +119,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="azure-resource-group-input-error">{errors.azureResourceGroup}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="Azure storage account" isRequired fieldId={azureStorageAccountKey}>
+            <FormGroup label="Azure storage account name" isRequired fieldId={azureStorageAccountKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureStorageAccountKey)}
