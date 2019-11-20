@@ -254,7 +254,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                         <Box my={1}>
                             <p>
                                 See the
-                                    <a href="https://docs.microsoft.com/en-us/azure/">
+                                    <a href="https://cloud.redhat.com/openshift/install/azure/installer-provisioned">
                                     product documentation
                                     </a>
                                 instructions on how to create an .INI file that
