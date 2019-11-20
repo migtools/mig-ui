@@ -381,9 +381,11 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
     case PlanActionTypes.SET_LOCKED_PLAN: return setLockedPlan(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
+      return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
-    default: return state;
+    default:
+      return state;
   }
 };
 
