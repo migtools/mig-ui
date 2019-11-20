@@ -373,6 +373,18 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPV
       namespace: migPlan.metadata.namespace,
     };
   }
+  if (planValues.sourceCluster) {
+    updatedSpec.srcMigClusterRef = {
+      name: planValues.sourceCluster,
+      namespace: migPlan.metadata.namespace,
+    };
+  }
+  if (planValues.targetCluster) {
+    updatedSpec.destMigClusterRef = {
+      name: planValues.targetCluster,
+      namespace: migPlan.metadata.namespace,
+    };
+  }
   if (isRerunPVDiscovery) {
     //rerun pv discovery
     updatedSpec.namespaces = planValues.selectedNamespaces;

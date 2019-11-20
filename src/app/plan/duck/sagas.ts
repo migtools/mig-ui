@@ -70,26 +70,32 @@ function* planUpdateRetry(action) {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes = yield call(getPlanSaga, planValues.planName);
           const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, isRerunPVDiscovery);
-          yield client.patch(
-            new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-            getPlanRes.data.metadata.name,
-            updatedMigPlan
-          );
-          //plan list was updating before status from controller was being set after update
-          //added delay to fix
+          if (
+            JSON.stringify(getPlanRes.data.spec.namespaces) !== JSON.stringify(planValues.selectedNamespaces) ||
+            JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !== JSON.stringify(planValues.targetCluster) ||
+            JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !== JSON.stringify(planValues.sourceCluster)
+          ) {
+            yield client.patch(
+              new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+              getPlanRes.data.metadata.name,
+              updatedMigPlan
+            );
+            yield delay(5000);
+            yield put(PlanActions.planUpdateSuccess());
+            if (isRerunPVDiscovery) {
+              yield put(PlanActions.pvUpdateRequest());
+              yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+            } else {
+              const getPlanResponse = yield call(getPlanSaga, planValues.planName);
+              const updatedPlan = getPlanResponse.data;
+              yield put(PlanActions.updatePlanList(updatedPlan));
+              yield put(PlanActions.startPlanStatusPolling(planValues.planName));
 
-          yield delay(5000);
-          yield put(PlanActions.planUpdateSuccess());
-          if (isRerunPVDiscovery) {
-            yield put(PlanActions.pvUpdateRequest());
-            yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+            }
           } else {
-            const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-            const updatedPlan = getPlanResponse.data;
-            yield put(PlanActions.updatePlanList(updatedPlan));
             yield put(PlanActions.startPlanStatusPolling(planValues.planName));
-
           }
+
         } catch (err) {
           yield put(PlanActions.planUpdateFailure(err));
           throw err;
