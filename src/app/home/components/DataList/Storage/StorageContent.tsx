@@ -42,7 +42,7 @@ const StorageContent = ({
             <Button onClick={() => {
               modalContext.setIsModalOpen(true);
             }} variant="primary">
-              Add repository
+              Add replication repository
           </Button>
           </EmptyState>
         )}

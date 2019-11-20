@@ -204,7 +204,7 @@ const ResourceSelectForm = props => {
 
             <GridItem>
               <FormGroup
-                label="Replication Repository"
+                label="Replication repository"
                 isRequired
                 fieldId="selectedStorage"
               >
