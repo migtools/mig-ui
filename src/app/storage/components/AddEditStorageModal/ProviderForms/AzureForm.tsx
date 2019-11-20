@@ -229,25 +229,25 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                             <ul>
                                 <li>
                                     - Azure subscription ID
-                        </li>
+                                </li>
                                 <li>
                                     - Azure storage account
-                        </li>
+                                </li>
                                 <li>
                                     - Azure tennant ID
-                        </li>
+                                </li>
                                 <li>
                                     - Azure client ID
-                        </li>
+                                </li>
                                 <li>
                                     - Azure client secret
-                        </li>
+                                </li>
                                 <li>
                                     - Azure resource group
-                        </li>
+                                </li>
                                 <li>
                                     - Azure cloud name
-                        </li>
+                                </li>
                             </ul>
 
                         </Box>
@@ -258,7 +258,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                                     href="https://cloud.redhat.com/openshift/install/azure/installer-provisioned"
                                     target="_blank">
                                     product documentation
-                                    </a>
+                                </a>
                                 &nbsp;
                                 instructions on how to create an .INI file that
                                 includes this information.
