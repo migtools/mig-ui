@@ -8,6 +8,7 @@ import {
     Tooltip,
     TooltipPosition,
     TextArea,
+    Modal
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import {
@@ -65,6 +66,11 @@ interface IOtherProps {
 }
 
 const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+    const [isPopUpModalOpen, setIsPopUpModalOpen] = useState(true);
+
+    const handleModalToggle = () => {
+        setIsPopUpModalOpen(!isPopUpModalOpen);
+    };
 
     const {
         addEditStatus: currentStatus,
@@ -133,7 +139,11 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="azure-storage-input-error">{errors.azureStorageAccount}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="Azure credentials - INI file contents" isRequired fieldId={azureBlobKey}>
+            <FormGroup
+                label="Azure credentials (Copy and paste .INI file contents here)"
+                isRequired
+                fieldId={azureBlobKey}
+            >
                 <TextArea
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureBlobKey)}
@@ -195,7 +205,66 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
                 </Box>
             </Flex>
+            {isPopUpModalOpen &&
+                <Modal
+                    isSmall
+                    title="Repository information required"
+                    isOpen={isPopUpModalOpen}
+                    onClose={handleModalToggle}
+                    actions={[
+                        <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+                            Close
+                        </Button>,
+                    ]}
+                    isFooterLeftAligned
+                >
+                    <Flex flexDirection="column">
+                        <Box my={1}>
+                            <p>
+                                To add an Azure repository, you will need the following information:
+                        </p>
 
+                        </Box>
+                        <Box my={1}>
+                            <ul>
+                                <li>
+                                    - Azure subscription ID
+                        </li>
+                                <li>
+                                    - Azure storage account
+                        </li>
+                                <li>
+                                    - Azure tennant ID
+                        </li>
+                                <li>
+                                    - Azure client ID
+                        </li>
+                                <li>
+                                    - Azure client secret
+                        </li>
+                                <li>
+                                    - Azure resource group
+                        </li>
+                                <li>
+                                    - Azure cloud name
+                        </li>
+                            </ul>
+
+                        </Box>
+                        <Box my={1}>
+                            <p>
+                                See the
+                                    <a href="https://docs.microsoft.com/en-us/azure/">
+                                    product documentation
+                                    </a>
+                                instructions on how to create an .INI file that
+                                includes this information.
+                            </p>
+
+                        </Box>
+                    </Flex>
+                </Modal>
+            }
         </Form>
 
     );
