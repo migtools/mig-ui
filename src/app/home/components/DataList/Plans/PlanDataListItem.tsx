@@ -24,7 +24,7 @@ const PlanDataListItem = ({
   toggleExpanded,
   planCount
 }) => {
-  const [isOpen, toggleOpen] = useOpenModal(false);
+  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   if (planList) {
     return (
       <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
@@ -52,15 +52,16 @@ const PlanDataListItem = ({
             ]}
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
-            <Button isDisabled={plansDisabled} onClick={toggleOpen} variant="secondary">
+            <Button isDisabled={plansDisabled} onClick={toggleWizardOpen} variant="secondary">
               Add plan
             </Button>
             <WizardContainer
               planList={planList}
               clusterList={clusterList}
               storageList={storageList}
-              isOpen={isOpen}
-              onHandleWizardModalClose={toggleOpen}
+              isEdit={false}
+              isOpen={isWizardOpen}
+              onHandleWizardModalClose={toggleWizardOpen}
             />
           </DataListAction>
         </DataListItemRow>
@@ -70,7 +71,7 @@ const PlanDataListItem = ({
           clusterList={clusterList}
           storageList={storageList}
           isExpanded={isExpanded}
-          toggleOpen={toggleOpen}
+          toggleWizardOpen={toggleWizardOpen}
         />
       </DataListItem>
     );

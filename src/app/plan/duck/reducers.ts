@@ -18,6 +18,7 @@ export interface ICurrentPlanStatus {
 export const INITIAL_STATE = {
   isPVError: false,
   isFetchingPVList: false,
+  isPVPolling: false,
   isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
@@ -64,18 +65,6 @@ export const migPlanFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.migPlanFetchFailure>) => {
     return { ...state, isError: true, isFetching: false };
   };
-export const pvFetchRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchRequest>) => {
-    return { ...state, isPVError: false, isFetchingPVList: true };
-  };
-export const pvFetchFailure =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchFailure>) => {
-    return { ...state, isPVError: true, isFetchingPVList: false };
-  };
-export const pvFetchSuccess =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.pvFetchSuccess>) => {
-    return { ...state, isPVError: false, isFetchingPVList: false };
-  };
 
 export const addPlanSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
@@ -100,7 +89,6 @@ export const addPlanFailure =
 export const addPlanRequest =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
     return {
-      ...state,
     };
   };
 
@@ -369,9 +357,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.NAMESPACE_FETCH_REQUEST: return namespaceFetchRequest(state, action);
     case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
     case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
-    case PlanActionTypes.PV_FETCH_SUCCESS: return pvFetchSuccess(state, action);
-    case PlanActionTypes.PV_FETCH_FAILURE: return pvFetchFailure(state, action);
-    case PlanActionTypes.PV_FETCH_REQUEST: return pvFetchRequest(state, action);
     case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
     case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
     case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
@@ -399,7 +384,8 @@ const planReducer = (state = INITIAL_STATE, action) => {
       return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
-    default: return state;
+    default:
+      return state;
   }
 };
 

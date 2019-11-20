@@ -1,5 +1,6 @@
 import { IMigPlan } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const PlanActionTypes = {
   UPDATE_PLANS: 'UPDATE_PLANS',
@@ -21,9 +22,6 @@ export const PlanActionTypes = {
   NAMESPACE_FETCH_REQUEST: 'NAMESPACE_FETCH_REQUEST',
   NAMESPACE_FETCH_SUCCESS: 'NAMESPACE_FETCH_SUCCESS',
   NAMESPACE_FETCH_FAILURE: 'NAMESPACE_FETCH_FAILURE',
-  PV_FETCH_REQUEST: 'PV_FETCH_REQUEST',
-  PV_FETCH_FAILURE: 'PV_FETCH_FAILURE',
-  PV_FETCH_SUCCESS: 'PV_FETCH_SUCCESS',
   SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS: 'SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS',
   START_PV_POLLING: 'START_PV_POLLING',
   STOP_PV_POLLING: 'STOP_PV_POLLING',
@@ -51,8 +49,15 @@ export const PlanActionTypes = {
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
   SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
-  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN'
+  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN',
+  PV_UPDATE_REQUEST: 'PV_UPDATE_REQUEST',
+  PV_UPDATE_SUCCESS: 'PV_UPDATE_SUCCESS',
 };
+
+const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
+  type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
+  currentPlanStatus,
+});
 
 const updatePlans = (updatedPlans: IMigPlan[]) => ({
   type: PlanActionTypes.UPDATE_PLANS,
@@ -124,18 +129,6 @@ const migPlanFetchFailure = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_FAILURE,
 });
 
-const pvFetchRequest = () => ({
-  type: PlanActionTypes.PV_FETCH_REQUEST,
-});
-
-const pvFetchFailure = () => ({
-  type: PlanActionTypes.PV_FETCH_FAILURE,
-});
-
-const pvFetchSuccess = () => ({
-  type: PlanActionTypes.PV_FETCH_SUCCESS,
-});
-
 const sourceClusterNamespacesFetchSuccess = (sourceClusterNamespaces: any[]) => ({
   type: PlanActionTypes.SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS,
   sourceClusterNamespaces,
@@ -155,18 +148,18 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const startPVPolling = (params) => ({
-  type: PlanActionTypes.START_PV_POLLING,
-  params,
+const pvUpdateRequest = () => ({
+  type: PlanActionTypes.PV_UPDATE_REQUEST,
 });
 
-const stopPVPolling = () => ({
-  type: PlanActionTypes.STOP_PV_POLLING,
+const pvUpdateSuccess = () => ({
+  type: PlanActionTypes.PV_UPDATE_SUCCESS,
 });
 
-const planUpdateRequest = (planValues) => ({
+const planUpdateRequest = (planValues, isRerunPVDiscovery?) => ({
   type: PlanActionTypes.PLAN_UPDATE_REQUEST,
   planValues,
+  isRerunPVDiscovery
 });
 
 const planUpdateSuccess = () => ({
@@ -274,10 +267,6 @@ const setCurrentPlan = (currentPlan) => ({
   currentPlan
 });
 
-const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
-  type: PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS,
-  currentPlanStatus,
-});
 
 const setLockedPlan = (planName) => ({
   type: PlanActionTypes.SET_LOCKED_PLAN,
@@ -300,15 +289,12 @@ export const PlanActions = {
   migPlanFetchRequest,
   migPlanFetchSuccess,
   migPlanFetchFailure,
-  pvFetchRequest,
-  pvFetchFailure,
-  pvFetchSuccess,
   sourceClusterNamespacesFetchSuccess,
   namespaceFetchRequest,
   namespaceFetchSuccess,
   namespaceFetchFailure,
-  startPVPolling,
-  stopPVPolling,
+  pvUpdateRequest,
+  pvUpdateSuccess,
   planUpdateRequest,
   planUpdateSuccess,
   planUpdateFailure,
@@ -332,5 +318,5 @@ export const PlanActions = {
   stopPlanPolling,
   resetCurrentPlan,
   setCurrentPlan,
-  setLockedPlan
+  setLockedPlan,
 };
