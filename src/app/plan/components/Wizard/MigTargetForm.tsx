@@ -78,7 +78,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
       <Box>
         <TextContent>
           <TextList component="dl">
-            <TextListItem component="dt">Replication Repository</TextListItem>
+            <TextListItem component="dt">Replication repository</TextListItem>
             <Select
               name="selectedStorage"
               onChange={option => {

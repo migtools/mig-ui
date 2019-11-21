@@ -203,7 +203,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
 
 // valuesHaveUpdate - returns true if the formik values hold values that differ
-// from a matching existing repository. This is different from props.dirty, which returns
+// from a matching existing replication repository. This is different from props.dirty, which returns
 // true when the form values differ from the initial values. It's possible to have
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.

@@ -31,7 +31,7 @@ const removeStorage = name => {
       ]);
 
       dispatch(StorageActions.removeStorageSuccess(name));
-      dispatch(AlertActions.alertSuccessTimeout(`Successfully removed repository "${name}"!`));
+      dispatch(AlertActions.alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
     } catch (err) {
       dispatch(AlertActions.alertErrorTimeout(err));
     }
