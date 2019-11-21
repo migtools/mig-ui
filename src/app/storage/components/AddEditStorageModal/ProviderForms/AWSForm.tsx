@@ -126,7 +126,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Repository name" isRequired fieldId={nameKey}>
+            <FormGroup label="Replication repository name" isRequired fieldId={nameKey}>
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -273,7 +273,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
 
 // valuesHaveUpdate - returns true if the formik values hold values that differ
-// from a matching existing repository. This is different from props.dirty, which returns
+// from a matching existing replication repository. This is different from props.dirty, which returns
 // true when the form values differ from the initial values. It's possible to have
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.

@@ -10,7 +10,6 @@ import {
   DataListAction,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import { PlusCircleIcon } from '@patternfly/react-icons';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 
@@ -53,7 +52,7 @@ const PlanDataListItem = ({
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
             <Button isDisabled={plansDisabled} onClick={toggleWizardOpen} variant="secondary">
-              Add plan
+              Add
             </Button>
             <WizardContainer
               planList={planList}

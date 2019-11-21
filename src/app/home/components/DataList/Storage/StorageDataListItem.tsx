@@ -43,7 +43,7 @@ const StorageDataListItem = ({
                 <DataListCell id="storage-item" key="storage">
                   <div className="pf-l-flex">
                     <div className="pf-l-flex__item">
-                      <span id="repos">Repositories</span>
+                      <span id="repos">Replication repositories</span>
                     </div>
                     <div className="pf-l-flex__item">
                       <Badge isRead>{storageCount}</Badge>
@@ -55,7 +55,7 @@ const StorageDataListItem = ({
             />
             <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
               <Button onClick={() => setIsModalOpen(true)} variant="secondary" id="add-repo-btn">
-                Add repository
+                Add
             </Button>
             </DataListAction>
 
