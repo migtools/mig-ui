@@ -3,7 +3,7 @@ import {
   Brand,
   PageHeader,
 } from '@patternfly/react-core';
-import openshiftLogo from '../../../assets/Logo-Cluster_Application_Migration.svg';
+import openshiftLogo from './CAM_LOGO.svg';
 
 const HeaderComponent = (
   <PageHeader
