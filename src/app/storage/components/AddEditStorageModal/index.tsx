@@ -60,7 +60,7 @@ const AddEditStorageModal = ({
 
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
-    'Edit repository' : 'Add repository';
+    'Edit replication repository' : 'Add replication repository';
 
   return (
     <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="storage-modal-modifier">

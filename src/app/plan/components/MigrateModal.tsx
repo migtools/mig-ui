@@ -43,8 +43,8 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                         `}
                     >
                         <Checkbox
-                            label="Don't halt transactions on the source while migrating"
-                            aria-label="don't halt transactions on the source while migrating"
+                            label="Do not stop applications on the source cluster during migration."
+                            aria-label="halt-label"
                             id="transaction-halt-checkbox"
                             isChecked={disableQuiesce}
                             onChange={handleChange}
