@@ -87,13 +87,13 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
           </GridItem>
           <GridItem>
             <DashboardCard
-              title="Replication Repositories"
+              title="Replication repositories"
               type="repositories"
               dataList={allStorage}
               isFetching={isFetchingStorage}
               isError={isStorageError}
               expandDetails={() => handleExpand(DataListItems.StorageList)}
-              loadingTitle="Loading repositories..."
+              loadingTitle="Loading replication repositories..."
             />
           </GridItem>
           <GridItem>
