@@ -234,7 +234,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                                     - Azure storage account
                                 </li>
                                 <li>
-                                    - Azure tennant ID
+                                    - Azure tenant ID
                                 </li>
                                 <li>
                                     - Azure client ID
