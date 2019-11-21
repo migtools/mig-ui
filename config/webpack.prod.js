@@ -40,7 +40,7 @@ const config = {
         use: {
           loader: 'file-loader',
           options: {
-            name: 'fonts/[name].[ext]',
+            name: '[name].[ext]',
             // Limit at 50k. larger files emited into separate files
             limit: 5000,
           },
