@@ -128,36 +128,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
-        <Checkbox
-          label="Azure cluster"
-          aria-label="Azure cluster"
-          id="azure-cluster-checkbox"
-          name={isAzureKey}
-          isChecked={values.isAzure}
-          onChange={formikHandleChange}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
-      {
-        values.isAzure &&
-        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
-          <TextInput
-            value={values.azureResourceGroup}
-            onChange={formikHandleChange}
-            onInput={formikSetFieldTouched(azureResourceGroupKey)}
-            onBlur={handleBlur}
-            name={azureResourceGroupKey}
-            id="token-input"
-            type="text"
-          />
-          {errors.azureResourceGroup && touched.azureResourceGroup && (
-            <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
-          )}
-        </FormGroup>
-
-      }
-
       <FormGroup label="CA Bundle" fieldId={caBundleKey}>
         <TextInput
           onChange={formikHandleChange}
@@ -181,6 +151,33 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           id="insecure-input"
         />
       </FormGroup>
+      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
+        <Checkbox
+          label="Azure cluster"
+          aria-label="Azure cluster"
+          id="azure-cluster-checkbox"
+          name={isAzureKey}
+          isChecked={values.isAzure}
+          onChange={formikHandleChange}
+          onBlur={handleBlur}
+        />
+      </FormGroup>
+      {values.isAzure &&
+        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
+          <TextInput
+            value={values.azureResourceGroup}
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(azureResourceGroupKey)}
+            onBlur={handleBlur}
+            name={azureResourceGroupKey}
+            id="token-input"
+            type="text"
+          />
+          {errors.azureResourceGroup && touched.azureResourceGroup && (
+            <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
+          )}
+        </FormGroup>}
+
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
