@@ -25,6 +25,7 @@ import {
   isCheckConnectionButtonDisabled,
 } from '../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+import Thumb from './Thumb';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -69,6 +70,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
     handleSubmit,
     handleChange,
     setFieldTouched,
+    setFieldValue,
     handleBlur,
     onClose,
   } = props;
@@ -129,7 +131,20 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         )}
       </FormGroup>
       <FormGroup label="CA Bundle" fieldId={caBundleKey}>
-        <TextInput
+        <div className="form-group">
+          <input
+            id="file"
+            name="file"
+            type="file"
+            onChange={(event) => {
+              setFieldValue(caBundleKey, event.currentTarget.files[0]);
+            }}
+            className="form-control"
+          />
+          <Thumb file={values.caBundle} />
+        </div>
+        {errors.caBundle && touched.caBundle && <FormErrorDiv id="feedback-ca-bundle">{errors.caBundle}</FormErrorDiv>}
+        {/* <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(caBundleKey)}
           onBlur={handleBlur}
@@ -138,7 +153,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           type="text"
           id="ca-bundle-input"
         />
-        {errors.caBundle && touched.caBundle && <FormErrorDiv id="feedback-ca-bundle">{errors.caBundle}</FormErrorDiv>}
+        {errors.caBundle && touched.caBundle && <FormErrorDiv id="feedback-ca-bundle">{errors.caBundle}</FormErrorDiv>} */}
       </FormGroup>
       <FormGroup fieldId={insecureKey}>
         <Checkbox
