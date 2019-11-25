@@ -59,6 +59,8 @@ export function createMigCluster(
     specObject = {
       isHostCluster: false,
       url: clusterUrl,
+      insecure,
+      caBundle: caBundle || null,
       serviceAccountSecretRef: {
         name: tokenSecret.metadata.name,
         namespace: tokenSecret.metadata.namespace,
