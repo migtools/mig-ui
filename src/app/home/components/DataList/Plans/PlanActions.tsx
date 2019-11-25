@@ -36,6 +36,8 @@ const PlanActions = ({ plan, history }) => {
     <DropdownItem
       isDisabled={
         hasClosedCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
         isPlanLocked
       }
       onClick={() => {
