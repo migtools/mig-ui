@@ -78,19 +78,17 @@ function* planUpdateRetry(action) {
               JSON.stringify(planValues.targetCluster) ||
               JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !== JSON.stringify(planValues.sourceCluster)
             ) {
-              yield client.patch(
+              const updatedPlanRes = yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
                 getPlanRes.data.metadata.name,
                 updatedMigPlan
               );
               yield put(PlanActions.planUpdateSuccess());
-              yield put(PlanActions.pvUpdateRequest());
+              yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
             } else {
-              const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-              const updatedPlan = getPlanResponse.data;
-              yield put(PlanActions.updatePlanList(updatedPlan));
-              yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+              yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
+              yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
 
             }
           } else {
@@ -99,11 +97,7 @@ function* planUpdateRetry(action) {
               getPlanRes.data.metadata.name,
               updatedMigPlan
             );
-            yield delay(5000);
-            const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-            const updatedPlan = getPlanResponse.data;
-            yield put(PlanActions.updatePlanList(updatedPlan));
-            yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+            yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
           }
 
         } catch (err) {
@@ -171,6 +165,7 @@ function* checkUpdatedPVs(action) {
   let pvUpdateComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 240;
+  const { isRerunPVDiscovery } = action;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -189,7 +184,11 @@ function* checkUpdatedPVs(action) {
           const oldGeneration = currentPlan.metadata.generation;
 
           //Generation check incremented twice: once for ui change, once for controller change. 
-          return updatedGeneration >= oldGeneration + 2;
+          if (isRerunPVDiscovery) {
+            return updatedGeneration >= oldGeneration + 2;
+          } else {
+            return updatedGeneration > 1;
+          }
         };
 
         if (isUpdatedPVList()) {

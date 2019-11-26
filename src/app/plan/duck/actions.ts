@@ -149,8 +149,9 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const pvUpdateRequest = () => ({
+const pvUpdateRequest = (isRerunPVDiscovery) => ({
   type: PlanActionTypes.PV_UPDATE_REQUEST,
+  isRerunPVDiscovery
 });
 
 const pvUpdateSuccess = () => ({

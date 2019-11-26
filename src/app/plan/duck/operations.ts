@@ -163,6 +163,7 @@ const addPlan = (migPlan) => {
         migPlanObj
       );
 
+      dispatch(PlanActions.setCurrentPlan(createPlanRes.data));
       dispatch(PlanActions.addPlanSuccess(createPlanRes.data));
 
     } catch (err) {
