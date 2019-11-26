@@ -83,7 +83,6 @@ function* planUpdateRetry(action) {
                 getPlanRes.data.metadata.name,
                 updatedMigPlan
               );
-              yield delay(5000);
               yield put(PlanActions.planUpdateSuccess());
               yield put(PlanActions.pvUpdateRequest());
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
