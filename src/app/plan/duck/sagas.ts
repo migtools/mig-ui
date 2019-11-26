@@ -168,7 +168,7 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   }
 };
 
-function* checkUpdatedPVs() {
+function* checkUpdatedPVs(action) {
   let pvUpdateComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 240;
@@ -177,9 +177,11 @@ function* checkUpdatedPVs() {
       tries += 1;
       const state = yield select();
       const { currentPlan } = state.plan;
-
-      const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
-      const updatedPlan = getPlanResponse.data;
+      let updatedPlan = null;
+      if (currentPlan) {
+        const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+        updatedPlan = getPlanResponse.data;
+      }
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
@@ -395,9 +397,11 @@ function* watchPlanUpdate() {
 }
 
 function* watchPVUpdate() {
-  yield takeEvery(PlanActionTypes.PV_UPDATE_REQUEST, checkUpdatedPVs);
+  while (true) {
+    const data = yield take(PlanActionTypes.PV_UPDATE_REQUEST);
+    yield race([call(checkUpdatedPVs, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
+  }
 }
-
 
 function* watchGetPVResourcesRequest() {
   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);

@@ -47,6 +47,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isEdit,
     editPlanObj,
     updateCurrentPlanStatus,
+    pvUpdatePollStop
   } = props;
 
   enum stepId {
@@ -232,6 +233,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetForm();
     resetCurrentPlan();
     stopPlanStatusPolling();
+    pvUpdatePollStop();
   };
   return (
     <React.Fragment>
