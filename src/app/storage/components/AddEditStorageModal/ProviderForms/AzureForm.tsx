@@ -23,6 +23,8 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 
+const CREDENTIAL_DOCUMENTATION_URL =
+    'https://github.com/fusor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
@@ -255,7 +257,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                             <p>
                                 See the &nbsp;
                                 <a
-                                    href="https://cloud.redhat.com/openshift/install/azure/installer-provisioned"
+                                    href={CREDENTIAL_DOCUMENTATION_URL}
                                     target="_blank">
                                     product documentation
                                 </a>
