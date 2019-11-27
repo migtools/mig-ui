@@ -137,7 +137,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             currentPlanStatus={currentPlanStatus}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError && currentPlanStatus.state !== 'Pending',
+        enableNext:
+          !isFetchingPVList &&
+          currentPlanStatus.state !== 'Pending' &&
+          currentPlanStatus.state !== 'Critical',
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
