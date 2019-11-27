@@ -8,6 +8,7 @@ import {
     Tooltip,
     TooltipPosition,
     TextArea,
+    Modal
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import {
@@ -21,6 +22,13 @@ import ConnectionStatusLabel from '../../../../common/components/ConnectionStatu
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
+
+/* tslint:disable */
+/* 
+This URL is swapped out with downstream build scripts to point to the downstream documentation reference
+*/
+const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/fusor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
+/* tslint:enable*/
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -65,6 +73,11 @@ interface IOtherProps {
 }
 
 const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+    const [isPopUpModalOpen, setIsPopUpModalOpen] = useState(true);
+
+    const handleModalToggle = () => {
+        setIsPopUpModalOpen(!isPopUpModalOpen);
+    };
 
     const {
         addEditStatus: currentStatus,
@@ -133,7 +146,11 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="azure-storage-input-error">{errors.azureStorageAccount}</FormErrorDiv>
                 )}
             </FormGroup>
-            <FormGroup label="Azure credentials - INI file contents" isRequired fieldId={azureBlobKey}>
+            <FormGroup
+                label="Azure credentials (Copy and paste .INI file contents here)"
+                isRequired
+                fieldId={azureBlobKey}
+            >
                 <TextArea
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureBlobKey)}
@@ -195,7 +212,69 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
                 </Box>
             </Flex>
+            {isPopUpModalOpen &&
+                <Modal
+                    isSmall
+                    title="Repository information required"
+                    isOpen={isPopUpModalOpen}
+                    onClose={handleModalToggle}
+                    actions={[
+                        <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+                            Close
+                        </Button>,
+                    ]}
+                    isFooterLeftAligned
+                >
+                    <Flex flexDirection="column">
+                        <Box my={1}>
+                            <p>
+                                To add an Azure repository, you will need the following information:
+                        </p>
 
+                        </Box>
+                        <Box my={1}>
+                            <ul>
+                                <li>
+                                    - Azure subscription ID
+                                </li>
+                                <li>
+                                    - Azure storage account
+                                </li>
+                                <li>
+                                    - Azure tenant ID
+                                </li>
+                                <li>
+                                    - Azure client ID
+                                </li>
+                                <li>
+                                    - Azure client secret
+                                </li>
+                                <li>
+                                    - Azure resource group
+                                </li>
+                                <li>
+                                    - Azure cloud name
+                                </li>
+                            </ul>
+
+                        </Box>
+                        <Box my={1}>
+                            <p>
+                                See the &nbsp;
+                                <a
+                                    href={CREDENTIAL_DOCUMENTATION_URL}
+                                    target="_blank">
+                                    product documentation
+                                </a>
+                                &nbsp;
+                                instructions on how to create an .INI file that
+                                includes this information.
+                            </p>
+
+                        </Box>
+                    </Flex>
+                </Modal>
+            }
         </Form>
 
     );

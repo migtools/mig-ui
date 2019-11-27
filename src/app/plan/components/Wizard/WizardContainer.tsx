@@ -31,6 +31,7 @@ export interface IOtherProps {
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
   stopPlanStatusPolling: () => void;
+  pvUpdatePollStop: () => void;
   planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
@@ -146,6 +147,7 @@ const mapDispatchToProps = dispatch => {
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
     setCurrentPlan: (plan) => dispatch(PlanActions.setCurrentPlan(plan)),
     updateCurrentPlanStatus: (status) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
+    pvUpdatePollStop: () => dispatch(PlanActions.pvUpdatePollStop()),
   };
 };
 

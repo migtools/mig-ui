@@ -47,6 +47,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isEdit,
     editPlanObj,
     updateCurrentPlanStatus,
+    pvUpdatePollStop
   } = props;
 
   enum stepId {
@@ -136,7 +137,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             currentPlanStatus={currentPlanStatus}
           />
         ),
-        enableNext: !isFetchingPVList && !isPVError && currentPlanStatus.state !== 'Pending',
+        enableNext:
+          !isFetchingPVList &&
+          currentPlanStatus.state !== 'Pending' &&
+          currentPlanStatus.state !== 'Critical',
         canJumpTo: stepIdReached >= stepId.PersistentVolumes,
       },
       {
@@ -197,6 +201,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
 
   const onMove = (curr, prev) => {
+    //stop pv polling when navigating
+    pvUpdatePollStop();
+    //
     if (stepIdReached < curr.id) {
       setStepIdReached(curr.id);
     }
@@ -232,6 +239,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetForm();
     resetCurrentPlan();
     stopPlanStatusPolling();
+    pvUpdatePollStop();
   };
   return (
     <React.Fragment>

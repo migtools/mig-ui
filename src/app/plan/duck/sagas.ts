@@ -78,20 +78,17 @@ function* planUpdateRetry(action) {
               JSON.stringify(planValues.targetCluster) ||
               JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !== JSON.stringify(planValues.sourceCluster)
             ) {
-              yield client.patch(
+              const updatedPlanRes = yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
                 getPlanRes.data.metadata.name,
                 updatedMigPlan
               );
-              yield delay(5000);
               yield put(PlanActions.planUpdateSuccess());
-              yield put(PlanActions.pvUpdateRequest());
+              yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
             } else {
-              const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-              const updatedPlan = getPlanResponse.data;
-              yield put(PlanActions.updatePlanList(updatedPlan));
-              yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+              yield put(PlanActions.pvUpdateRequest(false));
+              yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
 
             }
           } else {
@@ -100,11 +97,7 @@ function* planUpdateRetry(action) {
               getPlanRes.data.metadata.name,
               updatedMigPlan
             );
-            yield delay(5000);
-            const getPlanResponse = yield call(getPlanSaga, planValues.planName);
-            const updatedPlan = getPlanResponse.data;
-            yield put(PlanActions.updatePlanList(updatedPlan));
-            yield put(PlanActions.startPlanStatusPolling(planValues.planName));
+            yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
           }
 
         } catch (err) {
@@ -168,18 +161,21 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   }
 };
 
-function* checkUpdatedPVs() {
+function* checkUpdatedPVs(action) {
   let pvUpdateComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 240;
+  const { isRerunPVDiscovery } = action;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
       const state = yield select();
       const { currentPlan } = state.plan;
-
-      const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
-      const updatedPlan = getPlanResponse.data;
+      let updatedPlan = null;
+      if (currentPlan) {
+        const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+        updatedPlan = getPlanResponse.data;
+      }
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
@@ -188,7 +184,11 @@ function* checkUpdatedPVs() {
           const oldGeneration = currentPlan.metadata.generation;
 
           //Generation check incremented twice: once for ui change, once for controller change. 
-          return updatedGeneration >= oldGeneration + 2;
+          if (isRerunPVDiscovery) {
+            return updatedGeneration >= oldGeneration + 2;
+          } else {
+            return updatedGeneration > 1;
+          }
         };
 
         if (isUpdatedPVList()) {
@@ -395,9 +395,11 @@ function* watchPlanUpdate() {
 }
 
 function* watchPVUpdate() {
-  yield takeEvery(PlanActionTypes.PV_UPDATE_REQUEST, checkUpdatedPVs);
+  while (true) {
+    const data = yield take(PlanActionTypes.PV_UPDATE_REQUEST);
+    yield race([call(checkUpdatedPVs, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
+  }
 }
-
 
 function* watchGetPVResourcesRequest() {
   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
