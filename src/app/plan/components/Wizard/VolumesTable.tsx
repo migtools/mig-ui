@@ -9,6 +9,7 @@ import { Flex, Box, Text } from '@rebass/emotion';
 import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
 import {
+  Alert,
   Bullseye,
   TextContent,
   Popover,
@@ -155,6 +156,16 @@ const VolumesTable = (props): any => {
           <Title headingLevel="h2" size="xl">
             Discovering persistent volumes attached to source projects...
           </Title>
+        </EmptyState>
+      </Bullseye>
+    );
+  }
+  if (
+    (currentPlanStatus.state === 'Critical')) {
+    return (
+      <Bullseye>
+        <EmptyState variant="large">
+          <Alert variant="danger" isInline title={currentPlanStatus.errorMessage} />
         </EmptyState>
       </Bullseye>
     );

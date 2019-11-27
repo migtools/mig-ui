@@ -42,6 +42,7 @@ export const PlanActionTypes = {
   CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
   PLAN_STATUS_POLL_START: 'PLAN_STATUS_POLL_START',
   PLAN_STATUS_POLL_STOP: 'PLAN_STATUS_POLL_STOP',
+  PV_UPDATE_POLL_STOP: 'PV_UPDATE_POLL_STOP',
   GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST',
   GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS',
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE',
@@ -148,12 +149,17 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const pvUpdateRequest = () => ({
+const pvUpdateRequest = (isRerunPVDiscovery) => ({
   type: PlanActionTypes.PV_UPDATE_REQUEST,
+  isRerunPVDiscovery
 });
 
 const pvUpdateSuccess = () => ({
   type: PlanActionTypes.PV_UPDATE_SUCCESS,
+});
+
+const pvUpdatePollStop = () => ({
+  type: PlanActionTypes.PV_UPDATE_POLL_STOP,
 });
 
 const planUpdateRequest = (planValues, isRerunPVDiscovery?) => ({
@@ -295,6 +301,7 @@ export const PlanActions = {
   namespaceFetchFailure,
   pvUpdateRequest,
   pvUpdateSuccess,
+  pvUpdatePollStop,
   planUpdateRequest,
   planUpdateSuccess,
   planUpdateFailure,

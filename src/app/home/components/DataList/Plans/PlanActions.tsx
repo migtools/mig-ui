@@ -34,6 +34,12 @@ const PlanActions = ({ plan, history }) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
     <DropdownItem
+      isDisabled={
+        hasClosedCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
       onClick={() => {
         setKebabIsOpen(false);
         editPlan();
