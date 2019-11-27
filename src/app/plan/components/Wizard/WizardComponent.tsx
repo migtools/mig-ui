@@ -201,6 +201,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
 
   const onMove = (curr, prev) => {
+    //stop pv polling when navigating
+    pvUpdatePollStop();
+    //
     if (stepIdReached < curr.id) {
       setStepIdReached(curr.id);
     }
