@@ -87,7 +87,7 @@ function* planUpdateRetry(action) {
               yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
             } else {
-              yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
+              yield put(PlanActions.pvUpdateRequest(false));
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
 
             }
