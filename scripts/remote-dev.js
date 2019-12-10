@@ -10,20 +10,20 @@ const remoteConfigFile = path.join(configDir, 'config.dev.json');
 const oauthClientTemplateFile = path.join(configDir, 'remote.oauthclient.templ.yaml')
 
 // Validations
-if(!fs.existsSync(remoteConfigFile)) {
+if (!fs.existsSync(remoteConfigFile)) {
   console.error(`ERROR: Remote config file ${remoteConfigFile} is missing`)
   console.error(`You could should copy the example to that location and edit with desired config`)
   process.exit(1)
 }
 
-try{
+try {
   execSync('hash oc')
 } catch (error) {
   console.error(error.stdout.toString())
   process.exit(1)
 }
 
-try{
+try {
   execSync('oc whoami')
 } catch (error) {
   console.error('ERROR: A problem occurred while trying to log into openshift cluster:')
@@ -40,7 +40,7 @@ function setupOAuthClient() {
   const oauthClientName = 'mig-ui';
   const remoteDevSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
 
-  try{
+  try {
     console.log('Checking to see if mig-ui oauthclient exists in cluster...')
     execSync(`oc get oauthclient ${oauthClientName} -o json`)
     console.log('Found existing OAuthClient object in cluster')
@@ -48,7 +48,7 @@ function setupOAuthClient() {
     execSync(`oc delete oauthclient ${oauthClientName}`)
   } catch (error) {
     // Some error other than the client not existing occurred
-    if(!error.stderr.toString().includes('not found')) {
+    if (!error.stderr.toString().includes('not found')) {
       console.error("ERROR: Something went wrong while trying to get the remote-dev oauthclient:")
       console.error(error.stdout.toString())
       process.exit(1)
@@ -72,7 +72,7 @@ function setupOAuthClient() {
   // Configure OAuthClient in remote cluster
   try {
     execSync(`echo '${JSON.stringify(oauthClient)}' | oc create -f-`)
-  } catch(error) {
+  } catch (error) {
     console.error("ERROR: Something went wrong trying to create a new OAuthClient:");
     console.error(error.stdout.toString());
     process.exit(1);
@@ -80,8 +80,8 @@ function setupOAuthClient() {
 }
 
 function setupCors() {
-  if(!process.env.ORIGIN3_HOST) {
-    try{
+  if (!process.env.ORIGIN3_HOST && process.env.DEPRECATED_CORS === 'true') {
+    try {
       console.log('Patching in CORS support to the auth server')
       const patch = {
         spec: {
@@ -101,7 +101,7 @@ function setupCors() {
       process.exit(1);
     }
   } else {
-    console.log('Detected an origin3 host, skipping CORS config')
+    console.log('Skipping deprecated CORS config')
   }
 }
 
