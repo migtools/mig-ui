@@ -141,7 +141,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             onInput={formikSetFieldTouched(azureResourceGroupKey)}
             onBlur={handleBlur}
             name={azureResourceGroupKey}
-            id="token-input"
+            id="azure-token-input"
             type="text"
           />
           {errors.azureResourceGroup && touched.azureResourceGroup && (
@@ -197,7 +197,9 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           />
         </Box>
         <Box m="auto 0 0 0 ">
-          <Button variant="primary" onClick={onClose}>
+          <Button
+            variant="primary"
+            onClick={onClose}>
             Close
           </Button>
         </Box>
@@ -234,8 +236,8 @@ const AddEditClusterForm: any = withFormik({
       values.name = initialClusterValues.clusterName || '';
       values.url = initialClusterValues.clusterUrl || '';
       values.token = initialClusterValues.clusterSvcToken || '';
-      values.isAzure = initialClusterValues.isAzure || false;
-      values.azureResourceGroup = initialClusterValues.azureResourceGroup || null;
+      values.isAzure = initialClusterValues.clusterIsAzure || false;
+      values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || null;
     }
 
     return values;

@@ -105,7 +105,7 @@ const VolumesTable = (props): any => {
           return {
             name: planVolume.name,
             project: planVolume.pvc.namespace,
-            storageClass: planVolume.selection.storageClass || '',
+            storageClass: planVolume.storageClass || '',
             size: planVolume.capacity,
             claim: planVolume.pvc.name,
             type: pvAction,
