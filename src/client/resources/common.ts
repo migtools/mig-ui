@@ -71,7 +71,9 @@ export abstract class DiscoveryResource {
   }
 
   public parametrizedPath(params = {}) {
-    params['wait'] = this.discoveryPath().wait.toString();
+    if (this.discoveryPath().wait !== -1) {
+      params['wait'] = this.discoveryPath().wait.toString();
+    }
     if (this.discoveryPath().offset !== -1) {
       params['offset'] = this.discoveryPath().offset.toString();
     }
