@@ -4,7 +4,7 @@ export class NamespaceDiscovery extends DiscoveryResource {
   private _discoveryPath: IDiscoveryPath;
   private _cluster: string;
 
-  constructor(namespace: string, cluster: string, { wait = 5, offset = -1, limit = -1 } = {}) {
+  constructor(namespace: string, cluster: string, { wait = -1, offset = -1, limit = -1 } = {}) {
     super('namespaces');
 
     this._cluster = [namespace, cluster].join('/');
