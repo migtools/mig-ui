@@ -1,4 +1,5 @@
 import { ClusterClient, TokenExpiryHandler } from './client';
+import { DiscoveryClient } from './discoveryClient';
 import { ResponseType } from 'axios';
 
 export class ClientFactoryUnknownClusterError extends Error {
@@ -22,6 +23,13 @@ export class ClientFactoryMissingApiRoot extends Error {
   }
 }
 
+export class ClientFactoryMissingDiscoveryApi extends Error {
+  constructor() {
+    super('migMeta.discoveryApi is missing');
+    Object.setPrototypeOf(this, ClientFactoryMissingDiscoveryApi.prototype);
+  }
+}
+
 export const ClientFactory = {
   hostCluster: (state: any, customResponceType: ResponseType = 'json') => {
     if (!state.auth.user) {
@@ -34,7 +42,7 @@ export const ClientFactory = {
     const newClient = new ClusterClient(
       state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/, customResponceType);
 
-    if(tokenExpiryHandler) {
+    if (tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
     }
 
@@ -45,6 +53,15 @@ export const ClientFactory = {
     const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/, customResponceType);
     return newClient;
   },
+  discovery: (state: any) => {
+    if (!state.migMeta.discoveryApi) {
+      throw new ClientFactoryMissingDiscoveryApi();
+    }
+
+    const discoveryApi = state.migMeta.discoveryApi;
+    const discoveryClient = new DiscoveryClient(discoveryApi);
+    return discoveryClient;
+  }
 };
 
 interface IAuthDetails {

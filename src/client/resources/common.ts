@@ -11,6 +11,12 @@ export interface IGroupVersionKindPlural {
   kindPlural: string;
 }
 
+export interface IDiscoveryPath {
+  wait: number;
+  offset?: number;
+  limit?: number;
+}
+
 export abstract class NamespacedResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public namespace: string;
@@ -49,4 +55,31 @@ export abstract class ClusterResource {
 
 function namedPath(listPath, name) {
   return [listPath, name].join('/');
+}
+
+export abstract class DiscoveryResource {
+
+  public type: string;
+  public abstract discoveryPath(): IDiscoveryPath;
+  public abstract for(): object;
+
+  constructor(type: string) {
+    if (!type) {
+      throw new Error('DiscoveryResource must have a type, it was undefined');
+    }
+    this.type = type + '/';
+  }
+
+  public parametrizedPath(params = {}) {
+    params['wait'] = this.discoveryPath().wait.toString();
+    if (this.discoveryPath().offset !== -1) {
+      params['offset'] = this.discoveryPath().offset.toString();
+    }
+    if (this.discoveryPath().limit !== -1) {
+      params['limit'] = this.discoveryPath().limit.toString();
+    }
+
+    return params;
+  }
+
 }
