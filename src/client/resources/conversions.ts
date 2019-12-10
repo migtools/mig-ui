@@ -177,7 +177,7 @@ export function createMigStorage(
           volumeSnapshotConfig: {
             //azure specific config
             azureApiTimeout: '30s',
-            azureResourceGroup: 'Velero_Backups',
+            azureResourceGroup,
             credsSecretRef: {
               name: tokenSecret.metadata.name,
               namespace: tokenSecret.metadata.namespace,
