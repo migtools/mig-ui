@@ -98,8 +98,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
 })(WizardComponent);
 
 const mapStateToProps = state => {
-  const allSourceClusterNamespaces = state.plan.sourceClusterNamespaces;
-  const filteredSourceClusterNamespaces = allSourceClusterNamespaces.filter(ns => {
+  const filteredSourceClusterNamespaces = state.plan.sourceClusterNamespaces.filter(ns => {
     const rejectedRegex = [
       RegExp('^kube-.*', 'i'),
       RegExp('^openshift-.*', 'i'),
@@ -109,7 +108,7 @@ const mapStateToProps = state => {
     ];
 
     // Short circuit the regex check if any of them match a rejected regex and filter it out
-    return !rejectedRegex.some(rx => rx.test(ns.metadata.name));
+    return !rejectedRegex.some(rx => rx.test(ns.name));
   });
 
   return {

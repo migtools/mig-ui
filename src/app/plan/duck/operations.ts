@@ -7,15 +7,15 @@ import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/re
 import {
   createMigMigration,
   createInitialMigPlan,
-  updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import {
   AlertActions
 } from '../../common/duck/actions';
-import utils from '../../common/duck/utils';
 import planUtils from './utils';
 import { select } from 'redux-saga/effects';
 import { PollingActions } from '../../common/duck/actions';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { NamespaceDiscovery } from '../../../client/resources/discovery';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -214,18 +214,17 @@ function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Arra
 
 const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
-    const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
-    const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
+    const state = getState();
+    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+    const namespaces = new NamespaceDiscovery(state.migMeta.namespace, clusterName);
     try {
       dispatch(PlanActions.namespaceFetchRequest());
-      const res = await client.list(nsResource);
-      dispatch(PlanActions.namespaceFetchSuccess(res.data.items));
+      const res = await discoveryClient.get(namespaces);
+      const namespaceNames = res.data.map(namespaceName => ({
+        name: namespaceName
+      }));
+      dispatch(PlanActions.namespaceFetchSuccess(namespaceNames));
     } catch (err) {
-      if (utils.isSelfSignedCertError(err)) {
-        const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
-        utils.handleSelfSignedCertError(failedUrl, dispatch);
-        return;
-      }
       dispatch(PlanActions.namespaceFetchFailure(err));
       dispatch(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
     }
