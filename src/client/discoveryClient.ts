@@ -10,7 +10,7 @@ export class DiscoveryClient {
   public discoveryApi: string;
   private requester: AxiosInstance;
 
-  constructor(discoveryApi: string, customResponseType: ResponseType = 'json', token?: string) {
+  constructor(discoveryApi: string, token?: string, customResponseType: ResponseType = 'json') {
     this.discoveryApi = discoveryApi;
     this.token = token;
     const headers = {
@@ -27,12 +27,8 @@ export class DiscoveryClient {
   }
 
   public get = (resource: DiscoveryResource, params?: object): AxiosPromise<any> => {
-    params = {
-      ...resource.for(),
-      ...resource.parametrizedPath(params)
-    };
     return new Promise((resolve, reject) => {
-      this.requester.get(resource.type, { params })
+      this.requester.get(resource.for(), { ...resource.parametrizedPath(params) })
         .then(res => resolve(res))
         .catch(err => {
           reject(err);

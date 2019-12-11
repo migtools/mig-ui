@@ -11,7 +11,7 @@ export interface IGroupVersionKindPlural {
   kindPlural: string;
 }
 
-export interface IDiscoveryPath {
+export interface IDiscoveryParametrs {
   wait: number;
   offset?: number;
   limit?: number;
@@ -59,29 +59,56 @@ function namedPath(listPath, name) {
 
 export abstract class DiscoveryResource {
 
-  public type: string;
-  public abstract discoveryPath(): IDiscoveryPath;
-  public abstract for(): object;
+  private _type: string;
+  private _namespace: string;
+  public abstract discoveryParameters(): IDiscoveryParametrs;
+  public abstract for(): string;
 
-  constructor(type: string) {
+  constructor(namespace: string, type: string) {
     if (!type) {
       throw new Error('DiscoveryResource must have a type, it was undefined');
     }
-    this.type = type + '/';
+    if (!namespace) {
+      throw new Error('DiscoveryResource must have a namespace, it was undefined');
+    }
+    this._type = type;
+    this._namespace = namespace;
   }
 
+  public discoveryNamespace() {
+    return ['namespaces', this._namespace].join('/');
+  }
+
+  public discoveryType() { return this._type + '/'; }
+
   public parametrizedPath(params = {}) {
-    if (this.discoveryPath().wait !== -1) {
-      params['wait'] = this.discoveryPath().wait.toString();
+    if (this.discoveryParameters().wait !== -1) {
+      params['wait'] = this.discoveryParameters().wait.toString();
     }
-    if (this.discoveryPath().offset !== -1) {
-      params['offset'] = this.discoveryPath().offset.toString();
+    if (this.discoveryParameters().offset !== -1) {
+      params['offset'] = this.discoveryParameters().offset.toString();
     }
-    if (this.discoveryPath().limit !== -1) {
-      params['limit'] = this.discoveryPath().limit.toString();
+    if (this.discoveryParameters().limit !== -1) {
+      params['limit'] = this.discoveryParameters().limit.toString();
     }
 
     return params;
   }
 
+}
+
+export abstract class ClusterDiscoveryResource extends DiscoveryResource {
+  private _cluster: string;
+
+  constructor(namespace: string, cluster: string, type: string) {
+    if (!cluster) {
+      throw new Error('ClusterDiscoveryResource must have a cluster, it was undefined');
+    }
+    super(namespace, type);
+    this._cluster = cluster;
+  }
+
+  public discoveryCluster() {
+    return ['clusters', this._cluster].join('/');
+  }
 }

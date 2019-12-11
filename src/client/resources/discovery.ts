@@ -1,25 +1,27 @@
-import { DiscoveryResource, IDiscoveryPath } from './common';
+import { ClusterDiscoveryResource, IDiscoveryParametrs } from './common';
 
-export class NamespaceDiscovery extends DiscoveryResource {
-  private _discoveryPath: IDiscoveryPath;
-  private _cluster: string;
+export class NamespaceDiscovery extends ClusterDiscoveryResource {
+  private _discoveryParameters: IDiscoveryParametrs;
 
   constructor(namespace: string, cluster: string, { wait = -1, offset = -1, limit = -1 } = {}) {
-    super('namespaces');
+    super(namespace, cluster, 'namespaces');
 
-    this._cluster = [namespace, cluster].join('/');
-    this._discoveryPath = {
+    this._discoveryParameters = {
       'wait': wait,
       'offset': offset,
       'limit': limit,
     };
   }
 
-  public discoveryPath(): IDiscoveryPath {
-    return this._discoveryPath;
+  public discoveryParameters(): IDiscoveryParametrs {
+    return this._discoveryParameters;
   }
 
   public for() {
-    return { 'cluster': this._cluster };
+    return [
+      this.discoveryNamespace(),
+      this.discoveryCluster(),
+      this.discoveryType(),
+    ].join('/');
   }
 }
