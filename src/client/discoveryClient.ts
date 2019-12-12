@@ -14,7 +14,7 @@ export class DiscoveryClient {
   constructor(
     discoveryApi: string,
     discoveryNamespace: string,
-    token?: string,
+    token: string,
     customResponseType: ResponseType = 'json') {
 
     this.discoveryApi = discoveryApi;
