@@ -216,7 +216,7 @@ const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
     const state = getState();
     const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-    const namespaces = new NamespaceDiscovery(state.migMeta.namespace, clusterName);
+    const namespaces = new NamespaceDiscovery(clusterName);
     try {
       dispatch(PlanActions.namespaceFetchRequest());
       const res = await discoveryClient.get(namespaces);
