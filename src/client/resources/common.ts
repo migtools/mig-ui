@@ -57,29 +57,27 @@ function namedPath(listPath, name) {
   return [listPath, name].join('/');
 }
 
-export abstract class DiscoveryResource {
+export abstract class ClusterDiscoveryResource {
 
   private _type: string;
-  private _namespace: string;
+  private _cluster: string;
+
   public abstract discoveryParameters(): IDiscoveryParametrs;
   public abstract for(): string;
 
-  constructor(namespace: string, type: string) {
-    if (!type) {
-      throw new Error('DiscoveryResource must have a type, it was undefined');
+  constructor(cluster: string, type: string) {
+    if (!cluster) {
+      throw new Error('ClusterDiscoveryResource must have a cluster, it was undefined');
     }
-    if (!namespace) {
-      throw new Error('DiscoveryResource must have a namespace, it was undefined');
-    }
+    this._cluster = cluster;
     this._type = type;
-    this._namespace = namespace;
-  }
-
-  public discoveryNamespace() {
-    return ['namespaces', this._namespace].join('/');
   }
 
   public discoveryType() { return this._type + '/'; }
+
+  public discoveryCluster() {
+    return ['clusters', this._cluster].join('/');
+  }
 
   public parametrizedPath(params = {}) {
     if (this.discoveryParameters().wait !== -1) {
@@ -95,20 +93,4 @@ export abstract class DiscoveryResource {
     return params;
   }
 
-}
-
-export abstract class ClusterDiscoveryResource extends DiscoveryResource {
-  private _cluster: string;
-
-  constructor(namespace: string, cluster: string, type: string) {
-    if (!cluster) {
-      throw new Error('ClusterDiscoveryResource must have a cluster, it was undefined');
-    }
-    super(namespace, type);
-    this._cluster = cluster;
-  }
-
-  public discoveryCluster() {
-    return ['clusters', this._cluster].join('/');
-  }
 }

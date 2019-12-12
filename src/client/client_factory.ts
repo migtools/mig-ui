@@ -58,8 +58,7 @@ export const ClientFactory = {
       throw new ClientFactoryMissingDiscoveryApi();
     }
 
-    const discoveryApi = state.migMeta.discoveryApi;
-    const discoveryClient = new DiscoveryClient(discoveryApi);
+    const discoveryClient = new DiscoveryClient(state.migMeta.discoveryApi, state.migMeta.namespace);
     return discoveryClient;
   }
 };

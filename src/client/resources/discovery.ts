@@ -3,8 +3,8 @@ import { ClusterDiscoveryResource, IDiscoveryParametrs } from './common';
 export class NamespaceDiscovery extends ClusterDiscoveryResource {
   private _discoveryParameters: IDiscoveryParametrs;
 
-  constructor(namespace: string, cluster: string, { wait = -1, offset = -1, limit = -1 } = {}) {
-    super(namespace, cluster, 'namespaces');
+  constructor(cluster: string, { wait = -1, offset = -1, limit = -1 } = {}) {
+    super(cluster, 'namespaces');
 
     this._discoveryParameters = {
       'wait': wait,
@@ -19,7 +19,6 @@ export class NamespaceDiscovery extends ClusterDiscoveryResource {
 
   public for() {
     return [
-      this.discoveryNamespace(),
       this.discoveryCluster(),
       this.discoveryType(),
     ].join('/');
