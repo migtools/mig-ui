@@ -1,6 +1,8 @@
 import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IClusterClient } from '../../../client/client';
+import { PersistentVolumeDiscovery } from '../../../client/resources/discovery';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 import {
   AlertActions,
@@ -345,14 +347,11 @@ function* planCloseAndDeleteSaga(action) {
 
 function* getPVResourcesRequest(action) {
   const state = yield select();
-  const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
+  const discovery: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
-    const pvResourceRefs = action.pvList.map(pv => {
-      return client.get(
-        resource,
-        pv.name
-      );
+    const pvResourceRefs = action.pvList.map(pvName => {
+      const persistentVolume = new PersistentVolumeDiscovery(pvName, action.clusterName);
+      return discovery.get(persistentVolume);
     });
 
     const pvList = [];

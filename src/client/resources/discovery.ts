@@ -1,26 +1,19 @@
-import { ClusterDiscoveryResource, IDiscoveryParametrs } from './common';
+import { NamedClusterDiscoveryResource, ClusterDiscoveryResource, IDiscoveryParameters } from './common';
 
 export class NamespaceDiscovery extends ClusterDiscoveryResource {
-  private _discoveryParameters: IDiscoveryParametrs;
-
-  constructor(cluster: string, { wait = -1, offset = -1, limit = -1 } = {}) {
-    super(cluster, 'namespaces');
-
-    this._discoveryParameters = {
-      'wait': wait,
-      'offset': offset,
-      'limit': limit,
-    };
+  constructor(cluster: string, params: IDiscoveryParameters = {}) {
+    super(cluster, 'namespaces', params);
   }
+}
 
-  public discoveryParameters(): IDiscoveryParametrs {
-    return this._discoveryParameters;
+export class PersistentVolumeDiscovery extends NamedClusterDiscoveryResource {
+  constructor(name: string, cluster: string, params: IDiscoveryParameters = {}) {
+    super(name, cluster, 'persistentvolumes', params);
   }
+}
 
-  public for() {
-    return [
-      this.discoveryCluster(),
-      this.discoveryType(),
-    ].join('/');
+export class PersistentVolumesDiscovery extends ClusterDiscoveryResource {
+  constructor(cluster: string, params: IDiscoveryParameters = {}) {
+    super(cluster, 'persistentvolumes', params);
   }
 }

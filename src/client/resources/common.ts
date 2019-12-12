@@ -1,8 +1,19 @@
 export type KubeResource = NamespacedResource | ClusterResource;
 
-export interface IResource {
+export interface IKubeResource {
   listPath(): string;
   namedPath(name: string): string;
+}
+
+export interface IDiscoveryResource {
+  discoveryCluster(): string;
+  discoveryType(): string;
+  for(): string;
+  parametrized(): { [param: string]: string };
+}
+
+export interface INamedDiscoveryResource extends IDiscoveryResource {
+  discoveryName(): string;
 }
 
 export interface IGroupVersionKindPlural {
@@ -11,13 +22,14 @@ export interface IGroupVersionKindPlural {
   kindPlural: string;
 }
 
-export interface IDiscoveryParametrs {
-  wait: number;
+export interface IDiscoveryParameters {
+  wait?: number;
   offset?: number;
   limit?: number;
+  [param: string]: string | number;
 }
 
-export abstract class NamespacedResource {
+export abstract class NamespacedResource implements IKubeResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public namespace: string;
   constructor(namespace: string) {
@@ -43,7 +55,7 @@ export abstract class NamespacedResource {
   }
 }
 
-export abstract class ClusterResource {
+export abstract class ClusterResource implements IKubeResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public listPath(): string {
     return ['/apis', this.gvk().group, this.gvk().version, this.gvk().kindPlural].join('/');
@@ -57,40 +69,61 @@ function namedPath(listPath, name) {
   return [listPath, name].join('/');
 }
 
-export abstract class ClusterDiscoveryResource {
+export abstract class ClusterDiscoveryResource implements IDiscoveryResource {
 
   private _type: string;
   private _cluster: string;
+  private _discoveryParameters: IDiscoveryParameters;
 
-  public abstract discoveryParameters(): IDiscoveryParametrs;
-  public abstract for(): string;
-
-  constructor(cluster: string, type: string) {
-    if (!cluster) {
-      throw new Error('ClusterDiscoveryResource must have a cluster, it was undefined');
-    }
+  constructor(cluster: string, type: string, discoveryParameters: IDiscoveryParameters) {
     this._cluster = cluster;
     this._type = type;
+    this._discoveryParameters = discoveryParameters;
   }
 
-  public discoveryType() { return this._type + '/'; }
+  public discoveryType() { return this._type; }
 
   public discoveryCluster() {
     return ['clusters', this._cluster].join('/');
   }
 
-  public parametrizedPath(params = {}) {
-    if (this.discoveryParameters().wait !== -1) {
-      params['wait'] = this.discoveryParameters().wait.toString();
-    }
-    if (this.discoveryParameters().offset !== -1) {
-      params['offset'] = this.discoveryParameters().offset.toString();
-    }
-    if (this.discoveryParameters().limit !== -1) {
-      params['limit'] = this.discoveryParameters().limit.toString();
-    }
-
-    return params;
+  public parametrized(params: IDiscoveryParameters = {}) {
+    const merged = {};
+    Object.keys(this._discoveryParameters).map(param =>
+      merged[param] = this._discoveryParameters[param].toString());
+    Object.keys(params).map(param =>
+      merged[param] = this._discoveryParameters[param].toString());
+    return merged;
   }
 
+  public for(): string {
+    return [
+      this.discoveryCluster(),
+      this.discoveryType(),
+    ].join('/');
+  }
+
+}
+
+export abstract class NamedClusterDiscoveryResource
+  extends ClusterDiscoveryResource
+  implements INamedDiscoveryResource {
+
+  private _name: string;
+
+  constructor(cluster: string, type: string, name: string, discoveryParameters: IDiscoveryParameters) {
+    super(cluster, type, discoveryParameters);
+
+    this._name = name;
+  }
+
+  public discoveryName() { return this._name; }
+
+  public for(): string {
+    return [
+      this.discoveryCluster(),
+      this.discoveryType(),
+      this.discoveryName()
+    ].join('/');
+  }
 }

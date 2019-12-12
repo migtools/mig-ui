@@ -10,9 +10,11 @@ export {
 } from './core';
 
 export {
-  IResource,
+  IKubeResource,
   IGroupVersionKindPlural,
   NamespacedResource,
   ClusterResource,
   KubeResource,
+  ClusterDiscoveryResource,
+  NamedClusterDiscoveryResource
 } from './common';

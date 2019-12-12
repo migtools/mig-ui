@@ -7,5 +7,5 @@
   "namespace": "openshift-migration",
   "configNamespace": "openshift-config",
   "oauthClientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K",
-  "discoveryApi": "http://discovery-api.supercluster.example.com"
+  "discoveryApi": "https://discovery-api.supercluster.example.com"
 }

@@ -16,6 +16,7 @@ import { select } from 'redux-saga/effects';
 import { PollingActions } from '../../common/duck/actions';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
+import { ClusterDiscoveryResource } from '../../../client/resources/common';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -216,7 +217,7 @@ const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
     const state = getState();
     const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-    const namespaces = new NamespaceDiscovery(clusterName);
+    const namespaces: ClusterDiscoveryResource = new NamespaceDiscovery(clusterName);
     try {
       dispatch(PlanActions.namespaceFetchRequest());
       const res = await discoveryClient.get(namespaces);
