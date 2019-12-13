@@ -111,7 +111,7 @@ export abstract class NamedDiscoveryResource
 
   private readonly _name: string;
 
-  constructor(cluster: string, type: string, name: string, discoveryParameters: IDiscoveryParameters) {
+  constructor(name: string, cluster: string, type: string, discoveryParameters: IDiscoveryParameters) {
     super(cluster, type, discoveryParameters);
 
     this._name = name;

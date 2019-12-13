@@ -347,11 +347,11 @@ function* planCloseAndDeleteSaga(action) {
 
 function* getPVResourcesRequest(action) {
   const state = yield select();
-  const discovery: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    const pvResourceRefs = action.pvList.map(pvName => {
-      const persistentVolume = new PersistentVolumeDiscovery(pvName, action.clusterName);
-      return discovery.get(persistentVolume);
+    const pvResourceRefs = action.pvList.map(pv => {
+      const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
+      return discoveryClient.get(persistentVolume);
     });
 
     const pvList = [];
