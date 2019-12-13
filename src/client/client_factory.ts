@@ -53,7 +53,7 @@ export const ClientFactory = {
     const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/, customResponceType);
     return newClient;
   },
-  discovery: (state: any) => {
+  discovery: (state: any, customResponceType: ResponseType = 'json') => {
     if (!state.migMeta.discoveryApi) {
       throw new ClientFactoryMissingDiscoveryApi();
     }
@@ -61,7 +61,8 @@ export const ClientFactory = {
     const discoveryClient = new DiscoveryClient(
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
-      state.auth.user.access_token);
+      state.auth.user.access_token,
+      customResponceType);
     return discoveryClient;
   }
 };

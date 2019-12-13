@@ -16,7 +16,8 @@ import { select } from 'redux-saga/effects';
 import { PollingActions } from '../../common/duck/actions';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
-import { ClusterDiscoveryResource } from '../../../client/resources/common';
+import { DiscoveryResource } from '../../../client/resources/common';
+import utils from '../../common/duck/utils';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -217,7 +218,7 @@ const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
     const state = getState();
     const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-    const namespaces: ClusterDiscoveryResource = new NamespaceDiscovery(clusterName);
+    const namespaces: DiscoveryResource = new NamespaceDiscovery(clusterName);
     try {
       dispatch(PlanActions.namespaceFetchRequest());
       const res = await discoveryClient.get(namespaces);
@@ -226,6 +227,11 @@ const fetchNamespacesForCluster = clusterName => {
       }));
       dispatch(PlanActions.namespaceFetchSuccess(namespaceNames));
     } catch (err) {
+      if (utils.isSelfSignedCertError(err)) {
+        const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
+        utils.handleSelfSignedCertError(failedUrl, dispatch);
+        return;
+      }
       dispatch(PlanActions.namespaceFetchFailure(err));
       dispatch(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
     }

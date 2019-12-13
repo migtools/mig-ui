@@ -15,6 +15,6 @@ export {
   NamespacedResource,
   ClusterResource,
   KubeResource,
-  ClusterDiscoveryResource,
-  NamedClusterDiscoveryResource
+  DiscoveryResource,
+  NamedDiscoveryResource,
 } from './common';

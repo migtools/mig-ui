@@ -8,8 +8,8 @@ export interface IKubeResource {
 export interface IDiscoveryResource {
   discoveryCluster(): string;
   discoveryType(): string;
-  for(): string;
-  parametrized(): { [param: string]: string };
+  path(): string;
+  parametrized(IDiscoveryParameters?): { [param: string]: string };
 }
 
 export interface INamedDiscoveryResource extends IDiscoveryResource {
@@ -69,10 +69,10 @@ function namedPath(listPath, name) {
   return [listPath, name].join('/');
 }
 
-export abstract class ClusterDiscoveryResource implements IDiscoveryResource {
+export abstract class DiscoveryResource implements IDiscoveryResource {
 
-  private _type: string;
-  private _cluster: string;
+  private readonly _type: string;
+  private readonly _cluster: string;
   private _discoveryParameters: IDiscoveryParameters;
 
   constructor(cluster: string, type: string, discoveryParameters: IDiscoveryParameters) {
@@ -96,7 +96,7 @@ export abstract class ClusterDiscoveryResource implements IDiscoveryResource {
     return merged;
   }
 
-  public for(): string {
+  public path(): string {
     return [
       this.discoveryCluster(),
       this.discoveryType(),
@@ -105,11 +105,11 @@ export abstract class ClusterDiscoveryResource implements IDiscoveryResource {
 
 }
 
-export abstract class NamedClusterDiscoveryResource
-  extends ClusterDiscoveryResource
+export abstract class NamedDiscoveryResource
+  extends DiscoveryResource
   implements INamedDiscoveryResource {
 
-  private _name: string;
+  private readonly _name: string;
 
   constructor(cluster: string, type: string, name: string, discoveryParameters: IDiscoveryParameters) {
     super(cluster, type, discoveryParameters);
@@ -119,7 +119,7 @@ export abstract class NamedClusterDiscoveryResource
 
   public discoveryName() { return this._name; }
 
-  public for(): string {
+  public path(): string {
     return [
       this.discoveryCluster(),
       this.discoveryType(),
