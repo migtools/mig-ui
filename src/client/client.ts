@@ -150,23 +150,9 @@ export class ClusterClient {
   }
 
   private checkExpiry() {
-    if(this.isTokenExpired() && this.tokenExpiryHandler) {
+    if(isTokenExpired(this.tokenExpiryTime) && this.tokenExpiryHandler) {
       this.tokenExpiryHandler(this.oldToken());
     }
-  }
-
-  private isTokenExpired() {
-    const currentUnixTime = moment().unix();
-    const expiredTime = this.tokenExpiryTime;
-    const isExpired = currentUnixTime > expiredTime;
-
-    if(isExpired) {
-      console.warn('Client token appears to be expired:');
-      console.warn(`Current time: ${currentUnixTime}`);
-      console.warn(`Token expiry time: ${expiredTime}`);
-    }
-
-    return isExpired;
   }
 
   private oldToken() {
@@ -175,4 +161,18 @@ export class ClusterClient {
       tokenExpiryTime: this.tokenExpiryTime,
     };
   }
+}
+
+export function isTokenExpired(tokenExpiryTime) {
+  const currentUnixTime = moment().unix();
+  const expiredTime = tokenExpiryTime;
+  const isExpired = currentUnixTime > expiredTime;
+
+  if (isExpired) {
+    console.warn('Client token appears to be expired:');
+    console.warn(`Current time: ${currentUnixTime}`);
+    console.warn(`Token expiry time: ${expiredTime}`);
+  }
+
+  return isExpired;
 }

@@ -63,6 +63,10 @@ export const ClientFactory = {
       state.migMeta.namespace,
       state.auth.user.access_token,
       customResponceType);
+
+    if (tokenExpiryHandler) {
+      discoveryClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
+    }
     return discoveryClient;
   }
 };
