@@ -38,8 +38,6 @@ export const PlanActionTypes = {
   PLAN_CLOSE_REQUEST: 'PLAN_CLOSE_REQUEST',
   PLAN_CLOSE_SUCCESS: 'PLAN_CLOSE_SUCCESS',
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
-  CLOSED_STATUS_POLL_START: 'CLOSED_STATUS_POLL_START',
-  CLOSED_STATUS_POLL_STOP: 'CLOSED_STATUS_POLL_STOP',
   PLAN_STATUS_POLL_START: 'PLAN_STATUS_POLL_START',
   PLAN_STATUS_POLL_STOP: 'PLAN_STATUS_POLL_STOP',
   PV_UPDATE_POLL_STOP: 'PV_UPDATE_POLL_STOP',
@@ -50,7 +48,6 @@ export const PlanActionTypes = {
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
   SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
-  SET_LOCKED_PLAN: 'SET_LOCKED_PLAN',
   PV_UPDATE_REQUEST: 'PV_UPDATE_REQUEST',
   PV_UPDATE_SUCCESS: 'PV_UPDATE_SUCCESS',
 };
@@ -201,9 +198,10 @@ const planCloseAndDeleteSuccess = (planName: string) => ({
   planName,
 });
 
-const planCloseAndDeleteFailure = (err) => ({
+const planCloseAndDeleteFailure = (err, planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE,
   err,
+  planName
 });
 
 const planCloseRequest = (planName: string) => ({
@@ -211,22 +209,14 @@ const planCloseRequest = (planName: string) => ({
   planName
 });
 
-const planCloseSuccess = () => ({
+const planCloseSuccess = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_SUCCESS,
+  planName
 });
 
-const planCloseFailure = (err) => ({
+const planCloseFailure = (err, planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_FAILURE,
-  err
-});
-
-const startClosedStatusPolling = (planName) => ({
-  type: PlanActionTypes.CLOSED_STATUS_POLL_START,
-  planName,
-});
-
-const stopClosedStatusPolling = (planName) => ({
-  type: PlanActionTypes.CLOSED_STATUS_POLL_STOP,
+  err,
   planName
 });
 
@@ -246,13 +236,14 @@ const getPVResourcesFailure = (error) => ({
   error
 });
 
-const startPlanStatusPolling = (planName) => ({
+const startPlanStatusPolling = (planName: string) => ({
   type: PlanActionTypes.PLAN_STATUS_POLL_START,
   planName,
 });
 
-const stopPlanStatusPolling = () => ({
+const stopPlanStatusPolling = (planName: string) => ({
   type: PlanActionTypes.PLAN_STATUS_POLL_STOP,
+  planName
 });
 
 const startPlanPolling = (params?: any) => ({
@@ -271,12 +262,6 @@ const resetCurrentPlan = () => ({
 const setCurrentPlan = (currentPlan) => ({
   type: PlanActionTypes.SET_CURRENT_PLAN,
   currentPlan
-});
-
-
-const setLockedPlan = (planName) => ({
-  type: PlanActionTypes.SET_LOCKED_PLAN,
-  planName
 });
 
 export const PlanActions = {
@@ -314,8 +299,6 @@ export const PlanActions = {
   planCloseSuccess,
   planCloseFailure,
   planCloseRequest,
-  startClosedStatusPolling,
-  stopClosedStatusPolling,
   startPlanStatusPolling,
   stopPlanStatusPolling,
   getPVResourcesRequest,
@@ -325,5 +308,4 @@ export const PlanActions = {
   stopPlanPolling,
   resetCurrentPlan,
   setCurrentPlan,
-  setLockedPlan,
 };

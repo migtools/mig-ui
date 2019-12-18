@@ -33,12 +33,13 @@ function* getPlanSaga(planName) {
     throw err;
   }
 }
-function* patchPlanSaga(planValues) {
+function* planPatchClose(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
+    if (getPlanRes.data.spec.closed) { return; }
     const closedPlanSpecObj = {
       spec: {
         closed: true
@@ -116,34 +117,27 @@ function* planUpdateRetry(action) {
 }
 
 function* checkClosedStatus(action) {
-  let planClosed = false;
-  let tries = 0;
-  const TicksUntilTimeout = 8;
-  while (!planClosed) {
-    if (tries < TicksUntilTimeout) {
-      tries += 1;
-      const getPlanResponse = yield call(getPlanSaga, action.planName);
-      const MigPlan = getPlanResponse.data;
+  const PollingInterval = 5000;
+  const TicksUntilTimeout = 16;
+  for (let tries = 0; tries < TicksUntilTimeout; tries++) {
+    const getPlanResponse = yield call(getPlanSaga, action.planName);
+    const MigPlan = getPlanResponse.data;
 
-      if (MigPlan.status && MigPlan.status.conditions) {
-        const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
-        if (hasClosedCondition) {
-          yield put(PlanActions.planCloseSuccess());
-          yield put(PlanActions.stopClosedStatusPolling(action.planName));
-        }
+    if (MigPlan.status && MigPlan.status.conditions) {
+      const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
+      if (hasClosedCondition) {
+        yield put(PlanActions.planCloseSuccess(action.planName));
+        return;
       }
-    } else {
-      planClosed = true;
-      yield put(PlanActions.planCloseFailure('Failed to close plan'));
-      yield put(AlertActions.alertErrorTimeout('Timed out during plan close'));
-      yield put(PlanActions.stopClosedStatusPolling(action.planName));
-      break;
     }
 
-    const PollingInterval = 5000;
     yield delay(PollingInterval);
   }
+
+  yield put(PlanActions.planCloseFailure('Failed to close plan', action.planName));
+  yield put(AlertActions.alertErrorTimeout(`Timed out during plan close ${action.planName}`));
 }
+
 const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   const corePlan = (plan) => {
     const { metadata } = plan;
@@ -257,7 +251,7 @@ function* checkPlanStatus(action) {
           } else {
             yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
           }
-          yield put(PlanActions.stopPlanStatusPolling());
+          yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
         if (hasCriticalCondition) {
           const criticalCond = updatedPlan.status.conditions.find(cond => {
@@ -267,7 +261,7 @@ function* checkPlanStatus(action) {
             { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
           ));
 
-          yield put(PlanActions.stopPlanStatusPolling());
+          yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
         if (hasErrorCondition) {
           const errorCond = updatedPlan.status.conditions.find(cond => {
@@ -277,7 +271,7 @@ function* checkPlanStatus(action) {
             { state: CurrentPlanState.Critical, errorMessage: errorCond.message }
           ));
 
-          yield put(PlanActions.stopPlanStatusPolling());
+          yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
 
         if (hasConflictCondition) {
@@ -288,13 +282,13 @@ function* checkPlanStatus(action) {
             { state: CurrentPlanState.Critical, errorMessage: conflictCond.message }
           ));
 
-          yield put(PlanActions.stopPlanStatusPolling());
+          yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
       }
     } else {
       planStatusComplete = true;
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
-      yield put(PlanActions.stopPlanStatusPolling());
+      yield put(PlanActions.stopPlanStatusPolling(action.planName));
       break;
     }
 
@@ -313,35 +307,44 @@ function* planCloseSaga(action) {
     yield retry(
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
-      patchPlanSaga,
+      planPatchClose,
       updatedValues,
     );
-    yield put(PlanActions.startClosedStatusPolling(updatedValues.planName));
-  }
-  catch (err) {
-    yield put(PlanActions.planCloseFailure(err));
+  } catch (err) {
+    yield put(PlanActions.planCloseFailure(err, action.planName));
     yield put(AlertActions.alertErrorTimeout('Plan close request failed'));
-
   }
 }
 
-function* planCloseAndDeleteSaga(action) {
-  const state = yield select();
-  const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(state);
+function* planCloseAndDelete(action) {
   try {
-    yield put(PlanActions.setLockedPlan(action.planName));
-    yield put(PlanActions.planCloseRequest(action.planName));
-    yield take(PlanActionTypes.PLAN_CLOSE_SUCCESS);
-    yield client.delete(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      action.planName,
-    );
+    yield call(planCloseSaga, action);
+    yield call(checkClosedStatus, action);
+    yield call(planDeleteAfterClose, action.planName);
     yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
-    yield put(PlanActions.planCloseAndDeleteFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Plan delete request failed'));
+    yield put(PlanActions.planCloseAndDeleteFailure(err, action.planName));
+    yield put(AlertActions.alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`));
+  }
+}
+
+function* planDeleteAfterClose(planName) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  yield client.delete(
+    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    planName,
+  );
+}
+
+function* planCloseAndCheck(action) {
+  try {
+    yield call(planCloseSaga, action);
+    yield call(checkClosedStatus, action);
+  } catch (err) {
+    yield put(PlanActions.planCloseFailure(err, action.planName));
   }
 }
 
@@ -373,15 +376,7 @@ function* getPVResourcesRequest(action) {
 }
 
 function* watchPlanCloseAndDelete() {
-  yield takeLatest(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDeleteSaga);
-}
-
-
-function* watchClosedStatus() {
-  while (true) {
-    const data = yield take(PlanActionTypes.CLOSED_STATUS_POLL_START);
-    yield race([call(checkClosedStatus, data), take(PlanActionTypes.CLOSED_STATUS_POLL_STOP)]);
-  }
+  yield takeEvery(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDelete);
 }
 
 function* watchPlanStatus() {
@@ -407,14 +402,13 @@ function* watchGetPVResourcesRequest() {
 }
 
 function* watchPlanClose() {
-  yield takeLatest(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseSaga);
+  yield takeEvery(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseAndCheck);
 }
 
 export default {
   watchPlanUpdate,
   watchPlanCloseAndDelete,
   watchPlanClose,
-  watchClosedStatus,
   watchPlanStatus,
   watchGetPVResourcesRequest,
   watchPVUpdate
