@@ -5,6 +5,7 @@ import { isTokenExpired, TokenExpiryHandler } from './client';
 
 export interface IDiscoveryClient {
   get(resource: IDiscoveryResource, params?: object): Promise<any>;
+  getRaw(path: string): Promise<any>;
   apiRoot(): string;
   rootNamespace(): string;
   setTokenExpiryHandler: (TokenExpiryHandler, number) => void;
@@ -29,7 +30,6 @@ export class DiscoveryClient implements IDiscoveryClient {
     this._token = token;
     const headers = {
       Authorization: `Bearer ${this._token}`,
-      'Content-Type': 'application/json',
     };
     this._requester = axios.create({
       baseURL: this._discoveryApi,
@@ -52,8 +52,17 @@ export class DiscoveryClient implements IDiscoveryClient {
 
   public get = (resource: IDiscoveryResource, params?: IDiscoveryParameters): AxiosPromise<any> => {
     this.checkExpiry();
+    return this._get(this.fullPath(resource.path()), resource.parametrized(params));
+  }
+
+  public getRaw = (path: string): AxiosPromise<any> => {
+    this.checkExpiry();
+    return this._get(path);
+  }
+
+  private _get = (path: string, params?): AxiosPromise<any> => {
     return new Promise((resolve, reject) => {
-      this._requester.get(this.fullPath(resource.path()), resource.parametrized(params))
+      this._requester.get(path, params)
         .then(res => resolve(res))
         .catch(err => {
           if (err.response && err.response.status === 401) {

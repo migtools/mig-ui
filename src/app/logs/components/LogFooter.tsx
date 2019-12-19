@@ -8,26 +8,25 @@ const LogFooter = ({
   isFetchingLogs,
   log,
   downloadHandle,
-  refreshLogs,
-  ...props
+  requestReport,
 }) => {
-  return (<CardFooter style={{height: '5%'}}>
-      {isFetchingLogs ? null : (
-        <Flex>
-          <Box flex="0" mx="1em">
-            <Button
-              onClick={downloadHandle}
-              isDisabled={!log}
-              variant="primary">
-              Download Selected
+  return (<CardFooter style={{ height: '5%' }}>
+    {isFetchingLogs ? null : (
+      <Flex>
+        <Box flex="0" mx="1em">
+          <Button
+            onClick={downloadHandle}
+            isDisabled={!log}
+            variant="primary">
+            Download Selected
               </Button>
-          </Box>
-          <Box flex="0" mx="1em">
-            <Button onClick={refreshLogs} variant="secondary">Refresh</Button>
-          </Box>
-        </Flex>
-      )}
-    </CardFooter>);
+        </Box>
+        <Box flex="0" mx="1em">
+          <Button onClick={requestReport} variant="secondary">Refresh</Button>
+        </Box>
+      </Flex>
+    )}
+  </CardFooter>);
 };
 
 export default LogFooter;

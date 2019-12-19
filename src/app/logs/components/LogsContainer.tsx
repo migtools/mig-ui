@@ -7,7 +7,8 @@ import {
   FunctionComponent
 } from 'react';
 import { connect } from 'react-redux';
-import { IMigrationLogs, ClusterKind, LogKind, ILog, IMigrationClusterLog } from '../duck/sagas';
+import { } from '../duck/sagas';
+import { IPlanLogSources } from '../../../client/resources/convension';
 import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
@@ -28,78 +29,74 @@ import { PollingContext } from '../../home/duck/context';
 interface IProps {
   planName: string;
   isFetchingLogs: boolean;
-  plan: IMigPlan;
-  migrations: IMigMigration[];
-  logs: IMigrationLogs;
-  refreshLogs: (planName: string) => void;
+  report: IPlanLogSources;
+  log: string[];
+  requestLog: (logPath: string) => void;
+  requestReport: (planName: string) => void;
   logFetchErrorMsg: string;
 }
 
 const LogsContainer: FunctionComponent<IProps> = ({
+  log,
   isFetchingLogs,
-  refreshLogs,
+  requestLog,
+  requestReport,
   planName,
-  plan,
-  migrations,
-  logs,
+  report,
   logFetchErrorMsg
 }) => {
   const [cluster, setCluster] = useState({
-    label: 'host',
-    value: 'host'
-  });
-  const [podType, setPodType] = useState({
-    label: null,
-    value: '?'
+    label: 'controller',
+    value: 'controller'
   });
   const [podIndex, setPodIndex] = useState({
     label: null,
     value: -1
   });
-  const [log, setLog] = useState('');
   const pollingContext = useContext(PollingContext);
 
   useEffect(() => {
-    refreshLogs(planName);
+    requestReport(planName);
     pollingContext.stopAllPolling();
   }, []);
 
-  const downloadLogHandle = (clusterType, podLogType, logIndex) => {
-    const archive = new JSZip();
-    includeLog(archive, clusterType, podLogType, logIndex);
-    downloadArchive(`${clusterType}-${podLogType}`, archive);
-  };
+  // const downloadLogHandle = (clusterType, podLogType, logIndex) => {
+  //   const archive = new JSZip();
+  //   includeLog(archive, clusterType, podLogType, logIndex);
+  //   downloadArchive(`${clusterType}-${podLogType}`, archive);
+  // };
 
-  const includeLog = (archive, clusterType, podLogType, logIndex) => {
-    const podName = logs[clusterType][podLogType][logIndex].podName;
-    const name = `${clusterType}/${podName}.log`;
-    archive.file(name, logs[clusterType][podLogType][logIndex].log);
-  };
+  // const includeLog = (archive, clusterType, podLogType, logIndex) => {
+  //   const podName = logs[clusterType][podLogType][logIndex].podName;
+  //   const name = `${clusterType}/${podName}.log`;
+  //   archive.file(name, logs[clusterType][podLogType][logIndex].log);
+  // };
 
-  const downloadArchive = async (name, data) => {
-    const element = document.createElement('a');
-    const content = await data.generateAsync({ type: 'blob' });
-    const file = new Blob([content], { type: 'application/zip' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${name}.zip`;
-    document.body.appendChild(element);
-    element.click();
-  };
+  // const downloadArchive = async (name, data) => {
+  //   const element = document.createElement('a');
+  //   const content = await data.generateAsync({ type: 'blob' });
+  //   const file = new Blob([content], { type: 'application/zip' });
+  //   element.href = URL.createObjectURL(file);
+  //   element.download = `${name}.zip`;
+  //   document.body.appendChild(element);
+  //   element.click();
+  // };
 
-  const downloadAllHandle = () => {
-    const archive = new JSZip();
-    archive.file(`plan/${plan.metadata.name}.json`, JSON.stringify(plan, null, 2));
-    migrations.map(
-      mig => archive.file(`migrations/${mig.metadata.name}.json`, JSON.stringify(mig, null, 2)));
-    Object.keys(logs)
-      .filter(clName => Object.values(ClusterKind).includes(clName))
-      .map((clName) => Object.keys(logs[clName])
-        .filter(pType => Object.values(LogKind).includes(pType))
-        .map(logPodType => logs[clName][logPodType]
-          .map((_, logPodIndex) =>
-            includeLog(archive, clName, logPodType, logPodIndex))));
-    downloadArchive(`${plan.metadata.name}`, archive);
-  };
+  // const downloadAllHandle = () => {
+  //   const archive = new JSZip();
+  //   archive.file(`plan/${plan.metadata.name}.json`, JSON.stringify(plan, null, 2));
+  //   migrations.map(
+  //     mig => archive.file(`migrations/${mig.metadata.name}.json`, JSON.stringify(mig, null, 2)));
+  //   Object.keys(logs)
+  //     .filter(clName => Object.values(ClusterKind).includes(clName))
+  //     .map((clName) => Object.keys(logs[clName])
+  //       .filter(pType => Object.values(LogKind).includes(pType))
+  //       .map(logPodType => logs[clName][logPodType]
+  //         .map((_, logPodIndex) =>
+  //           includeLog(archive, clName, logPodType, logPodIndex))));
+  //   downloadArchive(`${plan.metadata.name}`, archive);
+  // };
+
   if (logFetchErrorMsg) {
     return (
       <EmptyState variant={EmptyStateVariant.small}>
@@ -116,42 +113,37 @@ const LogsContainer: FunctionComponent<IProps> = ({
   return (
     <Card>
       <LogHeader
-        logs={logs}
+        report={report}
         isFetchingLogs={isFetchingLogs}
         cluster={cluster}
-        podType={podType}
         podIndex={podIndex}
-        log={log}
         setCluster={setCluster}
-        setPodType={setPodType}
         setPodIndex={setPodIndex}
-        setLog={setLog}
+        requestLog={requestLog}
       />
       <LogBody
         isFetchingLogs={isFetchingLogs}
         log={log}
-        downloadAllHandle={downloadAllHandle} />
+        downloadAllHandle={() => null} />
       <LogFooter
         isFetchingLogs={isFetchingLogs}
         log={log}
-        downloadHandle={() => downloadLogHandle(cluster.label, podType.label, podIndex.value)}
-        cluster={cluster}
-        podType={podType}
-        podIndex={podIndex}
-        refreshLogs={() => refreshLogs(planName)} />
+        // downloadHandle={() => downloadLogHandle(cluster.label, podType.label, podIndex.value)}
+        downloadHandle={() => null}
+        requestReport={requestReport} />
     </Card>
   );
 };
 
 export default connect(
   state => ({
-    plan: state.logs.logs.plan,
-    logs: state.logs.logs,
-    migrations: state.logs.logs.migrations,
+    report: state.logs.report,
+    log: state.logs.log,
     isFetchingLogs: state.logs.isFetchingLogs,
     logFetchErrorMsg: state.logs.logFetchErrorMsg,
   }),
   dispatch => ({
-    refreshLogs: (planName) => dispatch(LogActions.logsFetchRequest(planName))
+    requestLog: (logPath) => dispatch(LogActions.logsFetchRequest(logPath)),
+    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName))
   })
 )(LogsContainer);

@@ -6,7 +6,7 @@ export interface IKubeResource {
 }
 
 export interface IDiscoveryResource {
-  discoveryCluster(): string;
+  discoveryAggregator(): string;
   discoveryType(): string;
   path(): string;
   parametrized(IDiscoveryParameters?): { [param: string]: string };
@@ -23,7 +23,6 @@ export interface IGroupVersionKindPlural {
 }
 
 export interface IDiscoveryParameters {
-  wait?: number;
   offset?: number;
   limit?: number;
   [param: string]: string | number;
@@ -72,19 +71,26 @@ function namedPath(listPath, name) {
 export abstract class DiscoveryResource implements IDiscoveryResource {
 
   private readonly _type: string;
-  private readonly _cluster: string;
+  private readonly _aggregatorType: string;
+  private readonly _aggregatorName: string;
   private _discoveryParameters: IDiscoveryParameters;
 
-  constructor(cluster: string, type: string, discoveryParameters: IDiscoveryParameters) {
-    this._cluster = cluster;
+  constructor(
+    aggregatorName: string,
+    type: string,
+    discoveryParameters: IDiscoveryParameters,
+    customAggregatorType: string = 'clusters'
+  ) {
+    this._aggregatorType = customAggregatorType;
+    this._aggregatorName = aggregatorName;
     this._type = type;
     this._discoveryParameters = discoveryParameters;
   }
 
   public discoveryType() { return this._type; }
 
-  public discoveryCluster() {
-    return ['clusters', this._cluster].join('/');
+  public discoveryAggregator() {
+    return [this._aggregatorType, this._aggregatorName].join('/');
   }
 
   public parametrized(params: IDiscoveryParameters = {}) {
@@ -98,7 +104,7 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
 
   public path(): string {
     return [
-      this.discoveryCluster(),
+      this.discoveryAggregator(),
       this.discoveryType(),
     ].join('/');
   }
@@ -111,8 +117,14 @@ export abstract class NamedDiscoveryResource
 
   private readonly _name: string;
 
-  constructor(name: string, cluster: string, type: string, discoveryParameters: IDiscoveryParameters) {
-    super(cluster, type, discoveryParameters);
+  constructor(
+    name: string,
+    aggregator: string,
+    type: string,
+    discoveryParameters: IDiscoveryParameters,
+    customAggregatorType: string = 'clusters'
+  ) {
+    super(aggregator, type, discoveryParameters, customAggregatorType);
 
     this._name = name;
   }
@@ -121,8 +133,7 @@ export abstract class NamedDiscoveryResource
 
   public path(): string {
     return [
-      this.discoveryCluster(),
-      this.discoveryType(),
+      super.path(),
       this.discoveryName()
     ].join('/');
   }

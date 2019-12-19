@@ -16,6 +16,7 @@ import {
   MigResourceKind
 } from '../../../client/resources';
 import Q from 'q';
+import { LogActions } from '../../logs/duck/actions';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
@@ -349,6 +350,7 @@ function* getPVResourcesRequest(action) {
   const state = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
+    yield put(LogActions.logsFetchRequest('test'));
     const pvResourceRefs = action.pvList.map(pv => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
       return discoveryClient.get(persistentVolume);
