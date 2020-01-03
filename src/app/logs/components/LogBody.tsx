@@ -18,7 +18,6 @@ const LogBody = ({
   log,
   downloadAllHandle,
 }) => {
-  console.error('Heeeey', log);
   return (
     <CardBody style={{ minHeight: `${window.innerHeight * 0.6}px`, textAlign: 'center' }}>
       <Bullseye>
@@ -31,7 +30,7 @@ const LogBody = ({
               Loading...
             </Title>
           </EmptyState>)
-          : log ? <LogItem log={log} />
+          : log.length > 0 ? <LogItem log={log} />
             :
             <Box flex="1" m="auto">
               <Text fontSize={[2, 3, 4]}>Select pod to display logs</Text>

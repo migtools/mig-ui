@@ -19,7 +19,7 @@ export const reportFetchSuccess =
 
 export const reportFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof LogActions.reportFetchFailure>) => {
-    return { ...state, isFetchingLogs: false, logFetchErrorMsg: 'Failed to fetch log report: ' + action.error };
+    return { ...state, isFetchingLogs: false, logFetchErrorMsg: 'Failed to fetch log report' };
   };
 
 export const logFetchRequest =
@@ -34,7 +34,7 @@ export const logFetchSuccess =
 
 export const logFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof LogActions.logsFetchFailure>) => {
-    return { ...state, isFetchingLogs: false, logFetchErrorMsg: 'Failed to fetch log: ' + action.error };
+    return { ...state, isFetchingLogs: false, logFetchErrorMsg: 'Failed to fetch log' };
   };
 
 const planReducer = (state = INITIAL_STATE, action) => {

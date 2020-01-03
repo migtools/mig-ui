@@ -60,27 +60,26 @@ const LogsContainer: FunctionComponent<IProps> = ({
     pollingContext.stopAllPolling();
   }, []);
 
-  // const downloadLogHandle = (clusterType, podLogType, logIndex) => {
-  //   const archive = new JSZip();
-  //   includeLog(archive, clusterType, podLogType, logIndex);
-  //   downloadArchive(`${clusterType}-${podLogType}`, archive);
-  // };
+  const downloadLogHandle = (clusterName, podName) => {
+    const archive = new JSZip();
+    includeLog(archive, clusterName, podName);
+    downloadArchive(`${clusterName}-${podName}`, archive);
+  };
 
-  // const includeLog = (archive, clusterType, podLogType, logIndex) => {
-  //   const podName = logs[clusterType][podLogType][logIndex].podName;
-  //   const name = `${clusterType}/${podName}.log`;
-  //   archive.file(name, logs[clusterType][podLogType][logIndex].log);
-  // };
+  const includeLog = (archive, clusterName, podName) => {
+    const name = `${clusterName}/${podName}.log`;
+    archive.file(name, log.join('\r\n'));
+  };
 
-  // const downloadArchive = async (name, data) => {
-  //   const element = document.createElement('a');
-  //   const content = await data.generateAsync({ type: 'blob' });
-  //   const file = new Blob([content], { type: 'application/zip' });
-  //   element.href = URL.createObjectURL(file);
-  //   element.download = `${name}.zip`;
-  //   document.body.appendChild(element);
-  //   element.click();
-  // };
+  const downloadArchive = async (name, data) => {
+    const element = document.createElement('a');
+    const content = await data.generateAsync({ type: 'blob' });
+    const file = new Blob([content], { type: 'application/zip' });
+    element.href = URL.createObjectURL(file);
+    element.download = `${name}.zip`;
+    document.body.appendChild(element);
+    element.click();
+  };
 
   // const downloadAllHandle = () => {
   //   const archive = new JSZip();
@@ -128,8 +127,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
       <LogFooter
         isFetchingLogs={isFetchingLogs}
         log={log}
-        // downloadHandle={() => downloadLogHandle(cluster.label, podType.label, podIndex.value)}
-        downloadHandle={() => null}
+        downloadHandle={() => downloadLogHandle(cluster.label, podIndex.label)}
         requestReport={requestReport} />
     </Card>
   );
