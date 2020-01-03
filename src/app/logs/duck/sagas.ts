@@ -17,6 +17,8 @@ import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { PlanPodReportDiscovery } from '../../../client/resources/discovery';
 import { IPlanReport } from '../../../client/resources/convension';
 import utils from '../../common/duck/utils';
+import { handleCertError } from './utils';
+import { AlertActions } from '../../common/duck/actions';
 
 // export enum LogKind {
 // velero = 'velero',
@@ -56,10 +58,10 @@ function* extractLogs(action) {
   } catch (err) {
     if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}/${logPath}`;
-      utils.handleSelfSignedCertError(failedUrl, put);
+      yield handleCertError(failedUrl);
       return;
     }
-    console.error(err);
+    yield put(AlertActions.alertErrorTimeout(err.message));
     yield put(LogActions.logsFetchFailure(err));
   }
 }
@@ -186,27 +188,17 @@ function* collectReport(action) {
   try {
     const planReport: IPlanReport = yield planPodReportDiscovery.get(discoveryClient);
 
-    // const logs: IPlanLogPods = {
-    //   source: yield extractLogs(discoveryClient, planContainer.source, planPodReportDiscovery),
-    //   destination: yield extractLogs(discoveryClient, planContainer.destination, planPodReportDiscovery),
-    //   controller: yield extractLogs(discoveryClient, planContainer.controller, planPodReportDiscovery),
-    // };
-
-    // yield Q.allSettled(Object.values(logs));
-
-    // console.error(logs);
     delete planReport.name;
     delete planReport.namespace;
     yield put(LogActions.reportFetchSuccess(planReport));
 
   } catch (err) {
-    console.error(err);
     if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}/${planPodReportDiscovery.path()}`;
-      utils.handleSelfSignedCertError(failedUrl, put);
+      yield handleCertError(failedUrl);
       return;
     }
-    console.error(err);
+    yield put(AlertActions.alertErrorTimeout(err.message));
     yield put(LogActions.reportFetchFailure(err));
   }
 }
