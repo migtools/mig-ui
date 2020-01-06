@@ -11,12 +11,24 @@ import {
   Title
 } from '@patternfly/react-core';
 import LogItem from './LogItem';
+import { connect } from 'react-redux';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { IPlanLogSources } from '../../../client/resources/convension';
+import { FunctionComponent } from 'react';
+import { LogActions } from '../duck';
 
-const LogBody = ({
+interface IProps {
+  isFetchingLogs: boolean;
+  report: IPlanLogSources;
+  log: string;
+  requestDownloadAll: (report) => void;
+}
+
+const LogBody: FunctionComponent<IProps> = ({
   isFetchingLogs,
   log,
-  downloadAllHandle,
+  report,
+  requestDownloadAll,
 }) => {
   return (
     <CardBody style={{ minHeight: `${window.innerHeight * 0.6}px`, textAlign: 'center' }}>
@@ -35,10 +47,25 @@ const LogBody = ({
             <Box flex="1" m="auto">
               <Text fontSize={[2, 3, 4]}>Select pod to display logs</Text>
               <Text fontSize={[2, 3, 4]}>or</Text>
-              <Button onClick={downloadAllHandle} variant="primary">Download Logs</Button>
+              <Button
+                onClick={(_) => requestDownloadAll(report)}
+                variant="primary"
+                disabled={!report}
+              >
+                Download Logs
+              </Button>
             </Box>}
       </Bullseye>
     </CardBody>);
 };
 
-export default LogBody;
+export default connect(
+  state => ({
+    log: state.logs.log,
+    report: state.logs.report,
+    isFetchingLogs: state.logs.isFetchingLogs,
+  }),
+  dispatch => ({
+    requestDownloadAll: (report) => dispatch(LogActions.requestDownloadAll(report))
+  })
+)(LogBody);

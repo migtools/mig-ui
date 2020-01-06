@@ -21,6 +21,8 @@ export default function* rootSaga() {
     planSagas.watchPVUpdate(),
     logSagas.watchReportPolling(),
     logSagas.watchLogsPolling(),
+    logSagas.watchLogDownload(),
+    logSagas.watchLogsDownload(),
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),

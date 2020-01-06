@@ -1,5 +1,5 @@
-import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
-import { IPodLogSource, IPlanReport, IPlanLogSources } from '../../../client/resources/convension';
+import { IPlanLogSources } from '../../../client/resources/convension';
+
 
 export const LogActionTypes = {
   REPORT_FETCH_REQUEST: 'REPORT_FETCH_REQUEST',
@@ -8,6 +8,9 @@ export const LogActionTypes = {
   LOGS_FETCH_REQUEST: 'LOGS_FETCH_REQUEST',
   LOGS_FETCH_SUCCESS: 'LOGS_FETCH_SUCCESS',
   LOGS_FETCH_FAILURE: 'LOGS_FETCH_FAILURE',
+  CREATE_LOG_ARCHIVE: 'CREATE_LOG_ARCHIVE',
+  REQUEST_DOWNLOAD_LOG: 'REQUEST_DOWNLOAD_LOG',
+  REQUEST_DOWNLOAD_ALL: 'REQUEST_DOWNLOAD_ALL',
 };
 
 const reportFetchRequest = (planName: string) => ({
@@ -40,6 +43,21 @@ const logsFetchFailure = (error: string) => ({
   error
 });
 
+const createLogArchive = (url: string) => ({
+  type: LogActionTypes.CREATE_LOG_ARCHIVE,
+  url
+});
+
+const requestDownloadLog = (logPath: string) => ({
+  type: LogActionTypes.REQUEST_DOWNLOAD_LOG,
+  logPath
+});
+
+const requestDownloadAll = (report: IPlanLogSources) => ({
+  type: LogActionTypes.REQUEST_DOWNLOAD_ALL,
+  report
+});
+
 
 export const LogActions = {
   logsFetchRequest,
@@ -48,4 +66,7 @@ export const LogActions = {
   reportFetchRequest,
   reportFetchSuccess,
   reportFetchFailure,
+  requestDownloadLog,
+  requestDownloadAll,
+  createLogArchive,
 };

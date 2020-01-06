@@ -3,30 +3,63 @@ import { jsx } from '@emotion/core';
 import { Box, Flex, Text } from '@rebass/emotion';
 import { css } from '@emotion/core';
 import { Button, CardFooter } from '@patternfly/react-core';
+import { FunctionComponent } from 'react';
+import { connect } from 'react-redux';
+import { LogActions } from '../duck';
+import { IndexUndefined } from './LogsContainer';
+import { IPlanLogSources } from '../../../client/resources/convension';
 
-const LogFooter = ({
+interface IProps {
+  podIndex: number;
+  cluster: string;
+  isFetchingLogs: boolean;
+  report: IPlanLogSources;
+  requestDownloadLog: (logPath) => void;
+  requestReport: (planName) => void;
+  planName: string;
+}
+
+const LogFooter: FunctionComponent<IProps> = ({
+  podIndex,
+  cluster,
+  report,
   isFetchingLogs,
-  log,
-  downloadHandle,
+  planName,
+  requestDownloadLog,
   requestReport,
 }) => {
+
+  const requestDownload = (_) => {
+    requestDownloadLog(report[cluster][podIndex].log);
+  };
+
   return (<CardFooter style={{ height: '5%' }}>
     {isFetchingLogs ? null : (
       <Flex>
         <Box flex="0" mx="1em">
           <Button
-            onClick={downloadHandle}
-            isDisabled={log.length === 0}
-            variant="primary">
+            onClick={requestDownload}
+            isDisabled={!report || podIndex === IndexUndefined}
+            variant="primary"
+          >
             Download Selected
-              </Button>
+          </Button>
         </Box>
         <Box flex="0" mx="1em">
-          <Button onClick={requestReport} variant="secondary">Refresh</Button>
+          <Button onClick={() => requestReport(planName)} variant="secondary">Refresh</Button>
         </Box>
       </Flex>
     )}
   </CardFooter>);
 };
 
-export default LogFooter;
+export default connect(
+  state => ({
+    report: state.logs.report,
+    isFetchingLogs: state.logs.isFetchingLogs,
+  }),
+  dispatch => ({
+    requestDownloadLog: (logPath) => dispatch(LogActions.requestDownloadLog(logPath)),
+    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
+  }),
+)(LogFooter);

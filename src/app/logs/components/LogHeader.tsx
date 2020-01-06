@@ -5,6 +5,8 @@ import { Box, Flex, Text } from '@rebass/emotion';
 import Select from 'react-select';
 import { CardHeader } from '@patternfly/react-core';
 import { IPlanLogSources, IPodLogSource } from '../../../client/resources/convension';
+import { connect } from 'react-redux';
+import { LogActions } from '../duck';
 
 interface ISelectItem {
   label: any;
@@ -18,7 +20,7 @@ interface IProps {
   podIndex: ISelectItem;
   setCluster: (itemISelectItem) => void;
   setPodIndex: (itemISelectItem) => void;
-  requestLog: (string) => void;
+  logsFetchRequest: (string) => void;
 }
 
 const LogHeader: FunctionComponent<IProps> = ({
@@ -28,7 +30,7 @@ const LogHeader: FunctionComponent<IProps> = ({
   podIndex,
   setCluster,
   setPodIndex,
-  requestLog
+  logsFetchRequest
 }) => {
   const clusters = Object.keys(report)
     .map(cl => {
@@ -72,7 +74,7 @@ const LogHeader: FunctionComponent<IProps> = ({
               value={podIndex}
               onChange={pod => {
                 setPodIndex(pod);
-                requestLog(report[cluster.value][pod.value].log);
+                logsFetchRequest(report[cluster.value][pod.value].log);
               }}
               options={pods}
             />
@@ -83,4 +85,12 @@ const LogHeader: FunctionComponent<IProps> = ({
   </span>);
 };
 
-export default LogHeader;
+export default connect(
+  state => ({
+    report: state.logs.report,
+    isFetchingLogs: state.logs.isFetchingLogs,
+  }),
+  dispatch => ({
+    logsFetchRequest: (logPath) => dispatch(LogActions.logsFetchRequest(logPath)),
+  })
+)(LogHeader);
