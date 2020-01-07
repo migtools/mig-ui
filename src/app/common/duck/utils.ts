@@ -25,6 +25,11 @@ export const isSelfSignedCertError = (err) => {
   return !e.code && e.message === 'Network Error';
 };
 
+export const isTimeoutError = (err) => {
+  const e = err.toJSON();
+  return e.code && e.code === 206;
+};
+
 export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
   dispatch(AuthActions.certErrorOccurred(failedUrl));
   dispatch(push('/cert-error'));
@@ -44,6 +49,7 @@ export default {
   testDNS1123,
   DNS1123Error,
   isSelfSignedCertError,
+  isTimeoutError,
   handleSelfSignedCertError,
   testURL,
 };

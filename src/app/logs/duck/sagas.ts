@@ -67,7 +67,9 @@ function* collectReport(action) {
     yield put(LogActions.reportFetchSuccess(planReport));
 
   } catch (err) {
-    if (utils.isSelfSignedCertError(err)) {
+    if (utils.isTimeoutError(err)) {
+      yield put(AlertActions.alertErrorTimeout('Timed out while fetching plan report'));
+    } else if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}`;
       yield handleCertError(failedUrl);
       return;
@@ -78,7 +80,7 @@ function* collectReport(action) {
 }
 
 function* watchLogsPolling() {
-  yield takeEvery(LogActionTypes.LOGS_FETCH_REQUEST, extractLogs);
+  yield takeEvery(LogActionTypes.LOG_FETCH_REQUEST, extractLogs);
 }
 
 function* watchLogsDownload() {

@@ -227,7 +227,9 @@ const fetchNamespacesForCluster = clusterName => {
       }));
       dispatch(PlanActions.namespaceFetchSuccess(namespaceNames));
     } catch (err) {
-      if (utils.isSelfSignedCertError(err)) {
+      if (utils.isTimeoutError(err)) {
+        dispatch(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+      } else if (utils.isSelfSignedCertError(err)) {
         const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
         utils.handleSelfSignedCertError(failedUrl, dispatch);
         return;

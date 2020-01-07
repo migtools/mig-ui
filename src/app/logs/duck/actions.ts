@@ -5,9 +5,9 @@ export const LogActionTypes = {
   REPORT_FETCH_REQUEST: 'REPORT_FETCH_REQUEST',
   REPORT_FETCH_SUCCESS: 'REPORT_FETCH_SUCCESS',
   REPORT_FETCH_FAILURE: 'REPORT_FETCH_FAILURE',
-  LOGS_FETCH_REQUEST: 'LOGS_FETCH_REQUEST',
-  LOGS_FETCH_SUCCESS: 'LOGS_FETCH_SUCCESS',
-  LOGS_FETCH_FAILURE: 'LOGS_FETCH_FAILURE',
+  LOG_FETCH_REQUEST: 'LOG_FETCH_REQUEST',
+  LOG_FETCH_SUCCESS: 'LOG_FETCH_SUCCESS',
+  LOG_FETCH_FAILURE: 'LOG_FETCH_FAILURE',
   CREATE_LOG_ARCHIVE: 'CREATE_LOG_ARCHIVE',
   REQUEST_DOWNLOAD_LOG: 'REQUEST_DOWNLOAD_LOG',
   REQUEST_DOWNLOAD_ALL: 'REQUEST_DOWNLOAD_ALL',
@@ -28,18 +28,18 @@ const reportFetchFailure = (error: string) => ({
   error
 });
 
-const logsFetchRequest = (logPath: string) => ({
-  type: LogActionTypes.LOGS_FETCH_REQUEST,
+const logFetchRequest = (logPath: string) => ({
+  type: LogActionTypes.LOG_FETCH_REQUEST,
   logPath
 });
 
 const logsFetchSuccess = (log: string[]) => ({
-  type: LogActionTypes.LOGS_FETCH_SUCCESS,
+  type: LogActionTypes.LOG_FETCH_SUCCESS,
   log
 });
 
 const logsFetchFailure = (error: string) => ({
-  type: LogActionTypes.LOGS_FETCH_FAILURE,
+  type: LogActionTypes.LOG_FETCH_FAILURE,
   error
 });
 
@@ -60,7 +60,7 @@ const requestDownloadAll = (report: IPlanLogSources) => ({
 
 
 export const LogActions = {
-  logsFetchRequest,
+  logFetchRequest,
   logsFetchSuccess,
   logsFetchFailure,
   reportFetchRequest,

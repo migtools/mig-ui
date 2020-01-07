@@ -17,6 +17,7 @@ import {
 } from '../../../client/resources';
 import Q from 'q';
 import { LogActions } from '../../logs/duck/actions';
+import utils from '../../common/duck/utils';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
@@ -350,7 +351,6 @@ function* getPVResourcesRequest(action) {
   const state = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    yield put(LogActions.logsFetchRequest('test'));
     const pvResourceRefs = action.pvList.map(pv => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
       return discoveryClient.get(persistentVolume);
@@ -367,8 +367,10 @@ function* getPVResourcesRequest(action) {
       });
     yield put(PlanActions.getPVResourcesSuccess(pvList));
   } catch (err) {
+    if (utils.isTimeoutError(err)) {
+      yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+    }
     yield put(PlanActions.getPVResourcesFailure('Failed to get pv details'));
-
   }
 }
 

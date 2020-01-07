@@ -20,7 +20,7 @@ interface IProps {
   podIndex: ISelectItem;
   setCluster: (itemISelectItem) => void;
   setPodIndex: (itemISelectItem) => void;
-  logsFetchRequest: (string) => void;
+  logFetchRequest: (string) => void;
 }
 
 const LogHeader: FunctionComponent<IProps> = ({
@@ -30,7 +30,7 @@ const LogHeader: FunctionComponent<IProps> = ({
   podIndex,
   setCluster,
   setPodIndex,
-  logsFetchRequest
+  logFetchRequest
 }) => {
   const clusters = Object.keys(report)
     .map(cl => {
@@ -74,7 +74,7 @@ const LogHeader: FunctionComponent<IProps> = ({
               value={podIndex}
               onChange={pod => {
                 setPodIndex(pod);
-                logsFetchRequest(report[cluster.value][pod.value].log);
+                logFetchRequest(report[cluster.value][pod.value].log);
               }}
               options={pods}
             />
@@ -91,6 +91,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   dispatch => ({
-    logsFetchRequest: (logPath) => dispatch(LogActions.logsFetchRequest(logPath)),
+    logFetchRequest: (logPath) => dispatch(LogActions.logFetchRequest(logPath)),
   })
 )(LogHeader);
