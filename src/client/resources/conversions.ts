@@ -38,7 +38,9 @@ export function createMigCluster(
   clusterUrl: string,
   tokenSecret: any,
   isAzure: boolean,
-  azureResourceGroup: string
+  azureResourceGroup: string,
+  requireSSL: boolean,
+  caBundle: string
 ) {
   let specObject;
   if (isAzure) {
@@ -50,6 +52,8 @@ export function createMigCluster(
         name: tokenSecret.metadata.name,
         namespace: tokenSecret.metadata.namespace,
       },
+      insecure: !requireSSL,
+      caBundle: caBundle || null,
     };
   } else {
     specObject = {
@@ -59,6 +63,8 @@ export function createMigCluster(
         name: tokenSecret.metadata.name,
         namespace: tokenSecret.metadata.namespace,
       },
+      insecure: !requireSSL,
+      caBundle: caBundle || null,
     };
   }
 

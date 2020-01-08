@@ -38,6 +38,9 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
       ? atob(cluster.Secret.data.saToken)
       : null;
 
+  const clusterRequireSSL = !cluster.MigCluster.spec.insecure;
+  const clusterCABundle = cluster.MigCluster.spec.caBundle;
+
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
@@ -149,7 +152,9 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
               clusterUrl,
               clusterSvcToken,
               clusterIsAzure,
-              clusterAzureResourceGroup
+              clusterAzureResourceGroup,
+              clusterRequireSSL,
+              clusterCABundle
             }}
           />
           <ConfirmModal

@@ -8,7 +8,10 @@ import {
   FormGroup,
   Tooltip,
   TooltipPosition,
-  Checkbox
+  Checkbox,
+  InputGroup,
+  InputGroupText,
+  TextArea
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -25,13 +28,15 @@ import {
   isCheckConnectionButtonDisabled,
 } from '../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+import CertificateUpload from '../../../common/components/CertificateUpload';
 
 const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
 const isAzureKey = 'isAzure';
 const azureResourceGroupKey = 'azureResourceGroup';
-
+const requireSSLKey = 'requireSSL';
+const caBundleKey = 'caBundle';
 const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
@@ -46,6 +51,8 @@ const valuesHaveUpdate = (values, currentCluster) => {
     return true;
   }
 
+  const requireSSL = !currentCluster.MigCluster.spec.insecure;
+  const caBundle = currentCluster.MigCluster.spec.caBundle;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
   const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup;
@@ -54,6 +61,8 @@ const valuesHaveUpdate = (values, currentCluster) => {
     values.token !== rawToken ||
     values.azureResourceGroup !== azureResourceGroup ||
     values.isAzure !== azureResourceGroup.length > 0;
+    values.requireSSL !== requireSSL ||
+    values.caBundle !== caBundle;
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
@@ -66,6 +75,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
     handleSubmit,
     handleChange,
     setFieldTouched,
+    setFieldValue,
     handleBlur,
     onClose,
   } = props;
@@ -151,9 +161,27 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
           )}
         </FormGroup>
-
       }
-
+      <FormGroup fieldId={requireSSLKey}>
+        <Checkbox
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(requireSSLKey)}
+          onBlur={handleBlur}
+          isChecked={values.requireSSL}
+          name={requireSSLKey}
+          label="Require SSL verification"
+          id="require-ssl-input"
+        />
+      </FormGroup>
+      <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+        <CertificateUpload
+          isDisabled={!values.requireSSL}
+          name={caBundleKey}
+          onChange={setFieldValue}
+          onInput={formikSetFieldTouched(caBundleKey)}
+          onBlur={handleBlur}
+        />
+      </FormGroup>
       <Flex flexDirection="column">
         <Box m="0 0 1em 0 ">
           <Button
@@ -216,6 +244,8 @@ interface IFormValues {
   token: string;
   isAzure: boolean;
   azureResourceGroup?: string;
+  requireSSL: boolean;
+  caBundle: string;
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -232,7 +262,9 @@ const AddEditClusterForm: any = withFormik({
       url: '',
       token: '',
       isAzure: false,
-      azureResourceGroup: ''
+      azureResourceGroup: '',
+      requireSSL: true,
+      caBundle: '',
     };
 
     if (initialClusterValues) {
@@ -241,6 +273,8 @@ const AddEditClusterForm: any = withFormik({
       values.token = initialClusterValues.clusterSvcToken || '';
       values.isAzure = initialClusterValues.clusterIsAzure || false;
       values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || null;
+      values.requireSSL = initialClusterValues.clusterRequireSSL || true;
+      values.caBundle = initialClusterValues.clusterCABundle || null;
     }
 
     return values;
