@@ -9,15 +9,10 @@ import PrivateRoute from './auth/PrivateRoute';
 import RefreshRoute from './auth/RefreshRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
-import {
-  AlertActions
-} from './common/duck/actions';
 import { ConnectedRouter } from 'connected-react-router';
 import { ThemeProvider } from 'emotion-theming';
 import theme from '../theme';
 import { Global } from '@emotion/core';
-import styled from '@emotion/styled';
-import { Alert, AlertActionCloseButton } from '@patternfly/react-core';
 import CertErrorComponent from './auth/CertErrorComponent';
 import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
@@ -27,14 +22,13 @@ import { planOperations } from './plan/duck';
 import { ClusterActions } from './cluster/duck/actions';
 import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
+import AlertModal from './common/components/AlertModal';
 
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
   successMessage: any;
   progressMessage: any;
-  alertType: string;
-  clearAlerts: () => void;
   startPlanPolling: (params) => void;
   stopPlanPolling: () => void;
   startStoragePolling: (params) => void;
@@ -46,23 +40,12 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   clusterList: any;
 }
-const NotificationContainer = styled.div`
-  position: fixed;
-  z-index: 9999999;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  width: 25%;
-`;
 
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
   successMessage,
   progressMessage,
-  alertType,
   isLoggedIn,
-  clearAlerts,
   startPlanPolling,
   stopPlanPolling,
   startStoragePolling,
@@ -136,33 +119,10 @@ const AppComponent: React.SFC<IProps> = ({
 
   return (
     <React.Fragment>
-      {progressMessage && (
-        <NotificationContainer>
-          <Alert
-            variant="info"
-            title={progressMessage}
-            action={<AlertActionCloseButton onClose={clearAlerts} />}
-          />
-        </NotificationContainer>
-      )}
-      {errorMessage && (
-        <NotificationContainer>
-          <Alert
-            variant="danger"
-            title={errorMessage}
-            action={<AlertActionCloseButton onClose={clearAlerts} />}
-          />
-        </NotificationContainer>
-      )}
-      {successMessage && (
-        <NotificationContainer>
-          <Alert
-            variant="success"
-            title={successMessage}
-            action={<AlertActionCloseButton onClose={clearAlerts} />}
-          />
-        </NotificationContainer>
-      )}
+
+      <AlertModal alertMessage={progressMessage} alertType="info" />
+      <AlertModal alertMessage={errorMessage} alertType="danger" />
+      <AlertModal alertMessage={successMessage} alertType="success" />
 
       <PollingContext.Provider value={{
         startDefaultClusterPolling: () => startDefaultClusterPolling(),
@@ -220,7 +180,6 @@ export default connect(
     clusterList: state.cluster.clusterList
   }),
   dispatch => ({
-    clearAlerts: () => dispatch(AlertActions.alertClear()),
     startPlanPolling: params => dispatch(PlanActions.startPlanPolling(params)),
     stopPlanPolling: () => dispatch(PlanActions.stopPlanPolling()),
     startStoragePolling: params => dispatch(StorageActions.startStoragePolling(params)),
