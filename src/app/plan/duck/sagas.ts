@@ -11,8 +11,6 @@ import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import {
   MigResource,
-  CoreClusterResource,
-  CoreClusterResourceKind,
   MigResourceKind
 } from '../../../client/resources';
 import Q from 'q';
@@ -25,7 +23,7 @@ const PlanUpdateRetryPeriodSeconds = 5;
 function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     return yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -38,7 +36,7 @@ function* getPlanSaga(planName) {
 function* patchPlanSaga(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
     const closedPlanSpecObj = {
@@ -69,7 +67,7 @@ function* planUpdateRetry(action) {
       function* (planValues, isRerunPVDiscovery) {
         const state = yield select();
         const migMeta = state.migMeta;
-        const client: IClusterClient = ClientFactory.hostCluster(state);
+        const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes = yield call(getPlanSaga, planValues.planName);
@@ -330,7 +328,7 @@ function* planCloseSaga(action) {
 function* planCloseAndDeleteSaga(action) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     yield put(PlanActions.setLockedPlan(action.planName));
     yield put(PlanActions.planCloseRequest(action.planName));

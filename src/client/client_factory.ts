@@ -1,6 +1,7 @@
-import { ClusterClient, TokenExpiryHandler } from './client';
+import { ClusterClient } from './client';
 import { DiscoveryClient } from './discoveryClient';
 import { ResponseType } from 'axios';
+import { TokenExpiryHandler } from './resources/common';
 
 export class ClientFactoryUnknownClusterError extends Error {
   constructor(clusterName: string) {
@@ -31,7 +32,7 @@ export class ClientFactoryMissingDiscoveryApi extends Error {
 }
 
 export const ClientFactory = {
-  hostCluster: (state: any, customResponceType: ResponseType = 'json') => {
+  cluster: (state: any, customResponceType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -40,7 +41,7 @@ export const ClientFactory = {
     }
 
     const newClient = new ClusterClient(
-      state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/, customResponceType);
+      state.migMeta.clusterApi, state.auth.user.access_token, customResponceType);
 
     if (tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
@@ -48,12 +49,10 @@ export const ClientFactory = {
 
     return newClient;
   },
-  forCluster: (clusterName: string, state: any, customResponceType: ResponseType = 'json') => {
-    const { clusterApi, accessToken } = getAuthForCluster(clusterName, state);
-    const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/, customResponceType);
-    return newClient;
-  },
   discovery: (state: any, customResponceType: ResponseType = 'json') => {
+    if (!state.auth.user) {
+      throw new ClientFactoryMissingUserError();
+    }
     if (!state.migMeta.discoveryApi) {
       throw new ClientFactoryMissingDiscoveryApi();
     }
@@ -70,22 +69,6 @@ export const ClientFactory = {
     return discoveryClient;
   }
 };
-
-interface IAuthDetails {
-  clusterApi: string;
-  accessToken: string;
-}
-
-function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
-  const cluster = state.cluster.clusterList.find(c => c.MigCluster.metadata.name === clusterName);
-  if (!cluster) {
-    throw new ClientFactoryUnknownClusterError(clusterName);
-  }
-  const clusterApi = cluster.MigCluster.spec.url;
-  const accessToken = atob(cluster.Secret.data.token || cluster.Secret.data.saToken);
-
-  return { clusterApi, accessToken };
-}
 
 let tokenExpiryHandler = null;
 

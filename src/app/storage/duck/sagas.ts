@@ -32,7 +32,7 @@ function* addStorageRequest(action) {
   const state = yield select();
   const { migMeta } = state;
   const { storageValues } = action;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
 
   const storageSecret = createStorageSecret(
     storageValues.name,
@@ -175,7 +175,7 @@ function* updateStorageRequest(action) {
   const state = yield select();
   const { migMeta } = state;
   const { storageValues } = action;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
 
   const currentStorage = state.storage.migStorageList.find(c => {
     return c.MigStorage.metadata.name === storageValues.name;
@@ -344,7 +344,7 @@ function* pollStorageAddEditStatus(action) {
       const { migMeta } = state;
       const { storageName } = action;
 
-      const client: IClusterClient = ClientFactory.hostCluster(state);
+      const client: IClusterClient = ClientFactory.cluster(state);
       const migStorageResource = new MigResource(
         MigResourceKind.MigStorage, migMeta.namespace);
       const storagePollResult = yield client.get(migStorageResource, storageName);
