@@ -1,6 +1,5 @@
 import { select, call, put, take, takeEvery, all } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
-import { IClusterClient } from '../../../client/client';
 import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
 import Q from 'q';
@@ -12,6 +11,9 @@ import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
 import { AlertActions } from '../../common/duck/actions';
 
+const clusterIndex = 4;
+const logIndex = 8;
+
 function* downloadLog(action) {
   const state = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
@@ -19,8 +21,8 @@ function* downloadLog(action) {
   try {
     const archive = new JSZip();
     const log = yield discoveryClient.getRaw(logPath);
-    const clusterName = logPath[4];
-    const logName = logPath[8];
+    const clusterName = logPath[clusterIndex];
+    const logName = logPath[logIndex];
     archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
     const content = yield archive.generateAsync({ type: 'blob' });
     const file = new Blob([content], { type: 'application/zip' });
@@ -49,8 +51,8 @@ function* downloadLogs(action) {
 
     logs.map((log, index) => {
       const fullPath = logPaths[index].split(/\//);
-      const clusterName = fullPath[4];
-      const logName = fullPath[8];
+      const clusterName = fullPath[clusterIndex];
+      const logName = fullPath[logIndex];
       archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
     });
 
