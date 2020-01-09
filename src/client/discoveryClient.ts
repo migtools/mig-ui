@@ -1,4 +1,4 @@
-import axios, { AxiosPromise, AxiosInstance, ResponseType } from 'axios';
+import axios, { AxiosInstance, ResponseType } from 'axios';
 import { IDiscoveryResource, IDiscoveryParameters, OAuthClient } from './resources/common';
 
 export interface IDiscoveryClient {
@@ -44,22 +44,20 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
     return [this.rootNamespace(), resourcePath].join('/');
   }
 
-  public get = (resource: IDiscoveryResource, params?: IDiscoveryParameters): AxiosPromise<any> => {
+  public get = (resource: IDiscoveryResource, params?: IDiscoveryParameters): Promise<any> => {
     return this._get(this.fullPath(resource.path()), resource.parametrized(params));
   }
 
-  public getRaw = (path: string): AxiosPromise<any> => {
+  public getRaw = (path: string): Promise<any> => {
     return this._get(path);
   }
 
-  private _get = (path: string, params?): AxiosPromise<any> => {
-    return new Promise((resolve, reject) => {
-      this._requester.get(path, params)
-        .then(res => resolve(res))
-        .catch(err => {
-          super.checkExpiry(err);
-          reject(err);
-        });
-    });
+  private _get = (path: string, params?): Promise<any> => {
+    try {
+      return this._requester.get(path, params);
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
+    }
   }
 }
