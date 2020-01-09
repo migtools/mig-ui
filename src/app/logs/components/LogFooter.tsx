@@ -7,7 +7,7 @@ import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
 import { PodUnselected } from './LogsContainer';
-import { IPlanLogSources } from '../../../client/resources/convension';
+import { IPlanLogSources } from '../../../client/resources/discovery';
 
 interface IProps {
   podIndex: number;

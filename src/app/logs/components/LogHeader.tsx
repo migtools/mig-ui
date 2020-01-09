@@ -4,9 +4,9 @@ import { FunctionComponent } from 'react';
 import { Box, Flex, Text } from '@rebass/emotion';
 import Select from 'react-select';
 import { CardHeader } from '@patternfly/react-core';
-import { IPlanLogSources, IPodLogSource } from '../../../client/resources/convension';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
+import { IPlanLogSources, IPodLogSource } from '../../../client/resources/discovery';
 
 interface ISelectItem {
   label: any;

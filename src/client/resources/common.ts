@@ -1,5 +1,3 @@
-import moment = require("moment");
-
 export type KubeResource = NamespacedResource | ClusterResource;
 
 export interface IKubeResource {

@@ -13,9 +13,9 @@ import {
 import LogItem from './LogItem';
 import { connect } from 'react-redux';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { IPlanLogSources } from '../../../client/resources/convension';
 import { FunctionComponent } from 'react';
 import { LogActions } from '../duck';
+import { IPlanLogSources } from '../../../client/resources/discovery';
 
 interface IProps {
   isFetchingLogs: boolean;

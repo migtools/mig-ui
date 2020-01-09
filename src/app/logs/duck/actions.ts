@@ -1,4 +1,4 @@
-import { IPlanLogSources } from '../../../client/resources/convension';
+import { IPlanLogSources } from '../../../client/resources/discovery';
 
 
 export const LogActionTypes = {
