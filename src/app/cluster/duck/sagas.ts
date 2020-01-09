@@ -33,7 +33,7 @@ function* addClusterRequest(action) {
   const state = yield select();
   const { migMeta } = state;
   const { clusterValues } = action;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
 
   const tokenSecret = createTokenSecret(
     clusterValues.name,
@@ -163,7 +163,7 @@ function* updateClusterRequest(action) {
   const state = yield select();
   const { migMeta } = state;
   const { clusterValues } = action;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
 
   const currentCluster = state.cluster.clusterList.find(c => {
     return c.MigCluster.metadata.name === clusterValues.name;
@@ -246,7 +246,7 @@ function* pollClusterAddEditStatus(action) {
       const { migMeta } = state;
       const { clusterName } = action;
 
-      const client: IClusterClient = ClientFactory.hostCluster(state);
+      const client: IClusterClient = ClientFactory.cluster(state);
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
       const clusterPollResult = yield client.get(migClusterResource, clusterName);
 

@@ -7,8 +7,6 @@ import {
   FunctionComponent
 } from 'react';
 import { connect } from 'react-redux';
-import { IMigrationLogs, ClusterKind, LogKind, ILog, IMigrationClusterLog } from '../duck/sagas';
-import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
@@ -21,86 +19,61 @@ import {
   Title,
   EmptyStateBody,
 } from '@patternfly/react-core';
-import JSZip from 'jszip';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import { PollingContext } from '../../home/duck/context';
 
 interface IProps {
   planName: string;
-  isFetchingLogs: boolean;
-  plan: IMigPlan;
-  migrations: IMigMigration[];
-  logs: IMigrationLogs;
-  refreshLogs: (planName: string) => void;
-  logFetchErrorMsg: string;
+  archive: string;
+  requestReport: (planName: string) => void;
+  logErrorMsg: string;
 }
 
+export const PodUnselected = -1;
+
 const LogsContainer: FunctionComponent<IProps> = ({
-  isFetchingLogs,
-  refreshLogs,
+  requestReport,
   planName,
-  plan,
-  migrations,
-  logs,
-  logFetchErrorMsg
+  archive,
+  logErrorMsg
 }) => {
   const [cluster, setCluster] = useState({
-    label: 'host',
-    value: 'host'
-  });
-  const [podType, setPodType] = useState({
-    label: null,
-    value: '?'
+    label: 'controller',
+    value: 'controller'
   });
   const [podIndex, setPodIndex] = useState({
     label: null,
-    value: -1
+    value: PodUnselected,
   });
-  const [log, setLog] = useState('');
   const pollingContext = useContext(PollingContext);
+  const [downloadLink, setDownloadLink] = useState(null);
 
   useEffect(() => {
-    refreshLogs(planName);
+    requestReport(planName);
     pollingContext.stopAllPolling();
   }, []);
 
-  const downloadLogHandle = (clusterType, podLogType, logIndex) => {
-    const archive = new JSZip();
-    includeLog(archive, clusterType, podLogType, logIndex);
-    downloadArchive(`${clusterType}-${podLogType}`, archive);
-  };
-
-  const includeLog = (archive, clusterType, podLogType, logIndex) => {
-    const podName = logs[clusterType][podLogType][logIndex].podName;
-    const name = `${clusterType}/${podName}.log`;
-    archive.file(name, logs[clusterType][podLogType][logIndex].log);
-  };
-
-  const downloadArchive = async (name, data) => {
-    const element = document.createElement('a');
-    const content = await data.generateAsync({ type: 'blob' });
-    const file = new Blob([content], { type: 'application/zip' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${name}.zip`;
+  const downloadArchive = async (element) => {
     document.body.appendChild(element);
     element.click();
+    setDownloadLink(null);
   };
 
-  const downloadAllHandle = () => {
-    const archive = new JSZip();
-    archive.file(`plan/${plan.metadata.name}.json`, JSON.stringify(plan, null, 2));
-    migrations.map(
-      mig => archive.file(`migrations/${mig.metadata.name}.json`, JSON.stringify(mig, null, 2)));
-    Object.keys(logs)
-      .filter(clName => Object.values(ClusterKind).includes(clName))
-      .map((clName) => Object.keys(logs[clName])
-        .filter(pType => Object.values(LogKind).includes(pType))
-        .map(logPodType => logs[clName][logPodType]
-          .map((_, logPodIndex) =>
-            includeLog(archive, clName, logPodType, logPodIndex))));
-    downloadArchive(`${plan.metadata.name}`, archive);
-  };
-  if (logFetchErrorMsg) {
+  // TODO: utilize dedicated solution for archive download
+  useEffect(() => {
+    if (archive) {
+      const element = document.createElement('a');
+      element.href = archive;
+      element.download = 'logs.zip';
+      setDownloadLink(element);
+    }
+  }, [archive]);
+
+  useEffect(() => {
+    if (downloadLink) { downloadArchive(downloadLink); }
+  }, [downloadLink]);
+
+  if (logErrorMsg) {
     return (
       <EmptyState variant={EmptyStateVariant.small}>
         <EmptyStateIcon icon={WarningTriangleIcon} />
@@ -116,42 +89,26 @@ const LogsContainer: FunctionComponent<IProps> = ({
   return (
     <Card>
       <LogHeader
-        logs={logs}
-        isFetchingLogs={isFetchingLogs}
         cluster={cluster}
-        podType={podType}
         podIndex={podIndex}
-        log={log}
         setCluster={setCluster}
-        setPodType={setPodType}
         setPodIndex={setPodIndex}
-        setLog={setLog}
       />
-      <LogBody
-        isFetchingLogs={isFetchingLogs}
-        log={log}
-        downloadAllHandle={downloadAllHandle} />
+      <LogBody />
       <LogFooter
-        isFetchingLogs={isFetchingLogs}
-        log={log}
-        downloadHandle={() => downloadLogHandle(cluster.label, podType.label, podIndex.value)}
-        cluster={cluster}
-        podType={podType}
-        podIndex={podIndex}
-        refreshLogs={() => refreshLogs(planName)} />
+        cluster={cluster.value}
+        podIndex={podIndex.value}
+        planName={planName} />
     </Card>
   );
 };
 
 export default connect(
   state => ({
-    plan: state.logs.logs.plan,
-    logs: state.logs.logs,
-    migrations: state.logs.logs.migrations,
-    isFetchingLogs: state.logs.isFetchingLogs,
-    logFetchErrorMsg: state.logs.logFetchErrorMsg,
+    logErrorMsg: state.logs.logErrorMsg,
+    archive: state.logs.archive,
   }),
   dispatch => ({
-    refreshLogs: (planName) => dispatch(LogActions.logsFetchRequest(planName))
+    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
   })
 )(LogsContainer);

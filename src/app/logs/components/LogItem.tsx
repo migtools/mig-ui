@@ -6,8 +6,7 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
 const LogItem = ({ log }) => {
-  const arrayOfLines = log.split(/\r?\n/);
-  const myData = arrayOfLines.map((item, _) => ({value: item}));
+  const logConverted = log.map((item) => ({ value: item }));
   const columns = [{
     Header: '', accessor: 'value'
   }];
@@ -27,9 +26,9 @@ const LogItem = ({ log }) => {
         }
         }
         defaultPageSize={200}
-        style={{ height: `${0.6 * window.innerHeight}px`, textAlign: 'left'}}
+        style={{ height: `${0.6 * window.innerHeight}px`, textAlign: 'left' }}
         columns={columns}
-        data={myData}
+        data={logConverted}
         className="-highlight"
       />
     </StyledBox>

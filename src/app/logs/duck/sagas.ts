@@ -1,196 +1,132 @@
-import { select, call, put, take } from 'redux-saga/effects';
+import { select, call, put, take, takeEvery, all } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
-import { IClusterClient } from '../../../client/client';
 import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
-import {
-  MigResource,
-  ExtendedCoreNamespacedResource,
-  CoreNamespacedResourceKind,
-  ExtendedCoreNamespacedResourceKind,
-  CoreNamespacedResource,
-  MigResourceKind
-} from '../../../client/resources';
-import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
 import Q from 'q';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { PlanPodReportDiscovery, ClusterKind, IPlanLogSources, IPlanReport } from '../../../client/resources/discovery';
+import JSZip from 'jszip';
+import utils from '../../common/duck/utils';
+import { handleCertError } from './utils';
+import { AlertActions } from '../../common/duck/actions';
 
-export enum LogKind {
-  velero = 'velero',
-  restic = 'restic',
-  controller = 'controller'
-}
+const clusterIndex = 4;
+const logIndex = 8;
 
-export enum ClusterKind {
-  source = 'source',
-  target = 'target',
-  host = 'host',
-}
-
-export interface ILog {
-  podName: string;
-  log: string;
-}
-
-export type IMigrationClusterLogType = {
-  [key in LogKind]?: ILog[];
-};
-
-export interface IMigrationClusterLog extends IMigrationClusterLogType {
-  clusterName: string;
-}
-
-export type IMigrationClusterLogList = {
-  [key in ClusterKind]: IMigrationClusterLog;
-};
-
-export interface IMigrationLogs extends IMigrationClusterLogList {
-  plan: IMigPlan;
-  migrations: IMigMigration[];
-}
-
-const ControllerPodLabel = 'control-plane=controller-manager';
-const VeleroPodLabel = 'component=velero';
-const ResticPodLabel = 'name=restic';
-
-function extractLogs(kind, pods, logAccum, client, namespace) {
-  return pods.map(veleroPod => {
-    const podName = veleroPod.metadata.name;
-    const veleroLog = client.get(
-      new ExtendedCoreNamespacedResource(
-        CoreNamespacedResourceKind.Pod,
-        namespace,
-        ExtendedCoreNamespacedResourceKind.Log),
-      podName
-    );
-    veleroLog.then(vl => logAccum[kind].push({
-      podName,
-      log: vl.data
-    }));
-    return veleroLog;
-  });
-}
-
-function* collectLogs(action) {
-  const { planName } = action;
+function* downloadLog(action) {
   const state = yield select();
-  const { migMeta } = state;
-  const hostClient: IClusterClient = ClientFactory.hostCluster(state, 'text');
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const logPath: string = action.logPath;
   try {
-    const planContainer = yield hostClient.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
-    const migrationsContainer = yield hostClient.list(new MigResource(MigResourceKind.MigMigration, migMeta.namespace));
-    const migrations = migrationsContainer.data.items.reduce((accum, mig) => {
-      if (mig.spec.migPlanRef.name === planName) { accum.push(mig); }
-      return accum;
-    }, []);
-    const plan = planContainer.data;
+    const archive = new JSZip();
+    const log = yield discoveryClient.getRaw(logPath);
+    const fullPath = logPath.split(/\//);
+    const clusterName = fullPath[clusterIndex];
+    const logName = fullPath[logIndex];
+    archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
+    const content = yield archive.generateAsync({ type: 'blob' });
+    const file = new Blob([content], { type: 'application/zip' });
+    const url = URL.createObjectURL(file);
+    yield put(LogActions.createLogArchive(url));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err.message));
+  }
+}
 
-    const migClusters = yield hostClient.list(new MigResource(MigResourceKind.MigCluster, migMeta.namespace));
-    const hostCluster = migClusters.data.items.filter(migCluster => migCluster.spec.isHostCluster)[0];
-    const hostClusterName = hostCluster.metadata.name;
-    const sourceClusterName = plan.spec.srcMigClusterRef.name;
-    const targetClusterName = plan.spec.destMigClusterRef.name;
-    const planClusterNames = [sourceClusterName, targetClusterName];
-    const migrationLogs: IMigrationLogs = {
-      source: {
-        clusterName: sourceClusterName,
-        [LogKind.velero]: [],
-        [LogKind.restic]: [],
-      },
-      target: {
-        clusterName: targetClusterName,
-        [LogKind.velero]: [],
-        [LogKind.restic]: [],
-      },
-      host: {
-        clusterName: hostClusterName,
-        [LogKind.controller]: [],
-      },
-      plan,
-      migrations
-    };
+function* downloadLogs(action) {
+  const state = yield select();
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const report: IPlanLogSources = action.report;
+  try {
+    const archive = new JSZip();
+    const logPaths = flatten(Object.values(ClusterKind).map(
+      src => report[src].map(pod => pod.log)));
 
-    const controllerPods = yield hostClient.list(
-      new CoreNamespacedResource(CoreNamespacedResourceKind.Pod, migMeta.namespace),
-      { labelSelector: ControllerPodLabel }
-    );
-
-    const controllerLogs = extractLogs(
-      LogKind.controller,
-      controllerPods.data.items,
-      migrationLogs[ClusterKind.host],
-      hostClient,
-      migMeta.namespace
-    );
-    yield Q.allSettled(controllerLogs);
-
-    const remoteClusters = migClusters.data.items.filter(
-      migCluster =>
-        !migCluster.spec.isHostCluster &&
-        planClusterNames.includes(migCluster.metadata.name))
-      .map(migCluster => migCluster.metadata.name)
-      .map(clusterName => ({
-        isSource: sourceClusterName === clusterName,
-        name: clusterName,
-        client: ClientFactory.forCluster(clusterName, state, 'text')
-      }));
-
-    // Append excluded host client
-    if (remoteClusters.length < 2) {
-      remoteClusters.push({
-        name: hostCluster.metadata.name,
-        client: hostClient
-      });
+    const logs = [];
+    for (const log of logPaths) {
+      const text = yield discoveryClient.getRaw(log);
+      logs.push(text);
     }
 
-    const migrationPods = yield remoteClusters.map(cluster => {
-      const veleroPods = cluster.client.list(
-        new CoreNamespacedResource(CoreNamespacedResourceKind.Pod, migMeta.namespace),
-        { labelSelector: VeleroPodLabel }
-      );
-      const resticPods = cluster.client.list(
-        new CoreNamespacedResource(CoreNamespacedResourceKind.Pod, migMeta.namespace),
-        { labelSelector: ResticPodLabel }
-      );
-      veleroPods.then(vp => cluster['velero'] = vp.data);
-      resticPods.then(rp => cluster['restic'] = rp.data);
-      return [veleroPods, resticPods];
-    });
-    yield Q.allSettled(flatten(migrationPods));
 
-    const logResults = yield remoteClusters.map(cluster => {
-      const clusterType = cluster.isSource ? 'source' : 'target';
-      const veleroLogs = extractLogs(
-        LogKind.velero,
-        cluster.velero.items,
-        migrationLogs[clusterType],
-        cluster.client,
-        migMeta.namespace
-      );
-
-      const resticLogs = extractLogs(
-        LogKind.restic,
-        cluster.restic.items,
-        migrationLogs[clusterType],
-        cluster.client,
-        migMeta.namespace
-      );
-      return veleroLogs.concat(resticLogs);
+    logs.map((log, index) => {
+      const fullPath = logPaths[index].split(/\//);
+      const clusterName = fullPath[clusterIndex];
+      const logName = fullPath[logIndex];
+      archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
     });
-    yield Q.allSettled(logResults);
-    yield put(LogActions.logsFetchSuccess(migrationLogs));
+
+    const content = yield archive.generateAsync({ type: 'blob' });
+    const file = new Blob([content], { type: 'application/zip' });
+    const url = URL.createObjectURL(file);
+    yield put(LogActions.createLogArchive(url));
   } catch (err) {
-    console.error(err);
-    yield put(LogActions.logsFetchFailure('Failed to get logs'));
+    yield put(AlertActions.alertErrorTimeout(err.message));
+  }
+}
+
+function* extractLogs(action) {
+  const state = yield select();
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const { logPath } = action;
+  try {
+    const log = yield discoveryClient.getRaw(logPath);
+    yield put(LogActions.logsFetchSuccess(log.data));
+  } catch (err) {
+    if (utils.isSelfSignedCertError(err)) {
+      const failedUrl = `${discoveryClient.apiRoot()}`;
+      yield handleCertError(failedUrl);
+      return;
+    }
+    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(LogActions.logsFetchFailure(err));
+  }
+}
+
+function* collectReport(action) {
+  const { planName } = action;
+  const state = yield select();
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const planPodReportDiscovery = new PlanPodReportDiscovery(planName);
+  try {
+    const planReport: IPlanReport = yield planPodReportDiscovery.get(discoveryClient);
+
+    delete planReport.name;
+    delete planReport.namespace;
+    yield put(LogActions.reportFetchSuccess(planReport));
+
+  } catch (err) {
+    if (utils.isTimeoutError(err)) {
+      yield put(AlertActions.alertErrorTimeout('Timed out while fetching plan report'));
+    } else if (utils.isSelfSignedCertError(err)) {
+      const failedUrl = `${discoveryClient.apiRoot()}`;
+      yield handleCertError(failedUrl);
+      return;
+    }
+    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(LogActions.reportFetchFailure(err));
   }
 }
 
 function* watchLogsPolling() {
-  while (true) {
-    const action = yield take(LogActionTypes.LOGS_FETCH_REQUEST);
-    yield call(collectLogs, action);
-  }
+  yield takeEvery(LogActionTypes.LOG_FETCH_REQUEST, extractLogs);
+}
+
+function* watchLogsDownload() {
+  yield takeEvery(LogActionTypes.REQUEST_DOWNLOAD_ALL, downloadLogs);
+}
+
+function* watchLogDownload() {
+  yield takeEvery(LogActionTypes.REQUEST_DOWNLOAD_LOG, downloadLog);
+}
+
+function* watchReportPolling() {
+  yield takeEvery(LogActionTypes.REPORT_FETCH_REQUEST, collectReport);
 }
 
 export default {
-  watchLogsPolling
+  watchLogsDownload,
+  watchLogDownload,
+  watchLogsPolling,
+  watchReportPolling,
 };

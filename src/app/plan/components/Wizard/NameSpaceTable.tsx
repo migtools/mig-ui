@@ -22,18 +22,17 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
   const [selectAll, setSelectAll] = useState(0);
 
-
   useEffect(() => {
     if (sourceClusterNamespaces.length > 0) {
       const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
         const keys = Object.keys(checkedNamespaceRows);
 
         for (const key of keys) {
-          if (item.metadata.uid === key && checkedNamespaceRows[key]) {
+          if (item.name === key && checkedNamespaceRows[key]) {
             return item;
           }
         }
-      }).map((namespace) => namespace.metadata.name);
+      }).map((namespace) => namespace.name);
 
       setFieldValue('selectedNamespaces', formValuesForNamespaces);
     }
@@ -42,16 +41,10 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   useEffect(() => {
     if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
       const newSelected = Object.assign({}, checkedNamespaceRows);
-      values.selectedNamespaces.filter((item, itemIndex) => {
+      values.selectedNamespaces.filter((item, _) => {
         for (let i = 0; sourceClusterNamespaces.length > i; i++) {
-          if (item.metadata && item.metadata.uid) {
-            if (item.metadata.uid === sourceClusterNamespaces[i].metadata.uid) {
-              newSelected[item.metadata.uid] = true;
-            }
-          } else {
-            if (item === sourceClusterNamespaces[i].metadata.name) {
-              newSelected[sourceClusterNamespaces[i].metadata.uid] = true;
-            }
+          if (item === sourceClusterNamespaces[i].name) {
+            newSelected[item] = true;
           }
         }
       });
@@ -64,7 +57,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
     if (selectAll === 0) {
       sourceClusterNamespaces.forEach(item => {
-        newSelected[item.metadata.uid] = true;
+        newSelected[item.name] = true;
       });
     }
     setSelectAll(selectAll === 0 ? 1 : 0);
@@ -107,8 +100,8 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     <div style={{ textAlign: 'center' }}>
                       <input
                         type="checkbox"
-                        onChange={() => selectRow(original.metadata.uid)}
-                        checked={checkedNamespaceRows[original.metadata.uid] === true}
+                        onChange={() => selectRow(original.name)}
+                        checked={checkedNamespaceRows[original.name] === true}
                       />
                     </div>
                   );
@@ -140,7 +133,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     Name
                     </div>
                 ),
-                accessor: 'metadata.name',
+                accessor: 'name',
               },
               {
                 Header: () => (

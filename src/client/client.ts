@@ -1,8 +1,5 @@
-import { KubeResource } from './resources/common';
-import axios, { AxiosPromise, AxiosInstance, ResponseType } from 'axios';
-import moment from 'moment';
-
-export type TokenExpiryHandler = (oldToken: object) => void;
+import { KubeResource, OAuthClient, TokenExpiryHandler } from './resources/common';
+import axios, { AxiosInstance, ResponseType } from 'axios';
 
 export interface IClusterClient {
   list(resource: KubeResource, params?: object): Promise<any>;
@@ -22,23 +19,18 @@ export class ClientTokenExpiredError extends Error {
   }
 }
 
-export class ClusterClient {
-  private token: string;
+export class ClusterClient extends OAuthClient {
   public apiRoot: string;
   private requester: AxiosInstance;
   private patchRequester: AxiosInstance;
-  private tokenExpiryHandler: TokenExpiryHandler;
-  private tokenExpiryTime: number;
-  private isOauth: boolean;
 
-  constructor(apiRoot: string, token: string, isOauth: boolean, customResponseType: ResponseType = 'json') {
+  constructor(apiRoot: string, token: string, customResponseType: ResponseType = 'json') {
+    super(token);
     this.apiRoot = apiRoot;
-    this.token = token;
-    this.isOauth = isOauth;
     this.requester = axios.create({
       baseURL: this.apiRoot,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        ...super.getOAuthHeader(),
         'Content-Type': 'application/json',
       },
       transformResponse: undefined,
@@ -47,132 +39,70 @@ export class ClusterClient {
     this.patchRequester = axios.create({
       baseURL: this.apiRoot,
       headers: {
-        Authorization: `Bearer ${this.token}`,
+        ...super.getOAuthHeader(),
         'Content-Type': 'application/merge-patch+json',
       },
       responseType: customResponseType,
     });
   }
 
-  public setTokenExpiryHandler(handler: TokenExpiryHandler, tokenExpiryTime: number) {
-    this.tokenExpiryHandler = handler;
-    this.tokenExpiryTime = tokenExpiryTime;
-  }
-
-  public list = (resource: KubeResource, params?: object): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.requester.get(resource.listPath(), { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-  public get = (resource: KubeResource, name: string, params?: object): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.requester.get(resource.namedPath(name), { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-  public put = (
-      resource: KubeResource,
-      name: string,
-      updatedObject: object,
-      params?: object
-    ): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.requester.put(resource.namedPath(name), updatedObject, { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-  public patch = (resource: KubeResource, name: string, patch: object, params?: object): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.patchRequester.patch(resource.namedPath(name), patch, { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-  public create = (resource: KubeResource, newObject: object, params?: object): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.requester.post(resource.listPath(), newObject, { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-  public delete = (resource: KubeResource, name: string, params?: object): AxiosPromise<any> => {
-    this.checkExpiry();
-    return new Promise((resolve, reject) => {
-      this.requester.delete(resource.namedPath(name), { params })
-        .then(res => resolve(res))
-        .catch(err => {
-          if(err.response && err.response.status === 401 && this.isOauth) {
-            this.tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
-        });
-    });
-  }
-
-  private checkExpiry() {
-    if(this.isTokenExpired() && this.tokenExpiryHandler) {
-      this.tokenExpiryHandler(this.oldToken());
+  public list = async (resource: KubeResource, params?: object): Promise<any> => {
+    try {
+      return await this.requester.get(resource.listPath(), { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
     }
   }
 
-  private isTokenExpired() {
-    const currentUnixTime = moment().unix();
-    const expiredTime = this.tokenExpiryTime;
-    const isExpired = currentUnixTime > expiredTime;
-
-    if(isExpired) {
-      console.warn('Client token appears to be expired:');
-      console.warn(`Current time: ${currentUnixTime}`);
-      console.warn(`Token expiry time: ${expiredTime}`);
+  public get = async (resource: KubeResource, name: string, params?: object): Promise<any> => {
+    try {
+      return await this.requester.get(resource.namedPath(name), { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
     }
-
-    return isExpired;
   }
 
-  private oldToken() {
-    return {
-      token: this.token,
-      tokenExpiryTime: this.tokenExpiryTime,
-    };
+  public put = async (
+    resource: KubeResource,
+    name: string,
+    updatedObject: object,
+    params?: object
+  ): Promise<any> => {
+    try {
+      return await this.requester.put(resource.namedPath(name), updatedObject, { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
+    }
   }
+
+  public patch = async (resource: KubeResource, name: string, patch: object, params?: object): Promise<any> => {
+    try {
+      return await this.patchRequester.patch(resource.namedPath(name), patch, { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
+    }
+  }
+
+  public create = async (resource: KubeResource, newObject: object, params?: object): Promise<any> => {
+    try {
+      return await this.requester.post(resource.listPath(), newObject, { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
+    }
+  }
+
+  public delete = async (resource: KubeResource, name: string, params?: object): Promise<any> => {
+    try {
+      return await this.requester.delete(resource.namedPath(name), { params });
+    } catch (err) {
+      super.checkExpiry(err);
+      throw err;
+    }
+  }
+
 }

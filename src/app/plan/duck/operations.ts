@@ -2,20 +2,21 @@ import { PlanActions } from './actions';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import { CoreClusterResource, CoreClusterResourceKind } from '../../../client/resources';
 
 import {
   createMigMigration,
   createInitialMigPlan,
-  updateMigPlanFromValues,
 } from '../../../client/resources/conversions';
 import {
   AlertActions
 } from '../../common/duck/actions';
-import utils from '../../common/duck/utils';
 import planUtils from './utils';
 import { select } from 'redux-saga/effects';
 import { PollingActions } from '../../common/duck/actions';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { NamespaceDiscovery } from '../../../client/resources/discovery';
+import { DiscoveryResource } from '../../../client/resources/common';
+import utils from '../../common/duck/utils';
 
 /* tslint:disable */
 const uuidv1 = require('uuid/v1');
@@ -28,7 +29,7 @@ const runStage = plan => {
       dispatch(PlanActions.initStage(plan.MigPlan.metadata.name));
       dispatch(AlertActions.alertProgressTimeout('Staging Started'));
       const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const client: IClusterClient = ClientFactory.cluster(getState());
       const migMigrationObj = createMigMigration(
         uuidv1(),
         plan.MigPlan.metadata.name,
@@ -86,7 +87,7 @@ const runMigration = (plan, disableQuiesce) => {
       dispatch(PlanActions.initMigration(plan.MigPlan.metadata.name));
       dispatch(AlertActions.alertProgressTimeout('Migration Started'));
       const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const client: IClusterClient = ClientFactory.cluster(getState());
 
       const migMigrationObj = createMigMigration(
         uuidv1(),
@@ -147,7 +148,7 @@ const addPlan = (migPlan) => {
        * Create the plan object. Blocks all code in this function until createPlanRes
        */
       const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const client: IClusterClient = ClientFactory.cluster(getState());
 
       const migPlanObj = createInitialMigPlan(
         migPlan.planName,
@@ -181,7 +182,7 @@ const fetchPlans = () => {
     dispatch(PlanActions.migPlanFetchRequest());
     try {
       const { migMeta } = getState();
-      const client: IClusterClient = ClientFactory.hostCluster(getState());
+      const client: IClusterClient = ClientFactory.cluster(getState());
       const resource = new MigResource(MigResourceKind.MigPlan, migMeta.namespace);
       const res = await client.list(resource);
       const migPlans = res.data.items || [];
@@ -214,15 +215,21 @@ function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Arra
 
 const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
-    const client: IClusterClient = ClientFactory.forCluster(clusterName, getState());
-    const nsResource = new CoreClusterResource(CoreClusterResourceKind.Namespace);
+    const state = getState();
+    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+    const namespaces: DiscoveryResource = new NamespaceDiscovery(clusterName);
     try {
       dispatch(PlanActions.namespaceFetchRequest());
-      const res = await client.list(nsResource);
-      dispatch(PlanActions.namespaceFetchSuccess(res.data.items));
+      const res = await discoveryClient.get(namespaces);
+      const namespaceNames = res.data.map(namespaceName => ({
+        name: namespaceName
+      }));
+      dispatch(PlanActions.namespaceFetchSuccess(namespaceNames));
     } catch (err) {
-      if (utils.isSelfSignedCertError(err)) {
-        const failedUrl = `${client.apiRoot}${nsResource.listPath()}`;
+      if (utils.isTimeoutError(err)) {
+        dispatch(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+      } else if (utils.isSelfSignedCertError(err)) {
+        const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
         utils.handleSelfSignedCertError(failedUrl, dispatch);
         return;
       }
@@ -234,7 +241,7 @@ const fetchNamespacesForCluster = clusterName => {
 
 function* fetchPlansGenerator() {
   const state = yield select();
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
   try {
     let planList = yield client.list(resource);

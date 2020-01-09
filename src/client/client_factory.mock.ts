@@ -1,6 +1,6 @@
 import { MockClusterClient } from './client.mock';
 import mocked_data from './kube_store/mocked_data';
-import { TokenExpiryHandler } from './client';
+import { TokenExpiryHandler } from './resources/common';
 
 function determineHostClusterName() {
   return mocked_data['hostMigClusterName'];

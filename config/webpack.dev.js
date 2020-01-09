@@ -47,6 +47,7 @@ migMeta.oauth = {
 };
 migMeta.namespace = localConfig.namespace;
 migMeta.configNamespace = localConfig.configNamespace;
+migMeta.discoveryApi = localConfig.discoveryApi;
 
 htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
 const PORT = process.env.PORT || localConfig.devServerPort;

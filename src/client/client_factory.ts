@@ -1,5 +1,7 @@
-import { ClusterClient, TokenExpiryHandler } from './client';
+import { ClusterClient } from './client';
+import { DiscoveryClient } from './discoveryClient';
 import { ResponseType } from 'axios';
+import { TokenExpiryHandler } from './resources/common';
 
 export class ClientFactoryUnknownClusterError extends Error {
   constructor(clusterName: string) {
@@ -22,8 +24,15 @@ export class ClientFactoryMissingApiRoot extends Error {
   }
 }
 
+export class ClientFactoryMissingDiscoveryApi extends Error {
+  constructor() {
+    super('migMeta.discoveryApi is missing');
+    Object.setPrototypeOf(this, ClientFactoryMissingDiscoveryApi.prototype);
+  }
+}
+
 export const ClientFactory = {
-  hostCluster: (state: any, customResponceType: ResponseType = 'json') => {
+  cluster: (state: any, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -32,36 +41,34 @@ export const ClientFactory = {
     }
 
     const newClient = new ClusterClient(
-      state.migMeta.clusterApi, state.auth.user.access_token, true /*isOauth*/, customResponceType);
+      state.migMeta.clusterApi, state.auth.user.access_token, customResponseType);
 
-    if(tokenExpiryHandler) {
+    if (tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
     }
 
     return newClient;
   },
-  forCluster: (clusterName: string, state: any, customResponceType: ResponseType = 'json') => {
-    const { clusterApi, accessToken } = getAuthForCluster(clusterName, state);
-    const newClient = new ClusterClient(clusterApi, accessToken, false /*isOauth*/, customResponceType);
-    return newClient;
-  },
-};
+  discovery: (state: any, customResponseType: ResponseType = 'json') => {
+    if (!state.auth.user) {
+      throw new ClientFactoryMissingUserError();
+    }
+    if (!state.migMeta.discoveryApi) {
+      throw new ClientFactoryMissingDiscoveryApi();
+    }
 
-interface IAuthDetails {
-  clusterApi: string;
-  accessToken: string;
-}
+    const discoveryClient = new DiscoveryClient(
+      state.migMeta.discoveryApi,
+      state.migMeta.namespace,
+      state.auth.user.access_token,
+      customResponseType);
 
-function getAuthForCluster(clusterName: string, state: any): IAuthDetails {
-  const cluster = state.cluster.clusterList.find(c => c.MigCluster.metadata.name === clusterName);
-  if (!cluster) {
-    throw new ClientFactoryUnknownClusterError(clusterName);
+    if (tokenExpiryHandler) {
+      discoveryClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
+    }
+    return discoveryClient;
   }
-  const clusterApi = cluster.MigCluster.spec.url;
-  const accessToken = atob(cluster.Secret.data.token || cluster.Secret.data.saToken);
-
-  return { clusterApi, accessToken };
-}
+};
 
 let tokenExpiryHandler = null;
 

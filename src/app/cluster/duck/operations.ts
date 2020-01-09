@@ -17,7 +17,7 @@ const removeCluster = name => {
     try {
       const state = getState();
       const { migMeta } = state;
-      const client: IClusterClient = ClientFactory.hostCluster(state);
+      const client: IClusterClient = ClientFactory.cluster(state);
 
       const secretResource = new CoreNamespacedResource(
         CoreNamespacedResourceKind.Secret,
@@ -72,7 +72,7 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
 
 function* fetchClustersGenerator() {
   const state = yield select();
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigCluster, state.migMeta.namespace);
   try {
     let clusterList = yield client.list(resource);

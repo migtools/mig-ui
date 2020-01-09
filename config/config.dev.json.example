@@ -6,5 +6,6 @@
   "redirectUri": "http://localhost:9000/login/callback",
   "namespace": "openshift-migration",
   "configNamespace": "openshift-config",
-  "oauthClientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K"
+  "oauthClientSecret": "bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K",
+  "discoveryApi": "https://discovery-api.supercluster.example.com"
 }

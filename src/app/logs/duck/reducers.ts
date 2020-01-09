@@ -2,29 +2,56 @@ import { LogActionTypes, LogActions } from './actions';
 
 export const INITIAL_STATE = {
   isFetchingLogs: true,
-  logFetchErrorMsg: null,
-  logs: {},
+  logErrorMsg: null,
+  report: {},
+  log: [],
+  archive: '',
 };
-export const logsFetchRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.logsFetchRequest>) => {
-    return { ...state, isFetchingLogs: true, logFetchErrorMsg: null };
+
+export const reportFetchRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.reportFetchRequest>) => {
+    return { ...state, isFetchingLogs: true, log: [], logErrorMsg: null, archive: '' };
   };
 
-export const logsFetchSuccess =
+export const reportFetchSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.reportFetchSuccess>) => {
+    return { ...state, report: action.report, isFetchingLogs: false };
+  };
+
+export const reportFetchFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.reportFetchFailure>) => {
+    return { ...state, isFetchingLogs: false, logErrorMsg: 'Failed to fetch log report' };
+  };
+
+export const logFetchRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.logFetchRequest>) => {
+    return { ...state, isFetchingLogs: true, archive: '' };
+  };
+
+export const logFetchSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof LogActions.logsFetchSuccess>) => {
-    return { ...state, logs: action.logs, isFetchingLogs: false, logFetchErrorMsg: null };
+    return { ...state, log: action.log, isFetchingLogs: false };
   };
 
-export const logsFetchFailure =
+export const logFetchFailure =
   (state = INITIAL_STATE, action: ReturnType<typeof LogActions.logsFetchFailure>) => {
-    return { ...state, isFetchingLogs: false, logFetchErrorMsg: 'Failed to fetch logs.' };
+    return { ...state, isFetchingLogs: false, logErrorMsg: 'Failed to fetch log' };
+  };
+
+export const createLogArchive =
+  (state = INITIAL_STATE, action: ReturnType<typeof LogActions.createLogArchive>) => {
+    return { ...state, archive: action.url };
   };
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case LogActionTypes.LOGS_FETCH_REQUEST: return logsFetchRequest(state, action);
-    case LogActionTypes.LOGS_FETCH_SUCCESS: return logsFetchSuccess(state, action);
-    case LogActionTypes.LOGS_FETCH_FAILURE: return logsFetchFailure(state, action);
+    case LogActionTypes.REPORT_FETCH_SUCCESS: return reportFetchSuccess(state, action);
+    case LogActionTypes.REPORT_FETCH_REQUEST: return reportFetchRequest(state, action);
+    case LogActionTypes.REPORT_FETCH_FAILURE: return reportFetchFailure(state, action);
+    case LogActionTypes.LOG_FETCH_SUCCESS: return logFetchSuccess(state, action);
+    case LogActionTypes.LOG_FETCH_REQUEST: return logFetchRequest(state, action);
+    case LogActionTypes.LOG_FETCH_FAILURE: return logFetchFailure(state, action);
+    case LogActionTypes.CREATE_LOG_ARCHIVE: return createLogArchive(state, action);
     default: return state;
   }
 };

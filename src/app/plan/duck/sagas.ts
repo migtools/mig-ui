@@ -1,6 +1,8 @@
 import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IClusterClient } from '../../../client/client';
+import { PersistentVolumeDiscovery } from '../../../client/resources/discovery';
 import { updateMigPlanFromValues } from '../../../client/resources/conversions';
 import {
   AlertActions,
@@ -9,11 +11,11 @@ import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import {
   MigResource,
-  CoreClusterResource,
-  CoreClusterResourceKind,
   MigResourceKind
 } from '../../../client/resources';
 import Q from 'q';
+import { LogActions } from '../../logs/duck/actions';
+import utils from '../../common/duck/utils';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
@@ -21,7 +23,7 @@ const PlanUpdateRetryPeriodSeconds = 5;
 function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     return yield client.get(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -34,7 +36,7 @@ function* getPlanSaga(planName) {
 function* patchPlanSaga(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
     const closedPlanSpecObj = {
@@ -65,7 +67,7 @@ function* planUpdateRetry(action) {
       function* (planValues, isRerunPVDiscovery) {
         const state = yield select();
         const migMeta = state.migMeta;
-        const client: IClusterClient = ClientFactory.hostCluster(state);
+        const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes = yield call(getPlanSaga, planValues.planName);
@@ -326,7 +328,7 @@ function* planCloseSaga(action) {
 function* planCloseAndDeleteSaga(action) {
   const state = yield select();
   const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.hostCluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state);
   try {
     yield put(PlanActions.setLockedPlan(action.planName));
     yield put(PlanActions.planCloseRequest(action.planName));
@@ -345,14 +347,11 @@ function* planCloseAndDeleteSaga(action) {
 
 function* getPVResourcesRequest(action) {
   const state = yield select();
-  const client: IClusterClient = ClientFactory.forCluster(action.clusterName, state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    const resource = new CoreClusterResource(CoreClusterResourceKind.PV);
     const pvResourceRefs = action.pvList.map(pv => {
-      return client.get(
-        resource,
-        pv.name
-      );
+      const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
+      return discoveryClient.get(persistentVolume);
     });
 
     const pvList = [];
@@ -366,8 +365,10 @@ function* getPVResourcesRequest(action) {
       });
     yield put(PlanActions.getPVResourcesSuccess(pvList));
   } catch (err) {
+    if (utils.isTimeoutError(err)) {
+      yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+    }
     yield put(PlanActions.getPVResourcesFailure('Failed to get pv details'));
-
   }
 }
 

@@ -1,30 +1,72 @@
-import { IMigPlan, IMigMigration } from '../../../client/resources/conversions';
-import { IMigrationLogs } from './sagas';
+import { IPlanLogSources } from '../../../client/resources/discovery';
+
 
 export const LogActionTypes = {
-  LOGS_FETCH_REQUEST: 'LOGS_FETCH_REQUEST',
-  LOGS_FETCH_SUCCESS: 'LOGS_FETCH_SUCCESS',
-  LOGS_FETCH_FAILURE: 'LOGS_FETCH_FAILURE',
+  REPORT_FETCH_REQUEST: 'REPORT_FETCH_REQUEST',
+  REPORT_FETCH_SUCCESS: 'REPORT_FETCH_SUCCESS',
+  REPORT_FETCH_FAILURE: 'REPORT_FETCH_FAILURE',
+  LOG_FETCH_REQUEST: 'LOG_FETCH_REQUEST',
+  LOG_FETCH_SUCCESS: 'LOG_FETCH_SUCCESS',
+  LOG_FETCH_FAILURE: 'LOG_FETCH_FAILURE',
+  CREATE_LOG_ARCHIVE: 'CREATE_LOG_ARCHIVE',
+  REQUEST_DOWNLOAD_LOG: 'REQUEST_DOWNLOAD_LOG',
+  REQUEST_DOWNLOAD_ALL: 'REQUEST_DOWNLOAD_ALL',
 };
 
-const logsFetchRequest = (planName: string) => ({
-  type: LogActionTypes.LOGS_FETCH_REQUEST,
+const reportFetchRequest = (planName: string) => ({
+  type: LogActionTypes.REPORT_FETCH_REQUEST,
   planName
 });
 
-const logsFetchSuccess = (logs: IMigrationLogs) => ({
-  type: LogActionTypes.LOGS_FETCH_SUCCESS,
-  logs
+const reportFetchSuccess = (report: IPlanLogSources) => ({
+  type: LogActionTypes.REPORT_FETCH_SUCCESS,
+  report
+});
+
+const reportFetchFailure = (error: string) => ({
+  type: LogActionTypes.REPORT_FETCH_FAILURE,
+  error
+});
+
+const logFetchRequest = (logPath: string) => ({
+  type: LogActionTypes.LOG_FETCH_REQUEST,
+  logPath
+});
+
+const logsFetchSuccess = (log: string[]) => ({
+  type: LogActionTypes.LOG_FETCH_SUCCESS,
+  log
 });
 
 const logsFetchFailure = (error: string) => ({
-  type: LogActionTypes.LOGS_FETCH_FAILURE,
+  type: LogActionTypes.LOG_FETCH_FAILURE,
   error
+});
+
+const createLogArchive = (url: string) => ({
+  type: LogActionTypes.CREATE_LOG_ARCHIVE,
+  url
+});
+
+const requestDownloadLog = (logPath: string) => ({
+  type: LogActionTypes.REQUEST_DOWNLOAD_LOG,
+  logPath
+});
+
+const requestDownloadAll = (report: IPlanLogSources) => ({
+  type: LogActionTypes.REQUEST_DOWNLOAD_ALL,
+  report
 });
 
 
 export const LogActions = {
-  logsFetchRequest,
+  logFetchRequest,
   logsFetchSuccess,
-  logsFetchFailure
+  logsFetchFailure,
+  reportFetchRequest,
+  reportFetchSuccess,
+  reportFetchFailure,
+  requestDownloadLog,
+  requestDownloadAll,
+  createLogArchive,
 };
