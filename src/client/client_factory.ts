@@ -32,7 +32,7 @@ export class ClientFactoryMissingDiscoveryApi extends Error {
 }
 
 export const ClientFactory = {
-  cluster: (state: any, customResponceType: ResponseType = 'json') => {
+  cluster: (state: any, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -41,7 +41,7 @@ export const ClientFactory = {
     }
 
     const newClient = new ClusterClient(
-      state.migMeta.clusterApi, state.auth.user.access_token, customResponceType);
+      state.migMeta.clusterApi, state.auth.user.access_token, customResponseType);
 
     if (tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
@@ -49,7 +49,7 @@ export const ClientFactory = {
 
     return newClient;
   },
-  discovery: (state: any, customResponceType: ResponseType = 'json') => {
+  discovery: (state: any, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -61,7 +61,7 @@ export const ClientFactory = {
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
       state.auth.user.access_token,
-      customResponceType);
+      customResponseType);
 
     if (tokenExpiryHandler) {
       discoveryClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);

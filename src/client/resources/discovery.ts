@@ -1,13 +1,13 @@
 import { NamedDiscoveryResource, DiscoveryResource, IDiscoveryParameters } from './common';
 import { IDiscoveryClient } from '../discoveryClient';
-import { IPlanReport, INamespaceList } from './convension';
+import { IPlanReport } from './convension';
 
 export class NamespaceDiscovery extends DiscoveryResource {
   constructor(cluster: string, params: IDiscoveryParameters = {}) {
     super(cluster, 'namespaces', params);
   }
 
-  public async get(client: IDiscoveryClient): Promise<INamespaceList> {
+  public async get(client: IDiscoveryClient): Promise<string[]> {
     const ns = await client.get(this);
     return ns.data;
   }

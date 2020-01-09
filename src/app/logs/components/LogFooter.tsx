@@ -6,7 +6,7 @@ import { Button, CardFooter } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
-import { IndexUndefined } from './LogsContainer';
+import { PodUnselected } from './LogsContainer';
 import { IPlanLogSources } from '../../../client/resources/convension';
 
 interface IProps {
@@ -39,7 +39,7 @@ const LogFooter: FunctionComponent<IProps> = ({
         <Box flex="0" mx="1em">
           <Button
             onClick={requestDownload}
-            isDisabled={!report || podIndex === IndexUndefined}
+            isDisabled={!report || podIndex === PodUnselected}
             variant="primary"
           >
             Download Selected

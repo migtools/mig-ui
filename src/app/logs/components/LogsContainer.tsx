@@ -29,7 +29,7 @@ interface IProps {
   logErrorMsg: string;
 }
 
-export const IndexUndefined = -1;
+export const PodUnselected = -1;
 
 const LogsContainer: FunctionComponent<IProps> = ({
   requestReport,
@@ -43,7 +43,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
   });
   const [podIndex, setPodIndex] = useState({
     label: null,
-    value: IndexUndefined,
+    value: PodUnselected,
   });
   const pollingContext = useContext(PollingContext);
   const [downloadLink, setDownloadLink] = useState(null);
@@ -59,6 +59,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
     setDownloadLink(null);
   };
 
+  // TODO: utilize dedicated solution for archive download
   useEffect(() => {
     if (archive) {
       const element = document.createElement('a');

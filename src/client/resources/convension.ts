@@ -1,5 +1,3 @@
-export type INamespaceList = string[];
-
 export enum ClusterKind {
   source = 'source',
   destination = 'destination',
