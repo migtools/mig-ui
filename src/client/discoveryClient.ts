@@ -1,7 +1,5 @@
 import axios, { AxiosPromise, AxiosInstance, ResponseType } from 'axios';
-import { IDiscoveryResource, IDiscoveryParameters } from './resources/common';
-import moment = require('moment');
-import { isTokenExpired, TokenExpiryHandler } from './client';
+import { IDiscoveryResource, IDiscoveryParameters, OAuthClient } from './resources/common';
 
 export interface IDiscoveryClient {
   get(resource: IDiscoveryResource, params?: object): Promise<any>;
@@ -11,25 +9,21 @@ export interface IDiscoveryClient {
   setTokenExpiryHandler: (TokenExpiryHandler, number) => void;
 }
 
-export class DiscoveryClient implements IDiscoveryClient {
+export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
   private readonly _discoveryApi: string;
   private readonly _discoveryNamespace: string;
   private readonly _requester: AxiosInstance;
-  private _token: string;
-  private _tokenExpiryTime: number;
-  private _tokenExpiryHandler: TokenExpiryHandler;
 
   constructor(
     discoveryApi: string,
     discoveryNamespace: string,
     token: string,
     customResponseType: ResponseType = 'json') {
-
+    super(token);
     this._discoveryApi = discoveryApi;
     this._discoveryNamespace = discoveryNamespace;
-    this._token = token;
     const headers = {
-      Authorization: `Bearer ${this._token}`,
+      ...super.getOAuthHeader()
     };
     this._requester = axios.create({
       baseURL: this._discoveryApi,
@@ -51,12 +45,10 @@ export class DiscoveryClient implements IDiscoveryClient {
   }
 
   public get = (resource: IDiscoveryResource, params?: IDiscoveryParameters): AxiosPromise<any> => {
-    this.checkExpiry();
     return this._get(this.fullPath(resource.path()), resource.parametrized(params));
   }
 
   public getRaw = (path: string): AxiosPromise<any> => {
-    this.checkExpiry();
     return this._get(path);
   }
 
@@ -65,31 +57,9 @@ export class DiscoveryClient implements IDiscoveryClient {
       this._requester.get(path, params)
         .then(res => resolve(res))
         .catch(err => {
-          if (err.response && err.response.status === 401) {
-            this._tokenExpiryHandler(this.oldToken());
-          } else {
-            reject(err);
-          }
+          super.checkExpiry(err);
+          reject(err);
         });
     });
-  }
-
-  private checkExpiry(): void {
-    if (isTokenExpired(this._tokenExpiryTime) && this._tokenExpiryHandler) {
-      this._tokenExpiryHandler(this.oldToken());
-    }
-  }
-
-
-  public setTokenExpiryHandler(tokenExpiryHandler, expiry) {
-    this._tokenExpiryTime = expiry;
-    this._tokenExpiryHandler = tokenExpiryHandler;
-  }
-
-  private oldToken() {
-    return {
-      token: this._token,
-      tokenExpiryTime: this._tokenExpiryTime,
-    };
   }
 }

@@ -1,3 +1,5 @@
+import moment = require("moment");
+
 export type KubeResource = NamespacedResource | ClusterResource;
 
 export interface IKubeResource {
@@ -27,6 +29,8 @@ export interface IDiscoveryParameters {
   limit?: number;
   [param: string]: string | number;
 }
+
+export type TokenExpiryHandler = (oldToken: object) => void;
 
 export abstract class NamespacedResource implements IKubeResource {
   public abstract gvk(): IGroupVersionKindPlural;
@@ -136,5 +140,40 @@ export abstract class NamedDiscoveryResource
       super.path(),
       this.discoveryName()
     ].join('/');
+  }
+}
+
+
+export abstract class OAuthClient {
+  private _token: string;
+  private _tokenExpiryTime: number;
+  private _tokenExpiryHandler: TokenExpiryHandler;
+
+  constructor(token: string) {
+    this._token = token;
+  }
+
+  public getOAuthHeader() {
+    return {
+      Authorization: `Bearer ${this._token}`,
+    };
+  }
+
+  public setTokenExpiryHandler(handler: TokenExpiryHandler, tokenExpiryTime: number) {
+    this._tokenExpiryHandler = handler;
+    this._tokenExpiryTime = tokenExpiryTime;
+  }
+
+  public checkExpiry(err) {
+    if (err.response && err.response.status === 401) {
+      this._tokenExpiryHandler(this._oldToken());
+    }
+  }
+
+  private _oldToken() {
+    return {
+      token: this._token,
+      tokenExpiryTime: this._tokenExpiryTime,
+    };
   }
 }
