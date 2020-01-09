@@ -20,8 +20,9 @@ function* downloadLog(action) {
   try {
     const archive = new JSZip();
     const log = yield discoveryClient.getRaw(logPath);
-    const clusterName = logPath[clusterIndex];
-    const logName = logPath[logIndex];
+    const fullPath = logPath.split(/\//);
+    const clusterName = fullPath[clusterIndex];
+    const logName = fullPath[logIndex];
     archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
     const content = yield archive.generateAsync({ type: 'blob' });
     const file = new Blob([content], { type: 'application/zip' });

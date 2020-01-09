@@ -52,9 +52,9 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
     return this._get(path);
   }
 
-  private _get = (path: string, params?): Promise<any> => {
+  private _get = async (path: string, params?): Promise<any> => {
     try {
-      return this._requester.get(path, params);
+      return await this._requester.get(path, params);
     } catch (err) {
       super.checkExpiry(err);
       throw err;
