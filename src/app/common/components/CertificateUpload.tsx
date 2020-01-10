@@ -6,28 +6,28 @@ import {
   TextInput
 } from '@patternfly/react-core';
 
-type CertificateUploadProps = {
-  isDisabled: boolean,
-  onBlur: any,
-  onChange: any,
-  onInput: any,
-  name: string,
+interface ICertificateUploadProps {
+  isDisabled: boolean;
+  onBlur: any;
+  onChange: any;
+  onInput: any;
+  name: string;
 }
 
-type CertificateUploadState = {
-  display: string,
+interface ICertificateUploadState {
+  display: string;
 }
 
-class CertificateUpload extends React.Component<CertificateUploadProps, CertificateUploadState> {
+class CertificateUpload extends React.Component<ICertificateUploadProps, ICertificateUploadState> {
 
-  private fileInput = React.createRef<HTMLInputElement>()
+  private fileInput = React.createRef<HTMLInputElement>();
 
   constructor(props) {
     super(props);
     this.clickFileInput = this.clickFileInput.bind(this);
     this.state = {
       display: '',
-    }
+    };
   }
 
   clickFileInput() {
@@ -45,10 +45,10 @@ class CertificateUpload extends React.Component<CertificateUploadProps, Certific
     // save it to the bound form field.
     const reader = new FileReader();
     reader.onload = (event) => {
-      var newValue = btoa(reader.result as string);
+      const newValue = btoa(reader.result as string);
       this.setState({ display: fileHandle.name });
       this.props.onChange(this.props.name, newValue);
-    }
+    };
     reader.readAsBinaryString(fileHandle);
   };
 
@@ -66,7 +66,7 @@ class CertificateUpload extends React.Component<CertificateUploadProps, Certific
           isDisabled={this.props.isDisabled}
           value={this.state.display}
           onClick={this.clickFileInput}
-          id={this.props.name+"-selected-filename"}
+          id={this.props.name+'-selected-filename'}
         />
         <Button
           isDisabled={this.props.isDisabled}
@@ -79,7 +79,7 @@ class CertificateUpload extends React.Component<CertificateUploadProps, Certific
           type="file"
           id={this.props.name}
           name={this.props.name}
-          style={{ display: "none" }}
+          style={{ display: 'none' }}
           onChange={this.onChange}
           onInput={this.props.onInput}
           onBlur={this.props.onBlur}
