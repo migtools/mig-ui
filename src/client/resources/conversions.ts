@@ -74,26 +74,6 @@ export function createMigCluster(
   };
 }
 
-export function updateMigClusterUrl(
-  clusterUrl: string,
-) {
-  return {
-    spec: {
-      url: clusterUrl,
-    },
-  };
-}
-
-export function updateAzureResourceGroup(
-  resourceGroup: string,
-) {
-  return {
-    spec: {
-      azureResourceGroup: resourceGroup,
-    }
-  };
-}
-
 export function createMigStorage(
   name: string,
   bslProvider: string,

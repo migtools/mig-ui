@@ -10,8 +10,6 @@ import {
   createTokenSecret,
   createMigCluster,
   updateTokenSecret,
-  updateMigClusterUrl,
-  updateAzureResourceGroup,
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
@@ -187,14 +185,26 @@ function* updateClusterRequest(action) {
   }
 
   const updatePromises = [];
+  const aggregatedPatch = { spec: {} };
+
   if (urlUpdated) {
-    const urlUpdatePatch = updateMigClusterUrl(clusterValues.url);
+    aggregatedPatch.spec['url'] = clusterValues.url;
+  }
+
+  if (azureUpdated) {
+    if (clusterValues.isAzure) {
+      aggregatedPatch.spec['azureResourceGroup'] = clusterValues.azureResourceGroup;
+    } else {
+      aggregatedPatch.spec['azureResourceGroup'] = '';
+    }
+  }
+
+  if (urlUpdated || azureUpdated) {
     const migClusterResource = new MigResource(
       MigResourceKind.MigCluster, migMeta.namespace);
-
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
-      migClusterResource, clusterValues.name, urlUpdatePatch));
+      migClusterResource, clusterValues.name, aggregatedPatch));
   }
 
   if (tokenUpdated) {
@@ -203,25 +213,10 @@ function* updateClusterRequest(action) {
       CoreNamespacedResourceKind.Secret,
       migMeta.configNamespace,
     );
+
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
       secretResource, clusterValues.name, newTokenSecret));
-  }
-
-  if (azureUpdated) {
-    let newAzureResourceGroup;
-    if (clusterValues.isAzure) {
-      newAzureResourceGroup = updateAzureResourceGroup(clusterValues.azureResourceGroup);
-    } else {
-      newAzureResourceGroup = updateAzureResourceGroup('');
-    }
-
-    const migClusterResource = new MigResource(
-      MigResourceKind.MigCluster, migMeta.namespace);
-
-    // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(
-      migClusterResource, clusterValues.name, newAzureResourceGroup));
   }
 
   try {
