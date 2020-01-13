@@ -74,16 +74,6 @@ export function createMigCluster(
   };
 }
 
-export function updateMigClusterUrl(
-  clusterUrl: string,
-) {
-  return {
-    spec: {
-      url: clusterUrl,
-    },
-  };
-}
-
 export function createMigStorage(
   name: string,
   bslProvider: string,
