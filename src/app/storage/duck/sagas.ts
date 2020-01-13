@@ -49,6 +49,7 @@ function* addStorageRequest(action) {
     storageValues.bslProvider,
     migMeta.namespace,
     storageSecret,
+    storageValues.requireSSL,
     storageValues.awsBucketName,
     storageValues.awsBucketRegion,
     storageValues.s3Url,
@@ -197,6 +198,9 @@ function* updateStorageRequest(action) {
     currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
+
+  const currentRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+  const requireSSLUpdated = storageValues.requireSSL !== currentRequireSSL;
   //
   //GCP
   const currentGCPBucketName =
@@ -221,9 +225,10 @@ function* updateStorageRequest(action) {
     bucketNameUpdated ||
     regionUpdated ||
     s3UrlUpdated ||
+    requireSSLUpdated ||
     //GCP
     gcpBucketNameUpdated ||
-    //Azure 
+    //Azure
     azureResourceGroupUpdated ||
     azureStorageAccountUpdated;
 
@@ -277,6 +282,7 @@ function* updateStorageRequest(action) {
       storageValues.gcpBucket,
       storageValues.azureResourceGroup,
       storageValues.azureStorageAccount,
+      storageValues.requireSSL,
     );
     const migStorageResource = new MigResource(
       MigResourceKind.MigStorage, migMeta.namespace);

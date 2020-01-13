@@ -36,6 +36,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
   let azureStorageAccount;
   let azureBlob;
   let gcpBlob;
+  let requireSSL;
   if (storage) {
     name = storage.MigStorage.metadata.name;
     provider = storage.MigStorage.spec.backupStorageProvider;
@@ -45,6 +46,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
     gcpBucket = storage.MigStorage.spec.backupStorageConfig.gcpBucket;
     azureResourceGroup = storage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
     azureStorageAccount = storage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+    requireSSL = !storage.MigStorage.spec.backupStorageConfig.insecure;
     accessKey =
       typeof storage.Secret === 'undefined'
         ? null
@@ -119,7 +121,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
       </Box>
       {(selectedProvider && selectedProvider.value === 'aws') &&
         <AWSForm provider={selectedProvider.value}
-          initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret }}
+          initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret, requireSSL }}
           {...props} />
       }
       {(selectedProvider && selectedProvider.value === 'azure') &&
