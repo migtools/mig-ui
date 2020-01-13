@@ -48,9 +48,12 @@ const valuesHaveUpdate = (values, currentCluster) => {
 
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
+  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup;
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
-    values.token !== rawToken;
+    values.token !== rawToken ||
+    values.azureResourceGroup !== azureResourceGroup ||
+    values.isAzure !== azureResourceGroup.length > 0;
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {

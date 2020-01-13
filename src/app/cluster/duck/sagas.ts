@@ -11,6 +11,7 @@ import {
   createMigCluster,
   updateTokenSecret,
   updateMigClusterUrl,
+  updateAzureResourceGroup,
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
@@ -176,7 +177,11 @@ function* updateClusterRequest(action) {
   const currentToken = atob(currentCluster.Secret.data.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
 
-  if (!urlUpdated && !tokenUpdated) {
+  const currentAzureResource = currentCluster.MigCluster.spec.azureResourceGroup;
+  const azureUpdated = clusterValues.azureResourceGroup !== currentAzureResource ||
+    clusterValues.isAzure !== currentAzureResource.length > 0;
+
+  if (!urlUpdated && !tokenUpdated && !azureUpdated) {
     console.warn('A cluster update was requested, but nothing was changed');
     return;
   }
@@ -201,6 +206,22 @@ function* updateClusterRequest(action) {
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
       secretResource, clusterValues.name, newTokenSecret));
+  }
+
+  if (azureUpdated) {
+    let newAzureResourceGroup;
+    if (clusterValues.isAzure) {
+      newAzureResourceGroup = updateAzureResourceGroup(clusterValues.azureResourceGroup);
+    } else {
+      newAzureResourceGroup = updateAzureResourceGroup('');
+    }
+
+    const migClusterResource = new MigResource(
+      MigResourceKind.MigCluster, migMeta.namespace);
+
+    // Pushing a request fn to delay the call until its yielded in a batch at same time
+    updatePromises.push(() => client.patch(
+      migClusterResource, clusterValues.name, newAzureResourceGroup));
   }
 
   try {
