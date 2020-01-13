@@ -79,6 +79,7 @@ export function createMigStorage(
   bslProvider: string,
   namespace: string,
   tokenSecret: any,
+  requireSSL: boolean,
   awsBucketName?: string,
   awsBucketRegion?: string,
   s3Url?: string,
@@ -106,6 +107,7 @@ export function createMigStorage(
               name: tokenSecret.metadata.name,
               namespace: tokenSecret.metadata.namespace,
             },
+            insecure: !requireSSL,
           },
           volumeSnapshotConfig: {
             awsRegion: awsBucketRegion,
@@ -187,7 +189,8 @@ export function updateMigStorage(
   s3Url: string,
   gcpBucket: string,
   azureResourceGroup: string,
-  azureStorageAccount: string
+  azureStorageAccount: string,
+  requireSSL: boolean,
 ) {
   switch (bslProvider) {
     case 'aws':
@@ -197,6 +200,7 @@ export function updateMigStorage(
             awsBucketName: bucketName,
             awsRegion: bucketRegion,
             awsS3Url: s3Url,
+            insecure: !requireSSL,
           },
           volumeSnapshotConfig: {
             awsRegion: bucketRegion,

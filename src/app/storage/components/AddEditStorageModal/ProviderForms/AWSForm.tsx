@@ -39,6 +39,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
     const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
     const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
     const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
+    const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
     let existingAccessKeyId;
     if (currentStorage.Secret.data['aws-access-key-id']) {
         existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
@@ -56,7 +57,8 @@ const valuesHaveUpdate = (values, currentStorage) => {
         values.bucketRegion !== existingAWSBucketRegion ||
         values.s3Url !== existingBucketUrl ||
         values.accessKey !== existingAccessKeyId ||
-        values.secret !== existingSecretAccessKey;
+        values.secret !== existingSecretAccessKey ||
+        values.requireSSL !== existingRequireSSL;
 
     return valuesUpdatedObject;
 };
@@ -69,6 +71,7 @@ interface IFormValues {
     secret: string;
     s3Url: string;
     bslProvider: string;
+    requireSSL: boolean;
 }
 interface IOtherProps {
     onAddEditSubmit: any;
@@ -105,6 +108,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     const secretKey = 'secret';
     const vslConfigKey = 'vslConfig';
     const vslBlobKey = 'vslBlob';
+    const requireSSLKey = 'requireSSL';
 
     const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
     const [isSharedCred, setIsSharedCred] = useState(true);
@@ -217,6 +221,17 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
                 )}
             </FormGroup>
+            <FormGroup fieldId={requireSSLKey}>
+              <Checkbox
+                onChange={formikHandleChange}
+                onInput={formikSetFieldTouched(requireSSLKey)}
+                onBlur={handleBlur}
+                isChecked={values.requireSSL}
+                name={requireSSLKey}
+                label="Require SSL verification"
+                id="require-ssl-input"
+              />
+            </FormGroup>
             <Flex flexDirection="column">
                 <Box m="0 0 1em 0 ">
                     <Button
@@ -289,6 +304,7 @@ const AWSForm: any = withFormik({
             secret: '',
             s3Url: '',
             bslProvider: provider,
+            requireSSL: true,
         };
 
         if (initialStorageValues) {
@@ -298,6 +314,7 @@ const AWSForm: any = withFormik({
             values.accessKey = initialStorageValues.accessKey || '';
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
+            values.requireSSL = initialStorageValues.requireSSL;
             // values.bslProvider = provider;
         }
 
