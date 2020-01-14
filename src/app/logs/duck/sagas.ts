@@ -23,7 +23,8 @@ function* downloadLog(action) {
     const fullPath = logPath.split(/\//);
     const clusterName = fullPath[clusterIndex];
     const logName = fullPath[logIndex];
-    archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
+    const containerName = logPath.split(/container=/)[1];
+    archive.file(`${clusterName}-${logName}-${containerName}.log`, log.data.join('\n'));
     const content = yield archive.generateAsync({ type: 'blob' });
     const file = new Blob([content], { type: 'application/zip' });
     const url = URL.createObjectURL(file);
@@ -39,19 +40,20 @@ function* downloadLogs(action) {
   const report: IPlanLogSources = action.report;
   try {
     const archive = new JSZip();
-    const logPaths = flatten(Object.values(ClusterKind).map(
+    let logPaths = flatten(Object.values(ClusterKind).map(
       src => report[src].map(
         pod => pod.containers.map(
           container => container.log
         ))));
-
+    logPaths = flatten(logPaths.filter(log => log.length > 0));
     const logs = yield all(logPaths.map(log => discoveryClient.getRaw(log)));
 
     logs.map((log, index) => {
       const fullPath = logPaths[index].split(/\//);
       const clusterName = fullPath[clusterIndex];
       const logName = fullPath[logIndex];
-      archive.file(`${clusterName}-${logName}.log`, log.data.join('\n'));
+      const containerName = logPaths[index].split(/container=/)[1];
+      archive.file(`${clusterName}-${logName}-${containerName}.log`, log.data.join('\n'));
     });
 
     const content = yield archive.generateAsync({ type: 'blob' });

@@ -104,7 +104,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
       <LogBody />
       <LogFooter
         cluster={cluster.value}
-        logSource={logSource}
+        logSource={logSource.value}
         planName={planName} />
     </Card>
   );

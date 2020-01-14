@@ -44,12 +44,12 @@ const LogHeader: FunctionComponent<IProps> = ({
 
   const logSources = report && report[cluster.value]
     ? flatten(report[cluster.value].map(
-      (pod: IPodLogSource, index) =>
+      (pod: IPodLogSource, podIndex) =>
         pod.containers.map((container: IPodContainer, containerIndex) => ({
           label: `${pod.name}-${container.name}`,
           value: {
-            podIndex: index,
-            logIndex: containerIndex,
+            podIndex,
+            containerIndex,
           },
         }))))
     : [];
@@ -81,9 +81,15 @@ const LogHeader: FunctionComponent<IProps> = ({
             <Select
               name="selectPod"
               value={logSource}
-              onChange={(pod: ILogSource) => {
-                setLogSource(pod);
-                logFetchRequest(report[cluster.value][pod.podIndex].containers[pod.containerIndex].log);
+              onChange={(logSelection) => {
+                setLogSource(logSelection);
+                const logStore: ILogSource = logSelection.value;
+                logFetchRequest(
+                  report[cluster.value]
+                  [logStore.podIndex]
+                    .containers
+                  [logStore.containerIndex]
+                    .log);
               }}
               options={logSources}
             />
