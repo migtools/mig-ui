@@ -24,11 +24,6 @@ class CertErrorComponent extends React.Component<any> {
             <div />
             NOTE: The contents of the resulting page may report "unauthorized".
             This is expected. After accepting the certificate, please reload the app.
-            <div />
-            If you think you have accepted all the certs and this issue continues to persist,
-            please ensure that you have configured CORS on all relevant clusters as outlined
-
-            in the <a href="https://github.com/fusor/mig-operator#manual-cors-cross-origin-resource-sharing-configuration">installation documentation</a>.
           </div> : <div />
         }
       </div>
