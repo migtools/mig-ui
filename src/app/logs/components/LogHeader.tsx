@@ -6,7 +6,9 @@ import Select from 'react-select';
 import { CardHeader } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
-import { IPlanLogSources, IPodLogSource } from '../../../client/resources/discovery';
+import { flatten } from 'lodash';
+import { IPlanLogSources, IPodLogSource, IPodContainer } from '../../../client/resources/discovery';
+import { ILogSource, LogUnselected } from './LogsContainer';
 
 interface ISelectItem {
   label: any;
@@ -17,9 +19,9 @@ interface IProps {
   isFetchingLogs: boolean;
   report: IPlanLogSources;
   cluster: ISelectItem;
-  podIndex: ISelectItem;
+  logSource: ISelectItem;
   setCluster: (itemISelectItem) => void;
-  setPodIndex: (itemISelectItem) => void;
+  setLogSource: (itemISelectItem) => void;
   logFetchRequest: (string) => void;
 }
 
@@ -27,9 +29,9 @@ const LogHeader: FunctionComponent<IProps> = ({
   isFetchingLogs,
   report,
   cluster,
-  podIndex,
+  logSource,
   setCluster,
-  setPodIndex,
+  setLogSource,
   logFetchRequest
 }) => {
   const clusters = Object.keys(report)
@@ -40,13 +42,17 @@ const LogHeader: FunctionComponent<IProps> = ({
       };
     });
 
-  const pods = report && report[cluster.value] ? report[cluster.value]
-    .map((pod: IPodLogSource, index) => {
-      return {
-        label: pod.name,
-        value: index,
-      };
-    }) : [];
+  const logSources = report && report[cluster.value]
+    ? flatten(report[cluster.value].map(
+      (pod: IPodLogSource, index) =>
+        pod.containers.map((container: IPodContainer, containerIndex) => ({
+          label: `${pod.name}-${container.name}`,
+          value: {
+            podIndex: index,
+            logIndex: containerIndex,
+          },
+        }))))
+    : [];
 
   return (<span>
     {isFetchingLogs ? null : (
@@ -59,9 +65,12 @@ const LogHeader: FunctionComponent<IProps> = ({
               value={cluster}
               onChange={clusterSelected => {
                 setCluster(clusterSelected);
-                setPodIndex({
+                setLogSource({
                   label: null,
-                  value: -1
+                  value: {
+                    podIndex: LogUnselected,
+                    logIndex: LogUnselected,
+                  }
                 });
               }}
               options={clusters}
@@ -71,12 +80,12 @@ const LogHeader: FunctionComponent<IProps> = ({
             <Text>Select Pod Source</Text>
             <Select
               name="selectPod"
-              value={podIndex}
-              onChange={pod => {
-                setPodIndex(pod);
-                logFetchRequest(report[cluster.value][pod.value].log);
+              value={logSource}
+              onChange={(pod: ILogSource) => {
+                setLogSource(pod);
+                logFetchRequest(report[cluster.value][pod.podIndex].containers[pod.containerIndex].log);
               }}
-              options={pods}
+              options={logSources}
             />
           </Box>
         </Flex>

@@ -28,8 +28,12 @@ interface IProps {
   requestReport: (planName: string) => void;
   logErrorMsg: string;
 }
+export interface ILogSource {
+  podIndex: number;
+  containerIndex: number;
+}
 
-export const PodUnselected = -1;
+export const LogUnselected = -1;
 
 const LogsContainer: FunctionComponent<IProps> = ({
   requestReport,
@@ -41,9 +45,12 @@ const LogsContainer: FunctionComponent<IProps> = ({
     label: 'controller',
     value: 'controller'
   });
-  const [podIndex, setPodIndex] = useState({
+  const [logSource, setLogSource] = useState({
     label: null,
-    value: PodUnselected,
+    value: {
+      podIndex: LogUnselected,
+      containerIndex: LogUnselected,
+    },
   });
   const pollingContext = useContext(PollingContext);
   const [downloadLink, setDownloadLink] = useState(null);
@@ -90,14 +97,14 @@ const LogsContainer: FunctionComponent<IProps> = ({
     <Card>
       <LogHeader
         cluster={cluster}
-        podIndex={podIndex}
+        logSource={logSource}
         setCluster={setCluster}
-        setPodIndex={setPodIndex}
+        setLogSource={setLogSource}
       />
       <LogBody />
       <LogFooter
         cluster={cluster.value}
-        podIndex={podIndex.value}
+        logSource={logSource}
         planName={planName} />
     </Card>
   );

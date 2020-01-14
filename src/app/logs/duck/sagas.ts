@@ -40,14 +40,12 @@ function* downloadLogs(action) {
   try {
     const archive = new JSZip();
     const logPaths = flatten(Object.values(ClusterKind).map(
-      src => report[src].map(pod => pod.log)));
+      src => report[src].map(
+        pod => pod.containers.map(
+          container => container.log
+        ))));
 
-    const logs = [];
-    for (const log of logPaths) {
-      const text = yield discoveryClient.getRaw(log);
-      logs.push(text);
-    }
-
+    const logs = yield all(logPaths.map(log => discoveryClient.getRaw(log)));
 
     logs.map((log, index) => {
       const fullPath = logPaths[index].split(/\//);
