@@ -7,10 +7,15 @@ export enum ClusterKind {
   controller = 'controller',
 }
 
+export interface IPodContainer {
+  name: string;
+  log: string;
+}
+
 export interface IPodLogSource {
   name: string;
   namespace: string;
-  log: string;
+  containers: IPodContainer[];
 }
 
 export type IPlanLogSources = {

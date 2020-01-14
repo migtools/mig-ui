@@ -6,11 +6,11 @@ import { Button, CardFooter } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
-import { PodUnselected } from './LogsContainer';
+import { LogUnselected, ILogSource } from './LogsContainer';
 import { IPlanLogSources } from '../../../client/resources/discovery';
 
 interface IProps {
-  podIndex: number;
+  logSource: ILogSource;
   cluster: string;
   isFetchingLogs: boolean;
   report: IPlanLogSources;
@@ -20,7 +20,7 @@ interface IProps {
 }
 
 const LogFooter: FunctionComponent<IProps> = ({
-  podIndex,
+  logSource,
   cluster,
   report,
   isFetchingLogs,
@@ -30,7 +30,12 @@ const LogFooter: FunctionComponent<IProps> = ({
 }) => {
 
   const requestDownload = (_) => {
-    requestDownloadLog(report[cluster][podIndex].log);
+    requestDownloadLog(
+      report[cluster]
+      [logSource.podIndex]
+        .containers
+      [logSource.containerIndex]
+        .log);
   };
 
   return (<CardFooter style={{ height: '5%' }}>
@@ -39,7 +44,7 @@ const LogFooter: FunctionComponent<IProps> = ({
         <Box flex="0" mx="1em">
           <Button
             onClick={requestDownload}
-            isDisabled={!report || podIndex === PodUnselected}
+            isDisabled={!report || logSource.podIndex === LogUnselected}
             variant="primary"
           >
             Download Selected
