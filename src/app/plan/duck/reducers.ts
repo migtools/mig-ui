@@ -283,7 +283,8 @@ export const stopPlanPolling = (state = INITIAL_STATE, action) => {
 export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    currentPlan: null
+    currentPlan: null,
+    sourceClusterNamespaces: []
   };
 };
 

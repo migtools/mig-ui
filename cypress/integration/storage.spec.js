@@ -21,6 +21,7 @@ describe('Storage functionality test', () => {
             cy.get('#bucketRegion').type(bucketRegion);
             cy.get('#accessKey').type(accessKey);
             cy.get('#secret').type(secret);
+            cy.get('#require-ssl-input').check();
             cy.get('#check-connection-btn').click();
             cy.get('#submit-cluster-btn').click();
           });
@@ -38,6 +39,7 @@ describe('Storage functionality test', () => {
             cy.get('#bucketRegion').type(bucketRegion);
             cy.get('#accessKey').type(accessKey);
             cy.get('#secret').type(secret);
+            cy.get('#require-ssl-input').check();
             cy.get('#check-connection-btn').should('be.disabled');
             cy.get('#submit-cluster-btn').should('be.disabled');
           });
