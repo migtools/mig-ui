@@ -30,7 +30,7 @@ export interface IOtherProps {
   currentPlan: any;
   currentPlanStatus: any;
   startPlanStatusPolling: (planName) => void;
-  stopPlanStatusPolling: () => void;
+  stopPlanStatusPolling: (planName) => void;
   pvUpdatePollStop: () => void;
   planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
@@ -140,8 +140,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(planOperations.fetchNamespacesForCluster(clusterName));
     },
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
-    startPlanStatusPolling: (planName) => dispatch(PlanActions.startPlanStatusPolling(planName)),
-    stopPlanStatusPolling: () => dispatch(PlanActions.stopPlanStatusPolling()),
+    startPlanStatusPolling: (planName: string) => dispatch(PlanActions.startPlanStatusPolling(planName)),
+    stopPlanStatusPolling: (planName: string) => dispatch(PlanActions.stopPlanStatusPolling(planName)),
     planUpdateRequest: (values, isRerunPVDiscovery) =>
       dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),

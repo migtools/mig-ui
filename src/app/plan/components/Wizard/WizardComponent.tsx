@@ -238,7 +238,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
-    stopPlanStatusPolling();
+    stopPlanStatusPolling(props.values.planName);
     pvUpdatePollStop();
   };
   return (

@@ -27,7 +27,6 @@ export const INITIAL_STATE = {
   planSearchText: '',
   sourceClusterNamespaces: [],
   currentPlan: null,
-  isClosing: false,
   isPollingStatus: false,
   isPolling: false,
   pvResourceList: [],
@@ -242,22 +241,6 @@ export const migrationFailure =
     return { ...state };
   };
 
-
-export const closedStatusPollStart =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startClosedStatusPolling>) => {
-    return { ...state, isClosing: true };
-  };
-
-export const closedStatusPollStop =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.stopClosedStatusPolling>) => {
-    const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
-    return {
-      ...state,
-      isClosing: false,
-      lockedPlanList: filteredLockedPlans
-    };
-  };
-
 export const planStatusPollStart =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.startPlanStatusPolling>) => {
     return { ...state, isPollingStatus: true };
@@ -320,30 +303,40 @@ export const updateCurrentPlanStatus = (
   };
 };
 
+export const planCloseAndDeleteRequest = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.planCloseAndDeleteRequest>
+) => {
+  return lockPlan(state, action.planName);
+};
+
 export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
-  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
+  state = unlockPlan(state, action.planName);
 
   return {
     ...state,
     migPlanList: state.migPlanList.filter(
       p => p.MigPlan.metadata.name !== action.planName),
-    lockedPlanList: filteredLockedPlans
   };
 };
 
 export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
-  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== action.planName);
+  return unlockPlan(state, action.planName);
+};
 
+const lockPlan = (state = INITIAL_STATE, planName: string) => {
+  let updatedLockedPlans = state.lockedPlanList;
+  if (state.lockedPlanList.indexOf(planName) === -1) {
+    updatedLockedPlans = [...updatedLockedPlans, planName];
+  }
+  return { ...state, lockedPlanList: updatedLockedPlans };
+};
+
+const unlockPlan = (state = INITIAL_STATE, planName: string) => {
+  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== planName);
   return {
     ...state,
     lockedPlanList: filteredLockedPlans
-  };
-};
-
-export const setLockedPlan = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    lockedPlanList: [...state.lockedPlanList, action.planName]
   };
 };
 
@@ -369,8 +362,6 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
     case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
     case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
-    case PlanActionTypes.CLOSED_STATUS_POLL_START: return closedStatusPollStart(state, action);
-    case PlanActionTypes.CLOSED_STATUS_POLL_STOP: return closedStatusPollStop(state, action);
     case PlanActionTypes.PLAN_STATUS_POLL_START: return planStatusPollStart(state, action);
     case PlanActionTypes.PLAN_STATUS_POLL_STOP: return planStatusPollStop(state, action);
     case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
@@ -380,7 +371,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
     case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
     case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
     case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
-    case PlanActionTypes.SET_LOCKED_PLAN: return setLockedPlan(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST: return planCloseAndDeleteRequest(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
       return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
