@@ -60,7 +60,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
     values.url !== existingEndpoint ||
     values.token !== rawToken ||
     values.azureResourceGroup !== azureResourceGroup ||
-    values.isAzure !== azureResourceGroup.length > 0;
+    values.isAzure !== azureResourceGroup.length > 0 ||
     values.requireSSL !== requireSSL ||
     values.caBundle !== caBundle;
 };
