@@ -9,11 +9,11 @@ import storage from 'redux-persist/lib/storage';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from './sagas';
 declare global {
-  /* tslint:disable */
+  /* eslint:disable */
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION__: any;
   }
-  /* tslint:enable */
+  /* eslint:enable */
 }
 
 const devMode = process.env.DEVMODE || 'local';
@@ -30,7 +30,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const sagaMiddleware = createSagaMiddleware();
 
 const enhancers = [];
-const logger = createLogger({collapsed: true});
+const logger = createLogger({ collapsed: true });
 const middleware = [thunk, logger, sagaMiddleware, routerMiddleware(history)];
 
 if (devMode === 'local') {

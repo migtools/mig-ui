@@ -18,9 +18,9 @@ const onBeforeLift = () => {
   // take some action before the gate lifts
 };
 // Some amount of meta data is delivered to the app by the server
-/* tslint:disable:no-string-literal */
+/* eslint:disable:no-string-literal */
 const migMeta = JSON.parse(atob(window['_mig_meta']));
-/* tslint:enable:no-string-literal */
+/* eslint:enable:no-string-literal */
 
 // Load the meta into the redux tree if it was found on the window
 // Will only be present in remote-dev and production scenarios where

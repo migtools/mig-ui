@@ -18,9 +18,9 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import utils from '../../common/duck/utils';
 
-/* tslint:disable */
+/* eslint:disable */
 const uuidv1 = require('uuid/v1');
-/* tslint:enable */
+/* eslint:enable */
 const PlanMigrationPollingInterval = 5000;
 
 const runStage = plan => {
