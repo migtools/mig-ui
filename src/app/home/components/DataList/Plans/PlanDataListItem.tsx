@@ -8,19 +8,23 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
+  TooltipPosition, 
+  Tooltip
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
 
-type PlanDataListItemProps = {
+interface IPlanDataListItemProps  {
   id: string;
   clusterList: Array<any>;
   storageList: Array<any>;
   planList: Array<any>;
   addPlanDisabledObj: IAddPlanDisabledObjModel;
-
+  isExpanded: boolean;
+  toggleExpanded: (id)=> void;
+  planCount: number;
 }
 
 const PlanDataListItem = ({
@@ -32,7 +36,7 @@ const PlanDataListItem = ({
   isExpanded,
   toggleExpanded,
   planCount
-}: PlanDataListItemProps) => {
+}: IPlanDataListItemProps) => {
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   if (planList) {
     return (
@@ -61,9 +65,18 @@ const PlanDataListItem = ({
             ]}
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
-            <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
-              Add
-            </Button>
+
+          <Tooltip
+            position={TooltipPosition.top}
+            content={<div>
+              {addPlanDisabledObj.disabledText}
+            </div>}>
+              <span>
+             <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
+               Add
+             </Button>
+              </span>
+          </Tooltip>
             <WizardContainer
               planList={planList}
               clusterList={clusterList}
@@ -77,8 +90,6 @@ const PlanDataListItem = ({
         <PlanContent
           addPlanDisabledObj={addPlanDisabledObj}
           planList={planList}
-          clusterList={clusterList}
-          storageList={storageList}
           isExpanded={isExpanded}
           toggleWizardOpen={toggleWizardOpen}
         />
