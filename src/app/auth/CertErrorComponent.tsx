@@ -9,7 +9,6 @@ class CertErrorComponent extends React.Component<any> {
     }
   }
 
-  /* eslint:disable */
   render() {
     return (
       <div>
@@ -29,7 +28,6 @@ class CertErrorComponent extends React.Component<any> {
       </div>
     );
   }
-  /* eslint:enable */
 }
 
 export default connect(

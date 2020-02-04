@@ -18,10 +18,34 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import utils from '../../common/duck/utils';
 
-/* eslint:disable */
 const uuidv1 = require('uuid/v1');
-/* eslint:enable */
 const PlanMigrationPollingInterval = 5000;
+
+function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+  const refs: Array<Promise<any>> = [];
+
+  migPlans.forEach(plan => {
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+    refs.push(client.list(migMigrationResource));
+  });
+
+  return refs;
+}
+
+function* fetchPlansGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  try {
+    let planList = yield client.list(resource);
+    planList = yield planList.data.items;
+    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
+    const groupedPlans = yield planUtils.groupPlans(planList, refs);
+    return { updatedPlans: groupedPlans, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
 
 const runStage = plan => {
   return async (dispatch, getState) => {
@@ -177,6 +201,7 @@ const removePlan = id => {
   throw new Error('NOT IMPLEMENTED');
 };
 
+
 const fetchPlans = () => {
   return async (dispatch, getState) => {
     dispatch(PlanActions.migPlanFetchRequest());
@@ -202,16 +227,6 @@ const fetchPlans = () => {
     }
   };
 };
-function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
-  const refs: Array<Promise<any>> = [];
-
-  migPlans.forEach(plan => {
-    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
-    refs.push(client.list(migMigrationResource));
-  });
-
-  return refs;
-}
 
 const fetchNamespacesForCluster = clusterName => {
   return async (dispatch, getState) => {
@@ -239,20 +254,6 @@ const fetchNamespacesForCluster = clusterName => {
   };
 };
 
-function* fetchPlansGenerator() {
-  const state = yield select();
-  const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
-  try {
-    let planList = yield client.list(resource);
-    planList = yield planList.data.items;
-    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
-    const groupedPlans = yield planUtils.groupPlans(planList, refs);
-    return { updatedPlans: groupedPlans, isSuccessful: true };
-  } catch (e) {
-    return { e, isSuccessful: false };
-  }
-}
 
 export default {
   fetchPlans,

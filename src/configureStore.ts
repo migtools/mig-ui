@@ -9,11 +9,9 @@ import storage from 'redux-persist/lib/storage';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from './sagas';
 declare global {
-  /* eslint:disable */
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION__: any;
   }
-  /* eslint:enable */
 }
 
 const devMode = process.env.DEVMODE || 'local';

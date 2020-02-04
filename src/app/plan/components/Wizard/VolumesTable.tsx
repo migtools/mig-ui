@@ -48,9 +48,6 @@ const VolumesTable = (props): any => {
   } = props;
   const [rows, setRows] = useState([]);
 
-  const handleTypeChange = (row, option) => {
-    updateTableData(row.index, option.value);
-  };
 
   const updateTableData = (rowIndex, updatedValue) => {
     const rowsCopy = [...rows];
@@ -62,6 +59,10 @@ const VolumesTable = (props): any => {
 
     setRows(rowsCopy);
     setFieldValue('persistentVolumes', rowsCopy);
+  };
+
+  const handleTypeChange = (row, option) => {
+    updateTableData(row.index, option.value);
   };
 
   const getPVResources = (pvList = [], clusterName = '') => {

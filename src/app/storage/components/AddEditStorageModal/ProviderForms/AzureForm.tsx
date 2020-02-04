@@ -23,12 +23,10 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 
-/* eslint:disable */
 /* 
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
 const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/fusor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
-/* eslint:enable*/
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
