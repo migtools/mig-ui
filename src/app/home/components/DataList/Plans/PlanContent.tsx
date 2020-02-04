@@ -36,7 +36,7 @@ const columns = [
 ];
 
 interface IPlanContentProps {
-  planList: Array<any>;
+  planList: any;
   isExpanded: boolean;
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleWizardOpen: () => void;

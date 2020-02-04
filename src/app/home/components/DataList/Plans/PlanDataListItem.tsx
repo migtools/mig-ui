@@ -18,9 +18,9 @@ import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
 
 interface IPlanDataListItemProps  {
   id: string;
-  clusterList: Array<any>;
-  storageList: Array<any>;
-  planList: Array<any>;
+  clusterList: any;
+  storageList: any;
+  planList: any;
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   isExpanded: boolean;
   toggleExpanded: (id)=> void;
