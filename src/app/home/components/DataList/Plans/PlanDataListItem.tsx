@@ -12,17 +12,27 @@ import {
 import { useOpenModal } from '../../../duck/hooks';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
+import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
+
+type PlanDataListItemProps = {
+  id: string;
+  clusterList: Array<any>;
+  storageList: Array<any>;
+  planList: Array<any>;
+  addPlanDisabledObj: IAddPlanDisabledObjModel;
+
+}
 
 const PlanDataListItem = ({
   id,
   clusterList,
   storageList,
   planList,
-  plansDisabled,
+  addPlanDisabledObj,
   isExpanded,
   toggleExpanded,
   planCount
-}) => {
+}: PlanDataListItemProps) => {
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   if (planList) {
     return (
@@ -51,7 +61,7 @@ const PlanDataListItem = ({
             ]}
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
-            <Button isDisabled={plansDisabled} onClick={toggleWizardOpen} variant="secondary">
+            <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
               Add
             </Button>
             <WizardContainer
@@ -65,7 +75,7 @@ const PlanDataListItem = ({
           </DataListAction>
         </DataListItemRow>
         <PlanContent
-          plansDisabled={plansDisabled}
+          addPlanDisabledObj={addPlanDisabledObj}
           planList={planList}
           clusterList={clusterList}
           storageList={storageList}

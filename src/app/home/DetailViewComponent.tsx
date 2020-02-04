@@ -19,6 +19,7 @@ import {
   StorageContext,
 } from './duck/context';
 import { createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../common/add_edit_state';
+import { IAddPlanDisabledObjModel } from './AddPlanDisabledObjModel';
 
 
 interface IProps {
@@ -72,16 +73,30 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     expanded
   } = props;
 
-  const [isAddPlanDisabled, setAddPlanDisabled] = useState(true);
+
+  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel | undefined>(
+    {
+      isAddPlanDisabled: true, disabledText: ''
+    }
+  );
+
   const [currentStorage, setCurrentStorage] = useState(null);
 
 
-
   useEffect(() => {
-    if (clusterList.length > 1 && storageList.length > 0) {
-      setAddPlanDisabled(false);
-    } else {
-      setAddPlanDisabled(true);
+    if (clusterList.length < 2) {
+      setAddPlanDisabledObj({
+        isAddPlanDisabled: true,
+        disabledText: 'A minimum of 2 clusters is required to create a plan.'
+      });
+      return;
+    } else if (storageList.length < 1) {
+      setAddPlanDisabledObj({
+        isAddPlanDisabled: true,
+        disabledText: 'A minimum of 1 replication repository is required to create a plan.'
+      });
+      return;
+
     }
   }, [clusterList, storageList]);
 
@@ -138,7 +153,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             planList={planList}
             clusterList={clusterList}
             storageList={storageList}
-            plansDisabled={isAddPlanDisabled}
+            addPlanDisabledObj={addPlanDisabledObj}
             isExpanded={expanded[DataListItems.PlanList]}
             toggleExpanded={handleExpandDetails}
             planCount={planList.length}

@@ -18,7 +18,7 @@ interface IProps {
   clusterList: any;
   storageList: any;
   isExpanded: boolean;
-  plansDisabled: boolean;
+  addPlanDisabledObj: { isPlanDisabled: boolean, disabledText: string };
   toggleWizardOpen: () => void;
 }
 
@@ -46,7 +46,7 @@ const columns = [
 const PlanContent: React.FunctionComponent<IProps> = ({
   planList,
   isExpanded,
-  plansDisabled,
+  addPlanDisabledObj,
   toggleWizardOpen,
 }) => {
   const [currentRows, setCurrentRows] = useState([]);
@@ -217,7 +217,7 @@ const PlanContent: React.FunctionComponent<IProps> = ({
       ) : (
           <PlanEmptyState
             toggleOpen={toggleWizardOpen}
-            plansDisabled={plansDisabled}
+            addPlanDisabledObj={addPlanDisabledObj}
           />
         )}
     </DataListContent>
