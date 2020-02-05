@@ -23,7 +23,7 @@ interface IPlanDataListItemProps  {
   planList: any;
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   isExpanded: boolean;
-  toggleExpanded: (id)=> void;
+  toggleExpanded: (id) => void;
   planCount: number;
 }
 
