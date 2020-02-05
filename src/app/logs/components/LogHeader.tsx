@@ -85,11 +85,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                 setLogSource(logSelection);
                 const logStore: ILogSource = logSelection.value;
                 logFetchRequest(
-                  report[cluster.value]
-                  [logStore.podIndex]
-                    .containers
-                  [logStore.containerIndex]
-                    .log);
+                  report[cluster.value][logStore.podIndex].containers[logStore.containerIndex].log);
               }}
               options={logSources}
             />

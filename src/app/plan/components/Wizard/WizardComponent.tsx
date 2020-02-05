@@ -58,6 +58,15 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     MigrationTarget,
     Results,
   }
+  const handleClose = () => {
+    onHandleWizardModalClose();
+    setStepIdReached(stepId.General);
+    pollingContext.startAllDefaultPolling();
+    resetForm();
+    resetCurrentPlan();
+    stopPlanStatusPolling(props.values.planName);
+    pvUpdatePollStop();
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -231,15 +240,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       //update plan & start status polling on results page
       planUpdateRequest(props.values, false);
     }
-  };
-  const handleClose = () => {
-    onHandleWizardModalClose();
-    setStepIdReached(stepId.General);
-    pollingContext.startAllDefaultPolling();
-    resetForm();
-    resetCurrentPlan();
-    stopPlanStatusPolling(props.values.planName);
-    pvUpdatePollStop();
   };
   return (
     <React.Fragment>

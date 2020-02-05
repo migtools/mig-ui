@@ -24,14 +24,10 @@ function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
-  try {
-    return yield client.get(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      planName
-    );
-  } catch (err) {
-    throw err;
-  }
+  return yield client.get(
+    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    planName
+  );
 }
 function* planPatchClose(planValues) {
   const state = yield select();
@@ -316,6 +312,16 @@ function* planCloseSaga(action) {
   }
 }
 
+function* planDeleteAfterClose(planName) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  yield client.delete(
+    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    planName,
+  );
+}
+
 function* planCloseAndDelete(action) {
   try {
     yield call(planCloseSaga, action);
@@ -329,15 +335,6 @@ function* planCloseAndDelete(action) {
   }
 }
 
-function* planDeleteAfterClose(planName) {
-  const state = yield select();
-  const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(state);
-  yield client.delete(
-    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-    planName,
-  );
-}
 
 function* planCloseAndCheck(action) {
   try {

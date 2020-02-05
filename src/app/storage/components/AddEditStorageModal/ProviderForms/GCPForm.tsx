@@ -87,12 +87,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     const gcpBucketKey = 'gcpBucket';
     const gcpBlobKey = 'gcpBlob';
 
+    const [isBlobHidden, setIsBlobHidden] = useState(true);
+
     const handleBlobHiddenToggle = e => {
         e.preventDefault();
         e.stopPropagation();
         setIsBlobHidden(!isBlobHidden);
     };
-    const [isBlobHidden, setIsBlobHidden] = useState(true);
 
     const formikHandleChange = (_val, e) => handleChange(e);
     const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);

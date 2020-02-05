@@ -5,7 +5,6 @@ import {
 } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
-import commonSagas from '../../common/duck/sagas';
 import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
@@ -52,7 +51,7 @@ const fetchToken = (oauthClient, codeRedirect) => {
 const initFromStorage = () => {
   return dispatch => {
     const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
-    if (!!currentUser) {
+    if (currentUser) {
       dispatch(AuthActions.loginSuccess(JSON.parse(currentUser)));
     }
   };

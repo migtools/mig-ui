@@ -159,7 +159,7 @@ function collectAndReformat(data) {
   //  { 'url':  response_data }
   return data.then(results => {
     return Object.keys(results).reduce(function(acc, key) {
-      let entry = results[key].data.items.reduce((acc, current) => {
+      const entry = results[key].data.items.reduce((acc, current) => {
         // Example of 'current'
         //  {apiVersion: 'migration.openshift.io/v1alpha1',
         //  kind: 'MigStorage',
@@ -175,30 +175,30 @@ function collectAndReformat(data) {
 }
 
 function gatherSecretRefs(client, serverAddr, data) {
-  let migstorages = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migstorages`];
-  let storageKeys = Object.keys(migstorages);
-  let storageSecretRefs = storageKeys.reduce((acc, currentKey) => {
+  const migstorages = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migstorages`];
+  const storageKeys = Object.keys(migstorages);
+  const storageSecretRefs = storageKeys.reduce((acc, currentKey) => {
     return acc
       .concat(migstorages[currentKey].spec.backupStorageConfig.credsSecretRef)
       .concat(migstorages[currentKey].spec.volumeSnapshotConfig.credsSecretRef);
   }, []);
 
-  let migclusters = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migclusters`];
-  let clusterKeys = Object.keys(migclusters);
-  let clusterSecretRefs = clusterKeys.reduce((acc, currentKey) => {
+  const migclusters = data[`apis/migration.openshift.io/v1alpha1/namespaces/${MIG_NAMESPACE}/migclusters`];
+  const clusterKeys = Object.keys(migclusters);
+  const clusterSecretRefs = clusterKeys.reduce((acc, currentKey) => {
     return acc.concat(migclusters[currentKey].spec.serviceAccountSecretRef);
   }, []);
-  let secretRefs = [].concat(storageSecretRefs).concat(clusterSecretRefs);
+  const secretRefs = [].concat(storageSecretRefs).concat(clusterSecretRefs);
 
   // We are filtering the secretRefs as entries such as 
   // our host cluster entry will lack a clusterRef
-  let all = secretRefs.filter(Boolean).map(s => {
+  const all = secretRefs.filter(Boolean).map(s => {
     const key = `api/v1/namespaces/${s.namespace}/secrets`;
     const url = `${key}/${s.name}`;
     return client
       .get(url)
       .then(response => {
-        let data = sanitizeSecretData(response.data);
+        const data = sanitizeSecretData(response.data);
         return { ...s, key: key, data: data, serverAddr: serverAddr };
       })
       .catch(error => {
@@ -225,7 +225,7 @@ function sanitizeSecretData(data) {
   // to avoid commiting real cluster data
   concernedKeys = ['aws-access-key-id', 'aws-secret-access-key'];
   mockedData = Buffer.from('mocked-data').toString('base64');
-  let sanitizedData = {};
+  const sanitizedData = {};
   Object.keys(data.data).forEach(key => {
     if (concernedKeys.indexOf(key) != -1) {
       sanitizedData[key] = mockedData;
@@ -350,7 +350,7 @@ function main() {
   });
 }
 
-var myArgs = process.argv.slice(2);
+const myArgs = process.argv.slice(2);
 switch (myArgs[0]) {
   case 'prune':
     console.log('Will prune older mocked data');

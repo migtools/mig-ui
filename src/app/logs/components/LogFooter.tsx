@@ -31,11 +31,8 @@ const LogFooter: FunctionComponent<IProps> = ({
 
   const requestDownload = (_) => {
     requestDownloadLog(
-      report[cluster]
-      [logSource.podIndex]
-        .containers
-      [logSource.containerIndex]
-        .log);
+      report[cluster][logSource.podIndex]
+        .containers[logSource.containerIndex].log);
   };
 
   return (<CardFooter style={{ height: '5%' }}>
