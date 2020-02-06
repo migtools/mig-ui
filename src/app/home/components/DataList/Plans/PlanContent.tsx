@@ -12,15 +12,8 @@ import {
 } from '@patternfly/react-table';
 import { MigrationIcon, DatabaseIcon, ServiceIcon } from '@patternfly/react-icons';
 import PlanEmptyState from './PlanEmptyState';
+import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
 
-interface IProps {
-  planList: any;
-  clusterList: any;
-  storageList: any;
-  isExpanded: boolean;
-  plansDisabled: boolean;
-  toggleWizardOpen: () => void;
-}
 
 const columns = [
   'Name',
@@ -42,13 +35,19 @@ const columns = [
   ''
 ];
 
+interface IPlanContentProps {
+  planList: any;
+  isExpanded: boolean;
+  addPlanDisabledObj: IAddPlanDisabledObjModel;
+  toggleWizardOpen: () => void;
+}
 
-const PlanContent: React.FunctionComponent<IProps> = ({
+const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
   planList,
   isExpanded,
-  plansDisabled,
+  addPlanDisabledObj,
   toggleWizardOpen,
-}) => {
+}: IPlanContentProps) => {
   const [currentRows, setCurrentRows] = useState([]);
 
   const buildNewRows = () => {
@@ -217,7 +216,7 @@ const PlanContent: React.FunctionComponent<IProps> = ({
       ) : (
           <PlanEmptyState
             toggleOpen={toggleWizardOpen}
-            plansDisabled={plansDisabled}
+            addPlanDisabledObj={addPlanDisabledObj}
           />
         )}
     </DataListContent>
