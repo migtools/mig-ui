@@ -14,15 +14,21 @@ interface IProps {
 }
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
+
   const getStatusIcon = iconStatus => {
+    const WrappedSpinner = () => (
+      <Spinner className={styles.spinner} size="md"></Spinner>
+    )
+
     switch (iconStatus.state) {
       case AddEditState.Pending: {
-        return (
+        const PendingSpan = () => (
           <span className={styles.pendingSpan}></span>
         )
+        return PendingSpan
       }
       case AddEditState.Fetching: {
-        return (<Spinner className={styles.spinner} size="md"></Spinner>)
+        return WrappedSpinner;
       }
       case AddEditState.Critical: {
         const CriticalIcon = () => (
@@ -45,7 +51,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
         return ReadyIcon;
       }
       case AddEditState.Watching: {
-        return (<Spinner className={styles.spinner} size="md"></Spinner>)
+        return WrappedSpinner
       }
       case AddEditState.TimedOut: {
         const TimedOutIcon = () => (
