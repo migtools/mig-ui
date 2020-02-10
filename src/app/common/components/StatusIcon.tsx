@@ -1,31 +1,22 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
-import styled from '@emotion/styled';
 import * as React from 'react';
-
+import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
+const styles = require("./StatusIcon.module")
 interface IProps {
   isReady: boolean;
   isDisabled?: boolean;
 }
-const DisabledExclamationCircleIcon = styled(ExclamationCircleIcon)`
-    color: #D2D2D2;
-  `;
-const DisabledCheckCircleIcon = styled(CheckCircleIcon)`
-    color: #D2D2D2;
-  `;
 
-const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, isDisabled, ...rest }) => {
+const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, isDisabled }) => {
   if (isReady) {
     return (
       <span className="pf-c-icon pf-m-success">
-        {isDisabled ? <DisabledCheckCircleIcon /> : <CheckCircleIcon />}
+        <CheckCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );
   } else {
     return (
       <span className="pf-c-icon pf-m-danger">
-        {isDisabled ? <DisabledExclamationCircleIcon /> : <ExclamationCircleIcon />}
+        <ExclamationCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );
   }
