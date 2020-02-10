@@ -1,9 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { FunctionComponent } from 'react';
-import { Box, Flex, Text } from '@rebass/emotion';
+
+import React, { FunctionComponent } from 'react';
 import Select from 'react-select';
-import { CardHeader } from '@patternfly/react-core';
+import { CardHeader, Grid, GridItem } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
 import { flatten } from 'lodash';
@@ -57,40 +55,48 @@ const LogHeader: FunctionComponent<IProps> = ({
   return (<span>
     {isFetchingLogs ? null : (
       <CardHeader style={{ height: '10%' }}>
-        <Flex>
-          <Box mx="3em" width={1 / 2} flex="auto">
-            <Text>Select Cluster</Text>
-            <Select
-              name="selectCluster"
-              value={cluster}
-              onChange={clusterSelected => {
-                setCluster(clusterSelected);
-                setLogSource({
-                  label: null,
-                  value: {
-                    podIndex: LogUnselected,
-                    logIndex: LogUnselected,
-                  }
-                });
-              }}
-              options={clusters}
-            />
-          </Box>
-          <Box mx="3em" width={1 / 2} flex="auto">
-            <Text>Select Pod Source</Text>
-            <Select
-              name="selectPod"
-              value={logSource}
-              onChange={(logSelection) => {
-                setLogSource(logSelection);
-                const logStore: ILogSource = logSelection.value;
-                logFetchRequest(
-                  report[cluster.value][logStore.podIndex].containers[logStore.containerIndex].log);
-              }}
-              options={logSources}
-            />
-          </Box>
-        </Flex>
+        <Grid gutter="lg">
+          <GridItem >
+            <GridItem >Select Cluster</GridItem>
+            <GridItem>
+              <Select
+                name="selectCluster"
+                value={cluster}
+                onChange={clusterSelected => {
+                  setCluster(clusterSelected);
+                  setLogSource({
+                    label: null,
+                    value: {
+                      podIndex: LogUnselected,
+                      logIndex: LogUnselected,
+                    }
+                  });
+                }}
+                options={clusters}
+              />
+
+            </GridItem>
+          </GridItem>
+        </Grid>
+        <Grid gutter="md">
+          <GridItem>
+            <GridItem>Select Pod Source</GridItem>
+            <GridItem>
+              <Select
+                name="selectPod"
+                value={logSource}
+                onChange={(logSelection) => {
+                  setLogSource(logSelection);
+                  const logStore: ILogSource = logSelection.value;
+                  logFetchRequest(
+                    report[cluster.value][logStore.podIndex].containers[logStore.containerIndex].log);
+                }}
+                options={logSources}
+              />
+
+            </GridItem>
+          </GridItem>
+        </Grid>
       </CardHeader>)
     }
   </span>);

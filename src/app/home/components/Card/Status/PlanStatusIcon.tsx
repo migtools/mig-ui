@@ -1,10 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+import React from 'react';
 import { OutlinedCircleIcon, ResourcesAlmostEmptyIcon, ResourcesFullIcon } from '@patternfly/react-icons';
 
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-
-import * as React from 'react';
 
 interface IProps {
   plan: any;

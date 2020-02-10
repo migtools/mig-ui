@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { Flex, Box } from '@rebass/emotion';
 import {
   Button,
   DataListAction,

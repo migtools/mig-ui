@@ -1,9 +1,8 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import styled from '@emotion/styled';
-import { Box } from '@rebass/emotion';
+import React from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
+const styles = require('./LogItem.module');
+import { Grid } from '@patternfly/react-core';
 
 const LogItem = ({ log }) => {
   const logConverted = log.map((item) => ({ value: item }));
@@ -11,14 +10,9 @@ const LogItem = ({ log }) => {
     Header: '', accessor: 'value'
   }];
 
-  const StyledBox = styled(Box)`
-    height: 100%;
-    max-height: 100%;
-    width: 100%;
-  `;
 
   return (
-    <StyledBox>
+    <Grid gutter='md' className={styles.container}>
       <ReactTable
         filterable
         defaultFilterMethod={(filter, row) => {
@@ -31,7 +25,7 @@ const LogItem = ({ log }) => {
         data={logConverted}
         className="-highlight"
       />
-    </StyledBox>
+    </Grid>
   );
 };
 
