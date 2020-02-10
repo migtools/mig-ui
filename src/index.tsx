@@ -12,7 +12,8 @@ import { initMigMeta } from './mig_meta';
 import { authOperations } from './app/auth/duck';
 import { setTokenExpiryHandler } from './client/client_factory';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import './app.scss';
+
+import './global.scss';
 
 const onBeforeLift = () => {
   // take some action before the gate lifts

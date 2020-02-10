@@ -1,7 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 //devtool: 'source-map',
 const config = {
   entry: './src/index.tsx',
@@ -27,8 +28,7 @@ const config = {
       {
         test: /\.s?[ac]ss$/i,
         use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
+          MiniCssExtractPlugin.loader, // instead of style-loader
           // Translates CSS into CommonJS
           'css-loader',
           // Compiles Sass to CSS
@@ -51,9 +51,10 @@ const config = {
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
-    new ExtractTextPlugin({
-      filename: 'style.css',
-    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[hash].css',
+      chunkFilename: '[id].[hash].css'
+    })
   ],
 };
 
