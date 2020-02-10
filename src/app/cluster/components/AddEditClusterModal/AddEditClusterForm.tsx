@@ -8,7 +8,7 @@ import {
   TooltipPosition,
   Checkbox,
   Grid,
-  GridItem,
+  GridItem
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -217,12 +217,17 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             </span>
           </Tooltip>
         </GridItem>
+      </Grid>
+      <Grid gutter="md">
         <GridItem>
           <ConnectionStatusLabel
             status={currentStatus}
             statusText={currentStatusFn(currentStatus)}
           />
         </GridItem>
+
+      </Grid>
+      <Grid gutter="md">
         <GridItem>
           <Button
             variant="primary"

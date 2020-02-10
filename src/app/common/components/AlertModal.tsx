@@ -1,18 +1,8 @@
-import styled from '@emotion/styled';
 import React from 'react';
 import { Alert, AlertActionCloseButton, AlertProps } from '@patternfly/react-core';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-
-const NotificationContainer = styled.div`
-  position: fixed;
-  z-index: 9999999;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  width: 25%;
-`;
+const styles = require('./AlertModal.module')
 
 interface IProps {
   alertMessage: string;
@@ -28,13 +18,13 @@ const AlertModal: React.FunctionComponent<IProps> = ({
   if (!alertMessage) { return null; }
 
   return (
-    <NotificationContainer>
+    <div className={styles.notiContainer}>
       <Alert
         variant={alertType}
         title={alertMessage}
         action={<AlertActionCloseButton onClose={clearAlerts} />}
       />
-    </NotificationContainer>
+    </div>
   );
 };
 

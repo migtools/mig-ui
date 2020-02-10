@@ -15,9 +15,6 @@ import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { PollingContext } from '../home/duck/context';
 
-const style = require('./HomeComponent.module');
-
-
 interface IProps {
   allClusters: any[];
   allStorage: any[];

@@ -1,7 +1,5 @@
-/** @jsx jsx */
 import React from 'react';
 import { Button, Modal } from '@patternfly/react-core';
-import { jsx } from '@emotion/core';
 
 interface IProps {
   onHandleClose: (isConfirmed) => void;
