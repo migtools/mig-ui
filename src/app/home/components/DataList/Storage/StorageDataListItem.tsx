@@ -8,6 +8,8 @@ import {
   DataListItemRow,
   DataListItemCells,
   DataListAction,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
 import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
 import StorageContent from './StorageContent';
@@ -41,14 +43,14 @@ const StorageDataListItem = ({
             <DataListItemCells
               dataListCells={[
                 <DataListCell id="storage-item" key="storage">
-                  <div className="pf-l-flex">
-                    <div className="pf-l-flex__item">
-                      <span id="repos">Replication repositories</span>
-                    </div>
-                    <div className="pf-l-flex__item">
+                  <Flex>
+                    <FlexItem>
+                        <span id="repos">Replication repositories</span>
+                    </FlexItem>
+                    <FlexItem>
                       <Badge isRead>{storageCount}</Badge>
-                    </div>
-                  </div>
+                      </FlexItem>
+                  </Flex>
 
                 </DataListCell>,
               ]}

@@ -10,6 +10,8 @@ import {
   DropdownItem,
   DropdownPosition,
   KebabToggle,
+  Flex,
+  FlexItem
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { useOpenModal } from '../../../duck/hooks';
@@ -97,11 +99,11 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
         <DataListItemCells
           dataListCells={[
             <DataListCell key="name" width={1}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
+              <Flex>
+                <FlexItem>
                   <span id="cluster-name">{clusterName}</span>
-                </div>
-              </div>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
             <DataListCell key="url" width={3}>
               <a target="_blank" href={clusterUrl}>
@@ -109,21 +111,21 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
               </a>
             </DataListCell>,
             <DataListCell key="count" width={2}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
+              <Flex>
+                <FlexItem>
                   {associatedPlanCount} associated migration {planText}
-                </div>
-              </div>
+                  </FlexItem>
+                  </Flex>
             </DataListCell>,
             <DataListCell key="connection" width={1}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
+              <Flex>
+                <FlexItem>
                   <StatusIcon isReady={clusterStatus} />
-                </div>
-                <div className="pf-l-flex__item">
+                  </FlexItem>
+                <FlexItem>
                   <span id="cluster-status-text">{clusterStatus ? `Connected` : `Connection Failed`}</span>
-                </div>
-              </div>
+                  </FlexItem>
+                  </Flex>
             </DataListCell>,
 
           ]}

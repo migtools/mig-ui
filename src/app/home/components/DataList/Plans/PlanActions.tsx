@@ -5,7 +5,9 @@ import {
   Dropdown,
   DropdownItem,
   DropdownPosition,
-  KebabToggle
+  KebabToggle,
+  Flex,
+  FlexItem
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
@@ -107,8 +109,8 @@ const PlanActions = ({ plan, history }) => {
     </DropdownItem>,
   ];
   return (
-    <div className="pf-l-flex pf-m-nowrap">
-      <div className="pf-l-flex__item pf-m-align-right">
+    <Flex>
+      <FlexItem>
         <Dropdown
           toggle={<KebabToggle
             onToggle={() => setKebabIsOpen(!kebabIsOpen)}
@@ -133,8 +135,8 @@ const PlanActions = ({ plan, history }) => {
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
         />
-      </div>
-    </div>
+      </FlexItem>
+    </Flex>
   );
 };
 
