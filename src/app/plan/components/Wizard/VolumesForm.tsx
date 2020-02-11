@@ -1,6 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Grid,
   GridItem,

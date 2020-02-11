@@ -1,12 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
-import { css } from '@emotion/core';
-import { Flex, Box, Text } from '@rebass/emotion';
-import styled from '@emotion/styled';
 import StatusIcon from '../../../common/components/StatusIcon';
 import {
   Alert,
@@ -20,11 +15,15 @@ import {
   EmptyStateVariant,
   EmptyStateIcon,
   EmptyStateBody,
+  Grid,
+  GridItem
 } from '@patternfly/react-core';
-import theme from '../../../../theme';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+
+const styles = require('./VolumesTable.module')
+const classNames = require('classnames');
 
 const capitalize = (s: string) => {
   if (s.charAt(0)) {
@@ -120,9 +119,6 @@ const VolumesTable = (props): any => {
     }
   }, [currentPlan, isPollingStatus]); // Only re-run the effect if fetching value changes
 
-  const StyledTextContent = styled(TextContent)`
-    margin: 1em 0 1em 0;
-  `;
 
   //TODO: added this component level error state to handle the case of no PVs
   // showing up after 3 checks of the interval. When the isPVError flag is checked,
@@ -132,18 +128,14 @@ const VolumesTable = (props): any => {
 
   if (isPVError) {
     return (
-      <Box
-        css={css`
-          text-align: center;
-        `}
-      >
-        <StyledTextContent>
-          <Text color={theme.colors.statusRed} fontSize={[2, 3, 4]}>
+      <Grid gutter="md" className={styles.centerAlign}>
+        <GridItem>
+          <div className={styles.errorDiv}>
             <StatusIcon isReady={false} />
             PV Discovery Error
-          </Text>
-        </StyledTextContent>
-      </Box>
+          </div>
+        </GridItem>
+      </Grid>
     );
   }
   if (isPollingStatus ||
@@ -171,15 +163,11 @@ const VolumesTable = (props): any => {
       </Bullseye>
     );
   }
-
+  const { volumesTableStyle}  =  styles
+  const tableClass = classNames('-striped', '-highlight', {volumesTableStyle})
   return (
     <ReactTable
-      css={css`
-            font-size: 14px;
-            .rt-td{
-              margin: auto 0;
-            }
-      `}
+      className={tableClass}
       data={rows}
       columns={[
         {
@@ -301,12 +289,8 @@ const VolumesTable = (props): any => {
               pvResource => pvResource.metadata.name === row.original.name
             );
             return (
-              <Popover
-                css={css`
-                      overflow-y: scroll;
-                      max-height: 20rem;
-                      width: 40rem;
-                `}
+              <Popover 
+                className={styles.popoverStyle} 
                 position={PopoverPosition.bottom}
                 bodyContent={
                   <React.Fragment>
@@ -328,20 +312,19 @@ const VolumesTable = (props): any => {
                 closeBtnAriaLabel="close-pv-details"
                 maxWidth="200rem"
               >
-                <Flex>
-                  <Box>
+                <Grid gutter="md">
+                  <GridItem>
                     <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
                       View JSON
                     </Button>
-                  </Box>
-                </Flex>
+                  </GridItem>
+                </Grid>
               </Popover>
             );
           },
         },
       ]}
       defaultPageSize={5}
-      className="-striped -highlight"
     />
   );
 };
