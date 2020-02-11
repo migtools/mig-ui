@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React from 'react';
 import {
   Bullseye,
@@ -7,12 +5,13 @@ import {
   Title,
   TextContent,
   TextList,
-  TextListItem
+  TextListItem,
+  Grid,
+  GridItem
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import Select from 'react-select';
 import TargetsTable from './TargetsTable';
-import { Box, Flex, Text } from '@rebass/emotion';
 
 interface IProps {
   values: any;
@@ -75,7 +74,7 @@ class MigTargetForm extends React.Component<IProps, IState> {
     const { clusterOptions, storageOptions } = this.state;
 
     return (
-      <Box>
+      <Grid gutter="md">
         <TextContent>
           <TextList component="dl">
             <TextListItem component="dt">Replication repository</TextListItem>
@@ -139,11 +138,13 @@ class MigTargetForm extends React.Component<IProps, IState> {
             </EmptyState>
           </Bullseye>
         ) : (
-            <Box mt={20}>
-              <TargetsTable values={values} />
-            </Box>
+            <Grid gutter="md">
+              <GridItem>
+                <TargetsTable values={values} />
+              </GridItem>
+            </Grid>
           )}
-      </Box>
+      </Grid>
     );
   }
 }

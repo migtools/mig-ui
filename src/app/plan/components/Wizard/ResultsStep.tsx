@@ -1,8 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React from 'react';
-import styled from '@emotion/styled';
-import { Box } from '@rebass/emotion';
 import { RedoIcon } from '@patternfly/react-icons';
 import {
   Button,
@@ -11,12 +7,16 @@ import {
   CardBody,
   CardFooter,
   Tooltip,
-  TooltipPosition
+  TooltipPosition,
+  Grid,
+  GridItem
 } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { OutlinedQuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+
+const styles = require('./ResultsStep.module');
 interface IProps {
   values: any;
   errors: any;
@@ -43,14 +43,6 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   };
 
   function HeaderIcon({ state }) {
-    const StyledIcon = styled(RedoIcon)`
-      height: 1.3em;
-      width: 1.3em;
-    `;
-    const StyledLoaderWrapper = styled.span`
-      display: inline-block;
-      margin-right: 0.75rem;
-    `;
 
     switch (state) {
       case CurrentPlanState.Pending:
@@ -68,16 +60,15 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     }
   }
   function HeaderText({ state }): any {
-    const StyledPlanName = styled.span`
-      display: inline-block;
-      font-size: 1.3em;
-      font-weight: 900;
-    `;
-    const StyledValidationText = styled.span`
-      font-size: 1.3em;
-      font-weight: 300;
-      display: inline-block;
-    `;
+    const StyledPlanName = (props) =>
+      <span className={styles.styledPlanName}>
+        {props.children}
+      </span>
+
+    const StyledValidationText = (props) =>
+      <span className={styles.styledValidationText}>
+        {props.children}
+      </span>
 
     switch (state) {
       case CurrentPlanState.Pending:
@@ -128,12 +119,11 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
     }
   }
   function BodyText({ state, errorMessage, warnMessage }): any {
-    const StyledBodyText = styled.span`
-      font-size: 1.0em;
-      font-weight: 300;
-      display: inline-block;
-      font-style: italic;
-    `;
+
+    const StyledBodyText = (props) =>
+      <span className={styles.styledBodyText}>
+        {props.children}
+      </span>
 
     switch (state) {
       case CurrentPlanState.Pending:
@@ -145,7 +135,6 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
           <StyledBodyText>
             {warnMessage}
           </StyledBodyText>
-
         </React.Fragment>;
       case CurrentPlanState.Ready:
         return <StyledBodyText>
@@ -170,7 +159,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
       case CurrentPlanState.Critical:
         return <Button onClick={onClose} variant="primary">Close</Button>;
       case CurrentPlanState.TimedOut:
-        return <Box>
+        return <Grid gutter="md">
           <Button
             style={{ marginRight: '10px' }}
             onClick={onClose}
@@ -187,18 +176,14 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
             </div>}>
             <span className="pf-c-icon"><OutlinedQuestionCircleIcon /></span>
           </Tooltip>
-        </Box>;
+        </Grid>;
       default:
         return null;
     }
   }
-  const StyledCard = styled(Card)`
-    margin: auto;
-    width: 50em;
-  `;
 
   return (
-    <StyledCard>
+    <Card className={styles.styledCard}>
       <CardHeader>
         <HeaderIcon
           state={currentPlanStatus.state}
@@ -219,7 +204,7 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
           state={currentPlanStatus.state}
         />
       </CardFooter>
-    </StyledCard>
+    </Card>
   );
 };
 
