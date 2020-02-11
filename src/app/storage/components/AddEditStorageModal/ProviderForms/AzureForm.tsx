@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Flex, Box } from '@rebass/emotion';
 import {
     Button,
     TextInput,
@@ -8,7 +7,9 @@ import {
     Tooltip,
     TooltipPosition,
     TextArea,
-    Modal
+    Modal,
+    Grid,
+    GridItem
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import {
@@ -162,8 +163,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-access-key">{errors.azureBlob}</FormErrorDiv>
                 )}
             </FormGroup>
-            <Flex flexDirection="column">
-                <Box m="0 0 1em 0 ">
+            <Grid gutter="md">
+                <GridItem>
                     <Button
                         type="submit"
                         isDisabled={isAddEditButtonDisabled(
@@ -197,19 +198,19 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                             Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
                     </Tooltip>
-                </Box>
-                <Box m="0 0 1em 0 ">
+                </GridItem>
+                <GridItem>
                     <ConnectionStatusLabel
                         status={currentStatus}
                         statusText={currentStatusFn(currentStatus)}
                     />
-                </Box>
-                <Box m="auto 0 0 0 ">
+                </GridItem>
+                <GridItem>
                     <Button variant="primary" onClick={onClose}>
                         Close
           </Button>
-                </Box>
-            </Flex>
+                </GridItem>
+            </Grid>
             {isPopUpModalOpen &&
                 <Modal
                     isSmall
@@ -223,14 +224,14 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     ]}
                     isFooterLeftAligned
                 >
-                    <Flex flexDirection="column">
-                        <Box my={1}>
+                    <Grid gutter="md">
+                        <GridItem>
                             <p>
                                 To add an Azure repository, you will need the following information:
                         </p>
 
-                        </Box>
-                        <Box my={1}>
+                        </GridItem>
+                        <GridItem>
                             <ul>
                                 <li>
                                     - Azure subscription ID
@@ -255,8 +256,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                                 </li>
                             </ul>
 
-                        </Box>
-                        <Box my={1}>
+                        </GridItem>
+                        <GridItem>
                             <p>
                                 See the &nbsp;
                                 <a
@@ -269,8 +270,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                                 includes this information.
                             </p>
 
-                        </Box>
-                    </Flex>
+                        </GridItem>
+                    </Grid>
                 </Modal>
             }
         </Form>

@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { Flex, Box } from '@rebass/emotion';
 import {
     Button,
     TextInput,
@@ -9,7 +7,9 @@ import {
     Tooltip,
     TooltipPosition,
     TextArea,
-    Checkbox
+    Checkbox,
+    Grid,
+    GridItem
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
@@ -227,27 +227,27 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                 )}
             </FormGroup>
             <FormGroup fieldId={requireSSLKey}>
-              <Checkbox
-                onChange={formikHandleChange}
-                onInput={formikSetFieldTouched(requireSSLKey)}
-                onBlur={handleBlur}
-                isChecked={values.requireSSL}
-                name={requireSSLKey}
-                label="Require SSL verification"
-                id="require-ssl-input"
-              />
+                <Checkbox
+                    onChange={formikHandleChange}
+                    onInput={formikSetFieldTouched(requireSSLKey)}
+                    onBlur={handleBlur}
+                    isChecked={values.requireSSL}
+                    name={requireSSLKey}
+                    label="Require SSL verification"
+                    id="require-ssl-input"
+                />
             </FormGroup>
             <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-              <CertificateUpload
-                isDisabled={!values.requireSSL}
-                name={caBundleKey}
-                setFieldValue={setFieldValue}
-                onInput={formikSetFieldTouched(caBundleKey)}
-                onBlur={handleBlur}
-              />
+                <CertificateUpload
+                    isDisabled={!values.requireSSL}
+                    name={caBundleKey}
+                    setFieldValue={setFieldValue}
+                    onInput={formikSetFieldTouched(caBundleKey)}
+                    onBlur={handleBlur}
+                />
             </FormGroup>
-            <Flex flexDirection="column">
-                <Box m="0 0 1em 0 ">
+            <Grid gutter="md">
+                <GridItem >
                     <Button
                         type="submit"
                         isDisabled={isAddEditButtonDisabled(
@@ -281,25 +281,22 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                             Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
                     </Tooltip>
-                </Box>
-                <Box m="0 0 1em 0 ">
+                </GridItem>
+                <GridItem>
                     <ConnectionStatusLabel
                         status={currentStatus}
                         statusText={currentStatusFn(currentStatus)}
                     />
-                </Box>
-                <Box m="auto 0 0 0 ">
+                </GridItem>
+                <GridItem>
                     <Button variant="primary" onClick={onClose}>
                         Close
           </Button>
-                </Box>
-            </Flex>
-
+                </GridItem>
+            </Grid>
         </Form>
-
     );
 };
-
 
 // valuesHaveUpdate - returns true if the formik values hold values that differ
 // from a matching existing replication repository. This is different from props.dirty, which returns
