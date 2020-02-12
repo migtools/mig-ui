@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const HOST = process.env.HOST || 'localhost';
 const localConfigFileName = 'config.dev.json';
-// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 

@@ -11,7 +11,7 @@ const config = {
     filename: 'app.bundle.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
   module: {
     rules: [
@@ -26,15 +26,55 @@ const config = {
         enforce: 'pre',
       },
       {
-        test: /\.s?[ac]ss$/i,
-        use: [
-          MiniCssExtractPlugin.loader, // instead of style-loader
-          // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
-        ],
+        test: /\.module\.s(a|c)ss$/,
+        loader: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              sourceMap: false
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: false
+            }
+          }
+        ]
       },
+      {
+        test: /\.s(a|c)ss$/,
+        exclude: /\.module.(s(a|c)ss)$/,
+        loader: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: false
+            }
+          }
+        ]
+      },
+      {
+        test: /\.css$/,
+        include: [
+          // path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, '../node_modules/'),
+          path.resolve(__dirname, '../node_modules/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+        ],
+        use: ["style-loader", "css-loader"]
+      },
+
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
         use: {
