@@ -3,12 +3,12 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-//devtool: 'source-map',
 const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: 'app.bundle.js',
+    publicPath: '/'
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.scss'],
