@@ -53,7 +53,6 @@ export function createMigCluster(
         namespace: tokenSecret.metadata.namespace,
       },
       insecure: !requireSSL,
-      caBundle: caBundle || null,
     };
   } else {
     specObject = {
@@ -64,8 +63,10 @@ export function createMigCluster(
         namespace: tokenSecret.metadata.namespace,
       },
       insecure: !requireSSL,
-      caBundle: caBundle || null,
     };
+  }
+  if (caBundle) {
+    specObject['caBundle'] = caBundle
   }
 
 
