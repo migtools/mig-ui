@@ -30,6 +30,10 @@ export interface IDiscoveryParameters {
 
 export type TokenExpiryHandler = (oldToken: object) => void;
 
+function namedPath(listPath, name) {
+  return [listPath, name].join('/');
+}
+
 export abstract class NamespacedResource implements IKubeResource {
   public abstract gvk(): IGroupVersionKindPlural;
   public namespace: string;
@@ -66,9 +70,6 @@ export abstract class ClusterResource implements IKubeResource {
   }
 }
 
-function namedPath(listPath, name) {
-  return [listPath, name].join('/');
-}
 
 export abstract class DiscoveryResource implements IDiscoveryResource {
 
@@ -81,7 +82,7 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
     aggregatorName: string,
     type: string,
     discoveryParameters: IDiscoveryParameters,
-    customAggregatorType: string = 'clusters'
+    customAggregatorType = 'clusters'
   ) {
     this._aggregatorType = customAggregatorType;
     this._aggregatorName = aggregatorName;
@@ -124,7 +125,7 @@ export abstract class NamedDiscoveryResource
     aggregator: string,
     type: string,
     discoveryParameters: IDiscoveryParameters,
-    customAggregatorType: string = 'clusters'
+    customAggregatorType = 'clusters'
   ) {
     super(aggregator, type, discoveryParameters, customAggregatorType);
 

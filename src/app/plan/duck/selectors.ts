@@ -209,8 +209,7 @@ const getPlansWithStatus = createSelector(
         if (migration.status.startTimestamp) {
           status.start = moment.tz(migration.status.startTimestamp, zone).format(`DD MMM YYYY, h:mm:ss z`);
         }
-        let endTime;
-        endTime = migration.status.conditions
+        const endTime = migration.status.conditions
           .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
           .map(c => c.lastTransitionTime)
           .toString();

@@ -303,6 +303,22 @@ export const updateCurrentPlanStatus = (
   };
 };
 
+const lockPlan = (state = INITIAL_STATE, planName: string) => {
+  let updatedLockedPlans = state.lockedPlanList;
+  if (state.lockedPlanList.indexOf(planName) === -1) {
+    updatedLockedPlans = [...updatedLockedPlans, planName];
+  }
+  return { ...state, lockedPlanList: updatedLockedPlans };
+};
+
+const unlockPlan = (state = INITIAL_STATE, planName: string) => {
+  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== planName);
+  return {
+    ...state,
+    lockedPlanList: filteredLockedPlans
+  };
+};
+
 export const planCloseAndDeleteRequest = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.planCloseAndDeleteRequest>
@@ -324,21 +340,6 @@ export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
   return unlockPlan(state, action.planName);
 };
 
-const lockPlan = (state = INITIAL_STATE, planName: string) => {
-  let updatedLockedPlans = state.lockedPlanList;
-  if (state.lockedPlanList.indexOf(planName) === -1) {
-    updatedLockedPlans = [...updatedLockedPlans, planName];
-  }
-  return { ...state, lockedPlanList: updatedLockedPlans };
-};
-
-const unlockPlan = (state = INITIAL_STATE, planName: string) => {
-  const filteredLockedPlans = state.lockedPlanList.filter(lockedPlanName => lockedPlanName !== planName);
-  return {
-    ...state,
-    lockedPlanList: filteredLockedPlans
-  };
-};
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {

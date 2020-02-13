@@ -4,12 +4,11 @@ import { push } from 'connected-react-router';
 
 class CertErrorComponent extends React.Component<any> {
   componentDidMount() {
-    if(!this.props.certError) {
+    if (!this.props.certError) {
       this.props.routeHome();
     }
   }
 
-  /* tslint:disable */
   render() {
     return (
       <div>
@@ -29,7 +28,6 @@ class CertErrorComponent extends React.Component<any> {
       </div>
     );
   }
-  /* tslint:enable */
 }
 
 export default connect(

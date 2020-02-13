@@ -31,6 +31,7 @@ export class ClientFactoryMissingDiscoveryApi extends Error {
   }
 }
 
+let tokenExpiryHandler = null;
 export const ClientFactory = {
   cluster: (state: any, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
@@ -70,7 +71,6 @@ export const ClientFactory = {
   }
 };
 
-let tokenExpiryHandler = null;
 
 export const setTokenExpiryHandler = (newExpiryHandler: TokenExpiryHandler) => {
   tokenExpiryHandler = newExpiryHandler;
