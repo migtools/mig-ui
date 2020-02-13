@@ -177,7 +177,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <CertificateUpload
           isDisabled={!values.requireSSL}
           name={caBundleKey}
-          onChange={setFieldValue}
+          setFieldValue={setFieldValue}
           onInput={formikSetFieldTouched(caBundleKey)}
           onBlur={handleBlur}
         />
