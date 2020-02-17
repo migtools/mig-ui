@@ -231,7 +231,7 @@ const getPlansWithStatus = createSelector(
           if (criticalCondition) {
             status.progress = 100;
             status.isFailed = true;
-            status.stepName = criticalCondition.message;
+            status.stepName = 'Failed';
             status.end = "--"
             return status;
           }
