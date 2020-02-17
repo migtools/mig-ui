@@ -43,8 +43,11 @@ const composedEnhancers = compose(
   ...enhancers
 );
 
-export default () => {
-  const store = createStore(persistedReducer, composedEnhancers);
+const createdStore = () => {
+  //TODO: remove any dependency on redux thunk. Added any type here to fix internal thunk type error
+  // TS4082: Default export of the module has or is using private name '$CombinedState'.
+  const store = createStore<any, any, any, any>(persistedReducer, composedEnhancers);
   sagaMiddleware.run(rootSaga);
   return { store, persistor: persistStore(store) };
 };
+export default createdStore;
