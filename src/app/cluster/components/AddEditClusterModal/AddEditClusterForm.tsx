@@ -178,7 +178,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onBlur={handleBlur}
         />
       </FormGroup>
-      <Grid gutter="lg" md={6} lg={4}>
+      <Grid gutter="md">
         <GridItem>
           <Button
             type="submit"
