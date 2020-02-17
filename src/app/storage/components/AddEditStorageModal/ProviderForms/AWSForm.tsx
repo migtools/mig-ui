@@ -22,6 +22,7 @@ import {
     isCheckConnectionButtonDisabled,
 } from '../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
+import CertificateUpload from '../../../../common/components/CertificateUpload';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
@@ -40,6 +41,7 @@ const valuesHaveUpdate = (values, currentStorage) => {
     const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
     const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
     const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+    const existingCABundle = !currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
     let existingAccessKeyId;
     if (currentStorage.Secret.data['aws-access-key-id']) {
         existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
@@ -58,7 +60,8 @@ const valuesHaveUpdate = (values, currentStorage) => {
         values.s3Url !== existingBucketUrl ||
         values.accessKey !== existingAccessKeyId ||
         values.secret !== existingSecretAccessKey ||
-        values.requireSSL !== existingRequireSSL;
+        values.requireSSL !== existingRequireSSL ||
+        values.caBundle !== existingCABundle;
 
     return valuesUpdatedObject;
 };
@@ -72,6 +75,7 @@ interface IFormValues {
     s3Url: string;
     bslProvider: string;
     requireSSL: boolean;
+    caBundle: string;
 }
 interface IOtherProps {
     onAddEditSubmit: any;
@@ -109,6 +113,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     const vslConfigKey = 'vslConfig';
     const vslBlobKey = 'vslBlob';
     const requireSSLKey = 'requireSSL';
+    const caBundleKey = 'caBundle';
 
     const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
     const [isSharedCred, setIsSharedCred] = useState(true);
@@ -232,6 +237,15 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                 id="require-ssl-input"
               />
             </FormGroup>
+            <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+              <CertificateUpload
+                isDisabled={!values.requireSSL}
+                name={caBundleKey}
+                setFieldValue={setFieldValue}
+                onInput={formikSetFieldTouched(caBundleKey)}
+                onBlur={handleBlur}
+              />
+            </FormGroup>
             <Flex flexDirection="column">
                 <Box m="0 0 1em 0 ">
                     <Button
@@ -305,6 +319,7 @@ const AWSForm: any = withFormik({
             s3Url: '',
             bslProvider: provider,
             requireSSL: true,
+            caBundle: '',
         };
 
         if (initialStorageValues) {
@@ -315,6 +330,7 @@ const AWSForm: any = withFormik({
             values.secret = initialStorageValues.secret || '';
             values.s3Url = initialStorageValues.s3Url || '';
             values.requireSSL = initialStorageValues.requireSSL;
+            values.caBundle = initialStorageValues.caBundle || null;
             // values.bslProvider = provider;
         }
 
