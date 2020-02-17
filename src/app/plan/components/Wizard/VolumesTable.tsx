@@ -296,7 +296,6 @@ const VolumesTable = (props): any => {
           accessor: 'details',
           width: 200,
           resizable: false,
-          textAlign: 'left',
           Cell: row => {
             const matchingPVResource = pvResourceList.find(
               pvResource => pvResource.metadata.name === row.original.name
