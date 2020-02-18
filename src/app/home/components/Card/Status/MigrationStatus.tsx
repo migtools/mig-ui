@@ -9,7 +9,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
     <dl className="pf-c-widget-description-list pf-m-inline">
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon">
-          <ResourcesAlmostEmptyIcon className={notStarted.length === 0 && styles.disabled} />
+          <ResourcesAlmostEmptyIcon className={notStarted.length === 0 ? styles.disabled : ''} />
         </span>
 
         <span className={notStarted.length > 0 ?
@@ -23,7 +23,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
       </dd>
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-info">
-          <ResourcesAlmostFullIcon className={inProgress.length === 0 && styles.disabled} />
+          <ResourcesAlmostFullIcon className={inProgress.length === 0 ? styles.disabled : ''} />
         </span>
         <span className={inProgress.length > 0 ?
           'pf-c-widget-description-list__num' :
@@ -36,7 +36,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
       </dd>
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-success">
-          <ResourcesFullIcon className={completed.length === 0 && styles.disabled} />
+          <ResourcesFullIcon className={completed.length === 0 ? styles.disabled : ''} />
         </span>
         <span className={completed.length > 0 ?
           'pf-c-widget-description-list__num' :
