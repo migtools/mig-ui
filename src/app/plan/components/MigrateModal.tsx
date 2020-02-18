@@ -36,7 +36,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                     </GridItem>
                     <GridItem className={styles.gridMargin}>
                         <Checkbox
-                            label="Do not stop applications on the source cluster during migration."
+                            label="Don't halt transactions on the source during migration."
                             aria-label="halt-label"
                             id="transaction-halt-checkbox"
                             isChecked={disableQuiesce}

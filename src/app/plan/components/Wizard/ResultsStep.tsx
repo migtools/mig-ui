@@ -17,6 +17,7 @@ import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { OutlinedQuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 
 const styles = require('./ResultsStep.module');
+
 interface IProps {
   values: any;
   errors: any;
@@ -183,28 +184,32 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   }
 
   return (
-    <Card className={styles.styledCard}>
-      <CardHeader>
-        <HeaderIcon
-          state={currentPlanStatus.state}
-        />
-        <HeaderText
-          state={currentPlanStatus.state}
-        />
-      </CardHeader>
-      <CardBody>
-        <BodyText
-          state={currentPlanStatus.state}
-          errorMessage={currentPlanStatus.errorMessage}
-          warnMessage={currentPlanStatus.warnMessage}
-        />
-      </CardBody>
-      <CardFooter>
-        <FooterText
-          state={currentPlanStatus.state}
-        />
-      </CardFooter>
-    </Card>
+    <Grid gutter="md">
+      <GridItem className={styles.centerCard}>
+        <Card className={styles.styledCard}>
+          <CardHeader>
+            <HeaderIcon
+              state={currentPlanStatus.state}
+            />
+            <HeaderText
+              state={currentPlanStatus.state}
+            />
+          </CardHeader>
+          <CardBody>
+            <BodyText
+              state={currentPlanStatus.state}
+              errorMessage={currentPlanStatus.errorMessage}
+              warnMessage={currentPlanStatus.warnMessage}
+            />
+          </CardBody>
+          <CardFooter>
+            <FooterText
+              state={currentPlanStatus.state}
+            />
+          </CardFooter>
+        </Card>
+      </GridItem>
+    </Grid>
   );
 };
 

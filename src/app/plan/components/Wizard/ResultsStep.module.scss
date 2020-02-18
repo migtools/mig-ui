@@ -8,10 +8,7 @@
       margin-right: 0.75rem;
 
    }
-    // const StyledIcon = styled(RedoIcon)`
-    // `;
-    // const StyledLoaderWrapper = styled.span`
-    // `;
+
    .styledPlanName{
       display: inline-block;
       font-size: 1.3em;
@@ -34,4 +31,8 @@
    .styledCard{
         margin: auto;
         width: 50em;
+   }
+
+   .centerCard{
+      margin-top: 3em;
    }
