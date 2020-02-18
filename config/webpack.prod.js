@@ -1,16 +1,17 @@
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-//devtool: 'source-map',
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const config = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: 'app.bundle.js',
+    publicPath: '/'
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
   module: {
     rules: [
@@ -25,16 +26,55 @@ const config = {
         enforce: 'pre',
       },
       {
-        test: /\.s?[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
-        ],
+        test: /\.module\.s(a|c)ss$/,
+        loader: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              sourceMap: false
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: false
+            }
+          }
+        ]
       },
+      {
+        test: /\.s(a|c)ss$/,
+        exclude: /\.module.(s(a|c)ss)$/,
+        loader: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: false
+            }
+          }
+        ]
+      },
+      {
+        test: /\.css$/,
+        include: [
+          // path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, '../node_modules/'),
+          path.resolve(__dirname, '../node_modules/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+        ],
+        use: ["style-loader", "css-loader"]
+      },
+
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
         use: {
@@ -51,9 +91,10 @@ const config = {
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
-    new ExtractTextPlugin({
-      filename: 'style.css',
-    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css'
+    })
   ],
 };
 

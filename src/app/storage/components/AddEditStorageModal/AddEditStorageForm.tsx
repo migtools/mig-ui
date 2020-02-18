@@ -1,13 +1,14 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
+import {
+  Grid,
+  GridItem
+} from '@patternfly/react-core';
 import Select from 'react-select';
-import { Box, Flex, Text } from '@rebass/emotion';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
-import { css } from '@emotion/core';
 import { StorageContext } from '../../../home/duck/context';
+const styles = require('./AddEditStorageForm.module');
 
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -98,21 +99,11 @@ const AddEditStorageForm = (props: IOtherProps) => {
   };
 
   return (
-    <Flex flexDirection="column">
-      <Box
-        m="0 0 1em 0 "
-        flex="auto"
-        width={1 / 2}
-        height={1}
-        minHeight={11}
-      >
-        <Text css={css`
-        font-weight: 550;
-        font-size: 14px;
-        margin-bottom: 5px;
-        `}>
-          Storage provider type
-        </Text>
+    <Grid gutter="md">
+      <GridItem className={styles.selectType}>
+        Storage provider type
+      </GridItem>
+      <GridItem span={8} className={styles.selectType}>
         <Select
           name="provider"
           onChange={handleProviderChange}
@@ -120,24 +111,26 @@ const AddEditStorageForm = (props: IOtherProps) => {
           value={selectedProvider}
           isDisabled={(provider) !== (null || undefined)}
         />
-      </Box>
-      {(selectedProvider && selectedProvider.value === 'aws') &&
-        <AWSForm provider={selectedProvider.value}
-          initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret, requireSSL, caBundle }}
-          {...props} />
-      }
-      {(selectedProvider && selectedProvider.value === 'azure') &&
-        <AzureForm
-          provider={selectedProvider.value}
-          initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
-          {...props} />
-      }
-      {(selectedProvider && selectedProvider.value === 'gcp') &&
-        <GCPForm provider={selectedProvider.value}
-          initialStorageValues={{ name, gcpBucket, gcpBlob }}
-          {...props} />
-      }
-    </Flex>
+      </GridItem>
+      <GridItem span={10}>
+        {(selectedProvider && selectedProvider.value === 'aws') &&
+          <AWSForm provider={selectedProvider.value}
+            initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret, requireSSL, caBundle }}
+            {...props} />
+        }
+        {(selectedProvider && selectedProvider.value === 'azure') &&
+          <AzureForm
+            provider={selectedProvider.value}
+            initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
+            {...props} />
+        }
+        {(selectedProvider && selectedProvider.value === 'gcp') &&
+          <GCPForm provider={selectedProvider.value}
+            initialStorageValues={{ name, gcpBucket, gcpBlob }}
+            {...props} />
+        }
+      </GridItem>
+    </Grid >
   );
 };
 export default AddEditStorageForm;

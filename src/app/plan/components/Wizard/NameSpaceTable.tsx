@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
@@ -9,7 +7,8 @@ import {
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
-import { css } from '@emotion/core';
+
+const styles = require('./NamespaceTable.module');
 interface INamespaceTableProps {
   isEdit: boolean;
   values: any;
@@ -71,6 +70,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setSelectAll(2);
   };
 
+  const tableStyle = {
+    fontSize: '14px',
+  };
 
   if (values.sourceCluster !== null) {
     return (
@@ -85,9 +87,8 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
         <GridItem>
           <ReactTable
-            css={css`
-                font-size: 14px;
-              `}
+            className="-striped -highlight"
+            style={tableStyle}
             data={sourceClusterNamespaces}
             columns={[
               {
@@ -176,7 +177,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
               },
             ]}
             defaultPageSize={5}
-            className="-striped -highlight"
           />
         </GridItem>
       </React.Fragment>

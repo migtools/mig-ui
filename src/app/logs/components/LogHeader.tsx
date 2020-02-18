@@ -1,9 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { FunctionComponent } from 'react';
-import { Box, Flex, Text } from '@rebass/emotion';
+
+import React, { FunctionComponent } from 'react';
 import Select from 'react-select';
-import { CardHeader } from '@patternfly/react-core';
+import { CardHeader, Grid, GridItem, TextContent, Text, TextVariants } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 import { LogActions } from '../duck';
 import { flatten } from 'lodash';
@@ -56,10 +54,16 @@ const LogHeader: FunctionComponent<IProps> = ({
 
   return (<span>
     {isFetchingLogs ? null : (
-      <CardHeader style={{ height: '10%' }}>
-        <Flex>
-          <Box mx="3em" width={1 / 2} flex="auto">
-            <Text>Select Cluster</Text>
+      <CardHeader>
+        <Grid gutter='sm'>
+          <GridItem span={2}>
+            <TextContent >
+              <Text component={TextVariants.p}>
+                Select cluster:
+            </Text>
+            </TextContent>
+          </GridItem>
+          <GridItem span={4} >
             <Select
               name="selectCluster"
               value={cluster}
@@ -75,9 +79,22 @@ const LogHeader: FunctionComponent<IProps> = ({
               }}
               options={clusters}
             />
-          </Box>
-          <Box mx="3em" width={1 / 2} flex="auto">
-            <Text>Select Pod Source</Text>
+
+          </GridItem>
+          <GridItem span={6}>
+
+          </GridItem>
+
+          <GridItem span={2}>
+            <TextContent >
+              <Text component={TextVariants.p}>
+                Select Pod Source:
+            </Text>
+
+            </TextContent>
+
+          </GridItem>
+          <GridItem span={4}>
             <Select
               name="selectPod"
               value={logSource}
@@ -89,8 +106,9 @@ const LogHeader: FunctionComponent<IProps> = ({
               }}
               options={logSources}
             />
-          </Box>
-        </Flex>
+
+          </GridItem>
+        </Grid>
       </CardHeader>)
     }
   </span>);

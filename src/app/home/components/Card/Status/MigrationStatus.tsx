@@ -1,31 +1,15 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+import React from 'react';
 import { ResourcesAlmostEmptyIcon, ResourcesAlmostFullIcon, ResourcesFullIcon } from '@patternfly/react-icons';
-import styled from '@emotion/styled';
+const styles = require('./MigrationStatus.module');
 
 const MigrationStatus = ({ planStatusCounts }) => {
   const { notStarted, inProgress, completed } = planStatusCounts;
-
-  const DisabledEmptyIcon = styled(ResourcesAlmostEmptyIcon)`
-    color: #D2D2D2;
-  `;
-
-  const DisabledAlmostFullIcon = styled(ResourcesAlmostFullIcon)`
-    color: #D2D2D2;
-  `;
-  const DisabledFullIcon = styled(ResourcesFullIcon)`
-    color: #D2D2D2;
-  `;
-  const DisabledWrapper = styled(ResourcesFullIcon)`
-    color: #D2D2D2;
-  `;
-
 
   return (
     <dl className="pf-c-widget-description-list pf-m-inline">
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon">
-          {notStarted.length > 0 ? <ResourcesAlmostEmptyIcon /> : <DisabledEmptyIcon />}
+          <ResourcesAlmostEmptyIcon className={notStarted.length === 0 ? styles.disabled : ''} />
         </span>
 
         <span className={notStarted.length > 0 ?
@@ -39,7 +23,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
       </dd>
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-info">
-          {inProgress.length > 0 ? <ResourcesAlmostFullIcon /> : <DisabledAlmostFullIcon />}
+          <ResourcesAlmostFullIcon className={inProgress.length === 0 ? styles.disabled : ''} />
         </span>
         <span className={inProgress.length > 0 ?
           'pf-c-widget-description-list__num' :
@@ -52,7 +36,7 @@ const MigrationStatus = ({ planStatusCounts }) => {
       </dd>
       <dt>
         <span className="pf-c-icon pf-c-widget-description-list__icon pf-m-success">
-          {completed.length > 0 ? <ResourcesFullIcon /> : <DisabledFullIcon />}
+          <ResourcesFullIcon className={completed.length === 0 ? styles.disabled : ''} />
         </span>
         <span className={completed.length > 0 ?
           'pf-c-widget-description-list__num' :

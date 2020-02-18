@@ -1,6 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import {
+import React, {
   useEffect,
   useContext,
   useState,

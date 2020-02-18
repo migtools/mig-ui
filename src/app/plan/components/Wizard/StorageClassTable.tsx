@@ -1,10 +1,7 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import Select from 'react-select';
-import { css } from '@emotion/core';
 import {
   Bullseye,
   EmptyState,
@@ -116,13 +113,15 @@ const StorageClassTable = (props) => {
     );
   }
 
+  const tableStyle = {
+    fontSize: '14px',
+  };
+
   if (rows !== null) {
     return (
       <React.Fragment>
         <ReactTable
-          css={css`
-            font-size: 14px;
-          `}
+          style={tableStyle}
           data={rows}
           columns={[
             {

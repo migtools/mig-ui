@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
-import { DataList, DataListContent, DataListItem } from '@patternfly/react-core';
+import { DataList, DataListContent, DataListItem, Flex, FlexItem} from '@patternfly/react-core';
 import PlanActions from './PlanActions';
 import PlanStatus from './PlanStatus';
 import MigrationsTable from './MigrationsTable';
@@ -83,22 +83,22 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
           cells: [
             {
               title: (
-                <div className="pf-l-flex">
-                  <div className="pf-l-flex__item">
+                <Flex>
+                  <FlexItem>
                     <span>{plan.MigPlan.metadata.name}</span>
-                  </div>
-                </div>
+                  </FlexItem>
+                </Flex>
               ),
 
               props: { component: 'th' },
             },
             {
               title: (
-                <div className="pf-l-flex">
-                  <div className="pf-l-flex__item" key={planKey + '-icon'}>
+                <Flex>
+                  <FlexItem key={planKey + '-icon'}>
                     <MigrationsIcon />
-                  </div>
-                </div>
+                  </FlexItem>
+                </Flex>
               ),
 
               props: {
@@ -117,11 +117,11 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
             },
             {
               title: (
-                <div className="pf-l-flex">
-                  <div className="pf-l-flex__item">
+                <Flex>
+                  <FlexItem>
                     <span>{pvCount}</span>
-                  </div>
-                </div>
+                  </FlexItem>
+                </Flex>
               ),
             },
             {

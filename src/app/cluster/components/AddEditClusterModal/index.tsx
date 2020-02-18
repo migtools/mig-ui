@@ -1,6 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
@@ -27,7 +25,7 @@ const AddEditClusterModal = ({
     useState(initialClusterValues ? initialClusterValues.clusterName : null);
 
   const onAddEditSubmit = (clusterValues) => {
-    switch(addEditStatus.mode) {
+    switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
         props.updateCluster(clusterValues);
         break;
@@ -39,13 +37,13 @@ const AddEditClusterModal = ({
       }
       default: {
         console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`, );
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
       }
     }
   };
 
   useEffect(() => {
-    if(isOpen && isPolling) {
+    if (isOpen && isPolling) {
       pollingContext.stopAllPolling();
     }
   });

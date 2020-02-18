@@ -1,14 +1,12 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import theme from '../../../theme';
-import { Box, Flex, Text } from '@rebass/emotion';
-import { css } from '@emotion/core';
+import React from 'react';
 import {
   Bullseye,
   Button,
   CardBody,
   EmptyState,
-  Title
+  Title,
+  Grid,
+  GridItem
 } from '@patternfly/react-core';
 import LogItem from './LogItem';
 import { connect } from 'react-redux';
@@ -44,9 +42,9 @@ const LogBody: FunctionComponent<IProps> = ({
           </EmptyState>)
           : log.length > 0 ? <LogItem log={log} />
             :
-            <Box flex="1" m="auto">
-              <Text fontSize={[2, 3, 4]}>Select pod to display logs</Text>
-              <Text fontSize={[2, 3, 4]}>or</Text>
+            <Grid gutter='md'>
+              <GridItem>Select pod to display logs</GridItem>
+              <GridItem >or</GridItem>
               <Button
                 onClick={(_) => requestDownloadAll(report)}
                 variant="primary"
@@ -54,7 +52,7 @@ const LogBody: FunctionComponent<IProps> = ({
               >
                 Download Logs
               </Button>
-            </Box>}
+            </Grid>}
       </Bullseye>
     </CardBody>);
 };

@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { Flex, Box } from '@rebass/emotion';
 import {
     Button,
     TextInput,
@@ -8,8 +6,8 @@ import {
     FormGroup,
     Tooltip,
     TooltipPosition,
-    TextArea,
-    Checkbox
+    Grid,
+    GridItem
 } from '@patternfly/react-core';
 import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
@@ -26,7 +24,6 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
-import commonUtils from '../../../../common/duck/utils';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -146,8 +143,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     <FormErrorDiv id="feedback-access-key">{errors.gcpBlob}</FormErrorDiv>
                 )}
             </FormGroup>
-            <Flex flexDirection="column">
-                <Box m="0 0 1em 0 ">
+            <Grid gutter="md">
+                <GridItem>
                     <Button
                         type="submit"
                         isDisabled={isAddEditButtonDisabled(
@@ -181,22 +178,20 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                             Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
                     </Tooltip>
-                </Box>
-                <Box m="0 0 1em 0 ">
+                </GridItem>
+                <GridItem>
                     <ConnectionStatusLabel
                         status={currentStatus}
                         statusText={currentStatusFn(currentStatus)}
                     />
-                </Box>
-                <Box m="auto 0 0 0 ">
+                </GridItem>
+                <GridItem>
                     <Button variant="primary" onClick={onClose}>
                         Close
           </Button>
-                </Box>
-            </Flex>
-
+                </GridItem>
+            </Grid>
         </Form>
-
     );
 };
 
@@ -252,4 +247,3 @@ const GCPForm: any = withFormik({
 })(InnerGCPForm);
 
 export default GCPForm;
-

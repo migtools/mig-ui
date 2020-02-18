@@ -1,7 +1,5 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+import React from 'react';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import styled from '@emotion/styled';
 
 const CardStatusComponent = ({ type, dataList, ...props }) => {
   let successList = [];

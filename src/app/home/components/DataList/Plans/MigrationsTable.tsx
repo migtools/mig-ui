@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React, { useEffect, useState } from 'react';
 import {
   Table,
@@ -15,7 +13,6 @@ import {
   ProgressSize,
   ProgressVariant
 } from '@patternfly/react-core';
-import StatusIcon from '../../../../common/components/StatusIcon';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 interface IProps {

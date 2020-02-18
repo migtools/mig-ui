@@ -1,16 +1,12 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import styled from '@emotion/styled';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   OutlinedCircleIcon,
 } from '@patternfly/react-icons';
-import theme from '../../../theme';
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-
+const styles = require('./ConnectionStatusLabel.module');
 
 interface IProps {
   status: any;
@@ -18,21 +14,21 @@ interface IProps {
 }
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
+
   const getStatusIcon = iconStatus => {
+    const WrappedSpinner = () => (
+      <Spinner className={styles.spinner} size="md"></Spinner>
+    )
+
     switch (iconStatus.state) {
       case AddEditState.Pending: {
-        return styled.span`
-          color: ${theme.colors.blue};
-        `;
+        const PendingSpan = () => (
+          <span className={styles.pendingSpan}></span>
+        )
+        return PendingSpan
       }
       case AddEditState.Fetching: {
-        const WrappedLoader = () => (
-          <Spinner size="md" />
-        );
-
-        return styled(WrappedLoader)`
-          display: inline;
-        `;
+        return WrappedSpinner;
       }
       case AddEditState.Critical: {
         const CriticalIcon = () => (
@@ -55,13 +51,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
         return ReadyIcon;
       }
       case AddEditState.Watching: {
-        const WrappedLoader = () => (
-          <Spinner size="md" />
-        );
-
-        return styled(WrappedLoader)`
-          display: inline;
-        `;
+        return WrappedSpinner
       }
       case AddEditState.TimedOut: {
         const TimedOutIcon = () => (

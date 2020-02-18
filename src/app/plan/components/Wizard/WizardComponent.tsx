@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Wizard } from '@patternfly/react-core';
+import { Wizard} from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
@@ -8,7 +8,9 @@ import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
-import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
+import { CurrentPlanState } from '../../duck/reducers';
+
+const styles = require('./WizardComponent.module');
 
 const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -253,6 +255,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           steps={updatedSteps}
           isFullWidth
           isCompactNav
+          className={styles.wizardModifier}
         />
       )}
     </React.Fragment>

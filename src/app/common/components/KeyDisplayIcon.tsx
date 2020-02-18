@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import { EyeIcon, EyeSlashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 

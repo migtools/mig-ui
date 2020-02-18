@@ -2,9 +2,10 @@ const path = require('path');
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HOST = process.env.HOST || 'localhost';
 const localConfigFileName = 'config.dev.json';
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
@@ -57,9 +58,10 @@ const plugins = [
   new webpack.NamedModulesPlugin(),
   new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
-  new ExtractTextPlugin({
-    filename: '[name].[contenthash].css',
-  }),
+  new MiniCssExtractPlugin({
+    filename: '[name].css',
+    chunkFilename: '[id].css'
+  })
 ];
 
 // Replace the normal OAuth login component with a mocked out login for local dev
@@ -85,7 +87,7 @@ const webpackConfig = {
     publicPath: '/',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
   devtool: 'eval-cheap-module-source-map',
   module: {
@@ -96,15 +98,53 @@ const webpackConfig = {
         use: 'ts-loader',
       },
       {
-        test: /\.s?[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
+        test: /\.module\.s(a|c)ss$/,
+        loader: [
           'style-loader',
-          // Translates CSS into CommonJS
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.s(a|c)ss$/,
+        exclude: /\.module.(s(a|c)ss)$/,
+        loader: [
+          'style-loader',
           'css-loader',
-          // Compiles Sass to CSS
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.css$/,
+        include: [
+          // path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, '../node_modules/'),
+          path.resolve(__dirname, '../node_modules/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
+          path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
         ],
+        use: ["style-loader", "css-loader"]
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,

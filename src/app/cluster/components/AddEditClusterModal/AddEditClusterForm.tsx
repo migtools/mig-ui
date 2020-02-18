@@ -1,6 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   TextInput,
@@ -9,9 +7,8 @@ import {
   Tooltip,
   TooltipPosition,
   Checkbox,
-  InputGroup,
-  InputGroupText,
-  TextArea
+  Grid,
+  GridItem
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -19,7 +16,6 @@ import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
-import { Flex, Box, Text } from '@rebass/emotion';
 import {
   AddEditMode,
   addEditStatusText,
@@ -182,8 +178,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onBlur={handleBlur}
         />
       </FormGroup>
-      <Flex flexDirection="column">
-        <Box m="0 0 1em 0 ">
+      <Grid gutter="md">
+        <GridItem>
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(
@@ -220,21 +216,26 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
               <OutlinedQuestionCircleIcon />
             </span>
           </Tooltip>
-        </Box>
-        <Box m="0 0 1em 0 ">
+        </GridItem>
+      </Grid>
+      <Grid gutter="md">
+        <GridItem>
           <ConnectionStatusLabel
             status={currentStatus}
             statusText={currentStatusFn(currentStatus)}
           />
-        </Box>
-        <Box m="auto 0 0 0 ">
+        </GridItem>
+
+      </Grid>
+      <Grid gutter="md">
+        <GridItem>
           <Button
             variant="primary"
             onClick={onClose}>
             Close
           </Button>
-        </Box>
-      </Flex>
+        </GridItem>
+      </Grid>
     </Form>
   );
 };

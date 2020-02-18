@@ -1,11 +1,8 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
-import { Modal } from '@patternfly/react-core';
-import { useState, useContext } from 'react';
-import { Flex, Box, Text } from '@rebass/emotion';
+import React, { useState, useContext } from 'react';
+import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
-import { css } from '@emotion/core';
 import { PlanContext } from '../../home/duck/context';
+const styles = require('./MigrateModal.module');
 
 interface IProps {
     onHandleClose: () => void;
@@ -28,31 +25,27 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
             onClose={() => onHandleClose()}
             title={`Migrate ${plan.MigPlan.metadata.name}`}
         >
-            <Flex>
+            <Grid gutter="md">
                 <form
                 >
-                    <Box>
+                    <GridItem>
                         Migrating a migration plan means that all transactions on the source cluster will be
                         halted before the migration begins and will remain halted for the duration of the
                         migration. Persistent volumes associated with the projects being migrated will be moved or
                         copied to the target cluster as specified in the migration plan.
-                    </Box>
-                    <Box
-                        css={css`
-                            margin-top: 20px;
-                        `}
-                    >
+                    </GridItem>
+                    <GridItem className={styles.gridMargin}>
                         <Checkbox
-                            label="Do not stop applications on the source cluster during migration."
+                            label="Don't halt transactions on the source during migration."
                             aria-label="halt-label"
                             id="transaction-halt-checkbox"
                             isChecked={disableQuiesce}
                             onChange={handleChange}
                         />
-                    </Box>
-                    <Box mt={20}>
-                        <Flex>
-                            <Box m="10px 10px 10px 0">
+                    </GridItem>
+                    <GridItem>
+                        <Grid gutter="md">
+                            <GridItem>
                                 <Button variant="primary"
                                     onClick={() => {
                                         onHandleClose();
@@ -62,8 +55,8 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                                 >
                                     Migrate
                                 </Button>
-                            </Box>
-                            <Box m={10}>
+                            </GridItem>
+                            <GridItem>
                                 <Button
                                     key="cancel"
                                     variant="secondary"
@@ -71,11 +64,11 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                                 >
                                     Cancel
                                 </Button>
-                            </Box>
-                        </Flex>
-                    </Box>
+                            </GridItem>
+                        </Grid>
+                    </GridItem>
                 </form>
-            </Flex>
+            </Grid>
         </Modal>
     );
 };

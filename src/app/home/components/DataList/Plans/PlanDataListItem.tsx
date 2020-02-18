@@ -8,15 +8,17 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
-  TooltipPosition, 
-  Tooltip
+  TooltipPosition,
+  Tooltip,
+  Flex,
+  FlexItem
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
 
-interface IPlanDataListItemProps  {
+interface IPlanDataListItemProps {
   id: string;
   clusterList: any;
   storageList: any;
@@ -52,31 +54,30 @@ const PlanDataListItem = ({
           <DataListItemCells
             dataListCells={[
               <DataListCell id="plan-item" key="plans">
-                <div className="pf-l-flex">
-                  <div className="pf-l-flex__item">
+                <Flex>
+                  <FlexItem>
                     <span id="plans">Plans</span>
-                  </div>
-                  <div className="pf-l-flex__item">
+                  </FlexItem>
+                  <FlexItem>
                     <Badge isRead>{planCount}</Badge>
-                  </div>
-                </div>
-
+                  </FlexItem>
+                </Flex>
               </DataListCell>,
             ]}
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
 
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>
-              {addPlanDisabledObj.disabledText}
-            </div>}>
+            <Tooltip
+              position={TooltipPosition.top}
+              content={<div>
+                {addPlanDisabledObj.disabledText}
+              </div>}>
               <span>
-             <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
-               Add
+                <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
+                  Add
              </Button>
               </span>
-          </Tooltip>
+            </Tooltip>
             <WizardContainer
               planList={planList}
               clusterList={clusterList}

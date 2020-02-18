@@ -1,5 +1,6 @@
 import React from 'react';
 import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
+import { Flex, FlexItem } from '@patternfly/react-core';
 
 interface IProps {
   plan: any;
@@ -45,16 +46,14 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     return status;
   };
   return (
-    <React.Fragment>
-      <div className="pf-l-flex pf-m-nowrap">
-        <div className="pf-l-flex__item">
+      <Flex>
+        <FlexItem>
           <PlanStatusIcon plan={plan} />
-        </div>
-        <div className="pf-l-flex__item">
+        </FlexItem>
+        <FlexItem>
           {getStatus().text}
-        </div>
-      </div>
-    </React.Fragment>
+        </FlexItem>
+      </Flex>
   );
 };
 

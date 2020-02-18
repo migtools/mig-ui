@@ -9,6 +9,8 @@ import {
   DropdownItem,
   DropdownPosition,
   KebabToggle,
+  Flex,
+  FlexItem
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { useOpenModal } from '../../../duck/hooks';
@@ -76,11 +78,11 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
         <DataListItemCells
           dataListCells={[
             <DataListCell key={name} width={1}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
-                  <span id="simple-item1">{name}</span>
-                </div>
-              </div>
+              <Flex>
+                <FlexItem>
+                  <span id="name">{name}</span>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
             <DataListCell key="url" width={3}>
               {s3Url &&
@@ -90,21 +92,21 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
               }
             </DataListCell>,
             <DataListCell key="count" width={2}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
+              <Flex>
+                <FlexItem>
                   {associatedPlanCount} associated migration {planText}
-                </div>
-              </div>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
             <DataListCell key="connection" width={1}>
-              <div className="pf-l-flex">
-                <div className="pf-l-flex__item">
+              <Flex>
+                <FlexItem>
                   <StatusIcon isReady={storageStatus} />
-                </div>
-                <div className="pf-l-flex__item">
+                </FlexItem>
+                <FlexItem>
                   <span id="storage-status-text">{storageStatus ? `Connected` : `Connection Failed`}</span>
-                </div>
-              </div>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
           ]}
         />

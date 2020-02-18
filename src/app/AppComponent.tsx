@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
 import React from 'react';
 import HomeComponent from './home/HomeComponent';
 import LogsComponent from './logs/LogsComponent';
@@ -10,9 +8,6 @@ import RefreshRoute from './auth/RefreshRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
 import { ConnectedRouter } from 'connected-react-router';
-import { ThemeProvider } from 'emotion-theming';
-import theme from '../theme';
-import { Global } from '@emotion/core';
 import CertErrorComponent from './auth/CertErrorComponent';
 import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
@@ -23,6 +18,8 @@ import { ClusterActions } from './cluster/duck/actions';
 import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
 import AlertModal from './common/components/AlertModal';
+
+
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -143,30 +140,19 @@ const AppComponent: React.SFC<IProps> = ({
         }
       }}>
 
-        <ThemeProvider theme={theme}>
-          <ConnectedRouter history={history}>
-            <Switch>
-              <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-              <RefreshRoute exact path="/logs/:planId"
-                clusterList={clusterList}
-                isLoggedIn={isLoggedIn}
-                component={LogsComponent}
-              />
-              <Route path="/login" component={LoginComponent} />
-              <Route path="/cert-error" component={CertErrorComponent} />
-            </Switch>
-          </ConnectedRouter>
-        </ThemeProvider>
+        <ConnectedRouter history={history}>
+          <Switch>
+            <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+            <RefreshRoute exact path="/logs/:planId"
+              clusterList={clusterList}
+              isLoggedIn={isLoggedIn}
+              component={LogsComponent}
+            />
+            <Route path="/login" component={LoginComponent} />
+            <Route path="/cert-error" component={CertErrorComponent} />
+          </Switch>
+        </ConnectedRouter>
       </PollingContext.Provider>
-      <Global
-        styles={{
-          'body.noScroll': {
-            // Prevent scrolling; conditionally activate this
-            // in subcomponents when necessary ...
-            overflow: 'hidden',
-          },
-        }}
-      />
     </React.Fragment>
   );
 };

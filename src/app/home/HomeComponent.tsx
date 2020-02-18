@@ -115,9 +115,8 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
           </GridItem>
         </Grid>
       </PageSection>
-      {/* <PageSection>
-        <TODO: footer content
-      </PageSection> */}
+      <PageSection>
+      </PageSection>
     </Page>
   );
 };
