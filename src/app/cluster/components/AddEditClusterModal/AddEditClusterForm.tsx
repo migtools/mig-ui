@@ -102,7 +102,12 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
         )}
       </FormGroup>
-      <FormGroup label="Url" isRequired fieldId={urlKey}>
+      <FormGroup
+        label="URL"
+        isRequired
+        fieldId={urlKey}
+        helperText="URL of the cluster's API server"
+      >
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(urlKey)}
@@ -114,7 +119,12 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         />
         {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
       </FormGroup>
-      <FormGroup label="Service account token" isRequired fieldId={tokenKey}>
+      <FormGroup
+        label="Service account token"
+        isRequired
+        fieldId={tokenKey}
+        helperText="Copy and paste the cluster's service account token."
+      >
         <HideWrapper onClick={toggleHideToken}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
         </HideWrapper>
@@ -142,7 +152,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onBlur={handleBlur}
         />
       </FormGroup>
-      {values.isAzure &&
+      {values.isAzure && (
         <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
           <TextInput
             value={values.azureResourceGroup}
@@ -157,7 +167,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
           )}
         </FormGroup>
-      }
+      )}
       <FormGroup fieldId={requireSSLKey}>
         <Checkbox
           onChange={formikHandleChange}
@@ -183,7 +193,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(
-              currentStatus, errors, touched, valuesHaveUpdate(values, currentCluster)
+              currentStatus,
+              errors,
+              touched,
+              valuesHaveUpdate(values, currentCluster)
             )}
             style={{ marginRight: '10px' }}
           >
@@ -191,9 +204,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Add or edit your cluster details
-            </div>}>
+            content={<div>Add or edit your cluster details</div>}
+          >
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
             </span>
@@ -201,7 +213,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus, valuesHaveUpdate(values, currentCluster),
+              currentStatus,
+              valuesHaveUpdate(values, currentCluster)
             )}
             onClick={() => checkConnection(values.name)}
           >
@@ -209,9 +222,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Re-check your cluster's connection state
-            </div>}>
+            content={<div>Re-check your cluster's connection state</div>}
+          >
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
             </span>
@@ -225,13 +237,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             statusText={currentStatusFn(currentStatus)}
           />
         </GridItem>
-
       </Grid>
       <Grid gutter="md">
         <GridItem>
-          <Button
-            variant="primary"
-            onClick={onClose}>
+          <Button variant="primary" onClick={onClose}>
             Close
           </Button>
         </GridItem>
