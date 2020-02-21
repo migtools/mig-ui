@@ -13,7 +13,6 @@ import {
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
-import FormErrorDiv from '../../../common/components/FormErrorDiv';
 import HideWrapper from '../../../common/components/HideWrapper';
 import utils from '../../../common/duck/utils';
 import {
@@ -87,7 +86,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-      <FormGroup label="Cluster Name" isRequired fieldId={nameKey}>
+      <FormGroup
+        label="Cluster Name"
+        isRequired
+        fieldId={nameKey}
+        helperTextInvalid={touched.name && errors.name}
+        isValid={!(touched.name && errors.name)}
+      >
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -97,16 +102,16 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           type="text"
           id="cluster-name-input"
           isDisabled={currentStatus.mode === AddEditMode.Edit}
+          isValid={!(touched.name && errors.name)}
         />
-        {errors.name && touched.name && (
-          <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-        )}
       </FormGroup>
       <FormGroup
         label="URL"
         isRequired
         fieldId={urlKey}
         helperText="URL of the cluster's API server"
+        helperTextInvalid={touched.url && errors.url}
+        isValid={!(touched.url && errors.url)}
       >
         <TextInput
           onChange={formikHandleChange}
@@ -116,14 +121,16 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           name={urlKey}
           type="text"
           id="url-input"
+          isValid={!(touched.url && errors.url)}
         />
-        {errors.url && touched.url && <FormErrorDiv id="feedback-url">{errors.url}</FormErrorDiv>}
       </FormGroup>
       <FormGroup
         label="Service account token"
         isRequired
         fieldId={tokenKey}
         helperText="Copy and paste the cluster's service account token."
+        helperTextInvalid={touched.token && errors.token}
+        isValid={!(touched.token && errors.token)}
       >
         <HideWrapper onClick={toggleHideToken}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
@@ -136,10 +143,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           name={tokenKey}
           id="token-input"
           type={isTokenHidden ? 'password' : 'text'}
+          isValid={!(touched.token && errors.token)}
         />
-        {errors.token && touched.token && (
-          <FormErrorDiv id="feedback-token">{errors.token}</FormErrorDiv>
-        )}
       </FormGroup>
       <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
         <Checkbox
@@ -153,7 +158,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         />
       </FormGroup>
       {values.isAzure && (
-        <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
+        <FormGroup
+          label="Azure resource group"
+          isRequired
+          fieldId={azureResourceGroupKey}
+          helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
+          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+        >
           <TextInput
             value={values.azureResourceGroup}
             onChange={formikHandleChange}
@@ -162,10 +173,8 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             name={azureResourceGroupKey}
             id="azure-token-input"
             type="text"
+            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
           />
-          {errors.azureResourceGroup && touched.azureResourceGroup && (
-            <FormErrorDiv id="feedback-token">{errors.azureResourceGroup}</FormErrorDiv>
-          )}
         </FormGroup>
       )}
       <FormGroup fieldId={requireSSLKey}>
@@ -310,7 +319,7 @@ const AddEditClusterForm: any = withFormik({
     }
 
     if (values.isAzure && !values.azureResourceGroup) {
-      errors.azureResourceGroupi = 'Required';
+      errors.azureResourceGroup = 'Required';
     }
 
     return errors;
