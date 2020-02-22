@@ -86,6 +86,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'plan'
     };
     startPlanPolling(planPollParams);
   };
@@ -98,6 +99,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'cluster'
     };
     startClusterPolling(clusterPollParams);
   };
@@ -110,6 +112,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'storage'
     };
     startStoragePolling(storagePollParams);
   };
@@ -120,7 +123,26 @@ const AppComponent: React.SFC<IProps> = ({
       <AlertModal alertMessage={progressMessage} alertType="info" />
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
-
+      <Modal
+        title="Modal Header"
+        isOpen={isModalOpen}
+        onClose={this.handleModalToggle}
+        actions={[
+          <Button key="confirm" variant="primary" onClick={this.handleModalToggle}>
+            Confirm
+            </Button>,
+          <Button key="cancel" variant="link" onClick={this.handleModalToggle}>
+            Cancel
+            </Button>
+        ]}
+        isFooterLeftAligned
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+        est laborum.
+        </Modal>
       <PollingContext.Provider value={{
         startDefaultClusterPolling: () => startDefaultClusterPolling(),
         startDefaultStoragePolling: () => startDefaultStoragePolling(),

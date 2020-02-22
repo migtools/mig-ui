@@ -23,8 +23,8 @@ function* poll(action) {
       if (!shouldContinue) {
         throw new Error('Error while fetching data.');
       }
-    } catch (e) {
-      throw new Error(e);
+    } catch (err) {
+      throw err;
     }
     yield delay(params.delay);
   }

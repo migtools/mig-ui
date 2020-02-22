@@ -43,6 +43,7 @@ function* fetchPlansGenerator() {
     const groupedPlans = yield planUtils.groupPlans(planList, refs);
     return { updatedPlans: groupedPlans, isSuccessful: true };
   } catch (e) {
+    console.log('throw error');
     put(AlertActions.alertErrorTimeout('Failed to fetch migration plans. '));
 
     return { e, isSuccessful: false };
