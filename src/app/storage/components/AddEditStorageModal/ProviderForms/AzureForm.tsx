@@ -27,7 +27,7 @@ import utils from '../../../../common/duck/utils';
 /* 
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
-const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/fusor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
+const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/konveyor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
