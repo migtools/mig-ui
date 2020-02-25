@@ -6,12 +6,10 @@ import {
     FormGroup,
     Tooltip,
     TooltipPosition,
-    TextArea,
     Checkbox,
     Grid,
     GridItem
 } from '@patternfly/react-core';
-import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
 import {
@@ -135,7 +133,13 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Replication repository name" isRequired fieldId={nameKey}>
+            <FormGroup
+                label="Replication repository name"
+                isRequired
+                fieldId={nameKey}
+                helperTextInvalid={touched.name && errors.name}
+                isValid={!(touched.name && errors.name)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -145,12 +149,16 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     type="text"
                     id="storage-name-input"
                     isDisabled={currentStatus.mode === AddEditMode.Edit}
+                    isValid={!(touched.name && errors.name)}
                 />
-                {errors.name && touched.name && (
-                    <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="S3 bucket name" isRequired fieldId={awsBucketNameKey}>
+            <FormGroup
+                label="S3 bucket name"
+                isRequired
+                fieldId={awsBucketNameKey}
+                helperTextInvalid={touched.awsBucketName && errors.awsBucketName}
+                isValid={!(touched.awsBucketName && errors.awsBucketName)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(awsBucketNameKey)}
@@ -159,12 +167,15 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={awsBucketNameKey}
                     type="text"
                     id="storage-bucket-name-input"
+                    isValid={!(touched.awsBucketName && errors.awsBucketName)}
                 />
-                {errors.awsBucketName && touched.awsBucketName && (
-                    <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="S3 bucket region" fieldId={awsBucketRegionKey}>
+            <FormGroup
+                label="S3 bucket region"
+                fieldId={awsBucketRegionKey}
+                helperTextInvalid={touched.awsBucketRegion && errors.awsBucketRegion}
+                isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(awsBucketRegionKey)}
@@ -173,12 +184,15 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={awsBucketRegionKey}
                     type="text"
                     id="storage-bucket-region-input"
+                    isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
                 />
-                {errors.awsBucketRegion && touched.awsBucketRegion && (
-                    <FormErrorDiv id="feedback-bucket-name">{errors.awsBucketName}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="S3 endpoint" fieldId={s3UrlKey}>
+            <FormGroup
+                label="S3 endpoint"
+                fieldId={s3UrlKey}
+                helperTextInvalid={touched.s3Url && errors.s3Url}
+                isValid={!(touched.s3Url && errors.s3Url)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(s3UrlKey)}
@@ -187,12 +201,16 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={s3UrlKey}
                     type="text"
                     id="storage-s3-url-input"
+                    isValid={!(touched.s3Url && errors.s3Url)}
                 />
-                {errors.s3Url && touched.s3Url && (
-                    <FormErrorDiv id="feedback-s3-url">{errors.s3Url}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="S3 provider access key" isRequired fieldId={accessKeyKey}>
+            <FormGroup
+                label="S3 provider access key"
+                isRequired
+                fieldId={accessKeyKey}
+                helperTextInvalid={touched.accessKey && errors.accessKey}
+                isValid={!(touched.accessKey && errors.accessKey)}
+            >
                 <HideWrapper onClick={handleAccessKeyHiddenToggle}>
                     <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
                 </HideWrapper>
@@ -204,12 +222,16 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={accessKeyKey}
                     type={isAccessKeyHidden ? 'password' : 'text'}
                     id="storage-access-key-input"
+                    isValid={!(touched.accessKey && errors.accessKey)}
                 />
-                {errors.accessKey && touched.accessKey && (
-                    <FormErrorDiv id="feedback-access-key">{errors.accessKey}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="S3 provider secret access key" isRequired fieldId={secretKey}>
+            <FormGroup
+                label="S3 provider secret access key"
+                isRequired
+                fieldId={secretKey}
+                helperTextInvalid={touched.secret && errors.secret}
+                isValid={!(touched.secret && errors.secret)}
+            >
                 <HideWrapper onClick={handleSecretHiddenToggle}>
                     <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
                 </HideWrapper>
@@ -221,10 +243,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={secretKey}
                     type={isSecretHidden ? 'password' : 'text'}
                     id="storage-secret-input"
+                    isValid={!(touched.secret && errors.secret)}
                 />
-                {errors.secret && touched.secret && (
-                    <FormErrorDiv id="feedback-secret-key">{errors.secret}</FormErrorDiv>
-                )}
             </FormGroup>
             <FormGroup fieldId={requireSSLKey}>
                 <Checkbox

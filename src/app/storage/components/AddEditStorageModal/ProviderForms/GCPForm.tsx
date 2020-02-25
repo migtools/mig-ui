@@ -9,7 +9,6 @@ import {
     Grid,
     GridItem
 } from '@patternfly/react-core';
-import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
 import {
@@ -97,7 +96,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Repository name" isRequired fieldId={nameKey}>
+            <FormGroup
+                label="Repository name"
+                isRequired
+                fieldId={nameKey}
+                helperTextInvalid={touched.name && errors.name}
+                isValid={!(touched.name && errors.name)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -107,12 +112,16 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     type="text"
                     id="storage-name-input"
                     isDisabled={currentStatus.mode === AddEditMode.Edit}
+                    isValid={!(touched.name && errors.name)}
                 />
-                {errors.name && touched.name && (
-                    <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="GCP bucket name" isRequired fieldId={gcpBucketKey}>
+            <FormGroup
+                label="GCP bucket name"
+                isRequired
+                fieldId={gcpBucketKey}
+                helperTextInvalid={touched.gcpBucket && errors.gcpBucket}
+                isValid={!(touched.gcpBucket && errors.gcpBucket)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(gcpBucketKey)}
@@ -121,12 +130,16 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={gcpBucketKey}
                     type="text"
                     id="storage-bucket-name-input"
+                    isValid={!(touched.gcpBucket && errors.gcpBucket)}
                 />
-                {errors.gcpBucket && touched.gcpBucket && (
-                    <FormErrorDiv id="feedback-bucket-name">{errors.gcpBucket}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="GCP credential JSON blob" isRequired fieldId={gcpBlobKey}>
+            <FormGroup
+                label="GCP credential JSON blob"
+                isRequired
+                fieldId={gcpBlobKey}
+                helperTextInvalid={touched.gcpBlob && errors.gcpBlob}
+                isValid={!(touched.gcpBlob && errors.gcpBlob)}
+            >
                 <HideWrapper onClick={handleBlobHiddenToggle}>
                     <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
                 </HideWrapper>
@@ -138,10 +151,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={gcpBlobKey}
                     type={isBlobHidden ? 'password' : 'text'}
                     id="storage-blob-input"
+                    isValid={!(touched.gcpBlob && errors.gcpBlob)}
                 />
-                {errors.gcpBlob && touched.gcpBlob && (
-                    <FormErrorDiv id="feedback-access-key">{errors.gcpBlob}</FormErrorDiv>
-                )}
             </FormGroup>
             <Grid gutter="md">
                 <GridItem>
@@ -225,11 +236,11 @@ const GCPForm: any = withFormik({
 
         if (!values.gcpBucket) {
             errors.gcpBucket = 'Required';
-        }
-
-        const gcpBucketNameError = storageUtils.testS3Name(values.gcpBucket);
-        if (gcpBucketNameError !== '') {
-            errors.gcpBucket = gcpBucketNameError;
+        } else {
+            const gcpBucketNameError = storageUtils.testS3Name(values.gcpBucket);
+            if (gcpBucketNameError !== '') {
+                errors.gcpBucket = gcpBucketNameError;
+            }
         }
 
         if (!values.gcpBlob) {
