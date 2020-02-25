@@ -292,7 +292,7 @@ const AddEditClusterForm: any = withFormik({
       values.token = initialClusterValues.clusterSvcToken || '';
       values.isAzure = initialClusterValues.clusterIsAzure || false;
       values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || null;
-      values.requireSSL = initialClusterValues.clusterRequireSSL || true;
+      values.requireSSL = initialClusterValues.clusterRequireSSL;
       values.caBundle = initialClusterValues.clusterCABundle || null;
     }
 
