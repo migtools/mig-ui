@@ -337,7 +337,7 @@ const AzureForm: any = withFormik({
         }
 
         if (!values.azureBlob) {
-            errors.azureBlop = 'Required';
+            errors.azureBlob = 'Required';
         }
 
         return errors;
