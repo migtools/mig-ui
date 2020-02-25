@@ -1,6 +1,6 @@
 # mig-ui
 
-[![Build Status](https://travis-ci.org/fusor/mig-ui.svg?branch=master)](https://travis-ci.org/fusor/mig-ui)
+[![Build Status](https://travis-ci.org/konveyor/mig-ui.svg?branch=master)](https://travis-ci.org/konveyor/mig-ui)
 
 ## Quick-start
 
@@ -16,7 +16,7 @@ https://yarnpkg.com/en/docs/install#centos-stable
 ### UI development server
 
 ```bash
-git clone https://github.com/fusor/mig-ui # clone the project
+git clone https://github.com/konveyor/mig-ui # clone the project
 cd mig-ui # navigate into the project directory
 yarn # install  dependencies
 yarn build # build the project
