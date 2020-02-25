@@ -236,11 +236,11 @@ const GCPForm: any = withFormik({
 
         if (!values.gcpBucket) {
             errors.gcpBucket = 'Required';
-        }
-
-        const gcpBucketNameError = storageUtils.testS3Name(values.gcpBucket);
-        if (gcpBucketNameError !== '') {
-            errors.gcpBucket = gcpBucketNameError;
+        } else {
+            const gcpBucketNameError = storageUtils.testS3Name(values.gcpBucket);
+            if (gcpBucketNameError !== '') {
+                errors.gcpBucket = gcpBucketNameError;
+            }
         }
 
         if (!values.gcpBlob) {
