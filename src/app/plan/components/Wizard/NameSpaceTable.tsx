@@ -170,7 +170,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                       fontWeight: 600,
                     }}
                   >
-                    Number of Services
+                    Number of services
                     </div>
                 ),
                 accessor: 'serviceCount',
