@@ -163,8 +163,8 @@ const VolumesTable = (props): any => {
       </Bullseye>
     );
   }
-  const { volumesTableStyle}  =  styles
-  const tableClass = classNames('-striped', '-highlight', {volumesTableStyle})
+  const { volumesTableStyle } = styles
+  const tableClass = classNames('-striped', '-highlight', { volumesTableStyle })
   return (
     <ReactTable
       className={tableClass}
@@ -286,11 +286,11 @@ const VolumesTable = (props): any => {
           resizable: false,
           Cell: row => {
             const matchingPVResource = pvResourceList.find(
-              pvResource => pvResource.metadata.name === row.original.name
+              pvResource => pvResource.name === row.original.name
             );
             return (
-              <Popover 
-                className={styles.popoverStyle} 
+              <Popover
+                className={styles.popoverStyle}
                 position={PopoverPosition.bottom}
                 bodyContent={
                   <React.Fragment>

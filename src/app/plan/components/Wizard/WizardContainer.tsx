@@ -135,7 +135,7 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    // addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
+    addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
     fetchNamespacesRequest: (clusterName) => dispatch(PlanActions.namespaceFetchRequest(clusterName)),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName: string) => dispatch(PlanActions.startPlanStatusPolling(planName)),

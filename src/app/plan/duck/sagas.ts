@@ -29,9 +29,6 @@ function* namespaceFetchRequest(action) {
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
     const res = yield discoveryClient.get(namespaces);
-    // const namespaces = res.data.resources.map(namespaceName => ({
-    //   name: namespaceName
-    // }));
     const namespaceResourceList = res.data.resources;
     yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
   } catch (err) {
