@@ -14,11 +14,38 @@ import {
   MigResourceKind
 } from '../../../client/resources';
 import Q from 'q';
-import { LogActions } from '../../logs/duck/actions';
 import utils from '../../common/duck/utils';
+import { NamespaceDiscovery } from '../../../client/resources/discovery';
+import { DiscoveryResource } from '../../../client/resources/common';
+import { AuthActions } from '../../auth/duck/actions';
+import { push } from 'connected-react-router';
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
+
+function* namespaceFetchRequest(action) {
+  const state = yield select();
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
+  try {
+    const res = yield discoveryClient.get(namespaces);
+    // const namespaces = res.data.resources.map(namespaceName => ({
+    //   name: namespaceName
+    // }));
+    const namespaceResourceList = res.data.resources;
+    yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
+  } catch (err) {
+    if (utils.isTimeoutError(err)) {
+      yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+    } else if (utils.isSelfSignedCertError(err)) {
+      const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
+      yield put(AuthActions.certErrorOccurred(failedUrl));
+      yield put(push('/cert-error'));
+    }
+    yield put(PlanActions.namespaceFetchFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
+  }
+}
 
 function* getPlanSaga(planName) {
   const state = yield select();
@@ -398,6 +425,10 @@ function* watchGetPVResourcesRequest() {
   yield takeLatest(PlanActionTypes.GET_PV_RESOURCES_REQUEST, getPVResourcesRequest);
 }
 
+function* watchNamespaceFetchRequest() {
+  yield takeLatest(PlanActionTypes.NAMESPACE_FETCH_REQUEST, namespaceFetchRequest);
+}
+
 function* watchPlanClose() {
   yield takeEvery(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseAndCheck);
 }
@@ -408,5 +439,6 @@ export default {
   watchPlanClose,
   watchPlanStatus,
   watchGetPVResourcesRequest,
+  watchNamespaceFetchRequest,
   watchPVUpdate
 };
