@@ -38,6 +38,7 @@ function* namespaceFetchRequest(action) {
       const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
       yield put(AuthActions.certErrorOccurred(failedUrl));
       yield put(push('/cert-error'));
+      return;
     }
     yield put(PlanActions.namespaceFetchFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
