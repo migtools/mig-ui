@@ -29,13 +29,13 @@ const ResourceSelectForm = props => {
     setFieldValue,
     setFieldTouched,
     isFetchingNamespaceList,
-    fetchNamespacesForCluster,
+    fetchNamespacesRequest,
     sourceClusterNamespaces,
     isEdit
   } = props;
   useEffect(() => {
     if (isEdit) {
-      fetchNamespacesForCluster(values.sourceCluster);
+      fetchNamespacesRequest(values.sourceCluster);
     }
   }, []);
 
@@ -147,7 +147,7 @@ const ResourceSelectForm = props => {
       value: matchingCluster.MigCluster.metadata.name,
     });
     setFieldTouched('sourceCluster');
-    fetchNamespacesForCluster(matchingCluster.MigCluster.metadata.name);
+    fetchNamespacesRequest(matchingCluster.MigCluster.metadata.name);
   };
 
   const handleTargetChange = option => {
