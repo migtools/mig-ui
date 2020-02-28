@@ -11,7 +11,6 @@ import {
     Grid,
     GridItem
 } from '@patternfly/react-core';
-import FormErrorDiv from '../../../../common/components/FormErrorDiv';
 import {
     AddEditMode,
     addEditStatusText,
@@ -27,7 +26,7 @@ import utils from '../../../../common/duck/utils';
 /* 
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
-const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/fusor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
+const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/konveyor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -102,7 +101,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
     return (
         <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
-            <FormGroup label="Repository name" isRequired fieldId={nameKey}>
+            <FormGroup
+                label="Repository name"
+                isRequired
+                fieldId={nameKey}
+                helperTextInvalid={touched.name && errors.name}
+                isValid={!(touched.name && errors.name)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(nameKey)}
@@ -112,12 +117,16 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     type="text"
                     id="storage-name-input"
                     isDisabled={currentStatus.mode === AddEditMode.Edit}
+                    isValid={!(touched.name && errors.name)}
                 />
-                {errors.name && touched.name && (
-                    <FormErrorDiv id="feedback-name">{errors.name}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="Azure resource group" isRequired fieldId={azureResourceGroupKey}>
+            <FormGroup
+                label="Azure resource group"
+                isRequired
+                fieldId={azureResourceGroupKey}
+                helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
+                isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureResourceGroupKey)}
@@ -126,12 +135,16 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={azureResourceGroupKey}
                     type="text"
                     id="azure-resource-group-input"
+                    isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
                 />
-                {errors.azureResourceGroup && touched.azureResourceGroup && (
-                    <FormErrorDiv id="azure-resource-group-input-error">{errors.azureResourceGroup}</FormErrorDiv>
-                )}
             </FormGroup>
-            <FormGroup label="Azure storage account name" isRequired fieldId={azureStorageAccountKey}>
+            <FormGroup
+                label="Azure storage account name"
+                isRequired
+                fieldId={azureStorageAccountKey}
+                helperTextInvalid={touched.azureStorageAccount && errors.azureStorageAccount}
+                isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
+            >
                 <TextInput
                     onChange={formikHandleChange}
                     onInput={formikSetFieldTouched(azureStorageAccountKey)}
@@ -140,15 +153,15 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={azureStorageAccountKey}
                     type="text"
                     id="azure-storage-input"
+                    isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
                 />
-                {errors.azureStorageAccount && touched.azureStorageAccount && (
-                    <FormErrorDiv id="azure-storage-input-error">{errors.azureStorageAccount}</FormErrorDiv>
-                )}
             </FormGroup>
             <FormGroup
                 label="Azure credentials (Copy and paste .INI file contents here)"
                 isRequired
                 fieldId={azureBlobKey}
+                helperTextInvalid={touched.azureBlob && errors.azureBlob}
+                isValid={!(touched.azureBlob && errors.azureBlob)}
             >
                 <TextArea
                     onChange={formikHandleChange}
@@ -158,10 +171,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
                     name={azureBlobKey}
                     type="text"
                     id="storage-blob-input"
+                    isValid={!(touched.azureBlob && errors.azureBlob)}
                 />
-                {errors.azureBlob && touched.azureBlob && (
-                    <FormErrorDiv id="feedback-access-key">{errors.azureBlob}</FormErrorDiv>
-                )}
             </FormGroup>
             <Grid gutter="md">
                 <GridItem>
@@ -326,7 +337,7 @@ const AzureForm: any = withFormik({
         }
 
         if (!values.azureBlob) {
-            errors.azureBlop = 'Required';
+            errors.azureBlob = 'Required';
         }
 
         return errors;

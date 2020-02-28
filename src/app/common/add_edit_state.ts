@@ -52,10 +52,11 @@ export const AddEditConditionReady = 'Ready';
 const addEditTimeoutSeconds = 30;
 export const AddEditWatchTimeout = addEditTimeoutSeconds * 1000;
 
-const addEditPollIntervalSeconds = 4;
+const addEditPollIntervalSeconds = 6;
 export const AddEditWatchTimeoutPollInterval = addEditPollIntervalSeconds * 1000;
 
-const addEditDebounceWaitSeconds = 3;
+const addEditDebounceWaitSeconds = 6;
+
 export const AddEditDebounceWait = addEditDebounceWaitSeconds * 1000;
 
 export const addEditStatusText = (componentType: string) => (status: IAddEditStatus) => {
