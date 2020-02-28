@@ -100,6 +100,7 @@ export const namespaceFetchRequest =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.namespaceFetchRequest>) => {
     return {
       ...state,
+      clusterName: action.clusterName,
       sourceClusterNamespaces: [],
       isFetchingNamespaceList: true,
     };

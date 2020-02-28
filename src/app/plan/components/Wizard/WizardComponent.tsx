@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Wizard} from '@patternfly/react-core';
+import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
@@ -35,7 +35,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isFetchingNamespaceList,
     isPVError,
     isPollingStatus,
-    fetchNamespacesForCluster,
+    fetchNamespacesRequest,
     sourceClusterNamespaces,
     getPVResourcesRequest,
     startPlanStatusPolling,
@@ -109,7 +109,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             clusterList={clusterList}
             storageList={storageList}
             isFetchingNamespaceList={isFetchingNamespaceList}
-            fetchNamespacesForCluster={fetchNamespacesForCluster}
+            fetchNamespacesRequest={fetchNamespacesRequest}
             sourceClusterNamespaces={sourceClusterNamespaces}
             isEdit={isEdit}
           />
