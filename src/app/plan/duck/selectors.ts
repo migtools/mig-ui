@@ -224,6 +224,18 @@ const getPlansWithStatus = createSelector(
             return status;
           }
 
+          // For critical migrations, show red 100% progress
+          const criticalCondition = migration.status.conditions.find(c => {
+            return c.category === 'Critical';
+          });
+          if (criticalCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = 'Failed';
+            status.end = "--"
+            return status;
+          }
+
           // For failed migrations, show red 100% progress
           const failedCondition = migration.status.conditions.find(c => {
             return c.type === 'Failed';
@@ -232,6 +244,7 @@ const getPlansWithStatus = createSelector(
             status.progress = 100;
             status.isFailed = true;
             status.stepName = failedCondition.reason;
+            status.end = "--"
             return status;
           }
 
