@@ -144,10 +144,10 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                       fontWeight: 600,
                     }}
                   >
-                    Display Name
+                    Number of pods
                     </div>
                 ),
-                accessor: 'displayName',
+                accessor: 'podCount',
               },
               {
                 Header: () => (
@@ -157,10 +157,10 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                       fontWeight: 600,
                     }}
                   >
-                    Number of Pods
+                    Number of PV claims
                     </div>
                 ),
-                accessor: 'pods',
+                accessor: 'pvcCount',
               },
               {
                 Header: () => (
@@ -170,10 +170,10 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                       fontWeight: 600,
                     }}
                   >
-                    Number of Services
+                    Number of services
                     </div>
                 ),
-                accessor: 'services',
+                accessor: 'serviceCount',
               },
             ]}
             defaultPageSize={5}

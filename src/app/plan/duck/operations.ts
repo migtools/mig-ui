@@ -228,38 +228,10 @@ const fetchPlans = () => {
   };
 };
 
-const fetchNamespacesForCluster = clusterName => {
-  return async (dispatch, getState) => {
-    const state = getState();
-    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-    const namespaces: DiscoveryResource = new NamespaceDiscovery(clusterName);
-    try {
-      dispatch(PlanActions.namespaceFetchRequest());
-      const res = await discoveryClient.get(namespaces);
-      const namespaceNames = res.data.map(namespaceName => ({
-        name: namespaceName
-      }));
-      dispatch(PlanActions.namespaceFetchSuccess(namespaceNames));
-    } catch (err) {
-      if (utils.isTimeoutError(err)) {
-        dispatch(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
-      } else if (utils.isSelfSignedCertError(err)) {
-        const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
-        utils.handleSelfSignedCertError(failedUrl, dispatch);
-        return;
-      }
-      dispatch(PlanActions.namespaceFetchFailure(err));
-      dispatch(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
-    }
-  };
-};
-
-
 export default {
   fetchPlans,
   addPlan,
   removePlan,
-  fetchNamespacesForCluster,
   runStage,
   runMigration,
   fetchMigMigrationsRefs,
