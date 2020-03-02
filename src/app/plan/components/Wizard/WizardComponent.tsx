@@ -256,6 +256,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}
+          onSubmit={event => event.preventDefault()}
         />
       )}
     </React.Fragment>
