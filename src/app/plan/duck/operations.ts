@@ -13,10 +13,6 @@ import {
 import planUtils from './utils';
 import { select, put } from 'redux-saga/effects';
 import { PollingActions } from '../../common/duck/actions';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
-import { NamespaceDiscovery } from '../../../client/resources/discovery';
-import { DiscoveryResource } from '../../../client/resources/common';
-import utils from '../../common/duck/utils';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -44,7 +40,8 @@ function* fetchPlansGenerator() {
     return { updatedPlans: groupedPlans, isSuccessful: true };
   } catch (e) {
     console.log('throw error');
-    put(AlertActions.alertErrorTimeout('Failed to fetch migration plans. '));
+    // put(AlertActions.alertErrorTimeout('Failed to fetch migration plans. '));
+    put(AlertActions.alertErrorModal('Failed to fetch migration plans. '));
 
     return { e, isSuccessful: false };
   }

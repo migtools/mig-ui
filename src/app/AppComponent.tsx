@@ -18,12 +18,14 @@ import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
 import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
+import ErrorModal from './common/components/ErrorModal';
 
 
 
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
+  errorModalMessage: any;
   successMessage: any;
   progressMessage: any;
   startPlanPolling: (params) => void;
@@ -40,6 +42,7 @@ interface IProps {
 
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
+  errorModalMessage,
   successMessage,
   progressMessage,
   isLoggedIn,
@@ -123,26 +126,6 @@ const AppComponent: React.SFC<IProps> = ({
       <AlertModal alertMessage={progressMessage} alertType="info" />
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
-      <Modal
-        title="Modal Header"
-        isOpen={isModalOpen}
-        onClose={this.handleModalToggle}
-        actions={[
-          <Button key="confirm" variant="primary" onClick={this.handleModalToggle}>
-            Confirm
-            </Button>,
-          <Button key="cancel" variant="link" onClick={this.handleModalToggle}>
-            Cancel
-            </Button>
-        ]}
-        isFooterLeftAligned
-      >
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-        est laborum.
-        </Modal>
       <PollingContext.Provider value={{
         startDefaultClusterPolling: () => startDefaultClusterPolling(),
         startDefaultStoragePolling: () => startDefaultStoragePolling(),
@@ -161,6 +144,7 @@ const AppComponent: React.SFC<IProps> = ({
           stopPlanPolling();
         }
       }}>
+        <ErrorModal errorMessage={errorModalMessage} isOpen />
 
         <ConnectedRouter history={history}>
           <Switch>
@@ -183,6 +167,7 @@ export default connect(
   state => ({
     isLoggedIn: !!state.auth.user,
     errorMessage: state.common.errorText,
+    errorModalMessage: state.common.errorModalText,
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
     clusterList: state.cluster.clusterList

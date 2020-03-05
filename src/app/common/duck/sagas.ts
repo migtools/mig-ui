@@ -5,9 +5,9 @@ import {
   PollingActionTypes,
   AlertActionTypes
 } from '../../common/duck/actions';
-import { PlanActionTypes } from '../../plan/duck/actions';
-import { StorageActionTypes } from '../../storage/duck/actions';
-import { ClusterActionTypes } from '../../cluster/duck/actions';
+import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
+import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
+import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -19,9 +19,15 @@ function* poll(action) {
     try {
       const response = yield call(params.asyncFetch);
       const shouldContinue = params.callback(response);
+      console.log('name', params.pollName, 'params', params)
 
       if (!shouldContinue) {
-        throw new Error('Error while fetching data.');
+        yield put(AlertActions.alertErrorModal(params.pollName))
+        yield put(PlanActions.stopPlanPolling());
+        yield put(ClusterActions.stopClusterPolling());
+        yield put(StorageActions.stopStoragePolling());
+
+        // throw new Error('Error while fetching data.');
       }
     } catch (err) {
       throw err;
