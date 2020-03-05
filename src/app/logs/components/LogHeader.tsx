@@ -60,7 +60,7 @@ const LogHeader: FunctionComponent<IProps> = ({
             <TextContent >
               <Text component={TextVariants.p}>
                 Select cluster:
-            </Text>
+              </Text>
             </TextContent>
           </GridItem>
           <GridItem span={4} >
@@ -89,7 +89,7 @@ const LogHeader: FunctionComponent<IProps> = ({
             <TextContent >
               <Text component={TextVariants.p}>
                 Select Pod Source:
-            </Text>
+              </Text>
 
             </TextContent>
 

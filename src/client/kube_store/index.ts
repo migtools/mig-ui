@@ -35,7 +35,7 @@ export class KubeStore {
       alert('Unable to find expected mocked data for clusterName "' + this.clusterName + '"');
       return {};
     }
-   return d['clusters'][this.clusterName]; 
+    return d['clusters'][this.clusterName]; 
   }
 
   private ensureDataLoaded() {

@@ -132,7 +132,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     }}
                   >
                     Name
-                    </div>
+                  </div>
                 ),
                 accessor: 'name',
               },
@@ -145,7 +145,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     }}
                   >
                     Number of pods
-                    </div>
+                  </div>
                 ),
                 accessor: 'podCount',
               },
@@ -158,7 +158,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     }}
                   >
                     Number of PV claims
-                    </div>
+                  </div>
                 ),
                 accessor: 'pvcCount',
               },
@@ -171,7 +171,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
                     }}
                   >
                     Number of services
-                    </div>
+                  </div>
                 ),
                 accessor: 'serviceCount',
               },

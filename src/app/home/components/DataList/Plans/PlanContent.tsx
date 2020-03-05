@@ -214,11 +214,11 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
           </DataListItem>
         </DataList>
       ) : (
-          <PlanEmptyState
-            toggleOpen={toggleWizardOpen}
-            addPlanDisabledObj={addPlanDisabledObj}
-          />
-        )}
+        <PlanEmptyState
+          toggleOpen={toggleWizardOpen}
+          addPlanDisabledObj={addPlanDisabledObj}
+        />
+      )}
     </DataListContent>
   );
 };
