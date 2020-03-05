@@ -9,6 +9,34 @@ const getMigMeta = state => state.migMeta;
 
 const lockedPlansSelector = state => state.plan.lockedPlanList;
 
+const sourceClusterNamespacesSelector = state => state.plan.sourceClusterNamespaces;
+
+const getFilteredNamespaces = createSelector(
+  [sourceClusterNamespacesSelector],
+  (sourceClusterNamespaces) => {
+
+    const filteredSourceClusterNamespaces = sourceClusterNamespaces.filter(ns => {
+      const rejectedRegex = [
+        RegExp('^kube-.*', 'i'),
+        RegExp('^openshift-.*', 'i'),
+        RegExp('^openshift$', 'i'),
+        RegExp('^velero$', 'i'),
+        RegExp('^default$', 'i'),
+        RegExp('^ocp-workshop$', 'i'),
+        RegExp('^management-infra$', 'i'),
+        RegExp('^operator-lifecycle-manager$', 'i'),
+      ];
+
+      // Short circuit the regex check if any of them match a rejected regex and filter it out
+      return !rejectedRegex.some(rx => rx.test(ns.name));
+    });
+
+    return filteredSourceClusterNamespaces
+
+  })
+
+
+
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
@@ -297,4 +325,5 @@ export default {
   getPlansWithStatus,
   getMigMeta,
   getCounts,
+  getFilteredNamespaces
 };
