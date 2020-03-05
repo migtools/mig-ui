@@ -27,19 +27,19 @@ const AddEditStorageModal = ({
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
-      case AddEditMode.Edit: {
-        props.updateStorage(storageValues);
-        break;
-      }
-      case AddEditMode.Add: {
-        props.addStorage(storageValues);
-        storageContext.setCurrentStorage(storageValues.name);
-        break;
-      }
-      default: {
-        console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
-      }
+    case AddEditMode.Edit: {
+      props.updateStorage(storageValues);
+      break;
+    }
+    case AddEditMode.Add: {
+      props.addStorage(storageValues);
+      storageContext.setCurrentStorage(storageValues.name);
+      break;
+    }
+    default: {
+      console.warn(
+        `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
+    }
     }
   };
 
