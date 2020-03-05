@@ -45,11 +45,11 @@ const StorageDataListItem = ({
                 <DataListCell id="storage-item" key="storage">
                   <Flex>
                     <FlexItem>
-                        <span id="repos">Replication repositories</span>
+                      <span id="repos">Replication repositories</span>
                     </FlexItem>
                     <FlexItem>
                       <Badge isRead>{storageCount}</Badge>
-                      </FlexItem>
+                    </FlexItem>
                   </Flex>
 
                 </DataListCell>,
@@ -58,7 +58,7 @@ const StorageDataListItem = ({
             <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
               <Button onClick={() => setIsModalOpen(true)} variant="secondary" id="add-repo-btn">
                 Add
-            </Button>
+              </Button>
             </DataListAction>
 
           </DataListItemRow>

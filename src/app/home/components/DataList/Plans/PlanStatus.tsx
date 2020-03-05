@@ -46,14 +46,14 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     return status;
   };
   return (
-      <Flex>
-        <FlexItem>
-          <PlanStatusIcon plan={plan} />
-        </FlexItem>
-        <FlexItem>
-          {getStatus().text}
-        </FlexItem>
-      </Flex>
+    <Flex>
+      <FlexItem>
+        <PlanStatusIcon plan={plan} />
+      </FlexItem>
+      <FlexItem>
+        {getStatus().text}
+      </FlexItem>
+    </Flex>
   );
 };
 

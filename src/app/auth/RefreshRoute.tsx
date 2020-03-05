@@ -8,26 +8,26 @@ interface IProps {
 }
 
 const RefreshRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
-    component: Component,
-    isLoggedIn,
-    clusterList,
-    ...rest
+  component: Component,
+  isLoggedIn,
+  clusterList,
+  ...rest
 }) => (
-        <Route
-            {...rest}
-            render={props =>
-                (isLoggedIn && clusterList.length > 0) ? (
-                    <Component {...props} />
-                ) : (
-                        <Redirect
-                            to={{
-                                pathname: '/',
-                            }}
-                        />
-                    )
-            }
+  <Route
+    {...rest}
+    render={props =>
+      (isLoggedIn && clusterList.length > 0) ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: '/',
+          }}
         />
-    );
+      )
+    }
+  />
+);
 
 export default RefreshRoute;
 

@@ -36,16 +36,16 @@ const StorageContent = ({
           })}
         </DataList>
       ) : (
-          <EmptyState variant="full">
-            <EmptyStateIcon icon={AddCircleOIcon} />
-            <Title size="lg">Add replication repositories for the migration</Title>
-            <Button onClick={() => {
-              modalContext.setIsModalOpen(true);
-            }} variant="primary">
+        <EmptyState variant="full">
+          <EmptyStateIcon icon={AddCircleOIcon} />
+          <Title size="lg">Add replication repositories for the migration</Title>
+          <Button onClick={() => {
+            modalContext.setIsModalOpen(true);
+          }} variant="primary">
               Add replication repository
           </Button>
-          </EmptyState>
-        )}
+        </EmptyState>
+      )}
     </DataListContent>
   );
 };
