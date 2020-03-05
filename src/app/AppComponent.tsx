@@ -25,7 +25,7 @@ import ErrorModal from './common/components/ErrorModal';
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
-  errorModalMessage: any;
+  errorModalObject: any;
   successMessage: any;
   progressMessage: any;
   startPlanPolling: (params) => void;
@@ -42,7 +42,7 @@ interface IProps {
 
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
-  errorModalMessage,
+  errorModalObject,
   successMessage,
   progressMessage,
   isLoggedIn,
@@ -144,7 +144,7 @@ const AppComponent: React.SFC<IProps> = ({
           stopPlanPolling();
         }
       }}>
-        <ErrorModal errorMessage={errorModalMessage} isOpen />
+        <ErrorModal errorModalObj={errorModalObject} isOpen />
 
         <ConnectedRouter history={history}>
           <Switch>
@@ -167,7 +167,7 @@ export default connect(
   state => ({
     isLoggedIn: !!state.auth.user,
     errorMessage: state.common.errorText,
-    errorModalMessage: state.common.errorModalText,
+    errorModalObject: state.common.errorModalObject,
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
     clusterList: state.cluster.clusterList

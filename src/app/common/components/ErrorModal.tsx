@@ -14,20 +14,18 @@ import { PollingContext } from '../../home/duck/context';
 const styles = require('./ErrorModal.module')
 
 interface IProps {
-  // alertMessage: string;
-  // alertType: AlertProps['variant'];
   onHandleClose: () => null;
   isOpen: boolean;
   clearErrors: () => null;
-  errorMessage: string;
+  errorModalObject: string;
 }
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   const pollingContext = useContext(PollingContext);
 
 
-  const { isOpen, errorMessage, clearErrors } = props;
-  if (!errorMessage) { return null; }
+  const { isOpen, errorModalObject, clearErrors } = props;
+  if (!errorModalObject) { return null; }
   return (
     <Modal
       isSmall
@@ -79,7 +77,9 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
 };
 
 export default connect(
-  null,
+  state => ({
+    migMeta: state.migMeta,
+  }),
   dispatch => ({
     clearErrors: () => dispatch(AlertActions.errorModalClear()),
   })

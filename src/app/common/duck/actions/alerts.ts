@@ -47,9 +47,9 @@ const errorModalClear = () => ({
   type: AlertActionTypes.ERROR_MODAL_CLEAR
 });
 
-const alertErrorModal = (text: string) => ({
+const alertErrorModal = (errorModalObject: any) => ({
   type: AlertActionTypes.ALERT_ERROR_MODAL,
-  text
+  errorModalObject
 });
 //
 
