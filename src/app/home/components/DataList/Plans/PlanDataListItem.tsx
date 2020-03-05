@@ -75,7 +75,7 @@ const PlanDataListItem = ({
               <span>
                 <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
                   Add
-             </Button>
+                </Button>
               </span>
             </Tooltip>
             <WizardContainer

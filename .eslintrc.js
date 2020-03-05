@@ -12,6 +12,7 @@ module.exports = {
     rules:
 
     {
+        "indent": ["error", 2],
         "@typescript-eslint/interface-name-prefix": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/no-explicit-any": "off",

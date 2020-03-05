@@ -64,27 +64,27 @@ const DashboardCard: React.FunctionComponent<IProps> = (
             {type === 'plans' ? (
               <MigrationStatus planStatusCounts={planStatusCounts} />
             ) : (
-                <CardStatus dataList={dataList} type={type} />
-              )}
+              <CardStatus dataList={dataList} type={type} />
+            )}
           </CardBody>
           <CardFooter>
             <CardFooterText dataList={dataList} type={type} expandDetails={expandDetails} />
           </CardFooter>
         </React.Fragment>
       ) : (
-          <CardBody>
-            <Bullseye>
-              <EmptyState variant="small">
-                <div className="pf-c-empty-state__icon">
-                  <Spinner size="xl" />
-                </div>
-                <Title headingLevel="h2" size="xl">
-                  {loadingTitle}
-                </Title>
-              </EmptyState>
-            </Bullseye>
-          </CardBody>
-        )}
+        <CardBody>
+          <Bullseye>
+            <EmptyState variant="small">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                {loadingTitle}
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        </CardBody>
+      )}
     </Card>
   );
 };

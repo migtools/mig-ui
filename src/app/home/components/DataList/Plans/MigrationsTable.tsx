@@ -101,14 +101,14 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           <TableBody />
         </Table>
       ) : (
-          <Bullseye>
-            <EmptyState variant="small">
-              <Title headingLevel="h2" size="xl">
+        <Bullseye>
+          <EmptyState variant="small">
+            <Title headingLevel="h2" size="xl">
                 No migrations started
             </Title>
-            </EmptyState>
-          </Bullseye>
-        )}
+          </EmptyState>
+        </Bullseye>
+      )}
     </React.Fragment>
   );
 };

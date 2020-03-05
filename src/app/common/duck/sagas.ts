@@ -57,14 +57,14 @@ function* checkStatus(action) {
     const pollingStatus = params.callback(generatorRes, params.statusItem);
 
     switch (pollingStatus) {
-      case 'SUCCESS':
-        yield put(PollingActions.stopStatusPolling());
-        break;
-      case 'FAILURE':
-        yield put(PollingActions.stopStatusPolling());
-        break;
-      default:
-        break;
+    case 'SUCCESS':
+      yield put(PollingActions.stopStatusPolling());
+      break;
+    case 'FAILURE':
+      yield put(PollingActions.stopStatusPolling());
+      break;
+    default:
+      break;
     }
     yield delay(params.delay);
   }

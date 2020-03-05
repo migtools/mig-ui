@@ -300,10 +300,10 @@ const VolumesTable = (props): any => {
                         <EmptyStateIcon icon={WarningTriangleIcon} />
                         <Title headingLevel="h5" size="sm">
                           No PV data found
-                      </Title>
+                        </Title>
                         <EmptyStateBody>
                           Unable to retrieve PV data
-                      </EmptyStateBody>
+                        </EmptyStateBody>
                       </EmptyState>
                     }
                   </React.Fragment>

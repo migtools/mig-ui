@@ -56,32 +56,32 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
     }
   }
 
-    return (
-        <InputGroup>
-          <TextInput
-            isReadOnly
-            isDisabled={isDisabled}
-            value={display}
-            onClick={clickFileInput}
-            id={name+'-selected-filename'}
-          />
-          <Button
-            isDisabled={isDisabled}
-            onClick={clickFileInput}
-          >
+  return (
+    <InputGroup>
+      <TextInput
+        isReadOnly
+        isDisabled={isDisabled}
+        value={display}
+        onClick={clickFileInput}
+        id={name+'-selected-filename'}
+      />
+      <Button
+        isDisabled={isDisabled}
+        onClick={clickFileInput}
+      >
             Browse
-          </Button>
-          <input
-            ref={fileInput}
-            type="file"
-            id={name}
-            name={name}
-            style={{ display: 'none' }}
-            onChange={handleChange}
-            onInput={onInput}
-            onBlur={onBlur}
-          />
-        </InputGroup>
-    );
+      </Button>
+      <input
+        ref={fileInput}
+        type="file"
+        id={name}
+        name={name}
+        style={{ display: 'none' }}
+        onChange={handleChange}
+        onInput={onInput}
+        onBlur={onBlur}
+      />
+    </InputGroup>
+  );
 }
 export default CertificateUpload;
