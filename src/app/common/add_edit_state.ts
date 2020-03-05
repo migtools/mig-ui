@@ -61,39 +61,39 @@ export const AddEditDebounceWait = addEditDebounceWaitSeconds * 1000;
 
 export const addEditStatusText = (componentType: string) => (status: IAddEditStatus) => {
   switch (status.state) {
-    case AddEditState.Pending: {
-      return ``;
-    }
-    case AddEditState.Fetching: {
-      return `Validating connection...`;
-    }
-    case AddEditState.Critical: {
-      return `Connection failed. Message: "${status.message}", Reason: "${status.reason}"`;
-    }
-    case AddEditState.Ready: {
-      return `Connection successful`;
-    }
-    case AddEditState.Watching: {
-      return `Validating connection...`;
-    }
-    case AddEditState.TimedOut: {
-      return 'Validation timed out. Ensure your cluster details are correct, \
+  case AddEditState.Pending: {
+    return ``;
+  }
+  case AddEditState.Fetching: {
+    return `Validating connection...`;
+  }
+  case AddEditState.Critical: {
+    return `Connection failed. Message: "${status.message}", Reason: "${status.reason}"`;
+  }
+  case AddEditState.Ready: {
+    return `Connection successful`;
+  }
+  case AddEditState.Watching: {
+    return `Validating connection...`;
+  }
+  case AddEditState.TimedOut: {
+    return 'Validation timed out. Ensure your cluster details are correct, \
         or continue to check the existing connection.';
-    }
-    default: {
-      return `AddEditStatus fell into an unknown state`;
-    }
+  }
+  default: {
+    return `AddEditStatus fell into an unknown state`;
+  }
   }
 };
 
 export const addEditButtonText = (componentType: string) => (status: IAddEditStatus) => {
   switch (status.mode) {
-    case AddEditMode.Add: {
-      return `Add ${componentType}`;
-    }
-    default: {
-      return `Update ${componentType}`;
-    }
+  case AddEditMode.Add: {
+    return `Add ${componentType}`;
+  }
+  default: {
+    return `Update ${componentType}`;
+  }
   }
 };
 

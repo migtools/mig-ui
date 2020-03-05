@@ -90,7 +90,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
       key="removeCluster"
     >
       Remove
-  </DropdownItem>,
+    </DropdownItem>,
   ];
 
   return (
@@ -114,18 +114,18 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
               <Flex>
                 <FlexItem>
                   {associatedPlanCount} associated migration {planText}
-                  </FlexItem>
-                  </Flex>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
             <DataListCell key="connection" width={1}>
               <Flex>
                 <FlexItem>
                   <StatusIcon isReady={clusterStatus} />
-                  </FlexItem>
+                </FlexItem>
                 <FlexItem>
                   <span id="cluster-status-text">{clusterStatus ? `Connected` : `Connection Failed`}</span>
-                  </FlexItem>
-                  </Flex>
+                </FlexItem>
+              </Flex>
             </DataListCell>,
 
           ]}

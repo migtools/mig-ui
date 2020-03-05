@@ -234,13 +234,13 @@ const ResourceSelectForm = props => {
           </Bullseye>
         </GridItem>
       ) : (
-          <NamespaceTable
-            setFieldValue={setFieldValue}
-            values={values}
-            sourceClusterNamespaces={sourceClusterNamespaces}
-            isEdit={isEdit}
-          />
-        )}
+        <NamespaceTable
+          setFieldValue={setFieldValue}
+          values={values}
+          sourceClusterNamespaces={sourceClusterNamespaces}
+          isEdit={isEdit}
+        />
+      )}
     </Grid>
   );
 };
