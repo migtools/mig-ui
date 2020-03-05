@@ -28,11 +28,12 @@
       font-style: italic;
    }
 
+// override PF styles 
    .styledCard{
-        margin: auto;
-        width: 50em;
+        margin: auto !important; 
+        width: 50em !important;
    }
 
    .centerCard{
-      margin-top: 3em;
+      margin-top: 3em !important;
    }
