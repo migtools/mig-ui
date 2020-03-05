@@ -27,7 +27,7 @@ function* poll(action) {
         yield put(ClusterActions.stopClusterPolling());
         yield put(StorageActions.stopStoragePolling());
 
-        // throw new Error('Error while fetching data.');
+        throw new Error('Error while fetching data.');
       }
     } catch (err) {
       throw err;

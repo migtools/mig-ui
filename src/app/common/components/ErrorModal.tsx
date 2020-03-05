@@ -11,7 +11,7 @@ import {
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
 import { PollingContext } from '../../home/duck/context';
-const styles = require('./AlertModal.module')
+const styles = require('./ErrorModal.module')
 
 interface IProps {
   // alertMessage: string;
@@ -33,25 +33,23 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       isSmall
       isOpen={isOpen}
       onClose={() => clearErrors()}
-      title={`Error`}
+      title={`Error while fetching data`}
     >
       <Grid gutter="md">
         <form
         >
-          <GridItem>
-            text
+          <GridItem className={styles.modalHeader}>
+            Unable to retrieve one or more resource objects (migcluster, migstorage, migplan).
           </GridItem>
           <GridItem className={styles.gridMargin}>
-            item
+            Refresh your browser and try again
           </GridItem>
           <GridItem>
             <Grid gutter="md">
               <GridItem>
                 <Button variant="primary"
                   onClick={() => {
-                    pollingContext.startAllDefaultPolling();
-                    clearErrors()
-
+                    window.location.reload();
                   }
                   }
                 >
@@ -63,8 +61,8 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   key="cancel"
                   variant="secondary"
                   onClick={() => {
+                    clearErrors();
                     pollingContext.startAllDefaultPolling();
-                    clearErrors()
                   }
                   }
 
