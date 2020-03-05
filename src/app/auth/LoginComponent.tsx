@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { authOperations } from './duck';
+import { AuthActions } from './duck/actions';
 import ClientOAuth2 from 'client-oauth2';
 
 interface IProps {
@@ -26,7 +26,7 @@ class LoginComponent extends React.Component<IProps> {
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
     const oauthMeta = this.props.auth.oauthMeta;
-    if(!oauthMeta) {
+    if (!oauthMeta) {
       this.props.fetchOauthMeta(migMeta.clusterApi);
       return;
     }
@@ -75,8 +75,8 @@ export default connect(
     router: state.router,
   }),
   dispatch => ({
-    fetchOauthMeta: clusterApi => dispatch(authOperations.fetchOauthMeta(clusterApi)),
-    fetchToken: (oauthClient, codeRedirect) =>
-      dispatch(authOperations.fetchToken(oauthClient, codeRedirect)),
+    fetchOauthMeta: clusterApi => dispatch(AuthActions.fetchOauthMeta(clusterApi)),
+    fetchToken: (oauthClient, coreRedirect) =>
+      dispatch(AuthActions.fetchToken(oauthClient, coreRedirect)),
   })
 )(LoginComponent);
