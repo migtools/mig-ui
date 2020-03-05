@@ -47,7 +47,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
               <GridItem>
                 <Button variant="primary"
                   onClick={() => {
-                    window.location.reload();
+                    // window.location.reload();
                   }
                   }
                 >

@@ -36,12 +36,15 @@ const logoutUserRequest = () =>
     type: AuthActionTypes.LOGOUT_USER_REQUEST,
   });
 
+<<<<<<< HEAD
 const fetchOauthMeta = (clusterApi: string) =>
   ({
     type: AuthActionTypes.FETCH_OAUTH_META,
     clusterApi,
   });
 
+=======
+>>>>>>> wip
 const setOauthMeta = (oauthMeta: string) =>
   ({
     type: AuthActionTypes.SET_OAUTH_META,
