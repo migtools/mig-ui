@@ -3,7 +3,11 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IClusterClient } from '../../../client/client';
 import { PersistentVolumeDiscovery } from '../../../client/resources/discovery';
-import { updateMigPlanFromValues } from '../../../client/resources/conversions';
+import {
+  updateMigPlanFromValues,
+  createInitialMigPlan,
+  createMigMigration,
+} from '../../../client/resources/conversions';
 import {
   AlertActions,
 } from '../../common/duck/actions';
@@ -19,9 +23,45 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
+import planUtils from './utils';
+import { PollingActions } from '../../common/duck/actions';
+
+const uuidv1 = require('uuid/v1');
+const PlanMigrationPollingInterval = 5000;
 
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
+
+function* addPlanSaga(action) {
+  const { migPlan } = action;
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migPlanObj = createInitialMigPlan(
+      migPlan.planName,
+      migMeta.namespace,
+      migPlan.sourceCluster,
+      migPlan.targetCluster,
+      migPlan.selectedStorage,
+      migPlan.namespaces
+    );
+
+    const createPlanRes = yield client.create(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      migPlanObj
+    );
+
+    yield put(PlanActions.setCurrentPlan(createPlanRes.data));
+    yield put(PlanActions.addPlanSuccess(createPlanRes.data));
+
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout('Failed to add plan'));
+  }
+};
+
+
 
 function* namespaceFetchRequest(action) {
   const state = yield select();
@@ -397,6 +437,151 @@ function* getPVResourcesRequest(action) {
   }
 }
 
+function* fetchPlansGenerator() {
+
+  function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+    const refs: Array<Promise<any>> = [];
+
+    migPlans.forEach(plan => {
+      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+      refs.push(client.list(migMigrationResource));
+    });
+
+    return refs;
+  }
+
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  try {
+    let planList = yield client.list(resource);
+    planList = yield planList.data.items;
+    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
+    const groupedPlans = yield planUtils.groupPlans(planList, refs);
+    return { updatedPlans: groupedPlans, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
+function* runStageSaga(plan) {
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
+    yield put(AlertActions.alertProgressTimeout('Staging Started'));
+
+    const migMigrationObj = createMigMigration(
+      uuidv1(),
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      true,
+      true
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    function* getStageStatusCondition(pollingResponse, newObjectRes) {
+      const matchingPlan = pollingResponse.updatedPlans.find(
+        p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+      );
+
+      const migStatus = matchingPlan
+        ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+        : null;
+      if (migStatus.success) {
+        yield put(PlanActions.stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
+        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
+        return 'SUCCESS';
+      } else if (migStatus.error) {
+        yield put(PlanActions.stagingFailure(migStatus.error));
+        yield put(AlertActions.alertErrorTimeout('Staging Failed'));
+        return 'FAILURE';
+      }
+    };
+
+    const params = {
+      asyncFetch: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      callback: getStageStatusCondition,
+      type: 'STAGE',
+      statusItem: createMigRes,
+    };
+
+    yield put(PollingActions.startStatusPolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.stagingFailure(err));
+  }
+};
+
+function* runMigrationSaga(action) {
+  try {
+    const { plan, disableQuiesce } = action;
+    const state = yield select();
+    const { migMeta } = state;
+    const client: IClusterClient = ClientFactory.cluster(state);
+    yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
+    yield put(AlertActions.alertProgressTimeout('Migration Started'));
+
+    const migMigrationObj = createMigMigration(
+      uuidv1(),
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      false,
+      disableQuiesce
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    function* getMigrationStatusCondition(pollingResponse, newObjectRes) {
+      const matchingPlan = pollingResponse.updatedPlans.find(
+        p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+      );
+      const migStatus = matchingPlan
+        ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+        : null;
+      if (migStatus.success) {
+        yield put(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+        yield put(PlanActions.planCloseRequest(newObjectRes.data.spec.migPlanRef.name));
+        yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
+        return 'SUCCESS';
+      } else if (migStatus.error) {
+        yield put(PlanActions.migrationFailure(migStatus.error));
+        yield put(AlertActions.alertErrorTimeout('Migration Failed'));
+        return 'FAILURE';
+      }
+    };
+
+    const params = {
+      asyncFetch: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      callback: getMigrationStatusCondition,
+      type: 'MIGRATION',
+      statusItem: createMigRes,
+    };
+
+    yield put(PollingActions.startStatusPolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.migrationFailure(err));
+  }
+};
+
+
 function* watchPlanCloseAndDelete() {
   yield takeEvery(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDelete);
 }
@@ -431,7 +616,23 @@ function* watchPlanClose() {
   yield takeEvery(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseAndCheck);
 }
 
+function* watchAddPlanRequest() {
+  yield takeLatest(PlanActionTypes.ADD_PLAN_REQUEST, addPlanSaga);
+}
+
+function* watchRunMigrationRequest() {
+  yield takeLatest(PlanActionTypes.RUN_MIGRATION_REQUEST, runMigrationSaga);
+}
+
+function* watchRunStageRequest() {
+  yield takeLatest(PlanActionTypes.RUN_MIGRATION_REQUEST, runStageSaga);
+}
+
 export default {
+  fetchPlansGenerator,
+  watchRunStageRequest,
+  watchRunMigrationRequest,
+  watchAddPlanRequest,
   watchPlanUpdate,
   watchPlanCloseAndDelete,
   watchPlanClose,

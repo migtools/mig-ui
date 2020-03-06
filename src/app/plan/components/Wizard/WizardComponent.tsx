@@ -42,7 +42,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     stopPlanStatusPolling,
     planUpdateRequest,
     pvResourceList,
-    addPlan,
+    addPlanRequest,
     setCurrentPlan,
     resetCurrentPlan,
     onHandleWizardModalClose,
@@ -196,19 +196,19 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     setUpdatedSteps(steps);
 
   },
-  //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
-  [
-    currentPlan,
-    values,
-    isPVError,
-    isFetchingPVList,
-    isPollingStatus,
-    isFetchingNamespaceList,
-    pvResourceList,
-    errors,
-    touched,
-    currentPlanStatus
-  ]);
+    //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
+    [
+      currentPlan,
+      values,
+      isPVError,
+      isFetchingPVList,
+      isPollingStatus,
+      isFetchingNamespaceList,
+      pvResourceList,
+      errors,
+      touched,
+      currentPlanStatus
+    ]);
 
 
   const onMove = (curr, prev) => {
@@ -228,7 +228,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       // requested namespaces and discover related PVs
 
       if (!currentPlan && !isEdit) {
-        addPlan({
+        addPlanRequest({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
           targetCluster: props.values.targetCluster,

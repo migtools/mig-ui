@@ -3,6 +3,8 @@ import { ICurrentPlanStatus } from './reducers';
 import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const PlanActionTypes = {
+  RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
+  RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
   ADD_PLAN_SUCCESS: 'ADD_PLAN_SUCCESS',
   ADD_PLAN_FAILURE: 'ADD_PLAN_FAILURE',
@@ -175,8 +177,9 @@ const planUpdateFailure = (error) => ({
   error
 });
 
-const addPlanRequest = () => ({
+const addPlanRequest = (planObject: any) => ({
   type: PlanActionTypes.ADD_PLAN_REQUEST,
+  planObject
 });
 
 const initStage = (planName: string) => ({
@@ -265,7 +268,20 @@ const setCurrentPlan = (currentPlan) => ({
   currentPlan
 });
 
+const runMigrationRequest = (plan, disableQuiesce) => ({
+  type: PlanActionTypes.RUN_MIGRATION_REQUEST,
+  plan,
+  disableQuiesce
+});
+
+const runStageRequest = (plan) => ({
+  type: PlanActionTypes.RUN_STAGE_REQUEST,
+  plan,
+});
+
 export const PlanActions = {
+  runMigrationRequest,
+  runStageRequest,
   updatePlans,
   addPlanSuccess,
   addPlanFailure,
