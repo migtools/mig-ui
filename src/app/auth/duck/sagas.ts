@@ -12,8 +12,8 @@ import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/d
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
-export function* fetchOauthMeta(clusterApi) {
-    const oauthMetaUrl = `${clusterApi}/.well-known/oauth-authorization-server`;
+export function* fetchOauthMeta(action) {
+    const oauthMetaUrl = `${action.clusterApi}/.well-known/oauth-authorization-server`;
     try {
         const res = yield axios.get(oauthMetaUrl);
         yield put(AuthActions.setOauthMeta(res.data));

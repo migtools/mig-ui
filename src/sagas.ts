@@ -8,7 +8,7 @@ import storageSagas from './app/storage/duck/sagas';
 import { initMigMeta } from './mig_meta';
 import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
-import { logoutUser } from './app/auth/duck/sagas';
+import { push } from 'connected-react-router';
 
 export default function* rootSaga() {
 
@@ -25,8 +25,11 @@ export default function* rootSaga() {
     }
 
     // Configure token expiry behavior
-    setTokenExpiryHandler(() => yield put(AuthActions.logoutUserRequest()))
-
+    setTokenExpiryHandler(() => {
+      const LS_KEY_CURRENT_USER = 'currentUser';
+      localStorage.removeItem(LS_KEY_CURRENT_USER);
+      push('/login?action=refresh');
+    })
   }
 
   yield all([
