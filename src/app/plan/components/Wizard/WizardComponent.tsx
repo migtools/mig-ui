@@ -196,19 +196,19 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     setUpdatedSteps(steps);
 
   },
-    //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
-    [
-      currentPlan,
-      values,
-      isPVError,
-      isFetchingPVList,
-      isPollingStatus,
-      isFetchingNamespaceList,
-      pvResourceList,
-      errors,
-      touched,
-      currentPlanStatus
-    ]);
+  //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
+  [
+    currentPlan,
+    values,
+    isPVError,
+    isFetchingPVList,
+    isPollingStatus,
+    isFetchingNamespaceList,
+    pvResourceList,
+    errors,
+    touched,
+    currentPlanStatus
+  ]);
 
 
   const onMove = (curr, prev) => {

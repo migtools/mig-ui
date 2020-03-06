@@ -59,7 +59,7 @@ function* addPlanSaga(action) {
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout('Failed to add plan'));
   }
-};
+}
 
 
 
@@ -464,6 +464,24 @@ function* fetchPlansGenerator() {
   }
 }
 
+function* getStageStatusCondition(pollingResponse, newObjectRes) {
+  const matchingPlan = pollingResponse.updatedPlans.find(
+    p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+  );
+
+  const migStatus = matchingPlan
+    ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+    : null;
+  if (migStatus.success) {
+    yield put(PlanActions.stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
+    yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
+    return 'SUCCESS';
+  } else if (migStatus.error) {
+    yield put(PlanActions.stagingFailure(migStatus.error));
+    yield put(AlertActions.alertErrorTimeout('Staging Failed'));
+    return 'FAILURE';
+  }
+}
 function* runStageSaga(action) {
   try {
     const state = yield select();
@@ -488,24 +506,6 @@ function* runStageSaga(action) {
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
-    function* getStageStatusCondition(pollingResponse, newObjectRes) {
-      const matchingPlan = pollingResponse.updatedPlans.find(
-        p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
-      );
-
-      const migStatus = matchingPlan
-        ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-        : null;
-      if (migStatus.success) {
-        yield put(PlanActions.stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
-        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
-        return 'SUCCESS';
-      } else if (migStatus.error) {
-        yield put(PlanActions.stagingFailure(migStatus.error));
-        yield put(AlertActions.alertErrorTimeout('Staging Failed'));
-        return 'FAILURE';
-      }
-    };
 
     const params = {
       asyncFetch: fetchPlansGenerator,
@@ -521,7 +521,26 @@ function* runStageSaga(action) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
-};
+}
+
+function* getMigrationStatusCondition(pollingResponse, newObjectRes) {
+  const matchingPlan = pollingResponse.updatedPlans.find(
+    p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+  );
+  const migStatus = matchingPlan
+    ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
+    : null;
+  if (migStatus.success) {
+    yield put(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
+    yield put(PlanActions.planCloseRequest(newObjectRes.data.spec.migPlanRef.name));
+    yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
+    return 'SUCCESS';
+  } else if (migStatus.error) {
+    yield put(PlanActions.migrationFailure(migStatus.error));
+    yield put(AlertActions.alertErrorTimeout('Migration Failed'));
+    return 'FAILURE';
+  }
+}
 
 function* runMigrationSaga(action) {
   try {
@@ -547,24 +566,6 @@ function* runMigrationSaga(action) {
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
-    function* getMigrationStatusCondition(pollingResponse, newObjectRes) {
-      const matchingPlan = pollingResponse.updatedPlans.find(
-        p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
-      );
-      const migStatus = matchingPlan
-        ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-        : null;
-      if (migStatus.success) {
-        yield put(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-        yield put(PlanActions.planCloseRequest(newObjectRes.data.spec.migPlanRef.name));
-        yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
-        return 'SUCCESS';
-      } else if (migStatus.error) {
-        yield put(PlanActions.migrationFailure(migStatus.error));
-        yield put(AlertActions.alertErrorTimeout('Migration Failed'));
-        return 'FAILURE';
-      }
-    };
 
     const params = {
       asyncFetch: fetchPlansGenerator,
@@ -580,7 +581,7 @@ function* runMigrationSaga(action) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.migrationFailure(err));
   }
-};
+}
 
 
 function* watchPlanCloseAndDelete() {
