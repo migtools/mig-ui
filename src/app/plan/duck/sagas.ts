@@ -464,11 +464,12 @@ function* fetchPlansGenerator() {
   }
 }
 
-function* runStageSaga(plan) {
+function* runStageSaga(action) {
   try {
     const state = yield select();
     const { migMeta } = state;
     const client: IClusterClient = ClientFactory.cluster(state);
+    const { plan } = action;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
     yield put(AlertActions.alertProgressTimeout('Staging Started'));
