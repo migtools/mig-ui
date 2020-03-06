@@ -177,9 +177,9 @@ const planUpdateFailure = (error) => ({
   error
 });
 
-const addPlanRequest = (planObject: any) => ({
+const addPlanRequest = (migPlan: any) => ({
   type: PlanActionTypes.ADD_PLAN_REQUEST,
-  planObject
+  migPlan
 });
 
 const initStage = (planName: string) => ({

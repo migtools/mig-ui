@@ -625,7 +625,7 @@ function* watchRunMigrationRequest() {
 }
 
 function* watchRunStageRequest() {
-  yield takeLatest(PlanActionTypes.RUN_MIGRATION_REQUEST, runStageSaga);
+  yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
 
 export default {
