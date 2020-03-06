@@ -4,13 +4,12 @@ import {
   PageHeader,
 } from '@patternfly/react-core';
 import openshiftLogo from './CAM_LOGO.svg';
+const styles = require('./HeaderComponent.module');
 
 const HeaderComponent = (
   <PageHeader
     logo={
-      <React.Fragment>
-        <Brand src={openshiftLogo} alt="OpenShift Logo" />
-      </React.Fragment>
+      <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
     }
   />
 );
