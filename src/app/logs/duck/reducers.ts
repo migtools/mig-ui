@@ -45,14 +45,14 @@ export const createLogArchive =
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case LogActionTypes.REPORT_FETCH_SUCCESS: return reportFetchSuccess(state, action);
-  case LogActionTypes.REPORT_FETCH_REQUEST: return reportFetchRequest(state, action);
-  case LogActionTypes.REPORT_FETCH_FAILURE: return reportFetchFailure(state, action);
-  case LogActionTypes.LOG_FETCH_SUCCESS: return logFetchSuccess(state, action);
-  case LogActionTypes.LOG_FETCH_REQUEST: return logFetchRequest(state, action);
-  case LogActionTypes.LOG_FETCH_FAILURE: return logFetchFailure(state, action);
-  case LogActionTypes.CREATE_LOG_ARCHIVE: return createLogArchive(state, action);
-  default: return state;
+    case LogActionTypes.REPORT_FETCH_SUCCESS: return reportFetchSuccess(state, action);
+    case LogActionTypes.REPORT_FETCH_REQUEST: return reportFetchRequest(state, action);
+    case LogActionTypes.REPORT_FETCH_FAILURE: return reportFetchFailure(state, action);
+    case LogActionTypes.LOG_FETCH_SUCCESS: return logFetchSuccess(state, action);
+    case LogActionTypes.LOG_FETCH_REQUEST: return logFetchRequest(state, action);
+    case LogActionTypes.LOG_FETCH_FAILURE: return logFetchFailure(state, action);
+    case LogActionTypes.CREATE_LOG_ARCHIVE: return createLogArchive(state, action);
+    default: return state;
   }
 };
 
