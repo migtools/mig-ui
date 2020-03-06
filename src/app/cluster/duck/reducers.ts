@@ -91,18 +91,18 @@ export const stopClusterPolling = (state = INITIAL_STATE, action) => {
 
 export const clusterReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case ClusterActionTypes.ADD_CLUSTER_REQUEST: return addClusterRequest(state, action);
-  case ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS: return setClusterAddEditStatus(state, action);
-  case ClusterActionTypes.CLUSTER_FETCH_REQUEST: return clusterFetchRequest(state, action);
-  case ClusterActionTypes.CLUSTER_FETCH_SUCCESS: return clusterFetchSuccess(state, action);
-  case ClusterActionTypes.CLUSTER_FETCH_FAILURE: return clusterFetchFailure(state, action);
-  case ClusterActionTypes.ADD_CLUSTER_SUCCESS: return addClusterSuccess(state, action);
-  case ClusterActionTypes.UPDATE_CLUSTERS: return updateClusters(state, action);
-  case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS: return updateClusterSuccess(state, action);
-  case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS: return removeClusterSuccess(state, action);
-  case ClusterActionTypes.CLUSTER_POLL_START: return startClusterPolling(state, action);
-  case ClusterActionTypes.CLUSTER_POLL_STOP: return stopClusterPolling(state, action);
-  default: return state;
+    case ClusterActionTypes.ADD_CLUSTER_REQUEST: return addClusterRequest(state, action);
+    case ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS: return setClusterAddEditStatus(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_REQUEST: return clusterFetchRequest(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_SUCCESS: return clusterFetchSuccess(state, action);
+    case ClusterActionTypes.CLUSTER_FETCH_FAILURE: return clusterFetchFailure(state, action);
+    case ClusterActionTypes.ADD_CLUSTER_SUCCESS: return addClusterSuccess(state, action);
+    case ClusterActionTypes.UPDATE_CLUSTERS: return updateClusters(state, action);
+    case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS: return updateClusterSuccess(state, action);
+    case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS: return removeClusterSuccess(state, action);
+    case ClusterActionTypes.CLUSTER_POLL_START: return startClusterPolling(state, action);
+    case ClusterActionTypes.CLUSTER_POLL_STOP: return stopClusterPolling(state, action);
+    default: return state;
   }
 };
 

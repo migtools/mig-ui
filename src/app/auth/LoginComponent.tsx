@@ -26,7 +26,7 @@ class LoginComponent extends React.Component<IProps> {
     const migMeta = this.props.migMeta;
     const routerLoc = this.props.router.location;
     const oauthMeta = this.props.auth.oauthMeta;
-    if(!oauthMeta) {
+    if (!oauthMeta) {
       this.props.fetchOauthMeta(migMeta.clusterApi);
       return;
     }
@@ -47,18 +47,18 @@ class LoginComponent extends React.Component<IProps> {
       });
 
       switch (routerLoc.pathname) {
-      case '/login': {
-        const uri = clusterAuth.code.getUri();
-        window.location.replace(uri);
-        break;
-      }
-      case '/login/callback': {
-        this.props.fetchToken(clusterAuth, window.location.href);
-        break;
-      }
-      default: {
-        return;
-      }
+        case '/login': {
+          const uri = clusterAuth.code.getUri();
+          window.location.replace(uri);
+          break;
+        }
+        case '/login/callback': {
+          this.props.fetchToken(clusterAuth, window.location.href);
+          break;
+        }
+        default: {
+          return;
+        }
       }
     }
   };
