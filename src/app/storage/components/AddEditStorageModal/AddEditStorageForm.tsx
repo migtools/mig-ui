@@ -86,9 +86,9 @@ const AddEditStorageForm = (props: IOtherProps) => {
     } : null
   );
   const [providerOptions, setproviderOptions] = useState([
-    { label: 'aws', value: 'aws' },
-    { label: 'gcp', value: 'gcp' },
-    { label: 'azure', value: 'azure' }
+    { label: 'S3', value: 'aws' },
+    { label: 'GCP', value: 'gcp' },
+    { label: 'Azure', value: 'azure' }
   ]);
 
 

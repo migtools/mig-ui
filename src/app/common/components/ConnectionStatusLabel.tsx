@@ -21,56 +21,56 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
     )
 
     switch (iconStatus.state) {
-    case AddEditState.Pending: {
-      const PendingSpan = () => (
-        <span className={styles.pendingSpan}></span>
-      )
-      return PendingSpan
-    }
-    case AddEditState.Fetching: {
-      return WrappedSpinner;
-    }
-    case AddEditState.Critical: {
-      const CriticalIcon = () => (
-        <span className="pf-c-icon pf-m-danger">
-          <ExclamationCircleIcon />
-        </span>
-      );
+      case AddEditState.Pending: {
+        const PendingSpan = () => (
+          <span className={styles.pendingSpan}></span>
+        )
+        return PendingSpan
+      }
+      case AddEditState.Fetching: {
+        return WrappedSpinner;
+      }
+      case AddEditState.Critical: {
+        const CriticalIcon = () => (
+          <span className="pf-c-icon pf-m-danger">
+            <ExclamationCircleIcon />
+          </span>
+        );
 
-      return CriticalIcon;
-    }
-    case AddEditState.Ready: {
-      const ReadyIcon = () => (
-        <span
-          id="connection-successful-icon"
-          className="pf-c-icon pf-m-success">
-          <CheckCircleIcon />
-        </span>
-      );
+        return CriticalIcon;
+      }
+      case AddEditState.Ready: {
+        const ReadyIcon = () => (
+          <span
+            id="connection-successful-icon"
+            className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+        );
 
-      return ReadyIcon;
-    }
-    case AddEditState.Watching: {
-      return WrappedSpinner
-    }
-    case AddEditState.TimedOut: {
-      const TimedOutIcon = () => (
-        <span className="pf-c-icon pf-m-danger">
-          <ExclamationCircleIcon />
-        </span>
-      );
+        return ReadyIcon;
+      }
+      case AddEditState.Watching: {
+        return WrappedSpinner
+      }
+      case AddEditState.TimedOut: {
+        const TimedOutIcon = () => (
+          <span className="pf-c-icon pf-m-danger">
+            <ExclamationCircleIcon />
+          </span>
+        );
 
-      return TimedOutIcon;
-    }
-    default: {
-      const DefaultIcon = () => (
-        <span className="pf-c-icon pf-m-info">
-          <OutlinedCircleIcon />
-        </span>
-      );
+        return TimedOutIcon;
+      }
+      default: {
+        const DefaultIcon = () => (
+          <span className="pf-c-icon pf-m-info">
+            <OutlinedCircleIcon />
+          </span>
+        );
 
-      return DefaultIcon;
-    }
+        return DefaultIcon;
+      }
     }
   };
 
