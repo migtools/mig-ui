@@ -23,12 +23,9 @@ export default function* rootSaga() {
       yield put(initMigMeta(migMeta));
       yield put(AuthActions.initFromStorage());
     }
-    function* logoutUserSaga() {
-      yield put(AuthActions.logoutUserRequest());
 
-    }
     // Configure token expiry behavior
-    setTokenExpiryHandler(() => logoutUserSaga())
+    setTokenExpiryHandler(() => yield put(AuthActions.logoutUserRequest()))
 
   }
 
