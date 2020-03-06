@@ -47,18 +47,18 @@ class LoginComponent extends React.Component<IProps> {
       });
 
       switch (routerLoc.pathname) {
-      case '/login': {
-        const uri = clusterAuth.code.getUri();
-        window.location.replace(uri);
-        break;
-      }
-      case '/login/callback': {
-        this.props.fetchToken(clusterAuth, window.location.href);
-        break;
-      }
-      default: {
-        return;
-      }
+        case '/login': {
+          const uri = clusterAuth.code.getUri();
+          window.location.replace(uri);
+          break;
+        }
+        case '/login/callback': {
+          this.props.fetchToken(clusterAuth, window.location.href);
+          break;
+        }
+        default: {
+          return;
+        }
       }
     }
   };
