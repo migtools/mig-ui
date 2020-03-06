@@ -96,96 +96,96 @@ export function createMigStorage(
   azureStorageAccount?: string,
 ) {
   switch (bslProvider) {
-  case 'aws':
-    return {
-      apiVersion: 'migration.openshift.io/v1alpha1',
-      kind: 'MigStorage',
-      metadata: {
-        name,
-        namespace,
-      },
-      spec: {
-        backupStorageProvider: 'aws',
-        volumeSnapshotProvider: 'aws',
-        backupStorageConfig: {
-          awsBucketName,
-          awsRegion: awsBucketRegion,
-          awsS3Url: s3Url,
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
-          },
-          insecure: !requireSSL,
-          s3CustomCABundle: caBundle || undefined,
+    case 'aws':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
         },
-        volumeSnapshotConfig: {
-          awsRegion: awsBucketRegion,
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
+        spec: {
+          backupStorageProvider: 'aws',
+          volumeSnapshotProvider: 'aws',
+          backupStorageConfig: {
+            awsBucketName,
+            awsRegion: awsBucketRegion,
+            awsS3Url: s3Url,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+            insecure: !requireSSL,
+            s3CustomCABundle: caBundle || undefined,
           },
-        },
-      },
-    };
-  case 'gcp':
-    return {
-      apiVersion: 'migration.openshift.io/v1alpha1',
-      kind: 'MigStorage',
-      metadata: {
-        name,
-        namespace,
-      },
-      spec: {
-        backupStorageProvider: 'gcp',
-        volumeSnapshotProvider: 'gcp',
-        backupStorageConfig: {
-          gcpBucket,
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
+          volumeSnapshotConfig: {
+            awsRegion: awsBucketRegion,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
           },
         },
-        volumeSnapshotConfig: {
-          //gcp specific config
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
+      };
+    case 'gcp':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
+        },
+        spec: {
+          backupStorageProvider: 'gcp',
+          volumeSnapshotProvider: 'gcp',
+          backupStorageConfig: {
+            gcpBucket,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+          volumeSnapshotConfig: {
+            //gcp specific config
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
           },
         },
-      },
-    };
+      };
 
-  case 'azure':
-    return {
-      apiVersion: 'migration.openshift.io/v1alpha1',
-      kind: 'MigStorage',
-      metadata: {
-        name,
-        namespace,
-      },
-      spec: {
-        backupStorageProvider: 'azure',
-        volumeSnapshotProvider: 'azure',
-        backupStorageConfig: {
-          azureResourceGroup,
-          azureStorageAccount,
-          azureStorageContainer: 'velero',
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
+    case 'azure':
+      return {
+        apiVersion: 'migration.openshift.io/v1alpha1',
+        kind: 'MigStorage',
+        metadata: {
+          name,
+          namespace,
+        },
+        spec: {
+          backupStorageProvider: 'azure',
+          volumeSnapshotProvider: 'azure',
+          backupStorageConfig: {
+            azureResourceGroup,
+            azureStorageAccount,
+            azureStorageContainer: 'velero',
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
+          },
+          volumeSnapshotConfig: {
+            //azure specific config
+            azureApiTimeout: '30s',
+            azureResourceGroup,
+            credsSecretRef: {
+              name: tokenSecret.metadata.name,
+              namespace: tokenSecret.metadata.namespace,
+            },
           },
         },
-        volumeSnapshotConfig: {
-          //azure specific config
-          azureApiTimeout: '30s',
-          azureResourceGroup,
-          credsSecretRef: {
-            name: tokenSecret.metadata.name,
-            namespace: tokenSecret.metadata.namespace,
-          },
-        },
-      },
-    };
+      };
 
 
   }
@@ -203,41 +203,41 @@ export function updateMigStorage(
   caBundle: string,
 ) {
   switch (bslProvider) {
-  case 'aws':
-    return {
-      spec: {
-        backupStorageConfig: {
-          awsBucketName: bucketName,
-          awsRegion: bucketRegion,
-          awsS3Url: s3Url,
-          insecure: !requireSSL,
-          s3CustomCABundle: caBundle || undefined,
+    case 'aws':
+      return {
+        spec: {
+          backupStorageConfig: {
+            awsBucketName: bucketName,
+            awsRegion: bucketRegion,
+            awsS3Url: s3Url,
+            insecure: !requireSSL,
+            s3CustomCABundle: caBundle || undefined,
+          },
+          volumeSnapshotConfig: {
+            awsRegion: bucketRegion,
+          },
         },
-        volumeSnapshotConfig: {
-          awsRegion: bucketRegion,
+      };
+    case 'gcp':
+      return {
+        spec: {
+          backupStorageConfig: {
+            gcpBucket
+          },
         },
-      },
-    };
-  case 'gcp':
-    return {
-      spec: {
-        backupStorageConfig: {
-          gcpBucket
+      };
+    case 'azure':
+      return {
+        spec: {
+          backupStorageConfig: {
+            azureResourceGroup,
+            azureStorageAccount
+          },
+          volumeSnapshotConfig: {
+            azureResourceGroup,
+          },
         },
-      },
-    };
-  case 'azure':
-    return {
-      spec: {
-        backupStorageConfig: {
-          azureResourceGroup,
-          azureStorageAccount
-        },
-        volumeSnapshotConfig: {
-          azureResourceGroup,
-        },
-      },
-    };
+      };
   }
 }
 
@@ -252,52 +252,52 @@ export function createStorageSecret(
 ) {
 
   switch (bslProvider) {
-  case 'aws':
-    const encodedAccessKey = btoa(accessKey);
-    const encodedSecretKey = btoa(secretKey);
-    return {
-      apiVersion: 'v1',
-      data: {
-        'aws-access-key-id': encodedAccessKey,
-        'aws-secret-access-key': encodedSecretKey,
-      },
-      kind: 'Secret',
-      metadata: {
-        name,
-        namespace,
-      },
-      type: 'Opaque',
-    };
+    case 'aws':
+      const encodedAccessKey = btoa(accessKey);
+      const encodedSecretKey = btoa(secretKey);
+      return {
+        apiVersion: 'v1',
+        data: {
+          'aws-access-key-id': encodedAccessKey,
+          'aws-secret-access-key': encodedSecretKey,
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
 
-  case 'gcp':
-    const gcpCred = btoa(gcpBlob);
-    return {
-      apiVersion: 'v1',
-      data: {
-        'gcp-credentials': gcpCred
-      },
-      kind: 'Secret',
-      metadata: {
-        name,
-        namespace,
-      },
-      type: 'Opaque',
-    };
+    case 'gcp':
+      const gcpCred = btoa(gcpBlob);
+      return {
+        apiVersion: 'v1',
+        data: {
+          'gcp-credentials': gcpCred
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
 
-  case 'azure':
-    const azureCred = btoa(azureBlob);
-    return {
-      apiVersion: 'v1',
-      data: {
-        'azure-credentials': azureCred
-      },
-      kind: 'Secret',
-      metadata: {
-        name,
-        namespace,
-      },
-      type: 'Opaque',
-    };
+    case 'azure':
+      const azureCred = btoa(azureBlob);
+      return {
+        apiVersion: 'v1',
+        data: {
+          'azure-credentials': azureCred
+        },
+        kind: 'Secret',
+        metadata: {
+          name,
+          namespace,
+        },
+        type: 'Opaque',
+      };
 
   }
   // btoa => to base64, atob => from base64
@@ -311,31 +311,31 @@ export function updateStorageSecret(
   azureBlob: any
 ) {
   switch (bslProvider) {
-  case 'aws':
+    case 'aws':
 
-    // btoa => to base64, atob => from base64
-    const encodedAccessKey = btoa(accessKey);
-    const encodedSecretKey = btoa(secretKey);
-    return {
-      data: {
-        'aws-access-key-id': encodedAccessKey,
-        'aws-secret-access-key': encodedSecretKey,
-      },
-    };
-  case 'gcp':
-    const gcpCred = btoa(gcpBlob);
-    return {
-      data: {
-        'gcp-credentials': gcpCred
-      },
-    };
-  case 'azure':
-    const azureCred = btoa(azureBlob);
-    return {
-      data: {
-        'azure-credentials': azureCred
-      },
-    };
+      // btoa => to base64, atob => from base64
+      const encodedAccessKey = btoa(accessKey);
+      const encodedSecretKey = btoa(secretKey);
+      return {
+        data: {
+          'aws-access-key-id': encodedAccessKey,
+          'aws-secret-access-key': encodedSecretKey,
+        },
+      };
+    case 'gcp':
+      const gcpCred = btoa(gcpBlob);
+      return {
+        data: {
+          'gcp-credentials': gcpCred
+        },
+      };
+    case 'azure':
+      const azureCred = btoa(azureBlob);
+      return {
+        data: {
+          'azure-credentials': azureCred
+        },
+      };
   }
 }
 

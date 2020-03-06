@@ -8,15 +8,15 @@ const INITIAL_STATE = {
 
 export const authReducer = (state=INITIAL_STATE, action) => {
   switch (action.type) {
-  case AuthActionTypes.LOGIN_SUCCESS:
-    return { ...state, user: action.user };
-  case AuthActionTypes.LOGIN_FAILURE:
-    return { ...state, user: null };
-  case AuthActionTypes.SET_OAUTH_META:
-    return { ...state, oauthMeta: action.oauthMeta };
-  case AuthActionTypes.CERT_ERROR_OCCURRED:
-    return { ...state, certError: { failedUrl: action.failedUrl } };
-  default: return state;
+    case AuthActionTypes.LOGIN_SUCCESS:
+      return { ...state, user: action.user };
+    case AuthActionTypes.LOGIN_FAILURE:
+      return { ...state, user: null };
+    case AuthActionTypes.SET_OAUTH_META:
+      return { ...state, oauthMeta: action.oauthMeta };
+    case AuthActionTypes.CERT_ERROR_OCCURRED:
+      return { ...state, certError: { failedUrl: action.failedUrl } };
+    default: return state;
   }
 };
 

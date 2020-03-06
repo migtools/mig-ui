@@ -97,7 +97,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
       });
       return;
 
-    } else{
+    } else {
       setAddPlanDisabledObj({
         isAddPlanDisabled: false,
         disabledText: 'Click to create a plan.'

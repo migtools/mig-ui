@@ -26,19 +26,19 @@ const AddEditClusterModal = ({
 
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
-    case AddEditMode.Edit: {
-      props.updateCluster(clusterValues);
-      break;
-    }
-    case AddEditMode.Add: {
-      props.addCluster(clusterValues);
-      setCurrentClusterName(clusterValues.name);
-      break;
-    }
-    default: {
-      console.warn(
-        `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
-    }
+      case AddEditMode.Edit: {
+        props.updateCluster(clusterValues);
+        break;
+      }
+      case AddEditMode.Add: {
+        props.addCluster(clusterValues);
+        setCurrentClusterName(clusterValues.name);
+        break;
+      }
+      default: {
+        console.warn(
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
+      }
     }
   };
 

@@ -344,42 +344,42 @@ export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-  case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
-  case PlanActionTypes.INIT_STAGE: return initStage(state, action);
-  case PlanActionTypes.INIT_MIGRATION: return initMigration(state, action);
-  case PlanActionTypes.MIG_PLAN_FETCH_REQUEST: return migPlanFetchRequest(state, action);
-  case PlanActionTypes.MIG_PLAN_FETCH_SUCCESS: return migPlanFetchSuccess(state, action);
-  case PlanActionTypes.MIG_PLAN_FETCH_FAILURE: return migPlanFetchFailure(state, action);
-  case PlanActionTypes.NAMESPACE_FETCH_REQUEST: return namespaceFetchRequest(state, action);
-  case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
-  case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
-  case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
-  case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
-  case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
-  case PlanActionTypes.STAGING_SUCCESS: return stagingSuccess(state, action);
-  case PlanActionTypes.STAGING_FAILURE: return stagingFailure(state, action);
-  case PlanActionTypes.MIGRATION_SUCCESS: return migrationSuccess(state, action);
-  case PlanActionTypes.MIGRATION_FAILURE: return migrationFailure(state, action);
-  case PlanActionTypes.UPDATE_PLAN_LIST: return updatePlanList(state, action);
-  case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
-  case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
-  case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
-  case PlanActionTypes.PLAN_STATUS_POLL_START: return planStatusPollStart(state, action);
-  case PlanActionTypes.PLAN_STATUS_POLL_STOP: return planStatusPollStop(state, action);
-  case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
-  case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
-  case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
-  case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
-  case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
-  case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
-  case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
-  case PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST: return planCloseAndDeleteRequest(state, action);
-  case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
-    return planCloseAndDeleteSuccess(state, action);
-  case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
-    return planCloseAndDeleteFailure(state, action);
-  default:
-    return state;
+    case PlanActionTypes.ADD_PLAN_REQUEST: return addPlanRequest(state, action);
+    case PlanActionTypes.INIT_STAGE: return initStage(state, action);
+    case PlanActionTypes.INIT_MIGRATION: return initMigration(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_REQUEST: return migPlanFetchRequest(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_SUCCESS: return migPlanFetchSuccess(state, action);
+    case PlanActionTypes.MIG_PLAN_FETCH_FAILURE: return migPlanFetchFailure(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_REQUEST: return namespaceFetchRequest(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_SUCCESS: return namespaceFetchSuccess(state, action);
+    case PlanActionTypes.NAMESPACE_FETCH_FAILURE: return namespaceFetchFailure(state, action);
+    case PlanActionTypes.ADD_PLAN_SUCCESS: return addPlanSuccess(state, action);
+    case PlanActionTypes.ADD_PLAN_FAILURE: return addPlanFailure(state, action);
+    case PlanActionTypes.REMOVE_PLAN_SUCCESS: return removePlanSuccess(state, action);
+    case PlanActionTypes.STAGING_SUCCESS: return stagingSuccess(state, action);
+    case PlanActionTypes.STAGING_FAILURE: return stagingFailure(state, action);
+    case PlanActionTypes.MIGRATION_SUCCESS: return migrationSuccess(state, action);
+    case PlanActionTypes.MIGRATION_FAILURE: return migrationFailure(state, action);
+    case PlanActionTypes.UPDATE_PLAN_LIST: return updatePlanList(state, action);
+    case PlanActionTypes.UPDATE_CURRENT_PLAN_STATUS: return updateCurrentPlanStatus(state, action);
+    case PlanActionTypes.UPDATE_PLAN_MIGRATIONS: return updatePlanMigrations(state, action);
+    case PlanActionTypes.UPDATE_PLANS: return updatePlans(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_START: return planStatusPollStart(state, action);
+    case PlanActionTypes.PLAN_STATUS_POLL_STOP: return planStatusPollStop(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_REQUEST: return getPVResourcesRequest(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_SUCCESS: return getPVResourcesSuccess(state, action);
+    case PlanActionTypes.GET_PV_RESOURCES_FAILURE: return getPVResourcesFailure(state, action);
+    case PlanActionTypes.PLAN_POLL_START: return startPlanPolling(state, action);
+    case PlanActionTypes.PLAN_POLL_STOP: return stopPlanPolling(state, action);
+    case PlanActionTypes.RESET_CURRENT_PLAN: return resetCurrentPlan(state, action);
+    case PlanActionTypes.SET_CURRENT_PLAN: return setCurrentPlan(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST: return planCloseAndDeleteRequest(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS:
+      return planCloseAndDeleteSuccess(state, action);
+    case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
+      return planCloseAndDeleteFailure(state, action);
+    default:
+      return state;
   }
 };
 
