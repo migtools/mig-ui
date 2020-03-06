@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
+import { takeLatest, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
 import {
     AlertActions
@@ -30,43 +30,29 @@ export function* fetchOauthMeta(action) {
 }
 
 export function* fetchToken(action) {
-    try {
-        const { oauthClient, coreRedirect } = action;
-        const result = yield oauthClient.code.getToken(coreRedirect);
-        const user = result.data;
-        const currentUnixTime = moment().unix();
-        const expiryUnixTime = currentUnixTime + user.expires_in;
-        user.login_time = currentUnixTime;
-        user.expiry_time = expiryUnixTime;
-        localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
-        yield put(AuthActions.loginSuccess(user));
-        yield put(push('/'));
-    }
-    catch (error) {
-        throw error;
-    }
+    const { oauthClient, coreRedirect } = action;
+    const result = yield oauthClient.code.getToken(coreRedirect);
+    const user = result.data;
+    const currentUnixTime = moment().unix();
+    const expiryUnixTime = currentUnixTime + user.expires_in;
+    user.login_time = currentUnixTime;
+    user.expiry_time = expiryUnixTime;
+    localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
+    yield put(AuthActions.loginSuccess(user));
+    yield put(push('/'));
 }
 
 export function* initFromStorage(): any {
-    try {
-        const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
-        if (currentUser) {
-            yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
-        }
-    }
-    catch (error) {
-        throw error;
+    const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
+    if (currentUser) {
+        yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
     }
 }
 
 
 export function* logoutUser() {
-    try {
-        localStorage.removeItem(LS_KEY_CURRENT_USER);
-        yield put(push('/login?action=refresh'));
-    } catch (error) {
-        throw error;
-    }
+    localStorage.removeItem(LS_KEY_CURRENT_USER);
+    yield put(push('/login?action=refresh'));
 }
 
 
@@ -79,8 +65,4 @@ function* watchAuthEvents() {
 
 export default {
     watchAuthEvents
-    //   fetchOauthMeta,
-    //   fetchToken,
-    //   initFromStorage,
-    //   logoutUser,
 };
