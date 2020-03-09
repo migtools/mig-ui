@@ -22,7 +22,11 @@ import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import { AuthActions } from '../../auth/duck/actions';
+<<<<<<< HEAD
 import { push } from 'connected-react-router'
+=======
+import { push } from 'connected-react-router';
+>>>>>>> Remove all plan thunks (#720)
 import planUtils from './utils';
 import { PollingActions } from '../../common/duck/actions';
 
