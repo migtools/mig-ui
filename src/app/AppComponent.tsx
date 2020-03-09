@@ -13,10 +13,10 @@ import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
 import { clusterOperations } from './cluster/duck';
 import { storageOperations } from './storage/duck';
-import { planOperations } from './plan/duck';
 import { ClusterActions } from './cluster/duck/actions';
 import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
+import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
 
 
@@ -80,7 +80,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultPlanPolling = () => {
     const planPollParams = {
-      asyncFetch: planOperations.fetchPlansGenerator,
+      asyncFetch: planSagas.fetchPlansGenerator,
       callback: handlePlanPoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,

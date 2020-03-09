@@ -1,6 +1,5 @@
 import { withFormik, FormikProps } from 'formik';
 import WizardComponent from './WizardComponent';
-import planOperations from '../../duck/operations';
 import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
@@ -37,7 +36,7 @@ export interface IOtherProps {
   setCurrentPlan: (plan) => void;
   fetchNamespacesRequest: (clusterName) => void;
   getPVResourcesRequest: () => void;
-  addPlan: (planValues) => void;
+  addPlanRequest: (migPlan) => void;
   sourceClusterNamespaces: any[];
   pvResourceList: any[];
   onHandleWizardModalClose: () => void;
@@ -123,7 +122,7 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    addPlan: (plan) => dispatch(planOperations.addPlan(plan)),
+    addPlanRequest: (migPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
     fetchNamespacesRequest: (clusterName) => dispatch(PlanActions.namespaceFetchRequest(clusterName)),
     getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName: string) => dispatch(PlanActions.startPlanStatusPolling(planName)),

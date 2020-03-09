@@ -1,9 +1,11 @@
 import { IMigPlan } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
-import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const PlanActionTypes = {
+  RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
+  RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
+  ADD_PLAN_REQUEST: 'ADD_PLAN_REQUEST',
   ADD_PLAN_SUCCESS: 'ADD_PLAN_SUCCESS',
   ADD_PLAN_FAILURE: 'ADD_PLAN_FAILURE',
   UPDATE_PLAN_RESULTS: 'UPDATE_PLAN_RESULTS',
@@ -25,7 +27,6 @@ export const PlanActionTypes = {
   SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS: 'SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS',
   START_PV_POLLING: 'START_PV_POLLING',
   STOP_PV_POLLING: 'STOP_PV_POLLING',
-  ADD_PLAN_REQUEST: 'ADD_PLAN_REQUEST',
   PLAN_UPDATE_REQUEST: 'PLAN_UPDATE_REQUEST',
   PLAN_UPDATE_SUCCESS: 'PLAN_UPDATE_SUCCESS',
   PLAN_UPDATE_FAILURE: 'PLAN_UPDATE_FAILURE',
@@ -62,15 +63,6 @@ const updatePlans = (updatedPlans: IMigPlan[]) => ({
   updatedPlans,
 });
 
-const addPlanSuccess = (newPlan: IMigPlan) => ({
-  type: PlanActionTypes.ADD_PLAN_SUCCESS,
-  newPlan,
-});
-
-const addPlanFailure = (error) => ({
-  type: PlanActionTypes.ADD_PLAN_FAILURE,
-  error,
-});
 
 const removePlanSuccess = (id) => ({
   type: PlanActionTypes.REMOVE_PLAN_SUCCESS,
@@ -175,8 +167,19 @@ const planUpdateFailure = (error) => ({
   error
 });
 
-const addPlanRequest = () => ({
+const addPlanRequest = (migPlan: any) => ({
   type: PlanActionTypes.ADD_PLAN_REQUEST,
+  migPlan
+});
+
+const addPlanSuccess = (newPlan: IMigPlan) => ({
+  type: PlanActionTypes.ADD_PLAN_SUCCESS,
+  newPlan,
+});
+
+const addPlanFailure = (error) => ({
+  type: PlanActionTypes.ADD_PLAN_FAILURE,
+  error,
 });
 
 const initStage = (planName: string) => ({
@@ -265,7 +268,20 @@ const setCurrentPlan = (currentPlan) => ({
   currentPlan
 });
 
+const runMigrationRequest = (plan, disableQuiesce) => ({
+  type: PlanActionTypes.RUN_MIGRATION_REQUEST,
+  plan,
+  disableQuiesce
+});
+
+const runStageRequest = (plan) => ({
+  type: PlanActionTypes.RUN_STAGE_REQUEST,
+  plan,
+});
+
 export const PlanActions = {
+  runMigrationRequest,
+  runStageRequest,
   updatePlans,
   addPlanSuccess,
   addPlanFailure,

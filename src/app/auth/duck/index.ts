@@ -1,4 +1,4 @@
 import authReducer from './reducers';
-export { default as authOperations } from './operations';
+export { default as authSagas } from './sagas';
 export { AuthActions as authActionCreators } from './actions';
 export default authReducer;

@@ -42,7 +42,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     stopPlanStatusPolling,
     planUpdateRequest,
     pvResourceList,
-    addPlan,
+    addPlanRequest,
     setCurrentPlan,
     resetCurrentPlan,
     onHandleWizardModalClose,
@@ -228,7 +228,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       // requested namespaces and discover related PVs
 
       if (!currentPlan && !isEdit) {
-        addPlan({
+        addPlanRequest({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
           targetCluster: props.values.targetCluster,

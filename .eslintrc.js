@@ -9,10 +9,10 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
     ],
-    rules:
-
-    {
-        "indent": ["error", 2],
+    rules: {
+        "indent": ["error", 2, { "SwitchCase": 1 }],
+        "keyword-spacing": 2,
+        "switch-colon-spacing": ["error", { "after": true, "before": false }],
         "@typescript-eslint/interface-name-prefix": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/no-explicit-any": "off",
@@ -25,4 +25,4 @@ module.exports = {
         "no-prototype-builtins": "off",
         "no-useless-escape": "off"
     }
-};
+}
