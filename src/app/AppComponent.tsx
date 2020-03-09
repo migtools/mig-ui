@@ -11,8 +11,8 @@ import { ConnectedRouter } from 'connected-react-router';
 import CertErrorComponent from './auth/CertErrorComponent';
 import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
-import { clusterOperations } from './cluster/duck';
-import { storageOperations } from './storage/duck';
+import { clusterSagas } from './cluster/duck';
+import { storageSagas } from './storage/duck';
 import { ClusterActions } from './cluster/duck/actions';
 import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
@@ -92,7 +92,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultClusterPolling = () => {
     const clusterPollParams = {
-      asyncFetch: clusterOperations.fetchClustersGenerator,
+      asyncFetch: clusterSagas.fetchClustersGenerator,
       callback: handleClusterPoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
@@ -104,7 +104,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultStoragePolling = () => {
     const storagePollParams = {
-      asyncFetch: storageOperations.fetchStorageGenerator,
+      asyncFetch: storageSagas.fetchStorageGenerator,
       callback: handleStoragePoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
