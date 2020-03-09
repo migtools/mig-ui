@@ -1,6 +1,5 @@
 import { history } from './helpers';
 import { createLogger } from 'redux-logger';
-import thunk from 'redux-thunk';
 import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './reducers';
 import { routerMiddleware } from 'connected-react-router';
@@ -29,7 +28,7 @@ const sagaMiddleware = createSagaMiddleware();
 
 const enhancers = [];
 const logger = createLogger({ collapsed: true });
-const middleware = [thunk, logger, sagaMiddleware, routerMiddleware(history)];
+const middleware = [logger, sagaMiddleware, routerMiddleware(history)];
 
 if (devMode === 'local') {
   const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -44,8 +43,6 @@ const composedEnhancers = compose(
 );
 
 const createdStore = () => {
-  //TODO: remove any dependency on redux thunk. Added any type here to fix internal thunk type error
-  // TS4082: Default export of the module has or is using private name '$CombinedState'.
   const store = createStore<any, any, any, any>(persistedReducer, composedEnhancers);
   sagaMiddleware.run(rootSaga);
   return { store, persistor: persistStore(store) };
