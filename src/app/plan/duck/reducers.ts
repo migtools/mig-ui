@@ -65,6 +65,11 @@ export const migPlanFetchFailure =
     return { ...state, isError: true, isFetching: false };
   };
 
+export const addPlanRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
+    return { ...state };
+  };
+
 export const addPlanSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanSuccess>) => {
     const newPlan = {
@@ -85,11 +90,6 @@ export const addPlanFailure =
     };
   };
 
-export const addPlanRequest =
-  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addPlanRequest>) => {
-    return {
-    };
-  };
 
 export const removePlanSuccess =
   (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.removePlanSuccess>) => {
