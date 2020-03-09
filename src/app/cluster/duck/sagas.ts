@@ -28,6 +28,79 @@ import {
 } from '../../common/add_edit_state';
 import Q from 'q';
 
+function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
+  const refs: Array<Promise<any>> = [];
+
+  migClusters.forEach(cluster => {
+    const secretRef = cluster.spec.serviceAccountSecretRef;
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      secretRef.namespace
+    );
+    refs.push(client.get(secretResource, secretRef.name));
+  });
+
+  return refs;
+}
+
+function groupClusters(migClusters: any[], refs: any[]): any[] {
+  return migClusters.map(mc => {
+    const fullCluster = {
+      MigCluster: mc,
+    };
+
+    if (!mc.spec.isHostCluster) {
+      fullCluster['Secret'] = refs.find(
+        i => i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
+      ).data;
+    }
+
+    return fullCluster;
+  });
+}
+
+function* fetchClustersGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigCluster, state.migMeta.namespace);
+  try {
+    let clusterList = yield client.list(resource);
+    clusterList = yield clusterList.data.items;
+    const nonHostClusters = clusterList.filter(c => !c.spec.isHostCluster);
+    const refs = yield Promise.all(fetchMigClusterRefs(client, state.migMeta, nonHostClusters));
+    const groupedClusters = groupClusters(clusterList, refs);
+    return { updatedClusters: groupedClusters, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
+function* removeClusterSaga(action) {
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace
+    );
+    const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+
+    yield Promise.all([
+      client.delete(secretResource, name),
+      client.delete(migClusterResource, name),
+    ]);
+
+    yield put(ClusterActions.removeClusterSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(ClusterActions.removeClusterFailure(err));
+  }
+}
+
 function* addClusterRequest(action) {
   const state = yield select();
   const { migMeta } = state;
@@ -348,8 +421,14 @@ function* watchClusterAddEditStatus() {
   yield takeLatest(ClusterActionTypes.WATCH_CLUSTER_ADD_EDIT_STATUS, startWatchingClusterAddEditStatus);
 }
 
+function* watchRemoveClusterRequest() {
+  yield takeLatest(ClusterActionTypes.REMOVE_CLUSTER_REQUEST, removeClusterSaga);
+}
+
 export default {
+  watchRemoveClusterRequest,
   watchAddClusterRequest,
   watchUpdateClusterRequest,
   watchClusterAddEditStatus,
+  fetchClustersGenerator
 };

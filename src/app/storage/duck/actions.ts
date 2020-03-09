@@ -14,6 +14,7 @@ export const StorageActionTypes = {
   ADD_STORAGE_REQUEST: 'ADD_STORAGE_REQUEST',
   ADD_STORAGE_SUCCESS: 'ADD_STORAGE_SUCCESS',
   ADD_STORAGE_FAILURE: 'ADD_STORAGE_FAILURE',
+  REMOVE_STORAGE_REQUEST: 'REMOVE_STORAGE_REQUEST',
   REMOVE_STORAGE_FAILURE: 'REMOVE_STORAGE_FAILURE',
   REMOVE_STORAGE_SUCCESS: 'REMOVE_STORAGE_SUCCESS',
   UPDATE_STORAGE_SUCCESS: 'UPDATE_STORAGE_SUCCESS',
@@ -35,6 +36,11 @@ const addStorageSuccess = (newStorage: IMigStorage) => ({
 const addStorageFailure = (error) => ({
   type: StorageActionTypes.ADD_STORAGE_FAILURE,
   error,
+});
+
+const removeStorageRequest = (name: string) => ({
+  type: StorageActionTypes.REMOVE_STORAGE_REQUEST,
+  name,
 });
 
 const removeStorageFailure = (storageName: string) => ({
@@ -122,6 +128,7 @@ export const StorageActions = {
   updateStorageRequest,
   addStorageSuccess,
   addStorageFailure,
+  removeStorageRequest,
   removeStorageFailure,
   removeStorageSuccess,
   updateStorageSuccess,

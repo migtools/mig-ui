@@ -28,6 +28,79 @@ import {
 } from '../../common/add_edit_state';
 import Q from 'q';
 
+function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
+  const refs: Array<Promise<any>> = [];
+
+  migStorages.forEach(storage => {
+    const secretRef = storage.spec.backupStorageConfig.credsSecretRef;
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      secretRef.namespace
+    );
+    refs.push(client.get(secretResource, secretRef.name));
+  });
+
+  return refs;
+}
+
+function groupStorages(migStorages: any[], refs: any[]): any[] {
+  return migStorages.map(ms => {
+    const fullStorage = {
+      MigStorage: ms,
+    };
+    // TODO: When VSL configuration is supported separate from BSL,
+    // this needs to be updated to support two different, distinct secrets
+    fullStorage['Secret'] = refs.find(
+      ref => ref.data.kind === 'Secret' &&
+        ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
+    ).data;
+
+    return fullStorage;
+  });
+}
+
+function* fetchStorageGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigStorage, state.migMeta.namespace);
+  try {
+    let storageList = yield client.list(resource);
+    storageList = yield storageList.data.items;
+    const refs = yield Promise.all(fetchMigStorageRefs(client, state.migMeta, storageList));
+    const groupedStorages = groupStorages(storageList, refs);
+    return { updatedStorages: groupedStorages, isSuccessful: true };
+  } catch (e) {
+    return { e, isSuccessful: false };
+  }
+}
+
+
+function* removeStorageSaga(action) {
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.namespace
+    );
+    const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
+
+    const arr = yield Promise.all([
+      client.delete(secretResource, name),
+      client.delete(migStorageResource, name),
+    ]);
+
+    yield put(StorageActions.removeStorageSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+  }
+}
+
+
 function* addStorageRequest(action) {
   const state = yield select();
   const { migMeta } = state;
@@ -431,7 +504,16 @@ function* watchStorageAddEditStatus() {
   );
 }
 
+function* watchRemoveStorageRequest() {
+  yield takeLatest(
+    StorageActionTypes.REMOVE_STORAGE_REQUEST,
+    removeStorageSaga
+  );
+}
+
 export default {
+  fetchStorageGenerator,
+  watchRemoveStorageRequest,
   watchAddStorageRequest,
   watchUpdateStorageRequest,
   watchStorageAddEditStatus,
