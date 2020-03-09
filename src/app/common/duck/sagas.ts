@@ -18,27 +18,23 @@ function* poll(action) {
   const params = { ...action.params };
 
   while (true) {
-    try {
-      const response = yield call(params.asyncFetch);
-      const shouldContinue = params.callback(response);
+    const response = yield call(params.asyncFetch);
+    const shouldContinue = params.callback(response);
 
-      if (!shouldContinue) {
-        const state = yield select();
-        const migMeta = state.migMeta;
-        const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+    if (!shouldContinue) {
+      const state = yield select();
+      const migMeta = state.migMeta;
+      const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
 
-        const alertModalObj = {
-          name: params.pollName,
-          errorMessage: 'error'
-        };
-        yield put(AlertActions.alertErrorModal(alertModalObj));
-        yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
-        yield put(PlanActions.stopPlanPolling());
-        yield put(ClusterActions.stopClusterPolling());
-        yield put(StorageActions.stopStoragePolling());
-      }
-    } catch (err) {
-      throw err;
+      const alertModalObj = {
+        name: params.pollName,
+        errorMessage: 'error'
+      };
+      yield put(AlertActions.alertErrorModal(alertModalObj));
+      yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+      yield put(PlanActions.stopPlanPolling());
+      yield put(ClusterActions.stopClusterPolling());
+      yield put(StorageActions.stopStoragePolling());
     }
     yield delay(params.delay);
   }

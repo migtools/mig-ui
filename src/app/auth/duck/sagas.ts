@@ -2,7 +2,7 @@ import axios from 'axios';
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
 import {
-    AlertActions
+  AlertActions
 } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
