@@ -2,12 +2,10 @@ import React, { useEffect, useContext, useState } from 'react';
 import {
   Modal,
   Button,
-  Alert,
-  AlertActionCloseButton,
-  AlertProps,
   Grid,
   GridItem
 } from '@patternfly/react-core';
+import { useHistory } from "react-router-dom";
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
 import { PollingContext } from '../../home/duck/context';
@@ -17,21 +15,21 @@ interface IProps {
   onHandleClose: () => null;
   isOpen: boolean;
   clearErrors: () => null;
-  errorModalObject: string;
+  errorModalObj: any;
 }
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
+  const history = useHistory();
   const pollingContext = useContext(PollingContext);
 
-
-  const { isOpen, errorModalObject, clearErrors } = props;
-  if (!errorModalObject) { return null; }
+  const { isOpen, errorModalObj, clearErrors } = props;
+  if (!errorModalObj) { return null; }
   return (
     <Modal
       isSmall
       isOpen={isOpen}
       onClose={() => clearErrors()}
-      title={`Error while fetching data`}
+      title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
       <Grid gutter="md">
         <form
@@ -40,18 +38,20 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
             Unable to retrieve one or more resource objects (migcluster, migstorage, migplan).
           </GridItem>
           <GridItem className={styles.gridMargin}>
-            Refresh your browser and try again
+            Refresh your certificate and try again
           </GridItem>
           <GridItem>
             <Grid gutter="md">
               <GridItem>
                 <Button variant="primary"
                   onClick={() => {
-                    // window.location.reload();
+                    history.push('/cert-error');
+                    clearErrors()
+
                   }
                   }
                 >
-                  Try again
+                  Refresh Certificate
                 </Button>
               </GridItem>
               <GridItem>

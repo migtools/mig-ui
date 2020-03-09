@@ -51,7 +51,6 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
-    //add alert trigger 
   }, []);
   const [expandedStateObj, setExpandedStateObj] = useState(
     {

@@ -42,7 +42,6 @@ const alertSuccessTimeout = (params?: any) => ({
   params,
 });
 
-//error modal actions
 const errorModalClear = () => ({
   type: AlertActionTypes.ERROR_MODAL_CLEAR
 });
@@ -51,7 +50,6 @@ const alertErrorModal = (errorModalObject: any) => ({
   type: AlertActionTypes.ALERT_ERROR_MODAL,
   errorModalObject
 });
-//
 
 export const AlertActions = {
   alertSuccess,

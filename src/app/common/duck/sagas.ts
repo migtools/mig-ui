@@ -10,7 +10,6 @@ import { AuthActions } from '../../auth/duck/actions';
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
-import { push } from 'connected-react-router';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -22,39 +21,21 @@ function* poll(action) {
     try {
       const response = yield call(params.asyncFetch);
       const shouldContinue = params.callback(response);
-      console.log('name', params.pollName, 'params', params)
-
-      const isSelfSignedCertError = (response) => {
-        const e = response.e.toJSON();
-        // HACK: Doing our best to determine whether or not the
-        // error was produced due to a self signed cert error.
-        // It's an extremely barren object.
-        return !e.code && e.message === 'Network Error';
-      };
 
       if (!shouldContinue) {
-        if (isSelfSignedCertError) {
-          const state = yield select();
-          const migMeta = state.migMeta;
-          const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+        const state = yield select();
+        const migMeta = state.migMeta;
+        const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
 
-          yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
-          yield put(push('/cert-error'));
-
-        } else {
-          const alertModalObj = {
-            name: params.pollName,
-            errorMessage: isSelfSignedCertError
-          };
-
-          yield put(AlertActions.alertErrorModal(alertModalObj));
-          yield put(PlanActions.stopPlanPolling());
-          yield put(ClusterActions.stopClusterPolling());
-          yield put(StorageActions.stopStoragePolling());
-
-        }
-
-        throw new Error('Error while fetching data.');
+        const alertModalObj = {
+          name: params.pollName,
+          errorMessage: 'error'
+        };
+        yield put(AlertActions.alertErrorModal(alertModalObj));
+        yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+        yield put(PlanActions.stopPlanPolling());
+        yield put(ClusterActions.stopClusterPolling());
+        yield put(StorageActions.stopStoragePolling());
       }
     } catch (err) {
       throw err;

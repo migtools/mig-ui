@@ -31,7 +31,7 @@ export default createReducer(
       return { ...state, errorModalObject: action.errorModalObject, };
     },
     [AlertActionTypes.ERROR_MODAL_CLEAR]: (state, action) => {
-      return { ...state, errorModalText: null };
+      return { ...state, errorModalObject: null };
     },
     [AlertActionTypes.ALERT_CLEAR]: (state, action) => {
       return { ...state, successText: null, errorText: null, progressText: null };
