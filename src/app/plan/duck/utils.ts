@@ -40,7 +40,6 @@ const groupPlan: any = (plan, response) => {
 };
 
 export default {
-  getMigrationStatus,
   groupPlan,
   groupPlans,
 };
