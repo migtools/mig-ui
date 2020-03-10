@@ -1,22 +1,5 @@
 import moment from 'moment';
 
-const getMigrationStatus = (plan, newResObject) => {
-  const matchingMigration = plan.Migrations.find(
-    s => s.metadata.name === newResObject.data.metadata.name
-  );
-  const statusObj = { success: null, error: null };
-
-  if (matchingMigration && matchingMigration.status) {
-    const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-      c => c.type === 'Succeeded'
-    );
-    statusObj.success = hasSucceededCondition;
-    const hasErrorCondition = !!matchingMigration.status.conditions.some(c => c.type === 'Failed');
-    statusObj.error = hasErrorCondition;
-  }
-  return statusObj;
-};
-
 function groupPlans(migPlans: any[], refs: any[]): any[] {
   return migPlans.map(mp => {
     const fullPlan = {
@@ -57,7 +40,6 @@ const groupPlan: any = (plan, response) => {
 };
 
 export default {
-  getMigrationStatus,
   groupPlan,
   groupPlans,
 };

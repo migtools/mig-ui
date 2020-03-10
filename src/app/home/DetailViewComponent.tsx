@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import clusterOperations from '../cluster/duck/operations';
-import storageOperations from '../storage/duck/operations';
-import planOperations from '../plan/duck/operations';
+import clusterSagas from '../cluster/duck/sagas';
+import storageSagas from '../storage/duck/sagas';
 import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
@@ -32,8 +31,8 @@ interface IProps {
   removeStorage: (id) => void;
   removePlan: (id) => void;
   removeCluster: (id) => void;
-  runStage: (plan) => void;
-  runMigration: (plan, disableQuiesce) => void;
+  runStageRequest: (plan) => void;
+  runMigrationRequest: (plan, disableQuiesce) => void;
   updateStageProgress: (plan, progress) => void;
   stagingSuccess: (plan) => void;
   migMeta: string;
@@ -60,8 +59,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     removeStorage,
     removePlan,
     removeCluster,
-    runStage,
-    runMigration,
+    runStageRequest,
+    runMigrationRequest,
     planCloseAndDeleteRequest,
     planList,
     clusterAssociatedPlans,
@@ -109,10 +108,10 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
 
 
   const handleStageTriggered = plan => {
-    runStage(plan);
+    runStageRequest(plan);
   };
   const handleRunMigration = (plan, disableQuiesce) => {
-    runMigration(plan, disableQuiesce);
+    runMigrationRequest(plan, disableQuiesce);
   };
 
   const handleDeletePlan = plan => {
@@ -192,10 +191,10 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = dispatch => {
   return {
-    removeCluster: id => dispatch(clusterOperations.removeCluster(id)),
-    removeStorage: id => dispatch(storageOperations.removeStorage(id)),
-    runStage: plan => dispatch(planOperations.runStage(plan)),
-    runMigration: (plan, disableQuiesce) => dispatch(planOperations.runMigration(plan, disableQuiesce)),
+    runStageRequest: plan => dispatch(PlanActions.runStageRequest(plan)),
+    runMigrationRequest: (plan, disableQuiesce) => dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
+    removeCluster: name => dispatch(ClusterActions.removeClusterRequest(name)),
+    removeStorage: name => dispatch(StorageActions.removeStorageRequest(name)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),

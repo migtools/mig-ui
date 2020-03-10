@@ -86,7 +86,6 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.0.3",
-    "redux-thunk": "^2.3.0",
     "reduxsauce": "^1.0.1",
     "reselect": "^4.0.0",
     "sass": "^1.22.10",

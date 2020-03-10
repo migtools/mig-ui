@@ -11,12 +11,12 @@ import { ConnectedRouter } from 'connected-react-router';
 import CertErrorComponent from './auth/CertErrorComponent';
 import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
-import { clusterOperations } from './cluster/duck';
-import { storageOperations } from './storage/duck';
-import { planOperations } from './plan/duck';
+import { clusterSagas } from './cluster/duck';
+import { storageSagas } from './storage/duck';
 import { ClusterActions } from './cluster/duck/actions';
 import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
+import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
 
 
@@ -80,7 +80,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultPlanPolling = () => {
     const planPollParams = {
-      asyncFetch: planOperations.fetchPlansGenerator,
+      asyncFetch: planSagas.fetchPlansGenerator,
       callback: handlePlanPoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
@@ -92,7 +92,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultClusterPolling = () => {
     const clusterPollParams = {
-      asyncFetch: clusterOperations.fetchClustersGenerator,
+      asyncFetch: clusterSagas.fetchClustersGenerator,
       callback: handleClusterPoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,
@@ -104,7 +104,7 @@ const AppComponent: React.SFC<IProps> = ({
 
   const startDefaultStoragePolling = () => {
     const storagePollParams = {
-      asyncFetch: storageOperations.fetchStorageGenerator,
+      asyncFetch: storageSagas.fetchStorageGenerator,
       callback: handleStoragePoll,
       delay: StatusPollingInterval,
       retryOnFailure: true,

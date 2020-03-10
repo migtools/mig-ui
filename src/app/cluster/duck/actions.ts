@@ -5,6 +5,7 @@ export const ClusterActionTypes = {
   UPDATE_CLUSTERS: 'UPDATE_CLUSTERS',
   ADD_CLUSTER_SUCCESS: 'ADD_CLUSTER_SUCCESS',
   ADD_CLUSTER_FAILURE: 'ADD_CLUSTER_FAILURE',
+  REMOVE_CLUSTER_REQUEST: 'REMOVE_CLUSTER_REQUEST',
   REMOVE_CLUSTER_SUCCESS: 'REMOVE_CLUSTER_SUCCESS',
   REMOVE_CLUSTER_FAILURE: 'REMOVE_CLUSTER_FAILURE',
   UPDATE_CLUSTER_SUCCESS: 'UPDATE_CLUSTER_SUCCESS',
@@ -34,6 +35,11 @@ const addClusterSuccess = (newCluster: IMigCluster) => ({
 const addClusterFailure = (error) => ({
   type: ClusterActionTypes.ADD_CLUSTER_FAILURE,
   error,
+});
+
+const removeClusterRequest = (name) => ({
+  type: ClusterActionTypes.REMOVE_CLUSTER_REQUEST,
+  name,
 });
 
 const removeClusterSuccess = (name) => ({
@@ -107,6 +113,7 @@ export const ClusterActions = {
   updateClusters,
   addClusterSuccess,
   addClusterFailure,
+  removeClusterRequest,
   removeClusterSuccess,
   removeClusterFailure,
   updateClusterSuccess,
