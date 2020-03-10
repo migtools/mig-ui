@@ -13,7 +13,7 @@ function createReducer(initialState, handlers) {
 }
 
 export default createReducer(
-  { successText: null, errorText: null, progressText: null },
+  { successText: null, errorText: null, progressText: null, errorModalObject: null },
   {
     [AlertActionTypes.ALERT_PROGRESS]: (state, action) => {
       const text = action.text.trim();
@@ -26,6 +26,12 @@ export default createReducer(
     [AlertActionTypes.ALERT_ERROR]: (state, action) => {
       const text = action.text.trim();
       return { ...state, errorText: text };
+    },
+    [AlertActionTypes.ALERT_ERROR_MODAL]: (state, action) => {
+      return { ...state, errorModalObject: action.errorModalObject, };
+    },
+    [AlertActionTypes.ERROR_MODAL_CLEAR]: (state, action) => {
+      return { ...state, errorModalObject: null };
     },
     [AlertActionTypes.ALERT_CLEAR]: (state, action) => {
       return { ...state, successText: null, errorText: null, progressText: null };

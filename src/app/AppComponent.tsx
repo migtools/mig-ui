@@ -18,12 +18,14 @@ import { StorageActions } from './storage/duck/actions';
 import { PlanActions } from './plan/duck/actions';
 import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
+import ErrorModal from './common/components/ErrorModal';
 
 
 
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
+  errorModalObject: any;
   successMessage: any;
   progressMessage: any;
   startPlanPolling: (params) => void;
@@ -40,6 +42,7 @@ interface IProps {
 
 const AppComponent: React.SFC<IProps> = ({
   errorMessage,
+  errorModalObject,
   successMessage,
   progressMessage,
   isLoggedIn,
@@ -86,6 +89,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'plan'
     };
     startPlanPolling(planPollParams);
   };
@@ -98,6 +102,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'cluster'
     };
     startClusterPolling(clusterPollParams);
   };
@@ -110,6 +115,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
+      pollName: 'storage'
     };
     startStoragePolling(storagePollParams);
   };
@@ -120,7 +126,6 @@ const AppComponent: React.SFC<IProps> = ({
       <AlertModal alertMessage={progressMessage} alertType="info" />
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
-
       <PollingContext.Provider value={{
         startDefaultClusterPolling: () => startDefaultClusterPolling(),
         startDefaultStoragePolling: () => startDefaultStoragePolling(),
@@ -139,6 +144,7 @@ const AppComponent: React.SFC<IProps> = ({
           stopPlanPolling();
         }
       }}>
+        <ErrorModal errorModalObj={errorModalObject} isOpen />
 
         <ConnectedRouter history={history}>
           <Switch>
@@ -161,6 +167,7 @@ export default connect(
   state => ({
     isLoggedIn: !!state.auth.user,
     errorMessage: state.common.errorText,
+    errorModalObject: state.common.errorModalObject,
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
     clusterList: state.cluster.clusterList

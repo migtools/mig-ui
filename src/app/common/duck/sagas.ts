@@ -1,13 +1,15 @@
-import { takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
+import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import {
   AlertActions,
   PollingActions,
   PollingActionTypes,
   AlertActionTypes
 } from '../../common/duck/actions';
-import { PlanActionTypes } from '../../plan/duck/actions';
-import { StorageActionTypes } from '../../storage/duck/actions';
-import { ClusterActionTypes } from '../../cluster/duck/actions';
+import { AuthActions } from '../../auth/duck/actions';
+
+import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
+import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
+import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -16,15 +18,23 @@ function* poll(action) {
   const params = { ...action.params };
 
   while (true) {
-    try {
-      const response = yield call(params.asyncFetch);
-      const shouldContinue = params.callback(response);
+    const response = yield call(params.asyncFetch);
+    const shouldContinue = params.callback(response);
 
-      if (!shouldContinue) {
-        throw new Error('Error while fetching data.');
-      }
-    } catch (e) {
-      throw new Error(e);
+    if (!shouldContinue) {
+      const state = yield select();
+      const migMeta = state.migMeta;
+      const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+
+      const alertModalObj = {
+        name: params.pollName,
+        errorMessage: 'error'
+      };
+      yield put(AlertActions.alertErrorModal(alertModalObj));
+      yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+      yield put(PlanActions.stopPlanPolling());
+      yield put(ClusterActions.stopClusterPolling());
+      yield put(StorageActions.stopStoragePolling());
     }
     yield delay(params.delay);
   }

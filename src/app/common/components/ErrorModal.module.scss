@@ -1,0 +1,18 @@
+@import "src/colors";
+
+.modalHeader {
+    font-weight: 600 !important;
+}
+
+.gridMargin {
+    margin: 1em 0 !important;
+}
+
+.actionButtons {
+    margin-top: 4em !important;
+}
+
+.errorIconStyles {
+    margin-right: .4em !important;
+    color: $statusRed;
+}
