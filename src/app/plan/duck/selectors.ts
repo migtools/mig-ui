@@ -259,7 +259,7 @@ const getPlansWithStatus = createSelector(
           if (criticalCondition) {
             status.progress = 100;
             status.isFailed = true;
-            status.stepName = 'Failed';
+            status.stepName = criticalCondition.message;
             status.end = "--"
             return status;
           }
