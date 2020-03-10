@@ -3,8 +3,14 @@ import {
   Modal,
   Button,
   Grid,
-  GridItem
+  GridItem,
+  Title,
+  TitleLevel,
+  BaseSizes
 } from '@patternfly/react-core';
+import {
+  ErrorCircleOIcon,
+} from '@patternfly/react-icons';
 import { useHistory } from "react-router-dom";
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
@@ -24,8 +30,19 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
 
   const { isOpen, errorModalObj, clearErrors } = props;
   if (!errorModalObj) { return null; }
+
+  const header = (
+    <React.Fragment>
+      <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+        <ErrorCircleOIcon className={styles.errorIconStyles} />
+        {`Error while fetching ${errorModalObj.name || 'data'}`}
+      </Title>
+    </React.Fragment>
+  );
+
   return (
     <Modal
+      header={header}
       isSmall
       isOpen={isOpen}
       onClose={() => clearErrors()}
@@ -40,9 +57,9 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
           <GridItem className={styles.gridMargin}>
             Refresh your certificate and try again
           </GridItem>
-          <GridItem>
+          <GridItem className={styles.actionButtons}>
             <Grid gutter="md">
-              <GridItem>
+              <GridItem span={5}>
                 <Button variant="primary"
                   onClick={() => {
                     history.push('/cert-error');
@@ -54,7 +71,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   Refresh Certificate
                 </Button>
               </GridItem>
-              <GridItem>
+              <GridItem span={4}>
                 <Button
                   key="cancel"
                   variant="secondary"
@@ -72,7 +89,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
           </GridItem>
         </form>
       </Grid>
-    </Modal>
+    </Modal >
   );
 };
 
