@@ -42,6 +42,10 @@ export const PlanActionTypes = {
   PLAN_STATUS_POLL_START: 'PLAN_STATUS_POLL_START',
   PLAN_STATUS_POLL_STOP: 'PLAN_STATUS_POLL_STOP',
   PV_UPDATE_POLL_STOP: 'PV_UPDATE_POLL_STOP',
+  MIGRATION_POLL_START: 'MIGRATION_POLL_START',
+  MIGRATION_POLL_STOP: 'MIGRATION_POLL_STOP',
+  STAGE_POLL_START: 'STAGE_POLL_START',
+  STAGE_POLL_STOP: 'STAGE_POLL_STOP',
   GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST',
   GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS',
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE',
@@ -250,6 +254,24 @@ const stopPlanStatusPolling = (planName: string) => ({
   planName
 });
 
+const startStagePolling = (params?: any) => ({
+  type: PlanActionTypes.STAGE_POLL_START,
+  params,
+});
+
+const stopStagePolling = () => ({
+  type: PlanActionTypes.STAGE_POLL_STOP,
+});
+
+const startMigrationPolling = (params?: any) => ({
+  type: PlanActionTypes.MIGRATION_POLL_START,
+  params,
+});
+
+const stopMigrationPolling = () => ({
+  type: PlanActionTypes.MIGRATION_POLL_STOP,
+});
+
 const startPlanPolling = (params?: any) => ({
   type: PlanActionTypes.PLAN_POLL_START,
   params,
@@ -325,4 +347,8 @@ export const PlanActions = {
   stopPlanPolling,
   resetCurrentPlan,
   setCurrentPlan,
+  startStagePolling,
+  stopStagePolling,
+  startMigrationPolling,
+  stopMigrationPolling,
 };

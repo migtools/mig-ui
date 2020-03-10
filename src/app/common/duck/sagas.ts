@@ -50,31 +50,6 @@ function* watchClustersPolling() {
   }
 }
 
-function* checkStatus(action) {
-  const params = { ...action.params };
-  while (true) {
-    const generatorRes = yield call(params.asyncFetch);
-    const pollingStatus = params.callback(generatorRes, params.statusItem);
-
-    switch (pollingStatus) {
-      case 'SUCCESS':
-        yield put(PollingActions.stopStatusPolling());
-        break;
-      case 'FAILURE':
-        yield put(PollingActions.stopStatusPolling());
-        break;
-      default:
-        break;
-    }
-    yield delay(params.delay);
-  }
-}
-function* watchStatusPolling() {
-  while (true) {
-    const data = yield take(PollingActionTypes.STATUS_POLL_START);
-    yield race([call(checkStatus, data), take(PollingActionTypes.STATUS_POLL_STOP)]);
-  }
-}
 
 export function* progressTimeoutSaga(action) {
   try {
@@ -116,6 +91,5 @@ export default {
   watchStoragePolling,
   watchClustersPolling,
   watchPlanPolling,
-  watchStatusPolling,
   watchAlerts,
 };

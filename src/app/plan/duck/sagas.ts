@@ -22,7 +22,7 @@ import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import { AuthActions } from '../../auth/duck/actions';
-import { push } from 'connected-react-router';
+import { push } from 'connected-react-router'
 import planUtils from './utils';
 import { PollingActions } from '../../common/duck/actions';
 
@@ -464,23 +464,36 @@ function* fetchPlansGenerator() {
   }
 }
 
-function* getStageStatusCondition(pollingResponse, newObjectRes) {
-  const matchingPlan = pollingResponse.updatedPlans.find(
-    p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
+function getStageStatusCondition(updatedPlans, createMigRes) {
+  const matchingPlan = updatedPlans.updatedPlans.find(
+    p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
+  const statusObj = { status: null, planName: null, errorMessage: null };
 
-  const migStatus = matchingPlan
-    ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-    : null;
-  if (migStatus.success) {
-    yield put(PlanActions.stagingSuccess(newObjectRes.data.spec.migPlanRef.name));
-    yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
-    return 'SUCCESS';
-  } else if (migStatus.error) {
-    yield put(PlanActions.stagingFailure(migStatus.error));
-    yield put(AlertActions.alertErrorTimeout('Staging Failed'));
-    return 'FAILURE';
+  if (matchingPlan && matchingPlan.Migrations) {
+    const matchingMigration = matchingPlan.Migrations.find(
+      s => s.metadata.name === createMigRes.data.metadata.name
+    );
+
+
+    if (matchingMigration && matchingMigration.status) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Succeeded'
+      );
+      if (hasSucceededCondition) {
+        statusObj.status = 'SUCCESS'
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(c => c.type === 'Failed' || c.category === 'Critical');
+      const errorCondition = matchingMigration.status.conditions.find(c => c.type === 'Failed' || c.category === 'Critical');
+      if (hasErrorCondition) {
+        statusObj.status = 'FAILURE'
+        statusObj.errorMessage = errorCondition.message;
+      }
+    }
   }
+  return statusObj;
+
 }
 function* runStageSaga(action) {
   try {
@@ -508,14 +521,13 @@ function* runStageSaga(action) {
 
 
     const params = {
-      asyncFetch: fetchPlansGenerator,
+      fetchPlansGenerator: fetchPlansGenerator,
       delay: PlanMigrationPollingInterval,
-      callback: getStageStatusCondition,
-      type: 'STAGE',
-      statusItem: createMigRes,
+      getStageStatusCondition: getStageStatusCondition,
+      createMigRes: createMigRes,
     };
 
-    yield put(PollingActions.startStatusPolling(params));
+    yield put(PlanActions.startStagePolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
@@ -523,23 +535,61 @@ function* runStageSaga(action) {
   }
 }
 
-function* getMigrationStatusCondition(pollingResponse, newObjectRes) {
-  const matchingPlan = pollingResponse.updatedPlans.find(
-    p => p.MigPlan.metadata.name === newObjectRes.data.spec.migPlanRef.name
-  );
-  const migStatus = matchingPlan
-    ? planUtils.getMigrationStatus(matchingPlan, newObjectRes)
-    : null;
-  if (migStatus.success) {
-    yield put(PlanActions.migrationSuccess(newObjectRes.data.spec.migPlanRef.name));
-    yield put(PlanActions.planCloseRequest(newObjectRes.data.spec.migPlanRef.name));
-    yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
-    return 'SUCCESS';
-  } else if (migStatus.error) {
-    yield put(PlanActions.migrationFailure(migStatus.error));
-    yield put(AlertActions.alertErrorTimeout('Migration Failed'));
-    return 'FAILURE';
+function* stagePoll(action) {
+  const params = { ...action.params };
+  while (true) {
+    const updatedPlans = yield call(params.fetchPlansGenerator);
+    const pollingStatusObj = params.getStageStatusCondition(updatedPlans, params.createMigRes);
+
+    switch (pollingStatusObj.status) {
+      case 'SUCCESS':
+        yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
+        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
+        yield put(PlanActions.stopStagePolling());
+        break;
+      case 'FAILURE':
+        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
+        yield put(AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`));
+        yield put(PlanActions.stopStagePolling());
+        break;
+      default:
+        break;
+    }
+    yield delay(params.delay);
   }
+}
+
+function getMigrationStatusCondition(updatedPlans, createMigRes) {
+  const matchingPlan = updatedPlans.updatedPlans.find(
+    p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+  );
+  const statusObj = { status: null, planName: null, errorMessage: null };
+
+  if (matchingPlan && matchingPlan.Migrations) {
+    const matchingMigration = matchingPlan.Migrations.find(
+      s => s.metadata.name === createMigRes.data.metadata.name
+    );
+
+
+    if (matchingMigration && matchingMigration.status) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Succeeded'
+      );
+      if (hasSucceededCondition) {
+        statusObj.status = 'SUCCESS'
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(c => c.type === 'Failed' || c.category === 'Critical');
+      const errorCondition = matchingMigration.status.conditions.find(c => c.type === 'Failed' || c.category === 'Critical');
+      if (hasErrorCondition) {
+        statusObj.status = 'FAILURE'
+        statusObj.errorMessage = errorCondition.message;
+      }
+    }
+  }
+  return statusObj;
+
+
 }
 
 function* runMigrationSaga(action) {
@@ -568,18 +618,56 @@ function* runMigrationSaga(action) {
 
 
     const params = {
-      asyncFetch: fetchPlansGenerator,
+      fetchPlansGenerator: fetchPlansGenerator,
       delay: PlanMigrationPollingInterval,
-      callback: getMigrationStatusCondition,
-      type: 'MIGRATION',
-      statusItem: createMigRes,
+      getMigrationStatusCondition: getMigrationStatusCondition,
+      createMigRes: createMigRes,
     };
 
-    yield put(PollingActions.startStatusPolling(params));
+    yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.migrationFailure(err));
+  }
+}
+function* migrationPoll(action) {
+  const params = { ...action.params };
+  while (true) {
+    const updatedPlans = yield call(params.fetchPlansGenerator);
+    const pollingStatusObj = params.getMigrationStatusCondition(updatedPlans, params.createMigRes);
+
+    switch (pollingStatusObj.status) {
+      case 'SUCCESS':
+        yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
+        yield put(PlanActions.planCloseRequest(pollingStatusObj.planName));
+        yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
+        yield put(PlanActions.stopMigrationPolling());
+        break;
+      case 'FAILURE':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`));
+        yield put(PlanActions.stopMigrationPolling());
+        break;
+      default:
+        break;
+    }
+    yield delay(params.delay);
+  }
+}
+
+
+function* watchStagePolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.STAGE_POLL_START);
+    yield race([call(stagePoll, data), take(PlanActionTypes.STAGE_POLL_STOP)]);
+  }
+}
+
+function* watchMigrationPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.MIGRATION_POLL_START);
+    yield race([call(migrationPoll, data), take(PlanActionTypes.MIGRATION_POLL_STOP)]);
   }
 }
 
@@ -631,6 +719,8 @@ function* watchRunStageRequest() {
 }
 
 export default {
+  watchStagePolling,
+  watchMigrationPolling,
   fetchPlansGenerator,
   watchRunStageRequest,
   watchRunMigrationRequest,

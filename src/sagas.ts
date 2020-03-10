@@ -35,10 +35,11 @@ export default function* rootSaga() {
   yield all([
     appStarted(),
     commonSagas.watchPlanPolling(),
-    commonSagas.watchStatusPolling(),
     commonSagas.watchClustersPolling(),
     commonSagas.watchStoragePolling(),
     commonSagas.watchAlerts(),
+    planSagas.watchStagePolling(),
+    planSagas.watchMigrationPolling(),
     planSagas.watchAddPlanRequest(),
     planSagas.watchRunMigrationRequest(),
     planSagas.watchRunStageRequest(),
