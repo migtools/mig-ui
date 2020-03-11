@@ -6,9 +6,10 @@ import {
   FormGroup,
   Grid,
   GridItem,
+  Select,
+  SelectOption,
   Title,
 } from '@patternfly/react-core';
-import Select from 'react-select';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -31,7 +32,7 @@ const ResourceSelectForm = props => {
     isFetchingNamespaceList,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
-    isEdit
+    isEdit,
   } = props;
   useEffect(() => {
     if (isEdit) {
@@ -48,8 +49,9 @@ const ResourceSelectForm = props => {
       const targetOptions = [];
       const clusterLen = clusterList.length;
       for (let i = 0; i < clusterLen; i++) {
-        if (clusterList[i].MigCluster.metadata.name !== values.sourceCluster
-          && clusterList[i].ClusterStatus.hasReadyCondition
+        if (
+          clusterList[i].MigCluster.metadata.name !== values.sourceCluster &&
+          clusterList[i].ClusterStatus.hasReadyCondition
         ) {
           targetOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -57,8 +59,8 @@ const ResourceSelectForm = props => {
           });
         }
         if (
-          clusterList[i].MigCluster.metadata.name !== values.targetCluster
-          && clusterList[i].ClusterStatus.hasReadyCondition
+          clusterList[i].MigCluster.metadata.name !== values.targetCluster &&
+          clusterList[i].ClusterStatus.hasReadyCondition
         ) {
           sourceOptions.push({
             label: clusterList[i].MigCluster.metadata.name,
@@ -101,9 +103,7 @@ const ResourceSelectForm = props => {
     const newStorageOptions = [];
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
-      if (
-        storageList[i].StorageStatus.hasReadyCondition
-      ) {
+      if (storageList[i].StorageStatus.hasReadyCondition) {
         newStorageOptions.push({
           label: storageList[i].MigStorage.metadata.name,
           value: storageList[i].MigStorage.metadata.name,
@@ -121,7 +121,6 @@ const ResourceSelectForm = props => {
           label: existingStorageSelection.MigStorage.metadata.name,
           value: existingStorageSelection.MigStorage.metadata.name,
         });
-
       }
     }
   }, [values]);
@@ -158,23 +157,40 @@ const ResourceSelectForm = props => {
     });
     setFieldTouched('targetCluster');
   };
+
+  const [sourceClusterExpanded, setSourceClusterExpanded] = useState(false);
+  const [targetClusterExpanded, setTargetClusterExpanded] = useState(false);
+  const [storageExpanded, setStorageExpanded] = useState(false);
+
+  const extendWithToString = option => ({ ...option, toString: () => option.label });
+  const srcClusterOptionsMeta = srcClusterOptions.map(extendWithToString);
+  const targetClusterOptionsMeta = targetClusterOptions.map(extendWithToString);
+  const storageOptionsMeta = storageOptions.map(extendWithToString);
+
   return (
     <Grid gutter="md">
       <GridItem>
         <Form>
           <Grid md={6} gutter="md">
             <GridItem>
-              <FormGroup
-                label="Source cluster"
-                isRequired
-                fieldId="sourceCluster"
-              >
+              <FormGroup label="Source cluster" isRequired fieldId="sourceCluster">
                 <Select
-                  name="sourceCluster"
-                  onChange={handleSourceChange}
-                  options={srcClusterOptions}
-                  value={selectedSrcCluster}
-                />
+                  id="sourceCluster"
+                  placeholderText="Select..."
+                  isExpanded={sourceClusterExpanded}
+                  onToggle={setSourceClusterExpanded}
+                  onSelect={(event, selection) => {
+                    handleSourceChange(selection);
+                    setSourceClusterExpanded(false);
+                  }}
+                  selections={srcClusterOptionsMeta.find(
+                    option => selectedSrcCluster && option.value === selectedSrcCluster.value
+                  )}
+                >
+                  {srcClusterOptionsMeta.map(option => (
+                    <SelectOption key={option.value} value={option} />
+                  ))}
+                </Select>
                 {errors.sourceCluster && touched.sourceCluster && (
                   <div id="feedback">{errors.sourceCluster}</div>
                 )}
@@ -182,17 +198,24 @@ const ResourceSelectForm = props => {
             </GridItem>
 
             <GridItem>
-              <FormGroup
-                label="Target cluster"
-                isRequired
-                fieldId="targetCluster"
-              >
+              <FormGroup label="Target cluster" isRequired fieldId="targetCluster">
                 <Select
-                  name="targetCluster"
-                  onChange={handleTargetChange}
-                  options={targetClusterOptions}
-                  value={selectedTargetCluster}
-                />
+                  id="targetCluster"
+                  placeholderText="Select..."
+                  isExpanded={targetClusterExpanded}
+                  onToggle={setTargetClusterExpanded}
+                  onSelect={(event, selection) => {
+                    handleTargetChange(selection);
+                    setTargetClusterExpanded(false);
+                  }}
+                  selections={targetClusterOptionsMeta.find(
+                    option => selectedTargetCluster && option.value === selectedTargetCluster.value
+                  )}
+                >
+                  {targetClusterOptionsMeta.map(option => (
+                    <SelectOption key={option.value} value={option} />
+                  ))}
+                </Select>
                 {errors.targetCluster && touched.targetCluster && (
                   <div id="feedback">{errors.targetCluster}</div>
                 )}
@@ -200,17 +223,24 @@ const ResourceSelectForm = props => {
             </GridItem>
 
             <GridItem>
-              <FormGroup
-                label="Replication repository"
-                isRequired
-                fieldId="selectedStorage"
-              >
+              <FormGroup label="Replication repository" isRequired fieldId="selectedStorage">
                 <Select
-                  name="selectedStorage"
-                  onChange={handleStorageChange}
-                  options={storageOptions}
-                  value={selectedStorage}
-                />
+                  id="selectedStorage"
+                  placeholderText="Select..."
+                  isExpanded={storageExpanded}
+                  onToggle={setStorageExpanded}
+                  onSelect={(event, selection) => {
+                    handleStorageChange(selection);
+                    setStorageExpanded(false);
+                  }}
+                  selections={storageOptionsMeta.find(
+                    option => selectedStorage && option.value === selectedStorage.value
+                  )}
+                >
+                  {storageOptionsMeta.map(option => (
+                    <SelectOption key={option.value} value={option} />
+                  ))}
+                </Select>
                 {errors.selectedStorage && touched.selectedStorage && (
                   <div id="feedback">{errors.selectedStorage}</div>
                 )}
