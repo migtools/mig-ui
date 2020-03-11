@@ -65,16 +65,10 @@ const ResourceSelectForm = props => {
       setTargetClusterOptions(targetOptions);
 
       if (values.sourceCluster !== null) {
-        const existingSrcCluster = clusterList.find(
-          c => c.MigCluster.metadata.name === values.sourceCluster
-        );
-        setSelectedSrcCluster(existingSrcCluster.MigCluster.metadata.name);
+        setSelectedSrcCluster(values.sourceCluster);
       }
       if (values.targetCluster !== null) {
-        const existingTargetCluster = clusterList.find(
-          c => c.MigCluster.metadata.name === values.targetCluster
-        );
-        setSelectedTargetCluster(existingTargetCluster.MigCluster.metadata.name);
+        setSelectedTargetCluster(values.targetCluster);
       }
     } else {
       setSrcClusterOptions(['No valid clusters found']);
@@ -92,35 +86,33 @@ const ResourceSelectForm = props => {
     setStorageOptions(newStorageOptions);
 
     if (values.selectedStorage !== null) {
-      const existingStorageSelection = storageList.find(
-        c => c.MigStorage.metadata.name === values.selectedStorage
-      );
-      if (existingStorageSelection) {
-        setSelectedStorage(existingStorageSelection.MigStorage.metadata.name);
-      }
+      setSelectedStorage(values.selectedStorage);
     }
   }, [values]);
 
   const handleStorageChange = value => {
+    // value came from storageList[].MigStorage.metadata.name
     setFieldValue('selectedStorage', value);
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
-    setSelectedStorage(matchingStorage.MigStorage.metadata.name);
+    setSelectedStorage(value);
     setFieldTouched('selectedStorage');
+    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   const handleSourceChange = value => {
+    // value came from clusterList[].MigCluster.metadata.name
     setFieldValue('sourceCluster', value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
-    setSelectedSrcCluster(matchingCluster.MigCluster.metadata.name);
+    setSelectedSrcCluster(value);
     setFieldTouched('sourceCluster');
-    fetchNamespacesRequest(matchingCluster.MigCluster.metadata.name);
+    fetchNamespacesRequest(value);
+    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   const handleTargetChange = value => {
+    // value came from clusterList[].MigCluster.metadata.name
     setFieldValue('targetCluster', value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
-    setSelectedTargetCluster(matchingCluster.MigCluster.metadata.name);
+    setSelectedTargetCluster(value);
     setFieldTouched('targetCluster');
+    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   return (
