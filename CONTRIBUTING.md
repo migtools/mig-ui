@@ -17,7 +17,7 @@ If you want to become a maintainer, we expect you to:
 - Add screenshots of any UI changes in your PR. 
 - Within the PR description, tag any issues your PR closes with ```Closes #insertIssueNumberHere```. 
 - Review and test pull requests submitted by others.
-- Encourage and ensure design remains an integral part of the review process and pull in Vince for UX review as needed.
+- Encourage and ensure design remains an integral part of the review process and pull in [Vince Conzola](https//github.com/vconzola) for UX review as needed.
 - Support users and other developers on [CoreOS Slack](https://coreos.slack.com/) (there is a channel dedicated to mig-ui).
 
 
