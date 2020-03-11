@@ -17,9 +17,6 @@ const ResourceSelectForm = props => {
   const [targetClusterOptions, setTargetClusterOptions] = useState([]);
   const [storageOptions, setStorageOptions] = useState([]);
 
-  const [selectedSrcCluster, setSelectedSrcCluster] = useState(null);
-  const [selectedTargetCluster, setSelectedTargetCluster] = useState(null);
-  const [selectedStorage, setSelectedStorage] = useState(null);
   const {
     clusterList,
     storageList,
@@ -63,13 +60,6 @@ const ResourceSelectForm = props => {
       }
       setSrcClusterOptions(sourceOptions);
       setTargetClusterOptions(targetOptions);
-
-      if (values.sourceCluster !== null) {
-        setSelectedSrcCluster(values.sourceCluster);
-      }
-      if (values.targetCluster !== null) {
-        setSelectedTargetCluster(values.targetCluster);
-      }
     } else {
       setSrcClusterOptions(['No valid clusters found']);
     }
@@ -84,35 +74,25 @@ const ResourceSelectForm = props => {
       }
     }
     setStorageOptions(newStorageOptions);
-
-    if (values.selectedStorage !== null) {
-      setSelectedStorage(values.selectedStorage);
-    }
   }, [values]);
 
   const handleStorageChange = value => {
     // value came from storageList[].MigStorage.metadata.name
     setFieldValue('selectedStorage', value);
-    setSelectedStorage(value);
     setFieldTouched('selectedStorage');
-    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   const handleSourceChange = value => {
     // value came from clusterList[].MigCluster.metadata.name
     setFieldValue('sourceCluster', value);
-    setSelectedSrcCluster(value);
     setFieldTouched('sourceCluster');
     fetchNamespacesRequest(value);
-    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   const handleTargetChange = value => {
     // value came from clusterList[].MigCluster.metadata.name
     setFieldValue('targetCluster', value);
-    setSelectedTargetCluster(value);
     setFieldTouched('targetCluster');
-    // TODO do we even need the state here, or can we just use formik as the source of truth?
   };
 
   return (
@@ -126,7 +106,7 @@ const ResourceSelectForm = props => {
                   id="sourceCluster"
                   onChange={handleSourceChange}
                   options={srcClusterOptions}
-                  value={selectedSrcCluster}
+                  value={values.sourceCluster}
                 />
                 {errors.sourceCluster && touched.sourceCluster && (
                   <div id="feedback">{errors.sourceCluster}</div>
@@ -140,7 +120,7 @@ const ResourceSelectForm = props => {
                   id="targetCluster"
                   onChange={handleTargetChange}
                   options={targetClusterOptions}
-                  value={selectedTargetCluster}
+                  value={values.targetCluster}
                 />
                 {errors.targetCluster && touched.targetCluster && (
                   <div id="feedback">{errors.targetCluster}</div>
@@ -154,7 +134,7 @@ const ResourceSelectForm = props => {
                   id="selectedStorage"
                   onChange={handleStorageChange}
                   options={storageOptions}
-                  value={selectedStorage}
+                  value={values.selectedStorage}
                 />
                 {errors.selectedStorage && touched.selectedStorage && (
                   <div id="feedback">{errors.selectedStorage}</div>
