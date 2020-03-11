@@ -119,6 +119,7 @@ const ResourceSelectForm = props => {
                   onChange={handleSourceChange}
                   options={srcClusterOptions}
                   value={values.sourceCluster}
+                  placeholderText="Select source..."
                 />
               </FormGroup>
             </GridItem>
@@ -136,6 +137,7 @@ const ResourceSelectForm = props => {
                   onChange={handleTargetChange}
                   options={targetClusterOptions}
                   value={values.targetCluster}
+                  placeholderText="Select target..."
                 />
               </FormGroup>
             </GridItem>
@@ -153,6 +155,7 @@ const ResourceSelectForm = props => {
                   onChange={handleStorageChange}
                   options={storageOptions}
                   value={values.selectedStorage}
+                  placeholderText="Select repository..."
                 />
               </FormGroup>
             </GridItem>
