@@ -77,22 +77,28 @@ const ResourceSelectForm = props => {
   }, [values]);
 
   const handleStorageChange = value => {
-    // value came from storageList[].MigStorage.metadata.name
-    setFieldValue('selectedStorage', value);
-    setFieldTouched('selectedStorage');
+    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
+    if (matchingStorage) {
+      setFieldValue('selectedStorage', value);
+      setFieldTouched('selectedStorage');
+    }
   };
 
   const handleSourceChange = value => {
-    // value came from clusterList[].MigCluster.metadata.name
-    setFieldValue('sourceCluster', value);
-    setFieldTouched('sourceCluster');
-    fetchNamespacesRequest(value);
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+    if (matchingCluster) {
+      setFieldValue('sourceCluster', value);
+      setFieldTouched('sourceCluster');
+      fetchNamespacesRequest(value);
+    }
   };
 
   const handleTargetChange = value => {
-    // value came from clusterList[].MigCluster.metadata.name
-    setFieldValue('targetCluster', value);
-    setFieldTouched('targetCluster');
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+    if (matchingCluster) {
+      setFieldValue('targetCluster', value);
+      setFieldTouched('targetCluster');
+    }
   };
 
   return (
