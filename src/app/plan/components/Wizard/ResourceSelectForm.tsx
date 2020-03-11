@@ -101,44 +101,53 @@ const ResourceSelectForm = props => {
         <Form>
           <Grid md={6} gutter="md">
             <GridItem>
-              <FormGroup label="Source cluster" isRequired fieldId="sourceCluster">
+              <FormGroup
+                label="Source cluster"
+                isRequired
+                fieldId="sourceCluster"
+                helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
+                isValid={!(touched.sourceCluster && errors.sourceCluster)}
+              >
                 <SimpleSelect
                   id="sourceCluster"
                   onChange={handleSourceChange}
                   options={srcClusterOptions}
                   value={values.sourceCluster}
                 />
-                {errors.sourceCluster && touched.sourceCluster && (
-                  <div id="feedback">{errors.sourceCluster}</div>
-                )}
               </FormGroup>
             </GridItem>
 
             <GridItem>
-              <FormGroup label="Target cluster" isRequired fieldId="targetCluster">
+              <FormGroup
+                label="Target cluster"
+                isRequired
+                fieldId="targetCluster"
+                helperTextInvalid={touched.targetCluster && errors.targetCluster}
+                isValid={!(touched.targetCluster && errors.targetCluster)}
+              >
                 <SimpleSelect
                   id="targetCluster"
                   onChange={handleTargetChange}
                   options={targetClusterOptions}
                   value={values.targetCluster}
                 />
-                {errors.targetCluster && touched.targetCluster && (
-                  <div id="feedback">{errors.targetCluster}</div>
-                )}
               </FormGroup>
             </GridItem>
 
             <GridItem>
-              <FormGroup label="Replication repository" isRequired fieldId="selectedStorage">
+              <FormGroup
+                label="Replication repository"
+                isRequired
+                fieldId="selectedStorage"
+                helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
+                isValid={!(touched.selectedStorage && errors.selectedStorage)}
+              >
                 <SimpleSelect
                   id="selectedStorage"
                   onChange={handleStorageChange}
                   options={storageOptions}
                   value={values.selectedStorage}
                 />
-                {errors.selectedStorage && touched.selectedStorage && (
-                  <div id="feedback">{errors.selectedStorage}</div>
-                )}
               </FormGroup>
             </GridItem>
           </Grid>
