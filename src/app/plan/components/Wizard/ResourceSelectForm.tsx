@@ -6,12 +6,11 @@ import {
   FormGroup,
   Grid,
   GridItem,
-  Select,
-  SelectOption,
   Title,
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import SimpleSelect from '../../../common/components/SimpleSelect';
 
 const ResourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
@@ -53,19 +52,13 @@ const ResourceSelectForm = props => {
           clusterList[i].MigCluster.metadata.name !== values.sourceCluster &&
           clusterList[i].ClusterStatus.hasReadyCondition
         ) {
-          targetOptions.push({
-            label: clusterList[i].MigCluster.metadata.name,
-            value: clusterList[i].MigCluster.metadata.name,
-          });
+          targetOptions.push(clusterList[i].MigCluster.metadata.name);
         }
         if (
           clusterList[i].MigCluster.metadata.name !== values.targetCluster &&
           clusterList[i].ClusterStatus.hasReadyCondition
         ) {
-          sourceOptions.push({
-            label: clusterList[i].MigCluster.metadata.name,
-            value: clusterList[i].MigCluster.metadata.name,
-          });
+          sourceOptions.push(clusterList[i].MigCluster.metadata.name);
         }
       }
       setSrcClusterOptions(sourceOptions);
@@ -75,27 +68,16 @@ const ResourceSelectForm = props => {
         const existingSrcCluster = clusterList.find(
           c => c.MigCluster.metadata.name === values.sourceCluster
         );
-        setSelectedSrcCluster({
-          label: existingSrcCluster.MigCluster.metadata.name,
-          value: existingSrcCluster.MigCluster.metadata.name,
-        });
+        setSelectedSrcCluster(existingSrcCluster.MigCluster.metadata.name);
       }
       if (values.targetCluster !== null) {
         const existingTargetCluster = clusterList.find(
           c => c.MigCluster.metadata.name === values.targetCluster
         );
-        setSelectedTargetCluster({
-          label: existingTargetCluster.MigCluster.metadata.name,
-          value: existingTargetCluster.MigCluster.metadata.name,
-        });
+        setSelectedTargetCluster(existingTargetCluster.MigCluster.metadata.name);
       }
     } else {
-      const myOptions: any = [];
-      myOptions.push({
-        label: 'No valid clusters found',
-        value: 'N/A',
-      });
-      setSrcClusterOptions(myOptions);
+      setSrcClusterOptions(['No valid clusters found']);
     }
     // ***
     // * Populate storage dropdown
@@ -104,10 +86,7 @@ const ResourceSelectForm = props => {
     const storageLen = storageList.length;
     for (let i = 0; i < storageLen; i++) {
       if (storageList[i].StorageStatus.hasReadyCondition) {
-        newStorageOptions.push({
-          label: storageList[i].MigStorage.metadata.name,
-          value: storageList[i].MigStorage.metadata.name,
-        });
+        newStorageOptions.push(storageList[i].MigStorage.metadata.name);
       }
     }
     setStorageOptions(newStorageOptions);
@@ -117,55 +96,32 @@ const ResourceSelectForm = props => {
         c => c.MigStorage.metadata.name === values.selectedStorage
       );
       if (existingStorageSelection) {
-        setSelectedStorage({
-          label: existingStorageSelection.MigStorage.metadata.name,
-          value: existingStorageSelection.MigStorage.metadata.name,
-        });
+        setSelectedStorage(existingStorageSelection.MigStorage.metadata.name);
       }
     }
   }, [values]);
 
-  const handleStorageChange = option => {
-    setFieldValue('selectedStorage', option.value);
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === option.value);
-
-    setSelectedStorage({
-      label: matchingStorage.MigStorage.metadata.name,
-      value: matchingStorage.MigStorage.metadata.name,
-    });
-
+  const handleStorageChange = value => {
+    setFieldValue('selectedStorage', value);
+    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
+    setSelectedStorage(matchingStorage.MigStorage.metadata.name);
     setFieldTouched('selectedStorage');
   };
 
-  const handleSourceChange = option => {
-    setFieldValue('sourceCluster', option.value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option.value);
-    setSelectedSrcCluster({
-      label: matchingCluster.MigCluster.metadata.name,
-      value: matchingCluster.MigCluster.metadata.name,
-    });
+  const handleSourceChange = value => {
+    setFieldValue('sourceCluster', value);
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+    setSelectedSrcCluster(matchingCluster.MigCluster.metadata.name);
     setFieldTouched('sourceCluster');
     fetchNamespacesRequest(matchingCluster.MigCluster.metadata.name);
   };
 
-  const handleTargetChange = option => {
-    setFieldValue('targetCluster', option.value);
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === option.value);
-    setSelectedTargetCluster({
-      label: matchingCluster.MigCluster.metadata.name,
-      value: matchingCluster.MigCluster.metadata.name,
-    });
+  const handleTargetChange = value => {
+    setFieldValue('targetCluster', value);
+    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+    setSelectedTargetCluster(matchingCluster.MigCluster.metadata.name);
     setFieldTouched('targetCluster');
   };
-
-  const [sourceClusterExpanded, setSourceClusterExpanded] = useState(false);
-  const [targetClusterExpanded, setTargetClusterExpanded] = useState(false);
-  const [storageExpanded, setStorageExpanded] = useState(false);
-
-  const extendWithToString = option => ({ ...option, toString: () => option.label });
-  const srcClusterOptionsMeta = srcClusterOptions.map(extendWithToString);
-  const targetClusterOptionsMeta = targetClusterOptions.map(extendWithToString);
-  const storageOptionsMeta = storageOptions.map(extendWithToString);
 
   return (
     <Grid gutter="md">
@@ -174,23 +130,12 @@ const ResourceSelectForm = props => {
           <Grid md={6} gutter="md">
             <GridItem>
               <FormGroup label="Source cluster" isRequired fieldId="sourceCluster">
-                <Select
+                <SimpleSelect
                   id="sourceCluster"
-                  placeholderText="Select..."
-                  isExpanded={sourceClusterExpanded}
-                  onToggle={setSourceClusterExpanded}
-                  onSelect={(event, selection) => {
-                    handleSourceChange(selection);
-                    setSourceClusterExpanded(false);
-                  }}
-                  selections={srcClusterOptionsMeta.find(
-                    option => selectedSrcCluster && option.value === selectedSrcCluster.value
-                  )}
-                >
-                  {srcClusterOptionsMeta.map(option => (
-                    <SelectOption key={option.value} value={option} />
-                  ))}
-                </Select>
+                  onChange={handleSourceChange}
+                  options={srcClusterOptions}
+                  value={selectedSrcCluster}
+                />
                 {errors.sourceCluster && touched.sourceCluster && (
                   <div id="feedback">{errors.sourceCluster}</div>
                 )}
@@ -199,23 +144,12 @@ const ResourceSelectForm = props => {
 
             <GridItem>
               <FormGroup label="Target cluster" isRequired fieldId="targetCluster">
-                <Select
+                <SimpleSelect
                   id="targetCluster"
-                  placeholderText="Select..."
-                  isExpanded={targetClusterExpanded}
-                  onToggle={setTargetClusterExpanded}
-                  onSelect={(event, selection) => {
-                    handleTargetChange(selection);
-                    setTargetClusterExpanded(false);
-                  }}
-                  selections={targetClusterOptionsMeta.find(
-                    option => selectedTargetCluster && option.value === selectedTargetCluster.value
-                  )}
-                >
-                  {targetClusterOptionsMeta.map(option => (
-                    <SelectOption key={option.value} value={option} />
-                  ))}
-                </Select>
+                  onChange={handleTargetChange}
+                  options={targetClusterOptions}
+                  value={selectedTargetCluster}
+                />
                 {errors.targetCluster && touched.targetCluster && (
                   <div id="feedback">{errors.targetCluster}</div>
                 )}
@@ -224,23 +158,12 @@ const ResourceSelectForm = props => {
 
             <GridItem>
               <FormGroup label="Replication repository" isRequired fieldId="selectedStorage">
-                <Select
+                <SimpleSelect
                   id="selectedStorage"
-                  placeholderText="Select..."
-                  isExpanded={storageExpanded}
-                  onToggle={setStorageExpanded}
-                  onSelect={(event, selection) => {
-                    handleStorageChange(selection);
-                    setStorageExpanded(false);
-                  }}
-                  selections={storageOptionsMeta.find(
-                    option => selectedStorage && option.value === selectedStorage.value
-                  )}
-                >
-                  {storageOptionsMeta.map(option => (
-                    <SelectOption key={option.value} value={option} />
-                  ))}
-                </Select>
+                  onChange={handleStorageChange}
+                  options={storageOptions}
+                  value={selectedStorage}
+                />
                 {errors.selectedStorage && touched.selectedStorage && (
                   <div id="feedback">{errors.selectedStorage}</div>
                 )}
