@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
-import {
-  GridItem,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
+import { GridItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const styles = require('./NamespaceTable.module');
 interface INamespaceTableProps {
   isEdit: boolean;
   values: any;
-  sourceClusterNamespaces: any;
+  sourceClusterNamespaces: [
+    {
+      name: string;
+      podCount: number;
+      pvcCount: number;
+      serviceCount: number;
+    }
+  ];
   setFieldValue: (fieldName, fieldValue) => void;
 }
 
@@ -23,15 +25,17 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
   useEffect(() => {
     if (sourceClusterNamespaces.length > 0) {
-      const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
-        const keys = Object.keys(checkedNamespaceRows);
+      const formValuesForNamespaces = sourceClusterNamespaces
+        .filter(item => {
+          const keys = Object.keys(checkedNamespaceRows);
 
-        for (const key of keys) {
-          if (item.name === key && checkedNamespaceRows[key]) {
-            return item;
+          for (const key of keys) {
+            if (item.name === key && checkedNamespaceRows[key]) {
+              return item;
+            }
           }
-        }
-      }).map((namespace) => namespace.name);
+        })
+        .map(namespace => namespace.name);
 
       setFieldValue('selectedNamespaces', formValuesForNamespaces);
     }
@@ -70,119 +74,42 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setSelectAll(2);
   };
 
-  const tableStyle = {
-    fontSize: '14px',
-  };
-
   if (values.sourceCluster !== null) {
+    console.log({ sourceClusterNamespaces });
+
+    const columns = [
+      { title: 'Name' },
+      { title: 'Pods' },
+      { title: 'PV claims' },
+      { title: 'Services' },
+    ];
+    const rows = sourceClusterNamespaces.map(namespace => ({
+      cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
+    }));
+
     return (
       <React.Fragment>
         <GridItem>
-          <TextContent>
-            <Text component={TextVariants.p}>
-              Select projects to be migrated:
-            </Text>
+          <TextContent className={spacing.mtMd}>
+            <Text component={TextVariants.p}>Select projects to be migrated:</Text>
           </TextContent>
         </GridItem>
-
         <GridItem>
-          <ReactTable
-            className="-striped -highlight"
-            style={tableStyle}
-            data={sourceClusterNamespaces}
-            columns={[
-              {
-                id: 'checkbox',
-                accessor: '',
-                resizable: false,
-                width: 50,
-                Cell: ({ original }) => {
-                  return (
-                    <div style={{ textAlign: 'center' }}>
-                      <input
-                        type="checkbox"
-                        onChange={() => selectRow(original.name)}
-                        checked={checkedNamespaceRows[original.name] === true}
-                      />
-                    </div>
-                  );
-                },
-                Header: () => {
-                  return (
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={selectAll === 1}
-                      ref={input => {
-                        if (input) {
-                          input.indeterminate = selectAll === 2;
-                        }
-                      }}
-                      onChange={toggleSelectAll}
-                    />
-                  );
-                }
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Name
-                  </div>
-                ),
-                accessor: 'name',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of pods
-                  </div>
-                ),
-                accessor: 'podCount',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of PV claims
-                  </div>
-                ),
-                accessor: 'pvcCount',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of services
-                  </div>
-                ),
-                accessor: 'serviceCount',
-              },
-            ]}
-            defaultPageSize={5}
-          />
+          <Table
+            aria-label="Projects table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            // onSelect={() => {}}
+            // canSelectAll
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
         </GridItem>
       </React.Fragment>
     );
-  }
-  else {
+  } else {
     return null;
   }
 };
