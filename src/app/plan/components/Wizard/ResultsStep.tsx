@@ -1,5 +1,5 @@
-const styles = require('./ResultsStep.module');
 import React from 'react';
+import { RedoIcon } from '@patternfly/react-icons';
 import {
   Button,
   Card,
@@ -16,6 +16,7 @@ import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { OutlinedQuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 
+const styles = require('./ResultsStep.module');
 
 interface IProps {
   values: any;
