@@ -20,9 +20,11 @@ interface INamespaceTableProps {
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   const { isEdit, setFieldValue, sourceClusterNamespaces, values } = props;
-  const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
-  const [selectAll, setSelectAll] = useState(0);
 
+  if (values.sourceCluster === null) return null;
+
+  /*
+  update formik when local state changes -- no need
   useEffect(() => {
     if (sourceClusterNamespaces.length > 0) {
       const formValuesForNamespaces = sourceClusterNamespaces
@@ -40,7 +42,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
       setFieldValue('selectedNamespaces', formValuesForNamespaces);
     }
   }, [checkedNamespaceRows]);
+  */
 
+  /* initialize local state from formik -- no need
   useEffect(() => {
     if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
       const newSelected = Object.assign({}, checkedNamespaceRows);
@@ -54,7 +58,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
       setCheckedNamespaceRows(newSelected);
     }
   }, [sourceClusterNamespaces]);
+  */
 
+  /* update local state on select all -- no need?
   const toggleSelectAll = () => {
     const newSelected = {};
 
@@ -66,52 +72,71 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setSelectAll(selectAll === 0 ? 1 : 0);
     setCheckedNamespaceRows(newSelected);
   };
+  */
 
+  /* update local state on select -- update formik directly instead
   const selectRow = rowId => {
     const newSelected = Object.assign({}, checkedNamespaceRows);
     newSelected[rowId] = !checkedNamespaceRows[rowId];
     setCheckedNamespaceRows(newSelected);
     setSelectAll(2);
   };
+  */
 
-  if (values.sourceCluster !== null) {
-    console.log({ sourceClusterNamespaces });
+  const columns = [
+    { title: 'Name' },
+    { title: 'Pods' },
+    { title: 'PV claims' },
+    { title: 'Services' },
+  ];
+  const rows = sourceClusterNamespaces.map(namespace => ({
+    cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
+    selected: values.selectedNamespaces.includes(namespace.name),
+  }));
 
-    const columns = [
-      { title: 'Name' },
-      { title: 'Pods' },
-      { title: 'PV claims' },
-      { title: 'Services' },
-    ];
-    const rows = sourceClusterNamespaces.map(namespace => ({
-      cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
-    }));
+  const onSelect = (event, isSelected, rowIndex) => {
+    console.log('was already selected?', values.selectedNamespaces);
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = sourceClusterNamespaces.map(namespace => namespace.name); // Select all
+      } else {
+        newSelected = []; // Deselect all
+      }
+    } else {
+      const thisNamespace = sourceClusterNamespaces[rowIndex];
+      if (isSelected) {
+        console.log('New shit:', [...values.selectedNamespaces, thisNamespace.name]);
+        newSelected = [...new Set([...values.selectedNamespaces, thisNamespace.name])];
+      } else {
+        newSelected = values.selectedNamespaces.filter(name => name !== thisNamespace.name);
+      }
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
 
-    return (
-      <React.Fragment>
-        <GridItem>
-          <TextContent className={spacing.mtMd}>
-            <Text component={TextVariants.p}>Select projects to be migrated:</Text>
-          </TextContent>
-        </GridItem>
-        <GridItem>
-          <Table
-            aria-label="Projects table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            // onSelect={() => {}}
-            // canSelectAll
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
-        </GridItem>
-      </React.Fragment>
-    );
-  } else {
-    return null;
-  }
+  return (
+    <React.Fragment>
+      <GridItem>
+        <TextContent className={spacing.mtMd}>
+          <Text component={TextVariants.p}>Select projects to be migrated:</Text>
+        </TextContent>
+      </GridItem>
+      <GridItem>
+        <Table
+          aria-label="Projects table"
+          variant={TableVariant.compact}
+          cells={columns}
+          rows={rows}
+          onSelect={onSelect}
+          canSelectAll
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+      </GridItem>
+    </React.Fragment>
+  );
 };
 
 export default NamespaceTable;
