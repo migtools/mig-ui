@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "prebuild": "yarn clean",
-    "localbuild": "webpack --mode=production --config config/webpack.local-prod.js",
+    "localbuild": "webpack --mode=production --config config/webpack.local-prod-test.js",
     "build": "webpack --mode=production --config config/webpack.prod.js",
     "image:build": "./scripts/build-image.sh",
     "image:push": "./scripts/push-image.sh",
