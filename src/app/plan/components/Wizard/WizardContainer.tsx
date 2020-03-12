@@ -13,6 +13,14 @@ import {
   PvCopyMethod,
 } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
+import { IMigHook } from '../../../../client/resources/conversions';
+import { defaultAddEditStatus, createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../../../common/add_edit_state';
+
+interface IHookDefinition {
+  hookName: string;
+  hookImageType: string;
+}
+
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
@@ -32,6 +40,7 @@ export interface IFormValues {
   pvCopyMethodAssignment: {
     [pvName: string]: PvCopyMethod;
   };
+  hookDefinitions: any[];
 }
 
 // TODO add more specific types instead of using `any`
@@ -66,6 +75,7 @@ export interface IOtherProps {
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
+  fetchHooksRequest: (currentPlanHooks) => void;
   addPlanRequest: (migPlan) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
   pvResourceList: IPersistentVolumeResource[];
@@ -73,6 +83,16 @@ export interface IOtherProps {
   editPlanObj?: any;
   isEdit: boolean;
   updateCurrentPlanStatus: any;
+  addHookRequest: (migHook) => void;
+  updateHookRequest: (migHook) => void;
+  removeHookRequest: (hookName, migrationStep) => void;
+  migHookList: IMigHook[];
+  isFetchingHookList: boolean;
+  watchHookAddEditStatus: () => void;
+  hookAddEditStatus: any;
+  cancelAddEditWatch: () => void;
+  resetAddEditState: () => void;
+
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
@@ -87,6 +107,19 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       pvStorageClassAssignment: {},
       pvVerifyFlagAssignment: {},
       pvCopyMethodAssignment: {},
+      hookDefinitions: [],
+      currentHookDefinition: {
+        hookName: '',
+        hookImageType: 'ansible',
+        customContainerImage: 'quay.io/konveyor/hook-runner:latest',
+        ansibleRuntimeImage: 'quay.io/konveyor/hook-runner:latest',
+        clusterType: 'source',
+        srcServiceAccountName: '',
+        destServiceAccountName: '',
+        srcServiceAccountNamespace: '',
+        destServiceAccountNamespace: '',
+        migrationStep: ''
+      }
     };
     if (editPlanObj && isEdit) {
       values.planName = editPlanObj.metadata.name || '';
@@ -97,6 +130,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
       // See https://github.com/konveyor/mig-ui/issues/797
       // values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
+      values.hookDefinitions = editPlanObj.spec.hookDefinitions || [];
     }
 
     return values;
@@ -152,6 +186,11 @@ const mapStateToProps = state => {
     currentPlan: planSelectors.getCurrentPlan(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
+    hookList: planSelectors.getHooks(state),
+    newHookList: state.plan.newHookList,
+    isFetchingHookList: state.plan.isFetchingHookList,
+    hookAddEditStatus: state.plan.hookAddEditStatus,
+    migHookList: state.plan.migHookList
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -164,12 +203,27 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanActions.startPlanStatusPolling(planName)),
     stopPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.stopPlanStatusPolling(planName)),
+    addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
+    fetchHooksRequest: (currentPlanHooks) => dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
     planUpdateRequest: (values, isRerunPVDiscovery) =>
       dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
     setCurrentPlan: plan => dispatch(PlanActions.setCurrentPlan(plan)),
     updateCurrentPlanStatus: status => dispatch(PlanActions.updateCurrentPlanStatus(status)),
     pvUpdatePollStop: () => dispatch(PlanActions.pvUpdatePollStop()),
+    watchHookAddEditStatus: (hookName) => {
+      // Push the add edit status into watching state, and start watching
+      dispatch(PlanActions.setHookAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      ));
+      dispatch(PlanActions.watchHookAddEditStatus(hookName));
+    },
+    cancelAddEditWatch: () => dispatch(PlanActions.cancelWatchHookAddEditStatus()),
+    resetAddEditState: () => {
+      dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
+    },
+    removeHookRequest: (name, migrationStep) => dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
   };
 };
 

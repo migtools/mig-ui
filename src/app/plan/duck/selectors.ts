@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import moment from 'moment-timezone';
 
+
 const planSelector = state => state.plan.migPlanList.map(p => p);
 
 const getCurrentPlan = state => state.plan.currentPlan;
@@ -10,6 +11,8 @@ const getMigMeta = state => state.migMeta;
 const lockedPlansSelector = state => state.plan.lockedPlanList;
 
 const sourceClusterNamespacesSelector = state => state.plan.sourceClusterNamespaces;
+
+const getHooks = state => state.plan.migHookList.map(h => h);
 
 const getFilteredNamespaces = createSelector(
   [sourceClusterNamespacesSelector],
@@ -364,4 +367,5 @@ export default {
   getMigMeta,
   getCounts,
   getFilteredNamespaces,
+  getHooks
 };

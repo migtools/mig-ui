@@ -1,5 +1,6 @@
-import { IMigPlan } from '../../../client/resources/conversions';
+import { IMigPlan, IMigHook } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
@@ -58,6 +59,26 @@ export const PlanActionTypes = {
   SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
   PV_UPDATE_REQUEST: 'PV_UPDATE_REQUEST',
   PV_UPDATE_SUCCESS: 'PV_UPDATE_SUCCESS',
+
+  /*
+  Hook action types
+  */
+
+  UPDATE_HOOK_REQUEST: 'UPDATE_HOOK_REQUEST',
+  UPDATE_HOOK_FAILURE: 'UPDATE_HOOK_FAILURE',
+  UPDATE_HOOK_SUCCESS: 'UPDATE_HOOK_SUCCESS',
+  ADD_HOOK_REQUEST: 'ADD_HOOK_REQUEST',
+  ADD_HOOK_FAILURE: 'ADD_HOOK_FAILURE',
+  ADD_HOOK_SUCCESS: 'ADD_HOOK_SUCCESS',
+  HOOK_FETCH_REQUEST: 'HOOK_FETCH_REQUEST',
+  HOOK_FETCH_FAILURE: 'HOOK_FETCH_FAILURE',
+  HOOK_FETCH_SUCCESS: 'HOOK_FETCH_SUCCESS',
+  SET_HOOK_ADD_EDIT_STATUS: 'SET_HOOK_ADD_EDIT_STATUS',
+  WATCH_HOOK_ADD_EDIT_STATUS: 'WATCH_HOOK_ADD_EDIT_STATUS',
+  CANCEL_WATCH_HOOK_ADD_EDIT_STATUS: 'CANCEL_WATCH_HOOK_ADD_EDIT_STATUS',
+  REMOVE_HOOK_REQUEST: 'REMOVE_HOOK_REQUEST',
+  REMOVE_HOOK_SUCCESS: 'REMOVE_HOOK_SUCCESS',
+  REMOVE_HOOK_FAILURE: 'REMOVE_HOOK_FAILURE',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -315,6 +336,82 @@ const runStageRequest = (plan) => ({
   plan,
 });
 
+/*
+Hook action definitions
+*/
+
+const addHookRequest = (migHook: any) => ({
+  type: PlanActionTypes.ADD_HOOK_REQUEST,
+  migHook
+});
+
+const addHookSuccess = (newHook: IMigHook) => ({
+  type: PlanActionTypes.ADD_HOOK_SUCCESS,
+  newHook,
+});
+
+const addHookFailure = (error) => ({
+  type: PlanActionTypes.ADD_HOOK_FAILURE,
+  error,
+});
+
+const hookFetchRequest = (currentPlanHooks) => ({
+  type: PlanActionTypes.HOOK_FETCH_REQUEST,
+  currentPlanHooks
+});
+
+const hookFetchSuccess = (migHookList: IMigHook[]) => ({
+  type: PlanActionTypes.HOOK_FETCH_SUCCESS,
+  migHookList,
+});
+
+const hookFetchFailure = () => ({
+  type: PlanActionTypes.HOOK_FETCH_FAILURE,
+});
+
+const setHookAddEditStatus = (status: IAddEditStatus) => ({
+  type: PlanActionTypes.SET_HOOK_ADD_EDIT_STATUS,
+  status,
+});
+
+const watchHookAddEditStatus = (hookName: string) => ({
+  type: PlanActionTypes.WATCH_HOOK_ADD_EDIT_STATUS,
+  hookName,
+});
+
+const cancelWatchHookAddEditStatus = () => ({
+  type: PlanActionTypes.CANCEL_WATCH_HOOK_ADD_EDIT_STATUS,
+});
+
+const removeHookRequest = (name, migrationStep) => ({
+  type: PlanActionTypes.REMOVE_HOOK_REQUEST,
+  name,
+  migrationStep
+});
+
+const removeHookSuccess = (name) => ({
+  type: PlanActionTypes.REMOVE_HOOK_SUCCESS,
+  name,
+});
+
+const removeHookFailure = (err) => ({
+  type: PlanActionTypes.REMOVE_HOOK_FAILURE,
+  err,
+});
+
+const updateHookRequest = (migHook: any) => ({
+  type: PlanActionTypes.UPDATE_HOOK_REQUEST,
+  migHook,
+});
+
+const updateHookFailure = () => ({
+  type: PlanActionTypes.UPDATE_HOOK_FAILURE,
+});
+
+const updateHookSuccess = () => ({
+  type: PlanActionTypes.UPDATE_HOOK_SUCCESS,
+});
+
 export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
@@ -367,4 +464,22 @@ export const PlanActions = {
   stopStagePolling,
   startMigrationPolling,
   stopMigrationPolling,
+  /*
+  Hook exports
+  */
+  updateHookFailure,
+  updateHookRequest,
+  updateHookSuccess,
+  addHookFailure,
+  addHookRequest,
+  addHookSuccess,
+  hookFetchFailure,
+  hookFetchRequest,
+  hookFetchSuccess,
+  setHookAddEditStatus,
+  watchHookAddEditStatus,
+  cancelWatchHookAddEditStatus,
+  removeHookFailure,
+  removeHookRequest,
+  removeHookSuccess
 };

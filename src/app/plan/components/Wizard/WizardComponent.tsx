@@ -4,6 +4,7 @@ import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
 import CopyOptionsForm from './CopyOptionsForm';
+import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
@@ -38,6 +39,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isPollingStatus,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
+    fetchHooksRequest,
+    migHookList,
+    isFetchingHookList,
     getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
@@ -51,6 +55,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     editPlanObj,
     updateCurrentPlanStatus,
     pvUpdatePollStop,
+    addHookRequest,
+    updateHookRequest,
+    watchHookAddEditStatus,
+    hookAddEditStatus,
+    cancelAddEditWatch,
+    resetAddEditState,
+    removeHookRequest
   } = props;
 
   enum stepId {
@@ -59,6 +70,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     PersistentVolumes,
     StorageClass,
     MigrationTarget,
+    Hooks,
     Results,
   }
   const handleClose = () => {
@@ -173,7 +185,27 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             </WizardStepContainer>
           ),
           canJumpTo: stepIdReached >= stepId.StorageClass,
-          nextButtonText: 'Finish',
+        },
+        {
+          id: stepId.Hooks,
+          name: 'Hooks',
+          component: (
+            <HooksStep
+              removeHookRequest={removeHookRequest}
+              addHookRequest={addHookRequest}
+              updateHookRequest={updateHookRequest}
+              isFetchingHookList={isFetchingHookList}
+              migHookList={migHookList}
+              fetchHooksRequest={fetchHooksRequest}
+              watchHookAddEditStatus={watchHookAddEditStatus}
+              hookAddEditStatus={hookAddEditStatus}
+              cancelAddEditWatch={cancelAddEditWatch}
+              resetAddEditState={resetAddEditState}
+              currentPlan={currentPlan}
+            />
+          ),
+          canJumpTo: stepIdReached >= stepId.Hooks,
+          nextButtonText: 'Finish'
         },
         {
           id: stepId.Results,
@@ -207,10 +239,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       errors,
       touched,
       currentPlanStatus,
+      migHookList,
+      hookAddEditStatus
     ]
   );
 
   const onMove = (curr, prev) => {
+
     //stop pv polling when navigating
     pvUpdatePollStop();
     //
@@ -233,6 +268,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           targetCluster: props.values.targetCluster,
           selectedStorage: props.values.selectedStorage,
           namespaces: props.values.selectedNamespaces,
+          hookDefinitions: props.values.hookDefinitions
         });
       }
     }
