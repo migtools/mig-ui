@@ -17,7 +17,7 @@
     "start": "DEVMODE=local webpack-dev-server --hot --color --progress --info=true --config config/webpack.dev.js",
     "start:prod-server": "./scripts/prod-server.sh",
     "start:remote": " DEPRECATED_CORS=false ./scripts/remote-dev.sh",
-    "start:remote:prod": " DEPRECATED_CORS=false ./scripts/local-prod-test/local-prod.sh",
+    "start:remote:prod-test": " DEPRECATED_CORS=false ./scripts/local-prod-test/local-prod.sh",
     "start:remote:3": "ORIGIN3_HOST=true ./scripts/remote-dev.sh",
     "prep-remote": "./scripts/prep-remote.sh",
     "type-check": "tsc --noEmit",
