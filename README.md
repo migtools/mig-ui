@@ -61,4 +61,4 @@ yarn start:remote # start the UI development server, backed by remote cluster
 ## Contributing
 
 Contributors please read and follow the [contributing recommendations](CONTRIBUTING.md)
-which also provide more details about the project.
+which also provides more details about the project.
