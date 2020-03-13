@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-module.exports = env => {
 
+module.exports = env => {
   const plugins = [
     new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
@@ -14,7 +14,7 @@ module.exports = env => {
       chunkFilename: '[id].css'
     })
   ];
-  if (env.IS_LOCAL_PROD) {
+  if (env.TARGET === 'localprod') {
     const localConfigFileName = 'config.dev.json';
 
     const htmlWebpackPluginOpt = {
