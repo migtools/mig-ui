@@ -7,8 +7,8 @@
   "private": true,
   "scripts": {
     "prebuild": "yarn clean",
-    "localbuild": "webpack --mode=production --config config/webpack.local-prod-test.js",
-    "build": "webpack --mode=production --config config/webpack.prod.js",
+    "localbuild": "webpack --mode=production --env.IS_LOCAL_PROD=true --config config/webpack.prod.js",
+    "build": "webpack --mode=production --env.IS_LOCAL_PROD=false --config config/webpack.prod.js",
     "image:build": "./scripts/build-image.sh",
     "image:push": "./scripts/push-image.sh",
     "clean": "yarn rimraf dist",
