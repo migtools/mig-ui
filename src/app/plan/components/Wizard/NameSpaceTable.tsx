@@ -23,13 +23,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
   if (values.sourceCluster === null) return null;
 
-  useEffect(() => {
-    console.log('>>>>>>>>>>> SELECTED NAMESPACES CHANGED', values.selectedNamespaces);
-  }, [values.selectedNamespaces]);
-
-  const currentSelected = JSON.parse(JSON.stringify(values.selectedNamespaces));
-  console.log('>>> -- selected namespaces at render time?', currentSelected);
-
   const columns = [
     { title: 'Name' },
     { title: 'Pods' },
@@ -38,12 +31,15 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   ];
   const rows = sourceClusterNamespaces.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
-    selected: currentSelected.includes(namespace.name),
+    selected: values.selectedNamespaces.includes(namespace.name),
+    meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
   }));
 
-  const onSelect = (event, isSelected, rowIndex) => {
-    console.log('=========  SELECT  ============');
-    console.log('??? -- selected namespaces at select time?', [...currentSelected]);
+  const onSelect = (event, isSelected, rowIndex, rowData) => {
+    // Because of a bug in Table where a shouldComponentUpdate method is too strict,
+    // when onSelect is called it may not be the one from the scope of the latest render.
+    // So, it is not safe to reference the current selection state directly from the outer scope.
+    // This is why we use rowData.meta.selectedNamespaces instead of values.selectedNamespaces.
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
@@ -52,11 +48,12 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
         newSelected = []; // Deselect all
       }
     } else {
+      const { selectedNamespaces } = rowData.meta;
       const thisNamespace = sourceClusterNamespaces[rowIndex];
       if (isSelected) {
-        newSelected = [...new Set([...currentSelected, thisNamespace.name])];
+        newSelected = [...new Set([...selectedNamespaces, thisNamespace.name])];
       } else {
-        newSelected = currentSelected.filter(name => name !== thisNamespace.name);
+        newSelected = selectedNamespaces.filter(name => name !== thisNamespace.name);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
