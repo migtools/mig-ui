@@ -141,7 +141,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.name && errors.name)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -162,7 +162,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.awsBucketName && errors.awsBucketName)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketNameKey)}
@@ -181,7 +181,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketRegionKey)}
@@ -200,7 +200,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.s3Url && errors.s3Url)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(s3UrlKey)}
@@ -223,7 +223,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
         </HideWrapper>
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
           onChange={formikHandleChange}
@@ -247,7 +247,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
         </HideWrapper>
         {/*
-          // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}

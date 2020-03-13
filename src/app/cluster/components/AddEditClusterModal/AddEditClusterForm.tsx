@@ -94,7 +94,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         isValid={!(touched.name && errors.name)}
       >
         {/*
-          // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -116,7 +116,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         isValid={!(touched.url && errors.url)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(urlKey)}
@@ -140,7 +140,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
         </HideWrapper>
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           value={values.token}
           onChange={formikHandleChange}
@@ -172,7 +172,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
         >
           {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
           <TextInput
             value={values.azureResourceGroup}
             onChange={formikHandleChange}

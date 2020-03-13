@@ -59,7 +59,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
   return (
     <InputGroup>
       {/*
-          // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
       <TextInput
         isReadOnly
         isDisabled={isDisabled}

@@ -109,7 +109,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.name && errors.name)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -130,7 +130,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureResourceGroupKey)}
@@ -149,8 +149,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.azureStorageAccount && errors.azureStorageAccount}
         isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
       >
-        {/* 
-        // @ts-ignore */}
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureStorageAccountKey)}

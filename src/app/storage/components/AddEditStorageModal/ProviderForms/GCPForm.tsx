@@ -104,7 +104,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.name && errors.name)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
           onChange={formikHandleChange}
@@ -126,7 +126,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.gcpBucket && errors.gcpBucket)}
       >
         {/*
-        // @ts-ignore */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
           onChange={formikHandleChange}
@@ -149,8 +149,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         <HideWrapper onClick={handleBlobHiddenToggle}>
           <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
         </HideWrapper>
-        {/* 
-        // @ts-ignore */}
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBlobKey)}
