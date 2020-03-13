@@ -1,5 +1,15 @@
-import React from 'react';
-import { GridItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import React, { useState } from 'react';
+import {
+  GridItem,
+  Text,
+  TextContent,
+  TextVariants,
+  Level,
+  LevelItem,
+  Pagination,
+  PaginationProps,
+  PaginationVariant,
+} from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -47,15 +57,27 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
         newSelected = []; // Deselect all
       }
     } else {
-      const { selectedNamespaces } = rowData.meta;
-      const thisNamespace = sourceClusterNamespaces[rowIndex];
+      const { meta, name } = rowData;
       if (isSelected) {
-        newSelected = [...new Set([...selectedNamespaces, thisNamespace.name])];
+        newSelected = [...new Set([...meta.selectedNamespaces, name.title])];
       } else {
-        newSelected = selectedNamespaces.filter(name => name !== thisNamespace.name);
+        newSelected = meta.selectedNamespaces.filter(selected => selected !== name.title);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
+  };
+
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
+  const currentPageRows = rows.slice(pageStartIndex, pageStartIndex + itemsPerPage);
+
+  const paginationProps: PaginationProps = {
+    itemCount: rows.length,
+    perPage: itemsPerPage,
+    page: currentPageNumber,
+    onSetPage: (event, pageNumber) => setCurrentPageNumber(pageNumber),
+    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
   };
 
   return (
@@ -66,17 +88,36 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
         </TextContent>
       </GridItem>
       <GridItem>
+        <Level>
+          <LevelItem>
+            <TextContent>
+              <Text
+                component={TextVariants.small}
+                className={spacing.mlLg}
+              >{`${values.selectedNamespaces.length} selected`}</Text>
+            </TextContent>
+          </LevelItem>
+          <LevelItem>
+            <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
+          </LevelItem>
+        </Level>
         <Table
           aria-label="Projects table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={rows}
+          rows={currentPageRows}
           onSelect={onSelect}
           canSelectAll
         >
           <TableHeader />
           <TableBody />
         </Table>
+        <Pagination
+          widgetId="namespace-table-pagination-bottom"
+          variant={PaginationVariant.bottom}
+          className={spacing.mtMd}
+          {...paginationProps}
+        />
       </GridItem>
     </React.Fragment>
   );
