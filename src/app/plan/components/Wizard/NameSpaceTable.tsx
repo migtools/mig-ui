@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { GridItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-const styles = require('./NamespaceTable.module');
 interface INamespaceTableProps {
   isEdit: boolean;
   values: any;
@@ -19,7 +18,7 @@ interface INamespaceTableProps {
 }
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
-  const { isEdit, setFieldValue, sourceClusterNamespaces, values } = props;
+  const { setFieldValue, sourceClusterNamespaces, values } = props;
 
   if (values.sourceCluster === null) return null;
 
