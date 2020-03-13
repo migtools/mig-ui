@@ -39,27 +39,27 @@ const valuesHaveUpdate = (values, currentStorage) => {
   }
 
   const valuesUpdatedObject =
-        values.name !== existingMigStorageName ||
-        values.gcpBucket !== existingGCPBucket ||
-        values.gcpBlob !== existingGCPBlob;
+    values.name !== existingMigStorageName ||
+    values.gcpBucket !== existingGCPBucket ||
+    values.gcpBlob !== existingGCPBlob;
 
   return valuesUpdatedObject;
 };
 
 interface IFormValues {
-    name: string;
-    bslProvider: string;
-    gcpBucket: string;
-    gcpBlob: any;
+  name: string;
+  bslProvider: string;
+  gcpBucket: string;
+  gcpBlob: any;
 }
 interface IOtherProps {
-    onAddEditSubmit: any;
-    onClose: any;
-    addEditStatus: any;
-    initialStorageValues: any;
-    checkConnection: (name) => void;
-    currentStorage: any;
-    provider: string;
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  initialStorageValues: any;
+  checkConnection: (name) => void;
+  currentStorage: any;
+  provider: string;
 }
 
 const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -103,6 +103,9 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.name && errors.name}
         isValid={!(touched.name && errors.name)}
       >
+        {/*
+        // @ts-ignore */}
+
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -122,6 +125,9 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.gcpBucket && errors.gcpBucket}
         isValid={!(touched.gcpBucket && errors.gcpBucket)}
       >
+        {/*
+        // @ts-ignore */}
+
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBucketKey)}
@@ -143,6 +149,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         <HideWrapper onClick={handleBlobHiddenToggle}>
           <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
         </HideWrapper>
+        {/* 
+        // @ts-ignore */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBlobKey)}
@@ -168,7 +176,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Add or edit your storage details
+              Add or edit your storage details
             </div>}>
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
@@ -181,12 +189,12 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
             )}
             onClick={() => checkConnection(values.name)}
           >
-                        Check Connection
+            Check Connection
           </Button>
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Re-check your storage connection state
+              Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
@@ -198,7 +206,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         </GridItem>
         <GridItem>
           <Button variant="primary" onClick={onClose}>
-                        Close
+            Close
           </Button>
         </GridItem>
       </Grid>
