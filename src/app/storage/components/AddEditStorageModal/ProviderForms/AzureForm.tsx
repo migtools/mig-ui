@@ -237,7 +237,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           actions={[
             <Button key="confirm" variant="primary" onClick={handleModalToggle}>
               Close
-                    </Button>,
+            </Button>,
           ]}
           isFooterLeftAligned
         >
@@ -245,47 +245,47 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
             <GridItem>
               <p>
                 To add an Azure repository, you will need the following information:
-                      </p>
+              </p>
 
             </GridItem>
             <GridItem>
               <ul>
                 <li>
                   - Azure subscription ID
-                        </li>
+                </li>
                 <li>
                   - Azure storage account
-                        </li>
+                </li>
                 <li>
                   - Azure tenant ID
-                        </li>
+                </li>
                 <li>
                   - Azure client ID
-                        </li>
+                </li>
                 <li>
                   - Azure client secret
-                        </li>
+                </li>
                 <li>
                   - Azure resource group
-                        </li>
+                </li>
                 <li>
                   - Azure cloud name
-                        </li>
+                </li>
               </ul>
 
             </GridItem>
             <GridItem>
               <p>
                 See the &nbsp;
-                        <a
+                <a
                   href={CREDENTIAL_DOCUMENTATION_URL}
                   target="_blank">
                   product documentation
-                        </a>
+                </a>
                 &nbsp;
                 instructions on how to create an .INI file that
                 includes this information.
-                      </p>
+              </p>
 
             </GridItem>
           </Grid>
