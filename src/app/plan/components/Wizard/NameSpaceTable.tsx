@@ -23,65 +23,12 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
 
   if (values.sourceCluster === null) return null;
 
-  /*
-  update formik when local state changes -- no need
   useEffect(() => {
-    if (sourceClusterNamespaces.length > 0) {
-      const formValuesForNamespaces = sourceClusterNamespaces
-        .filter(item => {
-          const keys = Object.keys(checkedNamespaceRows);
+    console.log('>>>>>>>>>>> SELECTED NAMESPACES CHANGED', values.selectedNamespaces);
+  }, [values.selectedNamespaces]);
 
-          for (const key of keys) {
-            if (item.name === key && checkedNamespaceRows[key]) {
-              return item;
-            }
-          }
-        })
-        .map(namespace => namespace.name);
-
-      setFieldValue('selectedNamespaces', formValuesForNamespaces);
-    }
-  }, [checkedNamespaceRows]);
-  */
-
-  /* initialize local state from formik -- no need
-  useEffect(() => {
-    if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
-      const newSelected = Object.assign({}, checkedNamespaceRows);
-      values.selectedNamespaces.filter((item, _) => {
-        for (let i = 0; sourceClusterNamespaces.length > i; i++) {
-          if (item === sourceClusterNamespaces[i].name) {
-            newSelected[item] = true;
-          }
-        }
-      });
-      setCheckedNamespaceRows(newSelected);
-    }
-  }, [sourceClusterNamespaces]);
-  */
-
-  /* update local state on select all -- no need?
-  const toggleSelectAll = () => {
-    const newSelected = {};
-
-    if (selectAll === 0) {
-      sourceClusterNamespaces.forEach(item => {
-        newSelected[item.name] = true;
-      });
-    }
-    setSelectAll(selectAll === 0 ? 1 : 0);
-    setCheckedNamespaceRows(newSelected);
-  };
-  */
-
-  /* update local state on select -- update formik directly instead
-  const selectRow = rowId => {
-    const newSelected = Object.assign({}, checkedNamespaceRows);
-    newSelected[rowId] = !checkedNamespaceRows[rowId];
-    setCheckedNamespaceRows(newSelected);
-    setSelectAll(2);
-  };
-  */
+  const currentSelected = JSON.parse(JSON.stringify(values.selectedNamespaces));
+  console.log('>>> -- selected namespaces at render time?', currentSelected);
 
   const columns = [
     { title: 'Name' },
@@ -91,11 +38,12 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
   ];
   const rows = sourceClusterNamespaces.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
-    selected: values.selectedNamespaces.includes(namespace.name),
+    selected: currentSelected.includes(namespace.name),
   }));
 
   const onSelect = (event, isSelected, rowIndex) => {
-    console.log('was already selected?', values.selectedNamespaces);
+    console.log('=========  SELECT  ============');
+    console.log('??? -- selected namespaces at select time?', [...currentSelected]);
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
@@ -106,10 +54,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     } else {
       const thisNamespace = sourceClusterNamespaces[rowIndex];
       if (isSelected) {
-        console.log('New shit:', [...values.selectedNamespaces, thisNamespace.name]);
-        newSelected = [...new Set([...values.selectedNamespaces, thisNamespace.name])];
+        newSelected = [...new Set([...currentSelected, thisNamespace.name])];
       } else {
-        newSelected = values.selectedNamespaces.filter(name => name !== thisNamespace.name);
+        newSelected = currentSelected.filter(name => name !== thisNamespace.name);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
