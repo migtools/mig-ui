@@ -8,7 +8,6 @@ echo "ERROR: This script has been deprecated."
 exit 1
 ################################################################################
 
-echo
 projectRoot="$_dir/.."
 exDevConfigFile="$projectRoot/config/config.dev.json.example"
 devConfigFile="$projectRoot/config/config.dev.json"
