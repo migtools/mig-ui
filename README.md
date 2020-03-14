@@ -10,8 +10,21 @@ configure your local development settings.
 `cp config/config.dev.json.example config/config.dev.json`
 
 Also ensure you have yarn installed by following recommended install instructions:
-
 https://yarnpkg.com/en/docs/install#centos-stable
+
+Install development/build dependencies
+`yarn`
+
+Start the development server
+`yarn start`
+
+Run a full build
+`yarn build`
+
+Consistent styles are enforced by travis and will gate PR merges. To check your code prior
+to submission, run:
+`yarn lint`
+
 
 ### UI development server
 
@@ -47,15 +60,5 @@ yarn start:remote # start the UI development server, backed by remote cluster
 
 ## Contributing
 
-Install development/build dependencies
-`yarn`
-
-Start the development server
-`yarn start`
-
-Run a full build
-`yarn build`
-
-Consistent styles are enforced by travis and will gate PR merges. To check your code prior
-to submission, run:
-`yarn lint`
+Contributors please read and follow the [contributing recommendations](CONTRIBUTING.md)
+which also provides more details about the project.
