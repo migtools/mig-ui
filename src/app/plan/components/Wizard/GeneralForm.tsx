@@ -33,6 +33,9 @@ const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
             isRequired
             fieldId="planName"
           >
+            {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+
             <TextInput
               onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}

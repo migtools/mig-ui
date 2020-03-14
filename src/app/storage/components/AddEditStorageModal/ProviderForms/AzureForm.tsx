@@ -45,29 +45,29 @@ const valuesHaveUpdate = (values, currentStorage) => {
   }
 
   const valuesUpdatedObject =
-        values.name !== existingMigStorageName ||
-        values.azureResourceGroup !== existingAzureResourceGroup ||
-        values.azureStorageAccount !== existingAzureStorageAccount ||
-        values.azureBlob !== existingAzureBlob;
+    values.name !== existingMigStorageName ||
+    values.azureResourceGroup !== existingAzureResourceGroup ||
+    values.azureStorageAccount !== existingAzureStorageAccount ||
+    values.azureBlob !== existingAzureBlob;
 
   return valuesUpdatedObject;
 };
 
 interface IFormValues {
-    name: string;
-    bslProvider: string;
-    azureResourceGroup: string;
-    azureStorageAccount: string;
-    azureBlob: any;
+  name: string;
+  bslProvider: string;
+  azureResourceGroup: string;
+  azureStorageAccount: string;
+  azureBlob: any;
 }
 interface IOtherProps {
-    onAddEditSubmit: any;
-    onClose: any;
-    addEditStatus: any;
-    initialStorageValues: any;
-    checkConnection: (name) => void;
-    currentStorage: any;
-    provider: string;
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  initialStorageValues: any;
+  checkConnection: (name) => void;
+  currentStorage: any;
+  provider: string;
 }
 
 const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -108,6 +108,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.name && errors.name}
         isValid={!(touched.name && errors.name)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -127,6 +129,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
         isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureResourceGroupKey)}
@@ -145,6 +149,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.azureStorageAccount && errors.azureStorageAccount}
         isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureStorageAccountKey)}
@@ -188,7 +194,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Add or edit your storage details
+              Add or edit your storage details
             </div>}>
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
@@ -201,12 +207,12 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
             )}
             onClick={() => checkConnection(values.name)}
           >
-                        Check Connection
+            Check Connection
           </Button>
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Re-check your storage connection state
+              Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
@@ -218,72 +224,72 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         </GridItem>
         <GridItem>
           <Button variant="primary" onClick={onClose}>
-                        Close
+            Close
           </Button>
         </GridItem>
       </Grid>
       {isPopUpModalOpen &&
-                <Modal
-                  isSmall
-                  title="Repository information required"
-                  isOpen={isPopUpModalOpen}
-                  onClose={handleModalToggle}
-                  actions={[
-                    <Button key="confirm" variant="primary" onClick={handleModalToggle}>
-                            Close
-                    </Button>,
-                  ]}
-                  isFooterLeftAligned
-                >
-                  <Grid gutter="md">
-                    <GridItem>
-                      <p>
-                                To add an Azure repository, you will need the following information:
-                      </p>
+        <Modal
+          isSmall
+          title="Repository information required"
+          isOpen={isPopUpModalOpen}
+          onClose={handleModalToggle}
+          actions={[
+            <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+              Close
+            </Button>,
+          ]}
+          isFooterLeftAligned
+        >
+          <Grid gutter="md">
+            <GridItem>
+              <p>
+                To add an Azure repository, you will need the following information:
+              </p>
 
-                    </GridItem>
-                    <GridItem>
-                      <ul>
-                        <li>
-                                    - Azure subscription ID
-                        </li>
-                        <li>
-                                    - Azure storage account
-                        </li>
-                        <li>
-                                    - Azure tenant ID
-                        </li>
-                        <li>
-                                    - Azure client ID
-                        </li>
-                        <li>
-                                    - Azure client secret
-                        </li>
-                        <li>
-                                    - Azure resource group
-                        </li>
-                        <li>
-                                    - Azure cloud name
-                        </li>
-                      </ul>
+            </GridItem>
+            <GridItem>
+              <ul>
+                <li>
+                  - Azure subscription ID
+                </li>
+                <li>
+                  - Azure storage account
+                </li>
+                <li>
+                  - Azure tenant ID
+                </li>
+                <li>
+                  - Azure client ID
+                </li>
+                <li>
+                  - Azure client secret
+                </li>
+                <li>
+                  - Azure resource group
+                </li>
+                <li>
+                  - Azure cloud name
+                </li>
+              </ul>
 
-                    </GridItem>
-                    <GridItem>
-                      <p>
-                                See the &nbsp;
-                        <a
-                          href={CREDENTIAL_DOCUMENTATION_URL}
-                          target="_blank">
-                                    product documentation
-                        </a>
-                                &nbsp;
-                                instructions on how to create an .INI file that
-                                includes this information.
-                      </p>
+            </GridItem>
+            <GridItem>
+              <p>
+                See the &nbsp;
+                <a
+                  href={CREDENTIAL_DOCUMENTATION_URL}
+                  target="_blank">
+                  product documentation
+                </a>
+                &nbsp;
+                instructions on how to create an .INI file that
+                includes this information.
+              </p>
 
-                    </GridItem>
-                  </Grid>
-                </Modal>
+            </GridItem>
+          </Grid>
+        </Modal>
       }
     </Form>
 

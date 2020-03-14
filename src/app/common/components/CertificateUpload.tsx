@@ -1,4 +1,4 @@
-import React ,{useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Button,
   InputGroup,
@@ -16,12 +16,12 @@ interface ICertificateUploadProps {
 
 
 const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
-  isDisabled, 
-  onBlur, 
-  onInput, 
-  setFieldValue, 
+  isDisabled,
+  onBlur,
+  onInput,
+  setFieldValue,
   name
-})=> {
+}) => {
 
   const [display, setDisplay] = useState('');
 
@@ -46,7 +46,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
   };
 
   const fileInput = useRef(null);
-  const clickFileInput = () =>{
+  const clickFileInput = () => {
     // redirect a click from any other part of the
     // component to the hidden file input in order
     // to open the browse dialog
@@ -58,18 +58,20 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
 
   return (
     <InputGroup>
+      {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
       <TextInput
         isReadOnly
         isDisabled={isDisabled}
         value={display}
         onClick={clickFileInput}
-        id={name+'-selected-filename'}
+        id={name + '-selected-filename'}
       />
       <Button
         isDisabled={isDisabled}
         onClick={clickFileInput}
       >
-            Browse
+        Browse
       </Button>
       <input
         ref={fileInput}

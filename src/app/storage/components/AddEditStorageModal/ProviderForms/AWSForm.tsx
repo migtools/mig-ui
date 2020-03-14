@@ -52,37 +52,37 @@ const valuesHaveUpdate = (values, currentStorage) => {
 
 
   const valuesUpdatedObject =
-        values.name !== existingMigStorageName ||
-        values.awsBucketName !== existingAWSBucketName ||
-        values.bucketRegion !== existingAWSBucketRegion ||
-        values.s3Url !== existingBucketUrl ||
-        values.accessKey !== existingAccessKeyId ||
-        values.secret !== existingSecretAccessKey ||
-        values.requireSSL !== existingRequireSSL ||
-        values.caBundle !== existingCABundle;
+    values.name !== existingMigStorageName ||
+    values.awsBucketName !== existingAWSBucketName ||
+    values.bucketRegion !== existingAWSBucketRegion ||
+    values.s3Url !== existingBucketUrl ||
+    values.accessKey !== existingAccessKeyId ||
+    values.secret !== existingSecretAccessKey ||
+    values.requireSSL !== existingRequireSSL ||
+    values.caBundle !== existingCABundle;
 
   return valuesUpdatedObject;
 };
 
 interface IFormValues {
-    name: string;
-    awsBucketName: string;
-    awsBucketRegion: string;
-    accessKey: string;
-    secret: string;
-    s3Url: string;
-    bslProvider: string;
-    requireSSL: boolean;
-    caBundle: string;
+  name: string;
+  awsBucketName: string;
+  awsBucketRegion: string;
+  accessKey: string;
+  secret: string;
+  s3Url: string;
+  bslProvider: string;
+  requireSSL: boolean;
+  caBundle: string;
 }
 interface IOtherProps {
-    onAddEditSubmit: any;
-    onClose: any;
-    addEditStatus: any;
-    initialStorageValues: any;
-    checkConnection: (name) => void;
-    currentStorage: any;
-    provider: string;
+  onAddEditSubmit: any;
+  onClose: any;
+  addEditStatus: any;
+  initialStorageValues: any;
+  checkConnection: (name) => void;
+  currentStorage: any;
+  provider: string;
 }
 
 const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -140,6 +140,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.name && errors.name}
         isValid={!(touched.name && errors.name)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
@@ -159,6 +161,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.awsBucketName && errors.awsBucketName}
         isValid={!(touched.awsBucketName && errors.awsBucketName)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketNameKey)}
@@ -176,6 +180,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.awsBucketRegion && errors.awsBucketRegion}
         isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketRegionKey)}
@@ -193,6 +199,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         helperTextInvalid={touched.s3Url && errors.s3Url}
         isValid={!(touched.s3Url && errors.s3Url)}
       >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(s3UrlKey)}
@@ -214,6 +222,9 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         <HideWrapper onClick={handleAccessKeyHiddenToggle}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
         </HideWrapper>
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(accessKeyKey)}
@@ -235,6 +246,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         <HideWrapper onClick={handleSecretHiddenToggle}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
         </HideWrapper>
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}
@@ -280,7 +293,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Add or edit your storage details
+              Add or edit your storage details
             </div>}>
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
@@ -293,12 +306,12 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
             )}
             onClick={() => checkConnection(values.name)}
           >
-                        Check Connection
+            Check Connection
           </Button>
           <Tooltip
             position={TooltipPosition.top}
             content={<div>
-                            Re-check your storage connection state
+              Re-check your storage connection state
             </div>}><OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
@@ -310,7 +323,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         </GridItem>
         <GridItem>
           <Button variant="primary" onClick={onClose}>
-                        Close
+            Close
           </Button>
         </GridItem>
       </Grid>
