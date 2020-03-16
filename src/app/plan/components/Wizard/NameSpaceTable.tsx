@@ -9,6 +9,7 @@ import {
   Pagination,
   PaginationProps,
   PaginationVariant,
+  DropdownDirection,
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -116,6 +117,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
           widgetId="namespace-table-pagination-bottom"
           variant={PaginationVariant.bottom}
           className={spacing.mtMd}
+          dropDirection={DropdownDirection.up}
           {...paginationProps}
         />
       </GridItem>
