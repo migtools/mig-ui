@@ -42,6 +42,8 @@ export function createMigCluster(
   requireSSL: boolean,
   caBundle: string
 ) {
+  clusterUrl = clusterUrl.trim()
+
   let specObject;
   if (isAzure) {
     specObject = {
@@ -110,7 +112,7 @@ export function createMigStorage(
           backupStorageConfig: {
             awsBucketName,
             awsRegion: awsBucketRegion,
-            awsS3Url: s3Url,
+            awsS3Url: s3Url.trim(),
             credsSecretRef: {
               name: tokenSecret.metadata.name,
               namespace: tokenSecret.metadata.namespace,
@@ -209,7 +211,7 @@ export function updateMigStorage(
           backupStorageConfig: {
             awsBucketName: bucketName,
             awsRegion: bucketRegion,
-            awsS3Url: s3Url,
+            awsS3Url: s3Url.trim(),
             insecure: !requireSSL,
             s3CustomCABundle: caBundle || undefined,
           },

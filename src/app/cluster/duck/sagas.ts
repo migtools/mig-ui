@@ -269,7 +269,7 @@ function* updateClusterRequest(action) {
   const aggregatedPatch = { spec: {} };
 
   if (urlUpdated) {
-    aggregatedPatch.spec['url'] = clusterValues.url;
+    aggregatedPatch.spec['url'] = clusterValues.url.trim();
   }
 
   if (azureUpdated) {
