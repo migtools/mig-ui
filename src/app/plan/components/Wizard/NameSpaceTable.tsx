@@ -1,190 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import React, { useState } from 'react';
 import {
   GridItem,
   Text,
   TextContent,
   TextVariants,
+  Level,
+  LevelItem,
+  Pagination,
+  PaginationProps,
+  PaginationVariant,
+  DropdownDirection,
 } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-const styles = require('./NamespaceTable.module');
 interface INamespaceTableProps {
   isEdit: boolean;
   values: any;
-  sourceClusterNamespaces: any;
+  sourceClusterNamespaces: [
+    {
+      name: string;
+      podCount: number;
+      pvcCount: number;
+      serviceCount: number;
+    }
+  ];
   setFieldValue: (fieldName, fieldValue) => void;
 }
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
-  const { isEdit, setFieldValue, sourceClusterNamespaces, values } = props;
-  const [checkedNamespaceRows, setCheckedNamespaceRows] = useState({});
-  const [selectAll, setSelectAll] = useState(0);
+  const { setFieldValue, sourceClusterNamespaces, values } = props;
 
-  useEffect(() => {
-    if (sourceClusterNamespaces.length > 0) {
-      const formValuesForNamespaces = sourceClusterNamespaces.filter((item) => {
-        const keys = Object.keys(checkedNamespaceRows);
+  if (values.sourceCluster === null) return null;
 
-        for (const key of keys) {
-          if (item.name === key && checkedNamespaceRows[key]) {
-            return item;
-          }
-        }
-      }).map((namespace) => namespace.name);
+  const columns = [
+    { title: 'Name' },
+    { title: 'Pods' },
+    { title: 'PV claims' },
+    { title: 'Services' },
+  ];
+  const rows = sourceClusterNamespaces.map(namespace => ({
+    cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
+    selected: values.selectedNamespaces.includes(namespace.name),
+    meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
+  }));
 
-      setFieldValue('selectedNamespaces', formValuesForNamespaces);
+  const onSelect = (event, isSelected, rowIndex, rowData) => {
+    // Because of a bug in Table where a shouldComponentUpdate method is too strict,
+    // when onSelect is called it may not be the one from the scope of the latest render.
+    // So, it is not safe to reference the current selection state directly from the outer scope.
+    // This is why we use rowData.meta.selectedNamespaces instead of values.selectedNamespaces.
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = sourceClusterNamespaces.map(namespace => namespace.name); // Select all
+      } else {
+        newSelected = []; // Deselect all
+      }
+    } else {
+      const { meta, name } = rowData;
+      if (isSelected) {
+        newSelected = [...new Set([...meta.selectedNamespaces, name.title])];
+      } else {
+        newSelected = meta.selectedNamespaces.filter(selected => selected !== name.title);
+      }
     }
-  }, [checkedNamespaceRows]);
-
-  useEffect(() => {
-    if (values.selectedNamespaces.length > 0 && sourceClusterNamespaces.length > 0) {
-      const newSelected = Object.assign({}, checkedNamespaceRows);
-      values.selectedNamespaces.filter((item, _) => {
-        for (let i = 0; sourceClusterNamespaces.length > i; i++) {
-          if (item === sourceClusterNamespaces[i].name) {
-            newSelected[item] = true;
-          }
-        }
-      });
-      setCheckedNamespaceRows(newSelected);
-    }
-  }, [sourceClusterNamespaces]);
-
-  const toggleSelectAll = () => {
-    const newSelected = {};
-
-    if (selectAll === 0) {
-      sourceClusterNamespaces.forEach(item => {
-        newSelected[item.name] = true;
-      });
-    }
-    setSelectAll(selectAll === 0 ? 1 : 0);
-    setCheckedNamespaceRows(newSelected);
+    setFieldValue('selectedNamespaces', newSelected);
   };
 
-  const selectRow = rowId => {
-    const newSelected = Object.assign({}, checkedNamespaceRows);
-    newSelected[rowId] = !checkedNamespaceRows[rowId];
-    setCheckedNamespaceRows(newSelected);
-    setSelectAll(2);
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
+  const currentPageRows = rows.slice(pageStartIndex, pageStartIndex + itemsPerPage);
+
+  const paginationProps: PaginationProps = {
+    itemCount: rows.length,
+    perPage: itemsPerPage,
+    page: currentPageNumber,
+    onSetPage: (event, pageNumber) => setCurrentPageNumber(pageNumber),
+    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
   };
 
-  const tableStyle = {
-    fontSize: '14px',
-  };
-
-  if (values.sourceCluster !== null) {
-    return (
-      <React.Fragment>
-        <GridItem>
-          <TextContent>
-            <Text component={TextVariants.p}>
-              Select projects to be migrated:
-            </Text>
-          </TextContent>
-        </GridItem>
-
-        <GridItem>
-          <ReactTable
-            className="-striped -highlight"
-            style={tableStyle}
-            data={sourceClusterNamespaces}
-            columns={[
-              {
-                id: 'checkbox',
-                accessor: '',
-                resizable: false,
-                width: 50,
-                Cell: ({ original }) => {
-                  return (
-                    <div style={{ textAlign: 'center' }}>
-                      <input
-                        type="checkbox"
-                        onChange={() => selectRow(original.name)}
-                        checked={checkedNamespaceRows[original.name] === true}
-                      />
-                    </div>
-                  );
-                },
-                Header: () => {
-                  return (
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={selectAll === 1}
-                      ref={input => {
-                        if (input) {
-                          input.indeterminate = selectAll === 2;
-                        }
-                      }}
-                      onChange={toggleSelectAll}
-                    />
-                  );
-                }
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Name
-                  </div>
-                ),
-                accessor: 'name',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of pods
-                  </div>
-                ),
-                accessor: 'podCount',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of PV claims
-                  </div>
-                ),
-                accessor: 'pvcCount',
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Number of services
-                  </div>
-                ),
-                accessor: 'serviceCount',
-              },
-            ]}
-            defaultPageSize={5}
-          />
-        </GridItem>
-      </React.Fragment>
-    );
-  }
-  else {
-    return null;
-  }
+  return (
+    <React.Fragment>
+      <GridItem>
+        <TextContent className={spacing.mtMd}>
+          <Text component={TextVariants.p}>Select projects to be migrated:</Text>
+        </TextContent>
+      </GridItem>
+      <GridItem>
+        <Level>
+          <LevelItem>
+            <TextContent>
+              <Text
+                component={TextVariants.small}
+                className={spacing.mlLg}
+              >{`${values.selectedNamespaces.length} selected`}</Text>
+            </TextContent>
+          </LevelItem>
+          <LevelItem>
+            <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
+          </LevelItem>
+        </Level>
+        <Table
+          aria-label="Projects table"
+          variant={TableVariant.compact}
+          cells={columns}
+          rows={currentPageRows}
+          onSelect={onSelect}
+          canSelectAll
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+        <Pagination
+          widgetId="namespace-table-pagination-bottom"
+          variant={PaginationVariant.bottom}
+          className={spacing.mtMd}
+          dropDirection={DropdownDirection.up}
+          {...paginationProps}
+        />
+      </GridItem>
+    </React.Fragment>
+  );
 };
 
 export default NamespaceTable;
