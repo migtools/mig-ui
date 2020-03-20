@@ -65,7 +65,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
 
   const getCABundleVal = (caBundle) => {
     if (caBundle) {
-      return isAzure;
+      return caBundle;
     } else return '';
   }
 
