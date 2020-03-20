@@ -142,7 +142,7 @@ function* addClusterRequest(action) {
     const getResults = yield Q.allSettled([
       client.list(secretResource, getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)),
       client.get(migClusterResource, migCluster.metadata.name),
-    ]);;
+    ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
       return res && res.status === 200 ?
@@ -182,7 +182,7 @@ function* addClusterRequest(action) {
       Object.assign(migCluster.spec.serviceAccountSecretRef, { 
         name: tokenSecretAddResult.data.metadata.name,
         namespace: tokenSecretAddResult.data.metadata.namespace,
-        });
+      });
 
       const clusterAddResult = yield client.create(migClusterResource, migCluster);
       if (clusterAddResult.status === 201) {
