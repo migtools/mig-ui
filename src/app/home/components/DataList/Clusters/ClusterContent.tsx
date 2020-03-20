@@ -31,14 +31,14 @@ const ClusterContent = ({
           })}
         </DataList>
       ) : (
-        <EmptyState variant="full">
-          <EmptyStateIcon icon={AddCircleOIcon} />
-          <Title size="lg">Add source and target clusters for the migration</Title>
-          <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
+          <EmptyState variant="full">
+            <EmptyStateIcon icon={AddCircleOIcon} />
+            <Title size="lg">Add source and target clusters for the migration</Title>
+            <Button onClick={() => toggleOpen(!isOpen)} variant="primary">
               Add cluster
           </Button>
-        </EmptyState>
-      )}
+          </EmptyState>
+        )}
       <AddEditClusterModal
         isOpen={isOpen}
         onHandleClose={toggleOpen}

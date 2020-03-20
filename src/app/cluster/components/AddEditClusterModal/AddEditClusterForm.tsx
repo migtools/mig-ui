@@ -45,18 +45,32 @@ const valuesHaveUpdate = (values, currentCluster) => {
   if (!currentCluster || currentCluster.MigCluster.spec.isHostCluster) {
     return true;
   }
-
   const requireSSL = !currentCluster.MigCluster.spec.insecure;
-  const caBundle = currentCluster.MigCluster.spec.caBundle;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
-  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup;
+
+  const getAzureResourceGroupVal = (azureResourceGroup) => {
+    if (azureResourceGroup) {
+      return azureResourceGroup.length > 0
+    } else return '';
+  }
+  const azureResourceGroup = getAzureResourceGroupVal(currentCluster.MigCluster.spec.azureResourceGroup);
+
+  const getIsAzureVal = (isAzure) => {
+    if (isAzure) {
+      return isAzure;
+    } else return false;
+  }
+  const isAzure = getIsAzureVal(currentCluster.MigCluster.spec.isAzure);
+
+  const caBundle = currentCluster.MigCluster.spec.caBundle;
+
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
     values.token !== rawToken ||
-    values.azureResourceGroup !== azureResourceGroup ||
-    values.isAzure !== azureResourceGroup.length > 0 ||
     values.requireSSL !== requireSSL ||
+    values.isAzure !== isAzure ||
+    values.azureResourceGroup !== azureResourceGroup ||
     values.caBundle !== caBundle;
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -229,10 +243,11 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentCluster)
-            )}
+            isDisabled={
+              isCheckConnectionButtonDisabled(
+                currentStatus,
+                valuesHaveUpdate(values, currentCluster)
+              )}
             onClick={() => checkConnection(values.name)}
           >
             Check connection
@@ -299,9 +314,9 @@ const AddEditClusterForm: any = withFormik({
       values.url = initialClusterValues.clusterUrl || '';
       values.token = initialClusterValues.clusterSvcToken || '';
       values.isAzure = initialClusterValues.clusterIsAzure || false;
-      values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || null;
+      values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || '';
       values.requireSSL = initialClusterValues.clusterRequireSSL;
-      values.caBundle = initialClusterValues.clusterCABundle || null;
+      values.caBundle = initialClusterValues.clusterCABundle || '';
     }
 
     return values;
