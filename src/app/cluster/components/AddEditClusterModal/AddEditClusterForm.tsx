@@ -63,7 +63,13 @@ const valuesHaveUpdate = (values, currentCluster) => {
   }
   const isAzure = getIsAzureVal(currentCluster.MigCluster.spec.isAzure);
 
-  const caBundle = currentCluster.MigCluster.spec.caBundle;
+  const getCABundleVal = (caBundle) => {
+    if (caBundle) {
+      return isAzure;
+    } else return '';
+  }
+
+  const caBundle = getCABundleVal(currentCluster.MigCluster.spec.caBundle);
 
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
