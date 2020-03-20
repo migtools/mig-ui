@@ -66,6 +66,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
         setKebabIsOpen(false);
         toggleConfirmOpen();
       }}
+      isDisabled={associatedPlanCount > 0}
       key="removeStorage"
     >
       Remove
