@@ -127,6 +127,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           />
           {isConfirmOpen &&
             <ConfirmModal
+              title="Confirmation"
               message={removeMessage}
               isOpen={isConfirmOpen}
               onHandleClose={handleRemoveStorage}

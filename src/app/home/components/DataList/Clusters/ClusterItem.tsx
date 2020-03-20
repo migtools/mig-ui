@@ -160,6 +160,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             }}
           />
           <ConfirmModal
+            title="Confirmation"
             message={removeMessage}
             isOpen={isConfirmOpen}
             onHandleClose={handleRemoveCluster}
