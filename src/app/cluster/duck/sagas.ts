@@ -150,11 +150,11 @@ function* addClusterRequest(action) {
     const alreadyExists = getResults.reduce((exists, res) => {
       return (res && res.status === 200) ?
         [...exists,
-        {
-          kind: res.value.data.kind,
-          name: (res.value.data.items && res.value.data.items.length > 0) ?
-            res.value.data.items[0].metadata.name : res.value.data.metadata.name
-        }
+          {
+            kind: res.value.data.kind,
+            name: (res.value.data.items && res.value.data.items.length > 0) ?
+              res.value.data.items[0].metadata.name : res.value.data.metadata.name
+          }
         ] :
         exists;
     }, []);
