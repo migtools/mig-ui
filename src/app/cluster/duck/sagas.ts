@@ -10,6 +10,7 @@ import {
   createTokenSecret,
   createMigCluster,
   updateTokenSecret,
+  getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
@@ -87,9 +88,15 @@ function* removeClusterSaga(action) {
       migMeta.configNamespace
     );
     const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
+    
+    const secretResourceList = yield client.list(secretResource, 
+      getTokenSecretLabelSelector(MigResourceKind.MigCluster, name));
+
+    const secretResourceName = (secretResourceList.data.items && secretResourceList.data.items.length > 0) ?
+      secretResourceList.data.items[0].metadata.name : '';
 
     yield Promise.all([
-      client.delete(secretResource, name),
+      client.delete(secretResource, secretResourceName),
       client.delete(migClusterResource, name),
     ]);
 
@@ -110,8 +117,11 @@ function* addClusterRequest(action) {
   const tokenSecret = createTokenSecret(
     clusterValues.name,
     migMeta.configNamespace,
-    clusterValues.token
+    clusterValues.token,
+    MigResourceKind.MigCluster,
+    clusterValues.name
   );
+
   const migCluster = createMigCluster(
     clusterValues.name,
     migMeta.namespace,
@@ -132,13 +142,20 @@ function* addClusterRequest(action) {
   // Ensure that none of objects that make up a cluster already exist
   try {
     const getResults = yield Q.allSettled([
-      client.get(secretResource, tokenSecret.metadata.name),
+      client.list(secretResource, 
+        getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)),
       client.get(migClusterResource, migCluster.metadata.name),
     ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
-      return res.value && res.value.status === 200 ?
-        [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
+      return (res && res.status === 200) ?
+        [...exists,
+          {
+            kind: res.value.data.kind,
+            name: (res.value.data.items && res.value.data.items.length > 0) ?
+              res.value.data.items[0].metadata.name : res.value.data.metadata.name
+          }
+        ] :
         exists;
     }, []);
 
@@ -162,18 +179,30 @@ function* addClusterRequest(action) {
   // If any of the objects actually fail creation, we need to rollback the others
   // so the clusters are created, or fail atomically
   try {
-    const clusterAddResults = yield Q.allSettled([
-      client.create(secretResource, tokenSecret),
-      client.create(migClusterResource, migCluster),
-    ]);
+    const clusterAddResults = [];
+    const tokenSecretAddResult = yield client.create(secretResource, tokenSecret);
+
+    if (tokenSecretAddResult.status === 201) {
+      clusterAddResults.push(tokenSecretAddResult);
+
+      Object.assign(migCluster.spec.serviceAccountSecretRef, { 
+        name: tokenSecretAddResult.data.metadata.name,
+        namespace: tokenSecretAddResult.data.metadata.namespace,
+      });
+
+      const clusterAddResult = yield client.create(migClusterResource, migCluster);
+      if (clusterAddResult.status === 201) {
+        clusterAddResults.push(clusterAddResult);
+      }
+    }
 
     // If any of the attempted object creation promises have failed, we need to
     // rollback those that succeeded so we don't have a halfway created "Cluster"
     // A rollback is only required if some objects have actually *succeeded*,
     // as well as failed.
-    const isRollbackRequired =
-      clusterAddResults.find(res => res.state === 'rejected') &&
-      clusterAddResults.find(res => res.state === 'fulfilled');
+    const isRollbackRequired = 
+      clusterAddResults.find(res => res.status === 201) &&
+      clusterAddResults.find(res => res.status !== 201)
 
     if (isRollbackRequired) {
       const kindToResourceMap = {
@@ -183,8 +212,8 @@ function* addClusterRequest(action) {
 
       // The objects that need to be rolled back are those that were fulfilled
       const rollbackObjs = clusterAddResults.reduce((rollbackAccum, res) => {
-        return res.state === 'fulfilled' ?
-          [...rollbackAccum, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
+        return res.status === 201 ?
+          [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }] :
           rollbackAccum;
       }, []);
 
@@ -209,7 +238,7 @@ function* addClusterRequest(action) {
     } // End rollback handling
 
     const cluster = clusterAddResults.reduce((accum, res) => {
-      const data = res.value.data;
+      const data = res.data;
       accum[data.kind] = data;
       return accum;
     }, {});
@@ -304,7 +333,7 @@ function* updateClusterRequest(action) {
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
-      secretResource, clusterValues.name, newTokenSecret));
+      secretResource, currentCluster.spec.serviceAccountSecretRef.name, newTokenSecret));
   }
 
   try {

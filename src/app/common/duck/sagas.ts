@@ -26,15 +26,20 @@ function* poll(action) {
       const migMeta = state.migMeta;
       const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
 
-      const alertModalObj = {
-        name: params.pollName,
-        errorMessage: 'error'
-      };
-      yield put(AlertActions.alertErrorModal(alertModalObj));
-      yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
-      yield put(PlanActions.stopPlanPolling());
-      yield put(ClusterActions.stopClusterPolling());
-      yield put(StorageActions.stopStoragePolling());
+      // Handle cert refresh error & network connectivity error
+      if (response.e.response.data.message === 'Network Error') {
+        const alertModalObj = {
+          name: params.pollName,
+          errorMessage: 'error'
+        };
+        yield put(AlertActions.alertErrorModal(alertModalObj));
+        yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+        yield put(PlanActions.stopPlanPolling());
+        yield put(ClusterActions.stopClusterPolling());
+        yield put(StorageActions.stopStoragePolling());
+
+      }
+
     }
     yield delay(params.delay);
   }

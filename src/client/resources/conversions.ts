@@ -1,7 +1,7 @@
 import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
 import { pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/StorageClassTable';
 
-export function createTokenSecret(name: string, namespace: string, rawToken: string) {
+export function createTokenSecret(name: string, namespace: string, rawToken: string, createdForResourceType: string, createdForResource: string) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
   return {
@@ -11,11 +11,21 @@ export function createTokenSecret(name: string, namespace: string, rawToken: str
     },
     kind: 'Secret',
     metadata: {
-      name,
+      generateName: `${name}-`,
       namespace,
+      labels: {
+        createdForResourceType,
+        createdForResource,
+      }
     },
     type: 'Opaque',
   };
+}
+
+export function getTokenSecretLabelSelector(createdForResourceType: string, createdForResource: string) {
+  return {
+    labelSelector: `createdForResourceType=${createdForResourceType},createdForResource=${createdForResource}`
+  }
 }
 
 export function updateTokenSecret(rawToken: string) {
