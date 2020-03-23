@@ -50,7 +50,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
 
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
 
-  const removeMessage = `Are you sure you want to remove "${clusterName}"`;
+  const removeMessage = `Removing "${clusterName}" will make it unavailable for migration plans`;
 
   const handleRemoveCluster = isConfirmed => {
     if (isConfirmed) {
@@ -160,7 +160,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             }}
           />
           <ConfirmModal
-            title="Confirmation"
+            title="Remove this Cluster?"
             message={removeMessage}
             isOpen={isConfirmOpen}
             onHandleClose={handleRemoveCluster}
