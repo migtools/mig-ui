@@ -92,8 +92,8 @@ function* removeClusterSaga(action) {
     const secretResourceList = yield client.list(secretResource, 
       getTokenSecretLabelSelector(MigResourceKind.MigCluster, name));
 
-    const secretResourceName = (secretResourceList.data.items && secretResourceList.data.items.length > 0) 
-      ? secretResourceList.data.items[0].metadata.name : '';
+    const secretResourceName = (secretResourceList.data.items && secretResourceList.data.items.length > 0) ?
+      secretResourceList.data.items[0].metadata.name : '';
 
     yield Promise.all([
       client.delete(secretResource, secretResourceName),
