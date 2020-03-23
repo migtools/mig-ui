@@ -70,9 +70,9 @@ function* fetchClustersGenerator() {
     const nonHostClusters = clusterList.filter(c => !c.spec.isHostCluster);
     const refs = yield Promise.all(fetchMigClusterRefs(client, state.migMeta, nonHostClusters));
     const groupedClusters = groupClusters(clusterList, refs);
-    return { updatedClusters: groupedClusters, isSuccessful: true };
+    return { updatedClusters: groupedClusters };
   } catch (e) {
-    return { e, isSuccessful: false };
+    throw e;
   }
 }
 
@@ -88,8 +88,8 @@ function* removeClusterSaga(action) {
       migMeta.configNamespace
     );
     const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
-    
-    const secretResourceList = yield client.list(secretResource, 
+
+    const secretResourceList = yield client.list(secretResource,
       getTokenSecretLabelSelector(MigResourceKind.MigCluster, name));
 
     const secretResourceName = (secretResourceList.data.items && secretResourceList.data.items.length > 0) ?
@@ -142,7 +142,7 @@ function* addClusterRequest(action) {
   // Ensure that none of objects that make up a cluster already exist
   try {
     const getResults = yield Q.allSettled([
-      client.list(secretResource, 
+      client.list(secretResource,
         getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)),
       client.get(migClusterResource, migCluster.metadata.name),
     ]);
@@ -150,11 +150,11 @@ function* addClusterRequest(action) {
     const alreadyExists = getResults.reduce((exists, res) => {
       return (res && res.status === 200) ?
         [...exists,
-          {
-            kind: res.value.data.kind,
-            name: (res.value.data.items && res.value.data.items.length > 0) ?
-              res.value.data.items[0].metadata.name : res.value.data.metadata.name
-          }
+        {
+          kind: res.value.data.kind,
+          name: (res.value.data.items && res.value.data.items.length > 0) ?
+            res.value.data.items[0].metadata.name : res.value.data.metadata.name
+        }
         ] :
         exists;
     }, []);
@@ -185,7 +185,7 @@ function* addClusterRequest(action) {
     if (tokenSecretAddResult.status === 201) {
       clusterAddResults.push(tokenSecretAddResult);
 
-      Object.assign(migCluster.spec.serviceAccountSecretRef, { 
+      Object.assign(migCluster.spec.serviceAccountSecretRef, {
         name: tokenSecretAddResult.data.metadata.name,
         namespace: tokenSecretAddResult.data.metadata.namespace,
       });
@@ -200,7 +200,7 @@ function* addClusterRequest(action) {
     // rollback those that succeeded so we don't have a halfway created "Cluster"
     // A rollback is only required if some objects have actually *succeeded*,
     // as well as failed.
-    const isRollbackRequired = 
+    const isRollbackRequired =
       clusterAddResults.find(res => res.status === 201) &&
       clusterAddResults.find(res => res.status !== 201)
 
