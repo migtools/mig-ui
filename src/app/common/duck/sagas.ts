@@ -22,13 +22,10 @@ function* poll(action) {
     try {
       const response = yield call(params.asyncFetch);
       params.callback(response);
-
-      // if (!shouldContinue) {
-
-      // }
     } catch (err) {
       const state = yield select();
       const migMeta = state.migMeta;
+      //handle selfSignedCert error & network connectivity error
       if (utils.isSelfSignedCertError(err)) {
         const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
         const alertModalObj = {
@@ -40,8 +37,8 @@ function* poll(action) {
         yield put(PlanActions.stopPlanPolling());
         yield put(ClusterActions.stopClusterPolling());
         yield put(StorageActions.stopStoragePolling());
-
       }
+      //TODO: Handle "secrets not found error" & any other fetch errors here
     }
     yield delay(params.delay);
   }
