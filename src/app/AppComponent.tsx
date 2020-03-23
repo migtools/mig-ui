@@ -58,7 +58,7 @@ const AppComponent: React.SFC<IProps> = ({
   clusterList
 }) => {
   const handlePlanPoll = response => {
-    if (response && response.isSuccessful === true) {
+    if (response) {
       updatePlans(response.updatedPlans);
       return true;
     }
@@ -66,7 +66,7 @@ const AppComponent: React.SFC<IProps> = ({
   };
 
   const handleClusterPoll = response => {
-    if (response && response.isSuccessful === true) {
+    if (response) {
       updateClusters(response.updatedClusters);
       return true;
     }
@@ -74,7 +74,7 @@ const AppComponent: React.SFC<IProps> = ({
   };
 
   const handleStoragePoll = response => {
-    if (response && response.isSuccessful === true) {
+    if (response) {
       updateStorages(response.updatedStorages);
       return true;
     }
