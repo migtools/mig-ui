@@ -191,6 +191,7 @@ function* addClusterRequest(action) {
       });
 
       const clusterAddResult = yield client.create(migClusterResource, migCluster);
+      
       if (clusterAddResult.status === 201) {
         clusterAddResults.push(clusterAddResult);
       }
