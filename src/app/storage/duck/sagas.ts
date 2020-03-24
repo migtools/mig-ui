@@ -84,7 +84,7 @@ function* removeStorageSaga(action) {
 
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
-      migMeta.namespace
+      migMeta.configNamespace
     );
     const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
