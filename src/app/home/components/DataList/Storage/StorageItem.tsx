@@ -127,7 +127,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           />
           {isConfirmOpen &&
             <ConfirmModal
-              title="Remove this Replication repository?"
+              title="Remove this replication repository?"
               message={removeMessage}
               isOpen={isConfirmOpen}
               onHandleClose={handleRemoveStorage}
