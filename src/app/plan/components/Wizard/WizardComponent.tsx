@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
-import ResourceSelectForm from './ResourceSelectForm';
+import SourceSelectForm from './SourceSelectForm';
+import DestinationSelectForm from './DestinationSelectForm';
+import ReplicationSelectForm from './ReplicationSelectForm';
 import VolumesForm from './VolumesForm';
 import StorageClassForm from './StorageClassForm';
 import ResultsStep from './ResultsStep';
@@ -55,6 +57,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   enum stepId {
     General = 1,
     MigrationSource,
+    MigrationDestination,
+    MigrationReplication,
     PersistentVolumes,
     StorageClass,
     MigrationTarget,
@@ -96,9 +100,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       },
       {
         id: stepId.MigrationSource,
-        name: 'Resources',
+        name: 'Source',
         component: (
-          <ResourceSelectForm
+          <SourceSelectForm
             values={values}
             errors={errors}
             touched={touched}
@@ -107,10 +111,63 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             setFieldValue={setFieldValue}
             setFieldTouched={setFieldTouched}
             clusterList={clusterList}
-            storageList={storageList}
             isFetchingNamespaceList={isFetchingNamespaceList}
             fetchNamespacesRequest={fetchNamespacesRequest}
             sourceClusterNamespaces={sourceClusterNamespaces}
+            isEdit={isEdit}
+          />
+        ),
+        enableNext:
+          !errors.sourceCluster &&
+          touched.sourceCluster === true &&
+          !errors.selectedNamespaces ||
+          (isEdit &&
+            !errors.sourceCluster &&
+            !errors.selectedNamespaces),
+        canJumpTo: stepIdReached >= stepId.MigrationSource,
+      }, 
+      {
+        id: stepId.MigrationDestination,
+        name: 'Destination',
+        component: (
+          <DestinationSelectForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            clusterList={clusterList}
+            isEdit={isEdit}
+          />
+        ),
+        enableNext:
+        !errors.targetCluster &&
+        touched.targetCluster === true &&
+        !errors.sourceCluster &&
+        touched.sourceCluster === true &&
+        !errors.selectedNamespaces ||
+        (isEdit &&
+          !errors.selectedStorage &&
+          !errors.targetCluster &&
+          !errors.sourceCluster &&
+          !errors.selectedNamespaces),
+        canJumpTo: stepIdReached >= stepId.MigrationDestination,
+      },
+      {
+        id: stepId.MigrationReplication,
+        name: 'Replication Repository',
+        component: (
+          <ReplicationSelectForm
+            values={values}
+            errors={errors}
+            touched={touched}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            setFieldValue={setFieldValue}
+            setFieldTouched={setFieldTouched}
+            storageList={storageList}
             isEdit={isEdit}
           />
         ),
@@ -127,7 +184,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             !errors.targetCluster &&
             !errors.sourceCluster &&
             !errors.selectedNamespaces),
-        canJumpTo: stepIdReached >= stepId.MigrationSource,
+        canJumpTo: stepIdReached >= stepId.MigrationReplication,
       },
       {
         id: stepId.PersistentVolumes,
@@ -219,11 +276,11 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setStepIdReached(curr.id);
     }
 
-    if (curr.id === stepId.MigrationSource && isEdit) {
+    if (curr.id === stepId.MigrationReplication && isEdit) {
       setCurrentPlan(editPlanObj);
     }
 
-    if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
+    if (prev.prevId === stepId.MigrationReplication && curr.id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
 
@@ -244,7 +301,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     }
   };
   return (
-    <React.Fragment>
+    <>
       {isOpen && (
         <Wizard
           isOpen={isOpen}
@@ -259,7 +316,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           onSubmit={event => event.preventDefault()}
         />
       )}
-    </React.Fragment>
+    </>
   );
 };
 

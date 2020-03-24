@@ -12,14 +12,11 @@ import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
-const ResourceSelectForm = props => {
+const SourceSelectForm = props => {
   const [srcClusterOptions, setSrcClusterOptions] = useState([]);
-  const [targetClusterOptions, setTargetClusterOptions] = useState([]);
-  const [storageOptions, setStorageOptions] = useState([]);
 
   const {
     clusterList,
-    storageList,
     values,
     errors,
     touched,
@@ -30,6 +27,7 @@ const ResourceSelectForm = props => {
     sourceClusterNamespaces,
     isEdit,
   } = props;
+  
   useEffect(() => {
     if (isEdit) {
       fetchNamespacesRequest(values.sourceCluster);
@@ -42,15 +40,8 @@ const ResourceSelectForm = props => {
     // ***
     if (clusterList.length) {
       const sourceOptions = [];
-      const targetOptions = [];
       const clusterLen = clusterList.length;
       for (let i = 0; i < clusterLen; i++) {
-        if (
-          clusterList[i].MigCluster.metadata.name !== values.sourceCluster &&
-          clusterList[i].ClusterStatus.hasReadyCondition
-        ) {
-          targetOptions.push(clusterList[i].MigCluster.metadata.name);
-        }
         if (
           clusterList[i].MigCluster.metadata.name !== values.targetCluster &&
           clusterList[i].ClusterStatus.hasReadyCondition
@@ -59,30 +50,10 @@ const ResourceSelectForm = props => {
         }
       }
       setSrcClusterOptions(sourceOptions);
-      setTargetClusterOptions(targetOptions);
     } else {
       setSrcClusterOptions(['No valid clusters found']);
     }
-    // ***
-    // * Populate storage dropdown
-    // ***
-    const newStorageOptions = [];
-    const storageLen = storageList.length;
-    for (let i = 0; i < storageLen; i++) {
-      if (storageList[i].StorageStatus.hasReadyCondition) {
-        newStorageOptions.push(storageList[i].MigStorage.metadata.name);
-      }
-    }
-    setStorageOptions(newStorageOptions);
   }, [values]);
-
-  const handleStorageChange = value => {
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
-    if (matchingStorage) {
-      setFieldValue('selectedStorage', value);
-      setFieldTouched('selectedStorage');
-    }
-  };
 
   const handleSourceChange = value => {
     const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
@@ -90,14 +61,6 @@ const ResourceSelectForm = props => {
       setFieldValue('sourceCluster', value);
       setFieldTouched('sourceCluster');
       fetchNamespacesRequest(value);
-    }
-  };
-
-  const handleTargetChange = value => {
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
-    if (matchingCluster) {
-      setFieldValue('targetCluster', value);
-      setFieldTouched('targetCluster');
     }
   };
 
@@ -120,42 +83,6 @@ const ResourceSelectForm = props => {
                   options={srcClusterOptions}
                   value={values.sourceCluster}
                   placeholderText="Select source..."
-                />
-              </FormGroup>
-            </GridItem>
-
-            <GridItem>
-              <FormGroup
-                label="Target cluster"
-                isRequired
-                fieldId="targetCluster"
-                helperTextInvalid={touched.targetCluster && errors.targetCluster}
-                isValid={!(touched.targetCluster && errors.targetCluster)}
-              >
-                <SimpleSelect
-                  id="targetCluster"
-                  onChange={handleTargetChange}
-                  options={targetClusterOptions}
-                  value={values.targetCluster}
-                  placeholderText="Select target..."
-                />
-              </FormGroup>
-            </GridItem>
-
-            <GridItem>
-              <FormGroup
-                label="Replication repository"
-                isRequired
-                fieldId="selectedStorage"
-                helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
-                isValid={!(touched.selectedStorage && errors.selectedStorage)}
-              >
-                <SimpleSelect
-                  id="selectedStorage"
-                  onChange={handleStorageChange}
-                  options={storageOptions}
-                  value={values.selectedStorage}
-                  placeholderText="Select repository..."
                 />
               </FormGroup>
             </GridItem>
@@ -187,4 +114,4 @@ const ResourceSelectForm = props => {
   );
 };
 
-export default ResourceSelectForm;
+export default SourceSelectForm;
