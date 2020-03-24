@@ -333,7 +333,7 @@ function* updateClusterRequest(action) {
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() => client.patch(
-      secretResource, currentCluster.spec.serviceAccountSecretRef.name, newTokenSecret));
+      secretResource, currentCluster.MigCluster.spec.serviceAccountSecretRef.name, newTokenSecret));
   }
 
   try {
