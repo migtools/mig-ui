@@ -48,28 +48,9 @@ const valuesHaveUpdate = (values, currentCluster) => {
   const requireSSL = !currentCluster.MigCluster.spec.insecure;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
-
-  const getAzureResourceGroupVal = (azureResourceGroup) => {
-    if (azureResourceGroup) {
-      return azureResourceGroup.length > 0
-    } else return '';
-  }
-  const azureResourceGroup = getAzureResourceGroupVal(currentCluster.MigCluster.spec.azureResourceGroup);
-
-  const getIsAzureVal = (isAzure) => {
-    if (isAzure) {
-      return isAzure;
-    } else return false;
-  }
-  const isAzure = getIsAzureVal(currentCluster.MigCluster.spec.isAzure);
-
-  const getCABundleVal = (caBundle) => {
-    if (caBundle) {
-      return caBundle;
-    } else return '';
-  }
-
-  const caBundle = getCABundleVal(currentCluster.MigCluster.spec.caBundle);
+  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup ? currentCluster.MigCluster.spec.isAzure : '';
+  const isAzure = currentCluster.MigCluster.spec.isAzure ? currentCluster.MigCluster.spec.isAzure : false;
+  const caBundle = currentCluster.MigCluster.spec.caBundle ? currentCluster.MigCluster.spec.caBundle : '';
 
   return values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
