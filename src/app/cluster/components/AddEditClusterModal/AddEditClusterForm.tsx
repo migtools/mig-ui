@@ -48,7 +48,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
   const requireSSL = !currentCluster.MigCluster.spec.insecure;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
-  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup ? currentCluster.MigCluster.spec.isAzure : '';
+  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup ? currentCluster.MigCluster.spec.azureResourceGroup : '';
   const isAzure = currentCluster.MigCluster.spec.isAzure ? currentCluster.MigCluster.spec.isAzure : false;
   const caBundle = currentCluster.MigCluster.spec.caBundle ? currentCluster.MigCluster.spec.caBundle : '';
 
