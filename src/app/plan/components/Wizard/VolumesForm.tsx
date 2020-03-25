@@ -1,11 +1,4 @@
 import React, { useEffect } from 'react';
-import {
-  Grid,
-  GridItem,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
 import VolumesTable from './VolumesTable';
 
 const VolumesForm = props => {
@@ -35,29 +28,18 @@ const VolumesForm = props => {
   }, []);
 
   return (
-    <Grid gutter="md">
-      <GridItem>
-        <TextContent>
-          <Text component={TextVariants.p}>
-            Choose to move or copy persistent volumes:
-          </Text>
-        </TextContent>
-      </GridItem>
-      <GridItem>
-        <VolumesTable
-          isEdit={isEdit}
-          isPVError={isPVError}
-          setFieldValue={setFieldValue}
-          values={values}
-          currentPlan={currentPlan}
-          currentPlanStatus={currentPlanStatus}
-          getPVResourcesRequest={getPVResourcesRequest}
-          pvResourceList={pvResourceList}
-          isFetchingPVResources={isFetchingPVResources}
-          isPollingStatus={isPollingStatus}
-        />
-      </GridItem>
-    </Grid>
+    <VolumesTable
+      isEdit={isEdit}
+      isPVError={isPVError}
+      setFieldValue={setFieldValue}
+      values={values}
+      currentPlan={currentPlan}
+      currentPlanStatus={currentPlanStatus}
+      getPVResourcesRequest={getPVResourcesRequest}
+      pvResourceList={pvResourceList}
+      isFetchingPVResources={isFetchingPVResources}
+      isPollingStatus={isPollingStatus}
+    />
   );
 };
 export default VolumesForm;

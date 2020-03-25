@@ -7,6 +7,8 @@ import {
   Alert,
   Bullseye,
   TextContent,
+  Text,
+  TextVariants,
   Popover,
   PopoverPosition,
   Title,
@@ -16,13 +18,13 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import ReactJson from 'react-json-view';
 import { BlueprintIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
-const styles = require('./VolumesTable.module')
+const styles = require('./VolumesTable.module');
 const classNames = require('classnames');
 
 const capitalize = (s: string) => {
@@ -43,10 +45,9 @@ const VolumesTable = (props): any => {
     isFetchingPVResources,
     pvResourceList,
     isPollingStatus,
-    currentPlanStatus
+    currentPlanStatus,
   } = props;
   const [rows, setRows] = useState([]);
-
 
   const updateTableData = (rowIndex, updatedValue) => {
     const rowsCopy = [...rows];
@@ -80,11 +81,9 @@ const VolumesTable = (props): any => {
             const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
             if (rowVal && rowVal.selection) {
               pvAction = rowVal.selection.action;
-            }
-            else {
+            } else {
               if (rowVal && rowVal.type) {
                 pvAction = rowVal.type;
-
               }
             }
           }
@@ -119,7 +118,6 @@ const VolumesTable = (props): any => {
     }
   }, [currentPlan, isPollingStatus]); // Only re-run the effect if fetching value changes
 
-
   //TODO: added this component level error state to handle the case of no PVs
   // showing up after 3 checks of the interval. When the isPVError flag is checked,
   // the volumes form will show this error. Need to add redux actions & state to encapsulate
@@ -138,8 +136,7 @@ const VolumesTable = (props): any => {
       </Grid>
     );
   }
-  if (isPollingStatus ||
-    (currentPlanStatus.state === 'Pending')) {
+  if (isPollingStatus || currentPlanStatus.state === 'Pending') {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -153,8 +150,7 @@ const VolumesTable = (props): any => {
       </Bullseye>
     );
   }
-  if (
-    (currentPlanStatus.state === 'Critical')) {
+  if (currentPlanStatus.state === 'Critical') {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -163,169 +159,181 @@ const VolumesTable = (props): any => {
       </Bullseye>
     );
   }
-  const { volumesTableStyle } = styles
-  const tableClass = classNames('-striped', '-highlight', { volumesTableStyle })
+  const { volumesTableStyle } = styles;
+  const tableClass = classNames('-striped', '-highlight', { volumesTableStyle });
   return (
-    <ReactTable
-      className={tableClass}
-      data={rows}
-      columns={[
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              PV Name
-            </div>
-          ),
-          accessor: 'name',
-          width: 180,
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Project
-            </div>
-          ),
-          accessor: 'project',
-          width: 150,
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Storage Class
-            </div>
-          ),
-          accessor: 'storageClass',
-          width: 150,
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Size
-            </div>
-          ),
-          accessor: 'size',
-          width: 75,
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Claim
-            </div>
-          ),
-          accessor: 'claim',
-          width: 180,
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Type
-            </div>
-          ),
-          accessor: 'type',
-          width: 120,
-          style: { overflow: 'visible' },
-          Cell: row => (
-            <Select
-              onChange={(option: any) => handleTypeChange(row, option)}
-              options={row.original.supportedActions.map((a: string) => {
-                // NOTE: Each PV may not support all actions (any at all even),
-                // we need to inspect the PV to determine this
-                return { value: a, label: capitalize(a) };
-              })}
-              name="persistentVolumes"
-              value={{
-                label: capitalize(row.original.type),
-                value: row.original.type,
-              }}
-            />
-          ),
-        },
-        {
-          Header: () => (
-            <div
-              style={{
-                textAlign: 'left',
-                fontWeight: 600,
-              }}
-            >
-              Details
-            </div>
-          ),
-          accessor: 'details',
-          width: 200,
-          resizable: false,
-          Cell: row => {
-            const matchingPVResource = pvResourceList.find(
-              pvResource => pvResource.name === row.original.name
-            );
-            return (
-              <Popover
-                className={styles.popoverStyle}
-                position={PopoverPosition.bottom}
-                bodyContent={
-                  <React.Fragment>
-                    {matchingPVResource ?
-                      <ReactJson src={matchingPVResource} enableClipboard={false} /> :
-                      <EmptyState variant={EmptyStateVariant.small}>
-                        <EmptyStateIcon icon={WarningTriangleIcon} />
-                        <Title headingLevel="h5" size="sm">
-                          No PV data found
-                        </Title>
-                        <EmptyStateBody>
-                          Unable to retrieve PV data
-                        </EmptyStateBody>
-                      </EmptyState>
+    <Grid gutter="md">
+      <GridItem>
+        <TextContent>
+          <Text component={TextVariants.p}>Choose to move or copy persistent volumes:</Text>
+        </TextContent>
+      </GridItem>
+      <GridItem>
+        <ReactTable
+          className={tableClass}
+          data={rows}
+          columns={[
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  PV Name
+                </div>
+              ),
+              accessor: 'name',
+              width: 180,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Project
+                </div>
+              ),
+              accessor: 'project',
+              width: 150,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Storage Class
+                </div>
+              ),
+              accessor: 'storageClass',
+              width: 150,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Size
+                </div>
+              ),
+              accessor: 'size',
+              width: 75,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Claim
+                </div>
+              ),
+              accessor: 'claim',
+              width: 180,
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Type
+                </div>
+              ),
+              accessor: 'type',
+              width: 120,
+              style: { overflow: 'visible' },
+              Cell: row => (
+                <Select
+                  onChange={(option: any) => handleTypeChange(row, option)}
+                  options={row.original.supportedActions.map((a: string) => {
+                    // NOTE: Each PV may not support all actions (any at all even),
+                    // we need to inspect the PV to determine this
+                    return { value: a, label: capitalize(a) };
+                  })}
+                  name="persistentVolumes"
+                  value={{
+                    label: capitalize(row.original.type),
+                    value: row.original.type,
+                  }}
+                />
+              ),
+            },
+            {
+              Header: () => (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    fontWeight: 600,
+                  }}
+                >
+                  Details
+                </div>
+              ),
+              accessor: 'details',
+              width: 200,
+              resizable: false,
+              Cell: row => {
+                const matchingPVResource = pvResourceList.find(
+                  pvResource => pvResource.name === row.original.name
+                );
+                return (
+                  <Popover
+                    className={styles.popoverStyle}
+                    position={PopoverPosition.bottom}
+                    bodyContent={
+                      <React.Fragment>
+                        {matchingPVResource ? (
+                          <ReactJson src={matchingPVResource} enableClipboard={false} />
+                        ) : (
+                          <EmptyState variant={EmptyStateVariant.small}>
+                            <EmptyStateIcon icon={WarningTriangleIcon} />
+                            <Title headingLevel="h5" size="sm">
+                              No PV data found
+                            </Title>
+                            <EmptyStateBody>Unable to retrieve PV data</EmptyStateBody>
+                          </EmptyState>
+                        )}
+                      </React.Fragment>
                     }
-                  </React.Fragment>
-                }
-                aria-label="pv-details"
-                closeBtnAriaLabel="close-pv-details"
-                maxWidth="200rem"
-              >
-                <Grid gutter="md">
-                  <GridItem>
-                    <Button isDisabled={isFetchingPVResources} variant="link" icon={<BlueprintIcon />}>
-                      View JSON
-                    </Button>
-                  </GridItem>
-                </Grid>
-              </Popover>
-            );
-          },
-        },
-      ]}
-      defaultPageSize={5}
-    />
+                    aria-label="pv-details"
+                    closeBtnAriaLabel="close-pv-details"
+                    maxWidth="200rem"
+                  >
+                    <Grid gutter="md">
+                      <GridItem>
+                        <Button
+                          isDisabled={isFetchingPVResources}
+                          variant="link"
+                          icon={<BlueprintIcon />}
+                        >
+                          View JSON
+                        </Button>
+                      </GridItem>
+                    </Grid>
+                  </Popover>
+                );
+              },
+            },
+          ]}
+          defaultPageSize={5}
+        />
+      </GridItem>
+    </Grid>
   );
 };
 
