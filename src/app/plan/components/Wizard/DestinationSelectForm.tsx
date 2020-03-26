@@ -26,7 +26,7 @@ const DestinationSelectForm = props => {
 
   useEffect(() => {
     // ***
-    // * Populate src and target cluster dropdowns
+    // * Populate target cluster dropdown
     // ***
     if (clusterList.length) {
       const targetOptions = [];

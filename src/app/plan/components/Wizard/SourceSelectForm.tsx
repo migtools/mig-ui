@@ -36,7 +36,7 @@ const SourceSelectForm = props => {
 
   useEffect(() => {
     // ***
-    // * Populate src and target cluster dropdowns
+    // * Populate src cluster dropdown
     // ***
     if (clusterList.length) {
       const sourceOptions = [];

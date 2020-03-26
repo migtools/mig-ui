@@ -276,7 +276,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setStepIdReached(curr.id);
     }
 
-    if (curr.id === stepId.MigrationReplication && isEdit) {
+    if (curr.id === stepId.MigrationSource && isEdit) {
       setCurrentPlan(editPlanObj);
     }
 
