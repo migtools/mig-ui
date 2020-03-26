@@ -28,20 +28,6 @@ const VolumesForm = props => {
     isPollingStatus,
   } = props;
 
-  const [rows, setRows] = useState([]); // TODO do we need state here? can we use redux+formik?
-
-  const updateTableData = (rowIndex, updatedValue) => {
-    const rowsCopy = [...rows];
-    if (currentPlan !== null && values.persistentVolumes) {
-      const updatedRow = { ...rowsCopy[rowIndex], type: updatedValue };
-
-      rowsCopy[rowIndex] = updatedRow;
-    }
-
-    setRows(rowsCopy);
-    setFieldValue('persistentVolumes', rowsCopy);
-  };
-
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
     let isRerunPVDiscovery = null;
@@ -72,6 +58,9 @@ const VolumesForm = props => {
               }
             }
           }
+          // TODO do we really need to generate these meta-objects and keep them in formik?
+          // currentPlan.spec.persistentVolumes is in global state, so we could just
+          // infer from that everywhere and keep only a mapping of action selections in formik
           return {
             name: planVolume.name,
             project: planVolume.pvc.namespace,
@@ -99,7 +88,6 @@ const VolumesForm = props => {
         });
       }
       setFieldValue('persistentVolumes', mappedPVs);
-      setRows(mappedPVs); // ???
     }
   }, [discoveredPersistentVolumes.length]); // Only re-run the effect if fetching value changes
 
@@ -145,13 +133,23 @@ const VolumesForm = props => {
     );
   }
 
+  const updatePersistentVolumes = (pvIndex, newValues) => {
+    if (currentPlan !== null && values.persistentVolumes) {
+      const newPVs = [...values.persistentVolumes];
+      newPVs[pvIndex] = { ...newPVs[pvIndex], ...newValues };
+      setFieldValue('persistentVolumes', newPVs);
+    }
+  };
+
+  const onTypeChange = (pvIndex, value) => updatePersistentVolumes(pvIndex, { type: value });
+
   return (
     <VolumesTable
       isEdit={isEdit}
       pvResourceList={pvResourceList}
       isFetchingPVResources={isFetchingPVResources}
-      rows={rows}
-      updateTableData={updateTableData}
+      rows={values.persistentVolumes}
+      onTypeChange={onTypeChange}
     />
   );
 };

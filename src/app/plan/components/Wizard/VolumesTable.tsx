@@ -33,16 +33,7 @@ const capitalize = (s: string) => {
 
 const VolumesTable = (props): any => {
   // TODO add a typescript interface for these props
-  const {
-    isFetchingPVResources,
-    pvResourceList,
-    rows, // TODO should be inferred from redux/formik?
-    updateTableData, // TODO this should be more abstract, right?
-  } = props;
-
-  const handleTypeChange = (row, option) => {
-    updateTableData(row.index, option.value);
-  };
+  const { isFetchingPVResources, pvResourceList, rows, onTypeChange } = props;
 
   const { volumesTableStyle } = styles;
   const tableClass = classNames('-striped', '-highlight', { volumesTableStyle });
@@ -144,7 +135,7 @@ const VolumesTable = (props): any => {
               style: { overflow: 'visible' },
               Cell: row => (
                 <Select
-                  onChange={(option: any) => handleTypeChange(row, option)}
+                  onChange={(option: any) => onTypeChange(row.index, option.value)}
                   options={row.original.supportedActions.map((a: string) => {
                     // NOTE: Each PV may not support all actions (any at all even),
                     // we need to inspect the PV to determine this
