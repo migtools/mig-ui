@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Select from 'react-select';
 import {
   TextContent,
   Text,
@@ -17,18 +16,23 @@ import {
   PaginationProps,
   Pagination,
   PaginationVariant,
-  DropdownDirection,
+  SelectOptionObject,
 } from '@patternfly/react-core';
+import { Table, TableVariant, TableHeader, TableBody } from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
-import { Table, TableVariant, TableHeader, TableBody } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import SimpleSelect from '../../../common/components/SimpleSelect';
 
 const styles = require('./VolumesTable.module');
 
+interface OptionWithValue extends SelectOptionObject {
+  value: string;
+}
+
 const capitalize = (s: string) => {
   if (s.charAt(0)) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    return `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
   } else {
     return s;
   }
@@ -50,6 +54,13 @@ const VolumesTable = (props): any => {
 
   const rows = persistentVolumes.map((pv, pvIndex) => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
+    const migrationTypeOptions = pv.supportedActions.map(
+      (action: string) =>
+        ({
+          value: action,
+          toString: () => capitalize(action),
+        } as OptionWithValue)
+    );
     return {
       cells: [
         pv.name,
@@ -59,21 +70,15 @@ const VolumesTable = (props): any => {
         pv.size,
         {
           title: (
-            // TODO replace with PatternFly Select (SimpleSelect)
-            <Select
-              onChange={(option: any) => onTypeChange(pvIndex, option.value)}
-              options={pv.supportedActions.map((a: string) => {
-                // NOTE: Each PV may not support all actions (any at all even),
-                // we need to inspect the PV to determine this
-                return { value: a, label: capitalize(a) };
-              })}
-              name="persistentVolumes"
-              value={{
-                label: capitalize(pv.type),
-                value: pv.type,
-              }}
+            <SimpleSelect
+              aria-label="Select migration type"
+              onChange={(option: OptionWithValue) => onTypeChange(pvIndex, option.value)}
+              options={migrationTypeOptions}
+              value={migrationTypeOptions.find(option => option.value === pv.type)}
+              placeholderText={null}
             />
           ),
+          key: pv.type,
         },
         {
           title: (
@@ -107,6 +112,7 @@ const VolumesTable = (props): any => {
     };
   });
 
+  // TODO abstract this away into a shared hook with NameSpaceTable
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
