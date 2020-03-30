@@ -60,7 +60,7 @@ const VolumesForm = props => {
           }
           // TODO do we really need to generate these meta-objects and keep them in formik?
           // currentPlan.spec.persistentVolumes is in global state, so we could just
-          // infer from that everywhere and keep only a mapping of action selections in formik
+          // infer from that everywhere and keep only a mapping of pv id => type selections in formik
           return {
             name: planVolume.name,
             project: planVolume.pvc.namespace,
@@ -148,7 +148,7 @@ const VolumesForm = props => {
       isEdit={isEdit}
       pvResourceList={pvResourceList}
       isFetchingPVResources={isFetchingPVResources}
-      rows={values.persistentVolumes}
+      persistentVolumes={values.persistentVolumes}
       onTypeChange={onTypeChange}
     />
   );
