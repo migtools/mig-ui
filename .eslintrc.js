@@ -23,6 +23,7 @@ module.exports = {
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/camelcase": "off",
         "no-prototype-builtins": "off",
-        "no-useless-escape": "off"
+        "no-useless-escape": "off",
+        "no-useless-catch": "off"
     }
 }

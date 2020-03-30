@@ -68,9 +68,9 @@ function* fetchStorageGenerator() {
     storageList = yield storageList.data.items;
     const refs = yield Promise.all(fetchMigStorageRefs(client, state.migMeta, storageList));
     const groupedStorages = groupStorages(storageList, refs);
-    return { updatedStorages: groupedStorages, isSuccessful: true };
+    return { updatedStorages: groupedStorages };
   } catch (e) {
-    return { e, isSuccessful: false };
+    throw e;
   }
 }
 

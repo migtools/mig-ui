@@ -10,6 +10,7 @@ import { AuthActions } from '../../auth/duck/actions';
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
+import utils from '../../common/duck/utils';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -18,16 +19,15 @@ function* poll(action) {
   const params = { ...action.params };
 
   while (true) {
-    const response = yield call(params.asyncFetch);
-    const shouldContinue = params.callback(response);
-
-    if (!shouldContinue) {
+    try {
+      const response = yield call(params.asyncFetch);
+      params.callback(response);
+    } catch (err) {
       const state = yield select();
       const migMeta = state.migMeta;
-      const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
-
-      // Handle cert refresh error & network connectivity error
-      if (response.e.response.data.message === 'Network Error') {
+      //handle selfSignedCert error & network connectivity error
+      if (utils.isSelfSignedCertError(err)) {
+        const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
         const alertModalObj = {
           name: params.pollName,
           errorMessage: 'error'
@@ -37,9 +37,8 @@ function* poll(action) {
         yield put(PlanActions.stopPlanPolling());
         yield put(ClusterActions.stopClusterPolling());
         yield put(StorageActions.stopStoragePolling());
-
       }
-
+      //TODO: Handle "secrets not found error" & any other fetch errors here
     }
     yield delay(params.delay);
   }

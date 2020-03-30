@@ -458,9 +458,9 @@ function* fetchPlansGenerator() {
     planList = yield planList.data.items;
     const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
     const groupedPlans = yield planUtils.groupPlans(planList, refs);
-    return { updatedPlans: groupedPlans, isSuccessful: true };
+    return { updatedPlans: groupedPlans };
   } catch (e) {
-    return { e, isSuccessful: false };
+    throw e;
   }
 }
 
