@@ -7,7 +7,7 @@ import {
   DropdownPosition,
   KebabToggle,
   Flex,
-  FlexItem
+  FlexItem,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
@@ -27,7 +27,7 @@ const PlanActions = ({ plan, history }) => {
     hasRunningMigrations,
     hasAttemptedMigration,
     finalMigrationComplete,
-    isPlanLocked
+    isPlanLocked,
   } = plan.PlanStatus;
 
   const editPlan = () => {
@@ -38,10 +38,7 @@ const PlanActions = ({ plan, history }) => {
   const kebabDropdownItems = [
     <DropdownItem
       isDisabled={
-        hasClosedCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
+        hasClosedCondition || hasRunningMigrations || finalMigrationComplete || isPlanLocked
       }
       onClick={() => {
         setKebabIsOpen(false);
@@ -93,10 +90,7 @@ const PlanActions = ({ plan, history }) => {
         toggleDeleteModalOpen();
       }}
       key="deletePlan"
-      isDisabled={
-        hasRunningMigrations ||
-        isPlanLocked
-      }
+      isDisabled={hasRunningMigrations || isPlanLocked}
     >
       Delete
     </DropdownItem>,
@@ -114,9 +108,7 @@ const PlanActions = ({ plan, history }) => {
     <Flex>
       <FlexItem>
         <Dropdown
-          toggle={<KebabToggle
-            onToggle={() => setKebabIsOpen(!kebabIsOpen)}
-          />}
+          toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
           isOpen={kebabIsOpen}
           isPlain
           dropdownItems={kebabDropdownItems}
@@ -136,13 +128,16 @@ const PlanActions = ({ plan, history }) => {
           plan={plan}
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
-        /> 
+        />
 
         <ConfirmModal
           title="Confirmation"
           message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isDeleteModalOpen}
-          onHandleClose={toggleDeleteModalOpen}
+          onHandleClose={isConfirmed => {
+            if (isConfirmed) planContext.handleDeletePlan(plan);
+            toggleDeleteModalOpen();
+          }}
           id="confirm-plan-removal"
         />
       </FlexItem>
