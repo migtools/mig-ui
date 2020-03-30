@@ -3,3 +3,5 @@ scripts/
 config/
 cypress/
 deploy/
+lib/
+dist/
