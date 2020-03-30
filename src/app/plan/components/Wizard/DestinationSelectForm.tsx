@@ -76,7 +76,7 @@ const DestinationSelectForm = props => {
           </Grid>
         </Form>
       </GridItem>
-     </Grid>
+    </Grid>
   );
 };
 
