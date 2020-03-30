@@ -148,6 +148,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
           <AddEditClusterModal
             isOpen={isAddEditOpen}
             onHandleClose={toggleIsAddEditOpen}
+            cluster={cluster}
             initialClusterValues={{
               clusterName,
               clusterUrl,
