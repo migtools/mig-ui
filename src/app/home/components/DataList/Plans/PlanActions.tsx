@@ -136,13 +136,17 @@ const PlanActions = ({ plan, history }) => {
           plan={plan}
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
-        /> 
+        />
 
         <ConfirmModal
           title="Confirmation"
           message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isDeleteModalOpen}
-          onHandleClose={toggleDeleteModalOpen}
+          onHandleClose={() => {
+            planContext.handleDeletePlan(plan)
+            toggleDeleteModalOpen()
+          }
+          }
           id="confirm-plan-removal"
         />
       </FlexItem>
