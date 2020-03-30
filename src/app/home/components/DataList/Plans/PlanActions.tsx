@@ -13,9 +13,11 @@ import { useOpenModal } from '../../../duck/hooks';
 import MigrateModal from '../../../../plan/components/MigrateModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
+import ConfirmModal from '../../../../common/components/ConfirmModal';
 
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -87,8 +89,8 @@ const PlanActions = ({ plan, history }) => {
     </DropdownItem>,
     <DropdownItem
       onClick={() => {
-        planContext.handleDeletePlan(plan);
         setKebabIsOpen(false);
+        toggleDeleteModalOpen();
       }}
       key="deletePlan"
       isDisabled={
@@ -134,6 +136,14 @@ const PlanActions = ({ plan, history }) => {
           plan={plan}
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
+        /> 
+
+        <ConfirmModal
+          title="Confirmation"
+          message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
+          isOpen={isDeleteModalOpen}
+          onHandleClose={toggleDeleteModalOpen}
+          id="confirm-plan-removal"
         />
       </FlexItem>
     </Flex>
