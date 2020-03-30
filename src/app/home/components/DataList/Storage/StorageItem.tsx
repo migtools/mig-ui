@@ -29,7 +29,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   if (storage.MigStorage.status) {
     storageStatus = storage.MigStorage.status.conditions.filter(c => c.type === 'Ready').length > 0;
   }
-  const removeMessage = `Are you sure you want to remove "${name}"`;
+  const removeMessage = `Removing "${name}" will make it unavailable for migration plans`;
 
   const handleRemoveStorage = isConfirmed => {
     if (isConfirmed) {
@@ -127,6 +127,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           />
           {isConfirmOpen &&
             <ConfirmModal
+              title="Remove this replication repository?"
               message={removeMessage}
               isOpen={isConfirmOpen}
               onHandleClose={handleRemoveStorage}
