@@ -13,7 +13,6 @@ import {
   EmptyStateBody,
   Grid,
   GridItem,
-  PaginationProps,
   Pagination,
   PaginationVariant,
   SelectOptionObject,
@@ -23,6 +22,7 @@ import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../common/components/SimpleSelect';
+import { usePaginationState } from '../../../common/duck/hooks';
 
 const styles = require('./VolumesTable.module');
 
@@ -112,19 +112,7 @@ const VolumesTable = (props): any => {
     };
   });
 
-  // TODO abstract this away into a shared hook with NameSpaceTable
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
-  const currentPageRows = rows.slice(pageStartIndex, pageStartIndex + itemsPerPage);
-
-  const paginationProps: PaginationProps = {
-    itemCount: rows.length,
-    perPage: itemsPerPage,
-    page: currentPageNumber,
-    onSetPage: (event, pageNumber) => setCurrentPageNumber(pageNumber),
-    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
-  };
+  const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
 
   return (
     <Grid gutter="md">
@@ -139,7 +127,7 @@ const VolumesTable = (props): any => {
           aria-label="Persistent volumes table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={currentPageRows}
+          rows={currentPageItems}
         >
           <TableHeader />
           <TableBody />

@@ -7,12 +7,12 @@ import {
   Level,
   LevelItem,
   Pagination,
-  PaginationProps,
   PaginationVariant,
   DropdownDirection,
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { usePaginationState } from '../../../common/duck/hooks';
 
 interface INamespaceTableProps {
   isEdit: boolean;
@@ -68,18 +68,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setFieldValue('selectedNamespaces', newSelected);
   };
 
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
-  const currentPageRows = rows.slice(pageStartIndex, pageStartIndex + itemsPerPage);
-
-  const paginationProps: PaginationProps = {
-    itemCount: rows.length,
-    perPage: itemsPerPage,
-    page: currentPageNumber,
-    onSetPage: (event, pageNumber) => setCurrentPageNumber(pageNumber),
-    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
-  };
+  const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
 
   return (
     <React.Fragment>
@@ -106,7 +95,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
           aria-label="Projects table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={currentPageRows}
+          rows={currentPageItems}
           onSelect={onSelect}
           canSelectAll
         >
