@@ -1,5 +1,13 @@
 #!/bin/bash
 _dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+################################################################################
+# NOTE 03/13/2020: This script is disabled but remains in the repo for archival
+# purposes. When bandwidth allows, integration tests will be revamped.
+echo "ERROR: This script has been deprecated."
+exit 1
+################################################################################
+
 projectRoot="$_dir/.."
 exDevConfigFile="$projectRoot/config/config.dev.json.example"
 devConfigFile="$projectRoot/config/config.dev.json"
