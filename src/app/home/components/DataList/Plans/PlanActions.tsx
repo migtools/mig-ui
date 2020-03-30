@@ -140,7 +140,7 @@ const PlanActions = ({ plan, history }) => {
 
         <ConfirmModal
           title="Confirmation"
-          message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"`}
+          message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isDeleteModalOpen}
           onHandleClose={toggleDeleteModalOpen}
           id="confirm-plan-removal"
