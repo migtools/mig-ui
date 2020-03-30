@@ -88,6 +88,7 @@ const ResourceSelectForm = props => {
     const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('sourceCluster', value);
+      setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
       fetchNamespacesRequest(value);
     }
