@@ -134,17 +134,15 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         name: 'Persistent Volumes',
         component: (
           <VolumesForm
-            isEdit={isEdit}
             values={values}
             setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
+            isFetchingPVResources={isFetchingPVList}
             isPollingStatus={isPollingStatus}
             planUpdateRequest={planUpdateRequest}
-            startPlanStatusPolling={startPlanStatusPolling}
             currentPlanStatus={currentPlanStatus}
           />
         ),

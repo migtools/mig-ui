@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { FormikProps } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import VolumesTable from './VolumesTable';
 import {
   Grid,
@@ -10,24 +12,35 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
+
 const styles = require('./VolumesTable.module');
 
-const VolumesForm = props => {
-  // TODO add a typescript interface for these props
-  const {
-    setFieldValue,
-    values,
-    isPVError,
-    currentPlan,
-    currentPlanStatus,
-    getPVResourcesRequest,
-    pvResourceList,
-    isFetchingPVResources,
-    isEdit,
-    planUpdateRequest,
-    isPollingStatus,
-  } = props;
+interface IVolumesFormProps
+  extends Pick<
+      IOtherProps,
+      | 'isPVError'
+      | 'currentPlan'
+      | 'currentPlanStatus'
+      | 'getPVResourcesRequest'
+      | 'pvResourceList'
+      | 'isFetchingPVResources'
+      | 'planUpdateRequest'
+      | 'isPollingStatus'
+    >,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
+const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
+  setFieldValue,
+  values,
+  isPVError,
+  currentPlan,
+  currentPlanStatus,
+  getPVResourcesRequest,
+  pvResourceList,
+  isFetchingPVResources,
+  planUpdateRequest,
+  isPollingStatus,
+}: IVolumesFormProps) => {
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
     let isRerunPVDiscovery = null;
@@ -133,19 +146,20 @@ const VolumesForm = props => {
     );
   }
 
-  const updatePersistentVolumes = (pvIndex, newValues) => {
+  const updatePersistentVolumes = (pvIndex: number, newValues: { type: string }) => {
     if (currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
       newPVs[pvIndex] = { ...newPVs[pvIndex], ...newValues };
+      // TODO this should only store selections, we should inherit the rest from currentPlan.spec.persistentVolumes
       setFieldValue('persistentVolumes', newPVs);
     }
   };
 
-  const onTypeChange = (pvIndex, value) => updatePersistentVolumes(pvIndex, { type: value });
+  const onTypeChange = (pvIndex: number, value: string) =>
+    updatePersistentVolumes(pvIndex, { type: value });
 
   return (
     <VolumesTable
-      isEdit={isEdit}
       pvResourceList={pvResourceList}
       isFetchingPVResources={isFetchingPVResources}
       persistentVolumes={values.persistentVolumes}

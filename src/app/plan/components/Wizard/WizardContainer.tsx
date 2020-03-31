@@ -4,13 +4,18 @@ import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../common/duck/utils';
+import { IPlan, IPlanPersistentVolume, IPersistentVolumeResource } from './types';
+import { ICurrentPlanStatus } from '../../duck/reducers';
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
   targetCluster: string;
   selectedStorage: string;
   selectedNamespaces: any[];
+  persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
 }
+
+// TODO add more specific types instead of using `any`
 export interface IOtherProps {
   clusterList: any[];
   planList: any[];
@@ -26,8 +31,8 @@ export interface IOtherProps {
   isPollingStorage: boolean;
   isPollingClusters: boolean;
   isPollingPlans: boolean;
-  currentPlan: any;
-  currentPlanStatus: any;
+  currentPlan: IPlan;
+  currentPlanStatus: ICurrentPlanStatus;
   startPlanStatusPolling: (planName) => void;
   stopPlanStatusPolling: (planName) => void;
   pvUpdatePollStop: () => void;
@@ -35,10 +40,13 @@ export interface IOtherProps {
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
   fetchNamespacesRequest: (clusterName) => void;
-  getPVResourcesRequest: () => void;
+  getPVResourcesRequest: (
+    persistentVolumes: IPlanPersistentVolume[],
+    sourceClusterName: IFormValues['sourceCluster']
+  ) => void;
   addPlanRequest: (migPlan) => void;
   sourceClusterNamespaces: any[];
-  pvResourceList: any[];
+  pvResourceList: IPersistentVolumeResource[];
   onHandleWizardModalClose: () => void;
   editPlanObj?: any;
   isEdit: boolean;

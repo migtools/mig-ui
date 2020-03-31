@@ -23,8 +23,15 @@ import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 import { usePaginationState } from '../../../common/duck/hooks';
+import { IFormValues, IOtherProps } from './WizardContainer';
 
 const styles = require('./VolumesTable.module');
+
+interface IVolumesTableProps
+  extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
+    Pick<IFormValues, 'persistentVolumes'> {
+  onTypeChange: (pvIndex: number, value: string) => void;
+}
 
 interface OptionWithValue extends SelectOptionObject {
   value: string;
@@ -38,10 +45,12 @@ const capitalize = (s: string) => {
   }
 };
 
-const VolumesTable = (props): any => {
-  // TODO add a typescript interface for these props
-  const { isFetchingPVResources, pvResourceList, persistentVolumes, onTypeChange } = props;
-
+const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
+  isFetchingPVResources,
+  pvResourceList,
+  persistentVolumes,
+  onTypeChange,
+}: IVolumesTableProps) => {
   const columns = [
     { title: 'PV name' },
     { title: 'Claim' },
