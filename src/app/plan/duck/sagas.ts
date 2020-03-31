@@ -85,6 +85,16 @@ function* namespaceFetchRequest(action) {
   }
 }
 
+function* getMigration(migrationName) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  return yield client.get(
+    new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
+    migrationName
+  );
+}
+
 function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
@@ -94,6 +104,7 @@ function* getPlanSaga(planName) {
     planName
   );
 }
+
 function* planPatchClose(planValues) {
   const state = yield select();
   const migMeta = state.migMeta;
@@ -116,6 +127,31 @@ function* planPatchClose(planValues) {
   } catch (err) {
     yield put(PlanActions.planUpdateFailure(err));
     throw err;
+  }
+}
+
+function* migrationCancel(action) {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  try {
+    const migration = yield call(getMigration, action.migrationName);
+    if (migration.data.spec.canceled) { return; }
+    const canceledMigrationSpec = {
+      spec: {
+        canceled: true
+      }
+    };
+    yield client.patch(
+      new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
+      action.migrationName,
+      canceledMigrationSpec
+    );
+    yield put(PlanActions.migrationCancelSuccess(action.migrationName));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully canceled "${action.migrationName}"!`));
+  } catch (err) {
+    yield put(PlanActions.migrationCancelFailure(err, action.migrationName));
+    yield put(AlertActions.alertErrorTimeout(`Failed to cancel "${action.migrationName}"`));
   }
 }
 
@@ -670,6 +706,9 @@ function* watchMigrationPolling() {
   }
 }
 
+function* watchMigrationCancel() {
+  yield takeEvery(PlanActionTypes.MIGRATION_CANCEL_REQUEST, migrationCancel);
+}
 
 function* watchPlanCloseAndDelete() {
   yield takeEvery(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDelete);
@@ -723,6 +762,7 @@ export default {
   watchPlanUpdate,
   watchPlanCloseAndDelete,
   watchPlanStatus,
+  watchMigrationCancel,
   watchGetPVResourcesRequest,
   watchNamespaceFetchRequest,
   watchPVUpdate

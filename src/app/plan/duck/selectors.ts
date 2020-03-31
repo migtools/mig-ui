@@ -53,6 +53,8 @@ const getPlansWithPlanStatus = createSelector(
       let hasSucceededMigration = null;
       let hasSucceededStage = null;
       let hasClosedCondition = null;
+      let hasCancellingCondition = null;
+      let hasCancelledCondition = null;
       const hasMigrationError = null;
       let latestType = null;
       let latestIsFailed = false;
@@ -75,6 +77,8 @@ const getPlansWithPlanStatus = createSelector(
           hasNotReadyCondition: hasPlanError,
           hasRunningMigrations,
           hasSucceededMigration,
+          hasCancellingCondition,
+          hasCancelledCondition,
           finalMigrationComplete,
           hasFailedCondition: hasMigrationError,
           latestType,
@@ -103,6 +107,8 @@ const getPlansWithPlanStatus = createSelector(
 
         if (latest.status && latest.status.conditions) {
           latestIsFailed = !!(latest.status.conditions.some(c => c.type === 'Failed'));
+          hasCancellingCondition = !!(latest.status.conditions.some(c => c.type === 'Canceling'));
+          hasCancelledCondition = !!(latest.status.conditions.some(c => c.type === 'Canceled'));
         }
 
         hasSucceededStage = !!plan.Migrations.filter(m => {
@@ -142,6 +148,8 @@ const getPlansWithPlanStatus = createSelector(
         hasSucceededMigration,
         finalMigrationComplete,
         hasFailedCondition: hasMigrationError,
+        hasCancellingCondition,
+        hasCancelledCondition,
         latestType,
         hasConflictCondition,
         conflictErrorMsg,
@@ -204,6 +212,13 @@ const getCounts = createSelector(
   }
 );
 
+const getRunningMigration = plan => (
+  plan.Migrations.find(m => {
+    if (m.status) {
+      return m.status.conditions.some(c => c.type === 'Running');
+    }
+  })
+)
 
 const getPlansWithStatus = createSelector(
   [getPlansWithPlanStatus],
@@ -227,6 +242,10 @@ const getPlansWithStatus = createSelector(
           return c.type === 'Succeeded';
         });
 
+        const cancelledCondition = migration.status.conditions.find(c => {
+          return c.type === 'Canceled';
+        });
+
         if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
           status.copied = MigPlan.spec.persistentVolumes.filter(p => p.selection.action === 'copy').length;
           if (!migration.spec.stage) {
@@ -244,6 +263,14 @@ const getPlansWithStatus = createSelector(
         status.end = endTime ? moment.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`) : 'In progress';
 
         if (migration.status.conditions.length) {
+          // For cancelled migrations, show 100% progress and `Canceled` step
+          if (cancelledCondition) {
+            status.progress = 100;
+            status.isFailed = true;
+            status.stepName = 'Canceled';
+            return status;
+          }
+
           // For successful migrations, show green 100% progress
           if (succeededCondition) {
             status.progress = 100;
@@ -276,11 +303,17 @@ const getPlansWithStatus = createSelector(
             return status;
           }
 
+          // For cancel in progress migrations, show progress in red and a `Cancelling - ` step with a running step name as a suffix
+          const cancellingCondition = migration.status.conditions.find(c => {
+            return c.type === 'Canceling';
+          });
+
           // For running migrations, calculate percent progress
           const runningCondition = migration.status.conditions.find(c => {
             return c.type === 'Running';
           });
-          if (runningCondition) {
+
+          if (runningCondition || cancellingCondition) {
             status.stepName = runningCondition.reason;
             // Match string in format 'Step: 16/26'. Capture both numbers.
             const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
@@ -325,5 +358,6 @@ export default {
   getPlansWithStatus,
   getMigMeta,
   getCounts,
-  getFilteredNamespaces
+  getFilteredNamespaces,
+  getRunningMigration,
 };

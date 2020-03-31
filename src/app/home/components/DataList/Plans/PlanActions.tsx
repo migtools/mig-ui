@@ -18,6 +18,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
+  const [isCancelModalOpen, toggleCancelModalOpen] = useOpenModal(false);
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -26,6 +27,8 @@ const PlanActions = ({ plan, history }) => {
     hasErrorCondition,
     hasRunningMigrations,
     hasAttemptedMigration,
+    hasCancellingCondition,
+    hasCancelledCondition,
     finalMigrationComplete,
     isPlanLocked,
   } = plan.PlanStatus;
@@ -87,6 +90,19 @@ const PlanActions = ({ plan, history }) => {
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
+        toggleCancelModalOpen();
+      }}
+      key="cancelMigration"
+      isDisabled={hasCancelledCondition ||
+        hasCancellingCondition ||
+        !hasRunningMigrations ||
+        isPlanLocked}
+    >
+      Cancel
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
         toggleDeleteModalOpen();
       }}
       key="deletePlan"
@@ -128,6 +144,17 @@ const PlanActions = ({ plan, history }) => {
           plan={plan}
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
+        />
+
+        <ConfirmModal
+          title="Cancel"
+          message={`Do you really want to cancel migration for plan "${plan.MigPlan.metadata.name}"?`}
+          isOpen={isCancelModalOpen}
+          onHandleClose={isConfirmed => {
+            if (isConfirmed) planContext.handleMigrationCancelRequest(plan);
+            toggleCancelModalOpen();
+          }}
+          id="confirm-migration-cancel"
         />
 
         <ConfirmModal
