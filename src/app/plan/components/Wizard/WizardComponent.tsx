@@ -131,7 +131,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       },
       {
         id: stepId.PersistentVolumes,
-        name: 'Persistent Volumes',
+        name: 'Persistent volumes',
         component: (
           <VolumesForm
             values={values}
@@ -154,7 +154,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       },
       {
         id: stepId.StorageClass,
-        name: 'Storage Class',
+        name: 'Storage class',
         component: (
           <StorageClassForm
             isEdit={isEdit}
