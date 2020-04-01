@@ -47,7 +47,6 @@ export default function* rootSaga() {
     planSagas.watchPlanUpdate(),
     planSagas.watchPlanUpdate(),
     planSagas.watchPlanCloseAndDelete(),
-    planSagas.watchPlanClose(),
     planSagas.watchPlanStatus(),
     planSagas.watchGetPVResourcesRequest(),
     planSagas.watchNamespaceFetchRequest(),

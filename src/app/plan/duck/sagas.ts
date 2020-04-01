@@ -640,7 +640,6 @@ function* migrationPoll(action) {
     switch (pollingStatusObj.status) {
       case 'SUCCESS':
         yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
-        yield put(PlanActions.planCloseRequest(pollingStatusObj.planName));
         yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
         yield put(PlanActions.stopMigrationPolling());
         break;
@@ -702,10 +701,6 @@ function* watchNamespaceFetchRequest() {
   yield takeLatest(PlanActionTypes.NAMESPACE_FETCH_REQUEST, namespaceFetchRequest);
 }
 
-function* watchPlanClose() {
-  yield takeEvery(PlanActionTypes.PLAN_CLOSE_REQUEST, planCloseAndCheck);
-}
-
 function* watchAddPlanRequest() {
   yield takeLatest(PlanActionTypes.ADD_PLAN_REQUEST, addPlanSaga);
 }
@@ -727,7 +722,6 @@ export default {
   watchAddPlanRequest,
   watchPlanUpdate,
   watchPlanCloseAndDelete,
-  watchPlanClose,
   watchPlanStatus,
   watchGetPVResourcesRequest,
   watchNamespaceFetchRequest,
