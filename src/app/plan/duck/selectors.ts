@@ -113,13 +113,15 @@ const getPlansWithPlanStatus = createSelector(
 
         hasSucceededStage = !!plan.Migrations.filter(m => {
           if (m.status && m.spec.stage) {
-            return m.status.conditions.some(c => c.type === 'Succeeded');
+            return m.status.conditions.some(c => c.type === 'Succeeded') &&
+              !(m.status.conditions.some(c => c.type === 'Canceled'));
           }
         }).length;
 
         hasSucceededMigration = !!plan.Migrations.filter(m => {
           if (m.status && !m.spec.stage) {
-            return m.status.conditions.some(c => c.type === 'Succeeded');
+            return m.status.conditions.some(c => c.type === 'Succeeded') &&
+              !(latest.status.conditions.some(c => c.type === 'Canceled'));
           }
         }).length;
 
@@ -212,14 +214,6 @@ const getCounts = createSelector(
   }
 );
 
-const getRunningMigration = plan => (
-  plan.Migrations.find(m => {
-    if (m.status) {
-      return m.status.conditions.some(c => c.type === 'Running');
-    }
-  })
-)
-
 const getPlansWithStatus = createSelector(
   [getPlansWithPlanStatus],
   (plans) => {
@@ -263,10 +257,9 @@ const getPlansWithStatus = createSelector(
         status.end = endTime ? moment.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`) : 'In progress';
 
         if (migration.status.conditions.length) {
-          // For cancelled migrations, show 100% progress and `Canceled` step
+          // For cancelled migrations, show 0% progress and `Canceled` step
           if (cancelledCondition) {
-            status.progress = 100;
-            status.isFailed = true;
+            status.progress = 0
             status.stepName = 'Canceled';
             return status;
           }
@@ -359,5 +352,4 @@ export default {
   getMigMeta,
   getCounts,
   getFilteredNamespaces,
-  getRunningMigration,
 };

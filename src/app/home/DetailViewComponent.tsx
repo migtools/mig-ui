@@ -37,7 +37,7 @@ interface IProps {
   stagingSuccess: (plan) => void;
   migMeta: string;
   updatePlans: (updatedPlans) => void;
-  migrationCancelRequest: (planName: string) => void;
+  migrationCancelRequest: (migrationName: string) => void;
   planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
@@ -120,8 +120,8 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
   };
 
-  const handleMigrationCancelRequest = plan => {
-    migrationCancelRequest(plan);
+  const handleMigrationCancelRequest = migrationName => {
+    migrationCancelRequest(migrationName);
   }
 
   return (
@@ -206,7 +206,7 @@ const mapDispatchToProps = dispatch => {
     stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
     updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
     planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
-    migrationCancelRequest: planName => dispatch(PlanActions.migrationCancelRequest(planSelectors.getRunningMigration(planName).metadata.name)),
+    migrationCancelRequest: migrationName => dispatch(PlanActions.migrationCancelRequest(migrationName)),
 
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching

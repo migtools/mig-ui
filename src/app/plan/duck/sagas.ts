@@ -85,16 +85,6 @@ function* namespaceFetchRequest(action) {
   }
 }
 
-function* getMigration(migrationName) {
-  const state = yield select();
-  const migMeta = state.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(state);
-  return yield client.get(
-    new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
-    migrationName
-  );
-}
-
 function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
@@ -135,7 +125,10 @@ function* migrationCancel(action) {
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
-    const migration = yield call(getMigration, action.migrationName);
+    const migration = yield client.get(
+      new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
+      action.migrationName
+    );
     if (migration.data.spec.canceled) { return; }
     const canceledMigrationSpec = {
       spec: {

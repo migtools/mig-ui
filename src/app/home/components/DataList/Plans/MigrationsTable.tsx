@@ -5,6 +5,7 @@ import {
   TableHeader,
   cellWidth
 } from '@patternfly/react-table';
+import MigrationActions from './MigrationActions';
 import {
   Bullseye,
   EmptyState,
@@ -34,6 +35,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       title: 'Status',
       transforms: [cellWidth('30')]
     },
+    '',
   ];
 
   useEffect(() => {
@@ -51,18 +53,26 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           title: (
             <div>
               <div>
-                {migration.tableStatus.progress && (
-                  <Progress
-                    value={migration.tableStatus.progress}
-                    title={migration.tableStatus.stepName}
-                    size={ProgressSize.sm}
-                    variant={progressVariant}
-                  />
-                )}
+                {migration.tableStatus.progress === 0 ?
+                  migration.tableStatus.stepName :
+                  (
+                    <Progress
+                      value={migration.tableStatus.progress}
+                      title={migration.tableStatus.stepName}
+                      size={ProgressSize.sm}
+                      variant={progressVariant}
+                    />
+                  )}
               </div>
             </div>
           ),
         },
+        {
+          title: <MigrationActions migration={migration} />,
+          props: {
+            className: 'pf-c-table__action',
+          }
+        }
       ];
       return {
         cells: rowCells
@@ -84,7 +94,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           TODO: ** need to evaluate what text to show here **
           </Title> */}
         </EmptyState>
-      </Bullseye>
+      </Bullseye >
     );
   }
 
@@ -104,12 +114,13 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
         <Bullseye>
           <EmptyState variant="small">
             <Title headingLevel="h2" size="xl">
-                No migrations started
+              No migrations started
             </Title>
           </EmptyState>
         </Bullseye>
       )}
-    </React.Fragment>
+    </React.Fragment >
   );
 };
+
 export default MigrationsTable;
