@@ -16,7 +16,19 @@ import {
   Pagination,
   PaginationVariant,
   SelectOptionObject,
+  Level,
+  LevelItem,
+  DataToolbar,
+  DataToolbarContent,
+  DataToolbarToggleGroup,
+  DataToolbarItem,
+  DataToolbarFilter,
+  Dropdown,
+  DropdownToggle,
+  DropdownItem,
+  InputGroup,
 } from '@patternfly/react-core';
+import { FilterIcon } from '@patternfly/react-icons';
 import { Table, TableVariant, TableHeader, TableBody } from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
@@ -121,7 +133,67 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
+  const [isCategoryDropdownOpen] = useState(false);
+  const clearAllFilters = () => console.log('clearAllFilters!');
+  const onCategorySelect = () => console.log('onCategorySelect!');
+  const onCategoryToggle = () => console.log('onCategoryToggle!');
+  const onClearFilter = () => console.log('onClearFilter');
+  const filterCategories = [
+    {
+      key: 'one',
+      title: 'One',
+    },
+    {
+      key: 'two',
+      title: 'Two',
+    },
+    {
+      key: 'three',
+      title: 'Three',
+    },
+  ];
+  const currentFilterCategory = filterCategories[0];
+  const filterChips = [];
+
+  const filterToolbar = (
+    <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={clearAllFilters}>
+      <DataToolbarContent>
+        <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
+          <DataToolbarItem>
+            <Dropdown // TODO use SimpleSelect instead? change it so it can use children?
+              onSelect={onCategorySelect}
+              toggle={
+                <DropdownToggle onToggle={onCategoryToggle}>
+                  <FilterIcon /> {currentFilterCategory.title}
+                </DropdownToggle>
+              }
+              isOpen={isCategoryDropdownOpen}
+              dropdownItems={filterCategories.map(category => (
+                // TODO properties for row property name and title
+                <DropdownItem key={category.key}>{category.title}</DropdownItem>
+              ))}
+            />
+          </DataToolbarItem>
+          {filterCategories.map(category => (
+            <DataToolbarFilter
+              key={category.key}
+              chips={filterChips[category.key]}
+              deleteChip={onClearFilter}
+              categoryName={category.title}
+              showToolbarItem={currentFilterCategory.key === category.key}
+            >
+              <InputGroup>TODO</InputGroup>
+            </DataToolbarFilter>
+          ))}
+        </DataToolbarToggleGroup>
+      </DataToolbarContent>
+    </DataToolbar>
+  );
+
   const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
+
+  // TODO: filters
+  // TODO: sorting
 
   return (
     <Grid gutter="md">
@@ -131,7 +203,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         </TextContent>
       </GridItem>
       <GridItem>
-        <Pagination widgetId="pv-table-pagination-top" {...paginationProps} />
+        <Level>
+          <LevelItem>{filterToolbar}</LevelItem>
+          <LevelItem>
+            <Pagination widgetId="pv-table-pagination-top" {...paginationProps} />
+          </LevelItem>
+        </Level>
         <Table
           aria-label="Persistent volumes table"
           variant={TableVariant.compact}
