@@ -4,7 +4,7 @@ import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../common/duck/utils';
-import { IPlan, IPlanPersistentVolume, IPersistentVolumeResource } from './types';
+import { IPlan, IPlanPersistentVolume, IPersistentVolumeResource, ISourceClusterNamespace } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
 export interface IFormValues {
   planName: string;
@@ -45,7 +45,7 @@ export interface IOtherProps {
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
   addPlanRequest: (migPlan) => void;
-  sourceClusterNamespaces: any[];
+  sourceClusterNamespaces: ISourceClusterNamespace[];
   pvResourceList: IPersistentVolumeResource[];
   onHandleWizardModalClose: () => void;
   editPlanObj?: any;
