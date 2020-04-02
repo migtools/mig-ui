@@ -69,7 +69,9 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       values.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
       values.selectedNamespaces = editPlanObj.spec.namespaces || [];
       values.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
-      values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
+      // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
+      // See https://github.com/konveyor/mig-ui/issues/797
+      // values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
     }
 
     return values;
@@ -106,7 +108,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
 })(WizardComponent);
 
 const mapStateToProps = state => {
-
   return {
     planName: '',
     sourceCluster: null,
@@ -130,21 +131,21 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    addPlanRequest: (migPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
-    fetchNamespacesRequest: (clusterName) => dispatch(PlanActions.namespaceFetchRequest(clusterName)),
-    getPVResourcesRequest: (pvList, clusterName) => dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
-    startPlanStatusPolling: (planName: string) => dispatch(PlanActions.startPlanStatusPolling(planName)),
-    stopPlanStatusPolling: (planName: string) => dispatch(PlanActions.stopPlanStatusPolling(planName)),
+    addPlanRequest: migPlan => dispatch(PlanActions.addPlanRequest(migPlan)),
+    fetchNamespacesRequest: clusterName => dispatch(PlanActions.namespaceFetchRequest(clusterName)),
+    getPVResourcesRequest: (pvList, clusterName) =>
+      dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
+    startPlanStatusPolling: (planName: string) =>
+      dispatch(PlanActions.startPlanStatusPolling(planName)),
+    stopPlanStatusPolling: (planName: string) =>
+      dispatch(PlanActions.stopPlanStatusPolling(planName)),
     planUpdateRequest: (values, isRerunPVDiscovery) =>
       dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
-    setCurrentPlan: (plan) => dispatch(PlanActions.setCurrentPlan(plan)),
-    updateCurrentPlanStatus: (status) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
+    setCurrentPlan: plan => dispatch(PlanActions.setCurrentPlan(plan)),
+    updateCurrentPlanStatus: status => dispatch(PlanActions.updateCurrentPlanStatus(status)),
     pvUpdatePollStop: () => dispatch(PlanActions.pvUpdatePollStop()),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(WizardContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(WizardContainer);
