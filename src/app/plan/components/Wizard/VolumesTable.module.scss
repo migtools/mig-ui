@@ -1,23 +1,5 @@
-@import "src/colors";
-
-  .centerAlign{
-      text-align:center;
-  }
-
-  .errorDiv{
-    margin: 1em 0 1em 0;
-    color: $statusRed
-  }
-
-  .volumesTableStyle{
-    font-size: 14px;
-
-    .rt-td{
-        margin: auto 0;
-    }
-  }
-  .popoverStyle{
-    overflow-y: scroll;
-    max-height: 20rem;
-    width: 40rem;
-  }
+.jsonPopover {
+  overflow-y: scroll;
+  max-height: 20rem;
+  width: 40rem;
+}

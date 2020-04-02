@@ -131,20 +131,18 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       },
       {
         id: stepId.PersistentVolumes,
-        name: 'Persistent Volumes',
+        name: 'Persistent volumes',
         component: (
           <VolumesForm
-            isEdit={isEdit}
             values={values}
             setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
             currentPlan={currentPlan}
             isPVError={isPVError}
             getPVResourcesRequest={getPVResourcesRequest}
             pvResourceList={pvResourceList}
+            isFetchingPVResources={isFetchingPVList}
             isPollingStatus={isPollingStatus}
             planUpdateRequest={planUpdateRequest}
-            startPlanStatusPolling={startPlanStatusPolling}
             currentPlanStatus={currentPlanStatus}
           />
         ),
@@ -156,7 +154,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       },
       {
         id: stepId.StorageClass,
-        name: 'Storage Class',
+        name: 'Storage class',
         component: (
           <StorageClassForm
             isEdit={isEdit}
