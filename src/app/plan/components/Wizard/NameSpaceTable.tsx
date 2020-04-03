@@ -22,7 +22,7 @@ interface INamespaceTableProps
     | 'isEdit'
     | 'sourceClusterNamespaces'
     >,
-  Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
   setFieldValue, sourceClusterNamespaces, values
