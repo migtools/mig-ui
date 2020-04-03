@@ -18,11 +18,11 @@ interface IResourceSelectFormProps
   extends Pick<
     IOtherProps,
     | 'clusterList'
-    | 'storageList'
-    | 'isFetchingNamespaceList'
     | 'fetchNamespacesRequest'
-    | 'sourceClusterNamespaces'
     | 'isEdit'
+    | 'isFetchingNamespaceList'
+    | 'sourceClusterNamespaces'
+    | 'storageList'
     >,
     Pick<FormikActions<IFormValues>, 'setFieldTouched'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'>,
@@ -32,16 +32,16 @@ interface IResourceSelectFormProps
 
 const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
   clusterList,
-  storageList,
-  values,
   errors,
-  touched,
-  setFieldValue,
-  setFieldTouched,
-  isFetchingNamespaceList,
   fetchNamespacesRequest,
-  sourceClusterNamespaces,
   isEdit,
+  isFetchingNamespaceList,
+  setFieldTouched,
+  setFieldValue,
+  sourceClusterNamespaces,
+  storageList,
+  touched,
+  values,
 }: IResourceSelectFormProps) => {
   useEffect(() => {
     if (isEdit) {
