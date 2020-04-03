@@ -21,12 +21,12 @@ interface IStorageClassFormProps
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
 const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
-   clusterList,
-   currentPlan,
-   isEdit,
-   isFetchingPVList,
-   setFieldValue,
-   values,
+  clusterList,
+  currentPlan,
+  isEdit,
+  isFetchingPVList,
+  setFieldValue,
+  values,
 }: IStorageClassFormProps) => { 
   return (
     <Grid gutter="md">
