@@ -13,6 +13,7 @@ export interface IFormValues {
   selectedStorage: string;
   selectedNamespaces: any[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
+  pvStorageClassAssignment: any[];
 }
 
 // TODO add more specific types instead of using `any`
@@ -62,6 +63,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       selectedNamespaces: [],
       selectedStorage: null,
       persistentVolumes: [],
+      pvStorageClassAssignment: [],
     };
     if (editPlanObj && isEdit) {
       values.planName = editPlanObj.metadata.name || '';

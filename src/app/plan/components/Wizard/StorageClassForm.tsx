@@ -39,7 +39,6 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
       </GridItem>
       <GridItem>
         <StorageClassTable
-          isEdit={isEdit}
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}
