@@ -1,5 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { FormikProps, FormikActions, FormikState } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   Form,
   FormGroup,
@@ -11,15 +13,25 @@ interface IProps {
   component: React.ReactNode;
 }
 
-const GeneralForm: React.SFC<IProps & RouteComponentProps> = ({
-  handleChange,
-  handleBlur,
-  values,
+interface IGeneralFormProps
+  extends Pick<
+    IOtherProps,
+    | 'isEdit'
+    >,
+    Pick<FormikActions<IFormValues>, 'setFieldTouched'>,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'>,
+    Pick<FormikState<IFormValues>, 'touched'> {
+      errors: any;
+    }
+const GeneralForm: React.FunctionComponent<IGeneralFormProps & RouteComponentProps> = ({
   errors,
-  touched,
+  handleBlur,
+  handleChange,
+  isEdit,
   setFieldTouched,
-  isEdit
-}) => {
+  touched,
+  values,
+}: IGeneralFormProps & RouteComponentProps) => {
   const onHandleChange = (val, e) => {
     handleChange(e);
   };
