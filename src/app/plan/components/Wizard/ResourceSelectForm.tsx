@@ -33,9 +33,9 @@ const ResourceSelectForm = props => {
     }
   }, []);
 
-  let srcClusterOptions = ['No valid clusters found'];
-  let targetClusterOptions = [];
-  let storageOptions = ['No valid storage found'];
+  let srcClusterOptions: string[] = ['No valid clusters found'];
+  let targetClusterOptions: string[] = [];
+  let storageOptions: string[] = ['No valid storage found'];
   
   if (clusterList.length) {
     srcClusterOptions = clusterList
