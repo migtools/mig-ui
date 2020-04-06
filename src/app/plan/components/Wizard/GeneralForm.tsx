@@ -14,10 +14,7 @@ interface IProps {
 }
 
 interface IGeneralFormProps
-  extends Pick<
-    IOtherProps,
-    | 'isEdit'
-    >,
+  extends Pick<IOtherProps, 'isEdit'>,
     Pick<FormikActions<IFormValues>, 'setFieldTouched'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'>,
     Pick<FormikState<IFormValues>, 'touched'> {
