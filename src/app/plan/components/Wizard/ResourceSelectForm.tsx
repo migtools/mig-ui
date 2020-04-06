@@ -33,15 +33,26 @@ const ResourceSelectForm = props => {
     }
   }, []);
 
-  // TOD: case for ['No valid clusters found']
-  const srcClusterOptions = clusterList.filter(cluster => { 
-    cluster.MigCluster.metadata.name !== values.targetCluster && cluster.ClusterStatus.hasReadyCondition})
+  let srcClusterOptions = ['No valid clusters found'];
+  let targetClusterOptions = [];
+  let storageOptions = ['No valid storage found'];
+  
+  if (clusterList.length) {
+    srcClusterOptions = clusterList
+      .filter(cluster => cluster.MigCluster.metadata.name !== values.targetCluster && cluster.ClusterStatus.hasReadyCondition)
+      .map(cluster => cluster.MigCluster.metadata.name)
 
-  const targetClusterOptions = clusterList.filter(cluster => { 
-      cluster.MigCluster.metadata.name !== values.sourceCluster && cluster.ClusterStatus.hasReadyCondition})
+    targetClusterOptions = clusterList
+      .filter(cluster => cluster.MigCluster.metadata.name !== values.sourceCluster && cluster.ClusterStatus.hasReadyCondition)
+      .map(cluster => cluster.MigCluster.metadata.name)
+  }
 
-  const storageOptions = storageList.filter(storage => {storage.StorageStatus.hasReadyCondition})
-
+  if (storageList.length) {
+    storageOptions = storageList
+      .filter(storage => storage.StorageStatus.hasReadyCondition)
+      .map(storage => storage.MigStorage.metadata.name)
+  }
+  
   const handleStorageChange = value => {
     const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
