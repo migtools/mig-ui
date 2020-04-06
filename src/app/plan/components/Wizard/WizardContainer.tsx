@@ -13,7 +13,7 @@ export interface IFormValues {
   selectedStorage: string;
   selectedNamespaces: any[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
-  pvStorageClassAssignment: any[];
+  pvStorageClassAssignment: any[]; 
 }
 
 // TODO add more specific types instead of using `any`

@@ -24,9 +24,13 @@ interface IResourceSelectFormProps
     | 'sourceClusterNamespaces'
     | 'storageList'
     >,
-    Pick<FormikActions<IFormValues>, 'setFieldTouched'>,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'>,
-    Pick<FormikState<IFormValues>, 'touched'> {
+    Pick<FormikProps<IFormValues>, 
+    | 'setFieldTouched'
+    | 'setFieldValue' 
+    | 'touched'
+    | 'values'
+    > 
+    {
       errors: any;
     }
 
