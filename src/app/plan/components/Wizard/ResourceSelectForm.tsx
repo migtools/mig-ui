@@ -12,11 +12,7 @@ import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
-const ResourceSelectForm = props => {
-  const [srcClusterOptions, setSrcClusterOptions] = useState([]);
-  const [targetClusterOptions, setTargetClusterOptions] = useState([]);
-  const [storageOptions, setStorageOptions] = useState([]);
-
+const ResourceSelectForm = props => {  
   const {
     clusterList,
     storageList,
@@ -30,52 +26,33 @@ const ResourceSelectForm = props => {
     sourceClusterNamespaces,
     isEdit,
   } = props;
+
   useEffect(() => {
     if (isEdit) {
       fetchNamespacesRequest(values.sourceCluster);
     }
   }, []);
 
-  useEffect(() => {
-    // ***
-    // * Populate src and target cluster dropdowns
-    // ***
-    if (clusterList.length) {
-      const sourceOptions = [];
-      const targetOptions = [];
-      const clusterLen = clusterList.length;
-      for (let i = 0; i < clusterLen; i++) {
-        if (
-          clusterList[i].MigCluster.metadata.name !== values.sourceCluster &&
-          clusterList[i].ClusterStatus.hasReadyCondition
-        ) {
-          targetOptions.push(clusterList[i].MigCluster.metadata.name);
-        }
-        if (
-          clusterList[i].MigCluster.metadata.name !== values.targetCluster &&
-          clusterList[i].ClusterStatus.hasReadyCondition
-        ) {
-          sourceOptions.push(clusterList[i].MigCluster.metadata.name);
-        }
-      }
-      setSrcClusterOptions(sourceOptions);
-      setTargetClusterOptions(targetOptions);
-    } else {
-      setSrcClusterOptions(['No valid clusters found']);
-    }
-    // ***
-    // * Populate storage dropdown
-    // ***
-    const newStorageOptions = [];
-    const storageLen = storageList.length;
-    for (let i = 0; i < storageLen; i++) {
-      if (storageList[i].StorageStatus.hasReadyCondition) {
-        newStorageOptions.push(storageList[i].MigStorage.metadata.name);
-      }
-    }
-    setStorageOptions(newStorageOptions);
-  }, [values]);
+  let srcClusterOptions: string[] = ['No valid clusters found'];
+  let targetClusterOptions: string[] = [];
+  let storageOptions: string[] = ['No valid storage found'];
+  
+  if (clusterList.length) {
+    srcClusterOptions = clusterList
+      .filter(cluster => cluster.MigCluster.metadata.name !== values.targetCluster && cluster.ClusterStatus.hasReadyCondition)
+      .map(cluster => cluster.MigCluster.metadata.name)
 
+    targetClusterOptions = clusterList
+      .filter(cluster => cluster.MigCluster.metadata.name !== values.sourceCluster && cluster.ClusterStatus.hasReadyCondition)
+      .map(cluster => cluster.MigCluster.metadata.name)
+  }
+
+  if (storageList.length) {
+    storageOptions = storageList
+      .filter(storage => storage.StorageStatus.hasReadyCondition)
+      .map(storage => storage.MigStorage.metadata.name)
+  }
+  
   const handleStorageChange = value => {
     const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
