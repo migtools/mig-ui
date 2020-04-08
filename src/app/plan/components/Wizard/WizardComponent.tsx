@@ -9,6 +9,7 @@ import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../duck/reducers';
+import WizardStepContainer from './WizardStepContainer';
 
 const styles = require('./WizardComponent.module');
 
@@ -82,15 +83,17 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         id: stepId.General,
         name: 'General',
         component: (
-          <GeneralForm
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldTouched={setFieldTouched}
-            isEdit={isEdit}
-          />
+          <WizardStepContainer title="General">
+            <GeneralForm
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              setFieldTouched={setFieldTouched}
+              isEdit={isEdit}
+            />
+          </WizardStepContainer>
         ),
         enableNext: !errors.planName && (touched.planName === true || isEdit === true),
       },
@@ -98,21 +101,23 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         id: stepId.MigrationSource,
         name: 'Resources',
         component: (
-          <ResourceSelectForm
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            clusterList={clusterList}
-            storageList={storageList}
-            isFetchingNamespaceList={isFetchingNamespaceList}
-            fetchNamespacesRequest={fetchNamespacesRequest}
-            sourceClusterNamespaces={sourceClusterNamespaces}
-            isEdit={isEdit}
-          />
+          <WizardStepContainer title="Resources">
+            <ResourceSelectForm
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              clusterList={clusterList}
+              storageList={storageList}
+              isFetchingNamespaceList={isFetchingNamespaceList}
+              fetchNamespacesRequest={fetchNamespacesRequest}
+              sourceClusterNamespaces={sourceClusterNamespaces}
+              isEdit={isEdit}
+            />
+          </WizardStepContainer>
         ),
         enableNext:
           !errors.selectedStorage &&
@@ -133,18 +138,20 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         id: stepId.PersistentVolumes,
         name: 'Persistent volumes',
         component: (
-          <VolumesForm
-            values={values}
-            setFieldValue={setFieldValue}
-            currentPlan={currentPlan}
-            isPVError={isPVError}
-            getPVResourcesRequest={getPVResourcesRequest}
-            pvResourceList={pvResourceList}
-            isFetchingPVResources={isFetchingPVList}
-            isPollingStatus={isPollingStatus}
-            planUpdateRequest={planUpdateRequest}
-            currentPlanStatus={currentPlanStatus}
-          />
+          <WizardStepContainer title="Persistent volumes">
+            <VolumesForm
+              values={values}
+              setFieldValue={setFieldValue}
+              currentPlan={currentPlan}
+              isPVError={isPVError}
+              getPVResourcesRequest={getPVResourcesRequest}
+              pvResourceList={pvResourceList}
+              isFetchingPVResources={isFetchingPVList}
+              isPollingStatus={isPollingStatus}
+              planUpdateRequest={planUpdateRequest}
+              currentPlanStatus={currentPlanStatus}
+            />
+          </WizardStepContainer>
         ),
         enableNext:
           !isFetchingPVList &&
@@ -156,19 +163,21 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         id: stepId.StorageClass,
         name: 'Storage class',
         component: (
-          <StorageClassForm
-            isEdit={isEdit}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
-            clusterList={clusterList}
-          />
+          <WizardStepContainer title="Storage class">
+            <StorageClassForm
+              isEdit={isEdit}
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              currentPlan={currentPlan}
+              isFetchingPVList={isFetchingPVList}
+              clusterList={clusterList}
+            />
+          </WizardStepContainer>
         ),
         canJumpTo: stepIdReached >= stepId.StorageClass,
         nextButtonText: 'Finish'
