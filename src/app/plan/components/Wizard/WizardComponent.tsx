@@ -107,8 +107,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                 values={values}
                 errors={errors}
                 touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
                 setFieldValue={setFieldValue}
                 setFieldTouched={setFieldTouched}
                 clusterList={clusterList}
@@ -168,12 +166,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               <StorageClassForm
                 isEdit={isEdit}
                 values={values}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
                 setFieldValue={setFieldValue}
-                setFieldTouched={setFieldTouched}
                 currentPlan={currentPlan}
                 isFetchingPVList={isFetchingPVList}
                 clusterList={clusterList}
