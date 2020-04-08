@@ -161,7 +161,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
   ];
 
-  const [filterValues, setFilterValues] = useState([]);
+  const [filterValues, setFilterValues] = useState({});
 
   ////////////////////////////////////////////////////////////////////////////////
 

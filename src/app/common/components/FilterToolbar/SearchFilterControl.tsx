@@ -9,7 +9,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   setFilterValue,
 }: IFilterControlProps) => {
   // Keep internal copy of value until submitted by user
-  const [inputValue, setInputValue] = useState(filterValue);
+  const [inputValue, setInputValue] = useState((filterValue && filterValue[0]) || '');
   // Update it if it changes externally
   useEffect(() => {
     setInputValue(filterValue);
@@ -30,13 +30,13 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
         placeholder={category.placeholderText}
         onKeyDown={(event: React.KeyboardEvent) => {
           if (event.key && event.key !== 'Enter') return;
-          setFilterValue(inputValue);
+          setFilterValue([inputValue]);
         }}
       />
       <Button
         variant={ButtonVariant.control}
         aria-label="search button for search input"
-        onClick={() => setFilterValue(inputValue)}
+        onClick={() => setFilterValue([inputValue])}
       >
         <SearchIcon />
       </Button>

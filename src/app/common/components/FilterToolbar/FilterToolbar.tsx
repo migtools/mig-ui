@@ -19,7 +19,7 @@ export enum FilterType {
   search = 'search',
 }
 
-export type FilterValue = any; // TODO.. SelectProps.selections? string? array?
+export type FilterValue = any[]; // TODO.. SelectProps.selections? string? array?
 
 export interface IFilterCategory {
   key: string;
@@ -35,7 +35,7 @@ export interface IFilterValues {
 
 export interface IFilterToolbarProps {
   filterCategories: IFilterCategory[];
-  filterValues: any[][]; // TODO type this...
+  filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
 }
 
@@ -84,7 +84,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
           {filterCategories.map(category => (
             <DataToolbarFilter
               key={category.key}
-              chips={filterValues[category.key]}
+              chips={filterValues[category.key] || []}
               deleteChip={onClearFilter} // TODO is this one value or all of a category?
               categoryName={category.title}
               showToolbarItem={currentFilterCategory.key === category.key}
