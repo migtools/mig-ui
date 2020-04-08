@@ -158,19 +158,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     value: any; // TODO type this... SelectProps.selections? string? array?
   }
 
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
-  const [filterValues, setFilterValues] = useState([]);
-
-  // @ts-ignore
-  const clearAllFilters = () => console.log('clearAllFilters!', arguments);
-  // @ts-ignore
-  const onCategorySelect = () => console.log('onCategorySelect!', arguments);
-  // @ts-ignore
-  const onClearFilter = () => console.log('onClearFilter', arguments);
-
-  const onFilterChange = () => console.log('TODO');
-
   const filterCategories: IFilterCategory[] = [
     {
       key: 'one',
@@ -187,20 +174,36 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           value: 'B',
         },
       ],
-      placeholderText: 'Filter by one...',
     },
     {
       key: 'two',
       title: 'Two',
       type: FilterType.search,
+      placeholderText: 'Filter by two...',
     },
     {
       key: 'three',
       title: 'Three',
       type: FilterType.search,
+      placeholderText: 'Filter by three...',
     },
   ];
-  const currentFilterCategory = filterCategories[currentCategoryIndex];
+  const [currentCategoryKey, setCurrentCategoryKey] = useState(filterCategories[0].key);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [filterValues, setFilterValues] = useState([]);
+
+  const onCategorySelect = category => {
+    setCurrentCategoryKey(category.key);
+    setIsCategoryDropdownOpen(false);
+  };
+
+  const clearAllFilters = () => console.log('clearAllFilters!'); // TODO
+  const onClearFilter = () => console.log('onClearFilter'); // TODO
+  const onFilterChange = () => console.log('onFilterChange'); // TODO
+
+  const currentFilterCategory = filterCategories.find(
+    category => category.key === currentCategoryKey
+  );
 
   const FilterControl: React.FunctionComponent<IFilterControlProps> = ({ category, value }) => {
     const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
@@ -273,7 +276,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
           <DataToolbarItem>
             <Dropdown
-              onSelect={onCategorySelect}
               toggle={
                 <DropdownToggle onToggle={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}>
                   <FilterIcon /> {currentFilterCategory.title}
@@ -282,7 +284,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               isOpen={isCategoryDropdownOpen}
               dropdownItems={filterCategories.map(category => (
                 // TODO properties for row property name and title
-                <DropdownItem key={category.key}>{category.title}</DropdownItem>
+                <DropdownItem key={category.key} onClick={() => onCategorySelect(category)}>
+                  {category.title}
+                </DropdownItem>
               ))}
             />
           </DataToolbarItem>
