@@ -43,7 +43,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   filterCategories,
   filterValues,
   setFilterValues,
-}) => {
+}: IFilterToolbarProps) => {
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = useState(filterCategories[0].key);
 

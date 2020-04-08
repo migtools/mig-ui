@@ -13,7 +13,7 @@ export interface IFilterControlProps {
 export const FilterControl: React.FunctionComponent<IFilterControlProps> = ({
   category,
   ...props
-}) => {
+}: IFilterControlProps) => {
   if (category.type === FilterType.select) {
     return <SelectFilterControl category={category} {...props} />;
   }

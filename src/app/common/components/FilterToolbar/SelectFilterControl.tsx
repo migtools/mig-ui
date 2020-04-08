@@ -6,7 +6,7 @@ const SelectFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   category,
   value,
   setValue,
-}) => {
+}: IFilterControlProps) => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const onFilterSelect = () => console.log('onFilterSelect');
 

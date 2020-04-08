@@ -7,7 +7,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   category,
   value,
   setValue,
-}) => {
+}: IFilterControlProps) => {
   const [inputValue, setInputValue] = useState('');
   const onInputSubmit = () => console.log('onInputSubmit');
   const onInputChange = () => console.log('onInputChange');
