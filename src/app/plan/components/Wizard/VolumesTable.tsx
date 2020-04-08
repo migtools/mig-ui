@@ -27,8 +27,13 @@ import {
   DropdownToggle,
   DropdownItem,
   InputGroup,
+  Select,
+  SelectOption,
+  SelectOptionProps,
+  TextInput,
+  ButtonVariant,
 } from '@patternfly/react-core';
-import { FilterIcon } from '@patternfly/react-icons';
+import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import { Table, TableVariant, TableHeader, TableBody } from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
@@ -133,37 +138,144 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
-  const [isCategoryDropdownOpen] = useState(false);
-  const clearAllFilters = () => console.log('clearAllFilters!');
-  const onCategorySelect = () => console.log('onCategorySelect!');
-  const onCategoryToggle = () => console.log('onCategoryToggle!');
-  const onClearFilter = () => console.log('onClearFilter');
-  const filterCategories = [
+  ////////////////////////////////////////////////////////////////////////////////
+
+  enum FilterType {
+    select = 'select',
+    search = 'search',
+  }
+
+  interface IFilterCategory {
+    key: string;
+    title: string;
+    type: FilterType;
+    selectOptions?: SelectOptionProps[]; // TODO only if select type?
+    placeholderText?: string; // TODO only if select type?
+  }
+
+  interface IFilterControlProps {
+    category: IFilterCategory;
+    value: any; // TODO type this... SelectProps.selections? string? array?
+  }
+
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
+  const [filterValues, setFilterValues] = useState([]);
+
+  // @ts-ignore
+  const clearAllFilters = () => console.log('clearAllFilters!', arguments);
+  // @ts-ignore
+  const onCategorySelect = () => console.log('onCategorySelect!', arguments);
+  // @ts-ignore
+  const onClearFilter = () => console.log('onClearFilter', arguments);
+
+  const onFilterChange = () => console.log('TODO');
+
+  const filterCategories: IFilterCategory[] = [
     {
       key: 'one',
       title: 'One',
+      type: FilterType.select,
+      selectOptions: [
+        // TODO generate from data with helper
+        {
+          key: 'a',
+          value: 'A',
+        },
+        {
+          key: 'b',
+          value: 'B',
+        },
+      ],
+      placeholderText: 'Filter by one...',
     },
     {
       key: 'two',
       title: 'Two',
+      type: FilterType.search,
     },
     {
       key: 'three',
       title: 'Three',
+      type: FilterType.search,
     },
   ];
-  const currentFilterCategory = filterCategories[0];
-  const filterChips = [];
+  const currentFilterCategory = filterCategories[currentCategoryIndex];
+
+  const FilterControl: React.FunctionComponent<IFilterControlProps> = ({ category, value }) => {
+    const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+    // @ts-ignore
+    const onFilterSelect = () => console.log('onFilterSelect', arguments);
+
+    // TODO split into sub components?
+
+    const [inputValue, setInputValue] = useState('');
+
+    const onInputSubmit = () => console.log('TODO');
+
+    // @ts-ignore
+    const onInputChange = () => console.log('onInputChange', arguments);
+
+    const onInputKeyDown = () => {
+      onInputSubmit();
+      // @ts-ignore
+      console.log('onInputKeyDown', arguments);
+    };
+
+    if (category.type === FilterType.select) {
+      return (
+        <Select
+          aria-label={category.title}
+          onToggle={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+          onSelect={onFilterSelect} // TODO ???
+          selections={value}
+          isExpanded={isFilterDropdownOpen}
+          placeholderText="Any"
+        >
+          {category.selectOptions.map(optionProps => (
+            <SelectOption {...optionProps} />
+          ))}
+        </Select>
+      );
+    }
+    if (category.type === FilterType.search) {
+      const id = `${category.key}-input`;
+      return (
+        <InputGroup>
+          {/*
+            // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          <TextInput
+            name={id}
+            id={id}
+            type="search"
+            aria-label={`${category.title} filter`}
+            onChange={onInputChange}
+            value={inputValue}
+            placeholder={category.placeholderText}
+            onKeyDown={onInputKeyDown}
+          />
+          <Button
+            variant={ButtonVariant.control}
+            aria-label="search button for search input"
+            onClick={onInputSubmit}
+          >
+            <SearchIcon />
+          </Button>
+        </InputGroup>
+      );
+    }
+    return null;
+  };
 
   const filterToolbar = (
     <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={clearAllFilters}>
       <DataToolbarContent>
         <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
           <DataToolbarItem>
-            <Dropdown // TODO use SimpleSelect instead? change it so it can use children?
+            <Dropdown
               onSelect={onCategorySelect}
               toggle={
-                <DropdownToggle onToggle={onCategoryToggle}>
+                <DropdownToggle onToggle={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}>
                   <FilterIcon /> {currentFilterCategory.title}
                 </DropdownToggle>
               }
@@ -177,12 +289,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           {filterCategories.map(category => (
             <DataToolbarFilter
               key={category.key}
-              chips={filterChips[category.key]}
+              chips={filterValues[category.key]}
               deleteChip={onClearFilter}
               categoryName={category.title}
               showToolbarItem={currentFilterCategory.key === category.key}
             >
-              <InputGroup>TODO</InputGroup>
+              <FilterControl category={category} value={filterValues[category.key]} />
             </DataToolbarFilter>
           ))}
         </DataToolbarToggleGroup>
@@ -191,6 +303,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   );
 
   const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
+
+  ////////////////////////////////////////////////////////////////////////////////
 
   // TODO: filters
   // TODO: sorting
