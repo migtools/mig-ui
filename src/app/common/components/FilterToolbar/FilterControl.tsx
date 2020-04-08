@@ -6,8 +6,8 @@ import SearchFilterControl from './SearchFilterControl';
 
 export interface IFilterControlProps {
   category: IFilterCategory;
-  value: FilterValue;
-  setValue: (newValue: FilterValue) => void;
+  filterValue: FilterValue;
+  setFilterValue: (newValue: FilterValue) => void;
 }
 
 export const FilterControl: React.FunctionComponent<IFilterControlProps> = ({

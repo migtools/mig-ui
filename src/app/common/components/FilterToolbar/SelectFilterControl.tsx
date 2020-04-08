@@ -4,8 +4,8 @@ import { IFilterControlProps } from './FilterControl';
 
 const SelectFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   category,
-  value,
-  setValue,
+  filterValue,
+  setFilterValue,
 }: IFilterControlProps) => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const onFilterSelect = () => console.log('onFilterSelect');
@@ -15,7 +15,7 @@ const SelectFilterControl: React.FunctionComponent<IFilterControlProps> = ({
       aria-label={category.title}
       onToggle={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
       onSelect={onFilterSelect} // TODO ???
-      selections={value}
+      selections={filterValue}
       isExpanded={isFilterDropdownOpen}
       placeholderText="Any"
     >

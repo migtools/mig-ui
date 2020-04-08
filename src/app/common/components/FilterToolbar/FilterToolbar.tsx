@@ -91,8 +91,8 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
             >
               <FilterControl
                 category={category}
-                value={filterValues[category.key]}
-                setValue={newValue => setFilterValue(category, newValue)}
+                filterValue={filterValues[category.key]}
+                setFilterValue={newValue => setFilterValue(category, newValue)}
               />
             </DataToolbarFilter>
           ))}
