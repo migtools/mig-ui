@@ -26,7 +26,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 import { usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import FilterToolbar, {
+import {
+  FilterToolbar,
   IFilterCategory,
   FilterType,
 } from '../../../common/components/FilterToolbar';
