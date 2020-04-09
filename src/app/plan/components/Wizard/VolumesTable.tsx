@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   TextContent,
   Text,
@@ -59,16 +59,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   persistentVolumes,
   onTypeChange,
 }: IVolumesTableProps) => {
-  const columns = [
-    { title: 'PV name' },
-    { title: 'Claim' },
-    { title: 'Namespace' },
-    { title: 'Storage class' },
-    { title: 'Size' },
-    { title: 'Migration type' },
-    { title: 'Details' },
-  ];
-
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -104,9 +94,18 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       ],
     },
   ];
-
   const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
   const { currentPageItems, paginationProps } = usePaginationState(filteredItems, 10);
+
+  const columns = [
+    { title: 'PV name' },
+    { title: 'Claim' },
+    { title: 'Namespace' },
+    { title: 'Storage class' },
+    { title: 'Size' },
+    { title: 'Migration type' },
+    { title: 'Details' },
+  ];
 
   const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);

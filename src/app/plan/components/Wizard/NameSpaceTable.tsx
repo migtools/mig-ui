@@ -14,7 +14,12 @@ import {
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, usePaginationState } from '../../../common/duck/hooks';
+import {
+  FilterToolbar,
+  FilterCategory,
+  FilterType,
+} from '../../../common/components/FilterToolbar';
 
 interface INamespaceTableProps
   extends Pick<
@@ -29,13 +34,25 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
 }: INamespaceTableProps) => {
   if (values.sourceCluster === null) return null;
 
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'name',
+      title: 'Name',
+      type: FilterType.search,
+      placeholderText: 'Filter by name...',
+    },
+  ];
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
+  const { currentPageItems, paginationProps } = usePaginationState(filteredItems, 10);
+
   const columns = [
     { title: 'Name' },
     { title: 'Pods' },
     { title: 'PV claims' },
     { title: 'Services' },
   ];
-  const rows = sourceClusterNamespaces.map(namespace => ({
+
+  const rows = currentPageItems.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
     selected: values.selectedNamespaces.includes(namespace.name),
     meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
@@ -64,8 +81,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     setFieldValue('selectedNamespaces', newSelected);
   };
 
-  const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
-
   return (
     <React.Fragment>
       <GridItem>
@@ -76,12 +91,11 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
       <GridItem>
         <Level>
           <LevelItem>
-            <TextContent>
-              <Text
-                component={TextVariants.small}
-                className={spacing.mlLg}
-              >{`${values.selectedNamespaces.length} selected`}</Text>
-            </TextContent>
+            <FilterToolbar
+              filterCategories={filterCategories}
+              filterValues={filterValues}
+              setFilterValues={setFilterValues}
+            />
           </LevelItem>
           <LevelItem>
             <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
@@ -91,20 +105,32 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
           aria-label="Projects table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={currentPageItems}
+          rows={rows}
           onSelect={onSelect}
           canSelectAll
         >
           <TableHeader />
           <TableBody />
         </Table>
-        <Pagination
-          widgetId="namespace-table-pagination-bottom"
-          variant={PaginationVariant.bottom}
-          className={spacing.mtMd}
-          dropDirection={DropdownDirection.up}
-          {...paginationProps}
-        />
+        <Level>
+          <LevelItem>
+            <TextContent>
+              <Text
+                component={TextVariants.small}
+                className={spacing.mlLg}
+              >{`${values.selectedNamespaces.length} selected`}</Text>
+            </TextContent>
+          </LevelItem>
+          <LevelItem>
+            <Pagination
+              widgetId="namespace-table-pagination-bottom"
+              variant={PaginationVariant.bottom}
+              className={spacing.mtMd}
+              dropDirection={DropdownDirection.up}
+              {...paginationProps}
+            />
+          </LevelItem>
+        </Level>
       </GridItem>
     </React.Fragment>
   );
