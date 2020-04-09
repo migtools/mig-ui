@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, TextInput, Button, ButtonVariant } from '@patternfly/react-core';
+import {
+  DataToolbarFilter,
+  InputGroup,
+  TextInput,
+  Button,
+  ButtonVariant,
+} from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { IFilterControlProps } from './FilterControl';
 
@@ -7,6 +13,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   category,
   filterValue,
   setFilterValue,
+  showToolbarItem,
 }: IFilterControlProps) => {
   // Keep internal copy of value until submitted by user
   const [inputValue, setInputValue] = useState((filterValue && filterValue[0]) || '');
@@ -17,30 +24,37 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
 
   const id = `${category.key}-input`;
   return (
-    <InputGroup>
-      {/*
+    <DataToolbarFilter
+      chips={filterValue || []}
+      deleteChip={() => setFilterValue([])}
+      categoryName={category.title}
+      showToolbarItem={showToolbarItem}
+    >
+      <InputGroup>
+        {/*
         // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-      <TextInput
-        name={id}
-        id={id}
-        type="search"
-        aria-label={`${category.title} filter`}
-        onChange={setInputValue}
-        value={inputValue as string}
-        placeholder={category.placeholderText}
-        onKeyDown={(event: React.KeyboardEvent) => {
-          if (event.key && event.key !== 'Enter') return;
-          setFilterValue([inputValue]);
-        }}
-      />
-      <Button
-        variant={ButtonVariant.control}
-        aria-label="search button for search input"
-        onClick={() => setFilterValue([inputValue])}
-      >
-        <SearchIcon />
-      </Button>
-    </InputGroup>
+        <TextInput
+          name={id}
+          id={id}
+          type="search"
+          aria-label={`${category.title} filter`}
+          onChange={setInputValue}
+          value={inputValue}
+          placeholder={category.placeholderText}
+          onKeyDown={(event: React.KeyboardEvent) => {
+            if (event.key && event.key !== 'Enter') return;
+            setFilterValue([inputValue]);
+          }}
+        />
+        <Button
+          variant={ButtonVariant.control}
+          aria-label="search button for search input"
+          onClick={() => setFilterValue([inputValue])}
+        >
+          <SearchIcon />
+        </Button>
+      </InputGroup>
+    </DataToolbarFilter>
   );
 };
 

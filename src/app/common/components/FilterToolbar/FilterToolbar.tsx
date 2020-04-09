@@ -56,8 +56,6 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setIsCategoryDropdownOpen(false);
   };
 
-  const onClearFilter = (category, chip) => console.log('onClearFilter', { category, chip }); // TODO
-
   const setFilterValue = (category: IFilterCategory, newValue: FilterValue) =>
     setFilterValues({ ...filterValues, [category.key]: newValue });
 
@@ -85,19 +83,13 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
             />
           </DataToolbarItem>
           {filterCategories.map(category => (
-            <DataToolbarFilter
+            <FilterControl
               key={category.key}
-              chips={filterValues[category.key] || []}
-              deleteChip={onClearFilter} // TODO is this one value or all of a category?
-              categoryName={category.title}
+              category={category}
+              filterValue={filterValues[category.key]}
+              setFilterValue={newValue => setFilterValue(category, newValue)}
               showToolbarItem={currentFilterCategory.key === category.key}
-            >
-              <FilterControl
-                category={category}
-                filterValue={filterValues[category.key]}
-                setFilterValue={newValue => setFilterValue(category, newValue)}
-              />
-            </DataToolbarFilter>
+            />
           ))}
         </DataToolbarToggleGroup>
       </DataToolbarContent>

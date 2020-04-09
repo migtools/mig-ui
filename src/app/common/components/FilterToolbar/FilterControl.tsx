@@ -8,6 +8,7 @@ export interface IFilterControlProps {
   category: IFilterCategory;
   filterValue: FilterValue;
   setFilterValue: (newValue: FilterValue) => void;
+  showToolbarItem: boolean;
 }
 
 export const FilterControl: React.FunctionComponent<IFilterControlProps> = ({
