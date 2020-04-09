@@ -27,6 +27,8 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
     setInputValue((filterValue && filterValue[0]) || '');
   }, [filterValue]);
 
+  const onFilterSubmit = () => setFilterValue(inputValue ? [inputValue] : []);
+
   const id = `${category.key}-input`;
   return (
     <DataToolbarFilter
@@ -48,13 +50,13 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
           placeholder={category.placeholderText}
           onKeyDown={(event: React.KeyboardEvent) => {
             if (event.key && event.key !== 'Enter') return;
-            setFilterValue([inputValue]);
+            onFilterSubmit();
           }}
         />
         <Button
           variant={ButtonVariant.control}
           aria-label="search button for search input"
-          onClick={() => setFilterValue([inputValue])}
+          onClick={onFilterSubmit}
         >
           <SearchIcon />
         </Button>
