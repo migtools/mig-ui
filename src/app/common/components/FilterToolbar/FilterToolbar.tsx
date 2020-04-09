@@ -19,13 +19,17 @@ export enum FilterType {
   search = 'search',
 }
 
-export type FilterValue = any[]; // TODO.. SelectProps.selections? string? array?
+export type FilterValue = string[];
+
+export interface OptionPropsWithKey extends SelectOptionProps {
+  key: string;
+}
 
 export interface IFilterCategory {
   key: string;
   title: string;
-  type: FilterType;
-  selectOptions?: SelectOptionProps[]; // TODO only if select type?
+  type: FilterType; // In the future if we want to support arbitrary control types we could have this be a React.Component prop instead
+  selectOptions?: OptionPropsWithKey[]; // TODO only if select type?
   placeholderText?: string; // TODO only if select type?
 }
 
@@ -52,8 +56,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setIsCategoryDropdownOpen(false);
   };
 
-  const clearAllFilters = () => console.log('clearAllFilters!'); // TODO
-  const onClearFilter = () => console.log('onClearFilter'); // TODO
+  const onClearFilter = (category, chip) => console.log('onClearFilter', { category, chip }); // TODO
 
   const setFilterValue = (category: IFilterCategory, newValue: FilterValue) =>
     setFilterValues({ ...filterValues, [category.key]: newValue });
@@ -63,7 +66,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   );
 
   return (
-    <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={clearAllFilters}>
+    <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
       <DataToolbarContent>
         <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
           <DataToolbarItem>

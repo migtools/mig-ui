@@ -30,6 +30,7 @@ import {
   FilterToolbar,
   IFilterCategory,
   FilterType,
+  IFilterValues,
 } from '../../../common/components/FilterToolbar';
 
 const styles = require('./VolumesTable.module');
@@ -161,7 +162,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
   ];
 
-  const [filterValues, setFilterValues] = useState({});
+  const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
   ////////////////////////////////////////////////////////////////////////////////
 

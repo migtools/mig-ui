@@ -12,7 +12,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
   const [inputValue, setInputValue] = useState((filterValue && filterValue[0]) || '');
   // Update it if it changes externally
   useEffect(() => {
-    setInputValue(filterValue);
+    setInputValue((filterValue && filterValue[0]) || '');
   }, [filterValue]);
 
   const id = `${category.key}-input`;
@@ -26,7 +26,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
         type="search"
         aria-label={`${category.title} filter`}
         onChange={setInputValue}
-        value={inputValue}
+        value={inputValue as string}
         placeholder={category.placeholderText}
         onKeyDown={(event: React.KeyboardEvent) => {
           if (event.key && event.key !== 'Enter') return;
