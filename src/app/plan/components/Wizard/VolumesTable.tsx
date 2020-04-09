@@ -31,6 +31,7 @@ import {
   FilterCategory,
   FilterType,
   IFilterValues,
+  OptionPropsWithKey,
 } from '../../../common/components/FilterToolbar';
 
 const styles = require('./VolumesTable.module');
@@ -129,42 +130,43 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
-  ////////////////////////////////////////////////////////////////////////////////
-
   const filterCategories: FilterCategory[] = [
     {
-      key: 'one',
-      title: 'One',
+      key: 'name',
+      title: 'PV name',
+      type: FilterType.search,
+      placeholderText: 'Filter by PV name...',
+    },
+    {
+      key: 'claim',
+      title: 'Claim',
+      type: FilterType.search,
+      placeholderText: 'Filter by claim...',
+    },
+    {
+      key: 'namespace',
+      title: 'Namespace',
+      type: FilterType.search,
+      placeholderText: 'Filter by namespace...',
+    },
+    {
+      key: 'storageClass',
+      title: 'Storage class',
+      type: FilterType.search,
+      placeholderText: 'Filter by storage class...',
+    },
+    {
+      key: 'type',
+      title: 'Migration type',
       type: FilterType.select,
       selectOptions: [
-        // TODO generate from data with helper
-        {
-          key: 'a',
-          value: 'A',
-        },
-        {
-          key: 'b',
-          value: 'B',
-        },
+        { key: 'copy', value: 'Copy' },
+        { key: 'move', value: 'Move' },
       ],
-    },
-    {
-      key: 'two',
-      title: 'Two',
-      type: FilterType.search,
-      placeholderText: 'Filter by two...',
-    },
-    {
-      key: 'three',
-      title: 'Three',
-      type: FilterType.search,
-      placeholderText: 'Filter by three...',
     },
   ];
 
   const [filterValues, setFilterValues] = useState<IFilterValues>({});
-
-  ////////////////////////////////////////////////////////////////////////////////
 
   const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
 

@@ -27,7 +27,7 @@ export interface OptionPropsWithKey extends SelectOptionProps {
 export interface IBasicFilterCategory {
   key: string;
   title: string;
-  type: FilterType; // In the future if we want to support arbitrary control types we could have this be a React.Component prop instead
+  type: FilterType; // If we want to support arbitrary filter types, this could be a React node that consumes context instead of an enum
 }
 
 export interface ISelectFilterCategory extends IBasicFilterCategory {
