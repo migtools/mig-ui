@@ -6,13 +6,18 @@ import {
   SelectOptionObject,
 } from '@patternfly/react-core';
 import { IFilterControlProps } from './FilterControl';
+import { ISelectFilterCategory } from './FilterToolbar';
 
-const SelectFilterControl: React.FunctionComponent<IFilterControlProps> = ({
+export interface ISelectFilterControlProps extends IFilterControlProps {
+  category: ISelectFilterCategory;
+}
+
+const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = ({
   category,
   filterValue,
   setFilterValue,
   showToolbarItem,
-}: IFilterControlProps) => {
+}: ISelectFilterControlProps) => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   const getOptionKeyFromOptionValue = (optionValue: string | SelectOptionObject) =>

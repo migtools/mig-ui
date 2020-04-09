@@ -8,13 +8,18 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { IFilterControlProps } from './FilterControl';
+import { ISearchFilterCategory } from './FilterToolbar';
 
-const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
+export interface ISearchFilterControlProps extends IFilterControlProps {
+  category: ISearchFilterCategory;
+}
+
+const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = ({
   category,
   filterValue,
   setFilterValue,
   showToolbarItem,
-}: IFilterControlProps) => {
+}: ISearchFilterControlProps) => {
   // Keep internal copy of value until submitted by user
   const [inputValue, setInputValue] = useState((filterValue && filterValue[0]) || '');
   // Update it if it changes externally
@@ -32,7 +37,7 @@ const SearchFilterControl: React.FunctionComponent<IFilterControlProps> = ({
     >
       <InputGroup>
         {/*
-        // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
           name={id}
           id={id}

@@ -28,7 +28,7 @@ import { usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   FilterToolbar,
-  IFilterCategory,
+  FilterCategory,
   FilterType,
   IFilterValues,
 } from '../../../common/components/FilterToolbar';
@@ -131,7 +131,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
   ////////////////////////////////////////////////////////////////////////////////
 
-  const filterCategories: IFilterCategory[] = [
+  const filterCategories: FilterCategory[] = [
     {
       key: 'one',
       title: 'One',

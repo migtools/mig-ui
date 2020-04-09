@@ -8,7 +8,6 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownItem,
-  DataToolbarFilter,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 
@@ -25,20 +24,28 @@ export interface OptionPropsWithKey extends SelectOptionProps {
   key: string;
 }
 
-export interface IFilterCategory {
+export interface IBasicFilterCategory {
   key: string;
   title: string;
   type: FilterType; // In the future if we want to support arbitrary control types we could have this be a React.Component prop instead
-  selectOptions?: OptionPropsWithKey[]; // TODO only if select type?
-  placeholderText?: string; // TODO only if select type?
 }
+
+export interface ISelectFilterCategory extends IBasicFilterCategory {
+  selectOptions: OptionPropsWithKey[];
+}
+
+export interface ISearchFilterCategory extends IBasicFilterCategory {
+  placeholderText: string;
+}
+
+export type FilterCategory = ISearchFilterCategory | ISelectFilterCategory;
 
 export interface IFilterValues {
   [categoryKey: string]: FilterValue;
 }
 
 export interface IFilterToolbarProps {
-  filterCategories: IFilterCategory[];
+  filterCategories: FilterCategory[];
   filterValues: IFilterValues;
   setFilterValues: (values: IFilterValues) => void;
 }
@@ -56,7 +63,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setIsCategoryDropdownOpen(false);
   };
 
-  const setFilterValue = (category: IFilterCategory, newValue: FilterValue) =>
+  const setFilterValue = (category: FilterCategory, newValue: FilterValue) =>
     setFilterValues({ ...filterValues, [category.key]: newValue });
 
   const currentFilterCategory = filterCategories.find(
