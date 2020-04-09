@@ -70,7 +70,54 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Details' },
   ];
 
-  const rows = persistentVolumes.map((pv, pvIndex) => {
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'name',
+      title: 'PV name',
+      type: FilterType.search,
+      placeholderText: 'Filter by PV name...',
+    },
+    {
+      key: 'claim',
+      title: 'Claim',
+      type: FilterType.search,
+      placeholderText: 'Filter by claim...',
+    },
+    {
+      key: 'project',
+      title: 'Namespace',
+      type: FilterType.search,
+      placeholderText: 'Filter by namespace...',
+    },
+    {
+      key: 'storageClass',
+      title: 'Storage class',
+      type: FilterType.search,
+      placeholderText: 'Filter by storage class...',
+    },
+    {
+      key: 'type',
+      title: 'Migration type',
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'copy', value: 'Copy' },
+        { key: 'move', value: 'Move' },
+      ],
+    },
+  ];
+
+  const [filterValues, setFilterValues] = useState<IFilterValues>({});
+
+  const filteredPersistentVolumes = persistentVolumes.filter(rowObject =>
+    Object.keys(filterValues).every(categoryKey => {
+      const values = filterValues[categoryKey];
+      if (!values || values.length === 0) return true;
+      const rowValue = rowObject[categoryKey];
+      return values.every(filterValue => !rowValue || rowValue.indexOf(filterValue) !== -1);
+    })
+  );
+
+  const rows = filteredPersistentVolumes.map((pv, pvIndex) => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
     const migrationTypeOptions = pv.supportedActions.map(
       (action: string) =>
@@ -129,44 +176,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       ],
     };
   });
-
-  const filterCategories: FilterCategory[] = [
-    {
-      key: 'name',
-      title: 'PV name',
-      type: FilterType.search,
-      placeholderText: 'Filter by PV name...',
-    },
-    {
-      key: 'claim',
-      title: 'Claim',
-      type: FilterType.search,
-      placeholderText: 'Filter by claim...',
-    },
-    {
-      key: 'namespace',
-      title: 'Namespace',
-      type: FilterType.search,
-      placeholderText: 'Filter by namespace...',
-    },
-    {
-      key: 'storageClass',
-      title: 'Storage class',
-      type: FilterType.search,
-      placeholderText: 'Filter by storage class...',
-    },
-    {
-      key: 'type',
-      title: 'Migration type',
-      type: FilterType.select,
-      selectOptions: [
-        { key: 'copy', value: 'Copy' },
-        { key: 'move', value: 'Move' },
-      ],
-    },
-  ];
-
-  const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
   const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
 
