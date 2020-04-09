@@ -12,6 +12,7 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../common/components/StatusIcon';
+import { IPlanPersistentVolume } from './types';
 
 const styles = require('./VolumesTable.module');
 
@@ -146,17 +147,22 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
     );
   }
 
-  const updatePersistentVolumes = (pvIndex: number, newValues: { type: string }) => {
+  const updatePersistentVolumes = (
+    currentPV: IPlanPersistentVolume,
+    newValues: { type: string }
+  ) => {
     if (currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
-      newPVs[pvIndex] = { ...newPVs[pvIndex], ...newValues };
+      const matchingPV = values.persistentVolumes.find(pv => pv === currentPV);
+      const pvIndex = values.persistentVolumes.indexOf(matchingPV);
+      newPVs[pvIndex] = { ...matchingPV, ...newValues };
       // TODO this should only store selections, we should inherit the rest from currentPlan.spec.persistentVolumes
       setFieldValue('persistentVolumes', newPVs);
     }
   };
 
-  const onTypeChange = (pvIndex: number, value: string) =>
-    updatePersistentVolumes(pvIndex, { type: value });
+  const onTypeChange = (currentPV: IPlanPersistentVolume, value: string) =>
+    updatePersistentVolumes(currentPV, { type: value });
 
   return (
     <VolumesTable

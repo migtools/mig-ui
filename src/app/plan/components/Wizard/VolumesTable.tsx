@@ -24,22 +24,21 @@ import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../common/components/SimpleSelect';
-import { usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   FilterToolbar,
   FilterCategory,
   FilterType,
-  IFilterValues,
-  OptionPropsWithKey,
 } from '../../../common/components/FilterToolbar';
+import { IPlanPersistentVolume } from './types';
 
 const styles = require('./VolumesTable.module');
 
 interface IVolumesTableProps
   extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
     Pick<IFormValues, 'persistentVolumes'> {
-  onTypeChange: (pvIndex: number, value: string) => void;
+  onTypeChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
 
 interface OptionWithValue extends SelectOptionObject {
@@ -106,18 +105,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
   ];
 
-  const [filterValues, setFilterValues] = useState<IFilterValues>({});
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
+  const { currentPageItems, paginationProps } = usePaginationState(filteredItems, 10);
 
-  const filteredPersistentVolumes = persistentVolumes.filter(rowObject =>
-    Object.keys(filterValues).every(categoryKey => {
-      const values = filterValues[categoryKey];
-      if (!values || values.length === 0) return true;
-      const rowValue = rowObject[categoryKey];
-      return values.every(filterValue => !rowValue || rowValue.indexOf(filterValue) !== -1);
-    })
-  );
-
-  const rows = filteredPersistentVolumes.map((pv, pvIndex) => {
+  const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
     const migrationTypeOptions = pv.supportedActions.map(
       (action: string) =>
@@ -137,7 +128,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           title: (
             <SimpleSelect
               aria-label="Select migration type"
-              onChange={(option: OptionWithValue) => onTypeChange(pvIndex, option.value)}
+              onChange={(option: OptionWithValue) => onTypeChange(pv, option.value)}
               options={migrationTypeOptions}
               value={migrationTypeOptions.find(option => option.value === pv.type)}
               placeholderText={null}
@@ -177,8 +168,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
-  const { currentPageItems, paginationProps } = usePaginationState(rows, 10);
-
   // TODO: sorting
 
   return (
@@ -205,7 +194,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           aria-label="Persistent volumes table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={currentPageItems}
+          rows={rows}
         >
           <TableHeader />
           <TableBody />
