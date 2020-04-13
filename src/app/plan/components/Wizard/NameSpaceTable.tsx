@@ -51,7 +51,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
   const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
-  useEffect(() => setPageNumber(1), [sortBy]);
+  useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
