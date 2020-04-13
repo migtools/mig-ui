@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
@@ -12,9 +12,9 @@ import {
   PaginationVariant,
   DropdownDirection,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, TableVariant, sortable } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useFilterState, usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import {
   FilterToolbar,
   FilterCategory,
@@ -22,18 +22,24 @@ import {
 } from '../../../common/components/FilterToolbar';
 
 interface INamespaceTableProps
-  extends Pick<
-    IOtherProps,
-    | 'isEdit'
-    | 'sourceClusterNamespaces'
-    >,
+  extends Pick<IOtherProps, 'isEdit' | 'sourceClusterNamespaces'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
-  setFieldValue, sourceClusterNamespaces, values
+  setFieldValue,
+  sourceClusterNamespaces,
+  values,
 }: INamespaceTableProps) => {
   if (values.sourceCluster === null) return null;
 
+  const columns = [
+    { title: 'Name', transforms: [sortable] },
+    { title: 'Pods', transforms: [sortable] },
+    { title: 'PV claims', transforms: [sortable] },
+    { title: 'Services', transforms: [sortable] },
+  ];
+  // Column 0 has the checkboxes, sort keys need to be indexed from 1
+  const sortKeys = [null, 'name', 'podCount', 'pvcCount', 'serviceCount'];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -43,14 +49,9 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     },
   ];
   const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
-  const { currentPageItems, paginationProps } = usePaginationState(filteredItems, 10);
-
-  const columns = [
-    { title: 'Name' },
-    { title: 'Pods' },
-    { title: 'PV claims' },
-    { title: 'Services' },
-  ];
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [sortBy]);
 
   const rows = currentPageItems.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
@@ -106,6 +107,8 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
           variant={TableVariant.compact}
           cells={columns}
           rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
           onSelect={onSelect}
           canSelectAll
         >

@@ -24,7 +24,7 @@ export const useSortState = (items: object[], sortKeys: string[]) => {
     setSortBy({ index, direction });
   };
 
-  const sortedItems = items.sort((a: object, b: object) => {
+  const sortedItems = [...items].sort((a: object, b: object) => {
     const { index, direction } = sortBy;
     const key = sortKeys[index];
     if (a[key] < b[key]) return direction === SortByDirection.asc ? -1 : 1;
