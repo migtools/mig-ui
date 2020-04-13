@@ -164,7 +164,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           component: (
             <WizardStepContainer title="Storage class">
               <StorageClassForm
-                isEdit={isEdit}
                 values={values}
                 setFieldValue={setFieldValue}
                 currentPlan={currentPlan}
@@ -256,7 +255,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={event => event.preventDefault()}
         />
       )}
     </React.Fragment>
