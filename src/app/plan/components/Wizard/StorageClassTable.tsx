@@ -45,6 +45,9 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
     );
   }
 
+  // TODO move all this stuff up into StorageClassForm, only handle render logic in here
+  // TODO log the form values on this and on master, make sure we're not screwing up any of this init stuff
+
   const migPlanPvs = currentPlan.spec.persistentVolumes;
 
   const destCluster = clusterList.find(
@@ -54,7 +57,6 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
   const storageClassOptions = destCluster.MigCluster.spec.storageClasses || [];
 
   // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
-  // TODO can we avoid this initialize-on-mount behavior?
   useEffect(() => {
     if (!values.pvStorageClassAssignment) {
       let pvStorageClassAssignment = {};
@@ -117,6 +119,9 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
     fontSize: '14px',
   };
 
+  // TODO do we need to guard against null rows here?
+  // TODO convert to PF table, add sorting, filtering, pagination
+  // TODO add columns based on Vince's mockups (excluding Verify copy, until next PR)
   if (rows !== null) {
     return (
       <Grid gutter="md">
@@ -173,7 +178,6 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
                 width: 500,
                 style: { overflow: 'visible' },
                 Cell: row => {
-                  const migPlanPvs = currentPlan.spec.persistentVolumes;
                   const currentPV = migPlanPvs.find(pv => pv.name === row.original.name);
                   const currentCopyMethod = values.pvCopyMethodAssignment[row.original.name];
 
