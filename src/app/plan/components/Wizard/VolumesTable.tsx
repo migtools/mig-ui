@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   TextContent,
   Text,
@@ -19,20 +19,12 @@ import {
   Level,
   LevelItem,
 } from '@patternfly/react-core';
-import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
-  sortable,
-  SortByDirection,
-  ISortBy,
-} from '@patternfly/react-table';
+import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../common/components/SimpleSelect';
-import { useFilterState, usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   FilterToolbar,
@@ -76,6 +68,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
+  const sortKeys = ['name', 'claim', 'project', 'storageClass', 'size', 'type'];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -111,22 +104,11 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       ],
     },
   ];
-  const sortKeys = ['name', 'claim', 'project', 'storageClass', 'size', 'type'];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
-
-  const [sortBy, setSortBy] = useState<ISortBy>({});
-  const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) =>
-    setSortBy({ index, direction });
-  const sortedItems = filteredItems.sort((a, b) => {
-    const { index, direction } = sortBy;
-    const key = sortKeys[index];
-    if (a[key] < b[key]) return direction === SortByDirection.asc ? -1 : 1;
-    if (a[key] > b[key]) return direction === SortByDirection.asc ? 1 : -1;
-    return 0;
-  });
-
-  const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [sortBy]);
 
   const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
