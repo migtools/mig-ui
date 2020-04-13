@@ -3,7 +3,7 @@ import { PaginationProps } from '@patternfly/react-core';
 import { IFilterValues } from '../components/FilterToolbar';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 
-export const useFilterState = (items: object[]) => {
+export const useFilterState = (items: any[]) => {
   const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
   const filteredItems = items.filter(item =>
@@ -18,13 +18,13 @@ export const useFilterState = (items: object[]) => {
   return { filterValues, setFilterValues, filteredItems };
 };
 
-export const useSortState = (items: object[], sortKeys: string[]) => {
+export const useSortState = (items: any[], sortKeys: string[]) => {
   const [sortBy, setSortBy] = useState<ISortBy>({});
   const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) => {
     setSortBy({ index, direction });
   };
 
-  const sortedItems = [...items].sort((a: object, b: object) => {
+  const sortedItems = [...items].sort((a: any, b: any) => {
     const { index, direction } = sortBy;
     const key = sortKeys[index];
     if (a[key] < b[key]) return direction === SortByDirection.asc ? -1 : 1;

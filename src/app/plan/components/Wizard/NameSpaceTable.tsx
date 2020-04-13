@@ -22,7 +22,7 @@ import {
 } from '../../../common/components/FilterToolbar';
 
 interface INamespaceTableProps
-  extends Pick<IOtherProps, 'isEdit' | 'sourceClusterNamespaces'>,
+  extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
 const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
@@ -67,7 +67,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
-        newSelected = sourceClusterNamespaces.map(namespace => namespace.name); // Select all
+        newSelected = filteredItems.map(namespace => namespace.name); // Select all (filtered)
       } else {
         newSelected = []; // Deselect all
       }
