@@ -211,7 +211,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
                 Cell: row => {
                   const currentStorageClass = values.pvStorageClassAssignment[row.original.name];
                   const storageClassOptionsWithNone = storageClassOptions.map(sc => {
-                    return { value: sc.name, label: sc.name + ':' + sc.provisioner };
+                    return { value: sc.name, label: `${sc.name}:${sc.provisioner}` };
                   });
                   storageClassOptionsWithNone.push({ value: '', label: 'None' });
                   return (
@@ -221,7 +221,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
                       name="storageClasses"
                       value={{
                         label: currentStorageClass
-                          ? currentStorageClass.name + ':' + currentStorageClass.provisioner
+                          ? `${currentStorageClass.name}:${currentStorageClass.provisioner}`
                           : 'None',
                         value: currentStorageClass ? currentStorageClass.name : '',
                       }}
