@@ -33,3 +33,10 @@ export interface IPersistentVolumeResource {
   name: string;
   [key: string]: any;
 }
+
+export interface ISourceClusterNamespace {
+  name: string;
+  podCount: number;
+  pvcCount: number;
+  serviceCount: number;
+}

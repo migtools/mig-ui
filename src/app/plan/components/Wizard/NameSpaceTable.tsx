@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { FormikProps } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   GridItem,
   Text,
@@ -14,23 +16,17 @@ import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-t
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { usePaginationState } from '../../../common/duck/hooks';
 
-interface INamespaceTableProps {
-  isEdit: boolean;
-  values: any;
-  sourceClusterNamespaces: [
-    {
-      name: string;
-      podCount: number;
-      pvcCount: number;
-      serviceCount: number;
-    }
-  ];
-  setFieldValue: (fieldName, fieldValue) => void;
-}
+interface INamespaceTableProps
+  extends Pick<
+    IOtherProps,
+    | 'isEdit'
+    | 'sourceClusterNamespaces'
+    >,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
-const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
-  const { setFieldValue, sourceClusterNamespaces, values } = props;
-
+const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
+  setFieldValue, sourceClusterNamespaces, values
+}: INamespaceTableProps) => {
   if (values.sourceCluster === null) return null;
 
   const columns = [

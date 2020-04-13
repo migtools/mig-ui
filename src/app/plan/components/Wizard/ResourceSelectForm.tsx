@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FormikProps, FormikActions, FormikState } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   Bullseye,
   EmptyState,
@@ -12,21 +14,39 @@ import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
-const ResourceSelectForm = props => {  
-  const {
-    clusterList,
-    storageList,
-    values,
-    errors,
-    touched,
-    setFieldValue,
-    setFieldTouched,
-    isFetchingNamespaceList,
-    fetchNamespacesRequest,
-    sourceClusterNamespaces,
-    isEdit,
-  } = props;
+interface IResourceSelectFormProps
+  extends Pick<
+    IOtherProps,
+    | 'clusterList'
+    | 'fetchNamespacesRequest'
+    | 'isEdit'
+    | 'isFetchingNamespaceList'
+    | 'sourceClusterNamespaces'
+    | 'storageList'
+    >,
+    Pick<FormikProps<IFormValues>, 
+    | 'setFieldTouched'
+    | 'setFieldValue' 
+    | 'touched'
+    | 'values'
+    > 
+    {
+      errors: any;
+    }
 
+const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
+  clusterList,
+  errors,
+  fetchNamespacesRequest,
+  isEdit,
+  isFetchingNamespaceList,
+  setFieldTouched,
+  setFieldValue,
+  sourceClusterNamespaces,
+  storageList,
+  touched,
+  values,
+}: IResourceSelectFormProps) => {
   useEffect(() => {
     if (isEdit) {
       fetchNamespacesRequest(values.sourceCluster);
@@ -36,7 +56,7 @@ const ResourceSelectForm = props => {
   let srcClusterOptions: string[] = ['No valid clusters found'];
   let targetClusterOptions: string[] = [];
   let storageOptions: string[] = ['No valid storage found'];
-  
+
   if (clusterList.length) {
     srcClusterOptions = clusterList
       .filter(cluster => cluster.MigCluster.metadata.name !== values.targetCluster && cluster.ClusterStatus.hasReadyCondition)
@@ -52,7 +72,7 @@ const ResourceSelectForm = props => {
       .filter(storage => storage.StorageStatus.hasReadyCondition)
       .map(storage => storage.MigStorage.metadata.name)
   }
-  
+
   const handleStorageChange = value => {
     const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
