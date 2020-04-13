@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   TextContent,
   Text,
@@ -19,7 +19,15 @@ import {
   Level,
   LevelItem,
 } from '@patternfly/react-core';
-import { Table, TableVariant, TableHeader, TableBody } from '@patternfly/react-table';
+import {
+  Table,
+  TableVariant,
+  TableHeader,
+  TableBody,
+  sortable,
+  SortByDirection,
+  ISortBy,
+} from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -59,6 +67,15 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   persistentVolumes,
   onTypeChange,
 }: IVolumesTableProps) => {
+  const columns = [
+    { title: 'PV name', transforms: [sortable] },
+    { title: 'Claim', transforms: [sortable] },
+    { title: 'Namespace', transforms: [sortable] },
+    { title: 'Storage class', transforms: [sortable] },
+    { title: 'Size', transforms: [sortable] },
+    { title: 'Migration type', transforms: [sortable] },
+    { title: 'Details' },
+  ];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -94,18 +111,22 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       ],
     },
   ];
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
-  const { currentPageItems, paginationProps } = usePaginationState(filteredItems, 10);
+  const sortKeys = ['name', 'claim', 'project', 'storageClass', 'size', 'type'];
 
-  const columns = [
-    { title: 'PV name' },
-    { title: 'Claim' },
-    { title: 'Namespace' },
-    { title: 'Storage class' },
-    { title: 'Size' },
-    { title: 'Migration type' },
-    { title: 'Details' },
-  ];
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
+
+  const [sortBy, setSortBy] = useState<ISortBy>({});
+  const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) =>
+    setSortBy({ index, direction });
+  const sortedItems = filteredItems.sort((a, b) => {
+    const { index, direction } = sortBy;
+    const key = sortKeys[index];
+    if (a[key] < b[key]) return direction === SortByDirection.asc ? -1 : 1;
+    if (a[key] > b[key]) return direction === SortByDirection.asc ? 1 : -1;
+    return 0;
+  });
+
+  const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
@@ -194,6 +215,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           variant={TableVariant.compact}
           cells={columns}
           rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
         >
           <TableHeader />
           <TableBody />
