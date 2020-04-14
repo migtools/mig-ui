@@ -31,10 +31,10 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
       status.text = conflictErrorMsg || 'Conflicting plan';
     } else if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
-    } else if (hasSucceededStage) {
-      status.text = `Stage Succeeded`;
     } else if (hasSucceededMigration) {
       status.text = `Migration Succeeded`;
+    } else if (hasSucceededStage) {
+      status.text = `Stage Succeeded`;
     } else if (hasNotReadyCondition || !hasReadyCondition) {
       status.text = 'Not Ready';
     } else if (hasReadyCondition) {

@@ -212,11 +212,6 @@ const planCloseAndDeleteFailure = (err, planName: string) => ({
   planName
 });
 
-const planCloseRequest = (planName: string) => ({
-  type: PlanActionTypes.PLAN_CLOSE_REQUEST,
-  planName
-});
-
 const planCloseSuccess = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_SUCCESS,
   planName
@@ -337,7 +332,6 @@ export const PlanActions = {
   planCloseAndDeleteFailure,
   planCloseSuccess,
   planCloseFailure,
-  planCloseRequest,
   startPlanStatusPolling,
   stopPlanStatusPolling,
   getPVResourcesRequest,
