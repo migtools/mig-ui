@@ -1,5 +1,5 @@
 import React from 'react';
-import { RedoIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   Button,
   Card,
@@ -10,12 +10,22 @@ import {
   TooltipPosition,
   Grid,
   GridItem,
+  DataList,
+  DataListContent,
+  Flex,
+  FlexItem,
+  FlexModifiers,
 } from '@patternfly/react-core';
-import StatusIcon from '../../../common/components/StatusIcon';
+import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import { OutlinedQuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
-
+import {
+  OutlinedQuestionCircleIcon,
+  IconSize,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  WarningTriangleIcon,
+} from '@patternfly/react-icons';
 const styles = require('./ResultsStep.module');
 
 interface IProps {
@@ -28,7 +38,7 @@ interface IProps {
   isPollingStatus: boolean;
 }
 
-const ResultsStep: React.FunctionComponent<IProps> = (props) => {
+const ResultsStep: React.FunctionComponent<IProps> = props => {
   const {
     values,
     currentPlan,
@@ -47,25 +57,32 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       case CurrentPlanState.Pending:
         return <Spinner size="xl" />;
       case CurrentPlanState.Ready:
-        return <StatusIcon isReady={true} />;
+        return (
+          <span className="pf-c-icon pf-m-success">
+            <CheckCircleIcon size={IconSize.sm} />
+          </span>
+        );
       case CurrentPlanState.Critical:
-        return <StatusIcon isReady={false} />;
+        return (
+          <span className="pf-c-icon pf-m-danger">
+            <ExclamationCircleIcon size={IconSize.sm} />
+          </span>
+        );
       case CurrentPlanState.Warn:
         return (
           <span className="pf-c-icon pf-m-warning">
-            <WarningTriangleIcon />
+            <WarningTriangleIcon size={IconSize.xl} />
           </span>
         );
       default:
         return null;
     }
   }
-  function HeaderText({ state }): any {
-    const StyledPlanName = (props) => (
-      <span className={styles.styledPlanName}>{props.children}</span>
-    );
 
-    const StyledValidationText = (props) => (
+  function HeaderText({ state }): any {
+    const StyledPlanName = props => <span className={styles.styledPlanName}>{props.children}</span>;
+
+    const StyledValidationText = props => (
       <span className={styles.styledValidationText}>{props.children}</span>
     );
 
@@ -117,20 +134,13 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
         return null;
     }
   }
+
   function BodyText({ state, errorMessage, warnMessage }): any {
-    const StyledBodyText = (props) => (
-      <span className={styles.styledBodyText}>{props.children}</span>
-    );
+    const StyledBodyText = props => <span className={styles.styledBodyText}>{props.children}</span>;
 
     switch (state) {
       case CurrentPlanState.Pending:
         return <StyledBodyText>This might take a few minutes.</StyledBodyText>;
-      case CurrentPlanState.Warn:
-        return (
-          <React.Fragment>
-            <StyledBodyText>{warnMessage}</StyledBodyText>
-          </React.Fragment>
-        );
       case CurrentPlanState.Ready:
         return (
           <StyledBodyText>
@@ -138,12 +148,11 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
             migration
           </StyledBodyText>
         );
-      case CurrentPlanState.Critical:
-        return <StyledBodyText>{errorMessage}</StyledBodyText>;
       default:
         return null;
     }
   }
+
   function FooterText({ state }): any {
     switch (state) {
       case CurrentPlanState.Pending:
@@ -197,8 +206,14 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       <GridItem className={styles.centerCard}>
         <Card className={styles.styledCard}>
           <CardHeader>
-            <HeaderIcon state={currentPlanStatus.state} />
-            <HeaderText state={currentPlanStatus.state} />
+            <Flex breakpointMods={[{ modifier: FlexModifiers['justify-content-center'] }]}>
+              <FlexItem>
+                <HeaderIcon state={currentPlanStatus.state} />
+              </FlexItem>
+              <FlexItem className={spacing.myLg}>
+                <HeaderText state={currentPlanStatus.state} />
+              </FlexItem>
+            </Flex>
           </CardHeader>
           <CardBody>
             <BodyText
@@ -206,6 +221,24 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
               errorMessage={currentPlanStatus.errorMessage}
               warnMessage={currentPlanStatus.warnMessage}
             />
+            {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
+              <DataListContent noPadding aria-label="current-plan-conditions-list">
+                {currentPlan.PlanStatus.displayedConditions.length > 0 && (
+                  <DataList aria-label="cluster-item-list">
+                    {currentPlan.PlanStatus.displayedConditions.map((condition, conditionIndex) => {
+                      return (
+                        <ConditionItem
+                          key={conditionIndex}
+                          condition={condition}
+                          conditionIndex={conditionIndex}
+                          incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
+                        />
+                      );
+                    })}
+                  </DataList>
+                )}
+              </DataListContent>
+            )}
           </CardBody>
           <CardFooter>
             <FooterText state={currentPlanStatus.state} />
