@@ -13,6 +13,7 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { FormikProps } from 'formik';
+import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -58,7 +59,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
 
   // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
   useEffect(() => {
-    if (!values.pvStorageClassAssignment) {
+    if (!values.pvStorageClassAssignment || isEmpty(values.pvStorageClassAssignment)) {
       let pvStorageClassAssignment = {};
       if (migPlanPvs) {
         pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
@@ -71,17 +72,22 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
       }
       setFieldValue(pvStorageClassAssignmentKey, pvStorageClassAssignment);
     }
-    // TODO should this only happen if (!values.pvCopyMethodAssignment), like above?
-    let pvCopyMethodAssignment = {};
-    if (migPlanPvs) {
-      pvCopyMethodAssignment = migPlanPvs.reduce((assignedCms, pv) => {
-        const supportedCopyMethods = pv.supported.copyMethods || [];
-        const suggestedCopyMethod = supportedCopyMethods.find(cm => cm === pv.selection.copyMethod);
-        assignedCms[pv.name] = suggestedCopyMethod ? suggestedCopyMethod : supportedCopyMethods[0];
-        return assignedCms;
-      }, {});
+    if (!values.pvCopyMethodAssignment || isEmpty(values.pvCopyMethodAssignment)) {
+      let pvCopyMethodAssignment = {};
+      if (migPlanPvs) {
+        pvCopyMethodAssignment = migPlanPvs.reduce((assignedCms, pv) => {
+          const supportedCopyMethods = pv.supported.copyMethods || [];
+          const suggestedCopyMethod = supportedCopyMethods.find(
+            cm => cm === pv.selection.copyMethod
+          );
+          assignedCms[pv.name] = suggestedCopyMethod
+            ? suggestedCopyMethod
+            : supportedCopyMethods[0];
+          return assignedCms;
+        }, {});
+      }
+      setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
     }
-    setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
   }, []);
 
   const rows = values.persistentVolumes.length
