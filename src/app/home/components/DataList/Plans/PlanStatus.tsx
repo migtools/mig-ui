@@ -14,8 +14,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     hasRunningMigrations,
     hasSucceededMigration,
     hasSucceededStage,
-    hasCancellingCondition,
-    hasCancelledCondition,
+    hasCanceledCondition,
     latestType,
     latestIsFailed,
     hasConflictCondition,
@@ -31,12 +30,10 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
       status.text = 'Closed';
     } else if (hasConflictCondition) {
       status.text = conflictErrorMsg || 'Conflicting plan';
-    } else if (hasCancellingCondition) {
-      status.text = `${latestType} Cancelling`;
     } else if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
-    } else if (hasCancelledCondition) {
-      status.text = `${latestType} Cancelled`;
+    } else if (hasCanceledCondition) {
+      status.text = `${latestType} Canceled`;
     } else if (hasSucceededMigration) {
       status.text = `Migration Succeeded`;
     } else if (hasSucceededStage) {

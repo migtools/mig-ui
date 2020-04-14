@@ -26,8 +26,6 @@ const PlanActions = ({ plan, history }) => {
     hasErrorCondition,
     hasRunningMigrations,
     hasAttemptedMigration,
-    hasCancellingCondition,
-    hasCancelledCondition,
     finalMigrationComplete,
     isPlanLocked,
   } = plan.PlanStatus;
