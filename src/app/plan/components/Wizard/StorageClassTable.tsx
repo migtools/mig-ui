@@ -7,13 +7,29 @@ import {
   EmptyState,
   Title,
 } from '@patternfly/react-core';
+import { FormikProps } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
 
-const StorageClassTable = (props) => {
-  const { currentPlan, clusterList, values, isFetchingPVList } = props;
+interface IStorageClassTableForm
+  extends Pick<
+    IOtherProps,
+    | 'clusterList'
+    | 'currentPlan'
+    | 'isFetchingPVList'
+    >,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+
+const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
+  clusterList,
+  currentPlan,
+  isFetchingPVList,
+  setFieldValue,
+  values,
+}: IStorageClassTableForm) => {
   const [rows, setRows] = useState([]);
   const [storageClassOptions, setStorageClassOptions] = useState([]);
   const [pvStorageClassAssignment, setPvStorageClassAssignment] = useState({});
@@ -36,7 +52,7 @@ const StorageClassTable = (props) => {
     };
 
     setPvStorageClassAssignment(updatedAssignment);
-    props.setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
+    setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
   };
 
   const handleCopyMethodChange = (selectedPV, option) => {
@@ -49,7 +65,7 @@ const StorageClassTable = (props) => {
     };
 
     setPvCopyMethodAssignment(updatedAssignment);
-    props.setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
+    setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
   };
 
   useEffect(() => {
@@ -75,7 +91,7 @@ const StorageClassTable = (props) => {
         return assignedScs;
       }, {}) : {};
       setPvStorageClassAssignment(initialAssignedScs);
-      props.setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
+      setFieldValue(pvStorageClassAssignmentKey, initialAssignedScs);
     }
 
 
@@ -91,7 +107,7 @@ const StorageClassTable = (props) => {
     }, {}) : {};
 
     setPvCopyMethodAssignment(initialAssignedCms);
-    props.setFieldValue(pvCopyMethodAssignmentKey, initialAssignedCms);
+    setFieldValue(pvCopyMethodAssignmentKey, initialAssignedCms);
 
     if (values.persistentVolumes.length) {
       setRows(values.persistentVolumes.filter(v => v.type === 'copy'));
