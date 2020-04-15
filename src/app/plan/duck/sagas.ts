@@ -787,7 +787,6 @@ function* addHookSaga(action) {
     const client: IClusterClient = ClientFactory.cluster(state);
 
     // add hook
-
     const migHookObj = createMigHook(
       migHook,
       migMeta.namespace
@@ -798,18 +797,12 @@ function* addHookSaga(action) {
     );
     yield put(PlanActions.addHookSuccess(createHookRes.data));
 
-    yield put(PlanActions.setHookAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
-    ));
-
     // associate  hook to plan
-
     const { currentPlan } = state.plan
     const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
     const currentPlanSpec = getPlanRes.data.spec;
 
     const createHooksSpec = () => {
-
       const updatedSpec = Object.assign({}, currentPlanSpec);
 
       const getServiceAccountNamespace = (clusterType) => {
@@ -862,6 +855,7 @@ function* addHookSaga(action) {
       currentPlan.metadata.name,
       createHooksSpec()
     );
+
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
@@ -926,32 +920,11 @@ function* pollHookAddEditStatus(action) {
   }
 }
 
-function* startWatchingHookAddEditStatus(action) {
-  // Start a race, poll until the watch is cancelled (by closing the modal),
-  // polling times out, or the condition is added, in that order of precedence.
-  const raceResult = yield race({
-    addEditResult: call(pollHookAddEditStatus, action),
-    timeout: delay(AddEditWatchTimeout),
-    cancel: take(PlanActionTypes.CANCEL_WATCH_HOOK_ADD_EDIT_STATUS),
-  });
-
-  if (raceResult.cancel) {
-    return;
-  }
-
-  const addEditResult: IAddEditStatus = raceResult.addEditResult;
-
-  const statusToDispatch = addEditResult || createAddEditStatus(
-    AddEditState.TimedOut, AddEditMode.Edit);
-
-  yield put(PlanActions.setHookAddEditStatus(statusToDispatch));
-}
-
 function* removeHookSaga(action) {
   try {
     const state = yield select();
     const { migMeta } = state;
-    const { name, migrationStep } = action;
+    const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
     const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
@@ -984,6 +957,8 @@ function* removeHookSaga(action) {
       currentPlan.metadata.name,
       createHooksSpec()
     );
+
+    yield put(PlanActions.removeHookSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
 
@@ -1031,14 +1006,13 @@ function* updateHookRequest(action) {
       migHookObj.migHookPatch
     );
 
+    yield put(PlanActions.updateHookSuccess());
     yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
     yield put(PlanActions.hookFetchRequest(patchPlanResponse.data.spec.hooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
-
     yield put(PlanActions.setHookAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
+      createAddEditStatus(AddEditState.Ready, AddEditMode.Add),
     ));
-    yield put(PlanActions.watchHookAddEditStatus(migHook.hookName));
 
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
@@ -1056,10 +1030,6 @@ function* watchUpdateHookRequest() {
 
 function* watchRemoveHookRequest() {
   yield takeLatest(PlanActionTypes.REMOVE_HOOK_REQUEST, removeHookSaga);
-}
-
-function* watchHookAddEditStatus() {
-  yield takeLatest(PlanActionTypes.WATCH_HOOK_ADD_EDIT_STATUS, startWatchingHookAddEditStatus);
 }
 
 function* watchFetchHooksRequest() {
@@ -1147,7 +1117,6 @@ export default {
   watchPVUpdate,
   watchAddHookRequest,
   watchFetchHooksRequest,
-  watchHookAddEditStatus,
   watchRemoveHookRequest,
   watchUpdateHookRequest
 };

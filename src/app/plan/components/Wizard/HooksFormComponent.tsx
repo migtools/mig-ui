@@ -392,7 +392,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         </GridItem>
         <GridItem className={spacing.mtMd}>
           <FormGroup
-            label="Migration step when the hook should be run "
+            label="Migration step when the hook should be run"
             isRequired
             fieldId={migrationStepKey}
             className={styles.styledFormGroupTitle}
@@ -431,7 +431,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               }
               }
             >
-              Close
+              Cancel
             </Button>
           </GridItem>
         </Grid>

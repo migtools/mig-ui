@@ -18,6 +18,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
   const pollingContext = useContext(PollingContext);
+  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
   const {
     values,
@@ -88,6 +89,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       pollingContext.stopAllPolling();
     }
   }, [isOpen]);
+
 
   useEffect(
     () => {
@@ -202,9 +204,14 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               cancelAddEditWatch={cancelAddEditWatch}
               resetAddEditState={resetAddEditState}
               currentPlan={currentPlan}
+              isAddHooksOpen={isAddHooksOpen}
+              setIsAddHooksOpen={setIsAddHooksOpen}
             />
           ),
           canJumpTo: stepIdReached >= stepId.Hooks,
+          enableNext:
+            !isAddHooksOpen,
+          hideCancelButton: isAddHooksOpen,
           nextButtonText: 'Finish'
         },
         {
@@ -240,7 +247,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       touched,
       currentPlanStatus,
       migHookList,
-      hookAddEditStatus
+      hookAddEditStatus,
+      isAddHooksOpen,
     ]
   );
 
@@ -277,6 +285,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       //update plan & start status polling on results page
       planUpdateRequest(props.values, false);
     }
+    if (prev.prevId === stepId.Hooks && curr.id === stepId.StorageClass) {
+      setIsAddHooksOpen(false)
+    }
+
   };
   return (
     <React.Fragment>

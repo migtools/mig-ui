@@ -46,10 +46,11 @@ const HooksStep = (props) => {
     hookAddEditStatus,
     currentPlan,
     removeHookRequest,
-    watchHookAddEditStatus
+    watchHookAddEditStatus,
+    isAddHooksOpen,
+    setIsAddHooksOpen
   } = props;
 
-  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
   const [initialHookValues, setInitialHookValues] = useState({});
 
   useEffect(() => {
@@ -63,10 +64,12 @@ const HooksStep = (props) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
+        setIsAddHooksOpen(false)
         break;
       }
       case AddEditMode.Add: {
         addHookRequest(hookValues);
+        setIsAddHooksOpen(false)
         break;
       }
       default: {

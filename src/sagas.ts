@@ -54,7 +54,6 @@ export default function* rootSaga() {
     planSagas.watchPVUpdate(),
     planSagas.watchAddHookRequest(),
     planSagas.watchFetchHooksRequest(),
-    planSagas.watchHookAddEditStatus(),
     planSagas.watchRemoveHookRequest(),
     planSagas.watchUpdateHookRequest(),
     logSagas.watchReportPolling(),
