@@ -86,7 +86,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     <React.Fragment>
       <GridItem>
         <TextContent className={spacing.mtMd}>
-          <Text component={TextVariants.p}>Select projects to be migrated:</Text>
+          <Text component={TextVariants.p}>Select projects to be migrated</Text>
         </TextContent>
       </GridItem>
       <GridItem>

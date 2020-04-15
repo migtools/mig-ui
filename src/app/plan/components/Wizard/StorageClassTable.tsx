@@ -136,7 +136,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
       <Grid gutter="md">
         <GridItem>
           <TextContent>
-            <Text component={TextVariants.p}>Select storage class for copied PVs:</Text>
+            <Text component={TextVariants.p}>Select target storage class for copied PVs</Text>
           </TextContent>
         </GridItem>
         <GridItem>
