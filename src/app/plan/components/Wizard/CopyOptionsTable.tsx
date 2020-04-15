@@ -28,7 +28,7 @@ import {
   FilterToolbar,
 } from '../../../common/components/FilterToolbar';
 
-interface IStorageClassTableProps
+interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
     Pick<IFormValues, 'persistentVolumes' | 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
   storageClasses: IClusterStorageClass[];
@@ -49,7 +49,7 @@ const copyMethodToString = (copyMethod: string) => {
   return copyMethod && capitalize(copyMethod);
 };
 
-const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
+const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   isFetchingPVList,
   currentPlan,
   persistentVolumes,
@@ -58,7 +58,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   storageClasses,
   onStorageClassChange,
   onCopyMethodChange,
-}: IStorageClassTableProps) => {
+}: ICopyOptionsTableProps) => {
   if (isFetchingPVList) {
     return (
       <Bullseye>
@@ -238,4 +238,4 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   );
 };
 
-export default StorageClassTable;
+export default CopyOptionsTable;

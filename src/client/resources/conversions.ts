@@ -1,5 +1,5 @@
-import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/StorageClassForm';
-import { pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/StorageClassForm';
+import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
+import { pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string, createdForResourceType: string, createdForResource: string) {
   // btoa => to base64, atob => from base64

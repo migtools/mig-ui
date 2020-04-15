@@ -2,23 +2,23 @@ import React, { useEffect } from 'react';
 import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import StorageClassTable from './StorageClassTable';
+import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from './types';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
 
-interface IStorageClassFormProps
+interface ICopyOptionsFormProps
   extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
-const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
+const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   clusterList,
   currentPlan,
   isFetchingPVList,
   setFieldValue,
   values,
-}: IStorageClassFormProps) => {
+}: ICopyOptionsFormProps) => {
   const migPlanPvs = currentPlan.spec.persistentVolumes;
 
   const destCluster = clusterList.find(
@@ -79,7 +79,7 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
   };
 
   return (
-    <StorageClassTable
+    <CopyOptionsTable
       isFetchingPVList={isFetchingPVList}
       currentPlan={currentPlan}
       persistentVolumes={
@@ -95,4 +95,4 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
     />
   );
 };
-export default StorageClassForm;
+export default CopyOptionsForm;
