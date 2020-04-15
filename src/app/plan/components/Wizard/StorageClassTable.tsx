@@ -112,8 +112,11 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     {
       key: 'copyMethod',
       title: 'Copy method',
-      type: FilterType.search,
-      placeholderText: 'Filter by copy method...',
+      type: FilterType.select,
+      selectOptions: [
+        { key: 'filesystem', value: 'Filesystem copy' },
+        { key: 'snapshot', value: 'Volume snapshot' },
+      ],
       getItemValue: pv => copyMethodToString(pvCopyMethodAssignment[pv.name]),
     },
     {
