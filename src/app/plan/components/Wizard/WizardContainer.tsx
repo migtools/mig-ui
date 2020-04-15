@@ -92,7 +92,6 @@ export interface IOtherProps {
   hookAddEditStatus: any;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
-
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({

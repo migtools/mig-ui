@@ -251,7 +251,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             </Grid>
           </FormGroup>
         </GridItem>
-        <GridItem className={spacing.mtSm}>
+        <GridItem className={spacing.mtMd}>
           <FormGroup
             label="Run in"
             fieldId="run-in-group"
@@ -390,7 +390,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             </Grid>
           </FormGroup>
         </GridItem>
-        <GridItem className={spacing.mtSm}>
+        <GridItem className={spacing.mtMd}>
           <FormGroup
             label="Migration step when the hook should be run "
             isRequired
@@ -412,14 +412,14 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           </FormGroup>
         </GridItem>
         <Grid span={6}>
-          <GridItem className={spacing.mtSm} span={2}>
+          <GridItem className={spacing.mtLg} span={2}>
             <Button
               type="submit"
             >
               {addEditButtonTextFn(hookAddEditStatus)}
             </Button>
           </GridItem>
-          <GridItem className={spacing.mtSm} span={2}>
+          <GridItem className={spacing.mtLg} span={2}>
             <Button
               key="cancel-add-hook"
               variant="secondary"
