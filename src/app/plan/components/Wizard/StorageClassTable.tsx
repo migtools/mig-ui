@@ -1,5 +1,4 @@
 import React from 'react';
-import Select from 'react-select';
 import {
   Bullseye,
   EmptyState,
@@ -14,6 +13,7 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
+  SelectOptionObject,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -21,25 +21,30 @@ import { useFilterState, useSortState, usePaginationState } from '../../../commo
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass } from './types';
 import { capitalize } from '../../../common/duck/utils';
+import SimpleSelect from '../../../common/components/SimpleSelect';
 
-interface IStorageClassTableForm
+interface IStorageClassTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
     Pick<IFormValues, 'persistentVolumes' | 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
-  storageClassOptions: IClusterStorageClass[];
+  storageClasses: IClusterStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
 
-const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
+interface OptionWithValue extends SelectOptionObject {
+  value: string;
+}
+
+const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   isFetchingPVList,
   currentPlan,
   persistentVolumes,
   pvStorageClassAssignment,
   pvCopyMethodAssignment,
-  storageClassOptions,
+  storageClasses,
   onStorageClassChange,
   onCopyMethodChange,
-}: IStorageClassTableForm) => {
+}: IStorageClassTableProps) => {
   if (isFetchingPVList) {
     return (
       <Bullseye>
@@ -69,9 +74,25 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
   const { currentPageItems, paginationProps } = usePaginationState(persistentVolumes, 10);
 
   const rows = currentPageItems.map(pv => {
-    const currentPV = currentPlan.spec.persistentVolumes.find(pv => pv.name === pv.name);
+    const currentPV = currentPlan.spec.persistentVolumes.find(planPV => planPV.name === pv.name);
     const currentCopyMethod = pvCopyMethodAssignment[pv.name];
     const currentStorageClass = pvStorageClassAssignment[pv.name];
+
+    const copyMethodOptions: OptionWithValue[] = currentPV.supported.copyMethods.map(
+      (copyMethod: string) => ({
+        value: copyMethod,
+        toString: () => capitalize(copyMethod),
+      })
+    );
+
+    const noneOption = { value: '', toString: () => 'None' };
+    const storageClassOptions: OptionWithValue[] = [
+      ...storageClasses.map(storageClass => ({
+        value: storageClass.name,
+        toString: () => `${storageClass.name}:${storageClass.provisioner}`,
+      })),
+      noneOption,
+    ];
 
     return {
       cells: [
@@ -81,40 +102,27 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
         },
         {
           title: (
-            // TODO replace with PF Select
-            <Select
-              onChange={option => onCopyMethodChange(currentPV, option.value)}
-              options={currentPV.supported.copyMethods.map(cm => {
-                return { value: cm, label: cm };
-              })}
-              name="copyMethods"
-              value={{
-                label: currentCopyMethod ? currentCopyMethod : 'None',
-                value: currentCopyMethod ? currentCopyMethod : '',
-              }}
-              placeholder="Select a copy method..."
+            <SimpleSelect
+              aria-label="Select copy method"
+              onChange={(option: OptionWithValue) => onCopyMethodChange(currentPV, option.value)}
+              options={copyMethodOptions}
+              value={copyMethodOptions.find(option => option.value === currentCopyMethod)}
+              placeholderText="Select a copy method..."
             />
           ),
         },
         {
           title: (
-            // TODO replace with PF Select
-            <Select
-              onChange={option => onStorageClassChange(currentPV, option.value)}
-              options={[
-                ...storageClassOptions.map(sc => {
-                  return { value: sc.name, label: `${sc.name}:${sc.provisioner}` };
-                }),
-                { value: '', label: 'None' },
-              ]}
-              name="storageClasses"
-              value={{
-                label: currentStorageClass
-                  ? `${currentStorageClass.name}:${currentStorageClass.provisioner}`
-                  : 'None',
-                value: currentStorageClass ? currentStorageClass.name : '',
-              }}
-              placeholder="Select a storage class..."
+            <SimpleSelect
+              aria-label="Select storage class"
+              onChange={(option: OptionWithValue) => onStorageClassChange(currentPV, option.value)}
+              options={storageClassOptions}
+              value={
+                storageClassOptions.find(
+                  option => currentStorageClass && option.value === currentStorageClass.name
+                ) || noneOption
+              }
+              placeholderText="Select a storage class..."
             />
           ),
         },
@@ -123,7 +131,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
   });
 
   // TODO add columns based on Vince's mockups (excluding Verify copy, until next PR)
-  if (persistentVolumes.length > 0) {
+  if (rows.length > 0) {
     return (
       <Grid gutter="md">
         <GridItem>

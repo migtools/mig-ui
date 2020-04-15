@@ -105,13 +105,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
   const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
-    const migrationTypeOptions = pv.supportedActions.map(
-      (action: string) =>
-        ({
-          value: action,
-          toString: () => capitalize(action),
-        } as OptionWithValue)
-    );
+    const migrationTypeOptions: OptionWithValue[] = pv.supportedActions.map((action: string) => ({
+      value: action,
+      toString: () => capitalize(action),
+    }));
     return {
       cells: [
         pv.name,
@@ -129,7 +126,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               placeholderText={null}
             />
           ),
-          key: pv.type,
         },
         {
           title: (

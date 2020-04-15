@@ -25,7 +25,7 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
     c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
   );
 
-  const storageClassOptions = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
+  const storageClasses = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
 
   // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
   useEffect(() => {
@@ -33,7 +33,7 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
       let pvStorageClassAssignment = {};
       if (migPlanPvs) {
         pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
-          const suggestedStorageClass = storageClassOptions.find(
+          const suggestedStorageClass = storageClasses.find(
             sc => sc.name === pv.selection.storageClass
           );
           assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
@@ -61,7 +61,7 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
   }, []);
 
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newSc = storageClassOptions.find(sc => sc.name === value) || '';
+    const newSc = storageClasses.find(sc => sc.name === value) || '';
     const updatedAssignment = {
       ...values.pvStorageClassAssignment,
       [currentPV.name]: newSc,
@@ -89,7 +89,7 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
       }
       pvStorageClassAssignment={values.pvStorageClassAssignment}
       pvCopyMethodAssignment={values.pvCopyMethodAssignment}
-      storageClassOptions={storageClassOptions}
+      storageClasses={storageClasses}
       onStorageClassChange={onStorageClassChange}
       onCopyMethodChange={onCopyMethodChange}
     />
