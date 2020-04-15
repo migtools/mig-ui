@@ -32,6 +32,7 @@ import {
   FilterType,
 } from '../../../common/components/FilterToolbar';
 import { IPlanPersistentVolume } from './types';
+import { capitalize } from '../../../common/duck/utils';
 
 const styles = require('./VolumesTable.module');
 
@@ -44,14 +45,6 @@ interface IVolumesTableProps
 interface OptionWithValue extends SelectOptionObject {
   value: string;
 }
-
-const capitalize = (s: string) => {
-  if (s.charAt(0)) {
-    return `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
-  } else {
-    return s;
-  }
-};
 
 const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   isFetchingPVResources,
@@ -169,8 +162,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       ],
     };
   });
-
-  // TODO: sorting
 
   return (
     <Grid gutter="md">

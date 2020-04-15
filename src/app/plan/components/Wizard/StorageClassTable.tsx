@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import React from 'react';
 import Select from 'react-select';
 import {
   Bullseye,
@@ -11,15 +9,22 @@ import {
   TextContent,
   Text,
   TextVariants,
+  Spinner,
+  Level,
+  LevelItem,
+  Pagination,
+  PaginationVariant,
 } from '@patternfly/react-core';
+import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import { IPlanPersistentVolume, IClusterStorageClass } from './types';
+import { capitalize } from '../../../common/duck/utils';
 
 interface IStorageClassTableForm
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
-    Pick<IFormValues, 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
-  filteredPersistentVolumes: IFormValues['persistentVolumes'];
+    Pick<IFormValues, 'persistentVolumes' | 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
   storageClassOptions: IClusterStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
@@ -28,7 +33,7 @@ interface IStorageClassTableForm
 const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
   isFetchingPVList,
   currentPlan,
-  filteredPersistentVolumes,
+  persistentVolumes,
   pvStorageClassAssignment,
   pvCopyMethodAssignment,
   storageClassOptions,
@@ -50,13 +55,75 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
     );
   }
 
-  const tableStyle = {
-    fontSize: '14px',
-  };
+  const columns = [
+    { title: 'PV name' },
+    { title: 'Migration type' },
+    { title: 'Copy method' },
+    { title: 'Storage class' },
+  ];
+  // const sortKeys = ['name', 'type', 'TODO copy method, derived?', 'storageClass'];
+  // TODO filterCategories
 
-  // TODO convert to PF table, add sorting, filtering, pagination
+  // TODO useFilterState
+  // TODO useSortState
+  const { currentPageItems, paginationProps } = usePaginationState(persistentVolumes, 10);
+
+  const rows = currentPageItems.map(pv => {
+    const currentPV = currentPlan.spec.persistentVolumes.find(pv => pv.name === pv.name);
+    const currentCopyMethod = pvCopyMethodAssignment[pv.name];
+    const currentStorageClass = pvStorageClassAssignment[pv.name];
+
+    return {
+      cells: [
+        pv.name,
+        {
+          title: capitalize(pv.type),
+        },
+        {
+          title: (
+            // TODO replace with PF Select
+            <Select
+              onChange={option => onCopyMethodChange(currentPV, option.value)}
+              options={currentPV.supported.copyMethods.map(cm => {
+                return { value: cm, label: cm };
+              })}
+              name="copyMethods"
+              value={{
+                label: currentCopyMethod ? currentCopyMethod : 'None',
+                value: currentCopyMethod ? currentCopyMethod : '',
+              }}
+              placeholder="Select a copy method..."
+            />
+          ),
+        },
+        {
+          title: (
+            // TODO replace with PF Select
+            <Select
+              onChange={option => onStorageClassChange(currentPV, option.value)}
+              options={[
+                ...storageClassOptions.map(sc => {
+                  return { value: sc.name, label: `${sc.name}:${sc.provisioner}` };
+                }),
+                { value: '', label: 'None' },
+              ]}
+              name="storageClasses"
+              value={{
+                label: currentStorageClass
+                  ? `${currentStorageClass.name}:${currentStorageClass.provisioner}`
+                  : 'None',
+                value: currentStorageClass ? currentStorageClass.name : '',
+              }}
+              placeholder="Select a storage class..."
+            />
+          ),
+        },
+      ],
+    };
+  });
+
   // TODO add columns based on Vince's mockups (excluding Verify copy, until next PR)
-  if (filteredPersistentVolumes.length > 0) {
+  if (persistentVolumes.length > 0) {
     return (
       <Grid gutter="md">
         <GridItem>
@@ -65,114 +132,26 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
           </TextContent>
         </GridItem>
         <GridItem>
-          <ReactTable
-            style={tableStyle}
-            data={filteredPersistentVolumes}
-            columns={[
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    PV Name
-                  </div>
-                ),
-                accessor: 'name',
-                width: 180,
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Type
-                  </div>
-                ),
-                accessor: 'type',
-                width: 180,
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Copy Method
-                  </div>
-                ),
-                accessor: '',
-                width: 500,
-                style: { overflow: 'visible' },
-                Cell: row => {
-                  const currentPV = currentPlan.spec.persistentVolumes.find(
-                    pv => pv.name === row.original.name
-                  );
-                  const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
-
-                  const copyMethodOptionsMapped = currentPV.supported.copyMethods.map(cm => {
-                    return { value: cm, label: cm };
-                  });
-                  return (
-                    <Select
-                      onChange={option => onCopyMethodChange(currentPV, option.value)}
-                      options={copyMethodOptionsMapped}
-                      name="copyMethods"
-                      value={{
-                        label: currentCopyMethod ? currentCopyMethod : 'None',
-                        value: currentCopyMethod ? currentCopyMethod : '',
-                      }}
-                      placeholder="Select a copy method..."
-                    />
-                  );
-                },
-              },
-              {
-                Header: () => (
-                  <div
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Storage Class
-                  </div>
-                ),
-                accessor: 'storageClass',
-                width: 500,
-                style: { overflow: 'visible' },
-                Cell: row => {
-                  const currentStorageClass = pvStorageClassAssignment[row.original.name];
-                  const storageClassOptionsWithNone = storageClassOptions.map(sc => {
-                    return { value: sc.name, label: `${sc.name}:${sc.provisioner}` };
-                  });
-                  storageClassOptionsWithNone.push({ value: '', label: 'None' });
-                  return (
-                    <Select
-                      onChange={option => onStorageClassChange(row.original, option.value)}
-                      options={storageClassOptionsWithNone}
-                      name="storageClasses"
-                      value={{
-                        label: currentStorageClass
-                          ? `${currentStorageClass.name}:${currentStorageClass.provisioner}`
-                          : 'None',
-                        value: currentStorageClass ? currentStorageClass.name : '',
-                      }}
-                      placeholder="Select a storage class..."
-                    />
-                  );
-                },
-              },
-            ]}
-            defaultPageSize={5}
-            className="-striped -highlight"
+          <Level>
+            <LevelItem>TODO: filters</LevelItem>
+            <LevelItem>
+              <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
+            </LevelItem>
+          </Level>
+          <Table
+            aria-label="Storage class selections table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+          <Pagination
+            widgetId="storage-class-table-pagination-bottom"
+            variant={PaginationVariant.bottom}
+            className={spacing.mtMd}
+            {...paginationProps}
           />
         </GridItem>
       </Grid>

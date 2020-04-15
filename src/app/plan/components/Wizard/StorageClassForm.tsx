@@ -60,10 +60,6 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
     }
   }, []);
 
-  const persistentVolumes = values.persistentVolumes.length
-    ? values.persistentVolumes.filter(v => v.type === 'copy')
-    : [];
-
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
     const newSc = storageClassOptions.find(sc => sc.name === value) || '';
     const updatedAssignment = {
@@ -86,7 +82,11 @@ const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
     <StorageClassTable
       isFetchingPVList={isFetchingPVList}
       currentPlan={currentPlan}
-      filteredPersistentVolumes={persistentVolumes}
+      persistentVolumes={
+        values.persistentVolumes.length
+          ? values.persistentVolumes.filter(v => v.type === 'copy')
+          : []
+      }
       pvStorageClassAssignment={values.pvStorageClassAssignment}
       pvCopyMethodAssignment={values.pvCopyMethodAssignment}
       storageClassOptions={storageClassOptions}
