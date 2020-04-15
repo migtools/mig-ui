@@ -16,23 +16,17 @@ import SimpleSelect from '../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps
   extends Pick<
-    IOtherProps,
-    | 'clusterList'
-    | 'fetchNamespacesRequest'
-    | 'isEdit'
-    | 'isFetchingNamespaceList'
-    | 'sourceClusterNamespaces'
-    | 'storageList'
+      IOtherProps,
+      | 'clusterList'
+      | 'fetchNamespacesRequest'
+      | 'isEdit'
+      | 'isFetchingNamespaceList'
+      | 'sourceClusterNamespaces'
+      | 'storageList'
     >,
-    Pick<FormikProps<IFormValues>, 
-    | 'setFieldTouched'
-    | 'setFieldValue' 
-    | 'touched'
-    | 'values'
-    > 
-    {
-      errors: any;
-    }
+    Pick<FormikProps<IFormValues>, 'setFieldTouched' | 'setFieldValue' | 'touched' | 'values'> {
+  errors: any;
+}
 
 const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
   clusterList,
@@ -59,18 +53,26 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
 
   if (clusterList.length) {
     srcClusterOptions = clusterList
-      .filter(cluster => cluster.MigCluster.metadata.name !== values.targetCluster && cluster.ClusterStatus.hasReadyCondition)
-      .map(cluster => cluster.MigCluster.metadata.name)
+      .filter(
+        cluster =>
+          cluster.MigCluster.metadata.name !== values.targetCluster &&
+          cluster.ClusterStatus.hasReadyCondition
+      )
+      .map(cluster => cluster.MigCluster.metadata.name);
 
     targetClusterOptions = clusterList
-      .filter(cluster => cluster.MigCluster.metadata.name !== values.sourceCluster && cluster.ClusterStatus.hasReadyCondition)
-      .map(cluster => cluster.MigCluster.metadata.name)
+      .filter(
+        cluster =>
+          cluster.MigCluster.metadata.name !== values.sourceCluster &&
+          cluster.ClusterStatus.hasReadyCondition
+      )
+      .map(cluster => cluster.MigCluster.metadata.name);
   }
 
   if (storageList.length) {
     storageOptions = storageList
       .filter(storage => storage.StorageStatus.hasReadyCondition)
-      .map(storage => storage.MigStorage.metadata.name)
+      .map(storage => storage.MigStorage.metadata.name);
   }
 
   const handleStorageChange = value => {
@@ -178,7 +180,6 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
           setFieldValue={setFieldValue}
           values={values}
           sourceClusterNamespaces={sourceClusterNamespaces}
-          isEdit={isEdit}
         />
       )}
     </Grid>

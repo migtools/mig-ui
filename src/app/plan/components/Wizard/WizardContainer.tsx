@@ -1,4 +1,4 @@
-import { withFormik, FormikProps } from 'formik';
+import { withFormik } from 'formik';
 import WizardComponent from './WizardComponent';
 import { PlanActions } from '../../duck/actions';
 import planSelectors from '../../duck/selectors';
@@ -11,7 +11,7 @@ export interface IFormValues {
   sourceCluster: string;
   targetCluster: string;
   selectedStorage: string;
-  selectedNamespaces: any[];
+  selectedNamespaces: string[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
   pvStorageClassAssignment: any; 
 }
