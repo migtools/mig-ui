@@ -745,6 +745,7 @@ function* fetchHooksSaga(action) {
           const srcServiceAccountNamespace = hookRef.spec.targetCluster === 'source' ? currentPlanHookRef.executionNamespace : null;
           const destServiceAccountName = hookRef.spec.targetCluster === 'destination' ? currentPlanHookRef.serviceAccount : null;
           const destServiceAccountNamespace = hookRef.spec.targetCluster === 'destination' ? currentPlanHookRef.executionNamespace : null;
+          const clusterTypeText = hookRef.spec.targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
 
           let ansibleFile;
           if (!hookRef.spec.custom) {
@@ -757,7 +758,7 @@ function* fetchHooksSaga(action) {
             customContainerImage,
             ansibleRuntimeImage,
             ansibleFile,
-            clusterType: hookRef.spec.targetCluster,
+            clusterType: clusterTypeText,
             srcServiceAccountName,
             srcServiceAccountNamespace,
             destServiceAccountName,

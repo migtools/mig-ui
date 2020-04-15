@@ -96,7 +96,7 @@ const HooksStep = (props) => {
     });
     actions = [
       {
-        title: 'edit',
+        title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
           const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title)
           setInitialHookValues(currentHook)
@@ -106,7 +106,7 @@ const HooksStep = (props) => {
         }
       },
       {
-        title: 'delete',
+        title: 'Delete',
         onClick: (event, rowId, rowData, extra) => {
           removeHookRequest(rowData.name.title, rowData["migration-step"].title)
         }
