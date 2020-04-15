@@ -9,6 +9,7 @@ import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../duck/reducers';
+import WizardStepContainer from './WizardStepContainer';
 
 const styles = require('./WizardComponent.module');
 
@@ -49,7 +50,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isEdit,
     editPlanObj,
     updateCurrentPlanStatus,
-    pvUpdatePollStop
+    pvUpdatePollStop,
   } = props;
 
   enum stepId {
@@ -76,140 +77,139 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    const steps = [
-      {
-        id: stepId.General,
-        name: 'General',
-        component: (
-          <GeneralForm
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldTouched={setFieldTouched}
-            isEdit={isEdit}
-          />
-        ),
-        enableNext: !errors.planName && (touched.planName === true || isEdit === true),
-      },
-      {
-        id: stepId.MigrationSource,
-        name: 'Resources',
-        component: (
-          <ResourceSelectForm
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            clusterList={clusterList}
-            storageList={storageList}
-            isFetchingNamespaceList={isFetchingNamespaceList}
-            fetchNamespacesRequest={fetchNamespacesRequest}
-            sourceClusterNamespaces={sourceClusterNamespaces}
-            isEdit={isEdit}
-          />
-        ),
-        enableNext:
-          !errors.selectedStorage &&
-          touched.selectedStorage === true &&
-          !errors.targetCluster &&
-          touched.targetCluster === true &&
-          !errors.sourceCluster &&
-          touched.sourceCluster === true &&
-          !errors.selectedNamespaces ||
-          (isEdit &&
-            !errors.selectedStorage &&
-            !errors.targetCluster &&
-            !errors.sourceCluster &&
-            !errors.selectedNamespaces),
-        canJumpTo: stepIdReached >= stepId.MigrationSource,
-      },
-      {
-        id: stepId.PersistentVolumes,
-        name: 'Persistent Volumes',
-        component: (
-          <VolumesForm
-            isEdit={isEdit}
-            values={values}
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            currentPlan={currentPlan}
-            isPVError={isPVError}
-            getPVResourcesRequest={getPVResourcesRequest}
-            pvResourceList={pvResourceList}
-            isPollingStatus={isPollingStatus}
-            planUpdateRequest={planUpdateRequest}
-            startPlanStatusPolling={startPlanStatusPolling}
-            currentPlanStatus={currentPlanStatus}
-          />
-        ),
-        enableNext:
-          !isFetchingPVList &&
-          currentPlanStatus.state !== 'Pending' &&
-          currentPlanStatus.state !== 'Critical',
-        canJumpTo: stepIdReached >= stepId.PersistentVolumes,
-      },
-      {
-        id: stepId.StorageClass,
-        name: 'Storage Class',
-        component: (
-          <StorageClassForm
-            isEdit={isEdit}
-            values={values}
-            errors={errors}
-            touched={touched}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            currentPlan={currentPlan}
-            isFetchingPVList={isFetchingPVList}
-            clusterList={clusterList}
-          />
-        ),
-        canJumpTo: stepIdReached >= stepId.StorageClass,
-        nextButtonText: 'Finish'
-      },
-      {
-        id: stepId.Results,
-        name: 'Results',
-        isFinishedStep: true,
-        component: (
-          <ResultsStep
-            values={values}
-            errors={errors}
-            currentPlan={currentPlan}
-            currentPlanStatus={currentPlanStatus}
-            isPollingStatus={isPollingStatus}
-            startPlanStatusPolling={startPlanStatusPolling}
-            onClose={handleClose}
-          />
-        ),
-      },
-    ];
+  useEffect(
+    () => {
+      const steps = [
+        {
+          id: stepId.General,
+          name: 'General',
+          component: (
+            <WizardStepContainer title="General">
+              <GeneralForm
+                values={values}
+                errors={errors}
+                touched={touched}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                setFieldTouched={setFieldTouched}
+                isEdit={isEdit}
+              />
+            </WizardStepContainer>
+          ),
+          enableNext: !errors.planName && (touched.planName === true || isEdit === true),
+        },
+        {
+          id: stepId.MigrationSource,
+          name: 'Resources',
+          component: (
+            <WizardStepContainer title="Resources">
+              <ResourceSelectForm
+                values={values}
+                errors={errors}
+                touched={touched}
+                setFieldValue={setFieldValue}
+                setFieldTouched={setFieldTouched}
+                clusterList={clusterList}
+                storageList={storageList}
+                isFetchingNamespaceList={isFetchingNamespaceList}
+                fetchNamespacesRequest={fetchNamespacesRequest}
+                sourceClusterNamespaces={sourceClusterNamespaces}
+                isEdit={isEdit}
+              />
+            </WizardStepContainer>
+          ),
+          enableNext:
+            (!errors.selectedStorage &&
+              touched.selectedStorage === true &&
+              !errors.targetCluster &&
+              touched.targetCluster === true &&
+              !errors.sourceCluster &&
+              touched.sourceCluster === true &&
+              !errors.selectedNamespaces) ||
+            (isEdit &&
+              !errors.selectedStorage &&
+              !errors.targetCluster &&
+              !errors.sourceCluster &&
+              !errors.selectedNamespaces),
+          canJumpTo: stepIdReached >= stepId.MigrationSource,
+        },
+        {
+          id: stepId.PersistentVolumes,
+          name: 'Persistent volumes',
+          component: (
+            <WizardStepContainer title="Persistent volumes">
+              <VolumesForm
+                values={values}
+                setFieldValue={setFieldValue}
+                currentPlan={currentPlan}
+                isPVError={isPVError}
+                getPVResourcesRequest={getPVResourcesRequest}
+                pvResourceList={pvResourceList}
+                isFetchingPVResources={isFetchingPVList}
+                isPollingStatus={isPollingStatus}
+                planUpdateRequest={planUpdateRequest}
+                currentPlanStatus={currentPlanStatus}
+              />
+            </WizardStepContainer>
+          ),
+          enableNext:
+            !isFetchingPVList &&
+            currentPlanStatus.state !== 'Pending' &&
+            currentPlanStatus.state !== 'Critical',
+          canJumpTo: stepIdReached >= stepId.PersistentVolumes,
+        },
+        {
+          id: stepId.StorageClass,
+          name: 'Storage class',
+          component: (
+            <WizardStepContainer title="Storage class">
+              <StorageClassForm
+                isEdit={isEdit}
+                values={values}
+                setFieldValue={setFieldValue}
+                currentPlan={currentPlan}
+                isFetchingPVList={isFetchingPVList}
+                clusterList={clusterList}
+              />
+            </WizardStepContainer>
+          ),
+          canJumpTo: stepIdReached >= stepId.StorageClass,
+          nextButtonText: 'Finish',
+        },
+        {
+          id: stepId.Results,
+          name: 'Results',
+          isFinishedStep: true,
+          component: (
+            <ResultsStep
+              values={values}
+              errors={errors}
+              currentPlan={currentPlan}
+              currentPlanStatus={currentPlanStatus}
+              isPollingStatus={isPollingStatus}
+              startPlanStatusPolling={startPlanStatusPolling}
+              onClose={handleClose}
+            />
+          ),
+        },
+      ];
 
-    setUpdatedSteps(steps);
-
-  },
-  //****************** Don't forget to update this array if you add changes to wizard children!!! */ 
-  [
-    currentPlan,
-    values,
-    isPVError,
-    isFetchingPVList,
-    isPollingStatus,
-    isFetchingNamespaceList,
-    pvResourceList,
-    errors,
-    touched,
-    currentPlanStatus
-  ]);
-
+      setUpdatedSteps(steps);
+    },
+    //****************** Don't forget to update this array if you add changes to wizard children!!! */
+    [
+      currentPlan,
+      values,
+      isPVError,
+      isFetchingPVList,
+      isPollingStatus,
+      isFetchingNamespaceList,
+      pvResourceList,
+      errors,
+      touched,
+      currentPlanStatus,
+    ]
+  );
 
   const onMove = (curr, prev) => {
     //stop pv polling when navigating
@@ -256,7 +256,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}
-          onSubmit={event => event.preventDefault()}
+          onSubmit={(event) => event.preventDefault()}
         />
       )}
     </React.Fragment>

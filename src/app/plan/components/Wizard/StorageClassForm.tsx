@@ -6,9 +6,28 @@ import {
   TextContent,
   TextVariants
 } from '@patternfly/react-core';
+import { FormikProps } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import StorageClassTable from './StorageClassTable';
-const StorageClassForm = props => {
-  const { isEdit, setFieldValue, values, currentPlan, clusterList, isFetchingPVList } = props;
+
+interface IStorageClassFormProps
+  extends Pick<
+    IOtherProps,
+    | 'clusterList'
+    | 'currentPlan'
+    | 'isEdit'
+    | 'isFetchingPVList'
+    >,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+
+const StorageClassForm: React.FunctionComponent<IStorageClassFormProps> = ({
+  clusterList,
+  currentPlan,
+  isEdit,
+  isFetchingPVList,
+  setFieldValue,
+  values,
+}: IStorageClassFormProps) => { 
   return (
     <Grid gutter="md">
       <GridItem>
@@ -20,7 +39,6 @@ const StorageClassForm = props => {
       </GridItem>
       <GridItem>
         <StorageClassTable
-          isEdit={isEdit}
           isFetchingPVList={isFetchingPVList}
           setFieldValue={setFieldValue}
           values={values}

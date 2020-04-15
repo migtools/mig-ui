@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { FormikProps } from 'formik';
+import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   GridItem,
   Text,
@@ -7,39 +9,51 @@ import {
   Level,
   LevelItem,
   Pagination,
-  PaginationProps,
   PaginationVariant,
   DropdownDirection,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, TableVariant } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, TableVariant, sortable } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
+import {
+  FilterToolbar,
+  FilterCategory,
+  FilterType,
+} from '../../../common/components/FilterToolbar';
 
-interface INamespaceTableProps {
-  isEdit: boolean;
-  values: any;
-  sourceClusterNamespaces: [
-    {
-      name: string;
-      podCount: number;
-      pvcCount: number;
-      serviceCount: number;
-    }
-  ];
-  setFieldValue: (fieldName, fieldValue) => void;
-}
+interface INamespaceTableProps
+  extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
+    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
-const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
-  const { setFieldValue, sourceClusterNamespaces, values } = props;
-
+const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
+  setFieldValue,
+  sourceClusterNamespaces,
+  values,
+}: INamespaceTableProps) => {
   if (values.sourceCluster === null) return null;
 
   const columns = [
-    { title: 'Name' },
-    { title: 'Pods' },
-    { title: 'PV claims' },
-    { title: 'Services' },
+    { title: 'Name', transforms: [sortable] },
+    { title: 'Pods', transforms: [sortable] },
+    { title: 'PV claims', transforms: [sortable] },
+    { title: 'Services', transforms: [sortable] },
   ];
-  const rows = sourceClusterNamespaces.map(namespace => ({
+  // Column 0 has the checkboxes, sort keys need to be indexed from 1
+  const sortKeys = [null, 'name', 'podCount', 'pvcCount', 'serviceCount'];
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'name',
+      title: 'Name',
+      type: FilterType.search,
+      placeholderText: 'Filter by name...',
+    },
+  ];
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [filterValues, sortBy]);
+
+  const rows = currentPageItems.map(namespace => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
     selected: values.selectedNamespaces.includes(namespace.name),
     meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
@@ -53,7 +67,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
-        newSelected = sourceClusterNamespaces.map(namespace => namespace.name); // Select all
+        newSelected = filteredItems.map(namespace => namespace.name); // Select all (filtered)
       } else {
         newSelected = []; // Deselect all
       }
@@ -68,19 +82,6 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
     setFieldValue('selectedNamespaces', newSelected);
   };
 
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const pageStartIndex = (currentPageNumber - 1) * itemsPerPage;
-  const currentPageRows = rows.slice(pageStartIndex, pageStartIndex + itemsPerPage);
-
-  const paginationProps: PaginationProps = {
-    itemCount: rows.length,
-    perPage: itemsPerPage,
-    page: currentPageNumber,
-    onSetPage: (event, pageNumber) => setCurrentPageNumber(pageNumber),
-    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
-  };
-
   return (
     <React.Fragment>
       <GridItem>
@@ -91,12 +92,11 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
       <GridItem>
         <Level>
           <LevelItem>
-            <TextContent>
-              <Text
-                component={TextVariants.small}
-                className={spacing.mlLg}
-              >{`${values.selectedNamespaces.length} selected`}</Text>
-            </TextContent>
+            <FilterToolbar
+              filterCategories={filterCategories}
+              filterValues={filterValues}
+              setFilterValues={setFilterValues}
+            />
           </LevelItem>
           <LevelItem>
             <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
@@ -106,20 +106,34 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = props => {
           aria-label="Projects table"
           variant={TableVariant.compact}
           cells={columns}
-          rows={currentPageRows}
+          rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
           onSelect={onSelect}
           canSelectAll
         >
           <TableHeader />
           <TableBody />
         </Table>
-        <Pagination
-          widgetId="namespace-table-pagination-bottom"
-          variant={PaginationVariant.bottom}
-          className={spacing.mtMd}
-          dropDirection={DropdownDirection.up}
-          {...paginationProps}
-        />
+        <Level>
+          <LevelItem>
+            <TextContent>
+              <Text
+                component={TextVariants.small}
+                className={spacing.mlLg}
+              >{`${values.selectedNamespaces.length} selected`}</Text>
+            </TextContent>
+          </LevelItem>
+          <LevelItem>
+            <Pagination
+              widgetId="namespace-table-pagination-bottom"
+              variant={PaginationVariant.bottom}
+              className={spacing.mtMd}
+              dropDirection={DropdownDirection.up}
+              {...paginationProps}
+            />
+          </LevelItem>
+        </Level>
       </GridItem>
     </React.Fragment>
   );

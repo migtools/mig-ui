@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { Select, SelectOption, SelectProps, Omit } from '@patternfly/react-core';
+import {
+  Select,
+  SelectOption,
+  SelectOptionObject,
+  SelectProps,
+  Omit,
+} from '@patternfly/react-core';
+
+type OptionLike = string | SelectOptionObject;
 
 interface SimpleSelectProps
-  extends Omit<SelectProps, 'onChange' | 'isExpanded' | 'onToggle' | 'onSelect' | 'selections'> {
-  id: string;
-  onChange: (selection: string) => void;
-  options: string[];
-  value: string;
+  extends Omit<
+    SelectProps,
+    'onChange' | 'isExpanded' | 'onToggle' | 'onSelect' | 'selections' | 'value'
+  > {
+  onChange: (selection: OptionLike) => void;
+  options: OptionLike[];
+  value: OptionLike | OptionLike[];
   placeholderText?: string;
 }
 
-// This can be used wherever we only need a simple select dropdown of strings.
-// If we need complex values, this could be enhanced to support option objects with a toString property
 const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
-  id,
   onChange,
   options,
   value,
@@ -23,11 +30,10 @@ const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Select
-      id={id}
       placeholderText={placeholderText}
       isExpanded={isExpanded}
       onToggle={setIsExpanded}
-      onSelect={(event, selection: string) => {
+      onSelect={(event, selection: OptionLike) => {
         onChange(selection);
         setIsExpanded(false);
       }}
@@ -35,7 +41,7 @@ const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
       {...props}
     >
       {options.map(option => (
-        <SelectOption key={option} value={option} />
+        <SelectOption key={option.toString()} value={option} />
       ))}
     </Select>
   );
