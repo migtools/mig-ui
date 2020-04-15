@@ -191,54 +191,48 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     };
   });
 
-  // TODO add columns based on Vince's mockups (excluding Verify copy, until next PR)
-  if (rows.length > 0) {
-    return (
-      <Grid gutter="md">
-        <GridItem>
-          <TextContent>
-            <Text component={TextVariants.p}>
-              For each persistent volume to be copied, select a copy method and target storage
-              class.
-            </Text>
-          </TextContent>
-        </GridItem>
-        <GridItem>
-          <Level>
-            <LevelItem>
-              <FilterToolbar
-                filterCategories={filterCategories}
-                filterValues={filterValues}
-                setFilterValues={setFilterValues}
-              />
-            </LevelItem>
-            <LevelItem>
-              <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
-            </LevelItem>
-          </Level>
-          <Table
-            aria-label="Storage class selections table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
-          <Pagination
-            widgetId="storage-class-table-pagination-bottom"
-            variant={PaginationVariant.bottom}
-            className={spacing.mtMd}
-            {...paginationProps}
-          />
-        </GridItem>
-      </Grid>
-    );
-  } else {
-    return <div />;
-  }
+  return (
+    <Grid gutter="md">
+      <GridItem>
+        <TextContent>
+          <Text component={TextVariants.p}>
+            For each persistent volume to be copied, select a copy method and target storage class.
+          </Text>
+        </TextContent>
+      </GridItem>
+      <GridItem>
+        <Level>
+          <LevelItem>
+            <FilterToolbar
+              filterCategories={filterCategories}
+              filterValues={filterValues}
+              setFilterValues={setFilterValues}
+            />
+          </LevelItem>
+          <LevelItem>
+            <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
+          </LevelItem>
+        </Level>
+        <Table
+          aria-label="Storage class selections table"
+          variant={TableVariant.compact}
+          cells={columns}
+          rows={rows}
+          sortBy={sortBy}
+          onSort={onSort}
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+        <Pagination
+          widgetId="storage-class-table-pagination-bottom"
+          variant={PaginationVariant.bottom}
+          className={spacing.mtMd}
+          {...paginationProps}
+        />
+      </GridItem>
+    </Grid>
+  );
 };
 
 export default StorageClassTable;
