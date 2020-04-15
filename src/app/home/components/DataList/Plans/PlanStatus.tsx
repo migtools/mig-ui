@@ -33,7 +33,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     } else if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
     } else if (hasCanceledCondition) {
-      status.text = `${latestType} Canceled`;
+      status.text = `${latestType} canceled`;
     } else if (hasSucceededMigration) {
       status.text = `Migration Succeeded`;
     } else if (hasSucceededStage) {

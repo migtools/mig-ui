@@ -94,7 +94,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           TODO: ** need to evaluate what text to show here **
           </Title> */}
         </EmptyState>
-      </Bullseye >
+      </Bullseye>
     );
   }
 
@@ -119,7 +119,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           </EmptyState>
         </Bullseye>
       )}
-    </React.Fragment >
+    </React.Fragment>
   );
 };
 

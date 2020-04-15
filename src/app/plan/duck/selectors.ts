@@ -180,6 +180,7 @@ const getCounts = createSelector(
       let hasErrorCondition = null;
       let hasRunningMigrations = null;
       let hasSucceededMigration = null;
+      let hasCancelCondition = null;
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
         counts.notStarted.push(plan);
         return;
@@ -199,7 +200,15 @@ const getCounts = createSelector(
           }
         }).length;
 
-        if (hasRunningMigrations) {
+        hasCancelCondition = !!plan.Migrations.filter(m => {
+          if (m.status) {
+            return m.status.conditions.some(c => c.type === 'Canceling' || c.type === 'Canceled');
+          }
+        }).length;
+
+        if (hasCancelCondition) {
+          counts.notStarted.push(plan);
+        } else if (hasRunningMigrations) {
           counts.inProgress.push(plan);
         } else if (hasSucceededMigration) {
           counts.completed.push(plan);
@@ -308,6 +317,9 @@ const getPlansWithStatus = createSelector(
 
           if (runningCondition || cancelingCondition) {
             status.stepName = runningCondition.reason;
+            if (cancelingCondition) {
+              status.stepName = 'Canceling' + status.stepName
+            }
             // Match string in format 'Step: 16/26'. Capture both numbers.
             const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
             if (matches && matches.length === 3) {

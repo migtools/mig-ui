@@ -141,7 +141,7 @@ function* migrationCancel(action) {
       canceledMigrationSpec
     );
     yield put(PlanActions.migrationCancelSuccess(action.migrationName));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully canceled "${action.migrationName}"!`));
+    yield put(AlertActions.alertSuccessTimeout(`Cancel requested for "${action.migrationName}"!`));
   } catch (err) {
     yield put(PlanActions.migrationCancelFailure(err, action.migrationName));
     yield put(AlertActions.alertErrorTimeout(`Failed to cancel "${action.migrationName}"`));
@@ -604,7 +604,12 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         c => c.type === 'Succeeded'
       );
-      if (hasSucceededCondition) {
+      const hasCanceledCondition = !!matchingMigration.status.conditions.some(
+        c => c.type === 'Canceled'
+      )
+      if (hasCanceledCondition) {
+        statusObj.status = 'CANCELED'
+      } else if (hasSucceededCondition) {
         statusObj.status = 'SUCCESS'
       }
       statusObj.planName = matchingPlan.MigPlan.metadata.name;
@@ -667,6 +672,10 @@ function* migrationPoll(action) {
     const pollingStatusObj = params.getMigrationStatusCondition(updatedPlans, params.createMigRes);
 
     switch (pollingStatusObj.status) {
+      case 'CANCELED':
+        yield put(AlertActions.alertSuccessTimeout('Migration canceled'));
+        yield put(PlanActions.stopMigrationPolling());
+        break;
       case 'SUCCESS':
         yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
         yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
