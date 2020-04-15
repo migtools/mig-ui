@@ -109,22 +109,26 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by namespace...',
     },
-    // TODO how to manage these derived keys in filters
-    /*{
-      key: '???',
+    {
+      key: 'copyMethod',
       title: 'Copy method',
       type: FilterType.search,
       placeholderText: 'Filter by copy method...',
+      getItemValue: pv => copyMethodToString(pvCopyMethodAssignment[pv.name]),
     },
     {
-      key: '???',
+      key: 'targetStorageClass',
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-    },*/
+      getItemValue: pv => storageClassToString(pvStorageClassAssignment[pv.name]),
+    },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    persistentVolumes,
+    filterCategories
+  );
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 

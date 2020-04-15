@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { PaginationProps } from '@patternfly/react-core';
-import { IFilterValues } from '../components/FilterToolbar';
+import { IFilterValues, FilterCategory } from '../components/FilterToolbar';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 
 // TODO these could be given generic types to avoid using `any` (https://www.typescriptlang.org/docs/handbook/generics.html)
 
-export const useFilterState = (items: any[]) => {
+export const useFilterState = (items: any[], filterCategories: FilterCategory[]) => {
   const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
   const filteredItems = items.filter(item =>
     Object.keys(filterValues).every(categoryKey => {
       const values = filterValues[categoryKey];
       if (!values || values.length === 0) return true;
-      const itemValue = item[categoryKey];
+      const filterCategory = filterCategories.find(category => category.key === categoryKey);
+      let itemValue = item[categoryKey];
+      if (filterCategory.getItemValue) {
+        itemValue = filterCategory.getItemValue(item);
+      }
       return values.every(filterValue => !itemValue || itemValue.indexOf(filterValue) !== -1);
     })
   );

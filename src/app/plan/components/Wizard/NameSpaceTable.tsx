@@ -53,7 +53,10 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
       placeholderText: 'Filter by name...',
     },
   ];
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    sourceClusterNamespaces,
+    filterCategories
+  );
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);

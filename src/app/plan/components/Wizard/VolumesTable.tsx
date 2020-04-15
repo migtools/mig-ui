@@ -98,7 +98,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    persistentVolumes,
+    filterCategories
+  );
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);

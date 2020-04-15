@@ -28,6 +28,7 @@ export interface IBasicFilterCategory {
   key: string;
   title: string;
   type: FilterType; // If we want to support arbitrary filter types, this could be a React node that consumes context instead of an enum
+  getItemValue?: (item: any) => any;
 }
 
 export interface ISelectFilterCategory extends IBasicFilterCategory {
