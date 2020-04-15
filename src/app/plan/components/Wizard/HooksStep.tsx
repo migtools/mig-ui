@@ -6,6 +6,8 @@ import {
 } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { PlusCircleIcon } from '@patternfly/react-icons';
+
 import {
   Grid,
   GridItem,
@@ -78,7 +80,7 @@ const HooksStep = (props) => {
     { title: 'Name' },
     { title: 'Definition' },
     { title: 'Run in' },
-    { title: 'Migration Step' },
+    { title: 'Migration step' },
   ];
 
   let rows = []
@@ -117,15 +119,11 @@ const HooksStep = (props) => {
           props: { colSpan: 8 },
           title: (
             <Bullseye>
-              <EmptyState variant={EmptyStateVariant.small}>
-                <EmptyStateIcon icon={SearchIcon} />
-                <Title headingLevel="h2" size="lg">
-                  No results found
+              <EmptyState variant={EmptyStateVariant.full}>
+                <EmptyStateIcon icon={PlusCircleIcon} />
+                <Title headingLevel="h4" size="lg">
+                  No hooks have been added to this migration plan.
                 </Title>
-                <EmptyStateBody>
-                  No hooks have been added to this migration plan
-                </EmptyStateBody>
-                <Button variant="link">Clear all filters</Button>
               </EmptyState>
             </Bullseye >
           )
@@ -139,12 +137,12 @@ const HooksStep = (props) => {
     <Grid>
       <GridItem className={spacing.mtSm}>
         <TextContent>
-          <Text component={TextVariants.h1}>
+          <Text component={TextVariants.h2}>
             Hooks
           </Text>
         </TextContent>
       </GridItem>
-      <GridItem className={spacing.mtSm}>
+      <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
             Hooks are commands that can be run at various steps in the migration process. They are defined in a container image or an Ansible playbook and can be run on either the source or target cluster.
@@ -179,16 +177,6 @@ const HooksStep = (props) => {
             :
             <GridItem className={hooksFormContainerStyles}>
               <Grid gutter="md">
-                <GridItem span={2}>
-                  <InputGroup>
-                    {/*
-                          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-                    <TextInput name="textInput11" id="textInput11" type="search" aria-label="search input example" />
-                    <Button variant="control" aria-label="search button for search input">
-                      <SearchIcon />
-                    </Button>
-                  </InputGroup>
-                </GridItem>
                 <GridItem span={4}>
                   <Button
                     key="add-hook"
@@ -201,7 +189,7 @@ const HooksStep = (props) => {
                     }
 
                   >
-                    Add Hook
+                    Add hook
                   </Button>
                 </GridItem>
               </Grid>

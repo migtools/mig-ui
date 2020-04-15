@@ -22,6 +22,7 @@ import {
 } from '../../../common/add_edit_state';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import SimpleSelect from '../../../common/components/SimpleSelect';
+const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
@@ -110,13 +111,14 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     setFieldValue('ansibleFile', value)
     setFieldValue('ansibleFilename', filename)
   }
+  const hookImageStyles = classNames(spacing.mtSm, spacing.mlMd)
 
   return (
     <Form onSubmit={handleSubmit}>
       <Grid span={8}>
-        <GridItem className={spacing.mtSm} >
+        <GridItem>
           <FormGroup
-            label="Hook Name"
+            label="Hook name"
             isRequired
             fieldId={hookNameKey}
             helperTextInvalid={touched.hookName && errors.hookName}
@@ -138,9 +140,9 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             />
           </FormGroup>
         </GridItem>
-        <GridItem className={spacing.mtSm}>
+        <GridItem className={spacing.mtMd}>
           <FormGroup
-            label="Hook Definition"
+            label="Hook definition"
             fieldId='definition-group'
             className={styles.styledFormGroupTitle}
           >
@@ -166,7 +168,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               </GridItem>
               {values.hookImageType === 'ansible' &&
                 <React.Fragment>
-                  <GridItem className={spacing.mtSm}>
+                  <GridItem className={hookImageStyles}>
                     <FormGroup
                       label="Upload your Ansible playbook file or paste its contents below."
                       isRequired
@@ -181,7 +183,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                       />
                     </FormGroup>
                   </GridItem>
-                  <GridItem className={spacing.mtSm}>
+                  <GridItem className={hookImageStyles}>
                     <FormGroup
                       label="Ansible runtime image"
                       isRequired
@@ -223,7 +225,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                 />
               </GridItem>
               {values.hookImageType === 'custom' &&
-                <GridItem className={spacing.mtSm}>
+                <GridItem className={hookImageStyles}>
                   <FormGroup
                     isRequired
                     fieldId={customImageKey}
@@ -244,7 +246,6 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                         && errors.customContainerImage)}
                     />
                   </FormGroup>
-
                 </GridItem>
               }
             </Grid>
