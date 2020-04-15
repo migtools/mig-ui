@@ -33,6 +33,9 @@ export const PlanActionTypes = {
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
+  MIGRATION_CANCEL_REQUEST: 'MIGRATION_CANCEL_REQUEST',
+  MIGRATION_CANCEL_SUCCESS: 'MIGRATION_CANCEL_SUCCESS',
+  MIGRATION_CANCEL_FAILURE: 'MIGRATION_CANCEL_FAILURE',
   PLAN_CLOSE_AND_DELETE_REQUEST: 'PLAN_CLOSE_AND_DELETE_REQUEST',
   PLAN_CLOSE_AND_DELETE_SUCCESS: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
   PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_FAILURE',
@@ -201,6 +204,22 @@ const planCloseAndDeleteRequest = (planName: string) => ({
   planName,
 });
 
+const migrationCancelRequest = (migrationName: string) => ({
+  type: PlanActionTypes.MIGRATION_CANCEL_REQUEST,
+  migrationName,
+})
+
+const migrationCancelSuccess = (migrationName: string) => ({
+  type: PlanActionTypes.MIGRATION_CANCEL_SUCCESS,
+  migrationName,
+});
+
+const migrationCancelFailure = (err, migrationName: string) => ({
+  type: PlanActionTypes.MIGRATION_CANCEL_FAILURE,
+  err,
+  migrationName
+});
+
 const planCloseAndDeleteSuccess = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_SUCCESS,
   planName,
@@ -327,6 +346,9 @@ export const PlanActions = {
   addPlanRequest,
   initStage,
   initMigration,
+  migrationCancelRequest,
+  migrationCancelSuccess,
+  migrationCancelFailure,
   planCloseAndDeleteRequest,
   planCloseAndDeleteSuccess,
   planCloseAndDeleteFailure,
