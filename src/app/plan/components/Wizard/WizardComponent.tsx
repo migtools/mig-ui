@@ -160,9 +160,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         },
         {
           id: stepId.StorageClass,
-          name: 'Storage class',
+          name: 'Copy options',
           component: (
-            <WizardStepContainer title="Storage class">
+            <WizardStepContainer title="Copy options">
               <StorageClassForm
                 values={values}
                 setFieldValue={setFieldValue}

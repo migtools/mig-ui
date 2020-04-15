@@ -163,7 +163,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     <Grid gutter="md">
       <GridItem>
         <TextContent>
-          <Text component={TextVariants.p}>Choose to move or copy persistent volumes</Text>
+          <Text component={TextVariants.p}>
+            Choose to move or copy persistent volumes associated with selected namespaces.
+          </Text>
         </TextContent>
       </GridItem>
       <GridItem>

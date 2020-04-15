@@ -144,7 +144,10 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
       <Grid gutter="md">
         <GridItem>
           <TextContent>
-            <Text component={TextVariants.p}>Select target storage class for copied PVs</Text>
+            <Text component={TextVariants.p}>
+              For each persistent volume to be copied, select a copy method and target storage
+              class.
+            </Text>
           </TextContent>
         </GridItem>
         <GridItem>
