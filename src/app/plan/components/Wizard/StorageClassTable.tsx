@@ -22,6 +22,11 @@ import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass } from './types';
 import { capitalize } from '../../../common/duck/utils';
 import SimpleSelect from '../../../common/components/SimpleSelect';
+import {
+  FilterCategory,
+  FilterType,
+  FilterToolbar,
+} from '../../../common/components/FilterToolbar';
 
 interface IStorageClassTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
@@ -85,10 +90,42 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     copyMethodToString(pvCopyMethodAssignment[pv.name]),
     storageClassToString(pvStorageClassAssignment[pv.name]),
   ];
-  // TODO filterCategories
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'name',
+      title: 'PV name',
+      type: FilterType.search,
+      placeholderText: 'Filter by PV name...',
+    },
+    {
+      key: 'claim',
+      title: 'Claim',
+      type: FilterType.search,
+      placeholderText: 'Filter by claim...',
+    },
+    {
+      key: 'project',
+      title: 'Namespace',
+      type: FilterType.search,
+      placeholderText: 'Filter by namespace...',
+    },
+    // TODO how to manage these derived keys in filters
+    /*{
+      key: '???',
+      title: 'Copy method',
+      type: FilterType.search,
+      placeholderText: 'Filter by copy method...',
+    },
+    {
+      key: '???',
+      title: 'Target storage class',
+      type: FilterType.search,
+      placeholderText: 'Filter by target storage class...',
+    },*/
+  ];
 
-  // TODO useFilterState
-  const { sortBy, onSort, sortedItems } = useSortState(persistentVolumes, getSortValues);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map(pv => {
@@ -164,7 +201,13 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
         </GridItem>
         <GridItem>
           <Level>
-            <LevelItem>TODO: filters</LevelItem>
+            <LevelItem>
+              <FilterToolbar
+                filterCategories={filterCategories}
+                filterValues={filterValues}
+                setFilterValues={setFilterValues}
+              />
+            </LevelItem>
             <LevelItem>
               <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
             </LevelItem>
