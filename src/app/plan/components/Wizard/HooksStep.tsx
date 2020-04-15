@@ -21,6 +21,9 @@ import {
   EmptyStateIcon,
   InputGroup,
   TextInput,
+  Flex,
+  FlexItem,
+  FlexModifiers
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import {
@@ -150,7 +153,6 @@ const HooksStep = (props) => {
       </GridItem>
       {isAddHooksOpen &&
         <GridItem className={hooksFormContainerStyles}>
-
           <HooksFormContainer
             onAddEditHookSubmit={onAddEditHookSubmit}
             initialHookValues={initialHookValues}
@@ -164,9 +166,17 @@ const HooksStep = (props) => {
       {(!isAddHooksOpen) &&
         <React.Fragment>
           {isFetchingHookList ?
-            <div className="pf-c-empty-state__icon">
-              <Spinner size="xl" />
-            </div> :
+            <Bullseye>
+              <EmptyState variant="large">
+                <div className="pf-c-empty-state__icon">
+                  <Spinner size="xl" />
+                </div>
+                <Title headingLevel="h2" size="xl">
+                  Finding hooks for this migration plan...
+                </Title>
+              </EmptyState>
+            </Bullseye>
+            :
             <GridItem className={hooksFormContainerStyles}>
               <Grid gutter="md">
                 <GridItem span={2}>
