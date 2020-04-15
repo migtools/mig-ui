@@ -17,7 +17,12 @@ export const useFilterState = (items: any[], filterCategories: FilterCategory[])
       if (filterCategory.getItemValue) {
         itemValue = filterCategory.getItemValue(item);
       }
-      return values.every(filterValue => itemValue && itemValue.indexOf(filterValue) !== -1);
+      return values.every(filterValue => {
+        if (!itemValue) return false;
+        const lowerCaseItemValue = String(itemValue).toLowerCase();
+        const lowerCaseFilterValue = String(filterValue).toLowerCase();
+        return lowerCaseItemValue.indexOf(lowerCaseFilterValue) !== -1;
+      });
     })
   );
 
