@@ -38,6 +38,12 @@ interface OptionWithValue extends SelectOptionObject {
 const storageClassToString = (storageClass: IClusterStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
+const copyMethodToString = (copyMethod: string) => {
+  if (copyMethod === 'filesystem') return 'Filesystem copy';
+  if (copyMethod === 'snapshot') return 'Volume snapshot';
+  return copyMethod && capitalize(copyMethod);
+};
+
 const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   isFetchingPVList,
   currentPlan,
@@ -76,7 +82,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     pv.claim,
     pv.project,
     pv.type,
-    pvCopyMethodAssignment[pv.name],
+    copyMethodToString(pvCopyMethodAssignment[pv.name]),
     storageClassToString(pvStorageClassAssignment[pv.name]),
   ];
   // TODO filterCategories
@@ -93,7 +99,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     const copyMethodOptions: OptionWithValue[] = currentPV.supported.copyMethods.map(
       (copyMethod: string) => ({
         value: copyMethod,
-        toString: () => capitalize(copyMethod),
+        toString: () => copyMethodToString(copyMethod),
       })
     );
 
