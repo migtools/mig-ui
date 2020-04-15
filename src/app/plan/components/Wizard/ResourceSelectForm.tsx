@@ -16,15 +16,15 @@ import SimpleSelect from '../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps
   extends Pick<
-  IOtherProps,
-  | 'clusterList'
-  | 'fetchNamespacesRequest'
-  | 'isEdit'
-  | 'isFetchingNamespaceList'
-  | 'sourceClusterNamespaces'
-  | 'storageList'
-  >,
-  Pick<FormikProps<IFormValues>, 'setFieldTouched' | 'setFieldValue' | 'touched' | 'values'> {
+      IOtherProps,
+      | 'clusterList'
+      | 'fetchNamespacesRequest'
+      | 'isEdit'
+      | 'isFetchingNamespaceList'
+      | 'sourceClusterNamespaces'
+      | 'storageList'
+    >,
+    Pick<FormikProps<IFormValues>, 'setFieldTouched' | 'setFieldValue' | 'touched' | 'values'> {
   errors: any;
 }
 
@@ -176,12 +176,12 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-          <NamespaceTable
-            setFieldValue={setFieldValue}
-            values={values}
-            sourceClusterNamespaces={sourceClusterNamespaces}
-          />
-        )}
+        <NamespaceTable
+          setFieldValue={setFieldValue}
+          values={values}
+          sourceClusterNamespaces={sourceClusterNamespaces}
+        />
+      )}
     </Grid>
   );
 };
