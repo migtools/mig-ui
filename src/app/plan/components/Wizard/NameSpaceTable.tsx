@@ -38,8 +38,13 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
   ];
-  // Column 0 has the checkboxes, sort keys need to be indexed from 1
-  const sortKeys = [null, 'name', 'podCount', 'pvcCount', 'serviceCount'];
+  const getSortValues = namespace => [
+    null, // Column 0 has the checkboxes, sort values need to be indexed from 1
+    namespace.name,
+    namespace.podCount,
+    namespace.pvcCount,
+    namespace.serviceCount,
+  ];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -49,7 +54,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     },
   ];
   const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
-  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 

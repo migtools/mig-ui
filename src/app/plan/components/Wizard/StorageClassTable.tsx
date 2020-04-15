@@ -35,6 +35,9 @@ interface OptionWithValue extends SelectOptionObject {
   value: string;
 }
 
+const storageClassToString = (storageClass: IClusterStorageClass) =>
+  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
+
 const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   isFetchingPVList,
   currentPlan,
@@ -61,17 +64,22 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
   }
 
   const columns = [
-    { title: 'PV name' },
-    { title: 'Migration type' },
-    { title: 'Copy method' },
-    { title: 'Storage class' },
+    { title: 'PV name', transforms: [sortable] },
+    { title: 'Migration type', transforms: [sortable] },
+    { title: 'Copy method', transforms: [sortable] },
+    { title: 'Storage class', transforms: [sortable] },
   ];
-  // const sortKeys = ['name', 'type', 'TODO copy method, derived?', 'storageClass'];
+  const getSortValues = pv => [
+    pv.name,
+    pv.type,
+    pvCopyMethodAssignment[pv.name],
+    storageClassToString(pvStorageClassAssignment[pv.name]),
+  ];
   // TODO filterCategories
 
   // TODO useFilterState
-  // TODO useSortState
-  const { currentPageItems, paginationProps } = usePaginationState(persistentVolumes, 10);
+  const { sortBy, onSort, sortedItems } = useSortState(persistentVolumes, getSortValues);
+  const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map(pv => {
     const currentPV = currentPlan.spec.persistentVolumes.find(planPV => planPV.name === pv.name);
@@ -89,7 +97,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     const storageClassOptions: OptionWithValue[] = [
       ...storageClasses.map(storageClass => ({
         value: storageClass.name,
-        toString: () => `${storageClass.name}:${storageClass.provisioner}`,
+        toString: () => storageClassToString(storageClass),
       })),
       noneOption,
     ];
@@ -151,6 +159,8 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
             variant={TableVariant.compact}
             cells={columns}
             rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
           >
             <TableHeader />
             <TableBody />

@@ -3,6 +3,8 @@ import { PaginationProps } from '@patternfly/react-core';
 import { IFilterValues } from '../components/FilterToolbar';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
 
+// TODO these could be given generic types to avoid using `any` (https://www.typescriptlang.org/docs/handbook/generics.html)
+
 export const useFilterState = (items: any[]) => {
   const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
@@ -18,7 +20,7 @@ export const useFilterState = (items: any[]) => {
   return { filterValues, setFilterValues, filteredItems };
 };
 
-export const useSortState = (items: any[], sortKeys: string[]) => {
+export const useSortState = (items: any[], getSortValues: (item: any) => string[]) => {
   const [sortBy, setSortBy] = useState<ISortBy>({});
   const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) => {
     setSortBy({ index, direction });
@@ -26,9 +28,10 @@ export const useSortState = (items: any[], sortKeys: string[]) => {
 
   const sortedItems = [...items].sort((a: any, b: any) => {
     const { index, direction } = sortBy;
-    const key = sortKeys[index];
-    if (a[key] < b[key]) return direction === SortByDirection.asc ? -1 : 1;
-    if (a[key] > b[key]) return direction === SortByDirection.asc ? 1 : -1;
+    const aValue = getSortValues(a)[index];
+    const bValue = getSortValues(b)[index];
+    if (aValue < bValue) return direction === SortByDirection.asc ? -1 : 1;
+    if (aValue > bValue) return direction === SortByDirection.asc ? 1 : -1;
     return 0;
   });
 

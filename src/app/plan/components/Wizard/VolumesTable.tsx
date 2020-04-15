@@ -61,7 +61,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
-  const sortKeys = ['name', 'claim', 'project', 'storageClass', 'size', 'type'];
+  const getSortValues = pv => [pv.name, pv.claim, pv.project, pv.storageClass, pv.size, pv.type];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -99,7 +99,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
-  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
