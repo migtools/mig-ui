@@ -65,12 +65,16 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
 
   const columns = [
     { title: 'PV name', transforms: [sortable] },
+    { title: 'Claim', transforms: [sortable] },
+    { title: 'Namespace', transforms: [sortable] },
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Copy method', transforms: [sortable] },
-    { title: 'Storage class', transforms: [sortable] },
+    { title: 'Target storage class', transforms: [sortable] },
   ];
   const getSortValues = pv => [
     pv.name,
+    pv.claim,
+    pv.project,
     pv.type,
     pvCopyMethodAssignment[pv.name],
     storageClassToString(pvStorageClassAssignment[pv.name]),
@@ -105,6 +109,8 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableProps> = ({
     return {
       cells: [
         pv.name,
+        pv.claim,
+        pv.project,
         {
           title: capitalize(pv.type),
         },
