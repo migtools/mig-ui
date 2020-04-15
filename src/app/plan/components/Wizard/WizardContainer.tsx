@@ -9,6 +9,7 @@ import {
   IPlanPersistentVolume,
   IPersistentVolumeResource,
   ISourceClusterNamespace,
+  ICluster,
 } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
 export interface IFormValues {
@@ -31,7 +32,10 @@ export interface IFormValues {
 
 // TODO add more specific types instead of using `any`
 export interface IOtherProps {
-  clusterList: any[];
+  clusterList: {
+    MigCluster: ICluster;
+    [key: string]: any;
+  }[];
   planList: any[];
   storageList: any[];
   isFetchingPVList: boolean;

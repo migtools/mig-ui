@@ -12,24 +12,28 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import { FormikProps } from 'formik';
-import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-
-export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
-export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
+import { IPlanPersistentVolume, IClusterStorageClass } from './types';
 
 interface IStorageClassTableForm
-  extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+  extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
+    Pick<IFormValues, 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
+  filteredPersistentVolumes: IFormValues['persistentVolumes'];
+  storageClassOptions: IClusterStorageClass[];
+  onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
+  onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
+}
 
 const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
-  clusterList,
-  currentPlan,
   isFetchingPVList,
-  setFieldValue,
-  values,
+  currentPlan,
+  filteredPersistentVolumes,
+  pvStorageClassAssignment,
+  pvCopyMethodAssignment,
+  storageClassOptions,
+  onStorageClassChange,
+  onCopyMethodChange,
 }: IStorageClassTableForm) => {
   if (isFetchingPVList) {
     return (
@@ -46,89 +50,13 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
     );
   }
 
-  // TODO move all this stuff up into StorageClassForm, only handle render logic in here
-  // TODO log the form values on this and on master, make sure we're not screwing up any of this init stuff
-
-  const migPlanPvs = currentPlan.spec.persistentVolumes;
-
-  const destCluster = clusterList.find(
-    c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
-  );
-
-  const storageClassOptions = destCluster.MigCluster.spec.storageClasses || [];
-
-  // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
-  useEffect(() => {
-    if (!values.pvStorageClassAssignment || isEmpty(values.pvStorageClassAssignment)) {
-      let pvStorageClassAssignment = {};
-      if (migPlanPvs) {
-        pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
-          const suggestedStorageClass = storageClassOptions.find(
-            sc => sc.name === pv.selection.storageClass
-          );
-          assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
-          return assignedScs;
-        }, {});
-      }
-      setFieldValue(pvStorageClassAssignmentKey, pvStorageClassAssignment);
-    }
-    if (!values.pvCopyMethodAssignment || isEmpty(values.pvCopyMethodAssignment)) {
-      let pvCopyMethodAssignment = {};
-      if (migPlanPvs) {
-        pvCopyMethodAssignment = migPlanPvs.reduce((assignedCms, pv) => {
-          const supportedCopyMethods = pv.supported.copyMethods || [];
-          const suggestedCopyMethod = supportedCopyMethods.find(
-            cm => cm === pv.selection.copyMethod
-          );
-          assignedCms[pv.name] = suggestedCopyMethod
-            ? suggestedCopyMethod
-            : supportedCopyMethods[0];
-          return assignedCms;
-        }, {});
-      }
-      setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
-    }
-  }, []);
-
-  const rows = values.persistentVolumes.length
-    ? values.persistentVolumes.filter(v => v.type === 'copy')
-    : [];
-
-  const handleStorageClassChange = (row, option) => {
-    const pvName = row.original.name;
-    const selectedScName = option.value;
-    let newSc;
-    if (selectedScName === '') {
-      newSc = '';
-    } else {
-      newSc = storageClassOptions.find(sc => sc.name === selectedScName);
-    }
-    const updatedAssignment = {
-      ...values.pvStorageClassAssignment,
-      [pvName]: newSc,
-    };
-    setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
-  };
-
-  const handleCopyMethodChange = (selectedPV, option) => {
-    const pvName = selectedPV.name;
-    const selectedCmName = option.value;
-    const newCm = selectedPV.supported.copyMethods.find(cm => cm === selectedCmName);
-    const updatedAssignment = {
-      ...values.pvCopyMethodAssignment,
-      [pvName]: newCm,
-    };
-    setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
-  };
-
   const tableStyle = {
     fontSize: '14px',
   };
 
-  // TODO do we need to guard against null rows here?
   // TODO convert to PF table, add sorting, filtering, pagination
   // TODO add columns based on Vince's mockups (excluding Verify copy, until next PR)
-  if (rows !== null) {
+  if (filteredPersistentVolumes.length > 0) {
     return (
       <Grid gutter="md">
         <GridItem>
@@ -139,7 +67,7 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
         <GridItem>
           <ReactTable
             style={tableStyle}
-            data={rows}
+            data={filteredPersistentVolumes}
             columns={[
               {
                 Header: () => (
@@ -184,15 +112,17 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
                 width: 500,
                 style: { overflow: 'visible' },
                 Cell: row => {
-                  const currentPV = migPlanPvs.find(pv => pv.name === row.original.name);
-                  const currentCopyMethod = values.pvCopyMethodAssignment[row.original.name];
+                  const currentPV = currentPlan.spec.persistentVolumes.find(
+                    pv => pv.name === row.original.name
+                  );
+                  const currentCopyMethod = pvCopyMethodAssignment[row.original.name];
 
                   const copyMethodOptionsMapped = currentPV.supported.copyMethods.map(cm => {
                     return { value: cm, label: cm };
                   });
                   return (
                     <Select
-                      onChange={option => handleCopyMethodChange(currentPV, option)}
+                      onChange={option => onCopyMethodChange(currentPV, option.value)}
                       options={copyMethodOptionsMapped}
                       name="copyMethods"
                       value={{
@@ -219,14 +149,14 @@ const StorageClassTable: React.FunctionComponent<IStorageClassTableForm> = ({
                 width: 500,
                 style: { overflow: 'visible' },
                 Cell: row => {
-                  const currentStorageClass = values.pvStorageClassAssignment[row.original.name];
+                  const currentStorageClass = pvStorageClassAssignment[row.original.name];
                   const storageClassOptionsWithNone = storageClassOptions.map(sc => {
                     return { value: sc.name, label: `${sc.name}:${sc.provisioner}` };
                   });
                   storageClassOptionsWithNone.push({ value: '', label: 'None' });
                   return (
                     <Select
-                      onChange={option => handleStorageClassChange(row, option)}
+                      onChange={option => onStorageClassChange(row.original, option.value)}
                       options={storageClassOptionsWithNone}
                       name="storageClasses"
                       value={{
