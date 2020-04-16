@@ -17,14 +17,30 @@ export interface IPlanPersistentVolume {
   };
   selection?: {
     action: string;
+    storageClass: string;
+    copyMethod: string;
+    verify: boolean;
     [key: string]: any;
   };
   [key: string]: any;
 }
 
+export interface INameNamespaceRef {
+  name: string;
+  namespace: string;
+}
+
 export interface IPlan {
+  apiVersion: string;
+  kind: string;
+  metadata: INameNamespaceRef;
   spec: {
     persistentVolumes?: IPlanPersistentVolume[];
+    migStorageRef?: INameNamespaceRef;
+    srcMigClusterRef?: INameNamespaceRef;
+    destMigClusterRef?: INameNamespaceRef;
+    namespaces?: string[];
+    closed?: boolean;
     [key: string]: any;
   };
   [key: string]: any;

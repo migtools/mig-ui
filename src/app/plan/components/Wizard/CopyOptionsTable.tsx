@@ -15,10 +15,13 @@ import {
   Pagination,
   PaginationVariant,
   SelectOptionObject,
+  Checkbox,
+  Flex,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass } from './types';
@@ -33,9 +36,16 @@ import TableEmptyState from '../../../common/components/TableEmptyState';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
-    Pick<IFormValues, 'persistentVolumes' | 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
+    Pick<
+      IFormValues,
+      | 'persistentVolumes'
+      | 'pvStorageClassAssignment'
+      | 'pvVerifyFlagAssignment'
+      | 'pvCopyMethodAssignment'
+    > {
   storageClasses: IClusterStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
+  onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
 
@@ -57,9 +67,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   currentPlan,
   persistentVolumes,
   pvStorageClassAssignment,
+  pvVerifyFlagAssignment,
   pvCopyMethodAssignment,
   storageClasses,
   onStorageClassChange,
+  onVerifyFlagChange,
   onCopyMethodChange,
 }: ICopyOptionsTableProps) => {
   if (isFetchingPVList) {
@@ -82,6 +94,15 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     { title: 'Claim', transforms: [sortable] },
     { title: 'Namespace', transforms: [sortable] },
     { title: 'Copy method', transforms: [sortable] },
+    {
+      title: (
+        <React.Fragment>
+          Verify copy
+          <em>(?)</em>
+        </React.Fragment>
+      ),
+      transforms: [sortable],
+    },
     { title: 'Target storage class', transforms: [sortable] },
   ];
   const getSortValues = pv => [
@@ -89,6 +110,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.claim,
     pv.project,
     copyMethodToString(pvCopyMethodAssignment[pv.name]),
+    pvVerifyFlagAssignment[pv.name],
     storageClassToString(pvStorageClassAssignment[pv.name]),
   ];
   const filterCategories: FilterCategory[] = [
@@ -171,6 +193,19 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               value={copyMethodOptions.find(option => option.value === currentCopyMethod)}
               placeholderText="Select a copy method..."
             />
+          ),
+        },
+        {
+          title: (
+            <Flex className={flex.justifyContentCenter}>
+              <Checkbox
+                isChecked={pvVerifyFlagAssignment[pv.name]}
+                onChange={checked => onVerifyFlagChange(currentPV, checked)}
+                aria-label={`Verify copy for PV ${pv.name}`}
+                id={`verify-pv-${pv.name}`}
+                name={`verify-pv-${pv.name}`}
+              />
+            </Flex>
           ),
         },
         {

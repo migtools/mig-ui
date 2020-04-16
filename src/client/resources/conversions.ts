@@ -1,5 +1,7 @@
-import { pvStorageClassAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
+import { pvStorageClassAssignmentKey, pvVerifyFlagAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
 import { pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
+import { IPlan } from '../../app/plan/components/Wizard/types';
+import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string, createdForResourceType: string, createdForResource: string) {
   // btoa => to base64, atob => from base64
@@ -382,7 +384,15 @@ export function createMigPlan(
   };
 }
 
-export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPVDiscovery) {
+interface IPlanValues extends IFormValues {
+  planClosed?: boolean;
+}
+
+export function updateMigPlanFromValues(
+  migPlan: IPlan,
+  planValues: IPlanValues,
+  isRerunPVDiscovery: boolean
+) {
   const updatedSpec = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
@@ -415,6 +425,8 @@ export function updateMigPlanFromValues(migPlan: any, planValues: any, isRerunPV
           if (selectedCopyMethodObj) {
             v.selection.copyMethod = selectedCopyMethodObj;
           }
+
+          v.selection.verify = planValues.pvVerifyFlagAssignment[v.name];
 
           const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
           if (selectedStorageClassObj) {

@@ -7,6 +7,7 @@ import { IPlanPersistentVolume } from './types';
 
 export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
 export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
+export const pvVerifyFlagAssignmentKey = 'pvVerifyFlagAssignment';
 
 interface ICopyOptionsFormProps
   extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
@@ -27,8 +28,8 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
 
   const storageClasses = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
 
-  // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
   useEffect(() => {
+    // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
     if (!values.pvStorageClassAssignment || isEmpty(values.pvStorageClassAssignment)) {
       let pvStorageClassAssignment = {};
       if (migPlanPvs) {
@@ -36,8 +37,10 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           const suggestedStorageClass = storageClasses.find(
             sc => sc.name === pv.selection.storageClass
           );
-          assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
-          return assignedScs;
+          return {
+            ...assignedScs,
+            [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+          };
         }, {});
       }
       setFieldValue(pvStorageClassAssignmentKey, pvStorageClassAssignment);
@@ -50,13 +53,26 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           const suggestedCopyMethod = supportedCopyMethods.find(
             cm => cm === pv.selection.copyMethod
           );
-          assignedCms[pv.name] = suggestedCopyMethod
-            ? suggestedCopyMethod
-            : supportedCopyMethods[0];
-          return assignedCms;
+          return {
+            ...assignedCms,
+            [pv.name]: suggestedCopyMethod ? suggestedCopyMethod : supportedCopyMethods[0],
+          };
         }, {});
       }
       setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
+    }
+    if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
+      let pvVerifyFlagAssignment = {};
+      if (migPlanPvs) {
+        pvVerifyFlagAssignment = migPlanPvs.reduce(
+          (assignedVerifyFlags, pv) => ({
+            ...assignedVerifyFlags,
+            [pv.name]: !!pv.selection.verify,
+          }),
+          {}
+        );
+      }
+      setFieldValue(pvVerifyFlagAssignmentKey, pvVerifyFlagAssignment);
     }
   }, []);
 
@@ -67,6 +83,14 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       [currentPV.name]: newSc,
     };
     setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
+  };
+
+  const onVerifyFlagChange = (currentPV: IPlanPersistentVolume, value: boolean) => {
+    const updatedAssignment = {
+      ...values.pvVerifyFlagAssignment,
+      [currentPV.name]: value,
+    };
+    setFieldValue(pvVerifyFlagAssignmentKey, updatedAssignment);
   };
 
   const onCopyMethodChange = (currentPV: IPlanPersistentVolume, value: string) => {
@@ -88,9 +112,11 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           : []
       }
       pvStorageClassAssignment={values.pvStorageClassAssignment}
+      pvVerifyFlagAssignment={values.pvVerifyFlagAssignment}
       pvCopyMethodAssignment={values.pvCopyMethodAssignment}
       storageClasses={storageClasses}
       onStorageClassChange={onStorageClassChange}
+      onVerifyFlagChange={onVerifyFlagChange}
       onCopyMethodChange={onCopyMethodChange}
     />
   );
