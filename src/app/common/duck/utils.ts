@@ -2,6 +2,7 @@ import { push } from 'connected-react-router';
 import { AuthActions } from '../../auth/duck/actions';
 
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
+const NameValidator = /^[a-z0-9]([a-z0-9]*\-?[a-z0-9])*[a-z0-9]?$/;
 const URLValidator =
   /(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
 
@@ -35,21 +36,28 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
   dispatch(push('/cert-error'));
 };
 
-
 const DNS1123Error = value => {
   return `Invalid value: "${value}" for a DNS-1123 subdomain with regex' +
     '"[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*"`;
 };
 
+const nameError = (value) => {
+  return `Invalid name: "${value}" must start and end with an alphanumeric character and can contain '-'`;
+};
+
 const testDNS1123 = value => DNS1123Validator.test(value);
+
+const testName = value => NameValidator.test(value);
 
 const testURL = value => URLValidator.test(value) || IPValidator(value);
 
 export default {
-  testDNS1123,
   DNS1123Error,
+  nameError,
   isSelfSignedCertError,
   isTimeoutError,
   handleSelfSignedCertError,
+  testDNS1123,
+  testName,
   testURL,
 };

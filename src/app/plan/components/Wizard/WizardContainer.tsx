@@ -13,7 +13,7 @@ export interface IFormValues {
   selectedStorage: string;
   selectedNamespaces: string[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
-  pvStorageClassAssignment: any; 
+  pvStorageClassAssignment: any;
 }
 
 // TODO add more specific types instead of using `any`
@@ -84,8 +84,8 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
 
     if (!values.planName) {
       errors.planName = 'Required';
-    } else if (!utils.testDNS1123(values.planName)) {
-      errors.planName = utils.DNS1123Error(values.planName);
+    } else if (!utils.testName(values.planName)) {
+      errors.planName = utils.nameError(values.planName);
     }
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
