@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Bullseye,
   EmptyState,
+  EmptyStateVariant,
   Title,
   Grid,
   GridItem,
@@ -16,6 +17,7 @@ import {
   SelectOptionObject,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { InfoCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
@@ -27,6 +29,7 @@ import {
   FilterType,
   FilterToolbar,
 } from '../../../common/components/FilterToolbar';
+import TableEmptyState from '../../../common/components/TableEmptyState';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
@@ -62,7 +65,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   if (isFetchingPVList) {
     return (
       <Bullseye>
-        <EmptyState variant="small">
+        <EmptyState variant={EmptyStateVariant.small}>
           <div className="pf-c-empty-state__icon">
             <Spinner size="xl" />
           </div>
@@ -78,7 +81,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     { title: 'PV name', transforms: [sortable] },
     { title: 'Claim', transforms: [sortable] },
     { title: 'Namespace', transforms: [sortable] },
-    { title: 'Migration type', transforms: [sortable] },
     { title: 'Copy method', transforms: [sortable] },
     { title: 'Target storage class', transforms: [sortable] },
   ];
@@ -86,7 +88,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.name,
     pv.claim,
     pv.project,
-    pv.type,
     copyMethodToString(pvCopyMethodAssignment[pv.name]),
     storageClassToString(pvStorageClassAssignment[pv.name]),
   ];
@@ -162,9 +163,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.claim,
         pv.project,
         {
-          title: capitalize(pv.type),
-        },
-        {
           title: (
             <SimpleSelect
               aria-label="Select copy method"
@@ -194,6 +192,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     };
   });
 
+  const tableEmptyState =
+    persistentVolumes.length > 0 ? (
+      <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+    ) : (
+      <TableEmptyState
+        icon={InfoCircleIcon}
+        titleText="No PVs selected for Copy"
+        bodyText="Select Next to continue."
+      />
+    );
+
   return (
     <Grid gutter="md">
       <GridItem>
@@ -216,17 +225,21 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
           </LevelItem>
         </Level>
-        <Table
-          aria-label="Storage class selections table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {rows.length > 0 ? (
+          <Table
+            aria-label="Storage class selections table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          tableEmptyState
+        )}
         <Pagination
           widgetId="storage-class-table-pagination-bottom"
           variant={PaginationVariant.bottom}

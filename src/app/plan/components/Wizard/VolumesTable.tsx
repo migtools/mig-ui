@@ -33,6 +33,7 @@ import {
 } from '../../../common/components/FilterToolbar';
 import { IPlanPersistentVolume } from './types';
 import { capitalize } from '../../../common/duck/utils';
+import TableEmptyState from '../../../common/components/TableEmptyState';
 
 const styles = require('./VolumesTable.module');
 
@@ -184,17 +185,21 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <Pagination widgetId="pv-table-pagination-top" {...paginationProps} />
           </LevelItem>
         </Level>
-        <Table
-          aria-label="Persistent volumes table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {rows.length > 0 ? (
+          <Table
+            aria-label="Persistent volumes table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+        )}
         <Pagination
           widgetId="pv-table-pagination-bottom"
           variant={PaginationVariant.bottom}

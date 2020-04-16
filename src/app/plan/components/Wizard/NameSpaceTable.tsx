@@ -20,6 +20,7 @@ import {
   FilterCategory,
   FilterType,
 } from '../../../common/components/FilterToolbar';
+import TableEmptyState from '../../../common/components/TableEmptyState';
 
 interface INamespaceTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
@@ -110,19 +111,23 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
             <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
           </LevelItem>
         </Level>
-        <Table
-          aria-label="Projects table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-          onSelect={onSelect}
-          canSelectAll
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {rows.length > 0 ? (
+          <Table
+            aria-label="Projects table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
+            onSelect={onSelect}
+            canSelectAll
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+        )}
         <Level>
           <LevelItem>
             <TextContent>
