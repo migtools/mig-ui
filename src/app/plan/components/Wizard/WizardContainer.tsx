@@ -10,6 +10,7 @@ import {
   IPersistentVolumeResource,
   ISourceClusterNamespace,
   ICluster,
+  PvCopyMethod,
 } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
 export interface IFormValues {
@@ -29,7 +30,7 @@ export interface IFormValues {
     [pvName: string]: boolean;
   };
   pvCopyMethodAssignment: {
-    [pvName: string]: string;
+    [pvName: string]: PvCopyMethod;
   };
 }
 

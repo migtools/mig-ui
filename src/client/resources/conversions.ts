@@ -419,12 +419,12 @@ export function updateMigPlanFromValues(
         const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
         if (userPv) {
           v.selection.action = userPv.type;
-          const selectedCopyMethodObj = planValues.pvCopyMethodAssignment[v.name];
-          if (selectedCopyMethodObj) {
-            v.selection.copyMethod = selectedCopyMethodObj;
+          const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
+          if (selectedCopyMethod) {
+            v.selection.copyMethod = selectedCopyMethod;
           }
 
-          v.selection.verify = planValues.pvVerifyFlagAssignment[v.name];
+          v.selection.verify = selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
 
           const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
           if (selectedStorageClassObj) {

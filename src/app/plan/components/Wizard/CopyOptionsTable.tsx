@@ -26,7 +26,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { IPlanPersistentVolume, IClusterStorageClass } from './types';
+import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
 import { capitalize } from '../../../common/duck/utils';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 import {
@@ -58,7 +58,7 @@ interface OptionWithValue extends SelectOptionObject {
 const storageClassToString = (storageClass: IClusterStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
-const copyMethodToString = (copyMethod: string) => {
+const copyMethodToString = (copyMethod: PvCopyMethod) => {
   if (copyMethod === 'filesystem') return 'Filesystem copy';
   if (copyMethod === 'snapshot') return 'Volume snapshot';
   return copyMethod && capitalize(copyMethod);
@@ -177,7 +177,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentStorageClass = pvStorageClassAssignment[pv.name];
 
     const copyMethodOptions: OptionWithValue[] = currentPV.supported.copyMethods.map(
-      (copyMethod: string) => ({
+      (copyMethod: PvCopyMethod) => ({
         value: copyMethod,
         toString: () => copyMethodToString(copyMethod),
       })
@@ -191,6 +191,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       })),
       noneOption,
     ];
+
+    const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
 
     return {
       cells: [
@@ -212,7 +214,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           title: (
             <Flex className={flex.justifyContentCenter}>
               <Checkbox
-                isChecked={pvVerifyFlagAssignment[pv.name]}
+                isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
+                isDisabled={!isVerifyCopyAllowed}
                 onChange={checked => onVerifyFlagChange(currentPV, checked)}
                 aria-label={`Verify copy for PV ${pv.name}`}
                 id={`verify-pv-${pv.name}`}
