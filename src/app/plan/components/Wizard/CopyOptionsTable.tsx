@@ -17,9 +17,11 @@ import {
   SelectOptionObject,
   Checkbox,
   Flex,
+  Tooltip,
+  TooltipPosition,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { InfoCircleIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
@@ -97,11 +99,22 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     {
       title: (
         <React.Fragment>
-          Verify copy
-          <em>(?)</em>
+          Verify copy{' '}
+          <Tooltip
+            position={TooltipPosition.top}
+            isContentLeftAligned
+            content={
+              <div>
+                Checksum verification is available for PVs that will be copied using a filesystem
+                copy method. Note that selecting this option will greatly reduce the copy
+                performance. See the product documentation for more information.
+              </div>
+            }
+          >
+            <QuestionCircleIcon />
+          </Tooltip>
         </React.Fragment>
       ),
-      transforms: [sortable],
     },
     { title: 'Target storage class', transforms: [sortable] },
   ];
