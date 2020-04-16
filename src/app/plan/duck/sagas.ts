@@ -797,7 +797,6 @@ function* addHookSaga(action) {
       new MigResource(MigResourceKind.MigHook, migMeta.namespace),
       migHookObj
     );
-    yield put(PlanActions.addHookSuccess(createHookRes.data));
 
     // associate  hook to plan
     const { currentPlan } = state.plan
@@ -858,67 +857,13 @@ function* addHookSaga(action) {
       createHooksSpec()
     );
 
+    yield put(PlanActions.addHookSuccess(createHookRes.data));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
-  } catch {
+  } catch (err) {
+    yield put(PlanActions.addHookFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
-  }
-}
-
-
-function* pollHookAddEditStatus(action) {
-  // Give the controller some time to bounce
-  yield delay(AddEditDebounceWait);
-  while (true) {
-    try {
-      const state = yield select();
-      const { migMeta } = state;
-      const { hookName } = action;
-
-      const client: IClusterClient = ClientFactory.cluster(state);
-      const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
-      const hookPollResult = yield client.get(migHookResource, hookName);
-
-      const hasStatusAndConditions =
-        hookPollResult.data.status &&
-        hookPollResult.data.status.conditions;
-
-      if (hasStatusAndConditions) {
-        const criticalCond = hookPollResult.data.status.conditions.find(cond => {
-          return cond.category === AddEditConditionCritical;
-        });
-
-        if (criticalCond) {
-          return createAddEditStatusWithMeta(
-            AddEditState.Critical,
-            AddEditMode.Edit,
-            criticalCond.message,
-            criticalCond.reason,
-          );
-        }
-
-        const readyCond = hookPollResult.data.status.conditions.find(cond => {
-          return cond.type === AddEditConditionReady;
-        });
-
-        if (readyCond) {
-          return createAddEditStatusWithMeta(
-            AddEditState.Ready,
-            AddEditMode.Edit,
-            readyCond.message,
-            '', // Ready has no reason
-          );
-        }
-      }
-
-      // No conditions found, let's wait a bit and keep checking
-      yield delay(AddEditWatchTimeoutPollInterval);
-    } catch (err) {
-      // TODO: what happens when the poll fails? Back into that hard error state?
-      console.error('Hard error branch hit in poll hook add edit', err);
-      return;
-    }
   }
 }
 
@@ -976,7 +921,7 @@ function* updateHookRequest(action) {
   const { migMeta } = state;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
-
+  yield put(PlanActions.updateHookSuccess());
   const currentHook = state.plan.migHookList.find(hook => {
     return hook.hookName === migHook.hookName;
   });
@@ -1017,6 +962,7 @@ function* updateHookRequest(action) {
     ));
 
   } catch (err) {
+    yield put(PlanActions.updateHookFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
     throw err;
   }
