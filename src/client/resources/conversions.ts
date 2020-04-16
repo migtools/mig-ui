@@ -1,5 +1,3 @@
-import { pvStorageClassAssignmentKey, pvVerifyFlagAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
-import { pvCopyMethodAssignmentKey } from '../../app/plan/components/Wizard/CopyOptionsForm';
 import { IPlan } from '../../app/plan/components/Wizard/types';
 import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
 
@@ -421,14 +419,14 @@ export function updateMigPlanFromValues(
         const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
         if (userPv) {
           v.selection.action = userPv.type;
-          const selectedCopyMethodObj = planValues[pvCopyMethodAssignmentKey][v.name];
+          const selectedCopyMethodObj = planValues.pvCopyMethodAssignment[v.name];
           if (selectedCopyMethodObj) {
             v.selection.copyMethod = selectedCopyMethodObj;
           }
 
           v.selection.verify = planValues.pvVerifyFlagAssignment[v.name];
 
-          const selectedStorageClassObj = planValues[pvStorageClassAssignmentKey][v.name];
+          const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
           if (selectedStorageClassObj) {
             v.selection.storageClass = selectedStorageClassObj.name;
           } else {

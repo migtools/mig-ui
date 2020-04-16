@@ -5,10 +5,6 @@ import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from './types';
 
-export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
-export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
-export const pvVerifyFlagAssignmentKey = 'pvVerifyFlagAssignment';
-
 interface ICopyOptionsFormProps
   extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
@@ -43,7 +39,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           };
         }, {});
       }
-      setFieldValue(pvStorageClassAssignmentKey, pvStorageClassAssignment);
+      setFieldValue('pvStorageClassAssignment', pvStorageClassAssignment);
     }
     if (!values.pvCopyMethodAssignment || isEmpty(values.pvCopyMethodAssignment)) {
       let pvCopyMethodAssignment = {};
@@ -59,7 +55,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           };
         }, {});
       }
-      setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
+      setFieldValue('pvCopyMethodAssignment', pvCopyMethodAssignment);
     }
     if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
       let pvVerifyFlagAssignment = {};
@@ -72,7 +68,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           {}
         );
       }
-      setFieldValue(pvVerifyFlagAssignmentKey, pvVerifyFlagAssignment);
+      setFieldValue('pvVerifyFlagAssignment', pvVerifyFlagAssignment);
     }
   }, []);
 
@@ -82,7 +78,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       ...values.pvStorageClassAssignment,
       [currentPV.name]: newSc,
     };
-    setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
+    setFieldValue('pvStorageClassAssignment', updatedAssignment);
   };
 
   const onVerifyFlagChange = (currentPV: IPlanPersistentVolume, value: boolean) => {
@@ -90,7 +86,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       ...values.pvVerifyFlagAssignment,
       [currentPV.name]: value,
     };
-    setFieldValue(pvVerifyFlagAssignmentKey, updatedAssignment);
+    setFieldValue('pvVerifyFlagAssignment', updatedAssignment);
   };
 
   const onCopyMethodChange = (currentPV: IPlanPersistentVolume, value: string) => {
@@ -99,7 +95,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       ...values.pvCopyMethodAssignment,
       [currentPV.name]: newCm,
     };
-    setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
+    setFieldValue('pvCopyMethodAssignment', updatedAssignment);
   };
 
   return (
