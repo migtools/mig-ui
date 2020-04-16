@@ -91,7 +91,7 @@ const HooksStep = (props) => {
   if (migHookList.length > 0) {
     rows = migHookList.map((migHook, id) => {
       return {
-        cells: [migHook.hookName, migHook.image, migHook.clusterType, migHook.phase],
+        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
       }
     });
     actions = [
