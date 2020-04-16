@@ -921,7 +921,6 @@ function* updateHookRequest(action) {
   const { migMeta } = state;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
-  yield put(PlanActions.updateHookSuccess());
   const currentHook = state.plan.migHookList.find(hook => {
     return hook.hookName === migHook.hookName;
   });
@@ -953,13 +952,13 @@ function* updateHookRequest(action) {
       migHookObj.migHookPatch
     );
 
-    yield put(PlanActions.updateHookSuccess());
     yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
-    yield put(PlanActions.hookFetchRequest(patchPlanResponse.data.spec.hooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
     yield put(PlanActions.setHookAddEditStatus(
       createAddEditStatus(AddEditState.Ready, AddEditMode.Add),
     ));
+    yield put(PlanActions.hookFetchRequest(patchPlanResponse.data.spec.hooks));
+    yield put(PlanActions.updateHookSuccess());
 
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
