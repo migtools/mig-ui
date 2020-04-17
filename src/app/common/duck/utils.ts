@@ -40,8 +40,8 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
 };
 
 const DNS1123Error = (value) => {
-  return `Invalid value: "${value}" for a DNS-1123 subdomain with regex' +
-    '"[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*"`;
+  return `Invalid value: "${value}" for a DNS-1123 label, only lowercase alphanumeric characters,
+    "." or "-" and must start and end with a lowercase alphanumeric character`;
 };
 
 const testDNS1123 = (value) => DNS1123Validator.test(value);
