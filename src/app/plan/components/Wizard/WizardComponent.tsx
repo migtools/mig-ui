@@ -211,6 +211,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           canJumpTo: stepIdReached >= stepId.Hooks,
           enableNext:
             !isAddHooksOpen,
+          hideBackButton: isAddHooksOpen,
           hideCancelButton: isAddHooksOpen,
           nextButtonText: 'Finish'
         },

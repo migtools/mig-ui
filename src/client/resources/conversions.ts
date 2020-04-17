@@ -532,7 +532,7 @@ export function updateMigHook(
       return encodedPlaybook;
     }
     if (imageType === 'custom') {
-      return;
+      return '';
     }
   }
 
@@ -637,7 +637,7 @@ export function createMigHook(
       return encodedPlaybook;
     }
     if (imageType === 'custom') {
-      return;
+      return '';
     }
   }
 
