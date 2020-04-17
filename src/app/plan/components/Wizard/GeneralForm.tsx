@@ -7,6 +7,7 @@ interface IProps {
 }
 
 interface IGeneralFormProps
+<<<<<<< HEAD
   extends Pick<IOtherProps, 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
@@ -14,6 +15,21 @@ interface IGeneralFormProps
     > {
   errors: any;
 }
+=======
+  extends Pick<
+    IOtherProps, 'isEdit'
+    >,
+    Pick<FormikProps<IFormValues>,
+    | 'handleBlur'
+    | 'handleChange'
+    | 'setFieldTouched'
+    | 'values'
+    | 'touched'
+    >
+    {
+      errors: any;
+    }
+>>>>>>> Missing Plan wizard plan name invalid helper
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   errors,
@@ -32,7 +48,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     <Form>
       <Grid lg={10} xl={6}>
         <GridItem>
-          <FormGroup label="Plan Name" isRequired fieldId="planName">
+          <FormGroup
+            label="Plan Name"
+            isRequired
+            fieldId="planName"
+            helperTextInvalid={touched.planName && errors.planName}
+            isValid={!(touched.planName && errors.planName)}
+          >
             {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
