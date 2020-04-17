@@ -10,6 +10,7 @@ import {
   IPersistentVolumeResource,
   ISourceClusterNamespace,
   ICluster,
+  PvCopyMethod,
 } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
 export interface IFormValues {
@@ -20,13 +21,16 @@ export interface IFormValues {
   selectedNamespaces: string[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
   pvStorageClassAssignment: {
-    [key: string]: {
+    [pvName: string]: {
       name: string;
       provisioner: string;
     };
   };
+  pvVerifyFlagAssignment: {
+    [pvName: string]: boolean;
+  };
   pvCopyMethodAssignment: {
-    [key: string]: string;
+    [pvName: string]: PvCopyMethod;
   };
 }
 
@@ -81,6 +85,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       selectedStorage: null,
       persistentVolumes: [],
       pvStorageClassAssignment: {},
+      pvVerifyFlagAssignment: {},
       pvCopyMethodAssignment: {},
     };
     if (editPlanObj && isEdit) {

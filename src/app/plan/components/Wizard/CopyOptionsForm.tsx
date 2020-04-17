@@ -5,9 +5,6 @@ import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from './types';
 
-export const pvStorageClassAssignmentKey = 'pvStorageClassAssignment';
-export const pvCopyMethodAssignmentKey = 'pvCopyMethodAssignment';
-
 interface ICopyOptionsFormProps
   extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
@@ -27,8 +24,8 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
 
   const storageClasses = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
 
-  // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
   useEffect(() => {
+    // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
     if (!values.pvStorageClassAssignment || isEmpty(values.pvStorageClassAssignment)) {
       let pvStorageClassAssignment = {};
       if (migPlanPvs) {
@@ -36,11 +33,13 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           const suggestedStorageClass = storageClasses.find(
             sc => sc.name === pv.selection.storageClass
           );
-          assignedScs[pv.name] = suggestedStorageClass ? suggestedStorageClass : '';
-          return assignedScs;
+          return {
+            ...assignedScs,
+            [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+          };
         }, {});
       }
-      setFieldValue(pvStorageClassAssignmentKey, pvStorageClassAssignment);
+      setFieldValue('pvStorageClassAssignment', pvStorageClassAssignment);
     }
     if (!values.pvCopyMethodAssignment || isEmpty(values.pvCopyMethodAssignment)) {
       let pvCopyMethodAssignment = {};
@@ -50,13 +49,26 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           const suggestedCopyMethod = supportedCopyMethods.find(
             cm => cm === pv.selection.copyMethod
           );
-          assignedCms[pv.name] = suggestedCopyMethod
-            ? suggestedCopyMethod
-            : supportedCopyMethods[0];
-          return assignedCms;
+          return {
+            ...assignedCms,
+            [pv.name]: suggestedCopyMethod ? suggestedCopyMethod : supportedCopyMethods[0],
+          };
         }, {});
       }
-      setFieldValue(pvCopyMethodAssignmentKey, pvCopyMethodAssignment);
+      setFieldValue('pvCopyMethodAssignment', pvCopyMethodAssignment);
+    }
+    if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
+      let pvVerifyFlagAssignment = {};
+      if (migPlanPvs) {
+        pvVerifyFlagAssignment = migPlanPvs.reduce(
+          (assignedVerifyFlags, pv) => ({
+            ...assignedVerifyFlags,
+            [pv.name]: !!pv.selection.verify,
+          }),
+          {}
+        );
+      }
+      setFieldValue('pvVerifyFlagAssignment', pvVerifyFlagAssignment);
     }
   }, []);
 
@@ -66,7 +78,15 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       ...values.pvStorageClassAssignment,
       [currentPV.name]: newSc,
     };
-    setFieldValue(pvStorageClassAssignmentKey, updatedAssignment);
+    setFieldValue('pvStorageClassAssignment', updatedAssignment);
+  };
+
+  const onVerifyFlagChange = (currentPV: IPlanPersistentVolume, value: boolean) => {
+    const updatedAssignment = {
+      ...values.pvVerifyFlagAssignment,
+      [currentPV.name]: value,
+    };
+    setFieldValue('pvVerifyFlagAssignment', updatedAssignment);
   };
 
   const onCopyMethodChange = (currentPV: IPlanPersistentVolume, value: string) => {
@@ -75,7 +95,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       ...values.pvCopyMethodAssignment,
       [currentPV.name]: newCm,
     };
-    setFieldValue(pvCopyMethodAssignmentKey, updatedAssignment);
+    setFieldValue('pvCopyMethodAssignment', updatedAssignment);
   };
 
   return (
@@ -88,9 +108,11 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
           : []
       }
       pvStorageClassAssignment={values.pvStorageClassAssignment}
+      pvVerifyFlagAssignment={values.pvVerifyFlagAssignment}
       pvCopyMethodAssignment={values.pvCopyMethodAssignment}
       storageClasses={storageClasses}
       onStorageClassChange={onStorageClassChange}
+      onVerifyFlagChange={onVerifyFlagChange}
       onCopyMethodChange={onCopyMethodChange}
     />
   );

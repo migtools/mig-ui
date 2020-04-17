@@ -15,13 +15,18 @@ import {
   Pagination,
   PaginationVariant,
   SelectOptionObject,
+  Checkbox,
+  Flex,
+  Tooltip,
+  TooltipPosition,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { InfoCircleIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { IPlanPersistentVolume, IClusterStorageClass } from './types';
+import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
 import { capitalize } from '../../../common/duck/utils';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 import {
@@ -33,9 +38,16 @@ import TableEmptyState from '../../../common/components/TableEmptyState';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
-    Pick<IFormValues, 'persistentVolumes' | 'pvStorageClassAssignment' | 'pvCopyMethodAssignment'> {
+    Pick<
+      IFormValues,
+      | 'persistentVolumes'
+      | 'pvStorageClassAssignment'
+      | 'pvVerifyFlagAssignment'
+      | 'pvCopyMethodAssignment'
+    > {
   storageClasses: IClusterStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
+  onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
 
@@ -46,7 +58,7 @@ interface OptionWithValue extends SelectOptionObject {
 const storageClassToString = (storageClass: IClusterStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
-const copyMethodToString = (copyMethod: string) => {
+const copyMethodToString = (copyMethod: PvCopyMethod) => {
   if (copyMethod === 'filesystem') return 'Filesystem copy';
   if (copyMethod === 'snapshot') return 'Volume snapshot';
   return copyMethod && capitalize(copyMethod);
@@ -57,9 +69,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   currentPlan,
   persistentVolumes,
   pvStorageClassAssignment,
+  pvVerifyFlagAssignment,
   pvCopyMethodAssignment,
   storageClasses,
   onStorageClassChange,
+  onVerifyFlagChange,
   onCopyMethodChange,
 }: ICopyOptionsTableProps) => {
   if (isFetchingPVList) {
@@ -82,6 +96,26 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     { title: 'Claim', transforms: [sortable] },
     { title: 'Namespace', transforms: [sortable] },
     { title: 'Copy method', transforms: [sortable] },
+    {
+      title: (
+        <React.Fragment>
+          Verify copy{' '}
+          <Tooltip
+            position={TooltipPosition.top}
+            isContentLeftAligned
+            content={
+              <div>
+                Checksum verification is available for PVs that will be copied using a filesystem
+                copy method. Note that selecting this option will greatly reduce the copy
+                performance. See the product documentation for more information.
+              </div>
+            }
+          >
+            <QuestionCircleIcon />
+          </Tooltip>
+        </React.Fragment>
+      ),
+    },
     { title: 'Target storage class', transforms: [sortable] },
   ];
   const getSortValues = pv => [
@@ -89,6 +123,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.claim,
     pv.project,
     copyMethodToString(pvCopyMethodAssignment[pv.name]),
+    pvVerifyFlagAssignment[pv.name],
     storageClassToString(pvStorageClassAssignment[pv.name]),
   ];
   const filterCategories: FilterCategory[] = [
@@ -142,7 +177,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentStorageClass = pvStorageClassAssignment[pv.name];
 
     const copyMethodOptions: OptionWithValue[] = currentPV.supported.copyMethods.map(
-      (copyMethod: string) => ({
+      (copyMethod: PvCopyMethod) => ({
         value: copyMethod,
         toString: () => copyMethodToString(copyMethod),
       })
@@ -156,6 +191,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       })),
       noneOption,
     ];
+
+    const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
 
     return {
       cells: [
@@ -171,6 +208,20 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               value={copyMethodOptions.find(option => option.value === currentCopyMethod)}
               placeholderText="Select a copy method..."
             />
+          ),
+        },
+        {
+          title: (
+            <Flex className={flex.justifyContentCenter}>
+              <Checkbox
+                isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
+                isDisabled={!isVerifyCopyAllowed}
+                onChange={checked => onVerifyFlagChange(currentPV, checked)}
+                aria-label={`Verify copy for PV ${pv.name}`}
+                id={`verify-pv-${pv.name}`}
+                name={`verify-pv-${pv.name}`}
+              />
+            </Flex>
           ),
         },
         {
