@@ -32,6 +32,8 @@ import {
   FilterType,
 } from '../../../common/components/FilterToolbar';
 import { IPlanPersistentVolume } from './types';
+import { capitalize } from '../../../common/duck/utils';
+import TableEmptyState from '../../../common/components/TableEmptyState';
 
 const styles = require('./VolumesTable.module');
 
@@ -44,14 +46,6 @@ interface IVolumesTableProps
 interface OptionWithValue extends SelectOptionObject {
   value: string;
 }
-
-const capitalize = (s: string) => {
-  if (s.charAt(0)) {
-    return `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
-  } else {
-    return s;
-  }
-};
 
 const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   isFetchingPVResources,
@@ -68,7 +62,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
-  const sortKeys = ['name', 'claim', 'project', 'storageClass', 'size', 'type'];
+  const getSortValues = pv => [pv.name, pv.claim, pv.project, pv.storageClass, pv.size, pv.type];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -105,20 +99,20 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
   ];
 
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(persistentVolumes);
-  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    persistentVolumes,
+    filterCategories
+  );
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map(pv => {
     const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
-    const migrationTypeOptions = pv.supportedActions.map(
-      (action: string) =>
-        ({
-          value: action,
-          toString: () => capitalize(action),
-        } as OptionWithValue)
-    );
+    const migrationTypeOptions: OptionWithValue[] = pv.supportedActions.map((action: string) => ({
+      value: action,
+      toString: () => capitalize(action),
+    }));
     return {
       cells: [
         pv.name,
@@ -136,7 +130,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               placeholderText={null}
             />
           ),
-          key: pv.type,
         },
         {
           title: (
@@ -170,13 +163,13 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
-  // TODO: sorting
-
   return (
     <Grid gutter="md">
       <GridItem>
         <TextContent>
-          <Text component={TextVariants.p}>Choose to move or copy persistent volumes:</Text>
+          <Text component={TextVariants.p}>
+            Choose to move or copy persistent volumes associated with selected namespaces.
+          </Text>
         </TextContent>
       </GridItem>
       <GridItem>
@@ -192,17 +185,21 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <Pagination widgetId="pv-table-pagination-top" {...paginationProps} />
           </LevelItem>
         </Level>
-        <Table
-          aria-label="Persistent volumes table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {rows.length > 0 ? (
+          <Table
+            aria-label="Persistent volumes table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+        )}
         <Pagination
           widgetId="pv-table-pagination-bottom"
           variant={PaginationVariant.bottom}

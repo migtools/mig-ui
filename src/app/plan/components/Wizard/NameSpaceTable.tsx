@@ -20,6 +20,7 @@ import {
   FilterCategory,
   FilterType,
 } from '../../../common/components/FilterToolbar';
+import TableEmptyState from '../../../common/components/TableEmptyState';
 
 interface INamespaceTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
@@ -38,8 +39,13 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
   ];
-  // Column 0 has the checkboxes, sort keys need to be indexed from 1
-  const sortKeys = [null, 'name', 'podCount', 'pvcCount', 'serviceCount'];
+  const getSortValues = namespace => [
+    null, // Column 0 has the checkboxes, sort values need to be indexed from 1
+    namespace.name,
+    namespace.podCount,
+    namespace.pvcCount,
+    namespace.serviceCount,
+  ];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -48,8 +54,11 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
       placeholderText: 'Filter by name...',
     },
   ];
-  const { filterValues, setFilterValues, filteredItems } = useFilterState(sourceClusterNamespaces);
-  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, sortKeys);
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    sourceClusterNamespaces,
+    filterCategories
+  );
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
@@ -86,7 +95,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     <React.Fragment>
       <GridItem>
         <TextContent className={spacing.mtMd}>
-          <Text component={TextVariants.p}>Select projects to be migrated:</Text>
+          <Text component={TextVariants.p}>Select projects to be migrated</Text>
         </TextContent>
       </GridItem>
       <GridItem>
@@ -102,19 +111,23 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
             <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
           </LevelItem>
         </Level>
-        <Table
-          aria-label="Projects table"
-          variant={TableVariant.compact}
-          cells={columns}
-          rows={rows}
-          sortBy={sortBy}
-          onSort={onSort}
-          onSelect={onSelect}
-          canSelectAll
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {rows.length > 0 ? (
+          <Table
+            aria-label="Projects table"
+            variant={TableVariant.compact}
+            cells={columns}
+            rows={rows}
+            sortBy={sortBy}
+            onSort={onSort}
+            onSelect={onSelect}
+            canSelectAll
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+        )}
         <Level>
           <LevelItem>
             <TextContent>

@@ -3,7 +3,7 @@ import { Wizard } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
-import StorageClassForm from './StorageClassForm';
+import CopyOptionsForm from './CopyOptionsForm';
 import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
@@ -160,11 +160,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         },
         {
           id: stepId.StorageClass,
-          name: 'Storage class',
+          name: 'Copy options',
           component: (
-            <WizardStepContainer title="Storage class">
-              <StorageClassForm
-                isEdit={isEdit}
+            <WizardStepContainer title="Copy options">
+              <CopyOptionsForm
                 values={values}
                 setFieldValue={setFieldValue}
                 currentPlan={currentPlan}
@@ -256,7 +255,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={event => event.preventDefault()}
         />
       )}
     </React.Fragment>
