@@ -192,21 +192,23 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           id: stepId.Hooks,
           name: 'Hooks',
           component: (
-            <HooksStep
-              removeHookRequest={removeHookRequest}
-              addHookRequest={addHookRequest}
-              updateHookRequest={updateHookRequest}
-              isFetchingHookList={isFetchingHookList}
-              migHookList={migHookList}
-              fetchHooksRequest={fetchHooksRequest}
-              watchHookAddEditStatus={watchHookAddEditStatus}
-              hookAddEditStatus={hookAddEditStatus}
-              cancelAddEditWatch={cancelAddEditWatch}
-              resetAddEditState={resetAddEditState}
-              currentPlan={currentPlan}
-              isAddHooksOpen={isAddHooksOpen}
-              setIsAddHooksOpen={setIsAddHooksOpen}
-            />
+            <WizardStepContainer title="Hooks">
+              <HooksStep
+                removeHookRequest={removeHookRequest}
+                addHookRequest={addHookRequest}
+                updateHookRequest={updateHookRequest}
+                isFetchingHookList={isFetchingHookList}
+                migHookList={migHookList}
+                fetchHooksRequest={fetchHooksRequest}
+                watchHookAddEditStatus={watchHookAddEditStatus}
+                hookAddEditStatus={hookAddEditStatus}
+                cancelAddEditWatch={cancelAddEditWatch}
+                resetAddEditState={resetAddEditState}
+                currentPlan={currentPlan}
+                isAddHooksOpen={isAddHooksOpen}
+                setIsAddHooksOpen={setIsAddHooksOpen}
+              />
+            </WizardStepContainer>
           ),
           canJumpTo: stepIdReached >= stepId.Hooks,
           enableNext:

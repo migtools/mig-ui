@@ -145,13 +145,6 @@ const HooksStep = (props) => {
     <Grid>
       <GridItem className={spacing.mtSm}>
         <TextContent>
-          <Text component={TextVariants.h2}>
-            Hooks
-          </Text>
-        </TextContent>
-      </GridItem>
-      <GridItem>
-        <TextContent>
           <Text component={TextVariants.p}>
             Hooks are commands that can be run at various steps in the migration process. They are defined in a container image or an Ansible playbook and can be run on either the source or target cluster.
           </Text>
@@ -195,7 +188,6 @@ const HooksStep = (props) => {
                       setInitialHookValues({});
                     }
                     }
-
                   >
                     Add hook
                   </Button>
@@ -221,4 +213,3 @@ const HooksStep = (props) => {
   );
 };
 export default HooksStep;
-

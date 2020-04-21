@@ -77,8 +77,8 @@ export interface IOtherProps {
   editPlanObj?: any;
   isEdit: boolean;
   updateCurrentPlanStatus: any;
-  addHookRequest: (migHook) => void;
-  updateHookRequest: (migHook) => void;
+  addHookRequest: (migHook: IMigHook) => void;
+  updateHookRequest: (migHook: IMigHook) => void;
   removeHookRequest: (hookName, migrationStep) => void;
   migHookList: IMigHook[];
   isFetchingHookList: boolean;
