@@ -97,7 +97,8 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
     setFieldValue('ansibleFile', value);
     setFieldValue('ansibleFilename', filename);
   };
-  const hookImageStyles = classNames(spacing.mtSm, spacing.mlMd);
+
+  const hookImageStyles = classNames(spacing.mtSm, spacing.mlLg);
 
   return (
     <Form onSubmit={handleSubmit}>
