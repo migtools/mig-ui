@@ -13,22 +13,18 @@ import {
   FileUpload,
   Tooltip,
   TooltipPosition,
-  Form
+  Form,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import {
-  AddEditMode,
-  addEditButtonText,
-} from '../../../common/add_edit_state';
+import { AddEditMode, addEditButtonText } from '../../../common/add_edit_state';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
-const styles = require('./HooksForm.module');
 
-interface IFormValues {
+interface IHooksFormValues {
   hookName: string;
   hookImageType: string;
   ansibleFile: string;
@@ -42,40 +38,33 @@ interface IFormValues {
   clusterType: string;
   migrationStep: string;
 }
-interface IOtherProps {
-  onAddEditSubmit: any;
-  onClose: any;
-  isEdit: boolean;
-  isEditHook: any;
+interface IHooksFormOtherProps {
   setInitialHookValues: any;
-  setIsAddHooksOpen: any;
+  setIsAddHooksOpen: (isOpen: boolean) => void;
   hookAddEditStatus: any;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   currentPlan: any;
 }
 
-const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
-
-  const {
-    setIsAddHooksOpen,
-    setInitialHookValues,
-    hookAddEditStatus,
-    handleSubmit,
-    touched,
-    errors,
-    setFieldValue,
-    setFieldTouched,
-    values,
-    handleChange,
-    handleBlur,
-    cancelAddEditWatch,
-    resetAddEditState,
-    currentPlan
-  } = props;
-
+const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikProps<IHooksFormValues> = ({
+  setIsAddHooksOpen,
+  setInitialHookValues,
+  hookAddEditStatus,
+  handleSubmit,
+  touched,
+  errors,
+  setFieldValue,
+  setFieldTouched,
+  values,
+  handleChange,
+  handleBlur,
+  cancelAddEditWatch,
+  resetAddEditState,
+  currentPlan,
+}: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   const hookNameKey = 'hookName';
   const hookImageTypeKey = 'hookImageType';
@@ -87,31 +76,30 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const destServiceAccountNameKey = 'destServiceAccountName';
   const srcServiceAccountNamespaceKey = 'srcServiceAccountNamespace';
   const destServiceAccountNamespaceKey = 'destServiceAccountNamespace';
-  const migrationStepKey = 'migrationStep'
+  const migrationStepKey = 'migrationStep';
   const [phaseOptions, setPhaseOptions] = useState([
     'PreBackup',
     'PostBackup',
     'PreRestore',
-    'PostRestore'
+    'PostRestore',
   ]);
 
   useEffect(() => {
     if (currentPlan.spec.hooks) {
       const existingPhases = currentPlan.spec.hooks.map((hook) => {
-        return hook.phase
-      })
-      let filteredPhases = []
-      filteredPhases = phaseOptions.filter(phase => !existingPhases.includes(phase));
-      setPhaseOptions(filteredPhases)
+        return hook.phase;
+      });
+      let filteredPhases = [];
+      filteredPhases = phaseOptions.filter((phase) => !existingPhases.includes(phase));
+      setPhaseOptions(filteredPhases);
     }
   }, []);
 
-
   const handleFileChange = (value, filename, event) => {
-    setFieldValue('ansibleFile', value)
-    setFieldValue('ansibleFilename', filename)
-  }
-  const hookImageStyles = classNames(spacing.mtSm, spacing.mlMd)
+    setFieldValue('ansibleFile', value);
+    setFieldValue('ansibleFilename', filename);
+  };
+  const hookImageStyles = classNames(spacing.mtSm, spacing.mlMd);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -122,7 +110,6 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             isRequired
             fieldId={hookNameKey}
             helperTextInvalid={touched.hookName && errors.hookName}
-            className={styles.styledFormGroupTitle}
             isValid={!(touched.hookName && errors.hookName)}
           >
             {/*
@@ -141,17 +128,19 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           </FormGroup>
         </GridItem>
         <GridItem className={spacing.mtMd}>
-          <FormGroup
-            label="Hook definition"
-            fieldId='definition-group'
-            className={styles.styledFormGroupTitle}
-          >
+          <FormGroup label="Hook definition" fieldId="definition-group">
             <Tooltip
               position={TooltipPosition.right}
-              content={<div>There are two options for adding a hook definition: 1) Add an ansible playbook file to be run. A default hook runner image is provided, or you may choose your own.
-              2) Specify only a custom image which will run your defined entrypoint when loaded.  </div>}
+              content={
+                <div>
+                  There are two options for adding a hook definition: 1) Add an ansible playbook
+                  file to be run. A default hook runner image is provided, or you may choose your
+                  own. 2) Specify only a custom image which will run your defined entrypoint when
+                  loaded.{' '}
+                </div>
+              }
             >
-              <span className={styles.tooltipStyles}>
+              <span className={spacing.mlSm}>
                 <OutlinedQuestionCircleIcon />
               </span>
             </Tooltip>
@@ -166,7 +155,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                   value="ansible"
                 />
               </GridItem>
-              {values.hookImageType === 'ansible' &&
+              {values.hookImageType === 'ansible' && (
                 <React.Fragment>
                   <GridItem className={hookImageStyles}>
                     <FormGroup
@@ -188,8 +177,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                       label="Ansible runtime image"
                       isRequired
                       fieldId={ansibleRuntimeImageKey}
-                      isValid={!(touched.ansibleRuntimeImage
-                        && errors.ansibleRuntimeImage)}
+                      isValid={!(touched.ansibleRuntimeImage && errors.ansibleRuntimeImage)}
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -201,19 +189,18 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                         name={ansibleRuntimeImageKey}
                         type="text"
                         id="ansible-runtime-image-name-input"
-                        isValid={!(touched.ansibleRuntimeImage
-                          && errors.ansibleRuntimeImage)}
+                        isValid={!(touched.ansibleRuntimeImage && errors.ansibleRuntimeImage)}
                       />
                       <TextContent>
                         <Text component={TextVariants.p}>
-                          This is the default Ansible runtime image.
-                          You can change it to a custom image with your own modules.
+                          This is the default Ansible runtime image. You can change it to a custom
+                          image with your own modules.
                         </Text>
                       </TextContent>
                     </FormGroup>
                   </GridItem>
                 </React.Fragment>
-              }
+              )}
               <GridItem className={spacing.mtSm}>
                 <Radio
                   isChecked={values.hookImageType === 'custom'}
@@ -224,13 +211,12 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                   value="custom"
                 />
               </GridItem>
-              {values.hookImageType === 'custom' &&
+              {values.hookImageType === 'custom' && (
                 <GridItem className={hookImageStyles}>
                   <FormGroup
                     isRequired
                     fieldId={customImageKey}
-                    isValid={!(touched.customContainerImage
-                      && errors.customContainerImage)}
+                    isValid={!(touched.customContainerImage && errors.customContainerImage)}
                   >
                     {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -242,21 +228,16 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                       name={customImageKey}
                       type="text"
                       id="container-image-name-input"
-                      isValid={!(touched.customContainerImage
-                        && errors.customContainerImage)}
+                      isValid={!(touched.customContainerImage && errors.customContainerImage)}
                     />
                   </FormGroup>
                 </GridItem>
-              }
+              )}
             </Grid>
           </FormGroup>
         </GridItem>
         <GridItem className={spacing.mtMd}>
-          <FormGroup
-            label="Run in"
-            fieldId="run-in-group"
-            className={styles.styledFormGroupTitle}
-          >
+          <FormGroup label="Run in" fieldId="run-in-group">
             <Grid>
               <GridItem className={spacing.mtSm}>
                 <Radio
@@ -268,23 +249,23 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                   value="source"
                 />
               </GridItem>
-              {values.clusterType === 'source' &&
+              {values.clusterType === 'source' && (
                 <React.Fragment>
                   <GridItem className={spacing.mtSm}>
                     <FormGroup
                       label="Service account name"
                       isRequired
                       fieldId={srcServiceAccountNameKey}
-                      helperTextInvalid={touched.srcServiceAccountName && errors.srcServiceAccountName}
-                      isValid={!(touched.srcServiceAccountName
-                        && errors.srcServiceAccountName)}
+                      helperTextInvalid={
+                        touched.srcServiceAccountName && errors.srcServiceAccountName
+                      }
+                      isValid={!(touched.srcServiceAccountName && errors.srcServiceAccountName)}
                     >
                       <Tooltip
                         position={TooltipPosition.right}
                         content={<div>Service account name used to run the executable hook.</div>}
                       >
-                        <span className={styles.tooltipStyles}>
-
+                        <span className={spacing.mlSm}>
                           <OutlinedQuestionCircleIcon />
                         </span>
                       </Tooltip>
@@ -299,8 +280,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                         name={srcServiceAccountNameKey}
                         type="text"
                         id="src-service-account-name-input"
-                        isValid={!(touched.srcServiceAccountName
-                          && errors.srcServiceAccountName)}
+                        isValid={!(touched.srcServiceAccountName && errors.srcServiceAccountName)}
                       />
                     </FormGroup>
                   </GridItem>
@@ -309,8 +289,12 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                       label="Service account namespace"
                       isRequired
                       fieldId={srcServiceAccountNamespaceKey}
-                      helperTextInvalid={touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace}
-                      isValid={!(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)}
+                      helperTextInvalid={
+                        touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace
+                      }
+                      isValid={
+                        !(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)
+                      }
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -322,13 +306,14 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                         name={srcServiceAccountNamespaceKey}
                         type="text"
                         id="src-service-account-namespace-input"
-                        isValid={!(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)}
+                        isValid={
+                          !(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)
+                        }
                       />
-
                     </FormGroup>
                   </GridItem>
                 </React.Fragment>
-              }
+              )}
               <GridItem className={spacing.mtSm}>
                 <Radio
                   isChecked={values.clusterType === 'destination'}
@@ -339,14 +324,16 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                   value="destination"
                 />
               </GridItem>
-              {values.clusterType === 'destination' &&
+              {values.clusterType === 'destination' && (
                 <React.Fragment>
                   <GridItem className={spacing.mtSm}>
                     <FormGroup
                       label="Service account name"
                       isRequired
                       fieldId={destServiceAccountNameKey}
-                      helperTextInvalid={touched.destServiceAccountName && errors.destServiceAccountName}
+                      helperTextInvalid={
+                        touched.destServiceAccountName && errors.destServiceAccountName
+                      }
                       isValid={!(touched.destServiceAccountName && errors.destServiceAccountName)}
                     >
                       {/*
@@ -368,8 +355,12 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                       label="Service account namespace"
                       isRequired
                       fieldId="destServiceAccountNamespace"
-                      helperTextInvalid={touched.destServiceAccountNamespace && errors.destServiceAccountNamespace}
-                      isValid={!(touched.destServiceAccountNamespace && errors.destServiceAccountNamespace)}
+                      helperTextInvalid={
+                        touched.destServiceAccountNamespace && errors.destServiceAccountNamespace
+                      }
+                      isValid={
+                        !(touched.destServiceAccountNamespace && errors.destServiceAccountNamespace)
+                      }
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -381,12 +372,17 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                         name={destServiceAccountNamespaceKey}
                         type="text"
                         id="dest-service-account-namespace-input"
-                        isValid={!(touched.destServiceAccountNamespace && errors.destServiceAccountNamespace)}
+                        isValid={
+                          !(
+                            touched.destServiceAccountNamespace &&
+                            errors.destServiceAccountNamespace
+                          )
+                        }
                       />
                     </FormGroup>
                   </GridItem>
                 </React.Fragment>
-              }
+              )}
             </Grid>
           </FormGroup>
         </GridItem>
@@ -395,7 +391,6 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             label="Migration step when the hook should be run"
             isRequired
             fieldId={migrationStepKey}
-            className={styles.styledFormGroupTitle}
             helperTextInvalid={touched.migrationStep && errors.migrationStep}
             isValid={!(touched.migrationStep && errors.migrationStep)}
           >
@@ -413,11 +408,7 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         </GridItem>
         <Grid span={6}>
           <GridItem className={spacing.mtLg} span={2}>
-            <Button
-              type="submit"
-            >
-              {addEditButtonTextFn(hookAddEditStatus)}
-            </Button>
+            <Button type="submit">{addEditButtonTextFn(hookAddEditStatus)}</Button>
           </GridItem>
           <GridItem className={spacing.mtLg} span={2}>
             <Button
@@ -427,9 +418,8 @@ const HooksFormComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                 setIsAddHooksOpen(false);
                 cancelAddEditWatch();
                 resetAddEditState();
-                setInitialHookValues({})
-              }
-              }
+                setInitialHookValues({});
+              }}
             >
               Cancel
             </Button>
