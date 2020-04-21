@@ -1,8 +1,13 @@
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../common/duck/utils';
 import HooksFormComponent from './HooksFormComponent';
+interface IHooksFormContainerValues {
+}
+interface IHooksFormContainerOtherProps {
+  initialHookValues?: any;
+}
 
-const AddEditHooksFormContainer: any = withFormik({
+const AddEditHooksFormContainer = withFormik<IHooksFormContainerOtherProps, IHooksFormContainerValues>({
   mapPropsToValues: ({ initialHookValues }) => {
     const values = {
       hookName: '',
