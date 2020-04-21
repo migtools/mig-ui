@@ -47,7 +47,7 @@ interface IHooksFormOtherProps {
   currentPlan: any;
 }
 
-const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikProps<IHooksFormValues> = ({
+const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikProps<IHooksFormValues>> = ({
   setIsAddHooksOpen,
   setInitialHookValues,
   hookAddEditStatus,
@@ -77,23 +77,21 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
   const srcServiceAccountNamespaceKey = 'srcServiceAccountNamespace';
   const destServiceAccountNamespaceKey = 'destServiceAccountNamespace';
   const migrationStepKey = 'migrationStep';
-  const [phaseOptions, setPhaseOptions] = useState([
+
+  let initialPhaseOptions = [
     'PreBackup',
     'PostBackup',
     'PreRestore',
-    'PostRestore',
-  ]);
+    'PostRestore'
+  ];
 
-  useEffect(() => {
-    if (currentPlan.spec.hooks) {
-      const existingPhases = currentPlan.spec.hooks.map((hook) => {
-        return hook.phase;
-      });
-      let filteredPhases = [];
-      filteredPhases = phaseOptions.filter((phase) => !existingPhases.includes(phase));
-      setPhaseOptions(filteredPhases);
-    }
-  }, []);
+  if (currentPlan.spec.hooks) {
+    const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
+    const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
+    initialPhaseOptions = filteredPhases;
+  }
+
+  const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
 
   const handleFileChange = (value, filename, event) => {
     setFieldValue('ansibleFile', value);
