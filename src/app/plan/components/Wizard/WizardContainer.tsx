@@ -16,11 +16,6 @@ import { ICurrentPlanStatus } from '../../duck/reducers';
 import { IMigHook } from '../../../../client/resources/conversions';
 import { defaultAddEditStatus, createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../../../common/add_edit_state';
 
-interface IHookDefinition {
-  hookName: string;
-  hookImageType: string;
-}
-
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
@@ -40,7 +35,6 @@ export interface IFormValues {
   pvCopyMethodAssignment: {
     [pvName: string]: PvCopyMethod;
   };
-  hookDefinitions: any[];
 }
 
 // TODO add more specific types instead of using `any`
@@ -96,7 +90,7 @@ export interface IOtherProps {
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ editPlanObj, isEdit }) => {
-    const values = {
+    const values: IFormValues = {
       planName: '',
       sourceCluster: null,
       targetCluster: null,
@@ -106,19 +100,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       pvStorageClassAssignment: {},
       pvVerifyFlagAssignment: {},
       pvCopyMethodAssignment: {},
-      hookDefinitions: [],
-      currentHookDefinition: {
-        hookName: '',
-        hookImageType: 'ansible',
-        customContainerImage: 'quay.io/konveyor/hook-runner:latest',
-        ansibleRuntimeImage: 'quay.io/konveyor/hook-runner:latest',
-        clusterType: 'source',
-        srcServiceAccountName: '',
-        destServiceAccountName: '',
-        srcServiceAccountNamespace: '',
-        destServiceAccountNamespace: '',
-        migrationStep: ''
-      }
     };
     if (editPlanObj && isEdit) {
       values.planName = editPlanObj.metadata.name || '';
@@ -129,7 +110,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
       // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
       // See https://github.com/konveyor/mig-ui/issues/797
       // values.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
-      values.hookDefinitions = editPlanObj.spec.hookDefinitions || [];
     }
 
     return values;

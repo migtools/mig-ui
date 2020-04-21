@@ -32,9 +32,10 @@ import {
   AddEditMode,
 } from '../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
+import { max } from 'moment';
+import { IMigHook } from '../../../../client/resources/conversions';
 
 const classNames = require('classnames');
-const styles = require('./HooksStep.module')
 
 const HooksStep = (props) => {
   const {
@@ -51,7 +52,7 @@ const HooksStep = (props) => {
     setIsAddHooksOpen
   } = props;
 
-  const [initialHookValues, setInitialHookValues] = useState({});
+  const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
 
   useEffect(() => {
     if (currentPlan) {
@@ -135,7 +136,11 @@ const HooksStep = (props) => {
     }]
   }
 
-  const hooksFormContainerStyles = classNames(spacing.mtSm, styles.formContainerStyles)
+  const hooksFormContainerStyles = classNames(
+    spacing.mySm,
+    spacing.mx_0,
+    spacing.pxSm,
+    spacing.pySm)
   return (
     <Grid>
       <GridItem className={spacing.mtSm}>
@@ -199,7 +204,6 @@ const HooksStep = (props) => {
 
 
               <Table
-                className={styles.hooksTableStyles}
                 aria-label="hooks-table"
                 cells={columns}
                 rows={rows}

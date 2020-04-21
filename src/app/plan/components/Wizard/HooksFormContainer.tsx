@@ -2,6 +2,17 @@ import { withFormik, FormikProps } from 'formik';
 import utils from '../../../common/duck/utils';
 import HooksFormComponent from './HooksFormComponent';
 interface IHooksFormContainerValues {
+  hookName: string;
+  hookImageType: string;
+  ansibleFile: string;
+  ansibleRuntimeImage: string;
+  customContainerImage: string;
+  srcServiceAccountName: string;
+  srcServiceAccountNamespace: string;
+  destServiceAccountName: string;
+  destServiceAccountNamespace: string;
+  clusterType: string;
+  migrationStep: string;
 }
 interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
@@ -9,7 +20,7 @@ interface IHooksFormContainerOtherProps {
 
 const AddEditHooksFormContainer = withFormik<IHooksFormContainerOtherProps, IHooksFormContainerValues>({
   mapPropsToValues: ({ initialHookValues }) => {
-    const values = {
+    const values: IHooksFormContainerValues = {
       hookName: '',
       hookImageType: 'ansible',
       customContainerImage: 'quay.io/konveyor/hook-runner:latest',
@@ -39,7 +50,7 @@ const AddEditHooksFormContainer = withFormik<IHooksFormContainerOtherProps, IHoo
     return values;
   },
 
-  validate: (values: any) => {
+  validate: (values) => {
     const errors: any = {};
 
     if (!values.hookName) {

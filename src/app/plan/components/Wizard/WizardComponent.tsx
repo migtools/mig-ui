@@ -278,7 +278,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           targetCluster: props.values.targetCluster,
           selectedStorage: props.values.selectedStorage,
           namespaces: props.values.selectedNamespaces,
-          hookDefinitions: props.values.hookDefinitions
         });
       }
     }

@@ -513,7 +513,7 @@ export function updateMigHook(
   migHook: any,
   currentPlanHookRef: any,
   namespace: string,
-  currentPlan: any
+  currentPlan: IPlan
 ) {
   const getImage = (imageType) => {
     if (imageType === 'ansible') {
