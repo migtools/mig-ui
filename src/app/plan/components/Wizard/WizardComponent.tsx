@@ -257,7 +257,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   );
 
   const onMove = (curr, prev) => {
-
     //stop pv polling when navigating
     pvUpdatePollStop();
     //

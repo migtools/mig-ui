@@ -1,5 +1,6 @@
 import { IPlan } from '../../app/plan/components/Wizard/types';
 import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
+import { HooksClusterType, HooksImageType } from '../../app/plan/components/Wizard/HooksFormComponent'
 
 export function createTokenSecret(name: string, namespace: string, rawToken: string, createdForResourceType: string, createdForResource: string) {
   // btoa => to base64, atob => from base64
@@ -508,6 +509,8 @@ export function createMigMigration(
   };
 }
 
+
+
 export function updateMigHook(
   currentHook: any,
   migHook: any,
@@ -516,22 +519,22 @@ export function updateMigHook(
   currentPlan: IPlan
 ) {
   const getImage = (imageType) => {
-    if (imageType === 'ansible') {
+    if (imageType === HooksImageType.Ansible) {
       return migHook.ansibleRuntimeImage;
     }
-    if (imageType === 'custom') {
+    if (imageType === HooksImageType.Custom) {
       return migHook.customContainerImage;
     }
   }
 
 
   const getPlaybook = (imageType) => {
-    if (imageType === 'ansible') {
+    if (imageType === HooksImageType.Ansible) {
       const encodedPlaybook = btoa(migHook.ansibleFile);
 
       return encodedPlaybook;
     }
-    if (imageType === 'custom') {
+    if (imageType === HooksImageType.Custom) {
       return '';
     }
   }
@@ -550,7 +553,7 @@ export function updateMigHook(
   const targetClusterUpdated = migHook.clusterType !== currentTargetCluster;
   const targetClusterValue = targetClusterUpdated ? migHook.clusterType : currentTargetCluster;
 
-  const isCustom = migHook.hookImageType === 'custom' ? true : false
+  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false
 
   const migHookSpec = {
     image: imageValue,
@@ -565,13 +568,13 @@ export function updateMigHook(
   let executionNamespaceValue;
   let serviceAccountUpdated;
   let serviceAccountValue;
-  if (migHook.clusterType === 'source') {
+  if (migHook.clusterType === HooksClusterType.Source) {
     executionNamespaceUpdated = migHook.srcServiceAccountNamespace !== currentExecutionNamespace;
     executionNamespaceValue = executionNamespaceUpdated ? migHook.srcServiceAccountNamespace : currentExecutionNamespace;
     serviceAccountUpdated = migHook.srcServiceAccountNames !== currentServiceAccount;
     serviceAccountValue = serviceAccountUpdated ? migHook.srcServiceAccountName : currentServiceAccount;
   }
-  if (migHook.clusterType === 'destination') {
+  if (migHook.clusterType === HooksClusterType.Source) {
     executionNamespaceUpdated = migHook.destServiceAccountNamespace !== currentExecutionNamespace;
     executionNamespaceValue = executionNamespaceUpdated ? migHook.destServiceAccountNamespace : currentExecutionNamespace;
     serviceAccountUpdated = migHook.destServiceAccountNames !== currentServiceAccount;
@@ -619,31 +622,30 @@ export function createMigHook(
   migHook: any,
   namespace: string
 ) {
+
   const getImage = (imageType) => {
-    if (imageType === 'ansible') {
+    if (imageType === HooksImageType.Ansible) {
       return migHook.ansibleRuntimeImage;
     }
-    if (imageType === 'custom') {
+    if (imageType === HooksImageType.Custom) {
       return migHook.customContainerImage;
     }
   }
 
-
-
   const getPlaybook = (imageType) => {
-    if (imageType === 'ansible') {
+    if (imageType === HooksImageType.Ansible) {
       const encodedPlaybook = btoa(migHook.ansibleFile);
 
       return encodedPlaybook;
     }
-    if (imageType === 'custom') {
+    if (imageType === HooksImageType.Custom) {
       return '';
     }
   }
 
   const image = getImage(migHook.hookImageType);
   const playbook = getPlaybook(migHook.hookImageType);
-  const isCustom = migHook.hookImageType === 'custom' ? true : false
+  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false
 
 
   const migHookSpec = {

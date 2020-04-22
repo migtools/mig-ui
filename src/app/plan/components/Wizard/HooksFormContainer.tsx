@@ -18,13 +18,15 @@ interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
 }
 
+const defaultHookRunnerImage = 'quay.io/konveyor/hook-runner:latest'
+
 const AddEditHooksFormContainer = withFormik<IHooksFormContainerOtherProps, IHooksFormContainerValues>({
   mapPropsToValues: ({ initialHookValues }) => {
     const values: IHooksFormContainerValues = {
       hookName: '',
       hookImageType: 'ansible',
-      customContainerImage: 'quay.io/konveyor/hook-runner:latest',
-      ansibleRuntimeImage: 'quay.io/konveyor/hook-runner:latest',
+      customContainerImage: defaultHookRunnerImage,
+      ansibleRuntimeImage: defaultHookRunnerImage,
       clusterType: 'source',
       srcServiceAccountName: '',
       destServiceAccountName: '',
@@ -36,8 +38,8 @@ const AddEditHooksFormContainer = withFormik<IHooksFormContainerOtherProps, IHoo
     if (initialHookValues) {
       values.hookName = initialHookValues.hookName || '';
       values.hookImageType = initialHookValues.hookImageType || 'ansible';
-      values.customContainerImage = initialHookValues.customContainerImage || 'quay.io/konveyor/hook-runner:latest';
-      values.ansibleRuntimeImage = initialHookValues.ansibleRuntimeImage || 'quay.io/konveyor/hook-runner:latest';
+      values.customContainerImage = initialHookValues.customContainerImage || defaultHookRunnerImage
+      values.ansibleRuntimeImage = initialHookValues.ansibleRuntimeImage || defaultHookRunnerImage
       values.ansibleFile = initialHookValues.ansibleFile || '';
       values.clusterType = initialHookValues.clusterType || 'source';
       values.srcServiceAccountName = initialHookValues.srcServiceAccountName || '';

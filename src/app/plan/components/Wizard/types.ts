@@ -32,15 +32,6 @@ export interface INameNamespaceRef {
   namespace: string;
 }
 
-export interface IHookDefinition {
-  hookName: string;
-  hookImageType: string;
-  customContainerImage: string;
-  ansibleRuyntimeImage: string;
-  capacity: string;
-  // [key: string]: any;
-}
-
 export interface IPlan {
   apiVersion: string;
   kind: string;

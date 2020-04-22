@@ -57,7 +57,6 @@ const HooksStep = (props) => {
   useEffect(() => {
     if (currentPlan) {
       fetchHooksRequest(currentPlan.spec.hooks);
-
     }
   }, []);
 
@@ -193,8 +192,6 @@ const HooksStep = (props) => {
                   </Button>
                 </GridItem>
               </Grid>
-
-
               <Table
                 aria-label="hooks-table"
                 cells={columns}
@@ -206,7 +203,6 @@ const HooksStep = (props) => {
               </Table>
             </GridItem>
           }
-
         </React.Fragment>
       }
     </Grid>

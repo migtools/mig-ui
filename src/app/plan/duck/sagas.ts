@@ -945,7 +945,6 @@ function* updateHookRequest(action) {
       migHookObj.currentPlanHookRefPatch
     );
 
-
     yield client.patch(
       new MigResource(MigResourceKind.MigHook, migMeta.namespace),
       migHook.hookName,

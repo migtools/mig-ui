@@ -46,6 +46,27 @@ interface IHooksFormOtherProps {
   resetAddEditState: () => void;
   currentPlan: any;
 }
+const hookNameKey = 'hookName';
+const hookImageTypeKey = 'hookImageType';
+const ansibleUploadKey = 'ansibleUpload';
+const customImageKey = 'customContainerImage';
+const ansibleRuntimeImageKey = 'ansibleRuntimeImage';
+const clusterTypeKey = 'clusterType';
+const srcServiceAccountNameKey = 'srcServiceAccountName';
+const destServiceAccountNameKey = 'destServiceAccountName';
+const srcServiceAccountNamespaceKey = 'srcServiceAccountNamespace';
+const destServiceAccountNamespaceKey = 'destServiceAccountNamespace';
+const migrationStepKey = 'migrationStep';
+
+export const HooksClusterType = {
+  Destination: 'destination',
+  Source: 'source',
+}
+
+export const HooksImageType = {
+  Ansible: 'ansible',
+  Custom: 'custom'
+}
 
 const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikProps<IHooksFormValues>> = ({
   setIsAddHooksOpen,
@@ -66,17 +87,6 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
-  const hookNameKey = 'hookName';
-  const hookImageTypeKey = 'hookImageType';
-  const ansibleUploadKey = 'ansibleUpload';
-  const customImageKey = 'customContainerImage';
-  const ansibleRuntimeImageKey = 'ansibleRuntimeImage';
-  const clusterTypeKey = 'clusterType';
-  const srcServiceAccountNameKey = 'srcServiceAccountName';
-  const destServiceAccountNameKey = 'destServiceAccountName';
-  const srcServiceAccountNamespaceKey = 'srcServiceAccountNamespace';
-  const destServiceAccountNamespaceKey = 'destServiceAccountNamespace';
-  const migrationStepKey = 'migrationStep';
 
   let initialPhaseOptions = [
     'PreBackup',
@@ -146,15 +156,15 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
             <Grid>
               <GridItem className={spacing.mtSm}>
                 <Radio
-                  isChecked={values.hookImageType === 'ansible'}
+                  isChecked={values.hookImageType === HooksImageType.Ansible}
                   name={hookImageTypeKey}
                   onChange={formikHandleChange}
                   label="Ansible playbook"
                   id="ansible-playbook-radio"
-                  value="ansible"
+                  value={HooksImageType.Ansible}
                 />
               </GridItem>
-              {values.hookImageType === 'ansible' && (
+              {values.hookImageType === HooksImageType.Ansible && (
                 <React.Fragment>
                   <GridItem className={hookImageStyles}>
                     <FormGroup
@@ -202,15 +212,15 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
               )}
               <GridItem className={spacing.mtSm}>
                 <Radio
-                  isChecked={values.hookImageType === 'custom'}
+                  isChecked={values.hookImageType === HooksImageType.Custom}
                   name={hookImageTypeKey}
                   onChange={formikHandleChange}
                   label="Custom container image"
                   id="custom-image-radio"
-                  value="custom"
+                  value={HooksImageType.Custom}
                 />
               </GridItem>
-              {values.hookImageType === 'custom' && (
+              {values.hookImageType === HooksImageType.Custom && (
                 <GridItem className={hookImageStyles}>
                   <FormGroup
                     isRequired
@@ -240,15 +250,15 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
             <Grid>
               <GridItem className={spacing.mtSm}>
                 <Radio
-                  isChecked={values.clusterType === 'source'}
+                  isChecked={values.clusterType === HooksClusterType.Source}
                   name={clusterTypeKey}
                   onChange={formikHandleChange}
                   label="Source cluster"
                   id="source-cluster-radio"
-                  value="source"
+                  value={HooksClusterType.Source}
                 />
               </GridItem>
-              {values.clusterType === 'source' && (
+              {values.clusterType === HooksClusterType.Source && (
                 <React.Fragment>
                   <GridItem className={spacing.mtSm}>
                     <FormGroup
@@ -315,15 +325,15 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
               )}
               <GridItem className={spacing.mtSm}>
                 <Radio
-                  isChecked={values.clusterType === 'destination'}
+                  isChecked={values.clusterType === HooksClusterType.Destination}
                   name={clusterTypeKey}
                   onChange={formikHandleChange}
                   label="Target cluster"
                   id="target-cluster-radio"
-                  value="destination"
+                  value={HooksClusterType.Destination}
                 />
               </GridItem>
-              {values.clusterType === 'destination' && (
+              {values.clusterType === HooksClusterType.Destination && (
                 <React.Fragment>
                   <GridItem className={spacing.mtSm}>
                     <FormGroup
