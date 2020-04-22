@@ -881,8 +881,6 @@ function* removeHookSaga(action) {
       name,
     );
 
-    yield put(PlanActions.removeHookSuccess(name));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
 
     const { currentPlan } = state.plan;
 
@@ -905,6 +903,7 @@ function* removeHookSaga(action) {
       createHooksSpec()
     );
 
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
