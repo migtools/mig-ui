@@ -1,5 +1,6 @@
 import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
+import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
 
 export enum CurrentPlanState {
   Pending = 'Pending',
@@ -34,7 +35,10 @@ export const INITIAL_STATE = {
     state: CurrentPlanState.Pending,
     errorMessage: ''
   } as ICurrentPlanStatus,
-  lockedPlanList: []
+  lockedPlanList: [],
+  isFetchingHookList: false,
+  migHookList: [],
+  hookAddEditStatus: defaultAddEditStatus()
 };
 
 const sortPlans = planList =>
@@ -341,6 +345,117 @@ export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
   return unlockPlan(state, action.planName);
 };
 
+/* 
+Hook Reducers
+*/
+
+export const removeHookRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.removeHookRequest>) => {
+    return {
+      ...state,
+      hookAddEditStatus: fetchingAddEditStatus(),
+      isFetchingHookList: true,
+    };
+  };
+
+export const removeHookSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.removeHookSuccess>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+export const removeHookFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.removeHookFailure>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+export const addHookRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addHookRequest>) => {
+    return {
+      ...state,
+      hookAddEditStatus: fetchingAddEditStatus(),
+      isFetchingHookList: true,
+    };
+  };
+
+export const addHookSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addHookSuccess>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+export const addHookFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.addHookFailure>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+export const hookFetchRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.hookFetchRequest>) => {
+    return {
+      ...state,
+      migHookList: [],
+      isFetchingHookList: true,
+    };
+  };
+export const hookFetchSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.hookFetchSuccess>) => {
+    return {
+      ...state,
+      migHookList: action.migHookList,
+      isFetchingHookList: false,
+    };
+  };
+export const hookFetchFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.hookFetchFailure>) => {
+    return {
+      ...state,
+      migHookList: [],
+      isFetchingHookList: false,
+    };
+  };
+
+export const setHookAddEditStatus = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    hookAddEditStatus: action.status,
+  };
+};
+
+export const updateHookRequest =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateHookRequest>) => {
+    return {
+      ...state,
+      hookAddEditStatus: fetchingAddEditStatus(),
+      isFetchingHookList: true,
+    };
+  };
+export const updateHookSuccess =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateHookSuccess>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+export const updateHookFailure =
+  (state = INITIAL_STATE, action: ReturnType<typeof PlanActions.updateHookSuccess>) => {
+    return {
+      ...state,
+      isFetchingHookList: false,
+    };
+  };
+
+
 
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -378,6 +493,20 @@ const planReducer = (state = INITIAL_STATE, action) => {
       return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
+    case PlanActionTypes.HOOK_FETCH_REQUEST: return hookFetchRequest(state, action);
+    case PlanActionTypes.HOOK_FETCH_SUCCESS: return hookFetchSuccess(state, action);
+    case PlanActionTypes.HOOK_FETCH_FAILURE: return hookFetchFailure(state, action);
+    case PlanActionTypes.REMOVE_HOOK_REQUEST: return removeHookRequest(state, action);
+    case PlanActionTypes.REMOVE_HOOK_FAILURE: return removeHookFailure(state, action);
+    case PlanActionTypes.REMOVE_HOOK_SUCCESS: return removeHookSuccess(state, action);
+    case PlanActionTypes.SET_HOOK_ADD_EDIT_STATUS: return setHookAddEditStatus(state, action);
+    case PlanActionTypes.UPDATE_HOOK_REQUEST: return updateHookRequest(state, action);
+    case PlanActionTypes.UPDATE_HOOK_SUCCESS: return updateHookSuccess(state, action);
+    case PlanActionTypes.UPDATE_HOOK_FAILURE: return updateHookFailure(state, action);
+    case PlanActionTypes.ADD_HOOK_REQUEST: return addHookRequest(state, action);
+    case PlanActionTypes.ADD_HOOK_SUCCESS: return addHookSuccess(state, action);
+    case PlanActionTypes.ADD_HOOK_FAILURE: return addHookFailure(state, action);
+
     default:
       return state;
   }

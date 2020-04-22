@@ -4,6 +4,7 @@ import GeneralForm from './GeneralForm';
 import ResourceSelectForm from './ResourceSelectForm';
 import VolumesForm from './VolumesForm';
 import CopyOptionsForm from './CopyOptionsForm';
+import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../home/duck/context';
 import { FormikProps } from 'formik';
@@ -17,6 +18,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
   const pollingContext = useContext(PollingContext);
+  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
   const {
     values,
@@ -38,6 +40,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     isPollingStatus,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
+    fetchHooksRequest,
+    migHookList,
+    isFetchingHookList,
     getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
@@ -51,6 +56,13 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     editPlanObj,
     updateCurrentPlanStatus,
     pvUpdatePollStop,
+    addHookRequest,
+    updateHookRequest,
+    watchHookAddEditStatus,
+    hookAddEditStatus,
+    cancelAddEditWatch,
+    resetAddEditState,
+    removeHookRequest
   } = props;
 
   enum stepId {
@@ -59,6 +71,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     PersistentVolumes,
     StorageClass,
     MigrationTarget,
+    Hooks,
     Results,
   }
   const handleClose = () => {
@@ -76,6 +89,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       pollingContext.stopAllPolling();
     }
   }, [isOpen]);
+
 
   useEffect(
     () => {
@@ -173,7 +187,35 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             </WizardStepContainer>
           ),
           canJumpTo: stepIdReached >= stepId.StorageClass,
-          nextButtonText: 'Finish',
+        },
+        {
+          id: stepId.Hooks,
+          name: 'Hooks',
+          component: (
+            <WizardStepContainer title="Hooks">
+              <HooksStep
+                removeHookRequest={removeHookRequest}
+                addHookRequest={addHookRequest}
+                updateHookRequest={updateHookRequest}
+                isFetchingHookList={isFetchingHookList}
+                migHookList={migHookList}
+                fetchHooksRequest={fetchHooksRequest}
+                watchHookAddEditStatus={watchHookAddEditStatus}
+                hookAddEditStatus={hookAddEditStatus}
+                cancelAddEditWatch={cancelAddEditWatch}
+                resetAddEditState={resetAddEditState}
+                currentPlan={currentPlan}
+                isAddHooksOpen={isAddHooksOpen}
+                setIsAddHooksOpen={setIsAddHooksOpen}
+              />
+            </WizardStepContainer>
+          ),
+          canJumpTo: stepIdReached >= stepId.Hooks,
+          enableNext:
+            !isAddHooksOpen,
+          hideBackButton: isAddHooksOpen,
+          hideCancelButton: isAddHooksOpen,
+          nextButtonText: 'Finish'
         },
         {
           id: stepId.Results,
@@ -207,6 +249,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       errors,
       touched,
       currentPlanStatus,
+      migHookList,
+      hookAddEditStatus,
+      isAddHooksOpen,
+      isFetchingHookList
     ]
   );
 
@@ -241,6 +287,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       //update plan & start status polling on results page
       planUpdateRequest(props.values, false);
     }
+    if (prev.prevId === stepId.Hooks && curr.id === stepId.StorageClass) {
+      setIsAddHooksOpen(false)
+    }
+
   };
   return (
     <React.Fragment>

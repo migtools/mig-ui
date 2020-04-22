@@ -10,7 +10,6 @@ import {
   DataListAction,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import { PlusCircleIcon } from '@patternfly/react-icons';
 import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
 import ClusterContent from './ClusterContent';
 

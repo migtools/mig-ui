@@ -13,6 +13,9 @@ import {
   PvCopyMethod,
 } from './types';
 import { ICurrentPlanStatus } from '../../duck/reducers';
+import { IMigHook } from '../../../../client/resources/conversions';
+import { defaultAddEditStatus, createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../../../common/add_edit_state';
+
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
@@ -66,6 +69,7 @@ export interface IOtherProps {
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
+  fetchHooksRequest: (currentPlanHooks) => void;
   addPlanRequest: (migPlan) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
   pvResourceList: IPersistentVolumeResource[];
@@ -73,11 +77,20 @@ export interface IOtherProps {
   editPlanObj?: any;
   isEdit: boolean;
   updateCurrentPlanStatus: any;
+  addHookRequest: (migHook: IMigHook) => void;
+  updateHookRequest: (migHook: IMigHook) => void;
+  removeHookRequest: (hookName, migrationStep) => void;
+  migHookList: IMigHook[];
+  isFetchingHookList: boolean;
+  watchHookAddEditStatus: () => void;
+  hookAddEditStatus: any;
+  cancelAddEditWatch: () => void;
+  resetAddEditState: () => void;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ editPlanObj, isEdit }) => {
-    const values = {
+    const values: IFormValues = {
       planName: '',
       sourceCluster: null,
       targetCluster: null,
@@ -152,6 +165,11 @@ const mapStateToProps = state => {
     currentPlan: planSelectors.getCurrentPlan(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
+    hookList: planSelectors.getHooks(state),
+    newHookList: state.plan.newHookList,
+    isFetchingHookList: state.plan.isFetchingHookList,
+    hookAddEditStatus: state.plan.hookAddEditStatus,
+    migHookList: state.plan.migHookList
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -164,12 +182,27 @@ const mapDispatchToProps = dispatch => {
       dispatch(PlanActions.startPlanStatusPolling(planName)),
     stopPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.stopPlanStatusPolling(planName)),
+    addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
+    fetchHooksRequest: (currentPlanHooks) => dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
     planUpdateRequest: (values, isRerunPVDiscovery) =>
       dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
     setCurrentPlan: plan => dispatch(PlanActions.setCurrentPlan(plan)),
     updateCurrentPlanStatus: status => dispatch(PlanActions.updateCurrentPlanStatus(status)),
     pvUpdatePollStop: () => dispatch(PlanActions.pvUpdatePollStop()),
+    watchHookAddEditStatus: (hookName) => {
+      // Push the add edit status into watching state, and start watching
+      dispatch(PlanActions.setHookAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      ));
+      dispatch(PlanActions.watchHookAddEditStatus(hookName));
+    },
+    cancelAddEditWatch: () => dispatch(PlanActions.cancelWatchHookAddEditStatus()),
+    resetAddEditState: () => {
+      dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
+    },
+    removeHookRequest: (name, migrationStep) => dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
   };
 };
 
