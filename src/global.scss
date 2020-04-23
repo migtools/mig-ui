@@ -33,11 +33,11 @@
 }
 
 // shouldn't have to do this, not sure why hidden/visible isn't working
-$mig-ui-breakpoint-list: build-breakpoint-map("base", "sm", "md", "lg", "xl", "2xl", "3xl");
+$mig-ui-breakpoint-list: build-breakpoint-map('base', 'sm', 'md', 'lg', 'xl', '2xl', '3xl');
 
 .pf-c-data-list {
   @each $breakpoint, $breakpoint-value in $mig-ui-breakpoint-list {
-    $breakpoint-name: if($breakpoint != "base", -on-#{$breakpoint}, "");
+    $breakpoint-name: if($breakpoint != 'base', -on-#{$breakpoint}, '');
 
     @include pf-apply-breakpoint($breakpoint, $mig-ui-breakpoint-list) {
       // Hide
@@ -54,6 +54,6 @@ $mig-ui-breakpoint-list: build-breakpoint-map("base", "sm", "md", "lg", "xl", "2
   }
 }
 
-.storage-modal-modifier{
+.storage-modal-modifier {
   min-height: 22em;
 }
