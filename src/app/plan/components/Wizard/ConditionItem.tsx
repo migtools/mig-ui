@@ -13,13 +13,17 @@ import {
   ListItem,
   Text,
   TextContent,
-  TextVariants
+  TextVariants,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IconSize, CheckCircleIcon, ExclamationCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+import {
+  IconSize,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  WarningTriangleIcon,
+} from '@patternfly/react-icons';
 
 const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) => {
-
   return (
     <DataListItem key={conditionIndex} aria-labelledby="cluster-item">
       <DataListItemRow>
@@ -27,27 +31,27 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
           dataListCells={[
             <DataListCell key="type" width={1}>
               <Flex>
-                {condition.type === 'Ready' &&
+                {condition.type === 'Ready' && (
                   <FlexItem>
                     <span className="pf-c-icon pf-m-success">
                       <CheckCircleIcon size={IconSize.sm} />
                     </span>
                   </FlexItem>
-                }
-                {condition.type === 'Warn' &&
+                )}
+                {condition.type === 'Warn' && (
                   <FlexItem>
                     <span className="pf-c-icon pf-m-warning">
                       <WarningTriangleIcon size={IconSize.sm} />
                     </span>
                   </FlexItem>
-                }
-                {condition.type === 'Error' &&
+                )}
+                {condition.type === 'Error' && (
                   <FlexItem>
                     <span className="pf-c-icon pf-m-danger">
                       <ExclamationCircleIcon size={IconSize.sm} />
                     </span>
                   </FlexItem>
-                }
+                )}
                 <FlexItem>
                   <span id="condition-icon">{condition.type}</span>
                 </FlexItem>
@@ -57,7 +61,7 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
               <Flex>
                 <FlexItem>
                   <span id="condition-message">{condition.message}</span>
-                  {condition.isGVKCondition &&
+                  {condition.isGVKCondition && (
                     <Popover
                       minWidth="30em"
                       position={PopoverPosition.top}
@@ -80,16 +84,17 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
                           <List>
                             <ListItem>
                               <TextContent className={spacing.mbMd}>
-                                <Text component={TextVariants.p}>The GVKs below will not be migrated with the rest of the plan
-                            and will need to be updated in the target namespaces post migration.</Text>
+                                <Text component={TextVariants.p}>
+                                  The GVKs below will not be migrated with the rest of the plan and
+                                  will need to be updated in the target namespaces post migration.
+                                </Text>
                               </TextContent>
-
                             </ListItem>
                             <ListItem>
                               <TextContent className={spacing.mbMd}>
                                 <Text component={TextVariants.p}>
-                                  Optionally, you can return to the namespace selection page and remove namespaces
-                                  with unsupported GVKs from the plan.
+                                  Optionally, you can return to the namespace selection page and
+                                  remove namespaces with unsupported GVKs from the plan.
                                 </Text>
                               </TextContent>
                             </ListItem>
@@ -104,9 +109,7 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
                               return (
                                 <div>
                                   <TextContent>
-                                    <Text component={TextVariants.h6}>
-                                      {namespace.name}
-                                    </Text>
+                                    <Text component={TextVariants.h6}>{namespace.name}</Text>
                                   </TextContent>
                                   {namespace.gvks.map((gvk, gvkIndex) => {
                                     return (
@@ -115,7 +118,7 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
                                           {`${gvk.group}/${gvk.version} Resource=${gvk.kind}`}
                                         </Text>
                                       </TextContent>
-                                    )
+                                    );
                                   })}
                                 </div>
                               );
@@ -126,13 +129,13 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
                     >
                       <Button variant="link">See details</Button>
                     </Popover>
-                  }
+                  )}
                 </FlexItem>
               </Flex>
             </DataListCell>,
-
           ]}
-        />,
+        />
+        ,
       </DataListItemRow>
     </DataListItem>
   );

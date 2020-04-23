@@ -1,23 +1,23 @@
 import { createSelector } from 'reselect';
 import moment from 'moment-timezone';
 
-const planSelector = state => state.plan.migPlanList.map(p => p);
+const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
-const getCurrentPlan = state => state.plan.currentPlan;
+const getCurrentPlan = (state) => state.plan.currentPlan;
 
-const getCurrentPlanWithStatus = createSelector([getCurrentPlan], currentPlan => {
+const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) => {
   if (currentPlan && currentPlan.status && currentPlan.status.conditions) {
     let statusObject = {};
     let displayedConditions = currentPlan.status.conditions
       .filter(
-        condition =>
+        (condition) =>
           condition.category === 'Warn' ||
           condition.category === 'Error' ||
           condition.category === 'Critical' ||
           condition.type === 'PlanConflict' ||
           condition.type === 'Ready'
       )
-      .map(condition => {
+      .map((condition) => {
         const isGVKCondition = condition.type === 'GVKsIncompatible';
         if (isGVKCondition) {
           return {
@@ -43,7 +43,7 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], currentPlan =>
     let incompatibleNamespaces = [];
 
     if (currentPlan.status.incompatibleNamespaces) {
-      incompatibleNamespaces = currentPlan.status.incompatibleNamespaces.map(namespace => {
+      incompatibleNamespaces = currentPlan.status.incompatibleNamespaces.map((namespace) => {
         return {
           namespaceName: namespace.name,
           gvks: namespace.gvks,
@@ -52,9 +52,9 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], currentPlan =>
     }
 
     //move ready condition to first if it exists
-    const hasReadyCondition = !!displayedConditions.some(condition => condition.type === 'Ready');
+    const hasReadyCondition = !!displayedConditions.some((condition) => condition.type === 'Ready');
     if (hasReadyCondition) {
-      displayedConditions = displayedConditions.filter(condition => condition.type !== 'Ready');
+      displayedConditions = displayedConditions.filter((condition) => condition.type !== 'Ready');
       displayedConditions.unshift({ type: 'Ready', message: 'The migration plan is ready.' });
     }
 
@@ -67,18 +67,18 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], currentPlan =>
   return null;
 });
 
-const getMigMeta = state => state.migMeta;
+const getMigMeta = (state) => state.migMeta;
 
-const lockedPlansSelector = state => state.plan.lockedPlanList;
+const lockedPlansSelector = (state) => state.plan.lockedPlanList;
 
-const sourceClusterNamespacesSelector = state => state.plan.sourceClusterNamespaces;
+const sourceClusterNamespacesSelector = (state) => state.plan.sourceClusterNamespaces;
 
-const getHooks = state => state.plan.migHookList.map(h => h);
+const getHooks = (state) => state.plan.migHookList.map((h) => h);
 
 const getFilteredNamespaces = createSelector(
   [sourceClusterNamespacesSelector],
-  sourceClusterNamespaces => {
-    const filteredSourceClusterNamespaces = sourceClusterNamespaces.filter(ns => {
+  (sourceClusterNamespaces) => {
+    const filteredSourceClusterNamespaces = sourceClusterNamespaces.filter((ns) => {
       const rejectedRegex = [
         RegExp('^kube-.*', 'i'),
         RegExp('^openshift-.*', 'i'),
@@ -91,7 +91,7 @@ const getFilteredNamespaces = createSelector(
       ];
 
       // Short circuit the regex check if any of them match a rejected regex and filter it out
-      return !rejectedRegex.some(rx => rx.test(ns.name));
+      return !rejectedRegex.some((rx) => rx.test(ns.name));
     });
 
     return filteredSourceClusterNamespaces;
@@ -101,7 +101,7 @@ const getFilteredNamespaces = createSelector(
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
-    const plansWithStatus = plans.map(plan => {
+    const plansWithStatus = plans.map((plan) => {
       let isPlanLocked = null;
       let hasReadyCondition = null;
       let hasPlanError = null;
@@ -122,7 +122,7 @@ const getPlansWithPlanStatus = createSelector(
       let hasPVWarnCondition = null;
       let hasPODWarnCondition = null;
       //check to see if plan is locked
-      isPlanLocked = !!lockedPlans.some(lockedPlan => lockedPlan === plan.MigPlan.metadata.name);
+      isPlanLocked = !!lockedPlans.some((lockedPlan) => lockedPlan === plan.MigPlan.metadata.name);
       //
 
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
@@ -146,16 +146,23 @@ const getPlansWithPlanStatus = createSelector(
         return { ...plan, PlanStatus: emptyStatusObject };
       }
 
-      hasClosedCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Closed').length;
-      hasReadyCondition = !!plan.MigPlan.status.conditions.filter(c => c.type === 'Ready').length;
-      hasPlanError = plan.MigPlan.status.conditions.filter(c => c.category === 'Critical') > 0;
-      hasConflictCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PlanConflict');
-      hasPODWarnCondition = !!plan.MigPlan.status.conditions.some(
-        c => c.type === 'PodLimitExceeded'
+      hasClosedCondition = !!plan.MigPlan.status.conditions.filter((c) => c.type === 'Closed')
+        .length;
+      hasReadyCondition = !!plan.MigPlan.status.conditions.filter((c) => c.type === 'Ready').length;
+      hasPlanError = plan.MigPlan.status.conditions.filter((c) => c.category === 'Critical') > 0;
+      hasConflictCondition = !!plan.MigPlan.status.conditions.some(
+        (c) => c.type === 'PlanConflict'
       );
-      hasPVWarnCondition = !!plan.MigPlan.status.conditions.some(c => c.type === 'PVLimitExceeded');
+      hasPODWarnCondition = !!plan.MigPlan.status.conditions.some(
+        (c) => c.type === 'PodLimitExceeded'
+      );
+      hasPVWarnCondition = !!plan.MigPlan.status.conditions.some(
+        (c) => c.type === 'PVLimitExceeded'
+      );
 
-      const planConflictCond = plan.MigPlan.status.conditions.find(c => c.type === 'PlanConflict');
+      const planConflictCond = plan.MigPlan.status.conditions.find(
+        (c) => c.type === 'PlanConflict'
+      );
       if (planConflictCond) {
         conflictErrorMsg = planConflictCond.message;
       }
@@ -167,40 +174,40 @@ const getPlansWithPlanStatus = createSelector(
         latestType = latest.spec.stage ? 'Stage' : 'Migration';
 
         if (latest.status && latest.status.conditions) {
-          latestIsFailed = !!latest.status.conditions.some(c => c.type === 'Failed');
-          hasCancelingCondition = !!latest.status.conditions.some(c => c.type === 'Canceling');
-          hasCanceledCondition = !!latest.status.conditions.some(c => c.type === 'Canceled');
+          latestIsFailed = !!latest.status.conditions.some((c) => c.type === 'Failed');
+          hasCancelingCondition = !!latest.status.conditions.some((c) => c.type === 'Canceling');
+          hasCanceledCondition = !!latest.status.conditions.some((c) => c.type === 'Canceled');
         }
 
-        hasSucceededStage = !!plan.Migrations.filter(m => {
+        hasSucceededStage = !!plan.Migrations.filter((m) => {
           if (m.status && m.spec.stage) {
             return (
-              m.status.conditions.some(c => c.type === 'Succeeded') &&
-              !m.status.conditions.some(c => c.type === 'Canceled')
+              m.status.conditions.some((c) => c.type === 'Succeeded') &&
+              !m.status.conditions.some((c) => c.type === 'Canceled')
             );
           }
         }).length;
 
-        hasSucceededMigration = !!plan.Migrations.filter(m => {
+        hasSucceededMigration = !!plan.Migrations.filter((m) => {
           if (m.status && !m.spec.stage) {
             return (
-              m.status.conditions.some(c => c.type === 'Succeeded') &&
-              !latest.status.conditions.some(c => c.type === 'Canceled')
+              m.status.conditions.some((c) => c.type === 'Succeeded') &&
+              !latest.status.conditions.some((c) => c.type === 'Canceled')
             );
           }
         }).length;
 
-        hasAttemptedMigration = !!plan.Migrations.some(m => !m.spec.stage);
+        hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
 
-        finalMigrationComplete = !!plan.Migrations.filter(m => {
+        finalMigrationComplete = !!plan.Migrations.filter((m) => {
           if (m.status) {
             return m.spec.stage === false && hasSucceededMigration;
           }
         }).length;
 
-        hasRunningMigrations = !!plan.Migrations.filter(m => {
+        hasRunningMigrations = !!plan.Migrations.filter((m) => {
           if (m.status) {
-            return m.status.conditions.some(c => c.type === 'Running');
+            return m.status.conditions.some((c) => c.type === 'Running');
           }
         }).length;
       }
@@ -232,7 +239,7 @@ const getPlansWithPlanStatus = createSelector(
   }
 );
 
-const getCounts = createSelector([planSelector], plans => {
+const getCounts = createSelector([planSelector], (plans) => {
   const counts = {
     notStarted: [],
     inProgress: [],
@@ -248,24 +255,24 @@ const getCounts = createSelector([planSelector], plans => {
       counts.notStarted.push(plan);
       return;
     }
-    hasErrorCondition = !!plan.MigPlan.status.conditions.some(c => c.category === 'Critical');
+    hasErrorCondition = !!plan.MigPlan.status.conditions.some((c) => c.category === 'Critical');
 
     if (plan.Migrations.length) {
-      hasRunningMigrations = !!plan.Migrations.filter(m => {
+      hasRunningMigrations = !!plan.Migrations.filter((m) => {
         if (m.status) {
-          return m.status.conditions.some(c => c.type === 'Running');
+          return m.status.conditions.some((c) => c.type === 'Running');
         }
       }).length;
 
-      hasSucceededMigration = !!plan.Migrations.filter(m => {
+      hasSucceededMigration = !!plan.Migrations.filter((m) => {
         if (m.status) {
-          return m.status.conditions.some(c => c.type === 'Succeeded');
+          return m.status.conditions.some((c) => c.type === 'Succeeded');
         }
       }).length;
 
-      hasCancelCondition = !!plan.Migrations.filter(m => {
+      hasCancelCondition = !!plan.Migrations.filter((m) => {
         if (m.status) {
-          return m.status.conditions.some(c => c.type === 'Canceling' || c.type === 'Canceled');
+          return m.status.conditions.some((c) => c.type === 'Canceling' || c.type === 'Canceled');
         }
       }).length;
 
@@ -285,7 +292,7 @@ const getCounts = createSelector([planSelector], plans => {
   return counts;
 });
 
-const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
+const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
   const getMigrationStatus = (plan, migration) => {
     const { MigPlan } = plan;
     const status = {
@@ -301,17 +308,17 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
     const zone = moment.tz.guess();
 
     if (migration.status && migration.status.conditions) {
-      const succeededCondition = migration.status.conditions.find(c => {
+      const succeededCondition = migration.status.conditions.find((c) => {
         return c.type === 'Succeeded';
       });
 
-      const canceledCondition = migration.status.conditions.find(c => {
+      const canceledCondition = migration.status.conditions.find((c) => {
         return c.type === 'Canceled';
       });
 
       if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
         status.copied = MigPlan.spec.persistentVolumes.filter(
-          p => p.selection.action === 'copy'
+          (p) => p.selection.action === 'copy'
         ).length;
         if (!migration.spec.stage) {
           status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
@@ -324,8 +331,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
           .format(`DD MMM YYYY, h:mm:ss z`);
       }
       const endTime = migration.status.conditions
-        .filter(c => c.type === 'Succeeded' || c.type === 'Failed')
-        .map(c => c.lastTransitionTime)
+        .filter((c) => c.type === 'Succeeded' || c.type === 'Failed')
+        .map((c) => c.lastTransitionTime)
         .toString();
       status.end = endTime
         ? moment.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`)
@@ -348,7 +355,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
         }
 
         // For critical migrations, show red 100% progress
-        const criticalCondition = migration.status.conditions.find(c => {
+        const criticalCondition = migration.status.conditions.find((c) => {
           return c.category === 'Critical';
         });
         if (criticalCondition) {
@@ -360,7 +367,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
         }
 
         // For failed migrations, show red 100% progress
-        const failedCondition = migration.status.conditions.find(c => {
+        const failedCondition = migration.status.conditions.find((c) => {
           return c.type === 'Failed';
         });
         if (failedCondition) {
@@ -372,12 +379,12 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
         }
 
         // For cancel in progress migrations, show progress in red and a `Canceling - ` step with a running step name as a suffix
-        const cancelingCondition = migration.status.conditions.find(c => {
+        const cancelingCondition = migration.status.conditions.find((c) => {
           return c.type === 'Canceling';
         });
 
         // For running migrations, calculate percent progress
-        const runningCondition = migration.status.conditions.find(c => {
+        const runningCondition = migration.status.conditions.find((c) => {
           return c.type === 'Running';
         });
 
@@ -398,7 +405,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
           return status;
         }
         // For running migrations, calculate percent progress
-        const planNotReadyCondition = migration.status.conditions.find(c => {
+        const planNotReadyCondition = migration.status.conditions.find((c) => {
           return c.type === 'PlanNotReady';
         });
         if (planNotReadyCondition) {
@@ -412,8 +419,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], plans => {
     }
     return status;
   };
-  const plansWithMigrationStatus = plans.map(plan => {
-    const migrationsWithStatus = plan.Migrations.map(migration => {
+  const plansWithMigrationStatus = plans.map((plan) => {
+    const migrationsWithStatus = plan.Migrations.map((migration) => {
       const tableStatus = getMigrationStatus(plan, migration);
       return { ...migration, tableStatus };
     });
