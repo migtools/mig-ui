@@ -1,6 +1,5 @@
 // Description list
 .pf-c-widget-description-list {
-
   // Item
   --pf-c-widget-description-list--dt--item--MarginLeft: var(--pf-global--spacer--md);
 
@@ -36,7 +35,6 @@
       grid-template-columns: max-content auto;
     }
   }
-
 }
 
 // Icon
@@ -57,6 +55,6 @@
   }
 }
 
-.disabled{
+.disabled {
   color: #72767b;
 }

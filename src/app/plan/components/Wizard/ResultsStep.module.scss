@@ -1,39 +1,37 @@
-   .styledIcon{
-      height: 1.3em;
-      width: 1.3em;
+.styledIcon {
+  height: 1.3em;
+  width: 1.3em;
+}
+.styledLoaderWrapper {
+  display: inline-block;
+  margin-right: 0.75rem;
+}
 
-   } 
-   .styledLoaderWrapper{
-      display: inline-block;
-      margin-right: 0.75rem;
+.styledPlanName {
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: 900;
+}
 
-   }
+.styledValidationText {
+  font-size: 1.3em;
+  font-weight: 300;
+  display: inline-block;
+}
 
-   .styledPlanName{
-      display: inline-block;
-      font-size: 1.3em;
-      font-weight: 900;
-   }
+.styledBodyText {
+  font-size: 1em;
+  font-weight: 300;
+  display: inline-block;
+  font-style: italic;
+}
 
-   .styledValidationText{
-      font-size: 1.3em;
-      font-weight: 300;
-      display: inline-block;
-   }
+// override PF styles
+.styledCard {
+  margin: auto !important;
+  width: 50em !important;
+}
 
-   .styledBodyText{
-      font-size: 1.0em;
-      font-weight: 300;
-      display: inline-block;
-      font-style: italic;
-   }
-
-// override PF styles 
-   .styledCard{
-        margin: auto !important; 
-        width: 50em !important;
-   }
-
-   .centerCard{
-      margin-top: 3em !important;
-   }
+.centerCard {
+  margin-top: 3em !important;
+}
