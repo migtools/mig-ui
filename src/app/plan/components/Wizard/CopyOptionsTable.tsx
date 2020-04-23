@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Bullseye,
   EmptyState,
   EmptyStateVariant,
   Title,
+  TitleLevel,
   Grid,
   GridItem,
   TextContent,
@@ -19,9 +20,12 @@ import {
   Flex,
   Tooltip,
   TooltipPosition,
+  Modal,
+  Button,
+  BaseSizes,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { InfoCircleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
@@ -53,6 +57,12 @@ interface ICopyOptionsTableProps
 
 interface OptionWithValue extends SelectOptionObject {
   value: string;
+}
+
+enum VerifyWarningState {
+  Unread = 'Unread',
+  Open = 'Open',
+  Dismissed = 'Dismissed',
 }
 
 const storageClassToString = (storageClass: IClusterStorageClass) =>
@@ -90,6 +100,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       </Bullseye>
     );
   }
+
+  const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
 
   const columns = [
     { title: 'PV name', transforms: [sortable] },
@@ -216,7 +228,12 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               <Checkbox
                 isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
                 isDisabled={!isVerifyCopyAllowed}
-                onChange={(checked) => onVerifyFlagChange(currentPV, checked)}
+                onChange={(checked) => {
+                  onVerifyFlagChange(currentPV, checked);
+                  if (checked && verifyWarningState === VerifyWarningState.Unread) {
+                    setVerifyWarningState(VerifyWarningState.Open);
+                  }
+                }}
                 aria-label={`Verify copy for PV ${pv.name}`}
                 id={`verify-pv-${pv.name}`}
                 name={`verify-pv-${pv.name}`}
@@ -297,6 +314,37 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           className={spacing.mtMd}
           {...paginationProps}
         />
+        <Modal
+          isSmall
+          title="Copy performance warning"
+          header={
+            <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+              <WarningTriangleIcon
+                color="var(--pf-global--warning-color--100)"
+                className={spacing.mrMd}
+              />
+              Copy performance warning
+            </Title>
+          }
+          isOpen={verifyWarningState === VerifyWarningState.Open}
+          onClose={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
+          actions={[
+            <Button
+              key="close"
+              variant="primary"
+              onClick={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
+            >
+              Close
+            </Button>,
+          ]}
+          isFooterLeftAligned
+        >
+          Selecting checksum verification for a PV that will be copied using a filesystem copy
+          method will severely impact the copy performance. Enabling verification will essentially
+          remove any time savings from incremental restore. <br />
+          <br />
+          See the product documentation for more information.
+        </Modal>
       </GridItem>
     </Grid>
   );
