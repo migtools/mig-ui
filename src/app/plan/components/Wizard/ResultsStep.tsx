@@ -1,5 +1,6 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import {
   Button,
   Card,
@@ -14,7 +15,6 @@ import {
   DataListContent,
   Flex,
   FlexItem,
-  FlexModifiers,
 } from '@patternfly/react-core';
 import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
@@ -38,7 +38,7 @@ interface IProps {
   isPollingStatus: boolean;
 }
 
-const ResultsStep: React.FunctionComponent<IProps> = (props) => {
+const ResultsStep: React.FunctionComponent<IProps> = props => {
   const {
     values,
     currentPlan,
@@ -59,13 +59,13 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       case CurrentPlanState.Ready:
         return (
           <span className="pf-c-icon pf-m-success">
-            <CheckCircleIcon size={IconSize.sm} />
+            <CheckCircleIcon size={IconSize.xl} />
           </span>
         );
       case CurrentPlanState.Critical:
         return (
           <span className="pf-c-icon pf-m-danger">
-            <ExclamationCircleIcon size={IconSize.sm} />
+            <ExclamationCircleIcon size={IconSize.xl} />
           </span>
         );
       case CurrentPlanState.Warn:
@@ -80,11 +80,9 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
   }
 
   function HeaderText({ state }): any {
-    const StyledPlanName = (props) => (
-      <span className={styles.styledPlanName}>{props.children}</span>
-    );
+    const StyledPlanName = props => <span className={styles.styledPlanName}>{props.children}</span>;
 
-    const StyledValidationText = (props) => (
+    const StyledValidationText = props => (
       <span className={styles.styledValidationText}>{props.children}</span>
     );
 
@@ -138,18 +136,23 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
   }
 
   function BodyText({ state, errorMessage, warnMessage }): any {
-    const StyledBodyText = (props) => (
-      <span className={styles.styledBodyText}>{props.children}</span>
-    );
+    const StyledBodyText = props => <span className={styles.styledBodyText}>{props.children}</span>;
 
     switch (state) {
       case CurrentPlanState.Pending:
         return <StyledBodyText>This might take a few minutes.</StyledBodyText>;
+      case CurrentPlanState.Warn:
+        return (
+          <StyledBodyText>
+            Select an action from the Migration Plans section of the dashboard to start the
+            migration.
+          </StyledBodyText>
+        );
       case CurrentPlanState.Ready:
         return (
           <StyledBodyText>
             Select an action from the Migration Plans section of the dashboard to start the
-            migration
+            migration.
           </StyledBodyText>
         );
       default:
@@ -210,7 +213,7 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       <GridItem className={styles.centerCard}>
         <Card className={styles.styledCard}>
           <CardHeader>
-            <Flex breakpointMods={[{ modifier: FlexModifiers['justify-content-center'] }]}>
+            <Flex className={flex.justifyContentCenter}>
               <FlexItem>
                 <HeaderIcon state={currentPlanStatus.state} />
               </FlexItem>
