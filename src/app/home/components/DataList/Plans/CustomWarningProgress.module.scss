@@ -1,0 +1,15 @@
+.pf-c-progress.pf-m-warning {
+  --pf-c-progress--m-warning__bar--before--BackgroundColor: var(--pf-global--warning-color--100);
+  --pf-c-progress--m-warning__indicator--BackgroundColor: var(--pf-global--warning-color--100);
+  --pf-c-progress--m-warning__status-icon--Color: var(--pf-global--warning-color--100);
+
+  &.pf-m-warning {
+    --pf-c-progress__bar--before--BackgroundColor: var(
+      --pf-c-progress--m-warning__bar--before--BackgroundColor
+    );
+    --pf-c-progress__indicator--BackgroundColor: var(
+      --pf-c-progress--m-warning__indicator--BackgroundColor
+    );
+    --pf-c-progress__status-icon--Color: var(--pf-c-progress--m-warning__status-icon--Color);
+  }
+}

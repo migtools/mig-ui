@@ -242,6 +242,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       stepName: 'Not started',
       isFailed: false,
       isSucceeded: false,
+      migrationState: null,
     };
     const zone = moment.tz.guess();
 
@@ -254,6 +255,9 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         return c.type === 'Canceled';
       });
 
+      const warnCondition = migration.status.conditions.find((c) => {
+        return c.category === 'Warn';
+      });
       if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
         status.copied = MigPlan.spec.persistentVolumes.filter(
           (p) => p.selection.action === 'copy'
@@ -284,11 +288,22 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return status;
         }
 
+        // For successful migrations with active warning, show warning 100% progress
+
+        if (warnCondition) {
+          status.progress = 100;
+          status.isSucceeded = true;
+          status.stepName = 'Completed with warnings';
+          status.migrationState = 'warn';
+          return status;
+        }
+
         // For successful migrations, show green 100% progress
         if (succeededCondition) {
           status.progress = 100;
           status.isSucceeded = true;
           status.stepName = 'Completed';
+          status.migrationState = 'success';
           return status;
         }
 
@@ -301,6 +316,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.isFailed = true;
           status.stepName = criticalCondition.message;
           status.end = '--';
+          status.migrationState = 'error';
           return status;
         }
 
@@ -313,6 +329,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.isFailed = true;
           status.stepName = failedCondition.reason;
           status.end = '--';
+          status.migrationState = 'error';
           return status;
         }
 
@@ -351,6 +368,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.isFailed = true;
           status.stepName = planNotReadyCondition.message;
           status.end = '--';
+          status.migrationState = 'error';
           return status;
         }
       }
