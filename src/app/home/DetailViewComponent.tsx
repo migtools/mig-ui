@@ -7,19 +7,19 @@ import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { PlanActions } from '../plan/duck/actions';
 import { ClusterActions } from '../cluster/duck/actions';
-import { StorageActions as StorageActions } from '../storage/duck/actions';
+import { StorageActions } from '../storage/duck/actions';
 import ClusterDataListItem from './components/DataList/Clusters/ClusterDataListItem';
 import StorageDataListItem from './components/DataList/Storage/StorageDataListItem';
 import PlanDataListItem from './components/DataList/Plans/PlanDataListItem';
 import { DataList } from '@patternfly/react-core';
+import { PlanContext, ClusterContext, StorageContext } from './duck/context';
 import {
-  PlanContext,
-  ClusterContext,
-  StorageContext,
-} from './duck/context';
-import { createAddEditStatus, AddEditState, AddEditMode, isAddEditButtonDisabled } from '../common/add_edit_state';
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  isAddEditButtonDisabled,
+} from '../common/add_edit_state';
 import { IAddPlanDisabledObjModel } from './AddPlanDisabledObjModel';
-
 
 interface IProps {
   clusterList: any[];
@@ -71,58 +71,53 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     watchStorageAddEditStatus,
     migMeta,
     handleExpandDetails,
-    expanded
+    expanded,
   } = props;
 
-
-  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel | undefined>(
-    {
-      isAddPlanDisabled: true, disabledText: ''
-    }
-  );
+  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<
+    IAddPlanDisabledObjModel | undefined
+  >({
+    isAddPlanDisabled: true,
+    disabledText: '',
+  });
 
   const [currentStorage, setCurrentStorage] = useState(null);
-
 
   useEffect(() => {
     if (clusterList.length < 2) {
       setAddPlanDisabledObj({
         isAddPlanDisabled: true,
-        disabledText: 'A minimum of 2 clusters is required to create a plan.'
+        disabledText: 'A minimum of 2 clusters is required to create a plan.',
       });
       return;
     } else if (storageList.length < 1) {
       setAddPlanDisabledObj({
         isAddPlanDisabled: true,
-        disabledText: 'A minimum of 1 replication repository is required to create a plan.'
+        disabledText: 'A minimum of 1 replication repository is required to create a plan.',
       });
       return;
-
     } else {
       setAddPlanDisabledObj({
         isAddPlanDisabled: false,
-        disabledText: 'Click to create a plan.'
+        disabledText: 'Click to create a plan.',
       });
-
     }
   }, [clusterList, storageList]);
 
-
-
-  const handleStageTriggered = plan => {
+  const handleStageTriggered = (plan) => {
     runStageRequest(plan);
   };
   const handleRunMigration = (plan, disableQuiesce) => {
     runMigrationRequest(plan, disableQuiesce);
   };
 
-  const handleDeletePlan = plan => {
+  const handleDeletePlan = (plan) => {
     planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
   };
 
-  const handleMigrationCancelRequest = migrationName => {
+  const handleMigrationCancelRequest = (migrationName) => {
     migrationCancelRequest(migrationName);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -139,7 +134,9 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             clusterCount={clusterList.length}
           />
         </ClusterContext.Provider>
-        <StorageContext.Provider value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}>
+        <StorageContext.Provider
+          value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
+        >
           <StorageDataListItem
             dataList={storageList}
             id={DataListItems.StorageList}
@@ -150,15 +147,17 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             storageCount={storageList.length}
           />
         </StorageContext.Provider>
-        <PlanContext.Provider value={{
-          handleStageTriggered,
-          handleDeletePlan,
-          handleRunMigration,
-          handleMigrationCancelRequest,
-          planList,
-          clusterList,
-          storageList,
-        }}>
+        <PlanContext.Provider
+          value={{
+            handleStageTriggered,
+            handleDeletePlan,
+            handleRunMigration,
+            handleMigrationCancelRequest,
+            planList,
+            clusterList,
+            storageList,
+          }}
+        >
           <PlanDataListItem
             id={DataListItems.PlanList}
             planList={planList}
@@ -195,37 +194,41 @@ function mapStateToProps(state) {
   };
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    runStageRequest: plan => dispatch(PlanActions.runStageRequest(plan)),
-    runMigrationRequest: (plan, disableQuiesce) => dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
-    removeCluster: name => dispatch(ClusterActions.removeClusterRequest(name)),
-    removeStorage: name => dispatch(StorageActions.removeStorageRequest(name)),
+    runStageRequest: (plan) => dispatch(PlanActions.runStageRequest(plan)),
+    runMigrationRequest: (plan, disableQuiesce) =>
+      dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
+    removeCluster: (name) => dispatch(ClusterActions.removeClusterRequest(name)),
+    removeStorage: (name) => dispatch(StorageActions.removeStorageRequest(name)),
     updateStageProgress: (plan, progress) =>
       dispatch(PlanActions.updateStageProgress(plan.planName, progress)),
-    stagingSuccess: plan => dispatch(PlanActions.stagingSuccess(plan.planName)),
-    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
-    planCloseAndDeleteRequest: planName => dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
-    migrationCancelRequest: migrationName => dispatch(PlanActions.migrationCancelRequest(migrationName)),
+    stagingSuccess: (plan) => dispatch(PlanActions.stagingSuccess(plan.planName)),
+    updatePlans: (updatedPlans) => dispatch(PlanActions.updatePlans(updatedPlans)),
+    planCloseAndDeleteRequest: (planName) =>
+      dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
+    migrationCancelRequest: (migrationName) =>
+      dispatch(PlanActions.migrationCancelRequest(migrationName)),
 
     watchClusterAddEditStatus: (clusterName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(ClusterActions.setClusterAddEditStatus(
-        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-      ));
+      dispatch(
+        ClusterActions.setClusterAddEditStatus(
+          createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+        )
+      );
       dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
     },
     watchStorageAddEditStatus: (storageName) => {
       // Push the add edit status into watching state, and start watching
-      dispatch(StorageActions.setStorageAddEditStatus(
-        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-      ));
+      dispatch(
+        StorageActions.setStorageAddEditStatus(
+          createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+        )
+      );
       dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     },
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DetailViewComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(DetailViewComponent);

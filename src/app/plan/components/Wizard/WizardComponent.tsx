@@ -62,7 +62,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     hookAddEditStatus,
     cancelAddEditWatch,
     resetAddEditState,
-    removeHookRequest
+    removeHookRequest,
   } = props;
 
   enum stepId {
@@ -89,7 +89,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       pollingContext.stopAllPolling();
     }
   }, [isOpen]);
-
 
   useEffect(
     () => {
@@ -211,11 +210,10 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             </WizardStepContainer>
           ),
           canJumpTo: stepIdReached >= stepId.Hooks,
-          enableNext:
-            !isAddHooksOpen,
+          enableNext: !isAddHooksOpen,
           hideBackButton: isAddHooksOpen,
           hideCancelButton: isAddHooksOpen,
-          nextButtonText: 'Finish'
+          nextButtonText: 'Finish',
         },
         {
           id: stepId.Results,
@@ -252,7 +250,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       migHookList,
       hookAddEditStatus,
       isAddHooksOpen,
-      isFetchingHookList
+      isFetchingHookList,
     ]
   );
 
@@ -288,9 +286,8 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       planUpdateRequest(props.values, false);
     }
     if (prev.prevId === stepId.Hooks && curr.id === stepId.StorageClass) {
-      setIsAddHooksOpen(false)
+      setIsAddHooksOpen(false);
     }
-
   };
   return (
     <React.Fragment>
@@ -305,7 +302,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}
-          onSubmit={event => event.preventDefault()}
+          onSubmit={(event) => event.preventDefault()}
         />
       )}
     </React.Fragment>

@@ -52,11 +52,13 @@ test('Test NamespacedResource setResource', () => {
     },
   };
 
-  localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify({ clusters: {[hostCluster] : {}} }));
+  localStorage.setItem(
+    LocalStorageMockedDataKey,
+    JSON.stringify({ clusters: { [hostCluster]: {} } })
+  );
   store.setResource(migResource, planName, examplePlan);
-  expect(_.isEqual(
-    JSON.stringify(expected),
-    localStorage.getItem(LocalStorageMockedDataKey)))
-    .toBe(true);
+  expect(_.isEqual(JSON.stringify(expected), localStorage.getItem(LocalStorageMockedDataKey))).toBe(
+    true
+  );
   localStorage.clear();
 });

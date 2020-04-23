@@ -54,37 +54,37 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
   if (clusterList.length) {
     srcClusterOptions = clusterList
       .filter(
-        cluster =>
+        (cluster) =>
           cluster.MigCluster.metadata.name !== values.targetCluster &&
           cluster.ClusterStatus.hasReadyCondition
       )
-      .map(cluster => cluster.MigCluster.metadata.name);
+      .map((cluster) => cluster.MigCluster.metadata.name);
 
     targetClusterOptions = clusterList
       .filter(
-        cluster =>
+        (cluster) =>
           cluster.MigCluster.metadata.name !== values.sourceCluster &&
           cluster.ClusterStatus.hasReadyCondition
       )
-      .map(cluster => cluster.MigCluster.metadata.name);
+      .map((cluster) => cluster.MigCluster.metadata.name);
   }
 
   if (storageList.length) {
     storageOptions = storageList
-      .filter(storage => storage.StorageStatus.hasReadyCondition)
-      .map(storage => storage.MigStorage.metadata.name);
+      .filter((storage) => storage.StorageStatus.hasReadyCondition)
+      .map((storage) => storage.MigStorage.metadata.name);
   }
 
-  const handleStorageChange = value => {
-    const matchingStorage = storageList.find(c => c.MigStorage.metadata.name === value);
+  const handleStorageChange = (value) => {
+    const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
       setFieldValue('selectedStorage', value);
       setFieldTouched('selectedStorage');
     }
   };
 
-  const handleSourceChange = value => {
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+  const handleSourceChange = (value) => {
+    const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
@@ -93,8 +93,8 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
     }
   };
 
-  const handleTargetChange = value => {
-    const matchingCluster = clusterList.find(c => c.MigCluster.metadata.name === value);
+  const handleTargetChange = (value) => {
+    const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
       setFieldTouched('targetCluster');

@@ -1,9 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-} from '@patternfly/react-table';
+import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
@@ -25,12 +21,10 @@ import {
   TextInput,
   Flex,
   FlexItem,
-  FlexModifiers
+  FlexModifiers,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import {
-  AddEditMode,
-} from '../../../common/add_edit_state';
+import { AddEditMode } from '../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
 import { max } from 'moment';
 import { IMigHook } from '../../../../client/resources/conversions';
@@ -49,7 +43,7 @@ const HooksStep = (props) => {
     removeHookRequest,
     watchHookAddEditStatus,
     isAddHooksOpen,
-    setIsAddHooksOpen
+    setIsAddHooksOpen,
   } = props;
 
   const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
@@ -64,17 +58,18 @@ const HooksStep = (props) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
-        setIsAddHooksOpen(false)
+        setIsAddHooksOpen(false);
         break;
       }
       case AddEditMode.Add: {
         addHookRequest(hookValues);
-        setIsAddHooksOpen(false)
+        setIsAddHooksOpen(false);
         break;
       }
       default: {
         console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${hookAddEditStatus.mode}. Ignoring.`);
+          `onAddEditSubmit, but unknown mode was found: ${hookAddEditStatus.mode}. Ignoring.`
+        );
       }
     }
   };
@@ -86,70 +81,73 @@ const HooksStep = (props) => {
     { title: 'Migration step' },
   ];
 
-  let rows = []
+  let rows = [];
   let actions = [];
   if (migHookList.length > 0) {
     rows = migHookList.map((migHook, id) => {
       return {
         cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
-      }
+      };
     });
     actions = [
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title)
-          setInitialHookValues(currentHook)
-          setIsAddHooksOpen(true)
+          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          setInitialHookValues(currentHook);
+          setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);
-
-        }
+        },
       },
       {
         title: 'Delete',
         onClick: (event, rowId, rowData, extra) => {
-          removeHookRequest(rowData.name.title, rowData["migration-step"].title)
-        }
-      }
-    ]
-
+          removeHookRequest(rowData.name.title, rowData['migration-step'].title);
+        },
+      },
+    ];
   }
   if (rows.length === 0) {
-    rows = [{
-      heightAuto: true,
-      cells: [
-        {
-          props: { colSpan: 8 },
-          title: (
-            <Bullseye>
-              <EmptyState variant={EmptyStateVariant.full}>
-                <EmptyStateIcon icon={PlusCircleIcon} />
-                <Title headingLevel="h4" size="lg">
-                  No hooks have been added to this migration plan.
-                </Title>
-              </EmptyState>
-            </Bullseye >
-          )
-        },
-      ]
-    }]
+    rows = [
+      {
+        heightAuto: true,
+        cells: [
+          {
+            props: { colSpan: 8 },
+            title: (
+              <Bullseye>
+                <EmptyState variant={EmptyStateVariant.full}>
+                  <EmptyStateIcon icon={PlusCircleIcon} />
+                  <Title headingLevel="h4" size="lg">
+                    No hooks have been added to this migration plan.
+                  </Title>
+                </EmptyState>
+              </Bullseye>
+            ),
+          },
+        ],
+      },
+    ];
   }
 
   const hooksFormContainerStyles = classNames(
     spacing.mySm,
     spacing.mx_0,
     spacing.pxSm,
-    spacing.pySm)
+    spacing.pySm
+  );
   return (
     <Grid>
       <GridItem className={spacing.mtSm}>
         <TextContent>
           <Text component={TextVariants.p}>
-            Hooks are commands that can be run at various steps in the migration process. They are defined in a container image or an Ansible playbook and can be run on either the source or target cluster.
+            Hooks are commands that can be run at various steps in the migration process. They are
+            defined in a container image or an Ansible playbook and can be run on either the source
+            or target cluster.
           </Text>
         </TextContent>
       </GridItem>
-      {isAddHooksOpen &&
+      {isAddHooksOpen && (
         <GridItem className={hooksFormContainerStyles}>
           <HooksFormContainer
             onAddEditHookSubmit={onAddEditHookSubmit}
@@ -158,12 +156,13 @@ const HooksStep = (props) => {
             setIsAddHooksOpen={setIsAddHooksOpen}
             isAddHooksOpen={isAddHooksOpen}
             isEditHook={false}
-            {...props} />
+            {...props}
+          />
         </GridItem>
-      }
-      {(!isAddHooksOpen) &&
+      )}
+      {!isAddHooksOpen && (
         <React.Fragment>
-          {isFetchingHookList ?
+          {isFetchingHookList ? (
             <Bullseye>
               <EmptyState variant="large">
                 <div className="pf-c-empty-state__icon">
@@ -174,7 +173,7 @@ const HooksStep = (props) => {
                 </Title>
               </EmptyState>
             </Bullseye>
-            :
+          ) : (
             <GridItem className={hooksFormContainerStyles}>
               <Grid gutter="md">
                 <GridItem span={4}>
@@ -185,26 +184,20 @@ const HooksStep = (props) => {
                     onClick={() => {
                       setIsAddHooksOpen(true);
                       setInitialHookValues({});
-                    }
-                    }
+                    }}
                   >
                     Add hook
                   </Button>
                 </GridItem>
               </Grid>
-              <Table
-                aria-label="hooks-table"
-                cells={columns}
-                rows={rows}
-                actions={actions}
-              >
+              <Table aria-label="hooks-table" cells={columns} rows={rows} actions={actions}>
                 <TableHeader />
                 <TableBody />
               </Table>
             </GridItem>
-          }
+          )}
         </React.Fragment>
-      }
+      )}
     </Grid>
   );
 };

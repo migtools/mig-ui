@@ -6,16 +6,14 @@ import {
   GridItem,
   Title,
   TitleLevel,
-  BaseSizes
+  BaseSizes,
 } from '@patternfly/react-core';
-import {
-  ErrorCircleOIcon,
-} from '@patternfly/react-icons';
-import { useHistory } from "react-router-dom";
+import { ErrorCircleOIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
 import { PollingContext } from '../../home/duck/context';
-const styles = require('./ErrorModal.module')
+const styles = require('./ErrorModal.module');
 
 interface IProps {
   onHandleClose: () => null;
@@ -29,7 +27,9 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   const pollingContext = useContext(PollingContext);
 
   const { isOpen, errorModalObj, clearErrors } = props;
-  if (!errorModalObj) { return null; }
+  if (!errorModalObj) {
+    return null;
+  }
 
   const header = (
     <React.Fragment>
@@ -49,24 +49,20 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
       <Grid gutter="md">
-        <form
-        >
+        <form>
           <GridItem className={styles.modalHeader}>
             Unable to retrieve one or more resource objects (migcluster, migstorage, migplan).
           </GridItem>
-          <GridItem className={styles.gridMargin}>
-            Refresh your certificate and try again
-          </GridItem>
+          <GridItem className={styles.gridMargin}>Refresh your certificate and try again</GridItem>
           <GridItem className={styles.actionButtons}>
             <Grid gutter="md">
               <GridItem span={5}>
-                <Button variant="primary"
+                <Button
+                  variant="primary"
                   onClick={() => {
                     history.push('/cert-error');
-                    clearErrors()
-
-                  }
-                  }
+                    clearErrors();
+                  }}
                 >
                   Refresh Certificate
                 </Button>
@@ -78,9 +74,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   onClick={() => {
                     clearErrors();
                     pollingContext.startAllDefaultPolling();
-                  }
-                  }
-
+                  }}
                 >
                   Cancel
                 </Button>
@@ -89,15 +83,15 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
           </GridItem>
         </form>
       </Grid>
-    </Modal >
+    </Modal>
   );
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     migMeta: state.migMeta,
   }),
-  dispatch => ({
+  (dispatch) => ({
     clearErrors: () => dispatch(AlertActions.errorModalClear()),
   })
 )(ErrorModal);

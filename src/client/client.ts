@@ -53,7 +53,7 @@ export class ClusterClient extends OAuthClient {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 
   public get = async (resource: KubeResource, name: string, params?: object): Promise<any> => {
     try {
@@ -62,7 +62,7 @@ export class ClusterClient extends OAuthClient {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 
   public put = async (
     resource: KubeResource,
@@ -76,25 +76,34 @@ export class ClusterClient extends OAuthClient {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 
-  public patch = async (resource: KubeResource, name: string, patch: object, params?: object): Promise<any> => {
+  public patch = async (
+    resource: KubeResource,
+    name: string,
+    patch: object,
+    params?: object
+  ): Promise<any> => {
     try {
       return await this.patchRequester.patch(resource.namedPath(name), patch, { params });
     } catch (err) {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 
-  public create = async (resource: KubeResource, newObject: object, params?: object): Promise<any> => {
+  public create = async (
+    resource: KubeResource,
+    newObject: object,
+    params?: object
+  ): Promise<any> => {
     try {
       return await this.requester.post(resource.listPath(), newObject, { params });
     } catch (err) {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 
   public delete = async (resource: KubeResource, name: string, params?: object): Promise<any> => {
     try {
@@ -103,6 +112,5 @@ export class ClusterClient extends OAuthClient {
       super.checkExpiry(err);
       throw err;
     }
-  }
-
+  };
 }

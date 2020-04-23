@@ -21,13 +21,13 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
   const getOptionKeyFromOptionValue = (optionValue: string | SelectOptionObject) =>
-    category.selectOptions.find(optionProps => optionProps.value === optionValue).key;
+    category.selectOptions.find((optionProps) => optionProps.value === optionValue).key;
   const getChipFromOptionValue = (optionValue: string | SelectOptionObject) =>
     optionValue.toString();
   const getOptionKeyFromChip = (chip: string) =>
-    category.selectOptions.find(optionProps => optionProps.value.toString() === chip).key;
+    category.selectOptions.find((optionProps) => optionProps.value.toString() === chip).key;
   const getOptionValueFromOptionKey = (optionKey: string) =>
-    category.selectOptions.find(optionProps => optionProps.key === optionKey).value;
+    category.selectOptions.find((optionProps) => optionProps.key === optionKey).value;
 
   const onFilterSelect = (value: string | SelectOptionObject) => {
     const optionKey = getOptionKeyFromOptionValue(value);
@@ -39,7 +39,7 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
   };
   const onFilterClear = (chip: string) => {
     const optionKey = getOptionKeyFromChip(chip);
-    const newValue = filterValue ? filterValue.filter(val => val !== optionKey) : [];
+    const newValue = filterValue ? filterValue.filter((val) => val !== optionKey) : [];
     setFilterValue(newValue.length > 0 ? newValue : null);
   };
 
@@ -62,7 +62,7 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
         isExpanded={isFilterDropdownOpen}
         placeholderText="Any"
       >
-        {category.selectOptions.map(optionProps => (
+        {category.selectOptions.map((optionProps) => (
           <SelectOption {...optionProps} />
         ))}
       </Select>

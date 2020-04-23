@@ -7,7 +7,7 @@ import {
   Tooltip,
   TooltipPosition,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
@@ -29,7 +29,9 @@ const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
 const valuesHaveUpdate = (values, currentStorage) => {
-  if (!currentStorage) { return true; }
+  if (!currentStorage) {
+    return true;
+  }
 
   const existingMigStorageName = currentStorage.MigStorage.metadata.name;
   const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
@@ -63,7 +65,6 @@ interface IOtherProps {
 }
 
 const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
-
   const {
     addEditStatus: currentStatus,
     currentStorage,
@@ -76,8 +77,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     setFieldValue,
     onClose,
     handleSubmit,
-    handleBlur
-
+    handleBlur,
   } = props;
   const nameKey = 'name';
   const gcpBucketKey = 'gcpBucket';
@@ -85,14 +85,14 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
   const [isBlobHidden, setIsBlobHidden] = useState(true);
 
-  const handleBlobHiddenToggle = e => {
+  const handleBlobHiddenToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsBlobHidden(!isBlobHidden);
   };
 
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -167,7 +167,10 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(
-              currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
+              currentStatus,
+              errors,
+              touched,
+              valuesHaveUpdate(values, currentStorage)
             )}
             style={{ marginRight: '10px' }}
           >
@@ -175,9 +178,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Add or edit your storage details
-            </div>}>
+            content={<div>Add or edit your storage details</div>}
+          >
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
             </span>
@@ -185,7 +187,8 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus, valuesHaveUpdate(values, currentStorage),
+              currentStatus,
+              valuesHaveUpdate(values, currentStorage)
             )}
             onClick={() => checkConnection(values.name)}
           >
@@ -193,9 +196,9 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Re-check your storage connection state
-            </div>}><OutlinedQuestionCircleIcon />
+            content={<div>Re-check your storage connection state</div>}
+          >
+            <OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
         <GridItem>

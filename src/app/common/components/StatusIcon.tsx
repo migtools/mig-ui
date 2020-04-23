@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
-const styles = require("./StatusIcon.module")
+const styles = require('./StatusIcon.module');
 interface IProps {
   isReady: boolean;
   isDisabled?: boolean;

@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
-import { DataList, DataListContent, DataListItem, Flex, FlexItem} from '@patternfly/react-core';
+import { DataList, DataListContent, DataListItem, Flex, FlexItem } from '@patternfly/react-core';
 import PlanActions from './PlanActions';
 import PlanStatus from './PlanStatus';
 import MigrationsTable from './MigrationsTable';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  compoundExpand,
-} from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, compoundExpand } from '@patternfly/react-table';
 import { MigrationIcon, DatabaseIcon, ServiceIcon } from '@patternfly/react-icons';
 import PlanEmptyState from './PlanEmptyState';
 import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
-
 
 const columns = [
   'Name',
@@ -32,7 +26,7 @@ const columns = [
     title: 'PVs',
   },
   'Last state',
-  ''
+  '',
 ];
 
 interface IPlanContentProps {
@@ -55,9 +49,17 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
       const MigrationsIcon = () => {
         const migrationCount = plan.Migrations.length || 0;
         if (migrationCount > 0) {
-          return <span className="pf-c-icon pf-m-info"><MigrationIcon /> {migrationCount}</span>;
+          return (
+            <span className="pf-c-icon pf-m-info">
+              <MigrationIcon /> {migrationCount}
+            </span>
+          );
         } else {
-          return <span className="pf-c-icon"><MigrationIcon /> {migrationCount}</span>;
+          return (
+            <span className="pf-c-icon">
+              <MigrationIcon /> {migrationCount}
+            </span>
+          );
         }
       };
       const parentIndex = planIndex * 2;
@@ -73,11 +75,13 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
         }
       }
 
-      const migStorageName = plan.MigPlan.spec.migStorageRef ?
-        plan.MigPlan.spec.migStorageRef.name : 'N/A';
+      const migStorageName = plan.MigPlan.spec.migStorageRef
+        ? plan.MigPlan.spec.migStorageRef.name
+        : 'N/A';
 
-      const pvCount = plan.MigPlan.spec.persistentVolumes ?
-        plan.MigPlan.spec.persistentVolumes.length : 0;
+      const pvCount = plan.MigPlan.spec.persistentVolumes
+        ? plan.MigPlan.spec.persistentVolumes.length
+        : 0;
       return [
         {
           cells: [
@@ -125,18 +129,14 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
               ),
             },
             {
-              title: <PlanStatus
-                plan={plan}
-              />,
+              title: <PlanStatus plan={plan} />,
             },
             {
-              title: <PlanActions
-                plan={plan}
-              />,
+              title: <PlanActions plan={plan} />,
 
               props: {
                 className: 'pf-c-table__action',
-              }
+              },
             },
           ],
         },
@@ -174,9 +174,9 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
 
     if (!isOpen) {
       // close all expanded rows
-      newRows.forEach(row => {
+      newRows.forEach((row) => {
         //set all other expanded cells false in this row if we are expanding
-        row.cells.forEach(cell => {
+        row.cells.forEach((cell) => {
           if (cell.props) {
             cell.props.isOpen = false;
           }
@@ -187,18 +187,16 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
       newRows[rowIndex].isOpen = true;
     } else {
       newRows[rowIndex].cells[colIndex].props.isOpen = false;
-      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(cell => cell.props && cell.props.isOpen);
+      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(
+        (cell) => cell.props && cell.props.isOpen
+      );
     }
 
     setCurrentRows(newRows);
   };
 
   return (
-    <DataListContent
-      noPadding
-      aria-label="plan-items-content-container"
-      isHidden={!isExpanded}
-    >
+    <DataListContent noPadding aria-label="plan-items-content-container" isHidden={!isExpanded}>
       {planList.length > 0 ? (
         <DataList aria-label="plan-item-list">
           <DataListItem key="id" aria-labelledby="simple-item1">
@@ -214,10 +212,7 @@ const PlanContent: React.FunctionComponent<IPlanContentProps> = ({
           </DataListItem>
         </DataList>
       ) : (
-        <PlanEmptyState
-          toggleOpen={toggleWizardOpen}
-          addPlanDisabledObj={addPlanDisabledObj}
-        />
+        <PlanEmptyState toggleOpen={toggleWizardOpen} addPlanDisabledObj={addPlanDisabledObj} />
       )}
     </DataListContent>
   );

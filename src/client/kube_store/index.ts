@@ -20,41 +20,43 @@ export class KubeStore {
     // Returns the chunk of data relevant for mocking data from this k8s cluster
     // All subsequent calls will use this data to lookup their responses
     const d = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
-    if (! ('clusters' in d)) {
+    if (!('clusters' in d)) {
       alert('Unable to find expected mocked data for "clusters"');
       return {};
     }
     // Returning a new copy of data on each call to limit unintentional changes
-    return {...d};
+    return { ...d };
   }
 
   private data() {
     // Focused on returning just the data for 'clusterName'
     const d = this._data();
-    if (! (this.clusterName in d['clusters'])) {
+    if (!(this.clusterName in d['clusters'])) {
       alert('Unable to find expected mocked data for clusterName "' + this.clusterName + '"');
       return {};
     }
-    return d['clusters'][this.clusterName]; 
+    return d['clusters'][this.clusterName];
   }
 
   private ensureDataLoaded() {
     let localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
-    if ((!localData) || (!localData.TIME_STAMP) || (localData.TIME_STAMP < mocked_data.TIME_STAMP)) {
+    if (!localData || !localData.TIME_STAMP || localData.TIME_STAMP < mocked_data.TIME_STAMP) {
       localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(mocked_data));
     }
     localData = JSON.parse(localStorage.getItem(LocalStorageMockedDataKey));
   }
 
-  private setResourceStatus(apiKey, resourceName, obj, statusType, timeout=2000) {
+  private setResourceStatus(apiKey, resourceName, obj, statusType, timeout = 2000) {
     setTimeout(() => {
       if (!obj['status']) {
         obj['status'] = {};
       }
-      obj['status']['conditions'] = [{
-        lastTransitionTime: new Date().toUTCString(),
-        type: statusType,
-      }];
+      obj['status']['conditions'] = [
+        {
+          lastTransitionTime: new Date().toUTCString(),
+          type: statusType,
+        },
+      ];
       if (this.data()[apiKey][resourceName]) {
         this.updateMockedData(apiKey, resourceName, obj);
       }
@@ -94,9 +96,11 @@ export class KubeStore {
       }
 
       const mockPVDiscovery = {
-        conditions: [{
-          type: 'PvsDiscovered',
-        }]
+        conditions: [
+          {
+            type: 'PvsDiscovered',
+          },
+        ],
       };
       migPlan['status'] = mockPVDiscovery;
       this.updateMockedData(apiKey, resourceName, migPlan);
@@ -141,11 +145,13 @@ export class KubeStore {
     }
     steps.map((migrationPhase, step) => {
       setTimeout(() => {
-        migMigration['status']['conditions'] = [{
-          type: 'Running',
-          reason: migrationPhase,
-          message: `Step: ${step + 1}/${steps.length}`
-        }];
+        migMigration['status']['conditions'] = [
+          {
+            type: 'Running',
+            reason: migrationPhase,
+            message: `Step: ${step + 1}/${steps.length}`,
+          },
+        ];
         migMigration['status']['phase'] = migrationPhase;
         this.updateMockedData(apiKey, resourceName, migMigration);
       }, 3000 + step * 3000);
@@ -159,31 +165,38 @@ export class KubeStore {
     } else {
       timeout = 65000;
       setTimeout(() => {
-        const planResource = new MigResource(MigResourceKind.MigPlan, migMigration.spec.migPlanRef.namespace);
+        const planResource = new MigResource(
+          MigResourceKind.MigPlan,
+          migMigration.spec.migPlanRef.namespace
+        );
         const closedPlan = this.getResource(
           new MigResource(MigResourceKind.MigPlan, migMigration.spec.migPlanRef.namespace),
           migMigration.spec.migPlanRef.name
         );
         closedPlan['spec']['closed'] = true;
-        closedPlan['status']['conditions'] = [{
-          lastTransitionTime: new Date().toUTCString(),
-          type: 'Closed',
-        }];
+        closedPlan['status']['conditions'] = [
+          {
+            lastTransitionTime: new Date().toUTCString(),
+            type: 'Closed',
+          },
+        ];
         this.updateMockedData(
           planResource.listPath().substr(1),
           migMigration.spec.migPlanRef.name,
-          closedPlan);
+          closedPlan
+        );
       }, timeout + 3000);
     }
     setTimeout(() => {
-      migMigration['status']['conditions'] = [{
-        lastTransitionTime: new Date().toUTCString(),
-        type: 'Succeeded',
-      }];
+      migMigration['status']['conditions'] = [
+        {
+          lastTransitionTime: new Date().toUTCString(),
+          type: 'Succeeded',
+        },
+      ];
       migMigration['status']['phase'] = 'Completed';
       this.updateMockedData(apiKey, resourceName, migMigration);
     }, timeout);
-
   };
 
   private setMigrationStarted = (apiKey, resourceName, migMigration) => {
@@ -191,8 +204,8 @@ export class KubeStore {
       migMigration['status'] = {};
       migMigration['status']['conditions'] = [];
       migMigration['status']['phase'] = 'Started';
-      migMigration['status']['startTimestamp'] = new Date().toUTCString(),
-      this.updateMockedData(apiKey, resourceName, migMigration);
+      (migMigration['status']['startTimestamp'] = new Date().toUTCString()),
+        this.updateMockedData(apiKey, resourceName, migMigration);
     }, 2000);
   };
 
@@ -225,7 +238,7 @@ export class KubeStore {
     const newObj = { [resourceName]: obj };
     newData.clusters[this.clusterName][apiKey] = {
       ...newData.clusters[this.clusterName][apiKey],
-      ...newObj
+      ...newObj,
     };
     localStorage.setItem(LocalStorageMockedDataKey, JSON.stringify(newData));
   }

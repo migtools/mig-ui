@@ -28,7 +28,7 @@ export default createReducer(
       return { ...state, errorText: text };
     },
     [AlertActionTypes.ALERT_ERROR_MODAL]: (state, action) => {
-      return { ...state, errorModalObject: action.errorModalObject, };
+      return { ...state, errorModalObject: action.errorModalObject };
     },
     [AlertActionTypes.ERROR_MODAL_CLEAR]: (state, action) => {
       return { ...state, errorModalObject: null };
@@ -38,4 +38,3 @@ export default createReducer(
     },
   }
 );
-

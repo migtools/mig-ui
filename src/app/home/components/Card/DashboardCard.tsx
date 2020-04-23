@@ -26,17 +26,15 @@ interface IProps {
   expandDetails?: (string) => void;
 }
 
-const DashboardCard: React.FunctionComponent<IProps> = (
-  {
-    dataList,
-    isFetching,
-    type,
-    isError,
-    planStatusCounts,
-    expandDetails,
-    loadingTitle,
-  }
-) => {
+const DashboardCard: React.FunctionComponent<IProps> = ({
+  dataList,
+  isFetching,
+  type,
+  isError,
+  planStatusCounts,
+  expandDetails,
+  loadingTitle,
+}) => {
   if (isError) {
     return (
       <Card>
@@ -44,9 +42,7 @@ const DashboardCard: React.FunctionComponent<IProps> = (
           <div className="pf-l-flex__item">
             <StatusIcon isReady={false} />
           </div>
-          <div className="pf-l-flex__item">
-            Failed to fetch
-          </div>
+          <div className="pf-l-flex__item">Failed to fetch</div>
         </div>
       </Card>
     );

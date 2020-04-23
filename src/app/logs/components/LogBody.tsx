@@ -6,7 +6,7 @@ import {
   EmptyState,
   Title,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import LogItem from './LogItem';
 import { connect } from 'react-redux';
@@ -39,31 +39,34 @@ const LogBody: FunctionComponent<IProps> = ({
             <Title headingLevel="h2" size="xl">
               Loading...
             </Title>
-          </EmptyState>)
-          : log.length > 0 ? <LogItem log={log} />
-            :
-            <Grid gutter='md'>
-              <GridItem>Select pod to display logs</GridItem>
-              <GridItem >or</GridItem>
-              <Button
-                onClick={(_) => requestDownloadAll(report)}
-                variant="primary"
-                disabled={!report}
-              >
-                Download Logs
-              </Button>
-            </Grid>}
+          </EmptyState>
+        ) : log.length > 0 ? (
+          <LogItem log={log} />
+        ) : (
+          <Grid gutter="md">
+            <GridItem>Select pod to display logs</GridItem>
+            <GridItem>or</GridItem>
+            <Button
+              onClick={(_) => requestDownloadAll(report)}
+              variant="primary"
+              disabled={!report}
+            >
+              Download Logs
+            </Button>
+          </Grid>
+        )}
       </Bullseye>
-    </CardBody>);
+    </CardBody>
+  );
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     log: state.logs.log,
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
-  dispatch => ({
-    requestDownloadAll: (report) => dispatch(LogActions.requestDownloadAll(report))
+  (dispatch) => ({
+    requestDownloadAll: (report) => dispatch(LogActions.requestDownloadAll(report)),
   })
 )(LogBody);

@@ -11,21 +11,23 @@ export const AlertActionTypes = {
 };
 
 const alertSuccess = (text: string) => ({
-  type: AlertActionTypes.ALERT_SUCCESS, text
+  type: AlertActionTypes.ALERT_SUCCESS,
+  text,
 });
 
 const alertError = (text: string) => ({
-  type: AlertActionTypes.ALERT_ERROR, text
+  type: AlertActionTypes.ALERT_ERROR,
+  text,
 });
 
 const alertProgress = (text: string) => ({
-  type: AlertActionTypes.ALERT_PROGRESS, text
+  type: AlertActionTypes.ALERT_PROGRESS,
+  text,
 });
 
 const alertClear = () => ({
-  type: AlertActionTypes.ALERT_CLEAR
+  type: AlertActionTypes.ALERT_CLEAR,
 });
-
 
 const alertProgressTimeout = (params?: any) => ({
   type: AlertActionTypes.ALERT_PROGRESS_TIMEOUT,
@@ -43,12 +45,12 @@ const alertSuccessTimeout = (params?: any) => ({
 });
 
 const errorModalClear = () => ({
-  type: AlertActionTypes.ERROR_MODAL_CLEAR
+  type: AlertActionTypes.ERROR_MODAL_CLEAR,
 });
 
 const alertErrorModal = (errorModalObject: any) => ({
   type: AlertActionTypes.ALERT_ERROR_MODAL,
-  errorModalObject
+  errorModalObject,
 });
 
 export const AlertActions = {
@@ -60,5 +62,5 @@ export const AlertActions = {
   alertErrorModal,
   alertSuccessTimeout,
   alertErrorTimeout,
-  alertProgressTimeout
+  alertProgressTimeout,
 };

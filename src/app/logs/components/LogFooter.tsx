@@ -25,40 +25,43 @@ const LogFooter: FunctionComponent<IProps> = ({
   requestDownloadLog,
   requestReport,
 }) => {
-
   const requestDownload = (_) => {
     requestDownloadLog(
-      report[cluster][logSource.podIndex]
-        .containers[logSource.containerIndex].log);
+      report[cluster][logSource.podIndex].containers[logSource.containerIndex].log
+    );
   };
 
-  return (<CardFooter style={{ height: '5%' }}>
-    {isFetchingLogs ? null : (
-      <Grid gutter="md">
-        <GridItem>
-          <Button
-            onClick={requestDownload}
-            isDisabled={!report || logSource.podIndex === LogUnselected}
-            variant="primary"
-          >
-            Download Selected
-          </Button>
-        </GridItem>
-        <GridItem>
-          <Button onClick={() => requestReport(planName)} variant="secondary">Refresh</Button>
-        </GridItem>
-      </Grid>
-    )}
-  </CardFooter>);
+  return (
+    <CardFooter style={{ height: '5%' }}>
+      {isFetchingLogs ? null : (
+        <Grid gutter="md">
+          <GridItem>
+            <Button
+              onClick={requestDownload}
+              isDisabled={!report || logSource.podIndex === LogUnselected}
+              variant="primary"
+            >
+              Download Selected
+            </Button>
+          </GridItem>
+          <GridItem>
+            <Button onClick={() => requestReport(planName)} variant="secondary">
+              Refresh
+            </Button>
+          </GridItem>
+        </Grid>
+      )}
+    </CardFooter>
+  );
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
-  dispatch => ({
+  (dispatch) => ({
     requestDownloadLog: (logPath) => dispatch(LogActions.requestDownloadLog(logPath)),
     requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
-  }),
+  })
 )(LogFooter);

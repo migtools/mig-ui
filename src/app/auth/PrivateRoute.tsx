@@ -13,7 +13,7 @@ const PrivateRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
 }) => (
   <Route
     {...rest}
-    render={props =>
+    render={(props) =>
       isLoggedIn ? (
         <Component {...props} />
       ) : (

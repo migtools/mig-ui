@@ -42,7 +42,10 @@ export const ClientFactory = {
     }
 
     const newClient = new ClusterClient(
-      state.migMeta.clusterApi, state.auth.user.access_token, customResponseType);
+      state.migMeta.clusterApi,
+      state.auth.user.access_token,
+      customResponseType
+    );
 
     if (tokenExpiryHandler) {
       newClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
@@ -62,15 +65,15 @@ export const ClientFactory = {
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
       state.auth.user.access_token,
-      customResponseType);
+      customResponseType
+    );
 
     if (tokenExpiryHandler) {
       discoveryClient.setTokenExpiryHandler(tokenExpiryHandler, state.auth.user.expiry_time);
     }
     return discoveryClient;
-  }
+  },
 };
-
 
 export const setTokenExpiryHandler = (newExpiryHandler: TokenExpiryHandler) => {
   tokenExpiryHandler = newExpiryHandler;

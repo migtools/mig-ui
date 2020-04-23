@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
-import {
-  AlertActions
-} from '../../common/duck/actions';
+import { AlertActions } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
 import moment from 'moment';
@@ -17,8 +15,7 @@ export function* fetchOauthMeta(action) {
   try {
     const res = yield axios.get(oauthMetaUrl);
     yield put(AuthActions.setOauthMeta(res.data));
-  }
-  catch (err) {
+  } catch (err) {
     if (isSelfSignedCertError(err)) {
       yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
       yield put(push('/cert-error'));
@@ -49,12 +46,10 @@ export function* initFromStorage(): any {
   }
 }
 
-
 export function* logoutUser() {
   localStorage.removeItem(LS_KEY_CURRENT_USER);
   yield put(push('/login?action=refresh'));
 }
-
 
 function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.LOGOUT_USER_REQUEST, logoutUser);
@@ -64,5 +59,5 @@ function* watchAuthEvents() {
 }
 
 export default {
-  watchAuthEvents
+  watchAuthEvents,
 };

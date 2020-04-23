@@ -11,7 +11,6 @@ import { setTokenExpiryHandler } from './client/client_factory';
 import { push } from 'connected-react-router';
 
 export default function* rootSaga() {
-
   function* appStarted() {
     // Some amount of meta data is delivered to the app by the server
     const migMeta = JSON.parse(atob(window['_mig_meta']));
@@ -29,9 +28,8 @@ export default function* rootSaga() {
       const LS_KEY_CURRENT_USER = 'currentUser';
       localStorage.removeItem(LS_KEY_CURRENT_USER);
       push('/login?action=refresh');
-    })
+    });
   }
-
 
   yield all([
     appStarted(),
@@ -68,6 +66,6 @@ export default function* rootSaga() {
     storageSagas.watchAddStorageRequest(),
     storageSagas.watchStorageAddEditStatus(),
     storageSagas.watchUpdateStorageRequest(),
-    authSagas.watchAuthEvents()
+    authSagas.watchAuthEvents(),
   ]);
 }

@@ -21,7 +21,6 @@ const AddEditStorageModal = ({
   initialStorageValues,
   ...props
 }) => {
-
   const pollingContext = useContext(PollingContext);
   const storageContext = useContext(StorageContext);
 
@@ -38,7 +37,8 @@ const AddEditStorageModal = ({
       }
       default: {
         console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`
+        );
       }
     }
   };
@@ -56,12 +56,19 @@ const AddEditStorageModal = ({
     pollingContext.startAllDefaultPolling();
   };
 
-
-  const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
-    'Edit replication repository' : 'Add replication repository';
+  const modalTitle =
+    addEditStatus.mode === AddEditMode.Edit
+      ? 'Edit replication repository'
+      : 'Add replication repository';
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="storage-modal-modifier">
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={onClose}
+      title={modalTitle}
+      className="storage-modal-modifier"
+    >
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
@@ -74,26 +81,28 @@ const AddEditStorageModal = ({
 };
 
 export default connect(
-  state => {
+  (state) => {
     return {
       addEditStatus: state.storage.addEditStatus,
       isPolling: state.storage.isPolling,
       storageList: state.storage.migStorageList,
-      isLoadingStorage: state.storage.isLoadingStorage
+      isLoadingStorage: state.storage.isLoadingStorage,
     };
   },
-  dispatch => ({
-    addStorage: storageValues => dispatch(StorageActions.addStorageRequest(storageValues)),
-    updateStorage: updatedStorageValues => dispatch(
-      StorageActions.updateStorageRequest(updatedStorageValues)),
+  (dispatch) => ({
+    addStorage: (storageValues) => dispatch(StorageActions.addStorageRequest(storageValues)),
+    updateStorage: (updatedStorageValues) =>
+      dispatch(StorageActions.updateStorageRequest(updatedStorageValues)),
     cancelAddEditWatch: () => dispatch(StorageActions.cancelWatchStorageAddEditStatus()),
     resetAddEditState: () => {
       dispatch(StorageActions.setStorageAddEditStatus(defaultAddEditStatus()));
     },
     checkConnection: (storageName: string) => {
-      dispatch(StorageActions.setStorageAddEditStatus(createAddEditStatus(
-        AddEditState.Fetching, AddEditMode.Edit,
-      )));
+      dispatch(
+        StorageActions.setStorageAddEditStatus(
+          createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
+        )
+      );
       dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     },
   })

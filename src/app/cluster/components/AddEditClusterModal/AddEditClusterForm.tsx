@@ -8,7 +8,7 @@ import {
   TooltipPosition,
   Checkbox,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
@@ -48,17 +48,25 @@ const valuesHaveUpdate = (values, currentCluster) => {
   const requireSSL = !currentCluster.MigCluster.spec.insecure;
   const rawToken = atob(currentCluster.Secret.data.saToken);
   const existingEndpoint = currentCluster.MigCluster.spec.url;
-  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup ? currentCluster.MigCluster.spec.azureResourceGroup : '';
-  const isAzure = currentCluster.MigCluster.spec.isAzure ? currentCluster.MigCluster.spec.isAzure : false;
-  const caBundle = currentCluster.MigCluster.spec.caBundle ? currentCluster.MigCluster.spec.caBundle : '';
+  const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup
+    ? currentCluster.MigCluster.spec.azureResourceGroup
+    : '';
+  const isAzure = currentCluster.MigCluster.spec.isAzure
+    ? currentCluster.MigCluster.spec.isAzure
+    : false;
+  const caBundle = currentCluster.MigCluster.spec.caBundle
+    ? currentCluster.MigCluster.spec.caBundle
+    : '';
 
-  return values.name !== currentCluster.MigCluster.metadata.name ||
+  return (
+    values.name !== currentCluster.MigCluster.metadata.name ||
     values.url !== existingEndpoint ||
     values.token !== rawToken ||
     values.requireSSL !== requireSSL ||
     values.isAzure !== isAzure ||
     values.azureResourceGroup !== azureResourceGroup ||
-    values.caBundle !== caBundle;
+    values.caBundle !== caBundle
+  );
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
@@ -77,13 +85,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   } = props;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
-  const toggleHideToken = e => {
+  const toggleHideToken = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsTokenHidden(!isTokenHidden);
   };
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -230,11 +238,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={
-              isCheckConnectionButtonDisabled(
-                currentStatus,
-                valuesHaveUpdate(values, currentCluster)
-              )}
+            isDisabled={isCheckConnectionButtonDisabled(
+              currentStatus,
+              valuesHaveUpdate(values, currentCluster)
+            )}
             onClick={() => checkConnection(values.name)}
           >
             Check connection

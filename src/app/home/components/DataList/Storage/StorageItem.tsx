@@ -10,7 +10,7 @@ import {
   DropdownPosition,
   KebabToggle,
   Flex,
-  FlexItem
+  FlexItem,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { useOpenModal } from '../../../duck/hooks';
@@ -24,14 +24,14 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
   const name = storage.MigStorage.metadata.name;
   const s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
-
   let storageStatus = null;
   if (storage.MigStorage.status) {
-    storageStatus = storage.MigStorage.status.conditions.filter(c => c.type === 'Ready').length > 0;
+    storageStatus =
+      storage.MigStorage.status.conditions.filter((c) => c.type === 'Ready').length > 0;
   }
   const removeMessage = `Removing "${name}" will make it unavailable for migration plans`;
 
-  const handleRemoveStorage = isConfirmed => {
+  const handleRemoveStorage = (isConfirmed) => {
     if (isConfirmed) {
       removeStorage(name);
       toggleConfirmOpen();
@@ -86,11 +86,11 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
               </Flex>
             </DataListCell>,
             <DataListCell key="url" width={3}>
-              {s3Url &&
+              {s3Url && (
                 <a target="_blank" href={s3Url}>
                   {s3Url}
                 </a>
-              }
+              )}
             </DataListCell>,
             <DataListCell key="count" width={2}>
               <Flex>
@@ -105,7 +105,9 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
                   <StatusIcon isReady={storageStatus} />
                 </FlexItem>
                 <FlexItem>
-                  <span id="storage-status-text">{storageStatus ? `Connected` : `Connection Failed`}</span>
+                  <span id="storage-status-text">
+                    {storageStatus ? `Connected` : `Connection Failed`}
+                  </span>
                 </FlexItem>
               </Flex>
             </DataListCell>,
@@ -117,15 +119,13 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
           aria-label="Actions"
         >
           <Dropdown
-            toggle={<KebabToggle
-              onToggle={() => setKebabIsOpen(!kebabIsOpen)}
-            />}
+            toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
             isOpen={kebabIsOpen}
             isPlain
             dropdownItems={kebabDropdownItems}
             position={DropdownPosition.right}
           />
-          {isConfirmOpen &&
+          {isConfirmOpen && (
             <ConfirmModal
               title="Remove this replication repository?"
               message={removeMessage}
@@ -133,7 +133,7 @@ const StorageItem = ({ storage, storageIndex, removeStorage, ...props }) => {
               onHandleClose={handleRemoveStorage}
               id="confirm-storage-removal"
             />
-          }
+          )}
         </DataListAction>
       </DataListItemRow>
     </DataListItem>

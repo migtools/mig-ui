@@ -14,18 +14,13 @@ interface IProps {
 }
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
-
-  const getStatusIcon = iconStatus => {
-    const WrappedSpinner = () => (
-      <Spinner className={styles.spinner} size="md"></Spinner>
-    )
+  const getStatusIcon = (iconStatus) => {
+    const WrappedSpinner = () => <Spinner className={styles.spinner} size="md"></Spinner>;
 
     switch (iconStatus.state) {
       case AddEditState.Pending: {
-        const PendingSpan = () => (
-          <span className={styles.pendingSpan}></span>
-        )
-        return PendingSpan
+        const PendingSpan = () => <span className={styles.pendingSpan}></span>;
+        return PendingSpan;
       }
       case AddEditState.Fetching: {
         return WrappedSpinner;
@@ -41,9 +36,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       }
       case AddEditState.Ready: {
         const ReadyIcon = () => (
-          <span
-            id="connection-successful-icon"
-            className="pf-c-icon pf-m-success">
+          <span id="connection-successful-icon" className="pf-c-icon pf-m-success">
             <CheckCircleIcon />
           </span>
         );
@@ -51,7 +44,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
         return ReadyIcon;
       }
       case AddEditState.Watching: {
-        return WrappedSpinner
+        return WrappedSpinner;
       }
       case AddEditState.TimedOut: {
         const TimedOutIcon = () => (
@@ -80,9 +73,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       <div className="pf-l-flex__item">
         <StatusIcon />
       </div>
-      <div className="pf-l-flex__item">
-        {statusText}
-      </div>
+      <div className="pf-l-flex__item">{statusText}</div>
     </div>
   );
 };

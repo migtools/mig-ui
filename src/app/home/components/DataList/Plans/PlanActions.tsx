@@ -134,7 +134,7 @@ const PlanActions = ({ plan, history }) => {
           title="Confirmation"
           message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isDeleteModalOpen}
-          onHandleClose={isConfirmed => {
+          onHandleClose={(isConfirmed) => {
             if (isConfirmed) planContext.handleDeletePlan(plan);
             toggleDeleteModalOpen();
           }}

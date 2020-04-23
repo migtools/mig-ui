@@ -11,7 +11,7 @@ import {
   TooltipPosition,
   Tooltip,
   Flex,
-  FlexItem
+  FlexItem,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
 import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
@@ -37,7 +37,7 @@ const PlanDataListItem = ({
   addPlanDisabledObj,
   isExpanded,
   toggleExpanded,
-  planCount
+  planCount,
 }: IPlanDataListItemProps) => {
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
   if (planList) {
@@ -66,14 +66,16 @@ const PlanDataListItem = ({
             ]}
           />
           <DataListAction aria-label="add-plan" aria-labelledby="plan-item" id="add-plan">
-
             <Tooltip
               position={TooltipPosition.top}
-              content={<div>
-                {addPlanDisabledObj.disabledText}
-              </div>}>
+              content={<div>{addPlanDisabledObj.disabledText}</div>}
+            >
               <span>
-                <Button isDisabled={addPlanDisabledObj.isAddPlanDisabled} onClick={toggleWizardOpen} variant="secondary">
+                <Button
+                  isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                  onClick={toggleWizardOpen}
+                  variant="secondary"
+                >
                   Add
                 </Button>
               </span>

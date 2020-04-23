@@ -91,7 +91,7 @@ const clusterFetchFailure = () => ({
 
 const addClusterRequest = (clusterValues: any) => ({
   type: ClusterActionTypes.ADD_CLUSTER_REQUEST,
-  clusterValues
+  clusterValues,
 });
 
 const updateClusterRequest = (clusterValues: any) => ({
@@ -107,7 +107,6 @@ const startClusterPolling = (params?: any) => ({
 const stopClusterPolling = () => ({
   type: ClusterActionTypes.CLUSTER_POLL_STOP,
 });
-
 
 export const ClusterActions = {
   updateClusters,

@@ -8,7 +8,9 @@ interface IProps {
 
 const KeyDisplayIcon: React.FunctionComponent<IProps> = ({ isHidden, id, ...rest }) => {
   return (
-    <span className="pf-c-icon pf-m-info">{isHidden ? <EyeSlashIcon id={id} /> : <EyeIcon id={id} />}</span>
+    <span className="pf-c-icon pf-m-info">
+      {isHidden ? <EyeSlashIcon id={id} /> : <EyeIcon id={id} />}
+    </span>
   );
 };
 
