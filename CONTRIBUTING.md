@@ -14,8 +14,8 @@ Maintainers are members of the Konveyor community who exhibit most of the follow
 - Play well with others, are respectful, show gratitude.
 
 If you want to become a maintainer, we expect you to:
-- Add screenshots of any UI changes in your PR. 
-- Within the PR description, tag any issues your PR closes with ```Closes #insertIssueNumberHere```. 
+- Add screenshots of any UI changes in your PR.
+- Within the PR description, tag any issues your PR closes with ```Closes #insertIssueNumberHere```.
 - Review and test pull requests submitted by others.
 - Encourage and ensure design remains an integral part of the review process and pull in [Vince Conzola](https//github.com/vconzola) for UX review as needed.
 - Support users and other developers on [CoreOS Slack](https://coreos.slack.com/) (there is a channel dedicated to mig-ui).
@@ -24,8 +24,8 @@ If you want to become a maintainer, we expect you to:
 ### Tech Stack
 
 ### K8s Client
-[Erik](https://github.com/eriknelson) developed an integration layer for interfacing with the k8s apis. Code for this & the underlying technologies involved can be found in the ```/src/client/``` directory. Examples of how to consume the client are found within ```sagas.ts``` files for each segment of the application. 
-<br><br>For example: <br>```const client: IClusterClient = ClientFactory.cluster(state); ``` 
+[Erik](https://github.com/eriknelson) developed an integration layer for interfacing with the k8s apis. Code for this & the underlying technologies involved can be found in the ```/src/client/``` directory. Examples of how to consume the client are found within ```sagas.ts``` files for each segment of the application.
+<br><br>For example: <br>```const client: IClusterClient = ClientFactory.cluster(state); ```
 <br>
 ```client.get(KubeResourceType, KubeResourceName)```
 <br>
@@ -34,13 +34,13 @@ A 3rd party promise library, [Q](https://github.com/kriskowal/q/wiki/API-Referen
 
 
 #### React
-We are using React 16.x. Our project uses [functional components](https://reactjs.org/docs/components-and-props.html), [hooks](https://reactjs.org/docs/hooks-reference.html), and [ context](https://reactjs.org/docs/context.html). 
+We are using React 16.x. Our project uses [functional components](https://reactjs.org/docs/components-and-props.html), [hooks](https://reactjs.org/docs/hooks-reference.html), and [ context](https://reactjs.org/docs/context.html).
 
 #### Redux
 
 For state management within the app, we use [Redux](https://react-redux.js.org/)
 
-To handle side-effects, we use [Redux Saga](https://redux-saga.js.org/). We leverage sagas to create a seperate thread in our app designed to handle data fetching, resource polling, and any other background tasks relevant to keeping the UI in sync with the underlying [controller API](https://docs.google.com/document/d/1BWlSlsrV_uzjLyFVkoYmjHaNHs-F__exMAh8yTVqAeg/edit?usp=sharing). 
+To handle side-effects, we use [Redux Saga](https://redux-saga.js.org/). We leverage sagas to create a seperate thread in our app designed to handle data fetching, resource polling, and any other background tasks relevant to keeping the UI in sync with the underlying [controller API](https://docs.google.com/document/d/1BWlSlsrV_uzjLyFVkoYmjHaNHs-F__exMAh8yTVqAeg/edit?usp=sharing).
 
 #### Patternfly & SASS Modules
 
@@ -50,7 +50,7 @@ Instructions for adding style to a component:
 1) Inside the .jsx component file:
 `const styles = require('./AddEditStorageForm.module');`
 
-2) Create a new file in the component directory called: 
+2) Create a new file in the component directory called:
 `AddEditStorageForm.module.scss`
 
 3) Add style to .scss module file:
@@ -59,15 +59,64 @@ Instructions for adding style to a component:
 4) In .jsx component file, you can style your JSX using the:
 `<GridItem className={styles.testStyleForComponent}>`
 
-#### Directory Structure 
+#### Directory Structure
 
-We have adopted the [ducks pattern](https://www.freecodecamp.org/news/scaling-your-redux-app-with-ducks-6115955638be/) for structuring our application. 
+We have adopted the [ducks pattern](https://www.freecodecamp.org/news/scaling-your-redux-app-with-ducks-6115955638be/) for structuring our application.
 
 ### Testing
 
-This area of our codebase needs work. Contributions wanted! 
+This area of our codebase needs work. Contributions wanted!
 
 ### Quick tips for new maintainers
 - A good place to start contributing would be [here](https://github.com/konveyor/mig-ui/issues?q=is%3Aissue+is%3Aopen+label%3Alow-hanging-fruit). Low-hanging fruit tags indicate that these issues would be relatively straightforward to pick up.
 - If something you merged broke something, it’s your responsibility to resolve or coordinate how to resolve the issue.
  [1]: http://contributor-covenant.org/version/1/4/code_of_conduct.md
+
+### ESLint/Prettier
+
+ESLint uses Prettier package to apply code formating rules.
+So we don't have to worry about code style as ESLint `.eslintrc.js` and Prettier `.prettierrc.json` rules have the last word.
+
+Running `yarn lint:fix` reformats all files according to the defined rules
+
+#### On demand VSCode formating
+
+Developers using Visual Studio Code can have code source reformated on demand from the editor, this is the equivalent of applying `yarn eslint <file> --fix`.
+
+Make sure to first add [Prettier package](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) to VSCode.
+
+Then once the following is added to VS Code configuration file `settings.json`, you can use `Ctrl + Shift + I` command to reformat current buffer (or alternatively use "Show All Command" with `Ctrl + Shift  + P` then type `Format Document`):
+
+```
+{
+  "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        { "language": "typescript", "autoFix": true },
+        { "language": "typescriptreact", "autoFix": true }
+    ],
+}
+```
+#### VSCode formating on file saving
+
+To have VSCode to automatically reformat the current edited file on saving just add following to VS Code `settings.json`:
+```
+{
+  "editor.formatOnSave": false,
+  "[javascript]": {
+      "editor.formatOnSave": true
+    },
+    "[javascriptreact]": {
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.formatOnSave": true
+    }
+}
+```
