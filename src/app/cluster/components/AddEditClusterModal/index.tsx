@@ -22,8 +22,9 @@ const AddEditClusterModal = ({
   ...props
 }) => {
   const pollingContext = useContext(PollingContext);
-  const [currentClusterName, setCurrentClusterName] =
-    useState(initialClusterValues ? initialClusterValues.clusterName : null);
+  const [currentClusterName, setCurrentClusterName] = useState(
+    initialClusterValues ? initialClusterValues.clusterName : null
+  );
   useEffect(() => {
     /* currentClusterName was not gettting set when exiting and re-entering the modal. 
     Fixed by passing in cluster to modal component to trigger rerender when it changes & set 
@@ -31,7 +32,7 @@ const AddEditClusterModal = ({
     
    */
     if (initialClusterValues) {
-      setCurrentClusterName(initialClusterValues.clusterName)
+      setCurrentClusterName(initialClusterValues.clusterName);
     }
   });
 
@@ -48,7 +49,8 @@ const AddEditClusterModal = ({
       }
       default: {
         console.warn(
-          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`);
+          `onAddEditSubmit, but unknown mode was found: ${addEditStatus.mode}. Ignoring.`
+        );
       }
     }
   };
@@ -67,10 +69,9 @@ const AddEditClusterModal = ({
     pollingContext.startAllDefaultPolling();
   };
 
-  const modalTitle = addEditStatus.mode === AddEditMode.Edit ?
-    'Edit cluster' : 'Add cluster';
+  const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit cluster' : 'Add cluster';
 
-  const currentCluster = clusterList.find(c => {
+  const currentCluster = clusterList.find((c) => {
     return c.MigCluster.metadata.name === currentClusterName;
   });
 
@@ -89,21 +90,23 @@ const AddEditClusterModal = ({
 };
 
 export default connect(
-  state => {
+  (state) => {
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,
       clusterList: state.cluster.clusterList,
     };
   },
-  dispatch => ({
-    addCluster: clusterValues => dispatch(ClusterActions.addClusterRequest(clusterValues)),
-    updateCluster: updatedClusterValues => dispatch(
-      ClusterActions.updateClusterRequest(updatedClusterValues)),
+  (dispatch) => ({
+    addCluster: (clusterValues) => dispatch(ClusterActions.addClusterRequest(clusterValues)),
+    updateCluster: (updatedClusterValues) =>
+      dispatch(ClusterActions.updateClusterRequest(updatedClusterValues)),
     checkConnection: (clusterName: string) => {
-      dispatch(ClusterActions.setClusterAddEditStatus(createAddEditStatus(
-        AddEditState.Fetching, AddEditMode.Edit,
-      )));
+      dispatch(
+        ClusterActions.setClusterAddEditStatus(
+          createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
+        )
+      );
       dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
     },
     cancelAddEditWatch: () => dispatch(ClusterActions.cancelWatchClusterAddEditStatus()),

@@ -20,8 +20,6 @@ import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
 
-
-
 interface IProps {
   isLoggedIn?: boolean;
   errorMessage: any;
@@ -55,9 +53,9 @@ const AppComponent: React.SFC<IProps> = ({
   updateClusters,
   updateStorages,
   updatePlans,
-  clusterList
+  clusterList,
 }) => {
-  const handlePlanPoll = response => {
+  const handlePlanPoll = (response) => {
     if (response) {
       updatePlans(response.updatedPlans);
       return true;
@@ -65,7 +63,7 @@ const AppComponent: React.SFC<IProps> = ({
     return false;
   };
 
-  const handleClusterPoll = response => {
+  const handleClusterPoll = (response) => {
     if (response) {
       updateClusters(response.updatedClusters);
       return true;
@@ -73,7 +71,7 @@ const AppComponent: React.SFC<IProps> = ({
     return false;
   };
 
-  const handleStoragePoll = response => {
+  const handleStoragePoll = (response) => {
     if (response) {
       updateStorages(response.updatedStorages);
       return true;
@@ -89,7 +87,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'plan'
+      pollName: 'plan',
     };
     startPlanPolling(planPollParams);
   };
@@ -102,7 +100,7 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'cluster'
+      pollName: 'cluster',
     };
     startClusterPolling(clusterPollParams);
   };
@@ -115,41 +113,44 @@ const AppComponent: React.SFC<IProps> = ({
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'storage'
+      pollName: 'storage',
     };
     startStoragePolling(storagePollParams);
   };
 
   return (
     <React.Fragment>
-
       <AlertModal alertMessage={progressMessage} alertType="info" />
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
-      <PollingContext.Provider value={{
-        startDefaultClusterPolling: () => startDefaultClusterPolling(),
-        startDefaultStoragePolling: () => startDefaultStoragePolling(),
-        startDefaultPlanPolling: () => startDefaultPlanPolling(),
-        stopClusterPolling: () => stopClusterPolling(),
-        stopStoragePolling: () => stopStoragePolling(),
-        stopPlanPolling: () => stopPlanPolling(),
-        startAllDefaultPolling: () => {
-          startDefaultClusterPolling();
-          startDefaultStoragePolling();
-          startDefaultPlanPolling();
-        },
-        stopAllPolling: () => {
-          stopClusterPolling();
-          stopStoragePolling();
-          stopPlanPolling();
-        }
-      }}>
+      <PollingContext.Provider
+        value={{
+          startDefaultClusterPolling: () => startDefaultClusterPolling(),
+          startDefaultStoragePolling: () => startDefaultStoragePolling(),
+          startDefaultPlanPolling: () => startDefaultPlanPolling(),
+          stopClusterPolling: () => stopClusterPolling(),
+          stopStoragePolling: () => stopStoragePolling(),
+          stopPlanPolling: () => stopPlanPolling(),
+          startAllDefaultPolling: () => {
+            startDefaultClusterPolling();
+            startDefaultStoragePolling();
+            startDefaultPlanPolling();
+          },
+          stopAllPolling: () => {
+            stopClusterPolling();
+            stopStoragePolling();
+            stopPlanPolling();
+          },
+        }}
+      >
         <ErrorModal errorModalObj={errorModalObject} isOpen />
 
         <ConnectedRouter history={history}>
           <Switch>
             <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-            <RefreshRoute exact path="/logs/:planId"
+            <RefreshRoute
+              exact
+              path="/logs/:planId"
               clusterList={clusterList}
               isLoggedIn={isLoggedIn}
               component={LogsComponent}
@@ -164,24 +165,23 @@ const AppComponent: React.SFC<IProps> = ({
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     isLoggedIn: !!state.auth.user,
     errorMessage: state.common.errorText,
     errorModalObject: state.common.errorModalObject,
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
-    clusterList: state.cluster.clusterList
+    clusterList: state.cluster.clusterList,
   }),
-  dispatch => ({
-    startPlanPolling: params => dispatch(PlanActions.startPlanPolling(params)),
+  (dispatch) => ({
+    startPlanPolling: (params) => dispatch(PlanActions.startPlanPolling(params)),
     stopPlanPolling: () => dispatch(PlanActions.stopPlanPolling()),
-    startStoragePolling: params => dispatch(StorageActions.startStoragePolling(params)),
+    startStoragePolling: (params) => dispatch(StorageActions.startStoragePolling(params)),
     stopStoragePolling: () => dispatch(StorageActions.stopStoragePolling()),
-    startClusterPolling: params => dispatch(ClusterActions.startClusterPolling(params)),
+    startClusterPolling: (params) => dispatch(ClusterActions.startClusterPolling(params)),
     stopClusterPolling: () => dispatch(ClusterActions.stopClusterPolling()),
-    updateClusters: updatedClusters => dispatch(ClusterActions.updateClusters(updatedClusters)),
-    updateStorages: updatedStorages => dispatch(StorageActions.updateStorages(updatedStorages)),
-    updatePlans: updatedPlans => dispatch(PlanActions.updatePlans(updatedPlans)),
-
+    updateClusters: (updatedClusters) => dispatch(ClusterActions.updateClusters(updatedClusters)),
+    updateStorages: (updatedStorages) => dispatch(StorageActions.updateStorages(updatedStorages)),
+    updatePlans: (updatedPlans) => dispatch(PlanActions.updatePlans(updatedPlans)),
   })
 )(AppComponent);

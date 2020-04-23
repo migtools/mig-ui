@@ -11,7 +11,7 @@ import {
   DropdownPosition,
   KebabToggle,
   Flex,
-  FlexItem
+  FlexItem,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { useOpenModal } from '../../../duck/hooks';
@@ -28,7 +28,8 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
   const clusterName = cluster.MigCluster.metadata.name;
   let clusterStatus = null;
   if (cluster.MigCluster.status) {
-    clusterStatus = cluster.MigCluster.status.conditions.filter(c => c.type === 'Ready').length > 0;
+    clusterStatus =
+      cluster.MigCluster.status.conditions.filter((c) => c.type === 'Ready').length > 0;
   }
   const clusterUrl = cluster.MigCluster.spec.isHostCluster
     ? migMeta.clusterApi
@@ -52,7 +53,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
 
   const removeMessage = `Removing "${clusterName}" will make it unavailable for migration plans`;
 
-  const handleRemoveCluster = isConfirmed => {
+  const handleRemoveCluster = (isConfirmed) => {
     if (isConfirmed) {
       removeCluster(clusterName);
       toggleConfirmOpen();
@@ -123,22 +124,22 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
                   <StatusIcon isReady={clusterStatus} />
                 </FlexItem>
                 <FlexItem>
-                  <span id="cluster-status-text">{clusterStatus ? `Connected` : `Connection Failed`}</span>
+                  <span id="cluster-status-text">
+                    {clusterStatus ? `Connected` : `Connection Failed`}
+                  </span>
                 </FlexItem>
               </Flex>
             </DataListCell>,
-
           ]}
-        />,
+        />
+        ,
         <DataListAction
           aria-labelledby="cluster-item cluster-item-actions-dropdown"
           id="cluster-item-actions-dropdown"
           aria-label="Actions"
         >
           <Dropdown
-            toggle={<KebabToggle
-              onToggle={() => setKebabIsOpen(!kebabIsOpen)}
-            />}
+            toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
             isOpen={kebabIsOpen}
             isPlain
             dropdownItems={kebabDropdownItems}
@@ -156,7 +157,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
               clusterIsAzure,
               clusterAzureResourceGroup,
               clusterRequireSSL,
-              clusterCABundle
+              clusterCABundle,
             }}
           />
           <ConfirmModal
@@ -166,7 +167,8 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
             onHandleClose={handleRemoveCluster}
             id="confirm-cluster-removal"
           />
-        </DataListAction>,
+        </DataListAction>
+        ,
       </DataListItemRow>
     </DataListItem>
   );

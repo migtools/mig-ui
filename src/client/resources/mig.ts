@@ -23,4 +23,5 @@ export enum MigResourceKind {
   MigStage = 'migstages',
   MigMigration = 'migmigrations',
   MigCluster = 'migclusters',
+  MigHook = 'mighooks',
 }

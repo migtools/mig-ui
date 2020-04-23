@@ -1,6 +1,5 @@
 import { IPlanLogSources } from '../../../client/resources/discovery';
 
-
 export const LogActionTypes = {
   REPORT_FETCH_REQUEST: 'REPORT_FETCH_REQUEST',
   REPORT_FETCH_SUCCESS: 'REPORT_FETCH_SUCCESS',
@@ -15,49 +14,48 @@ export const LogActionTypes = {
 
 const reportFetchRequest = (planName: string) => ({
   type: LogActionTypes.REPORT_FETCH_REQUEST,
-  planName
+  planName,
 });
 
 const reportFetchSuccess = (report: IPlanLogSources) => ({
   type: LogActionTypes.REPORT_FETCH_SUCCESS,
-  report
+  report,
 });
 
 const reportFetchFailure = (error: string) => ({
   type: LogActionTypes.REPORT_FETCH_FAILURE,
-  error
+  error,
 });
 
 const logFetchRequest = (logPath: string) => ({
   type: LogActionTypes.LOG_FETCH_REQUEST,
-  logPath
+  logPath,
 });
 
 const logsFetchSuccess = (log: string[]) => ({
   type: LogActionTypes.LOG_FETCH_SUCCESS,
-  log
+  log,
 });
 
 const logsFetchFailure = (error: string) => ({
   type: LogActionTypes.LOG_FETCH_FAILURE,
-  error
+  error,
 });
 
 const createLogArchive = (url: string) => ({
   type: LogActionTypes.CREATE_LOG_ARCHIVE,
-  url
+  url,
 });
 
 const requestDownloadLog = (logPath: string) => ({
   type: LogActionTypes.REQUEST_DOWNLOAD_LOG,
-  logPath
+  logPath,
 });
 
 const requestDownloadAll = (report: IPlanLogSources) => ({
   type: LogActionTypes.REQUEST_DOWNLOAD_ALL,
-  report
+  report,
 });
-
 
 export const LogActions = {
   logFetchRequest,

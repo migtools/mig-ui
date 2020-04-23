@@ -52,7 +52,7 @@ export class MockClusterClient {
     return new Promise<any>((res, rej) => {
       setTimeout(() => {
         res({
-          data: this.kube_store.patchResource(resource, name, patch)
+          data: this.kube_store.patchResource(resource, name, patch),
         });
       }, this.reqTime);
     });

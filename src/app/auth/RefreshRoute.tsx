@@ -2,9 +2,9 @@ import React from 'react';
 import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
 
 interface IProps {
-    component: React.ReactNode;
-    isLoggedIn: boolean;
-    clusterList: any;
+  component: React.ReactNode;
+  isLoggedIn: boolean;
+  clusterList: any;
 }
 
 const RefreshRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
@@ -15,8 +15,8 @@ const RefreshRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
 }) => (
   <Route
     {...rest}
-    render={props =>
-      (isLoggedIn && clusterList.length > 0) ? (
+    render={(props) =>
+      isLoggedIn && clusterList.length > 0 ? (
         <Component {...props} />
       ) : (
         <Redirect
@@ -30,4 +30,3 @@ const RefreshRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
 );
 
 export default RefreshRoute;
-

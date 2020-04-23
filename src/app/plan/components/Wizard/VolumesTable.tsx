@@ -62,7 +62,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
-  const getSortValues = pv => [pv.name, pv.claim, pv.project, pv.storageClass, pv.size, pv.type];
+  const getSortValues = (pv) => [pv.name, pv.claim, pv.project, pv.storageClass, pv.size, pv.type];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',
@@ -107,8 +107,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map(pv => {
-    const matchingPVResource = pvResourceList.find(pvResource => pvResource.name === pv.name);
+  const rows = currentPageItems.map((pv) => {
+    const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
     const migrationTypeOptions: OptionWithValue[] = pv.supportedActions.map((action: string) => ({
       value: action,
       toString: () => capitalize(action),
@@ -126,7 +126,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               aria-label="Select migration type"
               onChange={(option: OptionWithValue) => onTypeChange(pv, option.value)}
               options={migrationTypeOptions}
-              value={migrationTypeOptions.find(option => option.value === pv.type)}
+              value={migrationTypeOptions.find((option) => option.value === pv.type)}
               placeholderText={null}
             />
           ),

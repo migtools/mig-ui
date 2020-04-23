@@ -8,16 +8,16 @@ import { ISortBy, SortByDirection } from '@patternfly/react-table';
 export const useFilterState = (items: any[], filterCategories: FilterCategory[]) => {
   const [filterValues, setFilterValues] = useState<IFilterValues>({});
 
-  const filteredItems = items.filter(item =>
-    Object.keys(filterValues).every(categoryKey => {
+  const filteredItems = items.filter((item) =>
+    Object.keys(filterValues).every((categoryKey) => {
       const values = filterValues[categoryKey];
       if (!values || values.length === 0) return true;
-      const filterCategory = filterCategories.find(category => category.key === categoryKey);
+      const filterCategory = filterCategories.find((category) => category.key === categoryKey);
       let itemValue = item[categoryKey];
       if (filterCategory.getItemValue) {
         itemValue = filterCategory.getItemValue(item);
       }
-      return values.every(filterValue => {
+      return values.every((filterValue) => {
         if (!itemValue) return false;
         const lowerCaseItemValue = String(itemValue).toLowerCase();
         const lowerCaseFilterValue = String(filterValue).toLowerCase();

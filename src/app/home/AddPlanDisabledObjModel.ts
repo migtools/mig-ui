@@ -1,4 +1,4 @@
 export interface IAddPlanDisabledObjModel {
-    isAddPlanDisabled: boolean;
-    disabledText: string;
+  isAddPlanDisabled: boolean;
+  disabledText: string;
 }

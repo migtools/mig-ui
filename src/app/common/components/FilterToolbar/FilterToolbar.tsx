@@ -59,7 +59,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [currentCategoryKey, setCurrentCategoryKey] = useState(filterCategories[0].key);
 
-  const onCategorySelect = category => {
+  const onCategorySelect = (category) => {
     setCurrentCategoryKey(category.key);
     setIsCategoryDropdownOpen(false);
   };
@@ -68,7 +68,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
     setFilterValues({ ...filterValues, [category.key]: newValue });
 
   const currentFilterCategory = filterCategories.find(
-    category => category.key === currentCategoryKey
+    (category) => category.key === currentCategoryKey
   );
 
   return (
@@ -83,19 +83,19 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
                 </DropdownToggle>
               }
               isOpen={isCategoryDropdownOpen}
-              dropdownItems={filterCategories.map(category => (
+              dropdownItems={filterCategories.map((category) => (
                 <DropdownItem key={category.key} onClick={() => onCategorySelect(category)}>
                   {category.title}
                 </DropdownItem>
               ))}
             />
           </DataToolbarItem>
-          {filterCategories.map(category => (
+          {filterCategories.map((category) => (
             <FilterControl
               key={category.key}
               category={category}
               filterValue={filterValues[category.key]}
-              setFilterValue={newValue => setFilterValue(category, newValue)}
+              setFilterValue={(newValue) => setFilterValue(category, newValue)}
               showToolbarItem={currentFilterCategory.key === category.key}
             />
           ))}

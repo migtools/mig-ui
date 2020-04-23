@@ -6,7 +6,7 @@ const INITIAL_STATE = {
   certError: null,
 };
 
-export const authReducer = (state=INITIAL_STATE, action) => {
+export const authReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case AuthActionTypes.LOGIN_SUCCESS:
       return { ...state, user: action.user };
@@ -16,7 +16,8 @@ export const authReducer = (state=INITIAL_STATE, action) => {
       return { ...state, oauthMeta: action.oauthMeta };
     case AuthActionTypes.CERT_ERROR_OCCURRED:
       return { ...state, certError: { failedUrl: action.failedUrl } };
-    default: return state;
+    default:
+      return state;
   }
 };
 

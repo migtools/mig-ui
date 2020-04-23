@@ -12,13 +12,9 @@ import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
 import './global.scss';
 
-
 render(
   <Provider store={store}>
-    <PersistGate
-      loading={<Spinner size="xl" />}
-      persistor={persistor}
-    >
+    <PersistGate loading={<Spinner size="xl" />} persistor={persistor}>
       <ConnectedRouter history={history}>
         <AppComponent />
       </ConnectedRouter>

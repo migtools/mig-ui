@@ -39,7 +39,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
   ];
-  const getSortValues = namespace => [
+  const getSortValues = (namespace) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
     namespace.name,
     namespace.podCount,
@@ -62,7 +62,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map(namespace => ({
+  const rows = currentPageItems.map((namespace) => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
     selected: values.selectedNamespaces.includes(namespace.name),
     meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
@@ -76,7 +76,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
-        newSelected = filteredItems.map(namespace => namespace.name); // Select all (filtered)
+        newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
       } else {
         newSelected = []; // Deselect all
       }
@@ -85,7 +85,7 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
       if (isSelected) {
         newSelected = [...new Set([...meta.selectedNamespaces, name.title])];
       } else {
-        newSelected = meta.selectedNamespaces.filter(selected => selected !== name.title);
+        newSelected = meta.selectedNamespaces.filter((selected) => selected !== name.title);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);

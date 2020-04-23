@@ -70,9 +70,7 @@ export abstract class ClusterResource implements IKubeResource {
   }
 }
 
-
 export abstract class DiscoveryResource implements IDiscoveryResource {
-
   private readonly _type: string;
   private readonly _aggregatorType: string;
   private readonly _aggregatorName: string;
@@ -90,7 +88,9 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
     this._discoveryParameters = discoveryParameters;
   }
 
-  public discoveryType() { return this._type; }
+  public discoveryType() {
+    return this._type;
+  }
 
   public discoveryAggregator() {
     return [this._aggregatorType, this._aggregatorName].join('/');
@@ -98,26 +98,22 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
 
   public parametrized(params: IDiscoveryParameters = {}) {
     const merged = {};
-    Object.keys(this._discoveryParameters).map(param =>
-      merged[param] = this._discoveryParameters[param].toString());
-    Object.keys(params).map(param =>
-      merged[param] = this._discoveryParameters[param].toString());
+    Object.keys(this._discoveryParameters).map(
+      (param) => (merged[param] = this._discoveryParameters[param].toString())
+    );
+    Object.keys(params).map(
+      (param) => (merged[param] = this._discoveryParameters[param].toString())
+    );
     return merged;
   }
 
   public path(): string {
-    return [
-      this.discoveryAggregator(),
-      this.discoveryType(),
-    ].join('/');
+    return [this.discoveryAggregator(), this.discoveryType()].join('/');
   }
-
 }
 
-export abstract class NamedDiscoveryResource
-  extends DiscoveryResource
+export abstract class NamedDiscoveryResource extends DiscoveryResource
   implements INamedDiscoveryResource {
-
   private readonly _name: string;
 
   constructor(
@@ -132,16 +128,14 @@ export abstract class NamedDiscoveryResource
     this._name = name;
   }
 
-  public discoveryName() { return this._name; }
+  public discoveryName() {
+    return this._name;
+  }
 
   public path(): string {
-    return [
-      super.path(),
-      this.discoveryName()
-    ].join('/');
+    return [super.path(), this.discoveryName()].join('/');
   }
 }
-
 
 export abstract class OAuthClient {
   private _token: string;

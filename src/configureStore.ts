@@ -37,10 +37,7 @@ if (devMode === 'local') {
     enhancers.push(devToolsExtension());
   }
 }
-const composedEnhancers = compose(
-  applyMiddleware(...middleware),
-  ...enhancers
-);
+const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
 
 const createdStore = () => {
   const store = createStore<any, any, any, any>(persistedReducer, composedEnhancers);

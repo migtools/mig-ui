@@ -19,7 +19,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   const migPlanPvs = currentPlan.spec.persistentVolumes;
 
   const destCluster = clusterList.find(
-    c => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
+    (c) => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
   );
 
   const storageClasses = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
@@ -31,7 +31,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       if (migPlanPvs) {
         pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
           const suggestedStorageClass = storageClasses.find(
-            sc => sc.name === pv.selection.storageClass
+            (sc) => sc.name === pv.selection.storageClass
           );
           return {
             ...assignedScs,
@@ -47,7 +47,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
         pvCopyMethodAssignment = migPlanPvs.reduce((assignedCms, pv) => {
           const supportedCopyMethods = pv.supported.copyMethods || [];
           const suggestedCopyMethod = supportedCopyMethods.find(
-            cm => cm === pv.selection.copyMethod
+            (cm) => cm === pv.selection.copyMethod
           );
           return {
             ...assignedCms,
@@ -73,7 +73,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   }, []);
 
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newSc = storageClasses.find(sc => sc.name === value) || '';
+    const newSc = storageClasses.find((sc) => sc.name === value) || '';
     const updatedAssignment = {
       ...values.pvStorageClassAssignment,
       [currentPV.name]: newSc,
@@ -90,7 +90,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   };
 
   const onCopyMethodChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newCm = currentPV.supported.copyMethods.find(cm => cm === value);
+    const newCm = currentPV.supported.copyMethods.find((cm) => cm === value);
     const updatedAssignment = {
       ...values.pvCopyMethodAssignment,
       [currentPV.name]: newCm,
@@ -104,7 +104,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       currentPlan={currentPlan}
       persistentVolumes={
         values.persistentVolumes.length
-          ? values.persistentVolumes.filter(v => v.type === 'copy')
+          ? values.persistentVolumes.filter((v) => v.type === 'copy')
           : []
       }
       pvStorageClassAssignment={values.pvStorageClassAssignment}

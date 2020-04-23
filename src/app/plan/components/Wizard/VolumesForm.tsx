@@ -60,10 +60,10 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
       let mappedPVs;
       if (values.persistentVolumes) {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+        mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find(v => v.name === planVolume.name);
+            const rowVal = values.persistentVolumes.find((v) => v.name === planVolume.name);
             if (rowVal && rowVal.selection) {
               pvAction = rowVal.selection.action;
             } else {
@@ -87,7 +87,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
           };
         });
       } else {
-        mappedPVs = discoveredPersistentVolumes.map(planVolume => {
+        mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           const pvAction = 'copy'; // Default to copy
           return {
             name: planVolume.name,
@@ -153,7 +153,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   ) => {
     if (currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
-      const matchingPV = values.persistentVolumes.find(pv => pv === currentPV);
+      const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
       const pvIndex = values.persistentVolumes.indexOf(matchingPV);
       newPVs[pvIndex] = { ...matchingPV, ...newValues };
       // TODO this should only store selections, we should inherit the rest from currentPlan.spec.persistentVolumes

@@ -1,8 +1,5 @@
 import React, { useState, useContext } from 'react';
-import {
-  Grid,
-  GridItem
-} from '@patternfly/react-core';
+import { Grid, GridItem } from '@patternfly/react-core';
 import Select from 'react-select';
 import AWSForm from './ProviderForms/AWSForm';
 import GCPForm from './ProviderForms/GCPForm';
@@ -22,8 +19,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
   const { storageList } = props;
   const storageContext = useContext(StorageContext);
   const storage = storageList.find(
-    (storageItem) =>
-      storageItem.MigStorage.metadata.name === storageContext.currentStorage);
+    (storageItem) => storageItem.MigStorage.metadata.name === storageContext.currentStorage
+  );
 
   let name;
   let provider;
@@ -54,83 +51,92 @@ const AddEditStorageForm = (props: IOtherProps) => {
       typeof storage.Secret === 'undefined'
         ? null
         : storage.Secret.data['aws-access-key-id']
-          ? atob(storage.Secret.data['aws-access-key-id'])
-          : '';
+        ? atob(storage.Secret.data['aws-access-key-id'])
+        : '';
     secret =
       typeof storage.Secret === 'undefined'
         ? null
         : storage.Secret.data['aws-secret-access-key']
-          ? atob(storage.Secret.data['aws-secret-access-key'])
-          : '';
+        ? atob(storage.Secret.data['aws-secret-access-key'])
+        : '';
 
     gcpBlob =
       typeof storage.Secret === 'undefined'
         ? null
         : storage.Secret.data['gcp-credentials']
-          ? atob(storage.Secret.data['gcp-credentials'])
-          : '';
+        ? atob(storage.Secret.data['gcp-credentials'])
+        : '';
     azureBlob =
       typeof storage.Secret === 'undefined'
         ? null
         : storage.Secret.data['azure-credentials']
-          ? atob(storage.Secret.data['azure-credentials'])
-          : '';
-
-
+        ? atob(storage.Secret.data['azure-credentials'])
+        : '';
   }
 
   const [selectedProvider, setSelectedProvider] = useState(
-    (provider) ? {
-      label: provider,
-      value: provider
-    } : null
+    provider
+      ? {
+          label: provider,
+          value: provider,
+        }
+      : null
   );
   const [providerOptions, setproviderOptions] = useState([
     { label: 'S3', value: 'aws' },
     { label: 'GCP', value: 'gcp' },
-    { label: 'Azure', value: 'azure' }
+    { label: 'Azure', value: 'azure' },
   ]);
 
-
-  const handleProviderChange = option => {
-    setSelectedProvider(
-      option
-    );
+  const handleProviderChange = (option) => {
+    setSelectedProvider(option);
   };
 
   return (
     <Grid gutter="md">
-      <GridItem className={styles.selectType}>
-        Storage provider type
-      </GridItem>
+      <GridItem className={styles.selectType}>Storage provider type</GridItem>
       <GridItem span={8} className={styles.selectType}>
         <Select
           name="provider"
           onChange={handleProviderChange}
           options={providerOptions}
           value={selectedProvider}
-          isDisabled={(provider) !== (null || undefined)}
+          isDisabled={provider !== (null || undefined)}
         />
       </GridItem>
       <GridItem span={10}>
-        {(selectedProvider && selectedProvider.value === 'aws') &&
-          <AWSForm provider={selectedProvider.value}
-            initialStorageValues={{ name, awsBucketName, awsBucketRegion, s3Url, accessKey, secret, requireSSL, caBundle }}
-            {...props} />
-        }
-        {(selectedProvider && selectedProvider.value === 'azure') &&
+        {selectedProvider && selectedProvider.value === 'aws' && (
+          <AWSForm
+            provider={selectedProvider.value}
+            initialStorageValues={{
+              name,
+              awsBucketName,
+              awsBucketRegion,
+              s3Url,
+              accessKey,
+              secret,
+              requireSSL,
+              caBundle,
+            }}
+            {...props}
+          />
+        )}
+        {selectedProvider && selectedProvider.value === 'azure' && (
           <AzureForm
             provider={selectedProvider.value}
             initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
-            {...props} />
-        }
-        {(selectedProvider && selectedProvider.value === 'gcp') &&
-          <GCPForm provider={selectedProvider.value}
+            {...props}
+          />
+        )}
+        {selectedProvider && selectedProvider.value === 'gcp' && (
+          <GCPForm
+            provider={selectedProvider.value}
             initialStorageValues={{ name, gcpBucket, gcpBlob }}
-            {...props} />
-        }
+            {...props}
+          />
+        )}
       </GridItem>
-    </Grid >
+    </Grid>
   );
 };
 export default AddEditStorageForm;

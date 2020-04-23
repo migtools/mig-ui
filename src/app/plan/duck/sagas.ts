@@ -1,4 +1,14 @@
-import { takeEvery, takeLatest, select, retry, race, call, delay, put, take } from 'redux-saga/effects';
+import {
+  takeEvery,
+  takeLatest,
+  select,
+  retry,
+  race,
+  call,
+  delay,
+  put,
+  take,
+} from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IClusterClient } from '../../../client/client';
@@ -7,24 +17,34 @@ import {
   updateMigPlanFromValues,
   createInitialMigPlan,
   createMigMigration,
+  createMigHook,
+  updateMigHook,
+  getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
-import {
-  AlertActions,
-} from '../../common/duck/actions';
+import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
-import {
-  MigResource,
-  MigResourceKind
-} from '../../../client/resources';
+import { MigResource, MigResourceKind } from '../../../client/resources';
 import Q from 'q';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
 import { AuthActions } from '../../auth/duck/actions';
-import { push } from 'connected-react-router'
+import { push } from 'connected-react-router';
 import planUtils from './utils';
-import { PollingActions } from '../../common/duck/actions';
+import {
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  IAddEditStatus,
+  AddEditWatchTimeout,
+  AddEditWatchTimeoutPollInterval,
+  AddEditConditionCritical,
+  createAddEditStatusWithMeta,
+  AddEditConditionReady,
+  AddEditDebounceWait,
+} from '../../common/add_edit_state';
+import { createHook } from 'async_hooks';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -32,6 +52,9 @@ const PlanMigrationPollingInterval = 5000;
 const PlanUpdateTotalTries = 6;
 const PlanUpdateRetryPeriodSeconds = 5;
 
+/******************************************************************** */
+/* Plan sagas */
+/******************************************************************** */
 function* addPlanSaga(action) {
   const { migPlan } = action;
   try {
@@ -55,13 +78,10 @@ function* addPlanSaga(action) {
 
     yield put(PlanActions.setCurrentPlan(createPlanRes.data));
     yield put(PlanActions.addPlanSuccess(createPlanRes.data));
-
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout('Failed to add plan'));
   }
 }
-
-
 
 function* namespaceFetchRequest(action) {
   const state = yield select();
@@ -89,10 +109,7 @@ function* getPlanSaga(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
-  return yield client.get(
-    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-    planName
-  );
+  return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
 function* planPatchClose(planValues) {
@@ -101,11 +118,13 @@ function* planPatchClose(planValues) {
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
-    if (getPlanRes.data.spec.closed) { return; }
+    if (getPlanRes.data.spec.closed) {
+      return;
+    }
     const closedPlanSpecObj = {
       spec: {
-        closed: true
-      }
+        closed: true,
+      },
     };
     const patchPlanResponse = yield client.patch(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -129,11 +148,13 @@ function* migrationCancel(action) {
       new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
       action.migrationName
     );
-    if (migration.data.spec.canceled) { return; }
+    if (migration.data.spec.canceled) {
+      return;
+    }
     const canceledMigrationSpec = {
       spec: {
-        canceled: true
-      }
+        canceled: true,
+      },
     };
     yield client.patch(
       new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
@@ -148,7 +169,6 @@ function* migrationCancel(action) {
   }
 }
 
-
 function* planUpdateRetry(action) {
   try {
     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
@@ -162,14 +182,19 @@ function* planUpdateRetry(action) {
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes = yield call(getPlanSaga, planValues.planName);
-          const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, isRerunPVDiscovery);
+          const updatedMigPlan = updateMigPlanFromValues(
+            getPlanRes.data,
+            planValues,
+            isRerunPVDiscovery
+          );
           if (isRerunPVDiscovery) {
             if (
               JSON.stringify(getPlanRes.data.spec.namespaces) !==
-              JSON.stringify(planValues.selectedNamespaces) ||
+                JSON.stringify(planValues.selectedNamespaces) ||
               JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
-              JSON.stringify(planValues.targetCluster) ||
-              JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !== JSON.stringify(planValues.sourceCluster)
+                JSON.stringify(planValues.targetCluster) ||
+              JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
+                JSON.stringify(planValues.sourceCluster)
             ) {
               const updatedPlanRes = yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -182,7 +207,6 @@ function* planUpdateRetry(action) {
             } else {
               yield put(PlanActions.pvUpdateRequest(false));
               yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
-
             }
           } else {
             yield client.patch(
@@ -192,7 +216,6 @@ function* planUpdateRetry(action) {
             );
             yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
           }
-
         } catch (err) {
           yield put(PlanActions.planUpdateFailure(err));
           throw err;
@@ -214,7 +237,7 @@ function* checkClosedStatus(action) {
     const MigPlan = getPlanResponse.data;
 
     if (MigPlan.status && MigPlan.status.conditions) {
-      const hasClosedCondition = !!MigPlan.status.conditions.some(c => c.type === 'Closed');
+      const hasClosedCondition = !!MigPlan.status.conditions.some((c) => c.type === 'Closed');
       if (hasClosedCondition) {
         yield put(PlanActions.planCloseSuccess(action.planName));
         return;
@@ -236,7 +259,6 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
       delete metadata.resourceVersion;
     }
   };
-
 
   const currMigPlanCore = corePlan(currMigPlan);
   const prevMigPlanCore = corePlan(prevMigPlan);
@@ -265,11 +287,10 @@ function* checkUpdatedPVs(action) {
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
-
           const updatedGeneration = updatedPlan.metadata.generation;
           const oldGeneration = currentPlan.metadata.generation;
 
-          //Generation check incremented twice: once for ui change, once for controller change. 
+          //Generation check incremented twice: once for ui change, once for controller change.
           if (isRerunPVDiscovery) {
             return updatedGeneration >= oldGeneration + 2;
           } else {
@@ -286,8 +307,7 @@ function* checkUpdatedPVs(action) {
           pvUpdateComplete = true;
         }
       }
-    }
-    else {
+    } else {
       yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
       //failed to update
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
@@ -318,59 +338,72 @@ function* checkPlanStatus(action) {
         yield put(PlanActions.setCurrentPlan(updatedPlan));
       }
       if (updatedPlan.status && updatedPlan.status.conditions) {
-        const hasReadyCondition = !!updatedPlan.status.conditions.some(c => c.type === 'Ready');
-        const hasErrorCondition = !!updatedPlan.status.conditions.some(cond => {
+        const hasReadyCondition = !!updatedPlan.status.conditions.some((c) => c.type === 'Ready');
+        const hasErrorCondition = !!updatedPlan.status.conditions.some((cond) => {
           return cond.category === 'Error';
         });
-        const hasWarnCondition = !!updatedPlan.status.conditions.some(cond => {
+        const hasWarnCondition = !!updatedPlan.status.conditions.some((cond) => {
           return cond.category === 'Warn';
         });
-        const hasCriticalCondition = !!updatedPlan.status.conditions.some(cond => {
+        const hasCriticalCondition = !!updatedPlan.status.conditions.some((cond) => {
           return cond.category === 'Critical';
         });
-        const hasConflictCondition = !!updatedPlan.status.conditions.some(cond => {
+        const hasConflictCondition = !!updatedPlan.status.conditions.some((cond) => {
           return cond.type === 'PlanConflict';
         });
         if (hasReadyCondition) {
           if (hasWarnCondition) {
-            const warnCondition = updatedPlan.status.conditions.find(cond => {
+            const warnCondition = updatedPlan.status.conditions.find((cond) => {
               return cond.category === 'Warn';
             });
-            yield put(PlanActions.updateCurrentPlanStatus(
-              { state: CurrentPlanState.Warn, warnMessage: warnCondition.message }));
+            yield put(
+              PlanActions.updateCurrentPlanStatus({
+                state: CurrentPlanState.Warn,
+                warnMessage: warnCondition.message,
+              })
+            );
           } else {
-            yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready, }));
+            yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready }));
           }
           yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
         if (hasCriticalCondition) {
-          const criticalCond = updatedPlan.status.conditions.find(cond => {
+          const criticalCond = updatedPlan.status.conditions.find((cond) => {
             return cond.category === 'Critical';
           });
-          yield put(PlanActions.updateCurrentPlanStatus(
-            { state: CurrentPlanState.Critical, errorMessage: criticalCond.message }
-          ));
+          yield put(
+            PlanActions.updateCurrentPlanStatus({
+              state: CurrentPlanState.Critical,
+              errorMessage: criticalCond.message,
+            })
+          );
 
           yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
         if (hasErrorCondition) {
-          const errorCond = updatedPlan.status.conditions.find(cond => {
+          const errorCond = updatedPlan.status.conditions.find((cond) => {
             return cond.category === 'Error';
           });
-          yield put(PlanActions.updateCurrentPlanStatus(
-            { state: CurrentPlanState.Critical, errorMessage: errorCond.message }
-          ));
+          yield put(
+            PlanActions.updateCurrentPlanStatus({
+              state: CurrentPlanState.Critical,
+              errorMessage: errorCond.message,
+            })
+          );
 
           yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
 
         if (hasConflictCondition) {
-          const conflictCond = updatedPlan.status.conditions.find(cond => {
+          const conflictCond = updatedPlan.status.conditions.find((cond) => {
             return cond.type === 'PlanConflict';
           });
-          yield put(PlanActions.updateCurrentPlanStatus(
-            { state: CurrentPlanState.Critical, errorMessage: conflictCond.message }
-          ));
+          yield put(
+            PlanActions.updateCurrentPlanStatus({
+              state: CurrentPlanState.Critical,
+              errorMessage: conflictCond.message,
+            })
+          );
 
           yield put(PlanActions.stopPlanStatusPolling(action.planName));
         }
@@ -392,13 +425,13 @@ function* planCloseSaga(action) {
     const updatedValues = {
       planName: action.planName,
       planClosed: true,
-      persistentVolumes: []
+      persistentVolumes: [],
     };
     yield retry(
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
       planPatchClose,
-      updatedValues,
+      updatedValues
     );
   } catch (err) {
     yield put(PlanActions.planCloseFailure(err, action.planName));
@@ -410,10 +443,7 @@ function* planDeleteAfterClose(planName) {
   const state = yield select();
   const migMeta = state.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
-  yield client.delete(
-    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-    planName,
-  );
+  yield client.delete(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
 function* planCloseAndDelete(action) {
@@ -425,10 +455,11 @@ function* planCloseAndDelete(action) {
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
     yield put(PlanActions.planCloseAndDeleteFailure(err, action.planName));
-    yield put(AlertActions.alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`));
+    yield put(
+      AlertActions.alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`)
+    );
   }
 }
-
 
 function* planCloseAndCheck(action) {
   try {
@@ -443,20 +474,19 @@ function* getPVResourcesRequest(action) {
   const state = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    const pvResourceRefs = action.pvList.map(pv => {
+    const pvResourceRefs = action.pvList.map((pv) => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
       return discoveryClient.get(persistentVolume);
     });
 
     const pvList = [];
-    yield Q.allSettled(pvResourceRefs)
-      .then((results) => {
-        results.forEach((result) => {
-          if (result.state === 'fulfilled') {
-            pvList.push(result.value.data);
-          }
-        });
+    yield Q.allSettled(pvResourceRefs).then((results) => {
+      results.forEach((result) => {
+        if (result.state === 'fulfilled') {
+          pvList.push(result.value.data);
+        }
       });
+    });
     yield put(PlanActions.getPVResourcesSuccess(pvList));
   } catch (err) {
     if (utils.isTimeoutError(err)) {
@@ -467,11 +497,10 @@ function* getPVResourcesRequest(action) {
 }
 
 function* fetchPlansGenerator() {
-
   function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
     const refs: Array<Promise<any>> = [];
 
-    migPlans.forEach(plan => {
+    migPlans.forEach((plan) => {
       const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
       refs.push(client.list(migMigrationResource));
     });
@@ -493,36 +522,42 @@ function* fetchPlansGenerator() {
   }
 }
 
+/******************************************************************** */
+/* Stage sagas */
+/******************************************************************** */
+
 function getStageStatusCondition(updatedPlans, createMigRes) {
   const matchingPlan = updatedPlans.updatedPlans.find(
-    p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
   const statusObj = { status: null, planName: null, errorMessage: null };
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
-      s => s.metadata.name === createMigRes.data.metadata.name
+      (s) => s.metadata.name === createMigRes.data.metadata.name
     );
-
 
     if (matchingMigration && matchingMigration.status) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Succeeded'
+        (c) => c.type === 'Succeeded'
       );
       if (hasSucceededCondition) {
-        statusObj.status = 'SUCCESS'
+        statusObj.status = 'SUCCESS';
       }
       statusObj.planName = matchingPlan.MigPlan.metadata.name;
-      const hasErrorCondition = !!matchingMigration.status.conditions.some(c => c.type === 'Failed' || c.category === 'Critical');
-      const errorCondition = matchingMigration.status.conditions.find(c => c.type === 'Failed' || c.category === 'Critical');
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      const errorCondition = matchingMigration.status.conditions.find(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
       if (hasErrorCondition) {
-        statusObj.status = 'FAILURE'
+        statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
       }
     }
   }
   return statusObj;
-
 }
 function* runStageSaga(action) {
   try {
@@ -547,7 +582,6 @@ function* runStageSaga(action) {
     const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
-
 
     const params = {
       fetchPlansGenerator: fetchPlansGenerator,
@@ -578,7 +612,9 @@ function* stagePoll(action) {
         break;
       case 'FAILURE':
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
-        yield put(AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`));
+        yield put(
+          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`)
+        );
         yield put(PlanActions.stopStagePolling());
         break;
       default:
@@ -588,42 +624,47 @@ function* stagePoll(action) {
   }
 }
 
+/******************************************************************** */
+/* Migration sagas */
+/******************************************************************** */
+
 function getMigrationStatusCondition(updatedPlans, createMigRes) {
   const matchingPlan = updatedPlans.updatedPlans.find(
-    p => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
   const statusObj = { status: null, planName: null, errorMessage: null };
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
-      s => s.metadata.name === createMigRes.data.metadata.name
+      (s) => s.metadata.name === createMigRes.data.metadata.name
     );
-
 
     if (matchingMigration && matchingMigration.status) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Succeeded'
+        (c) => c.type === 'Succeeded'
       );
       const hasCanceledCondition = !!matchingMigration.status.conditions.some(
-        c => c.type === 'Canceled'
-      )
+        (c) => c.type === 'Canceled'
+      );
       if (hasCanceledCondition) {
-        statusObj.status = 'CANCELED'
+        statusObj.status = 'CANCELED';
       } else if (hasSucceededCondition) {
-        statusObj.status = 'SUCCESS'
+        statusObj.status = 'SUCCESS';
       }
       statusObj.planName = matchingPlan.MigPlan.metadata.name;
-      const hasErrorCondition = !!matchingMigration.status.conditions.some(c => c.type === 'Failed' || c.category === 'Critical');
-      const errorCondition = matchingMigration.status.conditions.find(c => c.type === 'Failed' || c.category === 'Critical');
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      const errorCondition = matchingMigration.status.conditions.find(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
       if (hasErrorCondition) {
-        statusObj.status = 'FAILURE'
+        statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
       }
     }
   }
   return statusObj;
-
-
 }
 
 function* runMigrationSaga(action) {
@@ -649,7 +690,6 @@ function* runMigrationSaga(action) {
 
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
-
 
     const params = {
       fetchPlansGenerator: fetchPlansGenerator,
@@ -683,7 +723,9 @@ function* migrationPoll(action) {
         break;
       case 'FAILURE':
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`));
+        yield put(
+          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`)
+        );
         yield put(PlanActions.stopMigrationPolling());
         break;
       default:
@@ -693,6 +735,276 @@ function* migrationPoll(action) {
   }
 }
 
+/******************************************************************** */
+//Hooks sagas
+/******************************************************************** */
+
+function* fetchHooksSaga(action) {
+  const state = yield select();
+  try {
+    const { migMeta } = state;
+    const client: IClusterClient = ClientFactory.cluster(state);
+    const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
+    const { currentPlan } = state.plan;
+    const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
+    const currentPlanHooks = getPlanRes.data.spec.hooks;
+
+    const hookList = yield client.list(migHookResource);
+    const associatedHooks = [];
+    if (currentPlanHooks) {
+      currentPlanHooks.forEach((currentPlanHookRef) =>
+        hookList.data.items.forEach((hookRef) => {
+          if (currentPlanHookRef.reference.name === hookRef.metadata.name) {
+            const hookImageType = hookRef.spec.custom ? 'custom' : 'ansible';
+            const customContainerImage = hookRef.spec.custom ? hookRef.spec.image : null;
+            const ansibleRuntimeImage = !hookRef.spec.custom ? hookRef.spec.image : null;
+            const srcServiceAccountName =
+              hookRef.spec.targetCluster === 'source' ? currentPlanHookRef.serviceAccount : null;
+            const srcServiceAccountNamespace =
+              hookRef.spec.targetCluster === 'source'
+                ? currentPlanHookRef.executionNamespace
+                : null;
+            const destServiceAccountName =
+              hookRef.spec.targetCluster === 'destination'
+                ? currentPlanHookRef.serviceAccount
+                : null;
+            const destServiceAccountNamespace =
+              hookRef.spec.targetCluster === 'destination'
+                ? currentPlanHookRef.executionNamespace
+                : null;
+            const clusterTypeText =
+              hookRef.spec.targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
+
+            let ansibleFile;
+            if (!hookRef.spec.custom) {
+              ansibleFile = atob(hookRef.spec.playbook);
+            }
+
+            const uiHookObject = {
+              hookName: hookRef.metadata.name,
+              hookImageType,
+              customContainerImage,
+              ansibleRuntimeImage,
+              ansibleFile,
+              clusterType: hookRef.spec.targetCluster,
+              clusterTypeText: clusterTypeText,
+              srcServiceAccountName,
+              srcServiceAccountNamespace,
+              destServiceAccountName,
+              destServiceAccountNamespace,
+              phase: currentPlanHookRef.phase,
+              image: hookRef.spec.image,
+              custom: hookRef.spec.custom,
+            };
+            associatedHooks.push(uiHookObject);
+          }
+        })
+      );
+    }
+    yield put(PlanActions.hookFetchSuccess(associatedHooks));
+  } catch (err) {
+    yield put(PlanActions.hookFetchFailure());
+    yield put(AlertActions.alertErrorTimeout('Failed to fetch hooks'));
+  }
+}
+
+function* addHookSaga(action) {
+  const { migHook } = action;
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    // add hook
+    const migHookObj = createMigHook(migHook, migMeta.namespace);
+    const createHookRes = yield client.create(
+      new MigResource(MigResourceKind.MigHook, migMeta.namespace),
+      migHookObj
+    );
+
+    // associate  hook to plan
+    const { currentPlan } = state.plan;
+    const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
+    const currentPlanSpec = getPlanRes.data.spec;
+
+    const createHooksSpec = () => {
+      const updatedSpec = Object.assign({}, currentPlanSpec);
+
+      const getServiceAccountNamespace = (clusterType) => {
+        if (clusterType === 'source') {
+          return migHook.srcServiceAccountNamespace;
+        }
+        if (clusterType === 'destination') {
+          return migHook.destServiceAccountNamespace;
+        }
+      };
+
+      const getServiceAccountName = (clusterType) => {
+        if (clusterType === 'source') {
+          return migHook.srcServiceAccountName;
+        }
+        if (clusterType === 'destination') {
+          return migHook.destServiceAccountName;
+        }
+      };
+      const executionNamespace = getServiceAccountNamespace(migHook.clusterType);
+      const { name, namespace } = createHookRes.data.metadata;
+
+      const newHook = {
+        executionNamespace: executionNamespace,
+        phase: migHook.migrationStep,
+        reference: {
+          name: name,
+          namespace: namespace,
+        },
+        serviceAccount: getServiceAccountName(migHook.clusterType),
+      };
+
+      if (updatedSpec.hooks) {
+        const isExistingPhase = updatedSpec.hooks.some((hook) => {
+          hook.phase === migHook.migrationStep;
+        });
+        if (!isExistingPhase) {
+          updatedSpec.hooks.push(newHook);
+        }
+      } else {
+        updatedSpec.hooks = [newHook];
+      }
+
+      const updatedHooksSpec = {
+        spec: updatedSpec,
+      };
+      return updatedHooksSpec;
+    };
+
+    const patchPlanRes = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      currentPlan.metadata.name,
+      createHooksSpec()
+    );
+
+    yield put(PlanActions.addHookSuccess(createHookRes.data));
+    yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
+    yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
+    yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
+  } catch (err) {
+    yield put(PlanActions.addHookFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
+  }
+}
+
+function* removeHookSaga(action) {
+  try {
+    const state = yield select();
+    const { migMeta } = state;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
+
+    yield client.delete(migHookResource, name);
+
+    const { currentPlan } = state.plan;
+
+    const createHooksSpec = () => {
+      const updatedSpec = Object.assign({}, currentPlan.spec);
+      if (updatedSpec.hooks) {
+        const deletedHookIndex = updatedSpec.hooks.findIndex(
+          (hook) => hook.reference.name === name
+        );
+        updatedSpec.hooks.splice(deletedHookIndex, 1);
+      }
+
+      const updatedHooksSpec = {
+        spec: updatedSpec,
+      };
+      return updatedHooksSpec;
+    };
+
+    const patchPlanRes = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      currentPlan.metadata.name,
+      createHooksSpec()
+    );
+
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
+    yield put(PlanActions.removeHookSuccess(name));
+    yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
+    yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.removeHookFailure(err));
+  }
+}
+
+function* updateHookRequest(action) {
+  const state = yield select();
+  const { migMeta } = state;
+  const { migHook } = action;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const currentHook = state.plan.migHookList.find((hook) => {
+    return hook.hookName === migHook.hookName;
+  });
+
+  const { currentPlan } = state.plan;
+
+  const currentPlanHookRef = currentPlan.spec.hooks.find((hook) => {
+    return hook.reference.name === migHook.hookName;
+  });
+  const migHookObj = updateMigHook(
+    currentHook,
+    migHook,
+    currentPlanHookRef,
+    migMeta.namespace,
+    currentPlan
+  );
+  //need to patch entire hooks array
+  try {
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      currentPlan.metadata.name,
+      migHookObj.currentPlanHookRefPatch
+    );
+
+    yield client.patch(
+      new MigResource(MigResourceKind.MigHook, migMeta.namespace),
+      migHook.hookName,
+      migHookObj.migHookPatch
+    );
+
+    yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
+    yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
+    yield put(
+      PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
+    );
+    yield put(PlanActions.hookFetchRequest(patchPlanResponse.data.spec.hooks));
+    yield put(PlanActions.updateHookSuccess());
+  } catch (err) {
+    yield put(PlanActions.updateHookFailure());
+    yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
+    throw err;
+  }
+}
+
+/******************************************************************** */
+/* Saga watchers */
+/******************************************************************** */
+
+function* watchUpdateHookRequest() {
+  yield takeLatest(PlanActionTypes.UPDATE_HOOK_REQUEST, updateHookRequest);
+}
+
+function* watchRemoveHookRequest() {
+  yield takeLatest(PlanActionTypes.REMOVE_HOOK_REQUEST, removeHookSaga);
+}
+
+function* watchFetchHooksRequest() {
+  yield takeLatest(PlanActionTypes.HOOK_FETCH_REQUEST, fetchHooksSaga);
+}
+
+function* watchAddHookRequest() {
+  yield takeLatest(PlanActionTypes.ADD_HOOK_REQUEST, addHookSaga);
+}
 
 function* watchStagePolling() {
   while (true) {
@@ -767,5 +1079,9 @@ export default {
   watchMigrationCancel,
   watchGetPVResourcesRequest,
   watchNamespaceFetchRequest,
-  watchPVUpdate
+  watchPVUpdate,
+  watchAddHookRequest,
+  watchFetchHooksRequest,
+  watchRemoveHookRequest,
+  watchUpdateHookRequest,
 };

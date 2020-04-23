@@ -1,10 +1,5 @@
 import React, { useState, useRef } from 'react';
-import {
-  Button,
-  InputGroup,
-  TextInput,
-  Form
-} from '@patternfly/react-core';
+import { Button, InputGroup, TextInput, Form } from '@patternfly/react-core';
 
 interface ICertificateUploadProps {
   isDisabled: boolean;
@@ -14,19 +9,16 @@ interface ICertificateUploadProps {
   name: string;
 }
 
-
 const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
   isDisabled,
   onBlur,
   onInput,
   setFieldValue,
-  name
+  name,
 }) => {
-
   const [display, setDisplay] = useState('');
 
-
-  const readFile = fileHandle => {
+  const readFile = (fileHandle) => {
     // read the uploaded certificate and b64 encode it, then
     // save it to the bound form field.
     const reader = new FileReader();
@@ -39,7 +31,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
     reader.readAsBinaryString(fileHandle);
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     if (event.target.files && event.target.files.length > 0) {
       readFile(event.target.files[0]);
     }
@@ -54,7 +46,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
     if (fileInputCurrent) {
       fileInputCurrent.click();
     }
-  }
+  };
 
   return (
     <InputGroup>
@@ -67,10 +59,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
         onClick={clickFileInput}
         id={name + '-selected-filename'}
       />
-      <Button
-        isDisabled={isDisabled}
-        onClick={clickFileInput}
-      >
+      <Button isDisabled={isDisabled} onClick={clickFileInput}>
         Browse
       </Button>
       <input
@@ -85,5 +74,5 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
       />
     </InputGroup>
   );
-}
+};
 export default CertificateUpload;
