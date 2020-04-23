@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  cellWidth
-} from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, cellWidth } from '@patternfly/react-table';
 import MigrationActions from './MigrationActions';
 import {
   Bullseye,
@@ -12,7 +7,7 @@ import {
   Title,
   Progress,
   ProgressSize,
-  ProgressVariant
+  ProgressVariant,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -33,7 +28,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     'PVs Copied',
     {
       title: 'Status',
-      transforms: [cellWidth('30')]
+      transforms: [cellWidth('30')],
     },
     '',
   ];
@@ -41,8 +36,11 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
   useEffect(() => {
     const mappedRows = migrations.map((migration, migrationIndex) => {
       const type = migration.spec.stage ? 'Stage' : 'Migration';
-      const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
-        (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
+      const progressVariant = migration.tableStatus.isSucceeded
+        ? ProgressVariant.success
+        : migration.tableStatus.isFailed
+        ? ProgressVariant.danger
+        : ProgressVariant.info;
       const rowCells = [
         { title: type },
         { title: migration.tableStatus.start },
@@ -53,16 +51,16 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           title: (
             <div>
               <div>
-                {migration.tableStatus.progress === 0 ?
-                  migration.tableStatus.stepName :
-                  (
-                    <Progress
-                      value={migration.tableStatus.progress}
-                      title={migration.tableStatus.stepName}
-                      size={ProgressSize.sm}
-                      variant={progressVariant}
-                    />
-                  )}
+                {migration.tableStatus.progress === 0 ? (
+                  migration.tableStatus.stepName
+                ) : (
+                  <Progress
+                    value={migration.tableStatus.progress}
+                    title={migration.tableStatus.stepName}
+                    size={ProgressSize.sm}
+                    variant={progressVariant}
+                  />
+                )}
               </div>
             </div>
           ),
@@ -71,15 +69,14 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           title: <MigrationActions migration={migration} />,
           props: {
             className: 'pf-c-table__action',
-          }
-        }
+          },
+        },
       ];
       return {
-        cells: rowCells
+        cells: rowCells,
       };
     });
     setCurrentRows(mappedRows);
-
   }, [migrations]);
 
   if (isPlanLocked) {

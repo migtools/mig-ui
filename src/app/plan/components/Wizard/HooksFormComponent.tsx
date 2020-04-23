@@ -61,14 +61,16 @@ const migrationStepKey = 'migrationStep';
 export const HooksClusterType = {
   Destination: 'destination',
   Source: 'source',
-}
+};
 
 export const HooksImageType = {
   Ansible: 'ansible',
-  Custom: 'custom'
-}
+  Custom: 'custom',
+};
 
-const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikProps<IHooksFormValues>> = ({
+const HooksFormComponent: React.FunctionComponent<
+  IHooksFormOtherProps & FormikProps<IHooksFormValues>
+> = ({
   setIsAddHooksOpen,
   setInitialHookValues,
   hookAddEditStatus,
@@ -87,13 +89,7 @@ const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps & FormikP
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
-
-  let initialPhaseOptions = [
-    'PreBackup',
-    'PostBackup',
-    'PreRestore',
-    'PostRestore'
-  ];
+  let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
   if (currentPlan.spec.hooks) {
     const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);

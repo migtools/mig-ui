@@ -3,7 +3,7 @@ import {
   AlertActions,
   PollingActions,
   PollingActionTypes,
-  AlertActionTypes
+  AlertActionTypes,
 } from '../../common/duck/actions';
 import { AuthActions } from '../../auth/duck/actions';
 
@@ -30,7 +30,7 @@ function* poll(action) {
         const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
         const alertModalObj = {
           name: params.pollName,
-          errorMessage: 'error'
+          errorMessage: 'error',
         };
         yield put(AlertActions.alertErrorModal(alertModalObj));
         yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
@@ -63,7 +63,6 @@ function* watchClustersPolling() {
     yield race([call(poll, action), take(ClusterActionTypes.CLUSTER_POLL_STOP)]);
   }
 }
-
 
 export function* progressTimeoutSaga(action) {
   try {

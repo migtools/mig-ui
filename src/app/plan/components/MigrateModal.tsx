@@ -5,10 +5,10 @@ import { PlanContext } from '../../home/duck/context';
 const styles = require('./MigrateModal.module');
 
 interface IProps {
-    onHandleClose: () => void;
-    id?: string;
-    isOpen: boolean;
-    plan: any;
+  onHandleClose: () => void;
+  id?: string;
+  isOpen: boolean;
+  plan: any;
 }
 
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
@@ -26,13 +26,12 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
       title={`Migrate ${plan.MigPlan.metadata.name}`}
     >
       <Grid gutter="md">
-        <form
-        >
+        <form>
           <GridItem>
-                        Migrating a migration plan means that all transactions on the source cluster will be
-                        halted before the migration begins and will remain halted for the duration of the
-                        migration. Persistent volumes associated with the projects being migrated will be moved or
-                        copied to the target cluster as specified in the migration plan.
+            Migrating a migration plan means that all transactions on the source cluster will be
+            halted before the migration begins and will remain halted for the duration of the
+            migration. Persistent volumes associated with the projects being migrated will be moved
+            or copied to the target cluster as specified in the migration plan.
           </GridItem>
           <GridItem className={styles.gridMargin}>
             <Checkbox
@@ -46,23 +45,19 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
           <GridItem>
             <Grid gutter="md">
               <GridItem>
-                <Button variant="primary"
+                <Button
+                  variant="primary"
                   onClick={() => {
                     onHandleClose();
                     planContext.handleRunMigration(plan, disableQuiesce);
-                  }
-                  }
+                  }}
                 >
-                                    Migrate
+                  Migrate
                 </Button>
               </GridItem>
               <GridItem>
-                <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => onHandleClose()}
-                >
-                                    Cancel
+                <Button key="cancel" variant="secondary" onClick={() => onHandleClose()}>
+                  Cancel
                 </Button>
               </GridItem>
             </Grid>

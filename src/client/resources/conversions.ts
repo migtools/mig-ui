@@ -1,8 +1,17 @@
 import { IPlan } from '../../app/plan/components/Wizard/types';
 import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
-import { HooksClusterType, HooksImageType } from '../../app/plan/components/Wizard/HooksFormComponent'
+import {
+  HooksClusterType,
+  HooksImageType,
+} from '../../app/plan/components/Wizard/HooksFormComponent';
 
-export function createTokenSecret(name: string, namespace: string, rawToken: string, createdForResourceType: string, createdForResource: string) {
+export function createTokenSecret(
+  name: string,
+  namespace: string,
+  rawToken: string,
+  createdForResourceType: string,
+  createdForResource: string
+) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
   return {
@@ -17,16 +26,19 @@ export function createTokenSecret(name: string, namespace: string, rawToken: str
       labels: {
         createdForResourceType,
         createdForResource,
-      }
+      },
     },
     type: 'Opaque',
   };
 }
 
-export function getTokenSecretLabelSelector(createdForResourceType: string, createdForResource: string) {
+export function getTokenSecretLabelSelector(
+  createdForResourceType: string,
+  createdForResource: string
+) {
   return {
-    labelSelector: `createdForResourceType=${createdForResourceType},createdForResource=${createdForResource}`
-  }
+    labelSelector: `createdForResourceType=${createdForResourceType},createdForResource=${createdForResource}`,
+  };
 }
 
 export function updateTokenSecret(rawToken: string) {
@@ -53,7 +65,7 @@ export function createMigCluster(
   requireSSL: boolean,
   caBundle: string
 ) {
-  clusterUrl = clusterUrl.trim()
+  clusterUrl = clusterUrl.trim();
 
   let specObject;
   if (isAzure) {
@@ -79,9 +91,8 @@ export function createMigCluster(
     };
   }
   if (caBundle) {
-    specObject['caBundle'] = caBundle
+    specObject['caBundle'] = caBundle;
   }
-
 
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -106,7 +117,7 @@ export function createMigStorage(
   s3Url?: string,
   gcpBucket?: string,
   azureResourceGroup?: string,
-  azureStorageAccount?: string,
+  azureStorageAccount?: string
 ) {
   switch (bslProvider) {
     case 'aws':
@@ -199,8 +210,6 @@ export function createMigStorage(
           },
         },
       };
-
-
   }
 }
 
@@ -213,7 +222,7 @@ export function updateMigStorage(
   azureResourceGroup: string,
   azureStorageAccount: string,
   requireSSL: boolean,
-  caBundle: string,
+  caBundle: string
 ) {
   switch (bslProvider) {
     case 'aws':
@@ -235,7 +244,7 @@ export function updateMigStorage(
       return {
         spec: {
           backupStorageConfig: {
-            gcpBucket
+            gcpBucket,
           },
         },
       };
@@ -244,7 +253,7 @@ export function updateMigStorage(
         spec: {
           backupStorageConfig: {
             azureResourceGroup,
-            azureStorageAccount
+            azureStorageAccount,
           },
           volumeSnapshotConfig: {
             azureResourceGroup,
@@ -261,9 +270,8 @@ export function createStorageSecret(
   secretKey?: any,
   accessKey?: string,
   gcpBlob?: any,
-  azureBlob?: any,
+  azureBlob?: any
 ) {
-
   switch (bslProvider) {
     case 'aws':
       const encodedAccessKey = btoa(accessKey);
@@ -287,7 +295,7 @@ export function createStorageSecret(
       return {
         apiVersion: 'v1',
         data: {
-          'gcp-credentials': gcpCred
+          'gcp-credentials': gcpCred,
         },
         kind: 'Secret',
         metadata: {
@@ -302,7 +310,7 @@ export function createStorageSecret(
       return {
         apiVersion: 'v1',
         data: {
-          'azure-credentials': azureCred
+          'azure-credentials': azureCred,
         },
         kind: 'Secret',
         metadata: {
@@ -311,7 +319,6 @@ export function createStorageSecret(
         },
         type: 'Opaque',
       };
-
   }
   // btoa => to base64, atob => from base64
 }
@@ -325,7 +332,6 @@ export function updateStorageSecret(
 ) {
   switch (bslProvider) {
     case 'aws':
-
       // btoa => to base64, atob => from base64
       const encodedAccessKey = btoa(accessKey);
       const encodedSecretKey = btoa(secretKey);
@@ -339,14 +345,14 @@ export function updateStorageSecret(
       const gcpCred = btoa(gcpBlob);
       return {
         data: {
-          'gcp-credentials': gcpCred
+          'gcp-credentials': gcpCred,
         },
       };
     case 'azure':
       const azureCred = btoa(azureBlob);
       return {
         data: {
-          'azure-credentials': azureCred
+          'azure-credentials': azureCred,
         },
       };
   }
@@ -416,8 +422,8 @@ export function updateMigPlanFromValues(
     updatedSpec.namespaces = planValues.selectedNamespaces;
   } else {
     if (updatedSpec.persistentVolumes) {
-      updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map(v => {
-        const userPv = planValues.persistentVolumes.find(upv => upv.name === v.name);
+      updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
+        const userPv = planValues.persistentVolumes.find((upv) => upv.name === v.name);
         if (userPv) {
           v.selection.action = userPv.type;
           const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
@@ -425,7 +431,8 @@ export function updateMigPlanFromValues(
             v.selection.copyMethod = selectedCopyMethod;
           }
 
-          v.selection.verify = selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
+          v.selection.verify =
+            selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
 
           const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
           if (selectedStorageClassObj) {
@@ -437,7 +444,6 @@ export function updateMigPlanFromValues(
         return v;
       });
     }
-
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;
@@ -509,8 +515,6 @@ export function createMigMigration(
   };
 }
 
-
-
 export function updateMigHook(
   currentHook: any,
   migHook: any,
@@ -525,8 +529,7 @@ export function updateMigHook(
     if (imageType === HooksImageType.Custom) {
       return migHook.customContainerImage;
     }
-  }
-
+  };
 
   const getPlaybook = (imageType) => {
     if (imageType === HooksImageType.Ansible) {
@@ -537,7 +540,7 @@ export function updateMigHook(
     if (imageType === HooksImageType.Custom) {
       return '';
     }
-  }
+  };
 
   const currentImage = currentHook.image;
   const image = getImage(migHook.hookImageType);
@@ -553,13 +556,13 @@ export function updateMigHook(
   const targetClusterUpdated = migHook.clusterType !== currentTargetCluster;
   const targetClusterValue = targetClusterUpdated ? migHook.clusterType : currentTargetCluster;
 
-  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false
+  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false;
 
   const migHookSpec = {
     image: imageValue,
     playbook: playbookValue,
     targetCluster: targetClusterValue,
-    custom: isCustom
+    custom: isCustom,
   };
 
   const currentExecutionNamespace = currentPlanHookRef.executionNamespace;
@@ -570,17 +573,24 @@ export function updateMigHook(
   let serviceAccountValue;
   if (migHook.clusterType === HooksClusterType.Source) {
     executionNamespaceUpdated = migHook.srcServiceAccountNamespace !== currentExecutionNamespace;
-    executionNamespaceValue = executionNamespaceUpdated ? migHook.srcServiceAccountNamespace : currentExecutionNamespace;
+    executionNamespaceValue = executionNamespaceUpdated
+      ? migHook.srcServiceAccountNamespace
+      : currentExecutionNamespace;
     serviceAccountUpdated = migHook.srcServiceAccountNames !== currentServiceAccount;
-    serviceAccountValue = serviceAccountUpdated ? migHook.srcServiceAccountName : currentServiceAccount;
+    serviceAccountValue = serviceAccountUpdated
+      ? migHook.srcServiceAccountName
+      : currentServiceAccount;
   }
   if (migHook.clusterType === HooksClusterType.Source) {
     executionNamespaceUpdated = migHook.destServiceAccountNamespace !== currentExecutionNamespace;
-    executionNamespaceValue = executionNamespaceUpdated ? migHook.destServiceAccountNamespace : currentExecutionNamespace;
+    executionNamespaceValue = executionNamespaceUpdated
+      ? migHook.destServiceAccountNamespace
+      : currentExecutionNamespace;
     serviceAccountUpdated = migHook.destServiceAccountNames !== currentServiceAccount;
-    serviceAccountValue = serviceAccountUpdated ? migHook.destServiceAccountName : currentServiceAccount;
+    serviceAccountValue = serviceAccountUpdated
+      ? migHook.destServiceAccountName
+      : currentServiceAccount;
   }
-
 
   const currentPhase = currentPlanHookRef.phase;
   const phaseUpdated = migHook.migrationStep !== currentPhase;
@@ -592,37 +602,39 @@ export function updateMigHook(
     phase: phaseValue,
     reference: {
       name: migHook.hookName,
-      namespace: namespace
+      namespace: namespace,
     },
-    serviceAccount: serviceAccountValue
+    serviceAccount: serviceAccountValue,
   };
 
-  const foundIndex = updatedHooksSpec.findIndex(hook => hook.reference.name == migHook.hookName);
+  const foundIndex = updatedHooksSpec.findIndex((hook) => hook.reference.name == migHook.hookName);
   updatedHooksSpec[foundIndex] = currentPlanHookRefSpec;
 
-  if (!imageUpdated && !playbookUpdated &&
-    !targetClusterUpdated && !executionNamespaceUpdated && !phaseUpdated && !serviceAccountUpdated) {
+  if (
+    !imageUpdated &&
+    !playbookUpdated &&
+    !targetClusterUpdated &&
+    !executionNamespaceUpdated &&
+    !phaseUpdated &&
+    !serviceAccountUpdated
+  ) {
     console.warn('A hook update was requested, but nothing was changed');
     return;
   }
 
   return {
     migHookPatch: {
-      spec: migHookSpec
+      spec: migHookSpec,
     },
     currentPlanHookRefPatch: {
       spec: {
-        hooks: updatedHooksSpec
-      }
-    }
-  }
+        hooks: updatedHooksSpec,
+      },
+    },
+  };
 }
 
-export function createMigHook(
-  migHook: any,
-  namespace: string
-) {
-
+export function createMigHook(migHook: any, namespace: string) {
   const getImage = (imageType) => {
     if (imageType === HooksImageType.Ansible) {
       return migHook.ansibleRuntimeImage;
@@ -630,7 +642,7 @@ export function createMigHook(
     if (imageType === HooksImageType.Custom) {
       return migHook.customContainerImage;
     }
-  }
+  };
 
   const getPlaybook = (imageType) => {
     if (imageType === HooksImageType.Ansible) {
@@ -641,18 +653,17 @@ export function createMigHook(
     if (imageType === HooksImageType.Custom) {
       return '';
     }
-  }
+  };
 
   const image = getImage(migHook.hookImageType);
   const playbook = getPlaybook(migHook.hookImageType);
-  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false
-
+  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false;
 
   const migHookSpec = {
     image,
     playbook,
     targetCluster: migHook.clusterType,
-    custom: isCustom
+    custom: isCustom,
   };
 
   return {
@@ -662,10 +673,9 @@ export function createMigHook(
       name: migHook.hookName,
       namespace,
     },
-    spec: migHookSpec
+    spec: migHookSpec,
   };
 }
-
 
 export type IMigHook = ReturnType<typeof createMigHook>;
 export type IMigPlan = ReturnType<typeof createMigPlan>;

@@ -20,7 +20,7 @@ class LoginComponent extends React.Component<IProps> {
     });
   };
 
-  componentDidUpdate = prevProps => {
+  componentDidUpdate = (prevProps) => {
     const newUser = !prevProps.auth.user && this.props.auth.user;
     if (newUser) {
       this.props.routeToHome();
@@ -33,13 +33,13 @@ class LoginComponent extends React.Component<IProps> {
 }
 
 export default connect(
-  state => ({
+  (state) => ({
     migMeta: state.migMeta,
     auth: state.auth,
     router: state.router,
   }),
-  dispatch => ({
-    loginUser: user => dispatch(authActionCreators.loginSuccess(user)),
+  (dispatch) => ({
+    loginUser: (user) => dispatch(authActionCreators.loginSuccess(user)),
     routeToHome: () => dispatch(push('/')),
   })
 )(LoginComponent);

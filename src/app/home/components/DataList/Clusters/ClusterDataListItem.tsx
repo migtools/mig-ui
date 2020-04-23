@@ -22,7 +22,8 @@ const ClusterDataListItem = ({
   migMeta,
   removeCluster,
   clusterCount,
-  ...props }) => {
+  ...props
+}) => {
   const [isOpen, toggleOpen] = useOpenModal(false);
   if (dataList) {
     return (
@@ -48,7 +49,12 @@ const ClusterDataListItem = ({
             ]}
           />
           <DataListAction aria-label="add-cluster" aria-labelledby="plan-item" id="add-cluster">
-            <Button aria-label="add-cluster-btn" id="add-cluster-btn" onClick={toggleOpen} variant="secondary">
+            <Button
+              aria-label="add-cluster-btn"
+              id="add-cluster-btn"
+              onClick={toggleOpen}
+              variant="secondary"
+            >
               Add
             </Button>
             <AddEditClusterModal isOpen={isOpen} onHandleClose={toggleOpen} />

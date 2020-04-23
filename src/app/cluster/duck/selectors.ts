@@ -1,36 +1,34 @@
 import { createSelector } from 'reselect';
 
-const clusterSelectorWithStatus = state => state.cluster.clusterList.map(cluster => {
-  let hasReadyCondition = null;
-  let hasCriticalCondition = null;
+const clusterSelectorWithStatus = (state) =>
+  state.cluster.clusterList.map((cluster) => {
+    let hasReadyCondition = null;
+    let hasCriticalCondition = null;
 
-  if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
-
-    const emptyStatusObject = {
+    if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
+      const emptyStatusObject = {
+        hasReadyCondition,
+        hasCriticalCondition,
+      };
+      return { ...cluster, ClusterStatus: emptyStatusObject };
+    }
+    hasReadyCondition = !!cluster.MigCluster.status.conditions.some((c) => c.type === 'Ready');
+    hasCriticalCondition = !!cluster.MigCluster.status.conditions.some(
+      (c) => c.type === 'Critical'
+    );
+    const statusObject = {
       hasReadyCondition,
-      hasCriticalCondition
+      hasCriticalCondition,
     };
-    return { ...cluster, ClusterStatus: emptyStatusObject };
-  }
-  hasReadyCondition = !!cluster.MigCluster.status.conditions.some(c => c.type === 'Ready');
-  hasCriticalCondition = !!cluster.MigCluster.status.conditions.some(c => c.type === 'Critical');
-  const statusObject = {
-    hasReadyCondition,
-    hasCriticalCondition
-  };
 
-  return { ...cluster, ClusterStatus: statusObject };
+    return { ...cluster, ClusterStatus: statusObject };
+  });
 
+const planSelector = (state) => state.plan.migPlanList.map((p) => p);
+
+const getAllClusters = createSelector([clusterSelectorWithStatus], (clusters) => {
+  return clusters;
 });
-
-const planSelector = state => state.plan.migPlanList.map(p => p);
-
-const getAllClusters = createSelector(
-  [clusterSelectorWithStatus],
-  clusters => {
-    return clusters;
-  }
-);
 
 const getAssociatedPlans = createSelector(
   [clusterSelectorWithStatus, planSelector],

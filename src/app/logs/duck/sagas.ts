@@ -4,7 +4,12 @@ import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
 import Q from 'q';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
-import { PlanPodReportDiscovery, ClusterKind, IPlanLogSources, IPlanReport } from '../../../client/resources/discovery';
+import {
+  PlanPodReportDiscovery,
+  ClusterKind,
+  IPlanLogSources,
+  IPlanReport,
+} from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
@@ -40,13 +45,13 @@ function* downloadLogs(action) {
   const report: IPlanLogSources = action.report;
   try {
     const archive = new JSZip();
-    let logPaths = flatten(Object.values(ClusterKind).map(
-      src => report[src].map(
-        pod => pod.containers.map(
-          container => container.log
-        ))));
-    logPaths = flatten(logPaths.filter(log => log.length > 0));
-    const logs = yield all(logPaths.map(log => discoveryClient.getRaw(log)));
+    let logPaths = flatten(
+      Object.values(ClusterKind).map((src) =>
+        report[src].map((pod) => pod.containers.map((container) => container.log))
+      )
+    );
+    logPaths = flatten(logPaths.filter((log) => log.length > 0));
+    const logs = yield all(logPaths.map((log) => discoveryClient.getRaw(log)));
 
     logs.map((log, index) => {
       const fullPath = logPaths[index].split(/\//);
@@ -94,7 +99,6 @@ function* collectReport(action) {
     delete planReport.name;
     delete planReport.namespace;
     yield put(LogActions.reportFetchSuccess(planReport));
-
   } catch (err) {
     if (utils.isTimeoutError(err)) {
       yield put(AlertActions.alertErrorTimeout('Timed out while fetching plan report'));

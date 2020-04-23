@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Page,
-  PageSection,
-  Grid,
-  GridItem
-} from '@patternfly/react-core';
+import { Page, PageSection, Grid, GridItem } from '@patternfly/react-core';
 import HeaderComponent from '../common/components/HeaderComponent';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbHeading } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
@@ -24,7 +19,9 @@ const LogsComponent: React.FunctionComponent<IProps> = ({ match }) => {
               <BreadcrumbItem>
                 <Link to="/">Home</Link>
               </BreadcrumbItem>
-              <BreadcrumbItem to="#" isActive>{match.params.planId} Logs</BreadcrumbItem>
+              <BreadcrumbItem to="#" isActive>
+                {match.params.planId} Logs
+              </BreadcrumbItem>
             </Breadcrumb>
           </GridItem>
         </Grid>

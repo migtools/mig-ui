@@ -118,7 +118,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     },
     { title: 'Target storage class', transforms: [sortable] },
   ];
-  const getSortValues = pv => [
+  const getSortValues = (pv) => [
     pv.name,
     pv.claim,
     pv.project,
@@ -153,14 +153,14 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         { key: 'filesystem', value: 'Filesystem copy' },
         { key: 'snapshot', value: 'Volume snapshot' },
       ],
-      getItemValue: pv => copyMethodToString(pvCopyMethodAssignment[pv.name]),
+      getItemValue: (pv) => copyMethodToString(pvCopyMethodAssignment[pv.name]),
     },
     {
       key: 'targetStorageClass',
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-      getItemValue: pv => storageClassToString(pvStorageClassAssignment[pv.name]),
+      getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
     },
   ];
 
@@ -171,8 +171,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
-  const rows = currentPageItems.map(pv => {
-    const currentPV = currentPlan.spec.persistentVolumes.find(planPV => planPV.name === pv.name);
+  const rows = currentPageItems.map((pv) => {
+    const currentPV = currentPlan.spec.persistentVolumes.find((planPV) => planPV.name === pv.name);
     const currentCopyMethod = pvCopyMethodAssignment[pv.name];
     const currentStorageClass = pvStorageClassAssignment[pv.name];
 
@@ -185,7 +185,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
 
     const noneOption = { value: '', toString: () => 'None' };
     const storageClassOptions: OptionWithValue[] = [
-      ...storageClasses.map(storageClass => ({
+      ...storageClasses.map((storageClass) => ({
         value: storageClass.name,
         toString: () => storageClassToString(storageClass),
       })),
@@ -205,7 +205,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               aria-label="Select copy method"
               onChange={(option: OptionWithValue) => onCopyMethodChange(currentPV, option.value)}
               options={copyMethodOptions}
-              value={copyMethodOptions.find(option => option.value === currentCopyMethod)}
+              value={copyMethodOptions.find((option) => option.value === currentCopyMethod)}
               placeholderText="Select a copy method..."
             />
           ),
@@ -216,7 +216,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               <Checkbox
                 isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
                 isDisabled={!isVerifyCopyAllowed}
-                onChange={checked => onVerifyFlagChange(currentPV, checked)}
+                onChange={(checked) => onVerifyFlagChange(currentPV, checked)}
                 aria-label={`Verify copy for PV ${pv.name}`}
                 id={`verify-pv-${pv.name}`}
                 name={`verify-pv-${pv.name}`}
@@ -232,7 +232,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               options={storageClassOptions}
               value={
                 storageClassOptions.find(
-                  option => currentStorageClass && option.value === currentStorageClass.name
+                  (option) => currentStorageClass && option.value === currentStorageClass.name
                 ) || noneOption
               }
               placeholderText="Select a storage class..."

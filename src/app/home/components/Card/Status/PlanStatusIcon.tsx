@@ -1,5 +1,9 @@
 import React from 'react';
-import { OutlinedCircleIcon, ResourcesAlmostEmptyIcon, ResourcesFullIcon } from '@patternfly/react-icons';
+import {
+  OutlinedCircleIcon,
+  ResourcesAlmostEmptyIcon,
+  ResourcesFullIcon,
+} from '@patternfly/react-icons';
 
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 
@@ -14,21 +18,35 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasNotReadyCondition,
     hasSucceededStage,
     hasSucceededMigration,
-    isPlanLocked
+    isPlanLocked,
   } = plan.PlanStatus;
 
   if (hasFailedCondition || hasNotReadyCondition) {
-    return <span className="pf-c-icon pf-m-danger"><ResourcesFullIcon /></span>;
-  } else if (hasRunningMigrations || isPlanLocked) {
     return (
-      <Spinner size="md" />
+      <span className="pf-c-icon pf-m-danger">
+        <ResourcesFullIcon />
+      </span>
     );
+  } else if (hasRunningMigrations || isPlanLocked) {
+    return <Spinner size="md" />;
   } else if (hasSucceededMigration) {
-    return <span className="pf-c-icon pf-m-success"><ResourcesFullIcon /></span>;
+    return (
+      <span className="pf-c-icon pf-m-success">
+        <ResourcesFullIcon />
+      </span>
+    );
   } else if (hasSucceededStage) {
-    return <span className="pf-c-icon pf-m-success"><ResourcesAlmostEmptyIcon /></span>;
+    return (
+      <span className="pf-c-icon pf-m-success">
+        <ResourcesAlmostEmptyIcon />
+      </span>
+    );
   } else {
-    return <span className="pf-c-icon pf-m-info"><OutlinedCircleIcon /></span>;
+    return (
+      <span className="pf-c-icon pf-m-info">
+        <OutlinedCircleIcon />
+      </span>
+    );
   }
 };
 

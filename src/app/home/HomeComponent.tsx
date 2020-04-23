@@ -1,12 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Card,
-  Page,
-  PageSection,
-  Grid,
-  GridItem,
-} from '@patternfly/react-core';
+import { Card, Page, PageSection, Grid, GridItem } from '@patternfly/react-core';
 import HeaderComponent from '../common/components/HeaderComponent';
 import DetailViewComponent from './DetailViewComponent';
 import DashboardCard from './components/Card/DashboardCard';
@@ -45,27 +39,23 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     isClusterError,
     isStorageError,
     isPlanError,
-    planStatusCounts
+    planStatusCounts,
   } = props;
 
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
-  const [expandedStateObj, setExpandedStateObj] = useState(
-    {
-      'clusterList': false,
-      'storageList': false,
-      'planList': false,
-    },
-  );
+  const [expandedStateObj, setExpandedStateObj] = useState({
+    clusterList: false,
+    storageList: false,
+    planList: false,
+  });
 
   const handleExpand = (id: string) => {
     const expanded = !expandedStateObj[id];
     const newExpanded = Object.assign({}, expandedStateObj);
-    Object.values(DataListItems).map(
-      expandItem => newExpanded[expandItem] = false
-    );
+    Object.values(DataListItems).map((expandItem) => (newExpanded[expandItem] = false));
     newExpanded[id] = expanded;
     setExpandedStateObj(newExpanded);
   };
@@ -115,14 +105,13 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
           </GridItem>
         </Grid>
       </PageSection>
-      <PageSection>
-      </PageSection>
+      <PageSection></PageSection>
     </Page>
   );
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     planStatusCounts: planSelectors.getCounts(state),
     allClusters: clusterSelectors.getAllClusters(state),
     allStorage: storageSelectors.getAllStorage(state),
@@ -136,7 +125,7 @@ export default connect(
     isStorageError: state.storage.isError,
     isPlanError: state.plan.isError,
   }),
-  dispatch => ({
+  (dispatch) => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
   })
 )(HomeComponent);

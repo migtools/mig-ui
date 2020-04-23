@@ -8,7 +8,7 @@ import {
   TooltipPosition,
   Checkbox,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
@@ -32,11 +32,14 @@ const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
 const valuesHaveUpdate = (values, currentStorage) => {
-  if (!currentStorage) { return true; }
+  if (!currentStorage) {
+    return true;
+  }
 
   const existingMigStorageName = currentStorage.MigStorage.metadata.name;
   const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
+  const existingAWSBucketRegion =
+    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
   const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
   const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
   const existingCABundle = !currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
@@ -49,7 +52,6 @@ const valuesHaveUpdate = (values, currentStorage) => {
   if (currentStorage.Secret.data['aws-secret-access-key-id']) {
     existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
   }
-
 
   const valuesUpdatedObject =
     values.name !== existingMigStorageName ||
@@ -86,7 +88,6 @@ interface IOtherProps {
 }
 
 const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
-
   const {
     addEditStatus: currentStatus,
     currentStorage,
@@ -99,8 +100,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     setFieldValue,
     onClose,
     handleSubmit,
-    handleBlur
-
+    handleBlur,
   } = props;
   const nameKey = 'name';
   const s3UrlKey = 's3Url';
@@ -116,20 +116,20 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
   const [isSharedCred, setIsSharedCred] = useState(true);
 
-  const handleAccessKeyHiddenToggle = e => {
+  const handleAccessKeyHiddenToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsAccessKeyHidden(!isAccessKeyHidden);
   };
   const [isSecretHidden, setIsSecretHidden] = useState(true);
-  const handleSecretHiddenToggle = e => {
+  const handleSecretHiddenToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSecretHidden(!isSecretHidden);
   };
 
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -280,11 +280,14 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         />
       </FormGroup>
       <Grid gutter="md">
-        <GridItem >
+        <GridItem>
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(
-              currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
+              currentStatus,
+              errors,
+              touched,
+              valuesHaveUpdate(values, currentStorage)
             )}
             style={{ marginRight: '10px' }}
           >
@@ -292,9 +295,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Add or edit your storage details
-            </div>}>
+            content={<div>Add or edit your storage details</div>}
+          >
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
             </span>
@@ -302,7 +304,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus, valuesHaveUpdate(values, currentStorage),
+              currentStatus,
+              valuesHaveUpdate(values, currentStorage)
             )}
             onClick={() => checkConnection(values.name)}
           >
@@ -310,9 +313,9 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Re-check your storage connection state
-            </div>}><OutlinedQuestionCircleIcon />
+            content={<div>Re-check your storage connection state</div>}
+          >
+            <OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
         <GridItem>
@@ -336,7 +339,6 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 // true when the form values differ from the initial values. It's possible to have
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
-
 
 const AWSForm: any = withFormik({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
@@ -390,8 +392,9 @@ const AWSForm: any = withFormik({
     }
 
     if (values.s3Url !== '') {
-      const s3UrlError = commonUtils.testURL(values.s3Url) ?
-        '' : 'S3 Endpoint must be a valid URL.';
+      const s3UrlError = commonUtils.testURL(values.s3Url)
+        ? ''
+        : 'S3 Endpoint must be a valid URL.';
       if (s3UrlError !== '') {
         errors.s3Url = s3UrlError;
       }

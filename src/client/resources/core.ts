@@ -26,7 +26,11 @@ export class CoreNamespacedResource extends NamespacedResource {
 
 export class ExtendedCoreNamespacedResource extends CoreNamespacedResource {
   private _operation: ExtendedCoreNamespacedResourceKind;
-  constructor(kind: CoreNamespacedResourceKind, namespace: string, operation: ExtendedCoreNamespacedResourceKind) {
+  constructor(
+    kind: CoreNamespacedResourceKind,
+    namespace: string,
+    operation: ExtendedCoreNamespacedResourceKind
+  ) {
     super(kind, namespace);
 
     this._operation = operation;
@@ -39,7 +43,6 @@ export class ExtendedCoreNamespacedResource extends CoreNamespacedResource {
   public namedPath(name): string {
     return [this.listPath(), name, this._operation].join('/');
   }
-
 }
 
 export class CoreClusterResource extends ClusterResource {
@@ -62,7 +65,6 @@ export class CoreClusterResource extends ClusterResource {
     // not have an API group
     return ['/api', this.gvk().version, this.gvk().kindPlural].join('/');
   }
-
 }
 
 export enum ExtendedCoreNamespacedResourceKind {
@@ -76,5 +78,5 @@ export enum CoreNamespacedResourceKind {
 
 export enum CoreClusterResourceKind {
   Namespace = 'namespaces',
-  PV = 'persistentvolumes'
+  PV = 'persistentvolumes',
 }

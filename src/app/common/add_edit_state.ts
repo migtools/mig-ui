@@ -99,10 +99,9 @@ export const addEditButtonText = (componentType: string) => (status: IAddEditSta
 
 export const isCheckConnectionButtonDisabled = (
   currentStatus: IAddEditStatus,
-  valuesUpdatedObject: boolean,
+  valuesUpdatedObject: boolean
 ) => {
-  const objectHasPendingUpdate =
-    currentStatus.mode === AddEditMode.Edit && valuesUpdatedObject;
+  const objectHasPendingUpdate = currentStatus.mode === AddEditMode.Edit && valuesUpdatedObject;
 
   const isDisabled =
     currentStatus.mode === AddEditMode.Add ||
@@ -117,7 +116,7 @@ export const isAddEditButtonDisabled = (
   status: IAddEditStatus,
   errors: object,
   touched: object,
-  valuesUpdatedObject: boolean,
+  valuesUpdatedObject: boolean
 ) => {
   const hasNotBeenTouched = Object.keys(touched).length === 0;
   const hasValidationErrors = Object.keys(errors).length > 0;

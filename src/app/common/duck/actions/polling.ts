@@ -3,7 +3,6 @@ export const PollingActionTypes = {
   STATUS_POLL_STOP: 'STATUS_POLL_STOP',
 };
 
-
 const startStatusPolling = (params?: any) => ({
   type: PollingActionTypes.STATUS_POLL_START,
   params,

@@ -15,7 +15,6 @@ import AddEditStorageModal from '../../../../storage/components/AddEditStorageMo
 import StorageContent from './StorageContent';
 import { StorageContext, ModalContext } from '../../../duck/context';
 
-
 const StorageDataListItem = ({
   id,
   dataList,
@@ -24,8 +23,8 @@ const StorageDataListItem = ({
   isExpanded,
   toggleExpanded,
   storageCount,
-  ...props }) => {
-
+  ...props
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const storageContext = useContext(StorageContext);
@@ -51,7 +50,6 @@ const StorageDataListItem = ({
                       <Badge isRead>{storageCount}</Badge>
                     </FlexItem>
                   </Flex>
-
                 </DataListCell>,
               ]}
             />
@@ -60,7 +58,6 @@ const StorageDataListItem = ({
                 Add
               </Button>
             </DataListAction>
-
           </DataListItemRow>
           <StorageContent
             associatedPlans={associatedPlans}
@@ -69,17 +66,15 @@ const StorageDataListItem = ({
             removeStorage={removeStorage}
             {...props}
           />
-          {isModalOpen &&
+          {isModalOpen && (
             <AddEditStorageModal
               isOpen={isModalOpen}
               onHandleClose={() => {
                 setIsModalOpen(false);
                 storageContext.setCurrentStorage(null);
-              }
-              }
+              }}
             />
-          }
-
+          )}
         </DataListItem>
       </ModalContext.Provider>
     );

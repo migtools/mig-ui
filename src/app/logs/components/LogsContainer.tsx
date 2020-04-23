@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-  FunctionComponent
-} from 'react';
+import React, { useEffect, useContext, useState, FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
@@ -37,11 +32,11 @@ const LogsContainer: FunctionComponent<IProps> = ({
   requestReport,
   planName,
   archive,
-  logErrorMsg
+  logErrorMsg,
 }) => {
   const [cluster, setCluster] = useState({
     label: 'controller',
-    value: 'controller'
+    value: 'controller',
   });
   const [logSource, setLogSource] = useState({
     label: null,
@@ -75,7 +70,9 @@ const LogsContainer: FunctionComponent<IProps> = ({
   }, [archive]);
 
   useEffect(() => {
-    if (downloadLink) { downloadArchive(downloadLink); }
+    if (downloadLink) {
+      downloadArchive(downloadLink);
+    }
   }, [downloadLink]);
 
   if (logErrorMsg) {
@@ -85,9 +82,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
         <Title headingLevel="h5" size="sm">
           Failed to fetch logs.
         </Title>
-        <EmptyStateBody>
-          Please try your request again.
-        </EmptyStateBody>
+        <EmptyStateBody>Please try your request again.</EmptyStateBody>
       </EmptyState>
     );
   }
@@ -100,20 +95,17 @@ const LogsContainer: FunctionComponent<IProps> = ({
         setLogSource={setLogSource}
       />
       <LogBody />
-      <LogFooter
-        cluster={cluster.value}
-        logSource={logSource.value}
-        planName={planName} />
+      <LogFooter cluster={cluster.value} logSource={logSource.value} planName={planName} />
     </Card>
   );
 };
 
 export default connect(
-  state => ({
+  (state) => ({
     logErrorMsg: state.logs.logErrorMsg,
     archive: state.logs.archive,
   }),
-  dispatch => ({
+  (dispatch) => ({
     requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
   })
 )(LogsContainer);

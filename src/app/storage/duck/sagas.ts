@@ -1,11 +1,8 @@
-import { takeLatest, select, race, take, call, put, delay, } from 'redux-saga/effects';
+import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import {
-  CoreNamespacedResource,
-  CoreNamespacedResourceKind,
-} from '../../../client/resources';
+import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import {
   createStorageSecret,
   createMigStorage,
@@ -31,7 +28,7 @@ import Q from 'q';
 function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
-  migStorages.forEach(storage => {
+  migStorages.forEach((storage) => {
     const secretRef = storage.spec.backupStorageConfig.credsSecretRef;
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
@@ -44,14 +41,15 @@ function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Arra
 }
 
 function groupStorages(migStorages: any[], refs: any[]): any[] {
-  return migStorages.map(ms => {
+  return migStorages.map((ms) => {
     const fullStorage = {
       MigStorage: ms,
     };
     // TODO: When VSL configuration is supported separate from BSL,
     // this needs to be updated to support two different, distinct secrets
     fullStorage['Secret'] = refs.find(
-      ref => ref.data.kind === 'Secret' &&
+      (ref) =>
+        ref.data.kind === 'Secret' &&
         ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
     ).data;
 
@@ -74,7 +72,6 @@ function* fetchStorageGenerator() {
   }
 }
 
-
 function* removeStorageSaga(action) {
   try {
     const state = yield select();
@@ -94,12 +91,13 @@ function* removeStorageSaga(action) {
     ]);
 
     yield put(StorageActions.removeStorageSuccess(name));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
+    yield put(
+      AlertActions.alertSuccessTimeout(`Successfully removed replication repository "${name}"!`)
+    );
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
   }
 }
-
 
 function* addStorageRequest(action) {
   const state = yield select();
@@ -114,7 +112,7 @@ function* addStorageRequest(action) {
     storageValues.secret,
     storageValues.accessKey,
     storageValues.gcpBlob,
-    storageValues.azureBlob,
+    storageValues.azureBlob
   );
 
   const migStorage = createMigStorage(
@@ -129,15 +127,14 @@ function* addStorageRequest(action) {
     storageValues.s3Url,
     storageValues.gcpBucket,
     storageValues.azureResourceGroup,
-    storageValues.azureStorageAccount,
+    storageValues.azureStorageAccount
   );
 
   const secretResource = new CoreNamespacedResource(
     CoreNamespacedResourceKind.Secret,
     migMeta.configNamespace
   );
-  const migStorageResource = new MigResource(
-    MigResourceKind.MigStorage, migMeta.namespace);
+  const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
   // Ensure that none of the objects that make up storage already exist
   try {
@@ -147,24 +144,25 @@ function* addStorageRequest(action) {
     ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
-      return res.value && res.value.status === 200 ?
-        [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
-        exists;
+      return res.value && res.value.status === 200
+        ? [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }]
+        : exists;
     }, []);
 
     if (alreadyExists.length > 0) {
-      throw new Error(alreadyExists.reduce((msg, v) => {
-        return msg + `- kind: "${v.kind}", name: "${v.name}"`;
-      }, 'Some storage objects already exist '));
+      throw new Error(
+        alreadyExists.reduce((msg, v) => {
+          return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+        }, 'Some storage objects already exist ')
+      );
     }
   } catch (err) {
     console.error(err.message);
-    yield put(StorageActions.setStorageAddEditStatus(createAddEditStatusWithMeta(
-      AddEditState.Critical,
-      AddEditMode.Add,
-      err.message,
-      '',
-    )));
+    yield put(
+      StorageActions.setStorageAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
     return;
   }
 
@@ -182,8 +180,8 @@ function* addStorageRequest(action) {
     // A rollback is only required if some objects have actually *succeeded*,
     // as well as failed.
     const isRollbackRequired =
-      storageAddResults.find(res => res.state === 'rejected') &&
-      storageAddResults.find(res => res.state === 'fulfilled');
+      storageAddResults.find((res) => res.state === 'rejected') &&
+      storageAddResults.find((res) => res.state === 'fulfilled');
 
     if (isRollbackRequired) {
       const kindToResourceMap = {
@@ -193,28 +191,32 @@ function* addStorageRequest(action) {
 
       // The objects that need to be rolled back are those that were fulfilled
       const rollbackObjs = storageAddResults.reduce((rollbackAccum, res) => {
-        return res.state === 'fulfilled' ?
-          [...rollbackAccum, { kind: res.value.data.kind, name: res.value.data.metadata.name }] :
-          rollbackAccum;
+        return res.state === 'fulfilled'
+          ? [...rollbackAccum, { kind: res.value.data.kind, name: res.value.data.metadata.name }]
+          : rollbackAccum;
       }, []);
 
-      const rollbackResults = yield Q.allSettled(rollbackObjs.map(r => {
-        return client.delete(kindToResourceMap[r.kind], r.name);
-      }));
+      const rollbackResults = yield Q.allSettled(
+        rollbackObjs.map((r) => {
+          return client.delete(kindToResourceMap[r.kind], r.name);
+        })
+      );
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if (rollbackResults.find(res => res.state === 'rejected')) {
-        throw new Error(rollbackResults.reduce((msg, r) => {
-          const kind = r.reason.request.response.kind;
-          const name = r.reason.request.response.details.name;
-          return msg + `- kind: ${kind}, name: ${name}`;
-        }, 'Attempted to rollback objects, but failed '));
+      if (rollbackResults.find((res) => res.state === 'rejected')) {
+        throw new Error(
+          rollbackResults.reduce((msg, r) => {
+            const kind = r.reason.request.response.kind;
+            const name = r.reason.request.response.details.name;
+            return msg + `- kind: ${kind}, name: ${name}`;
+          }, 'Attempted to rollback objects, but failed ')
+        );
       } else {
         // One of the objects failed, but rollback was successful. Need to alert
         // the user that something went wrong, but we were able to recover with
         // a rollback
-        throw Error(storageAddResults.find(res => res.state === 'rejected').reason);
+        throw Error(storageAddResults.find((res) => res.state === 'rejected').reason);
       }
     } // End rollback handling
 
@@ -227,9 +229,11 @@ function* addStorageRequest(action) {
     yield put(StorageActions.addStorageSuccess(storage));
 
     // Push into watching state
-    yield put(StorageActions.setStorageAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
-    ));
+    yield put(
+      StorageActions.setStorageAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      )
+    );
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch (err) {
     console.error('Storage failed creation with error: ', err);
@@ -252,24 +256,21 @@ function* updateStorageRequest(action) {
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  const currentStorage = state.storage.migStorageList.find(c => {
+  const currentStorage = state.storage.migStorageList.find((c) => {
     return c.MigStorage.metadata.name === storageValues.name;
   });
 
   // Check to see if any fields on the MigStorage were updated
   //AWS
-  const currentBucketName =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const currentBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
 
   const bucketNameUpdated = storageValues.awsBucketName !== currentBucketName;
 
-  const currentRegion =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
+  const currentRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
 
   const regionUpdated = storageValues.awsBucketRegion !== currentRegion;
 
-  const currentS3Url =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
+  const currentS3Url = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
 
   const s3UrlUpdated = storageValues.s3Url !== currentS3Url;
 
@@ -280,8 +281,7 @@ function* updateStorageRequest(action) {
   const caBundleUpdated = storageValues.caBundle !== currentCABundle;
   //
   //GCP
-  const currentGCPBucketName =
-    currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
+  const currentGCPBucketName = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
 
   const gcpBucketNameUpdated = storageValues.gcpBucket !== currentGCPBucketName;
   //
@@ -294,7 +294,8 @@ function* updateStorageRequest(action) {
   const currentAzureStorageAccount =
     currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
 
-  const azureStorageAccountUpdated = storageValues.azureStorageAccount !== currentAzureStorageAccount;
+  const azureStorageAccountUpdated =
+    storageValues.azureStorageAccount !== currentAzureStorageAccount;
   //
 
   const migStorageUpdated =
@@ -309,7 +310,6 @@ function* updateStorageRequest(action) {
     //Azure
     azureResourceGroupUpdated ||
     azureStorageAccountUpdated;
-
 
   // Check to see if any fields on the kube secret were updated
   // NOTE: Need to decode the b64 token off a k8s secret
@@ -361,14 +361,14 @@ function* updateStorageRequest(action) {
       storageValues.azureResourceGroup,
       storageValues.azureStorageAccount,
       storageValues.requireSSL,
-      storageValues.caBundle,
+      storageValues.caBundle
     );
-    const migStorageResource = new MigResource(
-      MigResourceKind.MigStorage, migMeta.namespace);
+    const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(
-      migStorageResource, storageValues.name, updatedMigStorage));
+    updatePromises.push(() =>
+      client.patch(migStorageResource, storageValues.name, updatedMigStorage)
+    );
   }
 
   if (kubeSecretUpdated) {
@@ -377,21 +377,22 @@ function* updateStorageRequest(action) {
       storageValues.secret,
       storageValues.accessKey,
       storageValues.gcpBlob,
-      storageValues.azureBlob,
+      storageValues.azureBlob
     );
     const secretResource = new CoreNamespacedResource(
-      CoreNamespacedResourceKind.Secret, migMeta.configNamespace);
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace
+    );
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(
-      secretResource, storageValues.name, updatedSecret));
+    updatePromises.push(() => client.patch(secretResource, storageValues.name, updatedSecret));
   }
 
   try {
     // Convert reqfns to promises, executing the requsts in the process
     // Then yield a wrapper all promise to the saga middleware and wait
     // on the results
-    const results = yield Promise.all(updatePromises.map(reqfn => reqfn()));
+    const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
     const groupedResults = results.reduce((accum, res) => {
       accum[res.data.kind] = res.data;
       return accum;
@@ -405,9 +406,11 @@ function* updateStorageRequest(action) {
     // Update the state tree with the updated storage, and start to watch
     // again to check for its condition after edits
     yield put(StorageActions.updateStorageSuccess(updatedStorage));
-    yield put(StorageActions.setStorageAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
-    ));
+    yield put(
+      StorageActions.setStorageAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      )
+    );
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch (err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateStorageRequest:', err);
@@ -430,16 +433,14 @@ function* pollStorageAddEditStatus(action) {
       const { storageName } = action;
 
       const client: IClusterClient = ClientFactory.cluster(state);
-      const migStorageResource = new MigResource(
-        MigResourceKind.MigStorage, migMeta.namespace);
+      const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
       const storagePollResult = yield client.get(migStorageResource, storageName);
 
       const hasStatusAndConditions =
-        storagePollResult.data.status &&
-        storagePollResult.data.status.conditions;
+        storagePollResult.data.status && storagePollResult.data.status.conditions;
 
       if (hasStatusAndConditions) {
-        const criticalCond = storagePollResult.data.status.conditions.find(cond => {
+        const criticalCond = storagePollResult.data.status.conditions.find((cond) => {
           return cond.category === AddEditConditionCritical;
         });
 
@@ -448,11 +449,11 @@ function* pollStorageAddEditStatus(action) {
             AddEditState.Critical,
             AddEditMode.Edit,
             criticalCond.message,
-            criticalCond.reason,
+            criticalCond.reason
           );
         }
 
-        const readyCond = storagePollResult.data.status.conditions.find(cond => {
+        const readyCond = storagePollResult.data.status.conditions.find((cond) => {
           return cond.type === AddEditConditionReady;
         });
 
@@ -461,7 +462,7 @@ function* pollStorageAddEditStatus(action) {
             AddEditState.Ready,
             AddEditMode.Edit,
             readyCond.message,
-            '', // Ready has no reason
+            '' // Ready has no reason
           );
         }
       }
@@ -491,8 +492,8 @@ function* startWatchingStorageAddEditStatus(action) {
 
   const addEditResult: IAddEditStatus = raceResult.addEditResult;
 
-  const statusToDispatch = addEditResult || createAddEditStatus(
-    AddEditState.TimedOut, AddEditMode.Edit);
+  const statusToDispatch =
+    addEditResult || createAddEditStatus(AddEditState.TimedOut, AddEditMode.Edit);
 
   yield put(StorageActions.setStorageAddEditStatus(statusToDispatch));
 }
@@ -505,10 +506,7 @@ function* watchStorageAddEditStatus() {
 }
 
 function* watchRemoveStorageRequest() {
-  yield takeLatest(
-    StorageActionTypes.REMOVE_STORAGE_REQUEST,
-    removeStorageSaga
-  );
+  yield takeLatest(StorageActionTypes.REMOVE_STORAGE_REQUEST, removeStorageSaga);
 }
 
 export default {

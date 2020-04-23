@@ -1,11 +1,8 @@
-import { takeLatest, select, race, take, call, put, delay, } from 'redux-saga/effects';
+import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import {
-  CoreNamespacedResource,
-  CoreNamespacedResourceKind,
-} from '../../../client/resources';
+import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import {
   createTokenSecret,
   createMigCluster,
@@ -32,7 +29,7 @@ import Q from 'q';
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
-  migClusters.forEach(cluster => {
+  migClusters.forEach((cluster) => {
     const secretRef = cluster.spec.serviceAccountSecretRef;
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
@@ -45,14 +42,15 @@ function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Arra
 }
 
 function groupClusters(migClusters: any[], refs: any[]): any[] {
-  return migClusters.map(mc => {
+  return migClusters.map((mc) => {
     const fullCluster = {
       MigCluster: mc,
     };
 
     if (!mc.spec.isHostCluster) {
       fullCluster['Secret'] = refs.find(
-        i => i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
+        (i) =>
+          i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
       ).data;
     }
 
@@ -67,7 +65,7 @@ function* fetchClustersGenerator() {
   try {
     let clusterList = yield client.list(resource);
     clusterList = yield clusterList.data.items;
-    const nonHostClusters = clusterList.filter(c => !c.spec.isHostCluster);
+    const nonHostClusters = clusterList.filter((c) => !c.spec.isHostCluster);
     const refs = yield Promise.all(fetchMigClusterRefs(client, state.migMeta, nonHostClusters));
     const groupedClusters = groupClusters(clusterList, refs);
     return { updatedClusters: groupedClusters };
@@ -89,11 +87,15 @@ function* removeClusterSaga(action) {
     );
     const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
 
-    const secretResourceList = yield client.list(secretResource,
-      getTokenSecretLabelSelector(MigResourceKind.MigCluster, name));
+    const secretResourceList = yield client.list(
+      secretResource,
+      getTokenSecretLabelSelector(MigResourceKind.MigCluster, name)
+    );
 
-    const secretResourceName = (secretResourceList.data.items && secretResourceList.data.items.length > 0) ?
-      secretResourceList.data.items[0].metadata.name : '';
+    const secretResourceName =
+      secretResourceList.data.items && secretResourceList.data.items.length > 0
+        ? secretResourceList.data.items[0].metadata.name
+        : '';
 
     yield Promise.all([
       client.delete(secretResource, secretResourceName),
@@ -142,36 +144,42 @@ function* addClusterRequest(action) {
   // Ensure that none of objects that make up a cluster already exist
   try {
     const getResults = yield Q.allSettled([
-      client.list(secretResource,
-        getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)),
+      client.list(
+        secretResource,
+        getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)
+      ),
       client.get(migClusterResource, migCluster.metadata.name),
     ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
-      return (res && res.status === 200) ?
-        [...exists,
-          {
-            kind: res.value.data.kind,
-            name: (res.value.data.items && res.value.data.items.length > 0) ?
-              res.value.data.items[0].metadata.name : res.value.data.metadata.name
-          }
-        ] :
-        exists;
+      return res && res.status === 200
+        ? [
+            ...exists,
+            {
+              kind: res.value.data.kind,
+              name:
+                res.value.data.items && res.value.data.items.length > 0
+                  ? res.value.data.items[0].metadata.name
+                  : res.value.data.metadata.name,
+            },
+          ]
+        : exists;
     }, []);
 
     if (alreadyExists.length > 0) {
-      throw new Error(alreadyExists.reduce((msg, v) => {
-        return msg + `- kind: "${v.kind}", name: "${v.name}"`;
-      }, 'Some cluster objects already exist '));
+      throw new Error(
+        alreadyExists.reduce((msg, v) => {
+          return msg + `- kind: "${v.kind}", name: "${v.name}"`;
+        }, 'Some cluster objects already exist ')
+      );
     }
   } catch (err) {
     console.error(err.message);
-    yield put(ClusterActions.setClusterAddEditStatus(createAddEditStatusWithMeta(
-      AddEditState.Critical,
-      AddEditMode.Add,
-      err.message,
-      '',
-    )));
+    yield put(
+      ClusterActions.setClusterAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
     return;
   }
 
@@ -191,7 +199,7 @@ function* addClusterRequest(action) {
       });
 
       const clusterAddResult = yield client.create(migClusterResource, migCluster);
-      
+
       if (clusterAddResult.status === 201) {
         clusterAddResults.push(clusterAddResult);
       }
@@ -202,8 +210,8 @@ function* addClusterRequest(action) {
     // A rollback is only required if some objects have actually *succeeded*,
     // as well as failed.
     const isRollbackRequired =
-      clusterAddResults.find(res => res.status === 201) &&
-      clusterAddResults.find(res => res.status !== 201)
+      clusterAddResults.find((res) => res.status === 201) &&
+      clusterAddResults.find((res) => res.status !== 201);
 
     if (isRollbackRequired) {
       const kindToResourceMap = {
@@ -213,28 +221,32 @@ function* addClusterRequest(action) {
 
       // The objects that need to be rolled back are those that were fulfilled
       const rollbackObjs = clusterAddResults.reduce((rollbackAccum, res) => {
-        return res.status === 201 ?
-          [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }] :
-          rollbackAccum;
+        return res.status === 201
+          ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]
+          : rollbackAccum;
       }, []);
 
-      const rollbackResults = yield Q.allSettled(rollbackObjs.map(r => {
-        return client.delete(kindToResourceMap[r.kind], r.name);
-      }));
+      const rollbackResults = yield Q.allSettled(
+        rollbackObjs.map((r) => {
+          return client.delete(kindToResourceMap[r.kind], r.name);
+        })
+      );
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if (rollbackResults.find(res => res.state === 'rejected')) {
-        throw new Error(rollbackResults.reduce((msg, r) => {
-          const kind = r.reason.request.response.kind;
-          const name = r.reason.request.response.details.name;
-          return msg + `- kind: ${kind}, name: ${name}`;
-        }, 'Attempted to rollback objects, but failed '));
+      if (rollbackResults.find((res) => res.state === 'rejected')) {
+        throw new Error(
+          rollbackResults.reduce((msg, r) => {
+            const kind = r.reason.request.response.kind;
+            const name = r.reason.request.response.details.name;
+            return msg + `- kind: ${kind}, name: ${name}`;
+          }, 'Attempted to rollback objects, but failed ')
+        );
       } else {
         // One of the objects failed, but rollback was successful. Need to alert
         // the user that something went wrong, but we were able to recover with
         // a rollback
-        throw Error(clusterAddResults.find(res => res.state === 'rejected').reason);
+        throw Error(clusterAddResults.find((res) => res.state === 'rejected').reason);
       }
     } // End rollback handling
 
@@ -247,9 +259,11 @@ function* addClusterRequest(action) {
     yield put(ClusterActions.addClusterSuccess(cluster));
 
     // Push into watching state
-    yield put(ClusterActions.setClusterAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
-    ));
+    yield put(
+      ClusterActions.setClusterAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      )
+    );
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch (err) {
     console.error('Cluster failed creation with error: ', err);
@@ -269,7 +283,7 @@ function* updateClusterRequest(action) {
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  const currentCluster = state.cluster.clusterList.find(c => {
+  const currentCluster = state.cluster.clusterList.find((c) => {
     return c.MigCluster.metadata.name === clusterValues.name;
   });
 
@@ -281,7 +295,8 @@ function* updateClusterRequest(action) {
   const tokenUpdated = clusterValues.token !== currentToken;
 
   const currentAzureResource = currentCluster.MigCluster.spec.azureResourceGroup;
-  const azureUpdated = clusterValues.azureResourceGroup !== currentAzureResource ||
+  const azureUpdated =
+    clusterValues.azureResourceGroup !== currentAzureResource ||
     clusterValues.isAzure !== currentAzureResource.length > 0;
 
   const currentRequireSSL = !currentCluster.MigCluster.spec.insecure;
@@ -318,30 +333,35 @@ function* updateClusterRequest(action) {
   }
 
   if (urlUpdated || azureUpdated || requireSSLUpdated || caBundleUpdated) {
-    const migClusterResource = new MigResource(
-      MigResourceKind.MigCluster, migMeta.namespace);
+    const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(
-      migClusterResource, clusterValues.name, aggregatedPatch));
+    updatePromises.push(() =>
+      client.patch(migClusterResource, clusterValues.name, aggregatedPatch)
+    );
   }
 
   if (tokenUpdated) {
     const newTokenSecret = updateTokenSecret(clusterValues.token);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
-      migMeta.configNamespace,
+      migMeta.configNamespace
     );
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(
-      secretResource, currentCluster.MigCluster.spec.serviceAccountSecretRef.name, newTokenSecret));
+    updatePromises.push(() =>
+      client.patch(
+        secretResource,
+        currentCluster.MigCluster.spec.serviceAccountSecretRef.name,
+        newTokenSecret
+      )
+    );
   }
 
   try {
     // Convert reqfns to promises, executing the requsts in the process
     // Then yield a wrapper all promise to the saga middleware and wait
     // on the results
-    const results = yield Promise.all(updatePromises.map(reqfn => reqfn()));
+    const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
 
     const groupedResults = results.reduce((accum, res) => {
       accum[res.data.kind] = res.data;
@@ -356,9 +376,11 @@ function* updateClusterRequest(action) {
     // Update the state tree with the updated cluster, and start to watch
     // again to check for its condition after edits
     yield put(ClusterActions.updateClusterSuccess(updatedCluster));
-    yield put(ClusterActions.setClusterAddEditStatus(
-      createAddEditStatus(AddEditState.Watching, AddEditMode.Edit),
-    ));
+    yield put(
+      ClusterActions.setClusterAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      )
+    );
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch (err) {
     console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
@@ -385,11 +407,10 @@ function* pollClusterAddEditStatus(action) {
       const clusterPollResult = yield client.get(migClusterResource, clusterName);
 
       const hasStatusAndConditions =
-        clusterPollResult.data.status &&
-        clusterPollResult.data.status.conditions;
+        clusterPollResult.data.status && clusterPollResult.data.status.conditions;
 
       if (hasStatusAndConditions) {
-        const criticalCond = clusterPollResult.data.status.conditions.find(cond => {
+        const criticalCond = clusterPollResult.data.status.conditions.find((cond) => {
           return cond.category === AddEditConditionCritical;
         });
 
@@ -398,11 +419,11 @@ function* pollClusterAddEditStatus(action) {
             AddEditState.Critical,
             AddEditMode.Edit,
             criticalCond.message,
-            criticalCond.reason,
+            criticalCond.reason
           );
         }
 
-        const readyCond = clusterPollResult.data.status.conditions.find(cond => {
+        const readyCond = clusterPollResult.data.status.conditions.find((cond) => {
           return cond.type === AddEditConditionReady;
         });
 
@@ -411,7 +432,7 @@ function* pollClusterAddEditStatus(action) {
             AddEditState.Ready,
             AddEditMode.Edit,
             readyCond.message,
-            '', // Ready has no reason
+            '' // Ready has no reason
           );
         }
       }
@@ -441,14 +462,17 @@ function* startWatchingClusterAddEditStatus(action) {
 
   const addEditResult: IAddEditStatus = raceResult.addEditResult;
 
-  const statusToDispatch = addEditResult || createAddEditStatus(
-    AddEditState.TimedOut, AddEditMode.Edit);
+  const statusToDispatch =
+    addEditResult || createAddEditStatus(AddEditState.TimedOut, AddEditMode.Edit);
 
   yield put(ClusterActions.setClusterAddEditStatus(statusToDispatch));
 }
 
 function* watchClusterAddEditStatus() {
-  yield takeLatest(ClusterActionTypes.WATCH_CLUSTER_ADD_EDIT_STATUS, startWatchingClusterAddEditStatus);
+  yield takeLatest(
+    ClusterActionTypes.WATCH_CLUSTER_ADD_EDIT_STATUS,
+    startWatchingClusterAddEditStatus
+  );
 }
 
 function* watchRemoveClusterRequest() {
@@ -460,5 +484,5 @@ export default {
   watchAddClusterRequest,
   watchUpdateClusterRequest,
   watchClusterAddEditStatus,
-  fetchClustersGenerator
+  fetchClustersGenerator,
 };

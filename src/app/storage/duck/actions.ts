@@ -114,7 +114,6 @@ const stopStoragePolling = () => ({
   type: StorageActionTypes.STORAGE_POLL_STOP,
 });
 
-
 export const StorageActions = {
   updateSearchTerm,
   setStorageAddEditStatus,

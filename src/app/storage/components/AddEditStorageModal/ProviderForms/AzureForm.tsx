@@ -9,7 +9,7 @@ import {
   TextArea,
   Modal,
   Grid,
-  GridItem
+  GridItem,
 } from '@patternfly/react-core';
 import {
   AddEditMode,
@@ -26,18 +26,23 @@ import utils from '../../../../common/duck/utils';
 /* 
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
-const CREDENTIAL_DOCUMENTATION_URL = 'https://github.com/konveyor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
+const CREDENTIAL_DOCUMENTATION_URL =
+  'https://github.com/konveyor/mig-operator/blob/master/docs/usage/ObjectStorage.md#azure-object-storage';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
 const valuesHaveUpdate = (values, currentStorage) => {
-  if (!currentStorage) { return true; }
+  if (!currentStorage) {
+    return true;
+  }
 
   const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAzureStorageAccount = currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
-  const existingAzureResourceGroup = currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+  const existingAzureStorageAccount =
+    currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+  const existingAzureResourceGroup =
+    currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
 
   let existingAzureBlob;
   if (currentStorage.Secret.data['azure-credentials']) {
@@ -88,8 +93,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
     setFieldTouched,
     onClose,
     handleSubmit,
-    handleBlur
-
+    handleBlur,
   } = props;
   const nameKey = 'name';
   const azureResourceGroupKey = 'azureResourceGroup';
@@ -97,7 +101,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const azureBlobKey = 'azureBlob';
 
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -185,7 +189,10 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Button
             type="submit"
             isDisabled={isAddEditButtonDisabled(
-              currentStatus, errors, touched, valuesHaveUpdate(values, currentStorage)
+              currentStatus,
+              errors,
+              touched,
+              valuesHaveUpdate(values, currentStorage)
             )}
             style={{ marginRight: '10px' }}
           >
@@ -193,9 +200,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Add or edit your storage details
-            </div>}>
+            content={<div>Add or edit your storage details</div>}
+          >
             <span className="pf-c-icon">
               <OutlinedQuestionCircleIcon />
             </span>
@@ -203,7 +209,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
             isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus, valuesHaveUpdate(values, currentStorage),
+              currentStatus,
+              valuesHaveUpdate(values, currentStorage)
             )}
             onClick={() => checkConnection(values.name)}
           >
@@ -211,9 +218,9 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
           <Tooltip
             position={TooltipPosition.top}
-            content={<div>
-              Re-check your storage connection state
-            </div>}><OutlinedQuestionCircleIcon />
+            content={<div>Re-check your storage connection state</div>}
+          >
+            <OutlinedQuestionCircleIcon />
           </Tooltip>
         </GridItem>
         <GridItem>
@@ -228,7 +235,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Button>
         </GridItem>
       </Grid>
-      {isPopUpModalOpen &&
+      {isPopUpModalOpen && (
         <Modal
           isSmall
           title="Repository information required"
@@ -243,66 +250,40 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         >
           <Grid gutter="md">
             <GridItem>
-              <p>
-                To add an Azure repository, you will need the following information:
-              </p>
-
+              <p>To add an Azure repository, you will need the following information:</p>
             </GridItem>
             <GridItem>
               <ul>
-                <li>
-                  - Azure subscription ID
-                </li>
-                <li>
-                  - Azure storage account
-                </li>
-                <li>
-                  - Azure tenant ID
-                </li>
-                <li>
-                  - Azure client ID
-                </li>
-                <li>
-                  - Azure client secret
-                </li>
-                <li>
-                  - Azure resource group
-                </li>
-                <li>
-                  - Azure cloud name
-                </li>
+                <li>- Azure subscription ID</li>
+                <li>- Azure storage account</li>
+                <li>- Azure tenant ID</li>
+                <li>- Azure client ID</li>
+                <li>- Azure client secret</li>
+                <li>- Azure resource group</li>
+                <li>- Azure cloud name</li>
               </ul>
-
             </GridItem>
             <GridItem>
               <p>
                 See the &nbsp;
-                <a
-                  href={CREDENTIAL_DOCUMENTATION_URL}
-                  target="_blank">
+                <a href={CREDENTIAL_DOCUMENTATION_URL} target="_blank">
                   product documentation
                 </a>
-                &nbsp;
-                instructions on how to create an .INI file that
-                includes this information.
+                &nbsp; instructions on how to create an .INI file that includes this information.
               </p>
-
             </GridItem>
           </Grid>
         </Modal>
-      }
+      )}
     </Form>
-
   );
 };
-
 
 // valuesHaveUpdate - returns true if the formik values hold values that differ
 // from a matching existing replication repository. This is different from props.dirty, which returns
 // true when the form values differ from the initial values. It's possible to have
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
-
 
 const AzureForm: any = withFormik({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
@@ -357,5 +338,3 @@ const AzureForm: any = withFormik({
 })(InnerAzureForm);
 
 export default AzureForm;
-
-

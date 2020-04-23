@@ -20,52 +20,43 @@ export const AuthActionTypes = {
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
 };
 
-const loginSuccess = (user: ILoginParams) =>
-  ({
-    type: AuthActionTypes.LOGIN_SUCCESS,
-    user,
-  });
+const loginSuccess = (user: ILoginParams) => ({
+  type: AuthActionTypes.LOGIN_SUCCESS,
+  user,
+});
 
-const loginFailure = () =>
-  ({
-    type: AuthActionTypes.LOGIN_FAILURE,
-  });
+const loginFailure = () => ({
+  type: AuthActionTypes.LOGIN_FAILURE,
+});
 
-const logoutUserRequest = () =>
-  ({
-    type: AuthActionTypes.LOGOUT_USER_REQUEST,
-  });
+const logoutUserRequest = () => ({
+  type: AuthActionTypes.LOGOUT_USER_REQUEST,
+});
 
-const fetchOauthMeta = (clusterApi: string) =>
-  ({
-    type: AuthActionTypes.FETCH_OAUTH_META,
-    clusterApi,
-  });
+const fetchOauthMeta = (clusterApi: string) => ({
+  type: AuthActionTypes.FETCH_OAUTH_META,
+  clusterApi,
+});
 
-const setOauthMeta = (oauthMeta: string) =>
-  ({
-    type: AuthActionTypes.SET_OAUTH_META,
-    oauthMeta,
-  });
+const setOauthMeta = (oauthMeta: string) => ({
+  type: AuthActionTypes.SET_OAUTH_META,
+  oauthMeta,
+});
 
-const initFromStorage = () =>
-  ({
-    type: AuthActionTypes.INIT_FROM_STORAGE,
-  });
+const initFromStorage = () => ({
+  type: AuthActionTypes.INIT_FROM_STORAGE,
+});
 
-const certErrorOccurred = (failedUrl: string) =>
-  ({
-    type: AuthActionTypes.CERT_ERROR_OCCURRED,
-    failedUrl,
-  });
+const certErrorOccurred = (failedUrl: string) => ({
+  type: AuthActionTypes.CERT_ERROR_OCCURRED,
+  failedUrl,
+});
 
-const fetchToken = (oauthClient: any, coreRedirect: any) =>
-  ({
-    type: AuthActionTypes.FETCH_TOKEN,
-    oauthClient,
-    coreRedirect
-  });
-
+const fetchToken = (oauthClient: any, coreRedirect: any) => ({
+  type: AuthActionTypes.FETCH_TOKEN,
+  oauthClient,
+  coreRedirect,
+});
 
 export const AuthActions = {
   logoutUserRequest,

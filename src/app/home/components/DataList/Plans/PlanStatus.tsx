@@ -19,7 +19,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     latestIsFailed,
     hasConflictCondition,
     conflictErrorMsg,
-    isPlanLocked
+    isPlanLocked,
   } = plan.PlanStatus;
 
   const getStatus = () => {
@@ -53,9 +53,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
       <FlexItem>
         <PlanStatusIcon plan={plan} />
       </FlexItem>
-      <FlexItem>
-        {getStatus().text}
-      </FlexItem>
+      <FlexItem>{getStatus().text}</FlexItem>
     </Flex>
   );
 };

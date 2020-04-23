@@ -40,7 +40,7 @@ const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
       selections={value}
       {...props}
     >
-      {options.map(option => (
+      {options.map((option) => (
         <SelectOption key={option.toString()} value={option} />
       ))}
     </Select>

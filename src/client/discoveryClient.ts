@@ -18,12 +18,13 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
     discoveryApi: string,
     discoveryNamespace: string,
     token: string,
-    customResponseType: ResponseType = 'json') {
+    customResponseType: ResponseType = 'json'
+  ) {
     super(token);
     this._discoveryApi = discoveryApi;
     this._discoveryNamespace = discoveryNamespace;
     const headers = {
-      ...super.getOAuthHeader()
+      ...super.getOAuthHeader(),
     };
     this._requester = axios.create({
       baseURL: this._discoveryApi,
@@ -46,11 +47,11 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
 
   public get = (resource: IDiscoveryResource, params?: IDiscoveryParameters): Promise<any> => {
     return this._get(this.fullPath(resource.path()), resource.parametrized(params));
-  }
+  };
 
   public getRaw = (path: string): Promise<any> => {
     return this._get(path);
-  }
+  };
 
   private _get = async (path: string, params?): Promise<any> => {
     try {
@@ -59,5 +60,5 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
       super.checkExpiry(err);
       throw err;
     }
-  }
+  };
 }

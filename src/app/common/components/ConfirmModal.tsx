@@ -9,7 +9,13 @@ interface IProps {
   isOpen: boolean;
 }
 
-const ConfirmModal: React.FunctionComponent<IProps> = ({ isOpen, onHandleClose, title, message, id }) => {
+const ConfirmModal: React.FunctionComponent<IProps> = ({
+  isOpen,
+  onHandleClose,
+  title,
+  message,
+  id,
+}) => {
   return (
     <Modal
       id={id}
