@@ -23,7 +23,17 @@ import {
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
 
-const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) => {
+interface IConditionItemProps {
+  condition: any;
+  conditionIndex: any;
+  incompatibleNamespaces: any;
+}
+
+const ConditionItem: React.FunctionComponent<IConditionItemProps> = ({
+  condition,
+  conditionIndex,
+  incompatibleNamespaces,
+}: IConditionItemProps) => {
   return (
     <DataListItem key={conditionIndex} aria-labelledby="cluster-item">
       <DataListItemRow>

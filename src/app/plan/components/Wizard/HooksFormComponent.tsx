@@ -46,6 +46,7 @@ interface IHooksFormOtherProps {
   resetAddEditState: () => void;
   currentPlan: any;
 }
+
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
 const ansibleUploadKey = 'ansibleUpload';
@@ -68,9 +69,8 @@ export const HooksImageType = {
   Custom: 'custom',
 };
 
-const HooksFormComponent: React.FunctionComponent<
-  IHooksFormOtherProps & FormikProps<IHooksFormValues>
-> = ({
+const HooksFormComponent: React.FunctionComponent<IHooksFormOtherProps &
+  FormikProps<IHooksFormValues>> = ({
   setIsAddHooksOpen,
   setInitialHookValues,
   hookAddEditStatus,
@@ -87,13 +87,13 @@ const HooksFormComponent: React.FunctionComponent<
   currentPlan,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = key => () => setFieldTouched(key, true, true);
 
   let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
   if (currentPlan.spec.hooks) {
-    const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
-    const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
+    const existingPhases = currentPlan.spec.hooks.map(hook => hook.phase);
+    const filteredPhases = initialPhaseOptions.filter(phase => !existingPhases.includes(phase));
     initialPhaseOptions = filteredPhases;
   }
 
@@ -401,7 +401,7 @@ const HooksFormComponent: React.FunctionComponent<
           >
             <SimpleSelect
               id="migrationStep"
-              onChange={(value) => {
+              onChange={value => {
                 setFieldValue('migrationStep', value);
                 setFieldTouched('migrationStep');
               }}
