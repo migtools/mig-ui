@@ -85,23 +85,16 @@ const ConditionItem = ({ condition, conditionIndex, incompatibleNamespaces }) =>
                             <ListItem>
                               <TextContent className={spacing.mbMd}>
                                 <Text component={TextVariants.p}>
-                                  The GVKs below will not be migrated with the rest of the plan and
-                                  will need to be updated in the target namespaces post migration.
-                                </Text>
-                              </TextContent>
-                            </ListItem>
-                            <ListItem>
-                              <TextContent className={spacing.mbMd}>
-                                <Text component={TextVariants.p}>
-                                  Optionally, you can return to the namespace selection page and
-                                  remove namespaces with unsupported GVKs from the plan.
+                                  Namespaces with GVKs that are not supported on the target cluster
+                                  will not be migrated with the rest of the migration plan. They
+                                  will need to be migrated manually, post migration.
                                 </Text>
                               </TextContent>
                             </ListItem>
                           </List>
                           <TextContent className={spacing.mbMd}>
                             <Text component={TextVariants.h3}>
-                              Namespaces with resource GVKs not supported by the target cluster:
+                              Namespaces with resource GVKs not supported on the target cluster:
                             </Text>
                           </TextContent>
                           <div aria-label="storage-item-list">
