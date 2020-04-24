@@ -22,6 +22,7 @@ import ErrorModal from './common/components/ErrorModal';
 
 interface IProps {
   isLoggedIn?: boolean;
+  warnMessage: any;
   errorMessage: any;
   errorModalObject: any;
   successMessage: any;
@@ -43,6 +44,7 @@ const AppComponent: React.SFC<IProps> = ({
   errorModalObject,
   successMessage,
   progressMessage,
+  warnMessage,
   isLoggedIn,
   startPlanPolling,
   stopPlanPolling,
@@ -123,6 +125,7 @@ const AppComponent: React.SFC<IProps> = ({
       <AlertModal alertMessage={progressMessage} alertType="info" />
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
+      <AlertModal alertMessage={warnMessage} alertType="warning" />
       <PollingContext.Provider
         value={{
           startDefaultClusterPolling: () => startDefaultClusterPolling(),
@@ -167,6 +170,7 @@ const AppComponent: React.SFC<IProps> = ({
 export default connect(
   (state) => ({
     isLoggedIn: !!state.auth.user,
+    warnMessage: state.common.warnText,
     errorMessage: state.common.errorText,
     errorModalObject: state.common.errorModalObject,
     successMessage: state.common.successText,
