@@ -27,6 +27,10 @@ export default createReducer(
       const text = action.text.trim();
       return { ...state, errorText: text };
     },
+    [AlertActionTypes.ALERT_WARN]: (state, action) => {
+      const text = action.text.trim();
+      return { ...state, warnText: text };
+    },
     [AlertActionTypes.ALERT_ERROR_MODAL]: (state, action) => {
       return { ...state, errorModalObject: action.errorModalObject };
     },
@@ -34,7 +38,7 @@ export default createReducer(
       return { ...state, errorModalObject: null };
     },
     [AlertActionTypes.ALERT_CLEAR]: (state, action) => {
-      return { ...state, successText: null, errorText: null, progressText: null };
+      return { ...state, successText: null, errorText: null, progressText: null, warnText: null };
     },
   }
 );
