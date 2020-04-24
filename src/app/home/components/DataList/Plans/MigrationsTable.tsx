@@ -10,7 +10,6 @@ import {
   ProgressVariant,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-
 const styles = require('./MigrationsTable.module');
 
 interface IProps {
