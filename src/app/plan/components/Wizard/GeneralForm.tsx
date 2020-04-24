@@ -7,7 +7,6 @@ interface IProps {
 }
 
 interface IGeneralFormProps
-<<<<<<< HEAD
   extends Pick<IOtherProps, 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
@@ -15,21 +14,6 @@ interface IGeneralFormProps
     > {
   errors: any;
 }
-=======
-  extends Pick<
-    IOtherProps, 'isEdit'
-    >,
-    Pick<FormikProps<IFormValues>,
-    | 'handleBlur'
-    | 'handleChange'
-    | 'setFieldTouched'
-    | 'values'
-    | 'touched'
-    >
-    {
-      errors: any;
-    }
->>>>>>> Missing Plan wizard plan name invalid helper
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   errors,

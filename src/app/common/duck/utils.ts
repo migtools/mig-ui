@@ -40,8 +40,9 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
 };
 
 const DNS1123Error = (value) => {
-  return `Invalid value: "${value}" for a DNS-1123 label, only lowercase alphanumeric characters,
-    "." or "-" and must start and end with a lowercase alphanumeric character`;
+  return `Invalid character: "${value}". Plan names must be DNS-1123 label compliant, starting and
+    ending with a lowercase alphanumeric character and containing only lowercase alphanumeric char
+    acters, "." or "-".`;
 };
 
 const testDNS1123 = (value) => DNS1123Validator.test(value);
