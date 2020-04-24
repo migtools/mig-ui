@@ -168,7 +168,7 @@ const mapStateToProps = (state) => {
     sourceClusterNamespaces: planSelectors.getFilteredNamespaces(state),
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlan(state),
+    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
     hookList: planSelectors.getHooks(state),

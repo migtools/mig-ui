@@ -544,7 +544,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
       if (hasSucceededCondition) {
         statusObj.status = 'SUCCESS';
       }
-      statusObj.planName = matchingPlan.MigPlan.metadata.name;
+
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
       );
@@ -555,6 +555,17 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
         statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
       }
+
+      const hasWarnCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.category === 'Warn'
+      );
+      const warnCondition = matchingMigration.status.conditions.find((c) => c.category === 'Warn');
+
+      if (hasWarnCondition) {
+        statusObj.status = 'WARN';
+        statusObj.errorMessage = warnCondition.message;
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
     }
   }
   return statusObj;
@@ -614,6 +625,15 @@ function* stagePoll(action) {
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
         yield put(
           AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`)
+        );
+        yield put(PlanActions.stopStagePolling());
+        break;
+      case 'WARN':
+        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `${pollingStatusObj.errorMessage || 'Staging succeeded with warnings'}`
+          )
         );
         yield put(PlanActions.stopStagePolling());
         break;
