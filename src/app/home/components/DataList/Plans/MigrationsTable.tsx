@@ -10,7 +10,8 @@ import {
   ProgressVariant,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
-import CustomWarningProgress from './CustomWarningProgress';
+
+const styles = require('./MigrationsTable.module');
 
 interface IProps {
   migrations: any[];
@@ -65,13 +66,13 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
         }
         case 'warn': {
           ProgressWrapper = () => (
-            // <Progress
-            //   value={migration.tableStatus.progress}
-            //   title={migration.tableStatus.stepName}
-            //   size={ProgressSize.sm}
-            //   variant={ProgressVariant.danger}
-            // />
-            <CustomWarningProgress />
+            <Progress
+              value={migration.tableStatus.progress}
+              title={migration.tableStatus.stepName}
+              size={ProgressSize.sm}
+              variant={ProgressVariant.success}
+              className={styles.warnProgressStyle}
+            />
           );
           break;
         }
