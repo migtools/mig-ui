@@ -32,6 +32,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
                 planContext.handleMigrationCancelRequest(migration.metadata.name);
               }}
               key={`cancelMigration-${migration.metadata.name}`}
+              isDisabled={!planContext.hasSucceededMigration || !planContext.hasSucceededStage}
             >
               Cancel
             </DropdownItem>,
