@@ -37,8 +37,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
   useEffect(() => {
     const mappedRows = migrations.map((migration, migrationIndex) => {
       const type = migration.spec.stage ? 'Stage' : 'Migration';
-      // const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
-      //   (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
       function ProgressWrapper() {
         switch (migration.tableStatus.migrationState) {
           case 'success': {
