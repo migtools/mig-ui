@@ -38,7 +38,7 @@ interface IProps {
   isPollingStatus: boolean;
 }
 
-const ResultsStep: React.FunctionComponent<IProps> = props => {
+const ResultsStep: React.FunctionComponent<IProps> = (props) => {
   const {
     values,
     currentPlan,
@@ -80,9 +80,11 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   }
 
   function HeaderText({ state }): any {
-    const StyledPlanName = props => <span className={styles.styledPlanName}>{props.children}</span>;
+    const StyledPlanName = (props) => (
+      <span className={styles.styledPlanName}>{props.children}</span>
+    );
 
-    const StyledValidationText = props => (
+    const StyledValidationText = (props) => (
       <span className={styles.styledValidationText}>{props.children}</span>
     );
 
@@ -136,7 +138,9 @@ const ResultsStep: React.FunctionComponent<IProps> = props => {
   }
 
   function BodyText({ state, errorMessage, warnMessage }): any {
-    const StyledBodyText = props => <span className={styles.styledBodyText}>{props.children}</span>;
+    const StyledBodyText = (props) => (
+      <span className={styles.styledBodyText}>{props.children}</span>
+    );
 
     switch (state) {
       case CurrentPlanState.Pending:
