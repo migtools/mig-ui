@@ -255,9 +255,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         return c.type === 'Canceled';
       });
 
-      const warnCondition = migration.status.conditions.find((c) => {
-        return c.category === 'Warn';
-      });
       if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
         status.copied = MigPlan.spec.persistentVolumes.filter(
           (p) => p.selection.action === 'copy'
@@ -285,25 +282,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         if (canceledCondition) {
           status.progress = 0;
           status.stepName = 'Canceled';
-          return status;
-        }
-
-        // For successful migrations with active warning, show warning 100% progress
-
-        if (warnCondition) {
-          status.progress = 100;
-          status.isSucceeded = true;
-          status.stepName = 'Completed with warnings';
-          status.migrationState = 'warn';
-          return status;
-        }
-
-        // For successful migrations, show green 100% progress
-        if (succeededCondition) {
-          status.progress = 100;
-          status.isSucceeded = true;
-          status.stepName = 'Completed';
-          status.migrationState = 'success';
           return status;
         }
 
@@ -369,6 +347,28 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.stepName = planNotReadyCondition.message;
           status.end = '--';
           status.migrationState = 'error';
+          return status;
+        }
+
+        // For successful migrations with active warning, show warning 100% progress
+        const warnCondition = migration.status.conditions.find((c) => {
+          return c.category === 'Warn';
+        });
+
+        if (warnCondition) {
+          status.progress = 100;
+          status.isSucceeded = true;
+          status.stepName = 'Completed with warnings';
+          status.migrationState = 'warn';
+          return status;
+        }
+
+        // For successful migrations, show green 100% progress
+        if (succeededCondition) {
+          status.progress = 100;
+          status.isSucceeded = true;
+          status.stepName = 'Completed';
+          status.migrationState = 'success';
           return status;
         }
       }

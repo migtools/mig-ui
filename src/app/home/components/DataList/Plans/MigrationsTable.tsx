@@ -39,41 +39,49 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       const type = migration.spec.stage ? 'Stage' : 'Migration';
       // const progressVariant = migration.tableStatus.isSucceeded ? ProgressVariant.success :
       //   (migration.tableStatus.isFailed ? ProgressVariant.danger : ProgressVariant.info);
-      let ProgressWrapper;
-      switch (migration.tableStatus.migrationState) {
-        case 'success': {
-          ProgressWrapper = () => (
-            <Progress
-              value={migration.tableStatus.progress}
-              title={migration.tableStatus.stepName}
-              size={ProgressSize.sm}
-              variant={ProgressVariant.success}
-            />
-          );
-          break;
-        }
-        case 'error': {
-          ProgressWrapper = () => (
-            <Progress
-              value={migration.tableStatus.progress}
-              title={migration.tableStatus.stepName}
-              size={ProgressSize.sm}
-              variant={ProgressVariant.danger}
-            />
-          );
-          break;
-        }
-        case 'warn': {
-          ProgressWrapper = () => (
-            <Progress
-              value={migration.tableStatus.progress}
-              title={migration.tableStatus.stepName}
-              size={ProgressSize.sm}
-              variant={ProgressVariant.success}
-              className={styles.warnProgressStyle}
-            />
-          );
-          break;
+      function ProgressWrapper() {
+        switch (migration.tableStatus.migrationState) {
+          case 'success': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.success}
+              />
+            );
+          }
+          case 'error': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.danger}
+              />
+            );
+          }
+          case 'warn': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.success}
+                className={styles.warnProgressStyle}
+              />
+            );
+          }
+          default: {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.info}
+              />
+            );
+          }
         }
       }
 
