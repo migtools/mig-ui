@@ -32,7 +32,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     <Form>
       <Grid lg={10} xl={6}>
         <GridItem>
-          <FormGroup label="Plan Name" isRequired fieldId="planName">
+          <FormGroup
+            label="Plan Name"
+            isRequired
+            fieldId="planName"
+            helperTextInvalid={touched.planName && errors.planName}
+            isValid={!(touched.planName && errors.planName)}
+          >
             {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
