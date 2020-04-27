@@ -286,14 +286,10 @@ function* checkUpdatedPVs(action) {
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
-          if (currentPlan.status) {
+          if (updatedPlan.status) {
             if (action.isRerunPVDiscovery) {
               const updatedGeneration = updatedPlan.status.observedDigest;
               const oldGeneration = currentPlan.status.observedDigest;
-              console.log('updated', updatedGeneration);
-              console.log('old', oldGeneration);
-              // const updatedGeneration = updatedPlan.metadata.generation;
-              // const oldGeneration = currentPlan.metadata.generation;
               if (updatedGeneration === oldGeneration) {
                 return false;
               } else {
@@ -305,12 +301,6 @@ function* checkUpdatedPVs(action) {
           } else {
             return false;
           }
-          //Generation check incremented twice: once for ui change, once for controller change.
-          // if (isRerunPVDiscovery) {
-          //   return updatedGeneration >= oldGeneration + 2;
-          // } else {
-          //   return updatedGeneration > 1;
-          // }
         };
 
         if (isUpdatedPVList()) {

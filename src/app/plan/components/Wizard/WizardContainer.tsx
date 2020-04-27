@@ -148,7 +148,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     return null;
   },
   validateOnBlur: false,
-  enableReinitialize: true,
 })(WizardComponent);
 
 const mapStateToProps = (state) => {
