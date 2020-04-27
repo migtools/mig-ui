@@ -127,7 +127,6 @@ const AddEditStorageForm = (props: IOtherProps) => {
               requireSSL,
               caBundle,
             }}
-            currentStorage={storage}
             isAWS={selectedProvider === 'aws-s3'}
             {...props}
           />

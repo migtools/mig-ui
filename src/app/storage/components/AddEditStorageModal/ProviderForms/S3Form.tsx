@@ -45,7 +45,6 @@ interface IOtherProps {
   addEditStatus: any;
   initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: IStorage;
   provider: string;
   isAWS: boolean;
 }
@@ -54,44 +53,8 @@ const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-const valuesHaveUpdate = (values: IFormValues, currentStorage: IStorage) => {
-  if (!currentStorage) {
-    return true;
-  }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const existingAWSBucketRegion =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
-  const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
-  const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
-  const existingCABundle = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
-  let existingAccessKeyId;
-  if (currentStorage.Secret.data['aws-access-key-id']) {
-    existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
-  }
-
-  let existingSecretAccessKey;
-  if (currentStorage.Secret.data['aws-secret-access-key-id']) {
-    existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
-  }
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.awsBucketName !== existingAWSBucketName ||
-    values.awsBucketRegion !== existingAWSBucketRegion ||
-    values.s3Url !== existingBucketUrl ||
-    values.accessKey !== existingAccessKeyId ||
-    values.secret !== existingSecretAccessKey ||
-    values.requireSSL !== existingRequireSSL ||
-    values.caBundle !== existingCABundle;
-
-  return valuesUpdatedObject;
-};
-
 const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues>> = ({
   addEditStatus: currentStatus,
-  currentStorage,
   checkConnection,
   values,
   touched,
@@ -289,12 +252,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         <GridItem>
           <Button
             type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus,
-              errors,
-              touched,
-              valuesHaveUpdate(values, currentStorage)
-            )}
+            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
             style={{ marginRight: '10px' }}
           >
             {addEditButtonTextFn(currentStatus)}
@@ -309,10 +267,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentStorage)
-            )}
+            isDisabled={isCheckConnectionButtonDisabled(currentStatus, true)}
             onClick={() => checkConnection(values.name)}
           >
             Check Connection
@@ -339,12 +294,6 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
     </Form>
   );
 };
-
-// valuesHaveUpdate - returns true if the formik values hold values that differ
-// from a matching existing replication repository. This is different from props.dirty, which returns
-// true when the form values differ from the initial values. It's possible to have
-// a storage object exist, but have no initial values (user adds new storage, then updates
-// while keeping the modal open). props.dirty is not sufficient for this case.
 
 const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialStorageValues, provider, isAWS }) => {
