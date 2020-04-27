@@ -120,7 +120,8 @@ export function createMigStorage(
   azureStorageAccount?: string
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       return {
         apiVersion: 'migration.openshift.io/v1alpha1',
         kind: 'MigStorage',

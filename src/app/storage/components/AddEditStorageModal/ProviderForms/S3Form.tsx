@@ -102,6 +102,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
   onClose,
   handleSubmit,
   handleBlur,
+  isAWS,
 }: IOtherProps & FormikProps<IFormValues>) => {
   const nameKey = 'name';
   const s3UrlKey = 's3Url';
@@ -191,25 +192,27 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
         />
       </FormGroup>
-      <FormGroup
-        label="S3 endpoint"
-        fieldId={s3UrlKey}
-        helperTextInvalid={touched.s3Url && errors.s3Url}
-        isValid={!(touched.s3Url && errors.s3Url)}
-      >
-        {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(s3UrlKey)}
-          onBlur={handleBlur}
-          value={values.s3Url}
-          name={s3UrlKey}
-          type="text"
-          id="storage-s3-url-input"
+      {!isAWS && (
+        <FormGroup
+          label="S3 endpoint"
+          fieldId={s3UrlKey}
+          helperTextInvalid={touched.s3Url && errors.s3Url}
           isValid={!(touched.s3Url && errors.s3Url)}
-        />
-      </FormGroup>
+        >
+          {/*
+            // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          <TextInput
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(s3UrlKey)}
+            onBlur={handleBlur}
+            value={values.s3Url}
+            name={s3UrlKey}
+            type="text"
+            id="storage-s3-url-input"
+            isValid={!(touched.s3Url && errors.s3Url)}
+          />
+        </FormGroup>
+      )}
       <FormGroup
         label="S3 provider access key"
         isRequired
@@ -257,26 +260,30 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           isValid={!(touched.secret && errors.secret)}
         />
       </FormGroup>
-      <FormGroup fieldId={requireSSLKey}>
-        <Checkbox
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(requireSSLKey)}
-          onBlur={handleBlur}
-          isChecked={values.requireSSL}
-          name={requireSSLKey}
-          label="Require SSL verification"
-          id="require-ssl-input"
-        />
-      </FormGroup>
-      <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-        <CertificateUpload
-          isDisabled={!values.requireSSL}
-          name={caBundleKey}
-          setFieldValue={setFieldValue}
-          onInput={formikSetFieldTouched(caBundleKey)}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
+      {!isAWS && (
+        <>
+          <FormGroup fieldId={requireSSLKey}>
+            <Checkbox
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(requireSSLKey)}
+              onBlur={handleBlur}
+              isChecked={values.requireSSL}
+              name={requireSSLKey}
+              label="Require SSL verification"
+              id="require-ssl-input"
+            />
+          </FormGroup>
+          <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+            <CertificateUpload
+              isDisabled={!values.requireSSL}
+              name={caBundleKey}
+              setFieldValue={setFieldValue}
+              onInput={formikSetFieldTouched(caBundleKey)}
+              onBlur={handleBlur}
+            />
+          </FormGroup>
+        </>
+      )}
       <Grid gutter="md">
         <GridItem>
           <Button
@@ -339,7 +346,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
 // while keeping the modal open). props.dirty is not sufficient for this case.
 
 const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormValues>({
-  mapPropsToValues: ({ initialStorageValues, provider }) => {
+  mapPropsToValues: ({ initialStorageValues, provider, isAWS }) => {
     const values = {
       name: '',
       awsBucketName: '',
@@ -359,9 +366,8 @@ const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormVa
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
       values.s3Url = initialStorageValues.s3Url || '';
-      values.requireSSL = initialStorageValues.requireSSL;
+      values.requireSSL = initialStorageValues.requireSSL || isAWS; // Default to require SSL for AWS
       values.caBundle = initialStorageValues.caBundle || null;
-      // values.bslProvider = provider;
     }
 
     return values;
