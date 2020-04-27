@@ -16,6 +16,11 @@ interface IOtherProps {
   storageList: IStorage[];
 }
 
+interface IProviderOption {
+  label: string;
+  value: 'aws-s3' | 'generic-s3' | 'gcp' | 'azure';
+}
+
 const AddEditStorageForm = (props: IOtherProps) => {
   const { storageList } = props;
   const storageContext = useContext(StorageContext);
@@ -24,7 +29,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
   );
 
   let name;
-  let provider;
+  let provider: IProviderOption['value'];
   let awsBucketName;
   let awsBucketRegion;
   let s3Url;
@@ -39,7 +44,6 @@ const AddEditStorageForm = (props: IOtherProps) => {
   let caBundle;
   if (storage) {
     name = storage.MigStorage.metadata.name;
-    provider = storage.MigStorage.spec.backupStorageProvider;
     awsBucketName = storage.MigStorage.spec.backupStorageConfig.awsBucketName;
     awsBucketRegion = storage.MigStorage.spec.backupStorageConfig.awsRegion;
     s3Url = storage.MigStorage.spec.backupStorageConfig.awsS3Url;
@@ -73,18 +77,20 @@ const AddEditStorageForm = (props: IOtherProps) => {
         : storage.Secret.data['azure-credentials']
         ? atob(storage.Secret.data['azure-credentials'])
         : '';
+
+    if (storage.MigStorage.spec.backupStorageProvider === 'aws') {
+      provider = 'generic-s3';
+      const annotations = storage.MigStorage.metadata.annotations;
+      const awsS3Annotation = annotations && annotations['migration.openshift.io/mig-ui.aws-s3'];
+      if (awsS3Annotation === 'true' || (awsS3Annotation !== 'false' && !s3Url)) {
+        provider = 'aws-s3';
+      }
+    }
   }
 
-  const [selectedProvider, setSelectedProvider] = useState(
-    provider
-      ? {
-          label: provider,
-          value: provider,
-        }
-      : null
-  );
+  const [selectedProvider, setSelectedProvider] = useState(provider);
 
-  const providerOptions = [
+  const providerOptions: IProviderOption[] = [
     { label: 'AWS S3', value: 'aws-s3' },
     { label: 'S3', value: 'generic-s3' },
     { label: 'GCP', value: 'gcp' },
@@ -92,7 +98,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
   ];
 
   const handleProviderChange = (option) => {
-    setSelectedProvider(option);
+    setSelectedProvider(option.value);
   };
 
   return (
@@ -103,14 +109,14 @@ const AddEditStorageForm = (props: IOtherProps) => {
           name="provider"
           onChange={handleProviderChange}
           options={providerOptions}
-          value={selectedProvider}
+          value={providerOptions.find((option) => option.value === selectedProvider)}
           isDisabled={provider !== (null || undefined)}
         />
       </GridItem>
       <GridItem span={10}>
-        {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider.value) && (
+        {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider) && (
           <S3Form
-            provider={selectedProvider.value}
+            provider={selectedProvider}
             initialStorageValues={{
               name,
               awsBucketName,
@@ -122,20 +128,20 @@ const AddEditStorageForm = (props: IOtherProps) => {
               caBundle,
             }}
             currentStorage={storage}
-            isAWS={selectedProvider.value === 'aws-s3'}
+            isAWS={selectedProvider === 'aws-s3'}
             {...props}
           />
         )}
-        {selectedProvider && selectedProvider.value === 'azure' && (
+        {selectedProvider && selectedProvider === 'azure' && (
           <AzureForm
-            provider={selectedProvider.value}
+            provider={selectedProvider}
             initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
             {...props}
           />
         )}
-        {selectedProvider && selectedProvider.value === 'gcp' && (
+        {selectedProvider && selectedProvider === 'gcp' && (
           <GCPForm
-            provider={selectedProvider.value}
+            provider={selectedProvider}
             initialStorageValues={{ name, gcpBucket, gcpBlob }}
             {...props}
           />

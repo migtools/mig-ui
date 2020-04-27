@@ -42,6 +42,9 @@ interface IMigStorageMetadata {
   resourceVersion: string;
   selfLink: string;
   uid: string;
+  annotations: {
+    'migration.openshift.io/mig-ui.aws-s3': 'true' | 'false';
+  };
 }
 interface IMigStorageSpec {
   bucketUrl: string;

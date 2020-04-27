@@ -128,6 +128,9 @@ export function createMigStorage(
         metadata: {
           name,
           namespace,
+          annotations: {
+            'migration.openshift.io/mig-ui.aws-s3': bslProvider === 'aws-s3' ? 'true' : 'false',
+          },
         },
         spec: {
           backupStorageProvider: 'aws',
