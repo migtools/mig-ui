@@ -87,7 +87,7 @@ interface IOtherProps {
   provider: string;
 }
 
-const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+const InnerS3Form = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
     addEditStatus: currentStatus,
     currentStorage,
@@ -340,7 +340,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 
-const AWSForm: any = withFormik({
+const S3Form: any = withFormik({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
     const values = {
       name: '',
@@ -416,6 +416,6 @@ const AWSForm: any = withFormik({
     formikBag.setSubmitting(false);
     formikBag.props.onAddEditSubmit(values);
   },
-})(InnerAWSForm);
+})(InnerS3Form);
 
-export default AWSForm;
+export default S3Form;

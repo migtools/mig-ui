@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Grid, GridItem } from '@patternfly/react-core';
 import Select from 'react-select';
-import AWSForm from './ProviderForms/AWSForm';
+import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { StorageContext } from '../../../home/duck/context';
@@ -82,11 +82,13 @@ const AddEditStorageForm = (props: IOtherProps) => {
         }
       : null
   );
-  const [providerOptions, setproviderOptions] = useState([
-    { label: 'S3', value: 'aws' },
+
+  const providerOptions = [
+    { label: 'AWS S3', value: 'aws-s3' },
+    { label: 'S3', value: 'generic-s3' },
     { label: 'GCP', value: 'gcp' },
     { label: 'Azure', value: 'azure' },
-  ]);
+  ];
 
   const handleProviderChange = (option) => {
     setSelectedProvider(option);
@@ -105,8 +107,8 @@ const AddEditStorageForm = (props: IOtherProps) => {
         />
       </GridItem>
       <GridItem span={10}>
-        {selectedProvider && selectedProvider.value === 'aws' && (
-          <AWSForm
+        {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider.value) && (
+          <S3Form
             provider={selectedProvider.value}
             initialStorageValues={{
               name,
@@ -118,6 +120,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
               requireSSL,
               caBundle,
             }}
+            isAWS={selectedProvider.value === 'aws-s3'}
             {...props}
           />
         )}
