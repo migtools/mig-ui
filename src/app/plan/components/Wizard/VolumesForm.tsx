@@ -54,7 +54,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   }, []);
 
   const discoveredPersistentVolumes = (currentPlan && currentPlan.spec.persistentVolumes) || [];
-
+  console.log('discovered', discoveredPersistentVolumes);
   useEffect(() => {
     if (discoveredPersistentVolumes.length > 0) {
       getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
@@ -102,8 +102,9 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
         });
       }
       setFieldValue('persistentVolumes', mappedPVs);
+      console.log('values', values);
     }
-  }, [discoveredPersistentVolumes.length]); // Only re-run the effect if fetching value changes
+  }, [discoveredPersistentVolumes]); // Only re-run the effect if fetching value changes
 
   //TODO: added this component level error state to handle the case of no PVs
   // showing up after 3 checks of the interval. When the isPVError flag is checked,
@@ -164,6 +165,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   const onTypeChange = (currentPV: IPlanPersistentVolume, value: string) =>
     updatePersistentVolumes(currentPV, { type: value });
 
+  console.log('values before table render', values);
   return (
     <VolumesTable
       pvResourceList={pvResourceList}

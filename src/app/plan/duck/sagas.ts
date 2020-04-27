@@ -196,7 +196,7 @@ function* planUpdateRetry(action) {
               JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
                 JSON.stringify(planValues.sourceCluster)
             ) {
-              const updatedPlanRes = yield client.patch(
+              yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
                 getPlanRes.data.metadata.name,
                 updatedMigPlan
@@ -273,7 +273,6 @@ function* checkUpdatedPVs(action) {
   let pvUpdateComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 240;
-  const { isRerunPVDiscovery } = action;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -287,15 +286,31 @@ function* checkUpdatedPVs(action) {
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
-          const updatedGeneration = updatedPlan.metadata.generation;
-          const oldGeneration = currentPlan.metadata.generation;
-
-          //Generation check incremented twice: once for ui change, once for controller change.
-          if (isRerunPVDiscovery) {
-            return updatedGeneration >= oldGeneration + 2;
+          if (currentPlan.status) {
+            if (action.isRerunPVDiscovery) {
+              const updatedGeneration = updatedPlan.status.observedDigest;
+              const oldGeneration = currentPlan.status.observedDigest;
+              console.log('updated', updatedGeneration);
+              console.log('old', oldGeneration);
+              // const updatedGeneration = updatedPlan.metadata.generation;
+              // const oldGeneration = currentPlan.metadata.generation;
+              if (updatedGeneration === oldGeneration) {
+                return false;
+              } else {
+                return true;
+              }
+            } else {
+              return true;
+            }
           } else {
-            return updatedGeneration > 1;
+            return false;
           }
+          //Generation check incremented twice: once for ui change, once for controller change.
+          // if (isRerunPVDiscovery) {
+          //   return updatedGeneration >= oldGeneration + 2;
+          // } else {
+          //   return updatedGeneration > 1;
+          // }
         };
 
         if (isUpdatedPVList()) {
