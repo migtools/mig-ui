@@ -53,7 +53,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   persistentVolumes,
   onTypeChange,
 }: IVolumesTableProps) => {
-  console.log('list in table', persistentVolumes);
   const columns = [
     { title: 'PV name', transforms: [sortable] },
     { title: 'Claim', transforms: [sortable] },
