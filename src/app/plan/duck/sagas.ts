@@ -273,6 +273,7 @@ function* checkUpdatedPVs(action) {
   let pvUpdateComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 240;
+  const { isRerunPVDiscovery } = action;
   while (!pvUpdateComplete) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
@@ -287,7 +288,7 @@ function* checkUpdatedPVs(action) {
       if (updatedPlan) {
         const isUpdatedPVList = () => {
           if (updatedPlan.status) {
-            if (action.isRerunPVDiscovery) {
+            if (isRerunPVDiscovery) {
               const updatedGeneration = updatedPlan.status.observedDigest;
               const oldGeneration = currentPlan.status.observedDigest;
               if (updatedGeneration === oldGeneration) {
