@@ -26,45 +26,7 @@ import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
 import commonUtils from '../../../../common/duck/utils';
-
-const componentTypeStr = 'Repository';
-const currentStatusFn = addEditStatusText(componentTypeStr);
-const addEditButtonTextFn = addEditButtonText(componentTypeStr);
-
-const valuesHaveUpdate = (values, currentStorage) => {
-  if (!currentStorage) {
-    return true;
-  }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const existingAWSBucketRegion =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
-  const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
-  const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
-  const existingCABundle = !currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
-  let existingAccessKeyId;
-  if (currentStorage.Secret.data['aws-access-key-id']) {
-    existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
-  }
-
-  let existingSecretAccessKey;
-  if (currentStorage.Secret.data['aws-secret-access-key-id']) {
-    existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
-  }
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.awsBucketName !== existingAWSBucketName ||
-    values.bucketRegion !== existingAWSBucketRegion ||
-    values.s3Url !== existingBucketUrl ||
-    values.accessKey !== existingAccessKeyId ||
-    values.secret !== existingSecretAccessKey ||
-    values.requireSSL !== existingRequireSSL ||
-    values.caBundle !== existingCABundle;
-
-  return valuesUpdatedObject;
-};
+import { IStorage } from '../../../../../models';
 
 interface IFormValues {
   name: string;
@@ -83,10 +45,49 @@ interface IOtherProps {
   addEditStatus: any;
   initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: any;
+  currentStorage: IStorage;
   provider: string;
   isAWS: boolean;
 }
+
+const componentTypeStr = 'Repository';
+const currentStatusFn = addEditStatusText(componentTypeStr);
+const addEditButtonTextFn = addEditButtonText(componentTypeStr);
+
+const valuesHaveUpdate = (values: IFormValues, currentStorage: IStorage) => {
+  if (!currentStorage) {
+    return true;
+  }
+
+  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const existingAWSBucketRegion =
+    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
+  const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
+  const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+  const existingCABundle = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
+  let existingAccessKeyId;
+  if (currentStorage.Secret.data['aws-access-key-id']) {
+    existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
+  }
+
+  let existingSecretAccessKey;
+  if (currentStorage.Secret.data['aws-secret-access-key-id']) {
+    existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+  }
+
+  const valuesUpdatedObject =
+    values.name !== existingMigStorageName ||
+    values.awsBucketName !== existingAWSBucketName ||
+    values.awsBucketRegion !== existingAWSBucketRegion ||
+    values.s3Url !== existingBucketUrl ||
+    values.accessKey !== existingAccessKeyId ||
+    values.secret !== existingSecretAccessKey ||
+    values.requireSSL !== existingRequireSSL ||
+    values.caBundle !== existingCABundle;
+
+  return valuesUpdatedObject;
+};
 
 const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues>> = ({
   addEditStatus: currentStatus,

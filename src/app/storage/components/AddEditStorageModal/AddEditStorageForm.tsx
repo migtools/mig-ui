@@ -5,6 +5,7 @@ import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { StorageContext } from '../../../home/duck/context';
+import { IStorage } from '../../../../models';
 const styles = require('./AddEditStorageForm.module');
 
 interface IOtherProps {
@@ -12,7 +13,7 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   checkConnection: (name) => void;
-  storageList: any;
+  storageList: IStorage[];
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
@@ -120,6 +121,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
               requireSSL,
               caBundle,
             }}
+            currentStorage={storage}
             isAWS={selectedProvider.value === 'aws-s3'}
             {...props}
           />
