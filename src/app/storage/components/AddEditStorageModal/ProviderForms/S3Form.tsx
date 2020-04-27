@@ -195,6 +195,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       {!isAWS && (
         <FormGroup
           label="S3 endpoint"
+          isRequired
           fieldId={s3UrlKey}
           helperTextInvalid={touched.s3Url && errors.s3Url}
           isValid={!(touched.s3Url && errors.s3Url)}
@@ -373,7 +374,7 @@ const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormVa
     return values;
   },
 
-  validate: (values: any) => {
+  validate: (values: IFormValues, props: IOtherProps) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -393,6 +394,10 @@ const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormVa
 
     if (!values.awsBucketName) {
       errors.awsBucketName = 'Required';
+    }
+
+    if (!props.isAWS && !values.s3Url) {
+      errors.s3Url = 'Required';
     }
 
     if (values.s3Url !== '') {
