@@ -85,36 +85,33 @@ interface IOtherProps {
   checkConnection: (name) => void;
   currentStorage: any;
   provider: string;
+  isAWS: boolean;
 }
 
-const InnerS3Form = (props: IOtherProps & FormikProps<IFormValues>) => {
-  const {
-    addEditStatus: currentStatus,
-    currentStorage,
-    checkConnection,
-    values,
-    touched,
-    errors,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    onClose,
-    handleSubmit,
-    handleBlur,
-  } = props;
+const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues>> = ({
+  addEditStatus: currentStatus,
+  currentStorage,
+  checkConnection,
+  values,
+  touched,
+  errors,
+  handleChange,
+  setFieldTouched,
+  setFieldValue,
+  onClose,
+  handleSubmit,
+  handleBlur,
+}: IOtherProps & FormikProps<IFormValues>) => {
   const nameKey = 'name';
   const s3UrlKey = 's3Url';
   const awsBucketNameKey = 'awsBucketName';
   const awsBucketRegionKey = 'awsBucketRegion';
   const accessKeyKey = 'accessKey';
   const secretKey = 'secret';
-  const vslConfigKey = 'vslConfig';
-  const vslBlobKey = 'vslBlob';
   const requireSSLKey = 'requireSSL';
   const caBundleKey = 'caBundle';
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
-  const [isSharedCred, setIsSharedCred] = useState(true);
 
   const handleAccessKeyHiddenToggle = (e) => {
     e.preventDefault();
@@ -340,7 +337,7 @@ const InnerS3Form = (props: IOtherProps & FormikProps<IFormValues>) => {
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 
-const S3Form: any = withFormik({
+const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
     const values = {
       name: '',
