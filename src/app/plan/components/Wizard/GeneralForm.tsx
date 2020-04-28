@@ -31,7 +31,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   useEffect(() => {
     inputRef.current.focus();
-  });
+  }, []);
 
   return (
     <Form>
