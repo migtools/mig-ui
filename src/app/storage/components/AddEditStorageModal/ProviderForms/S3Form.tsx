@@ -26,7 +26,6 @@ import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
 import commonUtils from '../../../../common/duck/utils';
-import { IStorage } from '../../../../../models';
 
 interface IFormValues {
   name: string;
