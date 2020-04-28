@@ -104,7 +104,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
   return (
     <Grid gutter="md">
       <GridItem className={styles.selectType}>Storage provider type</GridItem>
-      <GridItem span={8} className={styles.selectType}>
+      <GridItem className={styles.selectType}>
         <Select
           name="provider"
           onChange={handleProviderChange}
@@ -113,7 +113,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
           isDisabled={provider !== (null || undefined)}
         />
       </GridItem>
-      <GridItem span={10}>
+      <GridItem>
         {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider) && (
           <S3Form
             provider={selectedProvider}

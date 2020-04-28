@@ -4,13 +4,10 @@ import {
   TextInput,
   Form,
   FormGroup,
-  Tooltip,
-  TooltipPosition,
   Checkbox,
-  Grid,
-  GridItem,
+  Flex,
+  FlexModifiers,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -223,63 +220,34 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           onBlur={handleBlur}
         />
       </FormGroup>
-      <Grid gutter="md">
-        <GridItem>
-          <Button
-            type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus,
-              errors,
-              touched,
-              valuesHaveUpdate(values, currentCluster)
-            )}
-            style={{ marginRight: '10px' }}
-          >
-            {addEditButtonTextFn(currentStatus)}
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Add or edit your cluster details</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-          <Button
-            style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentCluster)
-            )}
-            onClick={() => checkConnection(values.name)}
-          >
-            Check connection
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Re-check your cluster's connection state</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-        </GridItem>
-      </Grid>
-      <Grid gutter="md">
-        <GridItem>
-          <ConnectionStatusLabel
-            status={currentStatus}
-            statusText={currentStatusFn(currentStatus)}
-          />
-        </GridItem>
-      </Grid>
-      <Grid gutter="md">
-        <GridItem>
-          <Button variant="primary" onClick={onClose}>
-            Close
-          </Button>
-        </GridItem>
-      </Grid>
+      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+        <Button
+          variant="primary"
+          type="submit"
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, currentCluster)
+          )}
+        >
+          {addEditButtonTextFn(currentStatus)}
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(
+            currentStatus,
+            valuesHaveUpdate(values, currentCluster)
+          )}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check connection
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };
