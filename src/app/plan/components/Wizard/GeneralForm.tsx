@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FormikProps, FormikActions, FormikState } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Form, FormGroup, Grid, GridItem, TextInput } from '@patternfly/react-core';
@@ -24,9 +24,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   touched,
   values,
 }: IGeneralFormProps) => {
+  const inputRef = useRef(null);
   const onHandleChange = (val, e) => {
     handleChange(e);
   };
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   return (
     <Form>
@@ -43,6 +48,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
             <TextInput
+              ref={inputRef}
               onChange={(val, e) => onHandleChange(val, e)}
               onInput={() => setFieldTouched('planName', true, true)}
               onBlur={handleBlur}
