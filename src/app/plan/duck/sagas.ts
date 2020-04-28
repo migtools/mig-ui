@@ -196,7 +196,7 @@ function* planUpdateRetry(action) {
               JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
                 JSON.stringify(planValues.sourceCluster)
             ) {
-              const updatedPlanRes = yield client.patch(
+              yield client.patch(
                 new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
                 getPlanRes.data.metadata.name,
                 updatedMigPlan
@@ -287,17 +287,23 @@ function* checkUpdatedPVs(action) {
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
-          const updatedGeneration = updatedPlan.metadata.generation;
-          const oldGeneration = currentPlan.metadata.generation;
-
-          //Generation check incremented twice: once for ui change, once for controller change.
-          if (isRerunPVDiscovery) {
-            return updatedGeneration >= oldGeneration + 2;
+          // TODO: refactor this function to improve logic.
+          if (updatedPlan.status) {
+            if (isRerunPVDiscovery) {
+              const updatedObservedDigest = updatedPlan.status.observedDigest;
+              const oldObservedDigest = currentPlan.status.observedDigest;
+              if (updatedObservedDigest === oldObservedDigest) {
+                return false;
+              } else {
+                return true;
+              }
+            } else {
+              return true;
+            }
           } else {
-            return updatedGeneration > 1;
+            return false;
           }
         };
-
         if (isUpdatedPVList()) {
           yield put(PlanActions.setCurrentPlan(updatedPlan));
           yield put(PlanActions.pvUpdateSuccess());
