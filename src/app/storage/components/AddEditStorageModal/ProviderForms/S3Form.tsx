@@ -226,7 +226,16 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       </FormGroup>
       {!isAWS && (
         <>
-          <FormGroup fieldId={requireSSLKey}>
+          <FormGroup
+            fieldId={requireSSLKey}
+            helperText={
+              <>
+                Select 'Require SSL verification' to verify SSL connections to the object store. If
+                you are using a self-signed certificate, you may either disable SSL verification, or
+                upload your certificate bundle.
+              </>
+            }
+          >
             <Checkbox
               onChange={formikHandleChange}
               onInput={formikSetFieldTouched(requireSSLKey)}
