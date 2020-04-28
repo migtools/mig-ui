@@ -229,7 +229,8 @@ export function updateMigStorage(
   caBundle: string
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       return {
         spec: {
           backupStorageConfig: {
@@ -277,7 +278,8 @@ export function createStorageSecret(
   azureBlob?: any
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       const encodedAccessKey = btoa(accessKey);
       const encodedSecretKey = btoa(secretKey);
       return {
@@ -335,7 +337,8 @@ export function updateStorageSecret(
   azureBlob: any
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       // btoa => to base64, atob => from base64
       const encodedAccessKey = btoa(accessKey);
       const encodedSecretKey = btoa(secretKey);
