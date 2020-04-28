@@ -287,23 +287,36 @@ function* checkUpdatedPVs(action) {
 
       if (updatedPlan) {
         const isUpdatedPVList = () => {
+          // TODO: refactor this function to improve logic.
+          // Possibly create a wizardStatus enum similar to planStatus. This will indicate which update function to run
+          // & write pure functions to encapsulate each behavior. Function names will become self documenting and will remove ambiguous functions like this one.
+
           if (updatedPlan.status) {
+            // Initial plan add case(1): If no status, return false & keep polling.
             if (isRerunPVDiscovery) {
-              const updatedGeneration = updatedPlan.status.observedDigest;
-              const oldGeneration = currentPlan.status.observedDigest;
-              if (updatedGeneration === oldGeneration) {
+              // Initial plan add case(1): isRerunPVDiscovery set to false on initial plan add from function instantiation on UI component.
+
+              // Rerun PV discovery on back nav case(2): isRerunPVDiscovery set to true from component.
+              // Check currentPlan observedDigest against getPlan polling response after patch request has succeeded.
+
+              const updatedObservedDigest = updatedPlan.status.observedDigest;
+              const oldObservedDigest = currentPlan.status.observedDigest;
+              if (updatedObservedDigest === oldObservedDigest) {
+                //Rerun PV discovery on back nav case(2): If the SHA is unchanged, return false and keep polling.
                 return false;
               } else {
+                //Rerun PV discovery on back nav case(2): If the SHA is changed, return true and stop polling/hydrate redux store with updated info.
                 return true;
               }
             } else {
+              //Initial plan add case(1): Will return true here once status is available.
               return true;
             }
           } else {
+            // Initial plan add case(1): Return false until status is ready.
             return false;
           }
         };
-
         if (isUpdatedPVList()) {
           yield put(PlanActions.setCurrentPlan(updatedPlan));
           yield put(PlanActions.pvUpdateSuccess());
