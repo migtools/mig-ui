@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FileUpload } from '@patternfly/react-core';
 
 interface ICertificateUploadProps {
-  isDisabled: boolean;
+  isDisabled?: boolean;
   onInput: (event: React.FormEvent<HTMLDivElement>) => void;
   fieldName: string;
   onChange: (value: string) => void;

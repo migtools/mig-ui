@@ -242,18 +242,19 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
               id="require-ssl-input"
             />
           </FormGroup>
-          <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-            <CertificateUpload
-              isDisabled={!values.requireSSL}
-              fieldName={caBundleKey}
-              value={values[caBundleKey]}
-              onChange={(value) => {
-                setFieldValue(caBundleKey, value);
-                formikSetFieldTouched(caBundleKey);
-              }}
-              onInput={formikSetFieldTouched(caBundleKey)}
-            />
-          </FormGroup>
+          {values.requireSSL && (
+            <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+              <CertificateUpload
+                fieldName={caBundleKey}
+                value={values[caBundleKey]}
+                onChange={(value) => {
+                  setFieldValue(caBundleKey, value);
+                  formikSetFieldTouched(caBundleKey);
+                }}
+                onInput={formikSetFieldTouched(caBundleKey)}
+              />
+            </FormGroup>
+          )}
         </>
       )}
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
