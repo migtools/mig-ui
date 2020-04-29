@@ -214,10 +214,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
       <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
         <CertificateUpload
           isDisabled={!values.requireSSL}
-          name={caBundleKey}
-          setFieldValue={setFieldValue}
+          fieldName={caBundleKey}
+          value={values[caBundleKey]}
+          onChange={(value) => {
+            setFieldValue(caBundleKey, value);
+            formikSetFieldTouched(caBundleKey);
+          }}
           onInput={formikSetFieldTouched(caBundleKey)}
-          onBlur={handleBlur}
         />
       </FormGroup>
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
