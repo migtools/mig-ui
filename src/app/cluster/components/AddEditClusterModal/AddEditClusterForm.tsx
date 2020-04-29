@@ -93,7 +93,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
       <FormGroup
-        label="Cluster Name"
+        label="Cluster name"
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
@@ -212,7 +212,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         />
       </FormGroup>
       {values.requireSSL && (
-        <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+        <FormGroup label="CA bundle file" fieldId={caBundleKey}>
           <CertificateUpload
             fieldName={caBundleKey}
             value={values[caBundleKey]}

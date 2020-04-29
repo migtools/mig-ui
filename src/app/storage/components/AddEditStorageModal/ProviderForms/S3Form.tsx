@@ -243,7 +243,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
             />
           </FormGroup>
           {values.requireSSL && (
-            <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+            <FormGroup label="CA bundle file" fieldId={caBundleKey}>
               <CertificateUpload
                 fieldName={caBundleKey}
                 value={values[caBundleKey]}
