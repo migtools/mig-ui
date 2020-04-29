@@ -308,7 +308,7 @@ const AddEditClusterForm: any = withFormik({
       token: '',
       isAzure: false,
       azureResourceGroup: '',
-      requireSSL: true,
+      requireSSL: false,
       caBundle: '',
     };
 
