@@ -1,13 +1,5 @@
 import React, { useState, useContext } from 'react';
-import {
-  Grid,
-  GridItem,
-  TextContent,
-  Text,
-  TextVariants,
-  Form,
-  FormGroup,
-} from '@patternfly/react-core';
+import { Form, FormGroup } from '@patternfly/react-core';
 import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
@@ -104,54 +96,50 @@ const AddEditStorageForm = (props: IOtherProps) => {
   ];
 
   return (
-    <Grid gutter="md">
-      <GridItem>
-        <Form>
-          <FormGroup label="Storage provider type" isRequired fieldId="provider-type-select">
-            <SimpleSelect
-              aria-label="Select storage provider type"
-              onChange={(option: IProviderOption) => setSelectedProvider(option.value)}
-              options={providerOptions}
-              value={providerOptions.find((option) => option.value === selectedProvider)}
-              placeholderText="Select a type..."
-            />
-          </FormGroup>
-        </Form>
-      </GridItem>
-      <GridItem>
-        {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider) && (
-          <S3Form
-            provider={selectedProvider}
-            initialStorageValues={{
-              name,
-              awsBucketName,
-              awsBucketRegion,
-              s3Url,
-              accessKey,
-              secret,
-              requireSSL,
-              caBundle,
-            }}
-            isAWS={selectedProvider === 'aws-s3'}
-            {...props}
+    <>
+      <Form>
+        <FormGroup label="Storage provider type" isRequired fieldId="provider-type-select">
+          <SimpleSelect
+            aria-label="Select storage provider type"
+            onChange={(option: IProviderOption) => setSelectedProvider(option.value)}
+            options={providerOptions}
+            value={providerOptions.find((option) => option.value === selectedProvider)}
+            placeholderText="Select a type..."
           />
-        )}
-        {selectedProvider && selectedProvider === 'azure' && (
-          <AzureForm
-            provider={selectedProvider}
-            initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
-            {...props}
-          />
-        )}
-        {selectedProvider && selectedProvider === 'gcp' && (
-          <GCPForm
-            provider={selectedProvider}
-            initialStorageValues={{ name, gcpBucket, gcpBlob }}
-            {...props}
-          />
-        )}
-      </GridItem>
-    </Grid>
+        </FormGroup>
+      </Form>
+      {selectedProvider && ['aws-s3', 'generic-s3'].includes(selectedProvider) && (
+        <S3Form
+          provider={selectedProvider}
+          initialStorageValues={{
+            name,
+            awsBucketName,
+            awsBucketRegion,
+            s3Url,
+            accessKey,
+            secret,
+            requireSSL,
+            caBundle,
+          }}
+          isAWS={selectedProvider === 'aws-s3'}
+          {...props}
+        />
+      )}
+      {selectedProvider && selectedProvider === 'azure' && (
+        <AzureForm
+          provider={selectedProvider}
+          initialStorageValues={{ name, azureResourceGroup, azureStorageAccount, azureBlob }}
+          {...props}
+        />
+      )}
+      {selectedProvider && selectedProvider === 'gcp' && (
+        <GCPForm
+          provider={selectedProvider}
+          initialStorageValues={{ name, gcpBucket, gcpBlob }}
+          {...props}
+        />
+      )}
+    </>
   );
 };
 export default AddEditStorageForm;
