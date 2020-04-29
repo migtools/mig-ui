@@ -113,6 +113,39 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isValid={!(touched.name && errors.name)}
         />
       </FormGroup>
+      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
+        <Checkbox
+          label="Azure cluster"
+          aria-label="Azure cluster"
+          id="azure-cluster-checkbox"
+          name={isAzureKey}
+          isChecked={values.isAzure}
+          onChange={formikHandleChange}
+          onBlur={handleBlur}
+        />
+      </FormGroup>
+      {values.isAzure && (
+        <FormGroup
+          label="Azure resource group"
+          isRequired
+          fieldId={azureResourceGroupKey}
+          helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
+          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+        >
+          {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          <TextInput
+            value={values.azureResourceGroup}
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(azureResourceGroupKey)}
+            onBlur={handleBlur}
+            name={azureResourceGroupKey}
+            id="azure-token-input"
+            type="text"
+            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+          />
+        </FormGroup>
+      )}
       <FormGroup
         label="URL"
         isRequired
@@ -158,39 +191,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isValid={!(touched.token && errors.token)}
         />
       </FormGroup>
-      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
-        <Checkbox
-          label="Azure cluster"
-          aria-label="Azure cluster"
-          id="azure-cluster-checkbox"
-          name={isAzureKey}
-          isChecked={values.isAzure}
-          onChange={formikHandleChange}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
-      {values.isAzure && (
-        <FormGroup
-          label="Azure resource group"
-          isRequired
-          fieldId={azureResourceGroupKey}
-          helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
-          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
-        >
-          {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-          <TextInput
-            value={values.azureResourceGroup}
-            onChange={formikHandleChange}
-            onInput={formikSetFieldTouched(azureResourceGroupKey)}
-            onBlur={handleBlur}
-            name={azureResourceGroupKey}
-            id="azure-token-input"
-            type="text"
-            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
-          />
-        </FormGroup>
-      )}
       <FormGroup
         fieldId={requireSSLKey}
         helperText={
