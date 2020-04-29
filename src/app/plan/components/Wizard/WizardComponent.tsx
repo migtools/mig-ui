@@ -47,6 +47,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     startPlanStatusPolling,
     stopPlanStatusPolling,
     planUpdateRequest,
+    validatePlanRequest,
     pvResourceList,
     addPlanRequest,
     setCurrentPlan,
