@@ -283,7 +283,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     if (curr.id === stepId.Results) {
       updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
-      planUpdateRequest(props.values, false);
+      validatePlanRequest(props.values);
     }
     if (prev.prevId === stepId.Hooks && curr.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);

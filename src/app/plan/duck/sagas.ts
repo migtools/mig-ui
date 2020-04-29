@@ -169,6 +169,124 @@ function* migrationCancel(action) {
   }
 }
 
+function* validatePlanSaga(action) {
+  try {
+    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+    // yield retry(
+    //   PlanUpdateTotalTries,
+    //   PlanUpdateRetryPeriodSeconds * 1000,
+    //   function* (planValues, isRerunPVDiscovery) {
+    //     const state = yield select();
+    //     const migMeta = state.migMeta;
+    //     const client: IClusterClient = ClientFactory.cluster(state);
+    //     try {
+    //       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+    //       const getPlanRes = yield call(getPlanSaga, planValues.planName);
+    //       const updatedMigPlan = updateMigPlanFromValues(
+    //         getPlanRes.data,
+    //         planValues,
+    //         isRerunPVDiscovery
+    //       );
+    //       if (isRerunPVDiscovery) {
+    //         if (
+    //           JSON.stringify(getPlanRes.data.spec.namespaces) !==
+    //             JSON.stringify(planValues.selectedNamespaces) ||
+    //           JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
+    //             JSON.stringify(planValues.targetCluster) ||
+    //           JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
+    //             JSON.stringify(planValues.sourceCluster)
+    //         ) {
+    //           yield client.patch(
+    //             new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    //             getPlanRes.data.metadata.name,
+    //             updatedMigPlan
+    //           );
+    //           yield put(PlanActions.planUpdateSuccess());
+    //           yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
+    //           yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+    //         } else {
+    //           yield put(PlanActions.pvUpdateRequest(false));
+    //           yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
+    //         }
+    //       } else {
+    //         yield client.patch(
+    //           new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    //           getPlanRes.data.metadata.name,
+    //           updatedMigPlan
+    //         );
+    //         yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
+    //       }
+    //     } catch (err) {
+    //       yield put(PlanActions.planUpdateFailure(err));
+    //       throw err;
+    //     }
+    //   },
+    //   action.planValues,
+    //   action.isRerunPVDiscovery
+    // );
+
+    // function* checkUpdatedPVs(action) {
+    //   let pvUpdateComplete = false;
+    //   let tries = 0;
+    //   const TicksUntilTimeout = 240;
+    //   const { isRerunPVDiscovery } = action;
+    //   while (!pvUpdateComplete) {
+    //     if (tries < TicksUntilTimeout) {
+    //       tries += 1;
+    //       const state = yield select();
+    //       const { currentPlan } = state.plan;
+    //       let updatedPlan = null;
+    //       if (currentPlan) {
+    //         const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+    //         updatedPlan = getPlanResponse.data;
+    //       }
+
+    //       if (updatedPlan) {
+    //         const isUpdatedPVList = () => {
+    //           // TODO: refactor this function to improve logic.
+    //           if (updatedPlan.status) {
+    //             if (isRerunPVDiscovery) {
+    //               const updatedObservedDigest = updatedPlan.status.observedDigest;
+    //               const oldObservedDigest = currentPlan.status.observedDigest;
+    //               if (updatedObservedDigest === oldObservedDigest) {
+    //                 return false;
+    //               } else {
+    //                 return true;
+    //               }
+    //             } else {
+    //               return true;
+    //             }
+    //           } else {
+    //             return false;
+    //           }
+    //         };
+    //         if (isUpdatedPVList()) {
+    //           yield put(PlanActions.setCurrentPlan(updatedPlan));
+    //           yield put(PlanActions.pvUpdateSuccess());
+    //           yield put(PlanActions.updatePlanList(updatedPlan));
+    //           yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+
+    //           pvUpdateComplete = true;
+    //         }
+    //       }
+    //     } else {
+    //       yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+    //       //failed to update
+    //       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+
+    //       pvUpdateComplete = true;
+    //       break;
+    //     }
+
+    //     const PollingInterval = 1000;
+    //     yield delay(PollingInterval);
+    //   }
+    // }
+  } catch (error) {
+    yield put(PlanActions.planUpdateFailure(error));
+  }
+}
+
 function* planUpdateRetry(action) {
   try {
     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
@@ -326,6 +444,7 @@ function* checkUpdatedPVs(action) {
     yield delay(PollingInterval);
   }
 }
+
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
   let tries = 0;
@@ -1091,6 +1210,9 @@ function* watchRunMigrationRequest() {
 function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
+function* watchValidatePlanRequest() {
+  yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
+}
 
 export default {
   watchStagePolling,
@@ -1110,4 +1232,5 @@ export default {
   watchFetchHooksRequest,
   watchRemoveHookRequest,
   watchUpdateHookRequest,
+  watchValidatePlanRequest,
 };
