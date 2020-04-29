@@ -15,7 +15,6 @@ import {
   GridItem,
   Pagination,
   PaginationVariant,
-  SelectOptionObject,
   Level,
   LevelItem,
 } from '@patternfly/react-core';
@@ -23,7 +22,7 @@ import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternf
 import ReactJson from 'react-json-view';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect from '../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
@@ -41,10 +40,6 @@ interface IVolumesTableProps
   extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
     Pick<IFormValues, 'persistentVolumes'> {
   onTypeChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-}
-
-interface OptionWithValue extends SelectOptionObject {
-  value: string;
 }
 
 const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
