@@ -42,9 +42,23 @@ interface IMigStorageMetadata {
   resourceVersion: string;
   selfLink: string;
   uid: string;
+  annotations: {
+    'migration.openshift.io/mig-ui.aws-s3': 'true' | 'false';
+  };
 }
 interface IMigStorageSpec {
   bucketUrl: string;
+  backupStorageConfig: {
+    awsBucketName: string;
+    awsRegion: string;
+    awsS3Url: string;
+    gcpBucket: string;
+    azureResourceGroup: string;
+    azureStorageAccount: string;
+    insecure: boolean;
+    s3CustomCABundle: string;
+  };
+  backupStorageProvider: string;
   backupStorageLocationRef: {
     name: string;
   };
@@ -60,6 +74,18 @@ export interface IMigStorage {
   spec: IMigStorageSpec;
   id: string;
   status: string;
+}
+
+export interface IStorage {
+  MigStorage: IMigStorage;
+  Secret: {
+    data: {
+      'aws-access-key-id': string;
+      'aws-secret-access-key': string;
+      'gcp-credentials': string;
+      'azure-credentials': string;
+    };
+  };
 }
 export interface IStorageFormObject {
   url: string;

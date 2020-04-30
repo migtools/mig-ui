@@ -27,45 +27,6 @@ import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
 import commonUtils from '../../../../common/duck/utils';
 
-const componentTypeStr = 'Repository';
-const currentStatusFn = addEditStatusText(componentTypeStr);
-const addEditButtonTextFn = addEditButtonText(componentTypeStr);
-
-const valuesHaveUpdate = (values, currentStorage) => {
-  if (!currentStorage) {
-    return true;
-  }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const existingAWSBucketRegion =
-    currentStorage.MigStorage.spec.backupStorageConfig.awsRegion || '';
-  const existingBucketUrl = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url || '';
-  const existingRequireSSL = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
-  const existingCABundle = !currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
-  let existingAccessKeyId;
-  if (currentStorage.Secret.data['aws-access-key-id']) {
-    existingAccessKeyId = atob(currentStorage.Secret.data['aws-access-key-id']);
-  }
-
-  let existingSecretAccessKey;
-  if (currentStorage.Secret.data['aws-secret-access-key-id']) {
-    existingSecretAccessKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
-  }
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.awsBucketName !== existingAWSBucketName ||
-    values.bucketRegion !== existingAWSBucketRegion ||
-    values.s3Url !== existingBucketUrl ||
-    values.accessKey !== existingAccessKeyId ||
-    values.secret !== existingSecretAccessKey ||
-    values.requireSSL !== existingRequireSSL ||
-    values.caBundle !== existingCABundle;
-
-  return valuesUpdatedObject;
-};
-
 interface IFormValues {
   name: string;
   awsBucketName: string;
@@ -83,38 +44,38 @@ interface IOtherProps {
   addEditStatus: any;
   initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: any;
   provider: string;
+  isAWS: boolean;
 }
 
-const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
-  const {
-    addEditStatus: currentStatus,
-    currentStorage,
-    checkConnection,
-    values,
-    touched,
-    errors,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    onClose,
-    handleSubmit,
-    handleBlur,
-  } = props;
+const componentTypeStr = 'Repository';
+const currentStatusFn = addEditStatusText(componentTypeStr);
+const addEditButtonTextFn = addEditButtonText(componentTypeStr);
+
+const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues>> = ({
+  addEditStatus: currentStatus,
+  checkConnection,
+  values,
+  touched,
+  errors,
+  handleChange,
+  setFieldTouched,
+  setFieldValue,
+  onClose,
+  handleSubmit,
+  handleBlur,
+  isAWS,
+}: IOtherProps & FormikProps<IFormValues>) => {
   const nameKey = 'name';
   const s3UrlKey = 's3Url';
   const awsBucketNameKey = 'awsBucketName';
   const awsBucketRegionKey = 'awsBucketRegion';
   const accessKeyKey = 'accessKey';
   const secretKey = 'secret';
-  const vslConfigKey = 'vslConfig';
-  const vslBlobKey = 'vslBlob';
   const requireSSLKey = 'requireSSL';
   const caBundleKey = 'caBundle';
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
-  const [isSharedCred, setIsSharedCred] = useState(true);
 
   const handleAccessKeyHiddenToggle = (e) => {
     e.preventDefault();
@@ -193,25 +154,28 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
         />
       </FormGroup>
-      <FormGroup
-        label="S3 endpoint"
-        fieldId={s3UrlKey}
-        helperTextInvalid={touched.s3Url && errors.s3Url}
-        isValid={!(touched.s3Url && errors.s3Url)}
-      >
-        {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-        <TextInput
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(s3UrlKey)}
-          onBlur={handleBlur}
-          value={values.s3Url}
-          name={s3UrlKey}
-          type="text"
-          id="storage-s3-url-input"
+      {!isAWS && (
+        <FormGroup
+          label="S3 endpoint"
+          isRequired
+          fieldId={s3UrlKey}
+          helperTextInvalid={touched.s3Url && errors.s3Url}
           isValid={!(touched.s3Url && errors.s3Url)}
-        />
-      </FormGroup>
+        >
+          {/*
+            // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          <TextInput
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(s3UrlKey)}
+            onBlur={handleBlur}
+            value={values.s3Url}
+            name={s3UrlKey}
+            type="text"
+            id="storage-s3-url-input"
+            isValid={!(touched.s3Url && errors.s3Url)}
+          />
+        </FormGroup>
+      )}
       <FormGroup
         label="S3 provider access key"
         isRequired
@@ -259,36 +223,44 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           isValid={!(touched.secret && errors.secret)}
         />
       </FormGroup>
-      <FormGroup fieldId={requireSSLKey}>
-        <Checkbox
-          onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(requireSSLKey)}
-          onBlur={handleBlur}
-          isChecked={values.requireSSL}
-          name={requireSSLKey}
-          label="Require SSL verification"
-          id="require-ssl-input"
-        />
-      </FormGroup>
-      <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-        <CertificateUpload
-          isDisabled={!values.requireSSL}
-          name={caBundleKey}
-          setFieldValue={setFieldValue}
-          onInput={formikSetFieldTouched(caBundleKey)}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
+      {!isAWS && (
+        <>
+          <FormGroup
+            fieldId={requireSSLKey}
+            helperText={
+              <>
+                Select 'Require SSL verification' to verify SSL connections to the object store. If
+                you are using a self-signed certificate, you may either disable SSL verification, or
+                upload your certificate bundle.
+              </>
+            }
+          >
+            <Checkbox
+              onChange={formikHandleChange}
+              onInput={formikSetFieldTouched(requireSSLKey)}
+              onBlur={handleBlur}
+              isChecked={values.requireSSL}
+              name={requireSSLKey}
+              label="Require SSL verification"
+              id="require-ssl-input"
+            />
+          </FormGroup>
+          <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
+            <CertificateUpload
+              isDisabled={!values.requireSSL}
+              name={caBundleKey}
+              setFieldValue={setFieldValue}
+              onInput={formikSetFieldTouched(caBundleKey)}
+              onBlur={handleBlur}
+            />
+          </FormGroup>
+        </>
+      )}
       <Grid gutter="md">
         <GridItem>
           <Button
             type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus,
-              errors,
-              touched,
-              valuesHaveUpdate(values, currentStorage)
-            )}
+            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
             style={{ marginRight: '10px' }}
           >
             {addEditButtonTextFn(currentStatus)}
@@ -303,10 +275,7 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           </Tooltip>
           <Button
             style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentStorage)
-            )}
+            isDisabled={isCheckConnectionButtonDisabled(currentStatus, true)}
             onClick={() => checkConnection(values.name)}
           >
             Check Connection
@@ -334,14 +303,8 @@ const InnerAWSForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   );
 };
 
-// valuesHaveUpdate - returns true if the formik values hold values that differ
-// from a matching existing replication repository. This is different from props.dirty, which returns
-// true when the form values differ from the initial values. It's possible to have
-// a storage object exist, but have no initial values (user adds new storage, then updates
-// while keeping the modal open). props.dirty is not sufficient for this case.
-
-const AWSForm: any = withFormik({
-  mapPropsToValues: ({ initialStorageValues, provider }) => {
+const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormValues>({
+  mapPropsToValues: ({ initialStorageValues, provider, isAWS }) => {
     const values = {
       name: '',
       awsBucketName: '',
@@ -361,15 +324,14 @@ const AWSForm: any = withFormik({
       values.accessKey = initialStorageValues.accessKey || '';
       values.secret = initialStorageValues.secret || '';
       values.s3Url = initialStorageValues.s3Url || '';
-      values.requireSSL = initialStorageValues.requireSSL;
+      values.requireSSL = initialStorageValues.requireSSL || isAWS; // Default to require SSL for AWS
       values.caBundle = initialStorageValues.caBundle || null;
-      // values.bslProvider = provider;
     }
 
     return values;
   },
 
-  validate: (values: any) => {
+  validate: (values: IFormValues, props: IOtherProps) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -389,6 +351,10 @@ const AWSForm: any = withFormik({
 
     if (!values.awsBucketName) {
       errors.awsBucketName = 'Required';
+    }
+
+    if (!props.isAWS && !values.s3Url) {
+      errors.s3Url = 'Required';
     }
 
     if (values.s3Url !== '') {
@@ -416,6 +382,6 @@ const AWSForm: any = withFormik({
     formikBag.setSubmitting(false);
     formikBag.props.onAddEditSubmit(values);
   },
-})(InnerAWSForm);
+})(InnerS3Form);
 
-export default AWSForm;
+export default S3Form;
