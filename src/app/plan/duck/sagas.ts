@@ -192,66 +192,109 @@ function* validatePlanSaga(action) {
       action.planValues
     );
 
-    //poll plan update
-    // _.isEqual(object, copy);
-    let planValidationComplete = false;
-    let tries = 0;
-    const TicksUntilTimeout = 240;
-    while (!planValidationComplete) {
-      if (tries < TicksUntilTimeout) {
-        tries += 1;
-        const state = yield select();
-        const { currentPlan } = state.plan;
-        let updatedPlan = null;
-        if (currentPlan) {
-          const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
-          updatedPlan = getPlanResponse.data;
-        }
-        //         if (
-        //           JSON.stringify(getPlanRes.data.spec.namespaces) !==
-        //             JSON.stringify(planValues.selectedNamespaces) ||
-        //           JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
-        //             JSON.stringify(planValues.targetCluster) ||
-        //           JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
-        //             JSON.stringify(planValues.sourceCluster)
-        //         ) {
-
-        if (updatedPlan) {
-          // const isUpdatedPVList = () => {
-          // TODO: refactor this function to improve logic.
-          if (updatedPlan.status) {
-            const updatedObservedDigest = updatedPlan.status.observedDigest;
-            const oldObservedDigest = currentPlan.status.observedDigest;
-            if (updatedObservedDigest === oldObservedDigest) {
-              console.log('return no change', updatedObservedDigest);
-              // return;
-            } else {
-              console.log('updated digest', updatedObservedDigest);
-              yield put(PlanActions.setCurrentPlan(updatedPlan));
-              yield put(PlanActions.pvUpdateSuccess());
-              yield put(PlanActions.updatePlanList(updatedPlan));
-              yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-              planValidationComplete = true;
-              break;
-            }
-          } else {
-            // return;
-          }
-        }
-      } else {
-        yield put(AlertActions.alertErrorTimeout('Timed out during plan validation'));
-        //failed to validate
-        yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
-
-        planValidationComplete = true;
-        break;
-      }
-
-      const PollingInterval = 1000;
-      yield delay(PollingInterval);
-    }
+    const params = {
+      fetchPlansGenerator: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      getStageStatusCondition: getStageStatusCondition,
+      createMigRes: createMigRes,
+    };
+    yield put(PlanActions.validatePlanPollStart(params));
   } catch (error) {
     yield put(PlanActions.planUpdateFailure(error));
+  }
+}
+
+function* validatePlanPoll(action) {
+  //poll plan update
+  // _.isEqual(object, copy);
+  // let planValidationComplete = false;
+  // let tries = 0;
+  // const TicksUntilTimeout = 240;
+  // while (!planValidationComplete) {
+  //   if (tries < TicksUntilTimeout) {
+  //     tries += 1;
+  //     const state = yield select();
+  //     const { currentPlan } = state.plan;
+  //     let updatedPlan = null;
+  //     if (currentPlan) {
+  //       const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+  //       updatedPlan = getPlanResponse.data;
+  //     }
+  //     //         if (
+  //     //           JSON.stringify(getPlanRes.data.spec.namespaces) !==
+  //     //             JSON.stringify(planValues.selectedNamespaces) ||
+  //     //           JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
+  //     //             JSON.stringify(planValues.targetCluster) ||
+  //     //           JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
+  //     //             JSON.stringify(planValues.sourceCluster)
+  //     //         ) {
+
+  //     if (updatedPlan) {
+  //       // const isUpdatedPVList = () => {
+  //       // TODO: refactor this function to improve logic.
+  //       if (updatedPlan.status) {
+  //         const updatedObservedDigest = updatedPlan.status.observedDigest;
+  //         const oldObservedDigest = currentPlan.status.observedDigest;
+  //         if (updatedObservedDigest === oldObservedDigest) {
+  //           console.log('return no change', updatedObservedDigest);
+  //           // return;
+  //         } else {
+  //           console.log('updated digest', updatedObservedDigest);
+  //           yield put(PlanActions.setCurrentPlan(updatedPlan));
+  //           yield put(PlanActions.pvUpdateSuccess());
+  //           yield put(PlanActions.updatePlanList(updatedPlan));
+  //           yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+  //           planValidationComplete = true;
+  //           break;
+  //         }
+  //       } else {
+  //         // return;
+  //       }
+  //     }
+  //   } else {
+  //     yield put(AlertActions.alertErrorTimeout('Timed out during plan validation'));
+  //     //failed to validate
+  //     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+
+  //     planValidationComplete = true;
+  //     break;
+  //   }
+
+  //   const PollingInterval = 1000;
+  //   yield delay(PollingInterval);
+  // }
+
+  const params = { ...action.params };
+  while (true) {
+    const updatedPlans = yield call(params.fetchPlansGenerator);
+    const pollingStatusObj = params.getStageStatusCondition(updatedPlans, params.createMigRes);
+
+    switch (pollingStatusObj.status) {
+      case 'SUCCESS':
+        yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
+        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
+        yield put(PlanActions.stopStagePolling());
+        break;
+      case 'FAILURE':
+        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`)
+        );
+        yield put(PlanActions.stopStagePolling());
+        break;
+      case 'WARN':
+        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `${pollingStatusObj.errorMessage || 'Staging succeeded with warnings'}`
+          )
+        );
+        yield put(PlanActions.stopStagePolling());
+        break;
+      default:
+        break;
+    }
+    yield delay(params.delay);
   }
 }
 
@@ -1178,6 +1221,14 @@ function* watchRunMigrationRequest() {
 function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
+
+function* watchValidatePlanPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
+    yield race([call(validatePlanPoll, data), take(PlanActionTypes.VALIDATE_PLAN_POLL_STOP)]);
+  }
+}
+
 function* watchValidatePlanRequest() {
   yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
 }

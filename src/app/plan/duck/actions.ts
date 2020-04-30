@@ -12,6 +12,8 @@ export const PlanActionTypes = {
   VALIDATE_PLAN_FAILURE: 'VALIDATE_PLAN_FAILURE',
   VALIDATE_PLAN_REQUEST: 'VALIDATE_PLAN_REQUEST',
   VALIDATE_PLAN_SUCCESS: 'VALIDATE_PLAN_SUCCESS',
+  VALIDATE_PLAN_POLL_START: 'VALIDATE_PLAN_POLL_START',
+  VALIDATE_PLAN_POLL_STOP: 'VALIDATE_PLAN_POLL_STOP',
   UPDATE_PLAN_RESULTS: 'UPDATE_PLAN_RESULTS',
   REMOVE_PLAN_SUCCESS: 'REMOVE_PLAN_SUCCESS',
   UPDATE_STAGE_PROGRESS: 'UPDATE_STAGE_PROGRESS',
@@ -179,6 +181,15 @@ const pvUpdateSuccess = () => ({
 
 const pvUpdatePollStop = () => ({
   type: PlanActionTypes.PV_UPDATE_POLL_STOP,
+});
+
+const validatePlanPollStart = (params) => ({
+  type: PlanActionTypes.VALIDATE_PLAN_POLL_START,
+  params,
+});
+
+const validatePlanPollStop = () => ({
+  type: PlanActionTypes.VALIDATE_PLAN_POLL_STOP,
 });
 
 const validatePlanRequest = (planValues) => ({
@@ -457,6 +468,8 @@ export const PlanActions = {
   validatePlanRequest,
   validatePlanSuccess,
   validatePlanFailure,
+  validatePlanPollStart,
+  validatePlanPollStop,
   addPlanRequest,
   initStage,
   initMigration,
