@@ -177,7 +177,7 @@ function* validatePlanSaga(action) {
             getPlanRes.data,
             planValues,
             //TODO: refactor isRerunPVDiscovery boolean in seperate PR
-            true
+            false
           );
           yield client.patch(
             new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
@@ -193,10 +193,8 @@ function* validatePlanSaga(action) {
     );
 
     const params = {
-      fetchPlansGenerator: fetchPlansGenerator,
+      planValues: planValues,
       delay: PlanMigrationPollingInterval,
-      getStageStatusCondition: getStageStatusCondition,
-      createMigRes: createMigRes,
     };
     yield put(PlanActions.validatePlanPollStart(params));
   } catch (error) {
@@ -205,94 +203,42 @@ function* validatePlanSaga(action) {
 }
 
 function* validatePlanPoll(action) {
-  //poll plan update
-  // _.isEqual(object, copy);
-  // let planValidationComplete = false;
-  // let tries = 0;
-  // const TicksUntilTimeout = 240;
-  // while (!planValidationComplete) {
-  //   if (tries < TicksUntilTimeout) {
-  //     tries += 1;
-  //     const state = yield select();
-  //     const { currentPlan } = state.plan;
-  //     let updatedPlan = null;
-  //     if (currentPlan) {
-  //       const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
-  //       updatedPlan = getPlanResponse.data;
-  //     }
-  //     //         if (
-  //     //           JSON.stringify(getPlanRes.data.spec.namespaces) !==
-  //     //             JSON.stringify(planValues.selectedNamespaces) ||
-  //     //           JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
-  //     //             JSON.stringify(planValues.targetCluster) ||
-  //     //           JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
-  //     //             JSON.stringify(planValues.sourceCluster)
-  //     //         ) {
-
-  //     if (updatedPlan) {
-  //       // const isUpdatedPVList = () => {
-  //       // TODO: refactor this function to improve logic.
-  //       if (updatedPlan.status) {
-  //         const updatedObservedDigest = updatedPlan.status.observedDigest;
-  //         const oldObservedDigest = currentPlan.status.observedDigest;
-  //         if (updatedObservedDigest === oldObservedDigest) {
-  //           console.log('return no change', updatedObservedDigest);
-  //           // return;
-  //         } else {
-  //           console.log('updated digest', updatedObservedDigest);
-  //           yield put(PlanActions.setCurrentPlan(updatedPlan));
-  //           yield put(PlanActions.pvUpdateSuccess());
-  //           yield put(PlanActions.updatePlanList(updatedPlan));
-  //           yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-  //           planValidationComplete = true;
-  //           break;
-  //         }
-  //       } else {
-  //         // return;
-  //       }
-  //     }
-  //   } else {
-  //     yield put(AlertActions.alertErrorTimeout('Timed out during plan validation'));
-  //     //failed to validate
-  //     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
-
-  //     planValidationComplete = true;
-  //     break;
-  //   }
-
-  //   const PollingInterval = 1000;
-  //   yield delay(PollingInterval);
-  // }
-
   const params = { ...action.params };
   while (true) {
-    const updatedPlans = yield call(params.fetchPlansGenerator);
-    const pollingStatusObj = params.getStageStatusCondition(updatedPlans, params.createMigRes);
+    const state = yield select();
+    const { currentPlan } = state.plan;
+    let updatedPlan = null;
+    const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
+    updatedPlan = getPlanRes.data;
+    const { pvStorageClassAssignment } = params.planValues;
 
-    switch (pollingStatusObj.status) {
-      case 'SUCCESS':
-        yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
-        yield put(PlanActions.stopStagePolling());
-        break;
-      case 'FAILURE':
-        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`)
-        );
-        yield put(PlanActions.stopStagePolling());
-        break;
-      case 'WARN':
-        yield put(PlanActions.stagingFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `${pollingStatusObj.errorMessage || 'Staging succeeded with warnings'}`
-          )
-        );
-        yield put(PlanActions.stopStagePolling());
-        break;
-      default:
-        break;
+    let isStorageClassUpdated = false;
+
+    currentPlan.spec.persistentVolumes.forEach((currentPv) => {
+      for (const formValuesPvName in pvStorageClassAssignment) {
+        if (formValuesPvName === currentPv.name) {
+          if (currentPv.selection.storageClass || pvStorageClassAssignment[formValuesPvName].name) {
+            isStorageClassUpdated =
+              pvStorageClassAssignment[formValuesPvName].name !== currentPv.selection.storageClass;
+          }
+        }
+      }
+    });
+
+    if (isStorageClassUpdated) {
+      const updatedObservedDigest = updatedPlan.status.observedDigest;
+      const oldObservedDigest = currentPlan.status.observedDigest;
+      if (updatedObservedDigest !== oldObservedDigest) {
+        yield put(PlanActions.setCurrentPlan(updatedPlan));
+        yield put(PlanActions.updatePlanList(updatedPlan));
+        yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+        yield put(PlanActions.validatePlanPollStop());
+      }
+    } else {
+      yield put(PlanActions.setCurrentPlan(updatedPlan));
+      yield put(PlanActions.updatePlanList(updatedPlan));
+      yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+      yield put(PlanActions.validatePlanPollStop());
     }
     yield delay(params.delay);
   }
@@ -1252,4 +1198,5 @@ export default {
   watchRemoveHookRequest,
   watchUpdateHookRequest,
   watchValidatePlanRequest,
+  watchValidatePlanPolling,
 };
