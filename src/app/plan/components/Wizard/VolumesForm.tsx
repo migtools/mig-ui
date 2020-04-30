@@ -63,12 +63,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find((v) => v.name === planVolume.name);
-            if (rowVal && rowVal.selection) {
-              pvAction = rowVal.selection.action;
-            } else {
-              if (rowVal && rowVal.type) {
-                pvAction = rowVal.type;
-              }
+            if (rowVal && planVolume.selection.action) {
+              pvAction = planVolume.selection.action;
             }
           }
           // TODO do we really need to generate these meta-objects and keep them in formik?
