@@ -583,7 +583,7 @@ export function updateMigHook(
     executionNamespaceValue = executionNamespaceUpdated
       ? migHook.srcServiceAccountNamespace
       : currentExecutionNamespace;
-    serviceAccountUpdated = migHook.srcServiceAccountNames !== currentServiceAccount;
+    serviceAccountUpdated = migHook.srcServiceAccountName !== currentServiceAccount;
     serviceAccountValue = serviceAccountUpdated
       ? migHook.srcServiceAccountName
       : currentServiceAccount;
@@ -593,7 +593,7 @@ export function updateMigHook(
     executionNamespaceValue = executionNamespaceUpdated
       ? migHook.destServiceAccountNamespace
       : currentExecutionNamespace;
-    serviceAccountUpdated = migHook.destServiceAccountNames !== currentServiceAccount;
+    serviceAccountUpdated = migHook.destServiceAccountName !== currentServiceAccount;
     serviceAccountValue = serviceAccountUpdated
       ? migHook.destServiceAccountName
       : currentServiceAccount;
