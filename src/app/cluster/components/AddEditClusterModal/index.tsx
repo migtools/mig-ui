@@ -76,7 +76,7 @@ const AddEditClusterModal = ({
   });
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle}>
+    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="always-scroll">
       <AddEditClusterForm
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
