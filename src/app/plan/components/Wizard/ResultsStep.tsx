@@ -95,33 +95,6 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
     }
   }
 
-  function BodyText({ state, errorMessage, warnMessage }): any {
-    const StyledBodyText = (props) => (
-      <span className={styles.styledBodyText}>{props.children}</span>
-    );
-
-    switch (state) {
-      case CurrentPlanState.Pending:
-        return <StyledBodyText>This might take a few minutes.</StyledBodyText>;
-      case CurrentPlanState.Warn:
-        return (
-          <StyledBodyText>
-            Select an action from the Migration Plans section of the dashboard to start the
-            migration.
-          </StyledBodyText>
-        );
-      case CurrentPlanState.Ready:
-        return (
-          <StyledBodyText>
-            Select an action from the Migration Plans section of the dashboard to start the
-            migration.
-          </StyledBodyText>
-        );
-      default:
-        return null;
-    }
-  }
-
   function FooterText({ state }): any {
     switch (state) {
       case CurrentPlanState.Pending:
@@ -185,11 +158,6 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
             </Bullseye>
           </CardHeader>
           <CardBody>
-            <BodyText
-              state={currentPlanStatus.state}
-              errorMessage={currentPlanStatus.errorMessage}
-              warnMessage={currentPlanStatus.warnMessage}
-            />
             {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
               <DataListContent noPadding aria-label="current-plan-conditions-list">
                 {currentPlan.PlanStatus.displayedConditions.length > 0 && (
