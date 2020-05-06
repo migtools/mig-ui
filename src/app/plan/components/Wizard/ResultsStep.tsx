@@ -20,7 +20,7 @@ import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import {
-  OutlinedQuestionCircleIcon,
+  QuestionCircleIcon,
   IconSize,
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -202,7 +202,7 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
             </Button>
             <Tooltip position={TooltipPosition.top} content={<div>Re-check plan status.</div>}>
               <span className="pf-c-icon">
-                <OutlinedQuestionCircleIcon />
+                <QuestionCircleIcon />
               </span>
             </Tooltip>
           </Grid>
