@@ -19,7 +19,6 @@ import {
   createMigMigration,
   createMigHook,
   updateMigHook,
-  getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
 import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
@@ -32,19 +31,8 @@ import { DiscoveryResource } from '../../../client/resources/common';
 import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
-import {
-  createAddEditStatus,
-  AddEditState,
-  AddEditMode,
-  IAddEditStatus,
-  AddEditWatchTimeout,
-  AddEditWatchTimeoutPollInterval,
-  AddEditConditionCritical,
-  createAddEditStatusWithMeta,
-  AddEditConditionReady,
-  AddEditDebounceWait,
-} from '../../common/add_edit_state';
-import { createHook } from 'async_hooks';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
+import _ from 'lodash';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -166,6 +154,93 @@ function* migrationCancel(action) {
   } catch (err) {
     yield put(PlanActions.migrationCancelFailure(err, action.migrationName));
     yield put(AlertActions.alertErrorTimeout(`Failed to cancel "${action.migrationName}"`));
+  }
+}
+
+function* validatePlanSaga(action) {
+  try {
+    const { planValues } = action;
+    yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+
+    //update plan
+    yield retry(
+      PlanUpdateTotalTries,
+      PlanUpdateRetryPeriodSeconds * 1000,
+      function* (planValues) {
+        const state = yield select();
+        const migMeta = state.migMeta;
+        const client: IClusterClient = ClientFactory.cluster(state);
+        try {
+          yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
+          const getPlanRes = yield call(getPlanSaga, planValues.planName);
+          const updatedMigPlan = updateMigPlanFromValues(
+            getPlanRes.data,
+            planValues,
+            //TODO: refactor isRerunPVDiscovery boolean in seperate PR
+            false
+          );
+          yield client.patch(
+            new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+            getPlanRes.data.metadata.name,
+            updatedMigPlan
+          );
+        } catch (err) {
+          yield put(PlanActions.planUpdateFailure(err));
+          throw err;
+        }
+      },
+      action.planValues
+    );
+
+    const params = {
+      planValues: planValues,
+      delay: PlanMigrationPollingInterval,
+    };
+    yield put(PlanActions.validatePlanPollStart(params));
+  } catch (error) {
+    yield put(PlanActions.planUpdateFailure(error));
+  }
+}
+
+function* validatePlanPoll(action) {
+  const params = { ...action.params };
+  while (true) {
+    const state = yield select();
+    const { currentPlan } = state.plan;
+    let updatedPlan = null;
+    const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
+    updatedPlan = getPlanRes.data;
+    const { pvStorageClassAssignment } = params.planValues;
+
+    let isStorageClassUpdated = false;
+
+    currentPlan.spec.persistentVolumes.forEach((currentPv) => {
+      for (const formValuesPvName in pvStorageClassAssignment) {
+        if (formValuesPvName === currentPv.name) {
+          if (currentPv.selection.storageClass || pvStorageClassAssignment[formValuesPvName].name) {
+            isStorageClassUpdated =
+              pvStorageClassAssignment[formValuesPvName].name !== currentPv.selection.storageClass;
+          }
+        }
+      }
+    });
+
+    if (isStorageClassUpdated) {
+      const updatedObservedDigest = updatedPlan.status.observedDigest;
+      const oldObservedDigest = currentPlan.status.observedDigest;
+      if (updatedObservedDigest !== oldObservedDigest) {
+        yield put(PlanActions.setCurrentPlan(updatedPlan));
+        yield put(PlanActions.updatePlanList(updatedPlan));
+        yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+        yield put(PlanActions.validatePlanPollStop());
+      }
+    } else {
+      yield put(PlanActions.setCurrentPlan(updatedPlan));
+      yield put(PlanActions.updatePlanList(updatedPlan));
+      yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+      yield put(PlanActions.validatePlanPollStop());
+    }
+    yield delay(params.delay);
   }
 }
 
@@ -326,6 +401,7 @@ function* checkUpdatedPVs(action) {
     yield delay(PollingInterval);
   }
 }
+
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
   let tries = 0;
@@ -1092,6 +1168,17 @@ function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
 
+function* watchValidatePlanPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
+    yield race([call(validatePlanPoll, data), take(PlanActionTypes.VALIDATE_PLAN_POLL_STOP)]);
+  }
+}
+
+function* watchValidatePlanRequest() {
+  yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
+}
+
 export default {
   watchStagePolling,
   watchMigrationPolling,
@@ -1110,4 +1197,6 @@ export default {
   watchFetchHooksRequest,
   watchRemoveHookRequest,
   watchUpdateHookRequest,
+  watchValidatePlanRequest,
+  watchValidatePlanPolling,
 };
