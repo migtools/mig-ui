@@ -2,6 +2,7 @@ import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import {
+  Bullseye,
   Button,
   Card,
   CardHeader,
@@ -217,14 +218,12 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       <GridItem className={styles.centerCard}>
         <Card className={styles.styledCard}>
           <CardHeader>
-            <Flex className={flex.justifyContentCenter}>
-              <FlexItem>
-                <HeaderIcon state={currentPlanStatus.state} />
-              </FlexItem>
-              <FlexItem className={spacing.myLg}>
-                <HeaderText state={currentPlanStatus.state} />
-              </FlexItem>
-            </Flex>
+            <Bullseye>
+              <HeaderIcon state={currentPlanStatus.state} />
+            </Bullseye>
+            <Bullseye>
+              <HeaderText state={currentPlanStatus.state} />
+            </Bullseye>
           </CardHeader>
           <CardBody>
             <BodyText
