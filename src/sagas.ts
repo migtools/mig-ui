@@ -49,7 +49,7 @@ export default function* rootSaga() {
     planSagas.watchPlanStatus(),
     planSagas.watchGetPVResourcesRequest(),
     planSagas.watchNamespaceFetchRequest(),
-    planSagas.watchPVUpdate(),
+    planSagas.watchPVUpdatePolling(),
     planSagas.watchAddHookRequest(),
     planSagas.watchFetchHooksRequest(),
     planSagas.watchRemoveHookRequest(),

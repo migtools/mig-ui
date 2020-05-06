@@ -344,12 +344,11 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   }
 };
 
-function* checkUpdatedPVs(action) {
-  let pvUpdateComplete = false;
+function* pvUpdatePoll(action) {
   let tries = 0;
   const TicksUntilTimeout = 240;
   const { isRerunPVDiscovery } = action;
-  while (!pvUpdateComplete) {
+  while (true) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
       const state = yield select();
@@ -384,17 +383,15 @@ function* checkUpdatedPVs(action) {
           yield put(PlanActions.pvUpdateSuccess());
           yield put(PlanActions.updatePlanList(updatedPlan));
           yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-
-          pvUpdateComplete = true;
+          yield put(PlanActions.pvUpdatePollStop());
         }
       }
     } else {
+      yield put(PlanActions.pvUpdatePollStop());
       yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
       //failed to update
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
-
-      pvUpdateComplete = true;
-      break;
+      yield put(PlanActions.pvUpdatePollStop());
     }
 
     const PollingInterval = 1000;
@@ -1141,10 +1138,10 @@ function* watchPlanUpdate() {
   yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
 }
 
-function* watchPVUpdate() {
+function* watchPVUpdatePolling() {
   while (true) {
     const data = yield take(PlanActionTypes.PV_UPDATE_REQUEST);
-    yield race([call(checkUpdatedPVs, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
+    yield race([call(pvUpdatePoll, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
   }
 }
 
@@ -1192,7 +1189,7 @@ export default {
   watchMigrationCancel,
   watchGetPVResourcesRequest,
   watchNamespaceFetchRequest,
-  watchPVUpdate,
+  watchPVUpdatePolling,
   watchAddHookRequest,
   watchFetchHooksRequest,
   watchRemoveHookRequest,
