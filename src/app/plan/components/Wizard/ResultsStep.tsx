@@ -14,6 +14,9 @@ import {
   GridItem,
   DataList,
   DataListContent,
+  Flex,
+  FlexModifiers,
+  FlexItem,
 } from '@patternfly/react-core';
 import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
@@ -144,45 +147,47 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
   }
 
   return (
-    <Grid gutter="md">
-      <GridItem className={styles.centerCard}>
-        <Card className={styles.styledCard}>
-          <CardHeader>
-            <Bullseye className={spacing.mbMd}>
-              <HeaderIcon state={currentPlanStatus.state} />
-            </Bullseye>
-            <Bullseye>
-              <Title headingLevel="h3" size="2xl">
-                {getHeaderText(currentPlanStatus.state)}
-              </Title>
-            </Bullseye>
-          </CardHeader>
-          <CardBody>
-            {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
-              <DataListContent noPadding aria-label="current-plan-conditions-list">
-                {currentPlan.PlanStatus.displayedConditions.length > 0 && (
-                  <DataList aria-label="cluster-item-list">
-                    {currentPlan.PlanStatus.displayedConditions.map((condition, conditionIndex) => {
-                      return (
-                        <ConditionItem
-                          key={conditionIndex}
-                          condition={condition}
-                          conditionIndex={conditionIndex}
-                          incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
-                        />
-                      );
-                    })}
-                  </DataList>
-                )}
-              </DataListContent>
+    <Flex
+      className={`${spacing.mtXl} ${styles.resultsContainer}`}
+      breakpointMods={[
+        { modifier: FlexModifiers['column'] },
+        { modifier: FlexModifiers['space-items-md'] },
+      ]}
+    >
+      <FlexItem>
+        <Bullseye className={spacing.mbMd}>
+          <HeaderIcon state={currentPlanStatus.state} />
+        </Bullseye>
+        <Bullseye>
+          <Title headingLevel="h3" size="2xl">
+            {getHeaderText(currentPlanStatus.state)}
+          </Title>
+        </Bullseye>
+      </FlexItem>
+      <FlexItem>
+        {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
+          <DataListContent noPadding aria-label="current-plan-conditions-list">
+            {currentPlan.PlanStatus.displayedConditions.length > 0 && (
+              <DataList aria-label="cluster-item-list">
+                {currentPlan.PlanStatus.displayedConditions.map((condition, conditionIndex) => {
+                  return (
+                    <ConditionItem
+                      key={conditionIndex}
+                      condition={condition}
+                      conditionIndex={conditionIndex}
+                      incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
+                    />
+                  );
+                })}
+              </DataList>
             )}
-          </CardBody>
-          <CardFooter>
-            <FooterText state={currentPlanStatus.state} />
-          </CardFooter>
-        </Card>
-      </GridItem>
-    </Grid>
+          </DataListContent>
+        )}
+      </FlexItem>
+      <FlexItem>
+        <FooterText state={currentPlanStatus.state} />
+      </FlexItem>
+    </Flex>
   );
 };
 
