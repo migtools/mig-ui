@@ -4,13 +4,10 @@ import {
   TextInput,
   Form,
   FormGroup,
-  Tooltip,
-  TooltipPosition,
   Checkbox,
-  Grid,
-  GridItem,
+  Flex,
+  FlexModifiers,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../common/components/HideWrapper';
@@ -96,7 +93,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
       <FormGroup
-        label="Cluster Name"
+        label="Cluster name"
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
@@ -116,6 +113,39 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isValid={!(touched.name && errors.name)}
         />
       </FormGroup>
+      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
+        <Checkbox
+          label="Azure cluster"
+          aria-label="Azure cluster"
+          id="azure-cluster-checkbox"
+          name={isAzureKey}
+          isChecked={values.isAzure}
+          onChange={formikHandleChange}
+          onBlur={handleBlur}
+        />
+      </FormGroup>
+      {values.isAzure && (
+        <FormGroup
+          label="Azure resource group"
+          isRequired
+          fieldId={azureResourceGroupKey}
+          helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
+          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+        >
+          {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+          <TextInput
+            value={values.azureResourceGroup}
+            onChange={formikHandleChange}
+            onInput={formikSetFieldTouched(azureResourceGroupKey)}
+            onBlur={handleBlur}
+            name={azureResourceGroupKey}
+            id="azure-token-input"
+            type="text"
+            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+          />
+        </FormGroup>
+      )}
       <FormGroup
         label="URL"
         isRequired
@@ -161,39 +191,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isValid={!(touched.token && errors.token)}
         />
       </FormGroup>
-      <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
-        <Checkbox
-          label="Azure cluster"
-          aria-label="Azure cluster"
-          id="azure-cluster-checkbox"
-          name={isAzureKey}
-          isChecked={values.isAzure}
-          onChange={formikHandleChange}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
-      {values.isAzure && (
-        <FormGroup
-          label="Azure resource group"
-          isRequired
-          fieldId={azureResourceGroupKey}
-          helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
-          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
-        >
-          {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-          <TextInput
-            value={values.azureResourceGroup}
-            onChange={formikHandleChange}
-            onInput={formikSetFieldTouched(azureResourceGroupKey)}
-            onBlur={handleBlur}
-            name={azureResourceGroupKey}
-            id="azure-token-input"
-            type="text"
-            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
-          />
-        </FormGroup>
-      )}
       <FormGroup
         fieldId={requireSSLKey}
         helperText={
@@ -214,72 +211,47 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           id="require-ssl-input"
         />
       </FormGroup>
-      <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-        <CertificateUpload
-          isDisabled={!values.requireSSL}
-          name={caBundleKey}
-          setFieldValue={setFieldValue}
-          onInput={formikSetFieldTouched(caBundleKey)}
-          onBlur={handleBlur}
-        />
-      </FormGroup>
-      <Grid gutter="md">
-        <GridItem>
-          <Button
-            type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus,
-              errors,
-              touched,
-              valuesHaveUpdate(values, currentCluster)
-            )}
-            style={{ marginRight: '10px' }}
-          >
-            {addEditButtonTextFn(currentStatus)}
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Add or edit your cluster details</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-          <Button
-            style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentCluster)
-            )}
-            onClick={() => checkConnection(values.name)}
-          >
-            Check connection
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Re-check your cluster's connection state</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-        </GridItem>
-      </Grid>
-      <Grid gutter="md">
-        <GridItem>
-          <ConnectionStatusLabel
-            status={currentStatus}
-            statusText={currentStatusFn(currentStatus)}
+      {values.requireSSL && (
+        <FormGroup label="CA bundle file" fieldId={caBundleKey}>
+          <CertificateUpload
+            fieldName={caBundleKey}
+            value={values[caBundleKey]}
+            onChange={(value) => {
+              setFieldValue(caBundleKey, value);
+              formikSetFieldTouched(caBundleKey);
+            }}
+            onInput={formikSetFieldTouched(caBundleKey)}
           />
-        </GridItem>
-      </Grid>
-      <Grid gutter="md">
-        <GridItem>
-          <Button variant="primary" onClick={onClose}>
-            Close
-          </Button>
-        </GridItem>
-      </Grid>
+        </FormGroup>
+      )}
+      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+        <Button
+          variant="primary"
+          type="submit"
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, currentCluster)
+          )}
+        >
+          {addEditButtonTextFn(currentStatus)}
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(
+            currentStatus,
+            valuesHaveUpdate(values, currentCluster)
+          )}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check connection
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };

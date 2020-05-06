@@ -15,7 +15,6 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
-  SelectOptionObject,
   Checkbox,
   Flex,
   Tooltip,
@@ -32,7 +31,7 @@ import { useFilterState, useSortState, usePaginationState } from '../../../commo
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
 import { capitalize } from '../../../common/duck/utils';
-import SimpleSelect from '../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
 import {
   FilterCategory,
   FilterType,
@@ -53,10 +52,6 @@ interface ICopyOptionsTableProps
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-}
-
-interface OptionWithValue extends SelectOptionObject {
-  value: string;
 }
 
 enum VerifyWarningState {

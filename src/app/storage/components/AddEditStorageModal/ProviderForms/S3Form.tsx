@@ -4,11 +4,9 @@ import {
   TextInput,
   Form,
   FormGroup,
-  Tooltip,
-  TooltipPosition,
   Checkbox,
-  Grid,
-  GridItem,
+  Flex,
+  FlexModifiers,
 } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
@@ -21,7 +19,6 @@ import {
 } from '../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../common/components/CertificateUpload';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
@@ -245,60 +242,41 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
               id="require-ssl-input"
             />
           </FormGroup>
-          <FormGroup label="CA Bundle file" fieldId={caBundleKey}>
-            <CertificateUpload
-              isDisabled={!values.requireSSL}
-              name={caBundleKey}
-              setFieldValue={setFieldValue}
-              onInput={formikSetFieldTouched(caBundleKey)}
-              onBlur={handleBlur}
-            />
-          </FormGroup>
+          {values.requireSSL && (
+            <FormGroup label="CA bundle file" fieldId={caBundleKey}>
+              <CertificateUpload
+                fieldName={caBundleKey}
+                value={values[caBundleKey]}
+                onChange={(value) => {
+                  setFieldValue(caBundleKey, value);
+                  formikSetFieldTouched(caBundleKey);
+                }}
+                onInput={formikSetFieldTouched(caBundleKey)}
+              />
+            </FormGroup>
+          )}
         </>
       )}
-      <Grid gutter="md">
-        <GridItem>
-          <Button
-            type="submit"
-            isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
-            style={{ marginRight: '10px' }}
-          >
-            {addEditButtonTextFn(currentStatus)}
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Add or edit your storage details</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-          <Button
-            style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(currentStatus, true)}
-            onClick={() => checkConnection(values.name)}
-          >
-            Check Connection
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Re-check your storage connection state</div>}
-          >
-            <OutlinedQuestionCircleIcon />
-          </Tooltip>
-        </GridItem>
-        <GridItem>
-          <ConnectionStatusLabel
-            status={currentStatus}
-            statusText={currentStatusFn(currentStatus)}
-          />
-        </GridItem>
-        <GridItem>
-          <Button variant="primary" onClick={onClose}>
-            Close
-          </Button>
-        </GridItem>
-      </Grid>
+      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+        <Button
+          variant="primary"
+          type="submit"
+          isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
+        >
+          {addEditButtonTextFn(currentStatus)}
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(currentStatus, true)}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check Connection
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };

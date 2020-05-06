@@ -7,7 +7,11 @@ import {
   Omit,
 } from '@patternfly/react-core';
 
-type OptionLike = string | SelectOptionObject;
+export interface OptionWithValue extends SelectOptionObject {
+  value: string;
+}
+
+type OptionLike = string | SelectOptionObject | OptionWithValue;
 
 interface SimpleSelectProps
   extends Omit<
