@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormikProps, FormikActions, FormikState } from 'formik';
+import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   Bullseye,

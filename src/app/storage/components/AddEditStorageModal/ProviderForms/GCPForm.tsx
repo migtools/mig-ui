@@ -60,7 +60,7 @@ interface IOtherProps {
   addEditStatus: any;
   initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: any;
+  currentStorage?: any;
   provider: string;
 }
 
@@ -217,7 +217,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   );
 };
 
-const GCPForm: any = withFormik({
+const GCPForm = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
     const values = {
       name: '',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { FormikProps, FormikActions, FormikState } from 'formik';
+import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Form, FormGroup, Grid, GridItem, TextInput } from '@patternfly/react-core';
 interface IProps {
