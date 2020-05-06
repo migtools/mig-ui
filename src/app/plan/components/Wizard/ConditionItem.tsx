@@ -20,7 +20,7 @@ import {
   IconSize,
   CheckCircleIcon,
   ExclamationCircleIcon,
-  WarningTriangleIcon,
+  ExclamationTriangleIcon,
 } from '@patternfly/react-icons';
 
 interface IConditionItemProps {
@@ -51,7 +51,7 @@ const ConditionItem: React.FunctionComponent<IConditionItemProps> = ({
                 {condition.type === 'Warn' && (
                   <FlexItem>
                     <span className="pf-c-icon pf-m-warning">
-                      <WarningTriangleIcon size={IconSize.sm} />
+                      <ExclamationTriangleIcon size={IconSize.sm} />
                     </span>
                   </FlexItem>
                 )}
@@ -79,7 +79,7 @@ const ConditionItem: React.FunctionComponent<IConditionItemProps> = ({
                         <Flex>
                           <FlexItem>
                             <span className="pf-c-icon pf-m-warning">
-                              <WarningTriangleIcon size={IconSize.sm} />
+                              <ExclamationTriangleIcon size={IconSize.sm} />
                             </span>
                           </FlexItem>
                           <FlexItem>

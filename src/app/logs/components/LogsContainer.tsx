@@ -12,7 +12,7 @@ import {
   Title,
   EmptyStateBody,
 } from '@patternfly/react-core';
-import { WarningTriangleIcon } from '@patternfly/react-icons';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import { PollingContext } from '../../home/duck/context';
 
 interface IProps {
@@ -78,7 +78,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
   if (logErrorMsg) {
     return (
       <EmptyState variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={WarningTriangleIcon} />
+        <EmptyStateIcon icon={ExclamationTriangleIcon} />
         <Title headingLevel="h5" size="sm">
           Failed to fetch logs.
         </Title>

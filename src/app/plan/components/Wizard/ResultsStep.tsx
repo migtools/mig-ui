@@ -24,7 +24,7 @@ import {
   IconSize,
   CheckCircleIcon,
   ExclamationCircleIcon,
-  WarningTriangleIcon,
+  ExclamationTriangleIcon,
 } from '@patternfly/react-icons';
 const styles = require('./ResultsStep.module');
 
@@ -71,7 +71,7 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       case CurrentPlanState.Warn:
         return (
           <span className="pf-c-icon pf-m-warning">
-            <WarningTriangleIcon size={IconSize.xl} />
+            <ExclamationTriangleIcon size={IconSize.xl} />
           </span>
         );
       default:

@@ -24,7 +24,11 @@ import {
   BaseSizes,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+import {
+  InfoCircleIcon,
+  QuestionCircleIcon,
+  ExclamationTriangleIcon,
+} from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
@@ -314,7 +318,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           title="Copy performance warning"
           header={
             <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
-              <WarningTriangleIcon
+              <ExclamationTriangleIcon
                 color="var(--pf-global--warning-color--100)"
                 className={spacing.mrMd}
               />
