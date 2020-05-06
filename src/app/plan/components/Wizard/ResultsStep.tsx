@@ -1,8 +1,8 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import {
   Bullseye,
+  Title,
   Button,
   Card,
   CardHeader,
@@ -14,8 +14,6 @@ import {
   GridItem,
   DataList,
   DataListContent,
-  Flex,
-  FlexItem,
 } from '@patternfly/react-core';
 import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
@@ -80,59 +78,18 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
     }
   }
 
-  function HeaderText({ state }): any {
-    const StyledPlanName = (props) => (
-      <span className={styles.styledPlanName}>{props.children}</span>
-    );
-
-    const StyledValidationText = (props) => (
-      <span className={styles.styledValidationText}>{props.children}</span>
-    );
-
+  function getHeaderText(state: CurrentPlanState): string {
     switch (state) {
       case CurrentPlanState.Pending:
-        return (
-          <StyledValidationText>
-            Validating migration plan
-            {` `}
-            <StyledPlanName>{currentPlan.metadata.name}</StyledPlanName>
-            {`.`}
-          </StyledValidationText>
-        );
+        return 'Validating migration plan';
       case CurrentPlanState.Ready:
-        return (
-          <StyledValidationText>
-            <StyledPlanName>{currentPlan.metadata.name}</StyledPlanName>
-            {` `}
-            has been validated.
-          </StyledValidationText>
-        );
+        return 'Validation successful';
       case CurrentPlanState.Warn:
-        return (
-          <StyledValidationText>
-            <StyledPlanName>{currentPlan.metadata.name}</StyledPlanName>
-            {` `}
-            has been validated with warning condition(s). See warning message.
-          </StyledValidationText>
-        );
+        return 'Validation completed with warnings';
       case CurrentPlanState.Critical:
-        return (
-          <StyledValidationText>
-            Failed to validate migration plan
-            {` `}
-            <StyledPlanName>{currentPlan.metadata.name}</StyledPlanName>
-            {`.`}
-          </StyledValidationText>
-        );
+        return 'Failed to validate migration plan';
       case CurrentPlanState.TimedOut:
-        return (
-          <StyledValidationText>
-            Failed to validate migration plan
-            {` `}
-            <StyledPlanName>{currentPlan.metadata.name}</StyledPlanName>
-            {`. Please Try again.`}
-          </StyledValidationText>
-        );
+        return 'Validation timed out';
       default:
         return null;
     }
@@ -218,11 +175,13 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       <GridItem className={styles.centerCard}>
         <Card className={styles.styledCard}>
           <CardHeader>
-            <Bullseye>
+            <Bullseye className={spacing.mbMd}>
               <HeaderIcon state={currentPlanStatus.state} />
             </Bullseye>
             <Bullseye>
-              <HeaderText state={currentPlanStatus.state} />
+              <Title headingLevel="h3" size="2xl">
+                {getHeaderText(currentPlanStatus.state)}
+              </Title>
             </Bullseye>
           </CardHeader>
           <CardBody>
