@@ -298,9 +298,10 @@ interface IOtherProps {
   addEditStatus: any;
   currentCluster: any;
   checkConnection: (name) => void;
+  initialClusterValues?: any;
 }
 
-const AddEditClusterForm: any = withFormik({
+const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialClusterValues }) => {
     const values = {
       name: '',

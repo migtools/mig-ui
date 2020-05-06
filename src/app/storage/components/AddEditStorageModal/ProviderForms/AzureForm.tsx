@@ -285,7 +285,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 // a storage object exist, but have no initial values (user adds new storage, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
 
-const AzureForm: any = withFormik({
+const AzureForm: any = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
     const values = {
       name: '',

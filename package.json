@@ -73,7 +73,7 @@
     "connected-react-router": "^6.3.2",
     "ejs": "^2.6.1",
     "express": "^4.17.1",
-    "formik": "^1.5.2",
+    "formik": "^2.1.4",
     "history": "^4.9.0",
     "jszip": "^3.2.2",
     "lodash": "^4.17.14",
