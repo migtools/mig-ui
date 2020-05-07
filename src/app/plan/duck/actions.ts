@@ -33,9 +33,9 @@ export const PlanActionTypes = {
   SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS: 'SOURCE_CLUSTER_NAMESPACES_FETCH_SUCCESS',
   START_PV_POLLING: 'START_PV_POLLING',
   STOP_PV_POLLING: 'STOP_PV_POLLING',
-  PLAN_UPDATE_REQUEST: 'PLAN_UPDATE_REQUEST',
-  PLAN_UPDATE_SUCCESS: 'PLAN_UPDATE_SUCCESS',
-  PLAN_UPDATE_FAILURE: 'PLAN_UPDATE_FAILURE',
+  PV_DISCOVERY_REQUEST: 'PV_DISCOVERY_REQUEST',
+  PV_DISCOVERY_SUCCESS: 'PV_DISCOVERY_SUCCESS',
+  PV_DISCOVERY_FAILURE: 'PV_DISCOVERY_FAILURE',
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
@@ -50,6 +50,7 @@ export const PlanActionTypes = {
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
   PLAN_STATUS_POLL_START: 'PLAN_STATUS_POLL_START',
   PLAN_STATUS_POLL_STOP: 'PLAN_STATUS_POLL_STOP',
+  PV_UPDATE_POLL_START: 'PV_UPDATE_POLL_START',
   PV_UPDATE_POLL_STOP: 'PV_UPDATE_POLL_STOP',
   MIGRATION_POLL_START: 'MIGRATION_POLL_START',
   MIGRATION_POLL_STOP: 'MIGRATION_POLL_STOP',
@@ -62,8 +63,6 @@ export const PlanActionTypes = {
   PLAN_POLL_STOP: 'PLAN_POLL_STOP',
   RESET_CURRENT_PLAN: 'RESET_CURRENT_PLAN',
   SET_CURRENT_PLAN: 'SET_CURRENT_PLAN',
-  PV_UPDATE_REQUEST: 'PV_UPDATE_REQUEST',
-  PV_UPDATE_SUCCESS: 'PV_UPDATE_SUCCESS',
 
   /*
   Hook action types
@@ -170,19 +169,6 @@ const namespaceFetchFailure = (err) => ({
   err,
 });
 
-const pvUpdateRequest = (isRerunPVDiscovery) => ({
-  type: PlanActionTypes.PV_UPDATE_REQUEST,
-  isRerunPVDiscovery,
-});
-
-const pvUpdateSuccess = () => ({
-  type: PlanActionTypes.PV_UPDATE_SUCCESS,
-});
-
-const pvUpdatePollStop = () => ({
-  type: PlanActionTypes.PV_UPDATE_POLL_STOP,
-});
-
 const validatePlanPollStart = (params) => ({
   type: PlanActionTypes.VALIDATE_PLAN_POLL_START,
   params,
@@ -205,19 +191,27 @@ const validatePlanFailure = (error) => ({
   type: PlanActionTypes.VALIDATE_PLAN_FAILURE,
   error,
 });
-const planUpdateRequest = (planValues, isRerunPVDiscovery?) => ({
-  type: PlanActionTypes.PLAN_UPDATE_REQUEST,
+const pvDiscoveryRequest = (planValues) => ({
+  type: PlanActionTypes.PV_DISCOVERY_REQUEST,
   planValues,
-  isRerunPVDiscovery,
 });
 
-const planUpdateSuccess = () => ({
-  type: PlanActionTypes.PLAN_UPDATE_SUCCESS,
+const pvDiscoverySuccess = () => ({
+  type: PlanActionTypes.PV_DISCOVERY_SUCCESS,
 });
 
-const planUpdateFailure = (error) => ({
-  type: PlanActionTypes.PLAN_UPDATE_FAILURE,
+const pvDiscoveryFailure = (error) => ({
+  type: PlanActionTypes.PV_DISCOVERY_FAILURE,
   error,
+});
+
+const pvUpdatePollStart = (params) => ({
+  type: PlanActionTypes.PV_UPDATE_POLL_START,
+  params,
+});
+
+const pvUpdatePollStop = () => ({
+  type: PlanActionTypes.PV_UPDATE_POLL_STOP,
 });
 
 const addPlanRequest = (migPlan: any) => ({
@@ -459,12 +453,11 @@ export const PlanActions = {
   namespaceFetchRequest,
   namespaceFetchSuccess,
   namespaceFetchFailure,
-  pvUpdateRequest,
-  pvUpdateSuccess,
+  pvUpdatePollStart,
   pvUpdatePollStop,
-  planUpdateRequest,
-  planUpdateSuccess,
-  planUpdateFailure,
+  pvDiscoveryRequest,
+  pvDiscoverySuccess,
+  pvDiscoveryFailure,
   validatePlanRequest,
   validatePlanSuccess,
   validatePlanFailure,

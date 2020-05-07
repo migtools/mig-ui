@@ -25,7 +25,7 @@ interface IVolumesFormProps
       | 'getPVResourcesRequest'
       | 'pvResourceList'
       | 'isFetchingPVResources'
-      | 'planUpdateRequest'
+      | 'pvDiscoveryRequest'
       | 'isPollingStatus'
     >,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
@@ -39,18 +39,12 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   getPVResourcesRequest,
   pvResourceList,
   isFetchingPVResources,
-  planUpdateRequest,
+  pvDiscoveryRequest,
   isPollingStatus,
 }: IVolumesFormProps) => {
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
-    let isRerunPVDiscovery = null;
-    if (currentPlan) {
-      isRerunPVDiscovery = true;
-      planUpdateRequest(values, isRerunPVDiscovery);
-    } else {
-      planUpdateRequest(values, isRerunPVDiscovery);
-    }
+    pvDiscoveryRequest(values);
   }, []);
 
   const discoveredPersistentVolumes = (currentPlan && currentPlan.spec.persistentVolumes) || [];
