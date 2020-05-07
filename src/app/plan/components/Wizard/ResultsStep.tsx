@@ -46,6 +46,7 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
           </span>
         );
       case CurrentPlanState.Critical:
+      case CurrentPlanState.TimedOut:
         return (
           <span className="pf-c-icon pf-m-danger">
             <ExclamationCircleIcon size={IconSize.xl} />
