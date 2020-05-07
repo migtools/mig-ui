@@ -1,5 +1,6 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import {
   Bullseye,
   Title,
@@ -54,7 +55,7 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
     startPlanStatusPolling(values.planName);
   };
 
-  function HeaderIcon({ state }) {
+  const HeaderIcon: React.FunctionComponent<{ state: CurrentPlanState }> = ({ state }) => {
     switch (state) {
       case CurrentPlanState.Pending:
         return <Spinner size="xl" />;
@@ -79,9 +80,9 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       default:
         return null;
     }
-  }
+  };
 
-  function getHeaderText(state: CurrentPlanState): string {
+  const getHeaderText = (state: CurrentPlanState): string => {
     switch (state) {
       case CurrentPlanState.Pending:
         return 'Validating migration plan';
@@ -96,55 +97,28 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
       default:
         return null;
     }
-  }
+  };
 
-  function FooterText({ state }): any {
-    switch (state) {
-      case CurrentPlanState.Pending:
-        return null;
-      case CurrentPlanState.Warn:
-        return (
+  const FooterButtons: React.FunctionComponent<{ state: CurrentPlanState }> = ({ state }) => {
+    if (state === CurrentPlanState.Pending) return null;
+    if (state === CurrentPlanState.TimedOut) {
+      return (
+        <>
           <Button onClick={onClose} variant="primary">
             Close
           </Button>
-        );
-      case CurrentPlanState.Ready:
-        return (
-          <Button onClick={onClose} variant="primary">
-            Close
+          <Button onClick={handlePollRestart} disabled={isPollingStatus} variant="secondary">
+            Retry validation
           </Button>
-        );
-      case CurrentPlanState.Critical:
-        return (
-          <Button onClick={onClose} variant="primary">
-            Close
-          </Button>
-        );
-      case CurrentPlanState.TimedOut:
-        return (
-          <Grid gutter="md">
-            <Button style={{ marginRight: '10px' }} onClick={onClose} variant="primary">
-              Close
-            </Button>
-            <Button
-              style={{ marginLeft: '10px', marginRight: '10px' }}
-              onClick={handlePollRestart}
-              disabled={isPollingStatus}
-              variant="secondary"
-            >
-              Check Connection
-            </Button>
-            <Tooltip position={TooltipPosition.top} content={<div>Re-check plan status.</div>}>
-              <span className="pf-c-icon">
-                <QuestionCircleIcon />
-              </span>
-            </Tooltip>
-          </Grid>
-        );
-      default:
-        return null;
+        </>
+      );
     }
-  }
+    return (
+      <Button onClick={onClose} variant="primary">
+        Close
+      </Button>
+    );
+  };
 
   return (
     <Flex
@@ -184,9 +158,15 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
           </DataListContent>
         )}
       </FlexItem>
-      <FlexItem>
-        <FooterText state={currentPlanStatus.state} />
-      </FlexItem>
+      <Flex
+        className={spacing.mtMd}
+        breakpointMods={[
+          { modifier: FlexModifiers['space-items-md'] },
+          { modifier: FlexModifiers['justify-content-center'] },
+        ]}
+      >
+        <FooterButtons state={currentPlanStatus.state} />
+      </Flex>
     </Flex>
   );
 };
