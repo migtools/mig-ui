@@ -293,6 +293,8 @@ function* pvUpdatePoll(action) {
         const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
         const updatedPlan = getPlanResponse.data;
         if (currentPlan.status) {
+          // if currentPlan has status, this is not the initial run of pv discovery.
+          // check for updated values & poll until observed digest changes if so.
           const updatedValues =
             JSON.stringify(initialGetPlanRes.data.spec.namespaces) !==
               JSON.stringify(planValues.selectedNamespaces) ||
