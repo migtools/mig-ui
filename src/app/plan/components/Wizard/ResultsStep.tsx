@@ -85,11 +85,11 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
     if (state === CurrentPlanState.TimedOut) {
       return (
         <>
-          <Button onClick={onClose} variant="primary">
-            Close
-          </Button>
-          <Button onClick={handlePollRestart} disabled={isPollingStatus} variant="secondary">
+          <Button onClick={handlePollRestart} disabled={isPollingStatus} variant="primary">
             Retry validation
+          </Button>
+          <Button onClick={onClose} variant="secondary">
+            Close
           </Button>
         </>
       );
