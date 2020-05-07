@@ -1,16 +1,7 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import {
-  Bullseye,
-  Title,
-  Button,
-  DataList,
-  DataListContent,
-  Flex,
-  FlexModifiers,
-  FlexItem,
-} from '@patternfly/react-core';
-import ConditionItem from './ConditionItem';
+import { Bullseye, Title, Button, Flex, FlexModifiers, FlexItem } from '@patternfly/react-core';
+import ConditionsGrid from './ConditionsGrid';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import {
@@ -19,7 +10,6 @@ import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
 } from '@patternfly/react-icons';
-const styles = require('./ResultsStep.module');
 
 interface IProps {
   values: any;
@@ -111,15 +101,16 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
   };
 
   return (
-    <Flex
-      className={`${spacing.mtXl} ${styles.resultsContainer}`}
-      breakpointMods={[
-        { modifier: FlexModifiers['column'] },
-        { modifier: FlexModifiers['space-items-md'] },
-      ]}
-    >
-      <FlexItem>
-        <Bullseye className={spacing.mbMd}>
+    <Bullseye>
+      <Flex
+        className={spacing.mtXl}
+        breakpointMods={[
+          { modifier: FlexModifiers['column'] },
+          { modifier: FlexModifiers['align-items-center'] },
+          { modifier: FlexModifiers['space-items-md'] },
+        ]}
+      >
+        <Bullseye>
           <HeaderIcon state={currentPlanStatus.state} />
         </Bullseye>
         <Bullseye>
@@ -127,37 +118,23 @@ const ResultsStep: React.FunctionComponent<IProps> = (props) => {
             {getHeaderText(currentPlanStatus.state)}
           </Title>
         </Bullseye>
-      </FlexItem>
-      <FlexItem>
         {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
-          <DataListContent noPadding aria-label="current-plan-conditions-list">
-            {currentPlan.PlanStatus.displayedConditions.length > 0 && (
-              <DataList aria-label="cluster-item-list">
-                {currentPlan.PlanStatus.displayedConditions.map((condition, conditionIndex) => {
-                  return (
-                    <ConditionItem
-                      key={conditionIndex}
-                      condition={condition}
-                      conditionIndex={conditionIndex}
-                      incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
-                    />
-                  );
-                })}
-              </DataList>
-            )}
-          </DataListContent>
+          <ConditionsGrid
+            conditions={currentPlan.PlanStatus.displayedConditions}
+            incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
+          />
         )}
-      </FlexItem>
-      <Flex
-        className={spacing.mtMd}
-        breakpointMods={[
-          { modifier: FlexModifiers['space-items-md'] },
-          { modifier: FlexModifiers['justify-content-center'] },
-        ]}
-      >
-        <FooterButtons state={currentPlanStatus.state} />
+        <Flex
+          className={spacing.mtMd}
+          breakpointMods={[
+            { modifier: FlexModifiers['space-items-md'] },
+            { modifier: FlexModifiers['justify-content-center'] },
+          ]}
+        >
+          <FooterButtons state={currentPlanStatus.state} />
+        </Flex>
       </Flex>
-    </Flex>
+    </Bullseye>
   );
 };
 
