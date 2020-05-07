@@ -207,17 +207,22 @@ function* validatePlanPoll(action) {
     const { pvStorageClassAssignment } = params.planValues;
 
     let isStorageClassUpdated = false;
-
-    currentPlan.spec.persistentVolumes.forEach((currentPv) => {
-      for (const formValuesPvName in pvStorageClassAssignment) {
-        if (formValuesPvName === currentPv.name) {
-          if (currentPv.selection.storageClass || pvStorageClassAssignment[formValuesPvName].name) {
-            isStorageClassUpdated =
-              pvStorageClassAssignment[formValuesPvName].name !== currentPv.selection.storageClass;
+    if (currentPlan && currentPlan.spec.persistentVolumes) {
+      currentPlan.spec.persistentVolumes.forEach((currentPv) => {
+        for (const formValuesPvName in pvStorageClassAssignment) {
+          if (formValuesPvName === currentPv.name) {
+            if (
+              currentPv.selection.storageClass ||
+              pvStorageClassAssignment[formValuesPvName].name
+            ) {
+              isStorageClassUpdated =
+                pvStorageClassAssignment[formValuesPvName].name !==
+                currentPv.selection.storageClass;
+            }
           }
         }
-      }
-    });
+      });
+    }
 
     if (isStorageClassUpdated) {
       const updatedObservedDigest = updatedPlan.status.observedDigest;
