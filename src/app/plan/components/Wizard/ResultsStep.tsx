@@ -1,18 +1,9 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import {
   Bullseye,
   Title,
   Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Tooltip,
-  TooltipPosition,
-  Grid,
-  GridItem,
   DataList,
   DataListContent,
   Flex,
@@ -23,7 +14,6 @@ import ConditionItem from './ConditionItem';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import {
-  QuestionCircleIcon,
   IconSize,
   CheckCircleIcon,
   ExclamationCircleIcon,
