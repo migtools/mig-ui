@@ -26,7 +26,10 @@ export const isSelfSignedCertError = (err) => {
   // HACK: Doing our best to determine whether or not the
   // error was produced due to a self signed cert error.
   // It's an extremely barren object.
-  return !e.code && e.message === 'Network Error';
+  return (
+    !e.code &&
+    (e.message === 'Network Error' || e.message === 'Request failed with status code 401')
+  );
 };
 
 export const isTimeoutError = (err) => {
