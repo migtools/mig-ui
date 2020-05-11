@@ -588,7 +588,7 @@ export function updateMigHook(
       ? migHook.srcServiceAccountName
       : currentServiceAccount;
   }
-  if (migHook.clusterType === HooksClusterType.Source) {
+  if (migHook.clusterType === HooksClusterType.Destination) {
     executionNamespaceUpdated = migHook.destServiceAccountNamespace !== currentExecutionNamespace;
     executionNamespaceValue = executionNamespaceUpdated
       ? migHook.destServiceAccountNamespace
