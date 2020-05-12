@@ -8,14 +8,8 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import { IMigMigration } from '../../../../../client/resources/conversions';
+import { IMigration } from './types';
 
-interface IMigration extends IMigMigration {
-  tableStatus: {
-    isFailed: boolean;
-    isSucceeded: boolean;
-  };
-}
 interface IProps {
   migration: IMigration;
 }
