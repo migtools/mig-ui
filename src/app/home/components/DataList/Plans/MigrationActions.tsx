@@ -8,10 +8,10 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import { IMigration } from './types';
+import { IMigrationWithStatus } from './types';
 
 interface IProps {
-  migration: IMigration;
+  migration: IMigrationWithStatus;
 }
 
 const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {

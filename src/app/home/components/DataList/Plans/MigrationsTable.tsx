@@ -12,10 +12,10 @@ import {
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 const styles = require('./MigrationsTable.module');
 
-import { IMigration } from './types';
+import { IMigrationWithStatus } from './types';
 
 interface IProps {
-  migrations: IMigration[];
+  migrations: IMigrationWithStatus[];
   id: string;
   type: string;
   isPlanLocked: boolean;
@@ -135,7 +135,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     );
   }
 
-  console.log('This is migration', migrations);
   return (
     <React.Fragment>
       {migrations.length > 0 ? (

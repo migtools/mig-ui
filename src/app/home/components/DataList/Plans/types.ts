@@ -1,6 +1,6 @@
 import { IMigMigration } from '../../../../../client/resources/conversions';
 
-export interface IMigration extends IMigMigration {
+export interface IMigrationWithStatus extends IMigMigration {
   tableStatus: {
     copied: number;
     end: string;
