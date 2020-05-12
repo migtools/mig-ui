@@ -4,7 +4,6 @@ import {
   Button,
   DataListItem,
   DataListCell,
-  DataListToggle,
   DataListItemRow,
   DataListItemCells,
   DataListAction,
@@ -21,7 +20,6 @@ const StorageDataListItem = ({
   associatedPlans,
   removeStorage,
   isExpanded,
-  toggleExpanded,
   storageCount,
   ...props
 }) => {
@@ -34,11 +32,6 @@ const StorageDataListItem = ({
       <ModalContext.Provider value={{ setIsModalOpen, isModalOpen }}>
         <DataListItem aria-labelledby="storage-container-item" isExpanded={isExpanded}>
           <DataListItemRow>
-            <DataListToggle
-              onClick={() => toggleExpanded(id)}
-              isExpanded={isExpanded}
-              id="storage-toggle"
-            />
             <DataListItemCells
               dataListCells={[
                 <DataListCell id="storage-item" key="storage">

@@ -134,9 +134,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
               migMeta={migMeta}
               removeCluster={removeCluster}
               isExpanded
-              toggleExpanded={() => {
-                // eslint-ignore
-              }}
               clusterCount={clusterList.length}
             />
           </ClusterContext.Provider>
@@ -151,9 +148,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
               associatedPlans={storageAssociatedPlans}
               removeStorage={removeStorage}
               isExpanded
-              toggleExpanded={() => {
-                // eslint-ignore
-              }}
               storageCount={storageList.length}
             />
           </StorageContext.Provider>
@@ -177,9 +171,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
               storageList={storageList}
               addPlanDisabledObj={addPlanDisabledObj}
               isExpanded
-              toggleExpanded={() => {
-                // eslint-ignore
-              }}
               planCount={planList.length}
             />
           </PlanContext.Provider>

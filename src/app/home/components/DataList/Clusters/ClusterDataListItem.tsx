@@ -4,7 +4,6 @@ import {
   Button,
   DataListItem,
   DataListCell,
-  DataListToggle,
   DataListItemRow,
   DataListItemCells,
   DataListAction,
@@ -16,7 +15,6 @@ import ClusterContent from './ClusterContent';
 const ClusterDataListItem = ({
   id,
   isExpanded,
-  toggleExpanded,
   dataList,
   associatedPlans,
   migMeta,
@@ -29,11 +27,6 @@ const ClusterDataListItem = ({
     return (
       <DataListItem aria-labelledby="cluster-container-item" isExpanded={isExpanded}>
         <DataListItemRow>
-          <DataListToggle
-            onClick={() => toggleExpanded(id)}
-            isExpanded={isExpanded}
-            id="cluster-toggle"
-          />
           <DataListItemCells
             dataListCells={[
               <DataListCell id="cluster-item" key="clusters">

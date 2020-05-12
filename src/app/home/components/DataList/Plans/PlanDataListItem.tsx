@@ -3,7 +3,6 @@ import {
   Badge,
   Button,
   DataListItem,
-  DataListToggle,
   DataListItemRow,
   DataListItemCells,
   DataListCell,
@@ -25,7 +24,6 @@ interface IPlanDataListItemProps {
   planList: any;
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   isExpanded: boolean;
-  toggleExpanded: (id) => void;
   planCount: number;
 }
 
@@ -36,7 +34,6 @@ const PlanDataListItem = ({
   planList,
   addPlanDisabledObj,
   isExpanded,
-  toggleExpanded,
   planCount,
 }: IPlanDataListItemProps) => {
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
@@ -44,13 +41,6 @@ const PlanDataListItem = ({
     return (
       <DataListItem aria-labelledby="ex-item1" isExpanded={isExpanded}>
         <DataListItemRow>
-          <DataListToggle
-            onClick={() => {
-              toggleExpanded(id);
-            }}
-            isExpanded={isExpanded}
-            id="plan-toggle"
-          />
           <DataListItemCells
             dataListCells={[
               <DataListCell id="plan-item" key="plans">
