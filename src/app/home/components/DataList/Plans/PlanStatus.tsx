@@ -1,5 +1,5 @@
 import React from 'react';
-import PlanStatusIcon from '../../Card/Status/PlanStatusIcon';
+import PlanStatusIcon from './PlanStatusIcon';
 import { Flex, FlexItem } from '@patternfly/react-core';
 
 interface IProps {
