@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-core';
 import { IMigMigration } from '../../../../../client/resources/conversions';
 
-export interface IMigration extends IMigMigration {
+interface IMigration extends IMigMigration {
   tableStatus: {
     isFailed: boolean;
     isSucceeded: boolean;
