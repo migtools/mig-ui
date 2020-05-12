@@ -6,6 +6,7 @@ const styles = require('./HeaderComponent.module');
 const HeaderComponent = (
   <PageHeader
     logo={<Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />}
+    showNavToggle
   />
 );
 

@@ -1,6 +1,17 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
-import { Card, Page, PageSection, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Card,
+  Nav,
+  NavList,
+  NavItem,
+  Page,
+  PageSidebar,
+  PageSection,
+  SkipToContent,
+  Grid,
+  GridItem,
+} from '@patternfly/react-core';
 import HeaderComponent from '../common/components/HeaderComponent';
 import DetailViewComponent from './DetailViewComponent';
 import DashboardCard from './components/Card/DashboardCard';
@@ -8,6 +19,8 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { PollingContext } from '../home/duck/context';
+
+const mainContainerId = 'mig-ui-page-main-container';
 
 interface IProps {
   allClusters: any[];
@@ -60,8 +73,36 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     setExpandedStateObj(newExpanded);
   };
 
+  const nav = (
+    <Nav
+      onSelect={() => {
+        /* eslint-ignore */
+      }}
+      aria-label="Page navigation"
+      theme="dark"
+    >
+      <NavList>
+        <NavItem itemId={0} isActive>
+          Clusters
+        </NavItem>
+        <NavItem itemId={1} isActive={false}>
+          Replication repositories
+        </NavItem>
+        <NavItem itemId={2} isActive={false}>
+          Migration plans
+        </NavItem>
+      </NavList>
+    </Nav>
+  );
+
   return (
-    <Page header={HeaderComponent}>
+    <Page
+      header={HeaderComponent}
+      sidebar={<PageSidebar nav={nav} theme="dark" />}
+      isManagedSidebar
+      skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
+      mainContainerId={mainContainerId}
+    >
       <PageSection>
         <Grid gutter="lg" md={6} lg={4}>
           <GridItem>
