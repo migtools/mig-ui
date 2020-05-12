@@ -10,8 +10,14 @@ import {
 } from '@patternfly/react-core';
 import { IMigMigration } from '../../../../../client/resources/conversions';
 
+export interface IMigration extends IMigMigration {
+  tableStatus: {
+    isFailed: boolean;
+    isSucceeded: boolean;
+  };
+}
 interface IProps {
-  migration: IMigMigration;
+  migration: IMigration;
 }
 
 const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
@@ -32,7 +38,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
                 planContext.handleMigrationCancelRequest(migration.metadata.name);
               }}
               key={`cancelMigration-${migration.metadata.name}`}
-              isDisabled={!planContext.hasSucceededMigration || !planContext.hasSucceededStage}
+              isDisabled={migration.tableStatus.isSucceeded || migration.tableStatus.isFailed}
             >
               Cancel
             </DropdownItem>,
