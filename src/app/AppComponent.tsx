@@ -151,6 +151,7 @@ const AppComponent: React.SFC<IProps> = ({
         <ConnectedRouter history={history}>
           <Switch>
             <PrivateRoute path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+            {/* TODO move this logs route inside the homecomponent so it inherits the nav */}
             <RefreshRoute
               exact
               path="/logs/:planId"

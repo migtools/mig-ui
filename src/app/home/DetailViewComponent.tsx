@@ -41,7 +41,6 @@ interface IProps {
   planCloseAndDeleteRequest: (string) => void;
   watchClusterAddEditStatus: (string) => void;
   watchStorageAddEditStatus: (string) => void;
-  handleExpandDetails: (string) => void;
   expanded: {
     [s: string]: boolean;
   };
@@ -52,6 +51,11 @@ enum DataListItems {
   StorageList = 'storageList',
   PlanList = 'planList',
 }
+
+// --- TODO ---
+// The contents of this component need to be broken up into the ClustersPage, StoragesPage, and PlansPage
+// components, each of which should be their own react-redux `connect` exports.
+// Thanks to the already-separated PlanContext, ClusterContext and StorageContext, this should be pretty easy!
 
 const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   const {
@@ -70,7 +74,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     watchClusterAddEditStatus,
     watchStorageAddEditStatus,
     migMeta,
-    handleExpandDetails,
     expanded,
   } = props;
 
@@ -122,53 +125,65 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <React.Fragment>
       <DataList aria-label="data-list-main-container">
-        <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-          <ClusterDataListItem
-            dataList={clusterList}
-            id={DataListItems.ClusterList}
-            associatedPlans={clusterAssociatedPlans}
-            migMeta={migMeta}
-            removeCluster={removeCluster}
-            isExpanded={expanded[DataListItems.ClusterList]}
-            toggleExpanded={handleExpandDetails}
-            clusterCount={clusterList.length}
-          />
-        </ClusterContext.Provider>
-        <StorageContext.Provider
-          value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
-        >
-          <StorageDataListItem
-            dataList={storageList}
-            id={DataListItems.StorageList}
-            associatedPlans={storageAssociatedPlans}
-            removeStorage={removeStorage}
-            isExpanded={expanded[DataListItems.StorageList]}
-            toggleExpanded={handleExpandDetails}
-            storageCount={storageList.length}
-          />
-        </StorageContext.Provider>
-        <PlanContext.Provider
-          value={{
-            handleStageTriggered,
-            handleDeletePlan,
-            handleRunMigration,
-            handleMigrationCancelRequest,
-            planList,
-            clusterList,
-            storageList,
-          }}
-        >
-          <PlanDataListItem
-            id={DataListItems.PlanList}
-            planList={planList}
-            clusterList={clusterList}
-            storageList={storageList}
-            addPlanDisabledObj={addPlanDisabledObj}
-            isExpanded={expanded[DataListItems.PlanList]}
-            toggleExpanded={handleExpandDetails}
-            planCount={planList.length}
-          />
-        </PlanContext.Provider>
+        {expanded[DataListItems.ClusterList] && (
+          <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+            <ClusterDataListItem
+              dataList={clusterList}
+              id={DataListItems.ClusterList}
+              associatedPlans={clusterAssociatedPlans}
+              migMeta={migMeta}
+              removeCluster={removeCluster}
+              isExpanded
+              toggleExpanded={() => {
+                // eslint-ignore
+              }}
+              clusterCount={clusterList.length}
+            />
+          </ClusterContext.Provider>
+        )}
+        {expanded[DataListItems.StorageList] && (
+          <StorageContext.Provider
+            value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
+          >
+            <StorageDataListItem
+              dataList={storageList}
+              id={DataListItems.StorageList}
+              associatedPlans={storageAssociatedPlans}
+              removeStorage={removeStorage}
+              isExpanded
+              toggleExpanded={() => {
+                // eslint-ignore
+              }}
+              storageCount={storageList.length}
+            />
+          </StorageContext.Provider>
+        )}
+        {expanded[DataListItems.PlanList] && (
+          <PlanContext.Provider
+            value={{
+              handleStageTriggered,
+              handleDeletePlan,
+              handleRunMigration,
+              handleMigrationCancelRequest,
+              planList,
+              clusterList,
+              storageList,
+            }}
+          >
+            <PlanDataListItem
+              id={DataListItems.PlanList}
+              planList={planList}
+              clusterList={clusterList}
+              storageList={storageList}
+              addPlanDisabledObj={addPlanDisabledObj}
+              isExpanded
+              toggleExpanded={() => {
+                // eslint-ignore
+              }}
+              planCount={planList.length}
+            />
+          </PlanContext.Provider>
+        )}
       </DataList>
     </React.Fragment>
   );

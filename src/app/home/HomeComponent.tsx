@@ -20,6 +20,7 @@ import clusterSelectors from '../cluster/duck/selectors';
 import storageSelectors from '../storage/duck/selectors';
 import planSelectors from '../plan/duck/selectors';
 import { PollingContext } from '../home/duck/context';
+import { ClustersPage, StoragesPage, PlansPage } from './pages';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -94,12 +95,6 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
     </Nav>
   );
 
-  const tmpDetailsBody = (
-    <Card>
-      <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
-    </Card>
-  );
-
   return (
     <Page
       header={HeaderComponent}
@@ -147,13 +142,13 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
           <GridItem span={12}>
             <Switch>
               <Route exact path="/clusters">
-                {tmpDetailsBody}
+                <ClustersPage />
               </Route>
               <Route exact path="/storages">
-                {tmpDetailsBody}
+                <StoragesPage />
               </Route>
               <Route exact path="/plans">
-                {tmpDetailsBody}
+                <PlansPage />
               </Route>
             </Switch>
           </GridItem>
