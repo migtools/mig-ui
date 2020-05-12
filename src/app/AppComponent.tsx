@@ -150,7 +150,7 @@ const AppComponent: React.SFC<IProps> = ({
 
         <ConnectedRouter history={history}>
           <Switch>
-            <PrivateRoute exact path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
+            <PrivateRoute path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
             <RefreshRoute
               exact
               path="/logs/:planId"

@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { connect } from 'react-redux';
+import { useRouteMatch, Link, Switch, Route } from 'react-router-dom';
 import {
   Card,
   Nav,
@@ -41,6 +42,16 @@ export enum DataListItems {
   PlanList = 'planList',
 }
 
+const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
+  const match = useRouteMatch({ path: to });
+  console.log({ to, match });
+  return (
+    <NavItem isActive={!!match}>
+      <Link to={to}>{label}</Link>
+    </NavItem>
+  );
+};
+
 const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   const {
     allClusters,
@@ -74,25 +85,19 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
   };
 
   const nav = (
-    <Nav
-      onSelect={() => {
-        /* eslint-ignore */
-      }}
-      aria-label="Page navigation"
-      theme="dark"
-    >
+    <Nav aria-label="Page navigation" theme="dark">
       <NavList>
-        <NavItem itemId={0} isActive>
-          Clusters
-        </NavItem>
-        <NavItem itemId={1} isActive={false}>
-          Replication repositories
-        </NavItem>
-        <NavItem itemId={2} isActive={false}>
-          Migration plans
-        </NavItem>
+        <NavItemLink to="/clusters" label="Clusters" />
+        <NavItemLink to="/storages" label="Replication repositories" />
+        <NavItemLink to="/plans" label="Migration plans" />
       </NavList>
     </Nav>
+  );
+
+  const tmpDetailsBody = (
+    <Card>
+      <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
+    </Card>
   );
 
   return (
@@ -140,13 +145,20 @@ const HomeComponent: React.FunctionComponent<IProps> = (props) => {
             />
           </GridItem>
           <GridItem span={12}>
-            <Card>
-              <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
-            </Card>
+            <Switch>
+              <Route exact path="/clusters">
+                {tmpDetailsBody}
+              </Route>
+              <Route exact path="/storages">
+                {tmpDetailsBody}
+              </Route>
+              <Route exact path="/plans">
+                {tmpDetailsBody}
+              </Route>
+            </Switch>
           </GridItem>
         </Grid>
       </PageSection>
-      <PageSection></PageSection>
     </Page>
   );
 };
