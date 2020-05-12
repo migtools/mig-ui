@@ -1,7 +1,6 @@
 import React from 'react';
-import { Page, PageSection, Grid, GridItem } from '@patternfly/react-core';
-import HeaderComponent from '../common/components/HeaderComponent';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbHeading } from '@patternfly/react-core';
+import { PageSection, Grid, GridItem } from '@patternfly/react-core';
+import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import LogsContainer from './components/LogsContainer';
 
@@ -11,7 +10,7 @@ interface IProps {
 
 const LogsComponent: React.FunctionComponent<IProps> = ({ match }) => {
   return (
-    <Page header={HeaderComponent}>
+    <>
       <PageSection>
         <Grid gutter="md">
           <GridItem>
@@ -29,7 +28,7 @@ const LogsComponent: React.FunctionComponent<IProps> = ({ match }) => {
       <PageSection>
         <LogsContainer planName={match.params.planId} />
       </PageSection>
-    </Page>
+    </>
   );
 };
 

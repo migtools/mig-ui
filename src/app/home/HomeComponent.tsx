@@ -7,12 +7,16 @@ import {
   NavItem,
   Page,
   PageSidebar,
-  PageSection,
   SkipToContent,
+  PageHeader,
+  Brand,
 } from '@patternfly/react-core';
-import HeaderComponent from '../common/components/HeaderComponent';
 import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage } from './pages';
+import RefreshRoute from '../auth/RefreshRoute';
+import LogsComponent from '../logs/LogsComponent';
+import openshiftLogo from '../common/components/CAM_LOGO.svg';
+const styles = require('./HomeComponent.module');
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -31,11 +35,24 @@ const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ t
   );
 };
 
-const HomeComponent: React.FunctionComponent<{}> = () => {
+interface IHomeComponentProps {
+  clusterList: any[]; // TODO
+}
+
+const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
+  clusterList,
+}: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
+
+  const header = (
+    <PageHeader
+      logo={<Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />}
+      showNavToggle
+    />
+  );
 
   const nav = (
     <Nav aria-label="Page navigation" theme="dark">
@@ -49,28 +66,33 @@ const HomeComponent: React.FunctionComponent<{}> = () => {
 
   return (
     <Page
-      header={HeaderComponent}
+      header={header}
       sidebar={<PageSidebar nav={nav} theme="dark" />}
       isManagedSidebar
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
-      <PageSection>
-        <Switch>
-          <Route exact path="/">
-            <Redirect to="/clusters" />
-          </Route>
-          <Route exact path="/clusters">
-            <ClustersPage />
-          </Route>
-          <Route exact path="/storages">
-            <StoragesPage />
-          </Route>
-          <Route exact path="/plans">
-            <PlansPage />
-          </Route>
-        </Switch>
-      </PageSection>
+      <Switch>
+        <Route exact path="/">
+          <Redirect to="/clusters" />
+        </Route>
+        <Route exact path="/clusters">
+          <ClustersPage />
+        </Route>
+        <Route exact path="/storages">
+          <StoragesPage />
+        </Route>
+        <Route exact path="/plans">
+          <PlansPage />
+        </Route>
+        <RefreshRoute
+          exact
+          path="/logs/:planId"
+          clusterList={clusterList}
+          isLoggedIn
+          component={LogsComponent}
+        />
+      </Switch>
     </Page>
   );
 };

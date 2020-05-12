@@ -1,10 +1,8 @@
 import React from 'react';
 import HomeComponent from './home/HomeComponent';
-import LogsComponent from './logs/LogsComponent';
 import LoginComponent from './auth/LoginComponent';
 import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
-import RefreshRoute from './auth/RefreshRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
 import { ConnectedRouter } from 'connected-react-router';
@@ -150,17 +148,14 @@ const AppComponent: React.SFC<IProps> = ({
 
         <ConnectedRouter history={history}>
           <Switch>
-            <PrivateRoute path="/" isLoggedIn={isLoggedIn} component={HomeComponent} />
-            {/* TODO move this logs route inside the homecomponent so it inherits the nav */}
-            <RefreshRoute
-              exact
-              path="/logs/:planId"
-              clusterList={clusterList}
-              isLoggedIn={isLoggedIn}
-              component={LogsComponent}
-            />
             <Route path="/login" component={LoginComponent} />
             <Route path="/cert-error" component={CertErrorComponent} />
+            <PrivateRoute
+              path="/"
+              isLoggedIn={isLoggedIn}
+              component={HomeComponent}
+              componentProps={{ clusterList }}
+            />
           </Switch>
         </ConnectedRouter>
       </PollingContext.Provider>
