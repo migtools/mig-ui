@@ -20,7 +20,7 @@ import {
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
-import { WarningTriangleIcon } from '@patternfly/react-icons';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
@@ -136,7 +136,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                   <ReactJson src={matchingPVResource} enableClipboard={false} />
                 ) : (
                   <EmptyState variant={EmptyStateVariant.small}>
-                    <EmptyStateIcon icon={WarningTriangleIcon} />
+                    <EmptyStateIcon icon={ExclamationTriangleIcon} />
                     <Title headingLevel="h5" size="sm">
                       No PV data found
                     </Title>
