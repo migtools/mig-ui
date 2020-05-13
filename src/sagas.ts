@@ -8,7 +8,7 @@ import storageSagas from './app/storage/duck/sagas';
 import { initMigMeta } from './mig_meta';
 import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
-import { push } from 'connected-react-router';
+import { history } from './helpers';
 
 export default function* rootSaga() {
   function* appStarted() {
@@ -27,7 +27,7 @@ export default function* rootSaga() {
     setTokenExpiryHandler(() => {
       const LS_KEY_CURRENT_USER = 'currentUser';
       localStorage.removeItem(LS_KEY_CURRENT_USER);
-      push('/login?action=refresh');
+      history.push('/login?action=refresh');
     });
   }
 

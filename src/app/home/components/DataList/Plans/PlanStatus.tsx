@@ -29,7 +29,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => {
     } else if (hasClosedCondition) {
       status.text = 'Closed';
     } else if (hasConflictCondition) {
-      status.text = conflictErrorMsg || 'Conflicting plan';
+      status.text = conflictErrorMsg;
     } else if (hasRunningMigrations) {
       status.text = `${latestType} Running`;
     } else if (hasCanceledCondition) {
