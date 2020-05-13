@@ -51,11 +51,11 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) 
       });
     }
 
-    //move ready condition to first if it exists
-    const hasReadyCondition = !!displayedConditions.some((condition) => condition.type === 'Ready');
-    if (hasReadyCondition) {
+    // Move ready condition to the end of the list if it exists
+    const readyCondition = displayedConditions.find((condition) => condition.type === 'Ready');
+    if (readyCondition) {
       displayedConditions = displayedConditions.filter((condition) => condition.type !== 'Ready');
-      displayedConditions.unshift({ type: 'Ready', message: 'The migration plan is ready.' });
+      displayedConditions.push(readyCondition);
     }
 
     statusObject = {

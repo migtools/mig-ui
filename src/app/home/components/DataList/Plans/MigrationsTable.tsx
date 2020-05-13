@@ -12,12 +12,15 @@ import {
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 const styles = require('./MigrationsTable.module');
 
+import { IMigrationWithStatus } from './types';
+
 interface IProps {
-  migrations: any[];
+  migrations: IMigrationWithStatus[];
   id: string;
   type: string;
   isPlanLocked: boolean;
 }
+
 const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked }) => {
   const [currentRows, setCurrentRows] = useState([]);
 
