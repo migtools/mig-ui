@@ -8,10 +8,10 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import { IMigMigration } from '../../../../../client/resources/conversions';
+import { IMigrationWithStatus } from './types';
 
 interface IProps {
-  migration: IMigMigration;
+  migration: IMigrationWithStatus;
 }
 
 const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
@@ -32,6 +32,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
                 planContext.handleMigrationCancelRequest(migration.metadata.name);
               }}
               key={`cancelMigration-${migration.metadata.name}`}
+              isDisabled={migration.tableStatus.isSucceeded || migration.tableStatus.isFailed}
             >
               Cancel
             </DropdownItem>,
