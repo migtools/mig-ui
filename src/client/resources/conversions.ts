@@ -677,7 +677,7 @@ export function createMigHook(migHook: any, namespace: string) {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigHook',
     metadata: {
-      name: migHook.hookName,
+      generateName: `${migHook.hookName}-`,
       namespace,
     },
     spec: migHookSpec,
