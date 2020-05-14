@@ -125,19 +125,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <React.Fragment>
       <DataList aria-label="data-list-main-container">
-        {expanded[DataListItems.ClusterList] && (
-          <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-            <ClusterDataListItem
-              dataList={clusterList}
-              id={DataListItems.ClusterList}
-              associatedPlans={clusterAssociatedPlans}
-              migMeta={migMeta}
-              removeCluster={removeCluster}
-              isExpanded
-              clusterCount={clusterList.length}
-            />
-          </ClusterContext.Provider>
-        )}
         {expanded[DataListItems.StorageList] && (
           <StorageContext.Provider
             value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
