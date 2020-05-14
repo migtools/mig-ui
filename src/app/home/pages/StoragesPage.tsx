@@ -15,6 +15,7 @@ interface IStoragesPageBaseProps {
   removeStorage: (id: string) => void;
 }
 
+// TODO replace the Card > DataList > DataListItem with a table? Talk to Vince.
 const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   storageList,
   storageAssociatedPlans,

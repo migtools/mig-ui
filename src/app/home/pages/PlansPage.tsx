@@ -20,6 +20,7 @@ interface IPlansPageBaseProps {
   migrationCancelRequest: (migrationName: string) => void;
 }
 
+// TODO replace the Card > DataList > DataListItem with a table? Talk to Vince.
 const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   planList,
   clusterList,
