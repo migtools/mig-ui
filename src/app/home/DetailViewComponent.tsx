@@ -84,8 +84,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     disabledText: '',
   });
 
-  const [currentStorage, setCurrentStorage] = useState(null);
-
   useEffect(() => {
     if (clusterList.length < 2) {
       setAddPlanDisabledObj({
@@ -125,20 +123,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
   return (
     <React.Fragment>
       <DataList aria-label="data-list-main-container">
-        {expanded[DataListItems.StorageList] && (
-          <StorageContext.Provider
-            value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
-          >
-            <StorageDataListItem
-              dataList={storageList}
-              id={DataListItems.StorageList}
-              associatedPlans={storageAssociatedPlans}
-              removeStorage={removeStorage}
-              isExpanded
-              storageCount={storageList.length}
-            />
-          </StorageContext.Provider>
-        )}
         {expanded[DataListItems.PlanList] && (
           <PlanContext.Provider
             value={{
