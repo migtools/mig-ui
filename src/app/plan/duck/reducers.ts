@@ -39,6 +39,7 @@ export const INITIAL_STATE = {
   isFetchingHookList: false,
   migHookList: [],
   hookAddEditStatus: defaultAddEditStatus(),
+  isCancelling: false,
 };
 
 const sortPlans = (planList) =>
@@ -532,6 +533,34 @@ export const updateHookFailure = (
   };
 };
 
+export const migrationCancelFailure = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.migrationCancelFailure>
+) => {
+  return {
+    ...state,
+    isCancelling: false,
+  };
+};
+export const migrationCancelRequest = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.migrationCancelRequest>
+) => {
+  return {
+    ...state,
+    isCancelling: true,
+  };
+};
+export const migrationCancelSuccess = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.migrationCancelSuccess>
+) => {
+  return {
+    ...state,
+    isCancelling: false,
+  };
+};
+
 const planReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST:
@@ -624,6 +653,12 @@ const planReducer = (state = INITIAL_STATE, action) => {
       return addHookSuccess(state, action);
     case PlanActionTypes.ADD_HOOK_FAILURE:
       return addHookFailure(state, action);
+    case PlanActionTypes.MIGRATION_CANCEL_REQUEST:
+      return migrationCancelRequest(state, action);
+    case PlanActionTypes.MIGRATION_CANCEL_SUCCESS:
+      return migrationCancelSuccess(state, action);
+    case PlanActionTypes.MIGRATION_CANCEL_FAILURE:
+      return migrationCancelFailure(state, action);
 
     default:
       return state;

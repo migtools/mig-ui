@@ -33,6 +33,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
               }}
               key={`cancelMigration-${migration.metadata.name}`}
               isDisabled={
+                planContext.isCancelling ||
                 migration.tableStatus.isSucceeded ||
                 migration.tableStatus.isFailed ||
                 migration.tableStatus.stepName === 'Canceled'
