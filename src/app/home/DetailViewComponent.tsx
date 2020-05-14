@@ -45,7 +45,7 @@ interface IProps {
   expanded: {
     [s: string]: boolean;
   };
-  isCancelling: {
+  isCanceling: {
     [s: string]: boolean;
   };
 }
@@ -75,7 +75,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     migMeta,
     handleExpandDetails,
     expanded,
-    isCancelling,
+    isCanceling,
   } = props;
 
   const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<
@@ -160,7 +160,7 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
             planList,
             clusterList,
             storageList,
-            isCancelling,
+            isCanceling,
           }}
         >
           <PlanDataListItem
@@ -187,7 +187,7 @@ function mapStateToProps(state) {
   const storageAssociatedPlans = storageSelectors.getAssociatedPlans(state);
 
   const { migStorageList } = state.storage;
-  const { isCancelling } = state.plan;
+  const { isCanceling } = state.plan;
   const migMeta = state.migMeta;
   return {
     clusterList,
@@ -197,7 +197,7 @@ function mapStateToProps(state) {
     clusterAssociatedPlans,
     storageAssociatedPlans,
     migMeta,
-    isCancelling,
+    isCanceling,
   };
 }
 

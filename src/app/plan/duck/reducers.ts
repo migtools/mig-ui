@@ -39,7 +39,7 @@ export const INITIAL_STATE = {
   isFetchingHookList: false,
   migHookList: [],
   hookAddEditStatus: defaultAddEditStatus(),
-  isCancelling: false,
+  isCanceling: false,
 };
 
 const sortPlans = (planList) =>
@@ -539,7 +539,7 @@ export const migrationCancelFailure = (
 ) => {
   return {
     ...state,
-    isCancelling: false,
+    isCanceling: false,
   };
 };
 export const migrationCancelRequest = (
@@ -548,7 +548,7 @@ export const migrationCancelRequest = (
 ) => {
   return {
     ...state,
-    isCancelling: true,
+    isCanceling: true,
   };
 };
 export const migrationCancelSuccess = (
@@ -557,7 +557,7 @@ export const migrationCancelSuccess = (
 ) => {
   return {
     ...state,
-    isCancelling: false,
+    isCanceling: false,
   };
 };
 
