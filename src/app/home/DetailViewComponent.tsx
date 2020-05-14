@@ -19,7 +19,6 @@ import {
   AddEditMode,
   isAddEditButtonDisabled,
 } from '../common/add_edit_state';
-import { IAddPlanDisabledObjModel } from './AddPlanDisabledObjModel';
 
 interface IProps {
   clusterList: any[];
@@ -77,13 +76,6 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     expanded,
   } = props;
 
-  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<
-    IAddPlanDisabledObjModel | undefined
-  >({
-    isAddPlanDisabled: true,
-    disabledText: '',
-  });
-
   useEffect(() => {
     if (clusterList.length < 2) {
       setAddPlanDisabledObj({
@@ -105,48 +97,9 @@ const DetailViewComponent: React.FunctionComponent<IProps> = (props) => {
     }
   }, [clusterList, storageList]);
 
-  const handleStageTriggered = (plan) => {
-    runStageRequest(plan);
-  };
-  const handleRunMigration = (plan, disableQuiesce) => {
-    runMigrationRequest(plan, disableQuiesce);
-  };
-
-  const handleDeletePlan = (plan) => {
-    planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
-  };
-
-  const handleMigrationCancelRequest = (migrationName) => {
-    migrationCancelRequest(migrationName);
-  };
-
   return (
     <React.Fragment>
-      <DataList aria-label="data-list-main-container">
-        {expanded[DataListItems.PlanList] && (
-          <PlanContext.Provider
-            value={{
-              handleStageTriggered,
-              handleDeletePlan,
-              handleRunMigration,
-              handleMigrationCancelRequest,
-              planList,
-              clusterList,
-              storageList,
-            }}
-          >
-            <PlanDataListItem
-              id={DataListItems.PlanList}
-              planList={planList}
-              clusterList={clusterList}
-              storageList={storageList}
-              addPlanDisabledObj={addPlanDisabledObj}
-              isExpanded
-              planCount={planList.length}
-            />
-          </PlanContext.Provider>
-        )}
-      </DataList>
+      <DataList aria-label="data-list-main-container"></DataList>
     </React.Fragment>
   );
 };
