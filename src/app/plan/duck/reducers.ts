@@ -624,6 +624,7 @@ const planReducer = (state = INITIAL_STATE, action) => {
       return addHookSuccess(state, action);
     case PlanActionTypes.ADD_HOOK_FAILURE:
       return addHookFailure(state, action);
+
     default:
       return state;
   }

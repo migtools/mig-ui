@@ -149,7 +149,7 @@ function* migrationCancel(action) {
       action.migrationName,
       canceledMigrationSpec
     );
-    // yield put(PlanActions.migrationCancelSuccess(action.migrationName));
+    yield put(PlanActions.migrationCancelSuccess(action.migrationName));
     yield put(AlertActions.alertSuccessTimeout(`Cancel requested for "${action.migrationName}"!`));
   } catch (err) {
     yield put(PlanActions.migrationCancelFailure(err, action.migrationName));
