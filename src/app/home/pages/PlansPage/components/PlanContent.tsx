@@ -7,7 +7,7 @@ import MigrationsTable from './MigrationsTable';
 import { Table, TableHeader, TableBody, compoundExpand } from '@patternfly/react-table';
 import { MigrationIcon, DatabaseIcon, ServiceIcon } from '@patternfly/react-icons';
 import PlanEmptyState from './PlanEmptyState';
-import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
+import { IAddPlanDisabledObjModel } from '../types';
 
 const columns = [
   'Name',

@@ -15,7 +15,7 @@ import {
 import { useOpenModal } from '../../../duck/hooks';
 import WizardContainer from './Wizard/WizardContainer';
 import PlanContent from './PlanContent';
-import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
+import { IAddPlanDisabledObjModel } from '../types';
 
 interface IPlanDataListItemProps {
   id: string;

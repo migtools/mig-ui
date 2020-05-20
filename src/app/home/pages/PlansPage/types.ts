@@ -15,3 +15,8 @@ export interface IMigrationWithStatus extends IMigMigration {
     stepName: string;
   };
 }
+
+export interface IAddPlanDisabledObjModel {
+  isAddPlanDisabled: boolean;
+  disabledText: string;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Card, PageSection, DataList } from '@patternfly/react-core';
-import { IAddPlanDisabledObjModel } from '../../AddPlanDisabledObjModel';
+import { IAddPlanDisabledObjModel } from './types';
 import { DataListItems } from '../../HomeComponent';
 import { PlanContext } from '../../duck/context';
 import PlanDataListItem from './components/PlanDataListItem';
