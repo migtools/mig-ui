@@ -11,7 +11,7 @@ import {
   Title,
   Alert,
 } from '@patternfly/react-core';
-import StatusIcon from '../../../common/components/StatusIcon';
+import StatusIcon from '../../../../../common/components/StatusIcon';
 import { IPlanPersistentVolume } from './types';
 
 const styles = require('./VolumesTable.module');

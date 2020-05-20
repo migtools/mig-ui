@@ -1,9 +1,9 @@
 import { withFormik } from 'formik';
 import WizardComponent from './WizardComponent';
-import { PlanActions } from '../../duck/actions';
-import planSelectors from '../../duck/selectors';
+import { PlanActions } from '../../../../../plan/duck/actions';
+import planSelectors from '../../../../../plan/duck/selectors';
 import { connect } from 'react-redux';
-import utils from '../../../common/duck/utils';
+import utils from '../../../../../common/duck/utils';
 import {
   IPlan,
   IPlanPersistentVolume,
@@ -12,15 +12,15 @@ import {
   ICluster,
   PvCopyMethod,
 } from './types';
-import { ICurrentPlanStatus } from '../../duck/reducers';
-import { IMigHook } from '../../../../client/resources/conversions';
+import { ICurrentPlanStatus } from '../../../../../plan/duck/reducers';
+import { IMigHook } from '../../../../../../client/resources/conversions';
 import {
   defaultAddEditStatus,
   createAddEditStatus,
   AddEditState,
   AddEditMode,
   isAddEditButtonDisabled,
-} from '../../../common/add_edit_state';
+} from '../../../../../common/add_edit_state';
 
 export interface IFormValues {
   planName: string;

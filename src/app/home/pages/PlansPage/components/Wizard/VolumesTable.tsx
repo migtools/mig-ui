@@ -22,17 +22,17 @@ import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternf
 import ReactJson from 'react-json-view';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
-import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   FilterToolbar,
   FilterCategory,
   FilterType,
-} from '../../../common/components/FilterToolbar';
+} from '../../../../../common/components/FilterToolbar';
 import { IPlanPersistentVolume } from './types';
-import { capitalize } from '../../../common/duck/utils';
-import TableEmptyState from '../../../common/components/TableEmptyState';
+import { capitalize } from '../../../../../common/duck/utils';
+import TableEmptyState from '../../../../../common/components/TableEmptyState';
 
 const styles = require('./VolumesTable.module');
 

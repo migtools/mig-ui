@@ -16,9 +16,9 @@ import {
   Form,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { AddEditMode, addEditButtonText } from '../../../common/add_edit_state';
+import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
-import SimpleSelect from '../../../common/components/SimpleSelect';
+import SimpleSelect from '../../../../../common/components/SimpleSelect';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';

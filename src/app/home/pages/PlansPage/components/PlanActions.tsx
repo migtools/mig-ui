@@ -10,9 +10,9 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import MigrateModal from '../../../../plan/components/MigrateModal';
+import MigrateModal from './MigrateModal';
 import { withRouter } from 'react-router-dom';
-import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
+import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 
 const PlanActions = ({ plan, history }) => {

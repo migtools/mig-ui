@@ -18,9 +18,9 @@ import {
   Button,
   EmptyStateIcon,
 } from '@patternfly/react-core';
-import { AddEditMode } from '../../../common/add_edit_state';
+import { AddEditMode } from '../../../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
-import { IMigHook } from '../../../../client/resources/conversions';
+import { IMigHook } from '../../../../../../client/resources/conversions';
 
 const classNames = require('classnames');
 

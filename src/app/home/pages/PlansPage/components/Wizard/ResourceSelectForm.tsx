@@ -12,7 +12,7 @@ import {
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
 import { Spinner } from '@patternfly/react-core';
-import SimpleSelect from '../../../common/components/SimpleSelect';
+import SimpleSelect from '../../../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps
   extends Pick<

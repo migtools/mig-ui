@@ -13,7 +13,7 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import WizardContainer from '../../../../plan/components/Wizard/WizardContainer';
+import WizardContainer from './Wizard/WizardContainer';
 import PlanContent from './PlanContent';
 import { IAddPlanDisabledObjModel } from '../../../AddPlanDisabledObjModel';
 

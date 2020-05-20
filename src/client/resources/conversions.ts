@@ -1,9 +1,9 @@
-import { IPlan } from '../../app/plan/components/Wizard/types';
-import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
+import { IPlan } from '../../app/home/pages/PlansPage/components/Wizard/types';
+import { IFormValues } from '../../app/home/pages/PlansPage/components/Wizard/WizardContainer';
 import {
   HooksClusterType,
   HooksImageType,
-} from '../../app/plan/components/Wizard/HooksFormComponent';
+} from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 
 export function createTokenSecret(
   name: string,

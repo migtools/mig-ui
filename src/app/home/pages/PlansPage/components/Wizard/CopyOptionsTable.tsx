@@ -31,17 +31,17 @@ import {
 } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
-import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
-import { capitalize } from '../../../common/duck/utils';
-import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
+import { capitalize } from '../../../../../common/duck/utils';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import {
   FilterCategory,
   FilterType,
   FilterToolbar,
-} from '../../../common/components/FilterToolbar';
-import TableEmptyState from '../../../common/components/TableEmptyState';
+} from '../../../../../common/components/FilterToolbar';
+import TableEmptyState from '../../../../../common/components/TableEmptyState';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,

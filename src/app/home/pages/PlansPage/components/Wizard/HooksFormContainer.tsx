@@ -1,5 +1,5 @@
 import { withFormik, FormikProps } from 'formik';
-import utils from '../../../common/duck/utils';
+import utils from '../../../../../common/duck/utils';
 import HooksFormComponent, { HooksImageType } from './HooksFormComponent';
 interface IHooksFormContainerValues {
   hookName: string;

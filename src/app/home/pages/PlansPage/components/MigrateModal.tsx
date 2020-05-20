@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
-import { PlanContext } from '../../home/duck/context';
+import { PlanContext } from '../../../duck/context';
 const styles = require('./MigrateModal.module');
 
 interface IProps {

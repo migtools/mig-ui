@@ -14,13 +14,13 @@ import {
 } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, TableVariant, sortable } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
+import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
 import {
   FilterToolbar,
   FilterCategory,
   FilterType,
-} from '../../../common/components/FilterToolbar';
-import TableEmptyState from '../../../common/components/TableEmptyState';
+} from '../../../../../common/components/FilterToolbar';
+import TableEmptyState from '../../../../../common/components/TableEmptyState';
 
 interface INamespaceTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,

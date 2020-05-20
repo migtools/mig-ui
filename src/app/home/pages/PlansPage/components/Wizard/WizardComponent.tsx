@@ -6,10 +6,10 @@ import VolumesForm from './VolumesForm';
 import CopyOptionsForm from './CopyOptionsForm';
 import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
-import { PollingContext } from '../../../home/duck/context';
+import { PollingContext } from '../../../../duck/context';
 import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
-import { CurrentPlanState } from '../../duck/reducers';
+import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
 
 const styles = require('./WizardComponent.module');
