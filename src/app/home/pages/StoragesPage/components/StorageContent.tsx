@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ModalContext } from '../../../../home/duck/context';
+import { ModalContext } from '../../../duck/context';
 import StorageItem from './StorageItem';
 import {
   DataList,

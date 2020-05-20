@@ -1,4 +1,4 @@
-import { IMigMigration } from '../../../../../client/resources/conversions';
+import { IMigMigration } from '../../../../client/resources/conversions';
 
 export interface IMigrationWithStatus extends IMigMigration {
   tableStatus: {

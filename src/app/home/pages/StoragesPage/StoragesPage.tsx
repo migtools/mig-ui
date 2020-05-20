@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Card, PageSection, DataList } from '@patternfly/react-core';
-import { DataListItems } from '../HomeComponent';
-import { StorageContext } from '../duck/context';
-import storageSelectors from '../../storage/duck/selectors';
-import { StorageActions } from '../../storage/duck/actions';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import StorageDataListItem from '../components/DataList/Storage/StorageDataListItem';
+import { DataListItems } from '../../HomeComponent';
+import { StorageContext } from '../../duck/context';
+import storageSelectors from '../../../storage/duck/selectors';
+import { StorageActions } from '../../../storage/duck/actions';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+import StorageDataListItem from './components/StorageDataListItem';
 
 interface IStoragesPageBaseProps {
   storageList: any[]; // TODO type?

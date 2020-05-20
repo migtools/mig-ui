@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Card, PageSection, DataList } from '@patternfly/react-core';
-import { DataListItems } from '../HomeComponent';
-import { ClusterContext } from '../duck/context';
-import clusterSelectors from '../../cluster/duck/selectors';
-import { ClusterActions } from '../../cluster/duck/actions';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import ClusterDataListItem from '../components/DataList/Clusters/ClusterDataListItem';
+import { DataListItems } from '../../HomeComponent';
+import { ClusterContext } from '../../duck/context';
+import clusterSelectors from '../../../cluster/duck/selectors';
+import { ClusterActions } from '../../../cluster/duck/actions';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+import ClusterDataListItem from './components/ClusterDataListItem';
 
 interface IClustersPageBaseProps {
   clusterList: any[]; // TODO type?
@@ -16,7 +16,9 @@ interface IClustersPageBaseProps {
   removeCluster: (id: string) => void;
 }
 
-// TODO replace the Card > DataList > DataListItem with a table? Talk to Vince.
+// TODO replace the Card > DataList > DataListItem with a table.
+// Use column headers and pagination from https://docs.google.com/presentation/d/1JU_Lw1A-gUO4gBRofZzi74aONcknYRHbqBl_xHxikYQ/edit#slide=id.g8482032e20_0_3
+// Use icons from https://marvelapp.com/58cgihg/screen/61031650
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   clusterList,
   clusterAssociatedPlans,
@@ -26,6 +28,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
 }: IClustersPageBaseProps) => (
   <PageSection>
     <Card>
+      {/* Replace ClusterDataListItem with ClustersTable probably? maybe just include here? Compare with wizard tables/forms. */}
       <DataList aria-label="data-list-main-container">
         <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
           <ClusterDataListItem

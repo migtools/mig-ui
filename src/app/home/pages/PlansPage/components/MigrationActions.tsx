@@ -8,7 +8,7 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import { IMigrationWithStatus } from './types';
+import { IMigrationWithStatus } from '../types';
 
 interface IProps {
   migration: IMigrationWithStatus;

@@ -12,7 +12,7 @@ import {
 import { Spinner } from '@patternfly/react-core';
 const styles = require('./MigrationsTable.module');
 
-import { IMigrationWithStatus } from './types';
+import { IMigrationWithStatus } from '../types';
 
 interface IProps {
   migrations: IMigrationWithStatus[];

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Card, PageSection, DataList } from '@patternfly/react-core';
-import { IAddPlanDisabledObjModel } from '../AddPlanDisabledObjModel';
-import { DataListItems } from '../HomeComponent';
-import { PlanContext } from '../duck/context';
-import PlanDataListItem from '../components/DataList/Plans/PlanDataListItem';
-import planSelectors from '../../plan/duck/selectors';
-import clusterSelectors from '../../cluster/duck/selectors';
-import storageSelectors from '../../storage/duck/selectors';
-import { PlanActions } from '../../plan/duck';
+import { IAddPlanDisabledObjModel } from '../../AddPlanDisabledObjModel';
+import { DataListItems } from '../../HomeComponent';
+import { PlanContext } from '../../duck/context';
+import PlanDataListItem from './components/PlanDataListItem';
+import planSelectors from '../../../plan/duck/selectors';
+import clusterSelectors from '../../../cluster/duck/selectors';
+import storageSelectors from '../../../storage/duck/selectors';
+import { PlanActions } from '../../../plan/duck';
 
 interface IPlansPageBaseProps {
   planList: any[]; // TODO type?
