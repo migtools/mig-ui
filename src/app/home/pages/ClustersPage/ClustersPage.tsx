@@ -1,12 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Card, PageSection, DataList } from '@patternfly/react-core';
+import { Card, PageSection } from '@patternfly/react-core';
 import { DataListItems } from '../../HomeComponent';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
-import ClusterDataListItem from './components/ClusterDataListItem';
+import ClustersTable from './components/ClustersTable';
+import AddEditClusterModal from './components/AddEditClusterModal';
+import { useOpenModal } from '../../duck/hooks';
 
 interface IClustersPageBaseProps {
   clusterList: any[]; // TODO type?
@@ -25,26 +27,27 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   migMeta,
   watchClusterAddEditStatus,
   removeCluster,
-}: IClustersPageBaseProps) => (
-  <PageSection>
-    <Card>
-      {/* Replace ClusterDataListItem with ClustersTable probably? maybe just include here? Compare with wizard tables/forms. */}
-      <DataList aria-label="data-list-main-container">
+}: IClustersPageBaseProps) => {
+  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  return (
+    <PageSection>
+      <Card>
         <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-          <ClusterDataListItem
-            dataList={clusterList}
-            id={DataListItems.ClusterList}
+          <ClustersTable
+            clusterList={clusterList}
             associatedPlans={clusterAssociatedPlans}
             migMeta={migMeta}
             removeCluster={removeCluster}
             isExpanded
             clusterCount={clusterList.length}
+            toggleAddEditModal={toggleAddEditModal}
           />
+          <AddEditClusterModal isOpen={isAddEditModalOpen} onHandleClose={toggleAddEditModal} />
         </ClusterContext.Provider>
-      </DataList>
-    </Card>
-  </PageSection>
-);
+      </Card>
+    </PageSection>
+  );
+};
 
 // TODO type for state arg? inherit from reducer?
 const mapStateToProps = (state) => ({
