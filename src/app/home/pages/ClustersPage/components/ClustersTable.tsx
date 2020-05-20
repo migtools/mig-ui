@@ -27,6 +27,17 @@ const ClustersTable = ({
   toggleAddEditModal,
 }) => {
   if (!clusterList) return null;
+  if (clusterList.length === 0) {
+    return (
+      <EmptyState variant="full">
+        <EmptyStateIcon icon={AddCircleOIcon} />
+        <Title size="lg">Add source and target clusters for the migration</Title>
+        <Button onClick={toggleAddEditModal} variant="primary">
+          Add cluster
+        </Button>
+      </EmptyState>
+    );
+  }
   return (
     // TODO replace with table
     <DataList aria-label="data-list-main-container">
@@ -62,30 +73,20 @@ const ClustersTable = ({
           aria-label="cluster-items-content-container"
           isHidden={!isExpanded}
         >
-          {clusterList.length > 0 ? (
-            <DataList aria-label="cluster-item-list">
-              {clusterList.map((cluster, clusterIndex) => {
-                return (
-                  <ClusterItem
-                    key={clusterIndex}
-                    cluster={cluster}
-                    clusterIndex={clusterIndex}
-                    migMeta={migMeta}
-                    removeCluster={removeCluster}
-                    associatedPlans={associatedPlans}
-                  />
-                );
-              })}
-            </DataList>
-          ) : (
-            <EmptyState variant="full">
-              <EmptyStateIcon icon={AddCircleOIcon} />
-              <Title size="lg">Add source and target clusters for the migration</Title>
-              <Button onClick={toggleAddEditModal} variant="primary">
-                Add cluster
-              </Button>
-            </EmptyState>
-          )}
+          <DataList aria-label="cluster-item-list">
+            {clusterList.map((cluster, clusterIndex) => {
+              return (
+                <ClusterItem
+                  key={clusterIndex}
+                  cluster={cluster}
+                  clusterIndex={clusterIndex}
+                  migMeta={migMeta}
+                  removeCluster={removeCluster}
+                  associatedPlans={associatedPlans}
+                />
+              );
+            })}
+          </DataList>
         </DataListContent>
       </DataListItem>
     </DataList>
