@@ -3,9 +3,9 @@ import { Form, FormGroup } from '@patternfly/react-core';
 import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
-import { StorageContext } from '../../../home/duck/context';
-import { IStorage } from '../../../../models';
-import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
+import { StorageContext } from '../../../../duck/context';
+import { IStorage } from '../../../../../../models';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 
 interface IOtherProps {
   onAddEditSubmit: any;

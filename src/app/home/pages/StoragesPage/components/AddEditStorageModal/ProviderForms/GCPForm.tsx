@@ -9,19 +9,19 @@ import {
   Flex,
   FlexModifiers,
 } from '@patternfly/react-core';
-import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../common/components/HideWrapper';
+import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
+import HideWrapper from '../../../../../../common/components/HideWrapper';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
   isCheckConnectionButtonDisabled,
-} from '../../../../common/add_edit_state';
-import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
+} from '../../../../../../common/add_edit_state';
+import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
 import { withFormik, FormikProps } from 'formik';
-import utils from '../../../../common/duck/utils';
-import storageUtils from '../../../duck/utils';
+import utils from '../../../../../../common/duck/utils';
+import storageUtils from '../../../../../../storage/duck/utils';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);

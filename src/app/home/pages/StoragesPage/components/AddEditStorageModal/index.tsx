@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
-import { StorageActions } from '../../duck/actions';
+import { StorageActions } from '../../../../../storage/duck/actions';
 import { Modal } from '@patternfly/react-core';
-import { PollingContext, StorageContext } from '../../../home/duck/context';
+import { PollingContext, StorageContext } from '../../../../duck/context';
 import {
   AddEditMode,
   defaultAddEditStatus,
   createAddEditStatus,
   AddEditState,
-} from '../../../common/add_edit_state';
+} from '../../../../../common/add_edit_state';
 
 const AddEditStorageModal = ({
   addEditStatus,

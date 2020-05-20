@@ -8,21 +8,21 @@ import {
   Flex,
   FlexModifiers,
 } from '@patternfly/react-core';
-import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../common/components/HideWrapper';
+import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
+import HideWrapper from '../../../../../../common/components/HideWrapper';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
   isCheckConnectionButtonDisabled,
-} from '../../../../common/add_edit_state';
-import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
-import CertificateUpload from '../../../../common/components/CertificateUpload';
+} from '../../../../../../common/add_edit_state';
+import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
+import CertificateUpload from '../../../../../../common/components/CertificateUpload';
 import { withFormik, FormikProps } from 'formik';
-import utils from '../../../../common/duck/utils';
-import storageUtils from '../../../duck/utils';
-import commonUtils from '../../../../common/duck/utils';
+import utils from '../../../../../../common/duck/utils';
+import storageUtils from '../../../../../../storage/duck/utils';
+import commonUtils from '../../../../../../common/duck/utils';
 
 interface IFormValues {
   name: string;

@@ -10,7 +10,7 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import AddEditStorageModal from '../../../../storage/components/AddEditStorageModal';
+import AddEditStorageModal from './AddEditStorageModal';
 import StorageContent from './StorageContent';
 import { StorageContext, ModalContext } from '../../../duck/context';
 
