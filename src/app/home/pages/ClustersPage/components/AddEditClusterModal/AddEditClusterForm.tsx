@@ -9,18 +9,18 @@ import {
   FlexModifiers,
 } from '@patternfly/react-core';
 import { withFormik, FormikProps } from 'formik';
-import KeyDisplayIcon from '../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../common/components/HideWrapper';
-import utils from '../../../common/duck/utils';
+import KeyDisplayIcon from '../../../../../common/components/KeyDisplayIcon';
+import HideWrapper from '../../../../../common/components/HideWrapper';
+import utils from '../../../../../common/duck/utils';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
   isCheckConnectionButtonDisabled,
-} from '../../../common/add_edit_state';
-import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
-import CertificateUpload from '../../../common/components/CertificateUpload';
+} from '../../../../../common/add_edit_state';
+import ConnectionStatusLabel from '../../../../../common/components/ConnectionStatusLabel';
+import CertificateUpload from '../../../../../common/components/CertificateUpload';
 
 const nameKey = 'name';
 const urlKey = 'url';

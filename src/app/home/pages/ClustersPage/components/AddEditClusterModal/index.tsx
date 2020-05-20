@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
-import { ClusterActions } from '../../duck/actions';
+import { ClusterActions } from '../../../../../cluster/duck/actions';
 import {
   defaultAddEditStatus,
   AddEditMode,
   createAddEditStatus,
   AddEditState,
-} from '../../../common/add_edit_state';
-import { PollingContext } from '../../../home/duck/context';
+} from '../../../../../common/add_edit_state';
+import { PollingContext } from '../../../../duck/context';
 
 const AddEditClusterModal = ({
   addEditStatus,

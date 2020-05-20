@@ -9,7 +9,7 @@ import {
   DataListAction,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck/hooks';
-import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
+import AddEditClusterModal from './AddEditClusterModal';
 import ClusterContent from './ClusterContent';
 
 const ClusterDataListItem = ({

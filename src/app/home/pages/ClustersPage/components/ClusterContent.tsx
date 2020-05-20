@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DataList, DataListContent } from '@patternfly/react-core';
 import ClusterItem from './ClusterItem';
 import { AddCircleOIcon } from '@patternfly/react-icons';
-import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
+import AddEditClusterModal from './AddEditClusterModal';
 import { Button, Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 
 const ClusterContent = ({ dataList, isExpanded, associatedPlans, migMeta, removeCluster }) => {

@@ -15,7 +15,7 @@ import {
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import { useOpenModal } from '../../../duck/hooks';
-import AddEditClusterModal from '../../../../cluster/components/AddEditClusterModal';
+import AddEditClusterModal from './AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { ClusterContext } from '../../../duck/context';
 
