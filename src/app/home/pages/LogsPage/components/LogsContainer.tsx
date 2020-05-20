@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
-import { LogActions } from '../duck';
+import { LogActions } from '../../../../logs/duck';
 import {
   Card,
   EmptyStateVariant,
@@ -13,7 +13,7 @@ import {
   EmptyStateBody,
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
-import { PollingContext } from '../../home/duck/context';
+import { PollingContext } from '../../../duck/context';
 
 interface IProps {
   planName: string;

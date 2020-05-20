@@ -12,9 +12,8 @@ import {
   Brand,
 } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
-import { ClustersPage, StoragesPage, PlansPage } from './pages';
+import { ClustersPage, StoragesPage, PlansPage, LogsPage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
-import LogsComponent from '../logs/LogsComponent';
 import openshiftLogo from '../common/components/CAM_LOGO.svg';
 const styles = require('./HomeComponent.module');
 
@@ -90,7 +89,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
           path="/logs/:planId"
           clusterList={clusterList}
           isLoggedIn
-          component={LogsComponent}
+          component={LogsPage}
         />
       </Switch>
     </Page>

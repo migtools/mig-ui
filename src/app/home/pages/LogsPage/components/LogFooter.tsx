@@ -2,9 +2,9 @@ import React from 'react';
 import { Button, CardFooter, Grid, GridItem } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
-import { LogActions } from '../duck';
+import { LogActions } from '../../../../logs/duck';
 import { LogUnselected, ILogSource } from './LogsContainer';
-import { IPlanLogSources } from '../../../client/resources/discovery';
+import { IPlanLogSources } from '../../../../../client/resources/discovery';
 
 interface IProps {
   logSource: ILogSource;

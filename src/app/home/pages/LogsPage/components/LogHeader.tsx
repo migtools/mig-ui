@@ -9,9 +9,13 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { connect } from 'react-redux';
-import { LogActions } from '../duck';
+import { LogActions } from '../../../../logs/duck';
 import { flatten } from 'lodash';
-import { IPlanLogSources, IPodLogSource, IPodContainer } from '../../../client/resources/discovery';
+import {
+  IPlanLogSources,
+  IPodLogSource,
+  IPodContainer,
+} from '../../../../../client/resources/discovery';
 import { ILogSource, LogUnselected } from './LogsContainer';
 
 interface ISelectItem {

@@ -8,7 +8,7 @@ interface IProps {
   match: any;
 }
 
-const LogsComponent: React.FunctionComponent<IProps> = ({ match }) => {
+export const LogsPage: React.FunctionComponent<IProps> = ({ match }) => {
   return (
     <>
       <PageSection>
@@ -31,5 +31,3 @@ const LogsComponent: React.FunctionComponent<IProps> = ({ match }) => {
     </>
   );
 };
-
-export default LogsComponent;
