@@ -182,7 +182,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addPlanRequest: (migPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
-    fetchNamespacesRequest: (clusterName, pageOffset, pageLimit) =>
+    fetchNamespacesRequest: (clusterName, pageOffset?, pageLimit?) =>
       dispatch(PlanActions.namespaceFetchRequest(clusterName, pageOffset, pageLimit)),
     getPVResourcesRequest: (pvList, clusterName) =>
       dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),

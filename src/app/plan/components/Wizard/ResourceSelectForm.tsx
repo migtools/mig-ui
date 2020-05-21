@@ -92,7 +92,7 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
       const pageOffset = 0;
-      const pageLimit = 0;
+      let pageLimit;
 
       fetchNamespacesRequest(value, pageOffset, pageLimit);
     }
