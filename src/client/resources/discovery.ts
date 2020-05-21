@@ -28,7 +28,7 @@ export interface IPlanReport extends IPlanLogSources {
 }
 
 export class NamespaceDiscovery extends DiscoveryResource {
-  constructor(cluster: string, params: IDiscoveryParameters = {}) {
+  constructor(cluster: string, params: IDiscoveryParameters = { offset: 0, limit: 200 }) {
     super(cluster, 'namespaces', params);
   }
 

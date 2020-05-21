@@ -72,11 +72,12 @@ function* addPlanSaga(action) {
 }
 
 function* namespaceFetchRequest(action) {
+  const { clusterName, pageOffset, pageLimit } = action;
   const state = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
-    const res = yield discoveryClient.get(namespaces);
+    const res = yield discoveryClient.get(namespaces, { offset: pageOffset, limit: pageLimit });
     const namespaceResourceList = res.data.resources;
     yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
   } catch (err) {

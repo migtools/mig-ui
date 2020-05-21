@@ -71,7 +71,7 @@ export interface IOtherProps {
   planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
-  fetchNamespacesRequest: (clusterName) => void;
+  fetchNamespacesRequest: (clusterName, pageOffset, pageLimit) => void;
   getPVResourcesRequest: (
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
@@ -182,8 +182,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addPlanRequest: (migPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
-    fetchNamespacesRequest: (clusterName) =>
-      dispatch(PlanActions.namespaceFetchRequest(clusterName)),
+    fetchNamespacesRequest: (clusterName, pageOffset, pageLimit) =>
+      dispatch(PlanActions.namespaceFetchRequest(clusterName, pageOffset, pageLimit)),
     getPVResourcesRequest: (pvList, clusterName) =>
       dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName: string) =>

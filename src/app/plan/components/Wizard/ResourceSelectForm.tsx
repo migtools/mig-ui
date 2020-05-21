@@ -43,7 +43,9 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
 }: IResourceSelectFormProps) => {
   useEffect(() => {
     if (isEdit) {
-      fetchNamespacesRequest(values.sourceCluster);
+      const pageOffset = 0;
+      const pageLimit = 20;
+      fetchNamespacesRequest(values.sourceCluster, pageOffset, pageLimit);
     }
   }, []);
 
@@ -89,7 +91,10 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
-      fetchNamespacesRequest(value);
+      const pageOffset = 0;
+      const pageLimit = 0;
+
+      fetchNamespacesRequest(value, pageOffset, pageLimit);
     }
   };
 

@@ -155,9 +155,11 @@ const sourceClusterNamespacesFetchSuccess = (sourceClusterNamespaces: any[]) => 
   sourceClusterNamespaces,
 });
 
-const namespaceFetchRequest = (clusterName: string) => ({
+const namespaceFetchRequest = (clusterName: string, pageOffset: any, pageLimit: any) => ({
   type: PlanActionTypes.NAMESPACE_FETCH_REQUEST,
   clusterName,
+  pageOffset,
+  pageLimit,
 });
 
 const namespaceFetchSuccess = (sourceClusterNamespaces: any[]) => ({

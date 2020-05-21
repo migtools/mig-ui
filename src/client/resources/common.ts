@@ -101,9 +101,7 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
     Object.keys(this._discoveryParameters).map(
       (param) => (merged[param] = this._discoveryParameters[param].toString())
     );
-    Object.keys(params).map(
-      (param) => (merged[param] = this._discoveryParameters[param].toString())
-    );
+    Object.keys(params).map((param) => (merged[param] = params[param].toString()));
     return merged;
   }
 
