@@ -3,6 +3,7 @@ import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { connect } from 'react-redux';
 
 import {
   Grid,
@@ -23,6 +24,8 @@ import { IMigHook } from '../../../../client/resources/conversions';
 
 const classNames = require('classnames');
 
+const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
+
 const HooksStep = (props) => {
   const {
     updateHookRequest,
@@ -36,8 +39,10 @@ const HooksStep = (props) => {
     watchHookAddEditStatus,
     isAddHooksOpen,
     setIsAddHooksOpen,
+    migMeta,
   } = props;
 
+  const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
 
   useEffect(() => {
@@ -142,6 +147,7 @@ const HooksStep = (props) => {
       {isAddHooksOpen && (
         <GridItem className={hooksFormContainerStyles}>
           <HooksFormContainer
+            defaultHookRunnerImage={defaultHookRunnerImage}
             onAddEditHookSubmit={onAddEditHookSubmit}
             initialHookValues={initialHookValues}
             setInitialHookValues={setInitialHookValues}
@@ -193,4 +199,7 @@ const HooksStep = (props) => {
     </Grid>
   );
 };
-export default HooksStep;
+
+export default connect((state) => ({
+  migMeta: state.migMeta,
+}))(HooksStep);

@@ -45,6 +45,7 @@ interface IHooksFormOtherProps {
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   currentPlan: any;
+  defaultHookRunnerImage: string;
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
