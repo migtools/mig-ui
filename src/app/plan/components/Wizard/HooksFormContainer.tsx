@@ -16,15 +16,14 @@ interface IHooksFormContainerValues {
 }
 interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
+  defaultHookRunnerImage: string;
 }
-
-const defaultHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 
 const AddEditHooksFormContainer = withFormik<
   IHooksFormContainerOtherProps,
   IHooksFormContainerValues
 >({
-  mapPropsToValues: ({ initialHookValues }) => {
+  mapPropsToValues: ({ initialHookValues, defaultHookRunnerImage }) => {
     const values: IHooksFormContainerValues = {
       hookName: '',
       hookImageType: 'ansible',
