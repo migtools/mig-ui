@@ -13,20 +13,12 @@ import {
   Bullseye,
   EmptyState,
   EmptyStateVariant,
-  EmptyStateBody,
   Title,
   Button,
   EmptyStateIcon,
-  InputGroup,
-  TextInput,
-  Flex,
-  FlexItem,
-  FlexModifiers,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import { AddEditMode } from '../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
-import { max } from 'moment';
 import { IMigHook } from '../../../../client/resources/conversions';
 
 const classNames = require('classnames');

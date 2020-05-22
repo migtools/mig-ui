@@ -75,20 +75,28 @@ const AddEditHooksFormContainer = withFormik<
     if (values.clusterType === 'source') {
       if (!values.srcServiceAccountName) {
         errors.srcServiceAccountName = 'Required';
+      } else if (!utils.testDNS1123(values.srcServiceAccountName)) {
+        errors.srcServiceAccountName = utils.DNS1123Error(values.srcServiceAccountName);
       }
 
       if (!values.srcServiceAccountNamespace) {
         errors.srcServiceAccountNamespace = 'Required';
+      } else if (!utils.testDNS1123(values.srcServiceAccountNamespace)) {
+        errors.srcServiceAccountNamespace = utils.DNS1123Error(values.srcServiceAccountNamespace);
       }
     }
 
     if (values.clusterType === 'destination') {
       if (!values.destServiceAccountName) {
         errors.destServiceAccountName = 'Required';
+      } else if (!utils.testDNS1123(values.destServiceAccountName)) {
+        errors.destServiceAccountName = utils.DNS1123Error(values.destServiceAccountName);
       }
 
       if (!values.destServiceAccountNamespace) {
         errors.destServiceAccountNamespace = 'Required';
+      } else if (!utils.testDNS1123(values.destServiceAccountNamespace)) {
+        errors.destServiceAccountNamespace = utils.DNS1123Error(values.destServiceAccountNamespace);
       }
     }
 
