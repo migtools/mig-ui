@@ -20,6 +20,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { ClusterContext } from '../../../duck/context';
 
 const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }) => {
+  // TODO move this initial logic to a helper like getClusterDetails or something
   let clusterIsAzure = false;
   const clusterAzureResourceGroup = cluster.MigCluster.spec.azureResourceGroup;
   if (clusterAzureResourceGroup) {
@@ -46,6 +47,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
   const associatedPlanCount = props.associatedPlans[clusterName];
   const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
 
+  // TODO move this state into a ClusterActions component? make that a cell? 2 cells?
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 

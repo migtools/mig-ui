@@ -18,7 +18,6 @@ import ClusterItem from './ClusterItem';
 
 // TODO add prop types interface
 const ClustersTable = ({
-  isExpanded,
   clusterList,
   associatedPlans,
   migMeta,
@@ -41,7 +40,7 @@ const ClustersTable = ({
   return (
     // TODO replace with table
     <DataList aria-label="data-list-main-container">
-      <DataListItem aria-labelledby="cluster-container-item" isExpanded={isExpanded}>
+      <DataListItem aria-labelledby="cluster-container-item" isExpanded>
         <DataListItemRow>
           <DataListItemCells
             dataListCells={[
@@ -68,13 +67,11 @@ const ClustersTable = ({
             </Button>
           </DataListAction>
         </DataListItemRow>
-        <DataListContent
-          noPadding
-          aria-label="cluster-items-content-container"
-          isHidden={!isExpanded}
-        >
+        <DataListContent noPadding aria-label="cluster-items-content-container" isHidden={false}>
           <DataList aria-label="cluster-item-list">
             {clusterList.map((cluster, clusterIndex) => {
+              // TODO this will define a rows array, so we need a helper fn/fns instead of a component?
+              // Maybe instead it's fine to have a component that renders a plain object? depends on where we define state.
               return (
                 <ClusterItem
                   key={clusterIndex}

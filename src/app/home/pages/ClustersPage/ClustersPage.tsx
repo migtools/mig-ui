@@ -38,7 +38,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
             associatedPlans={clusterAssociatedPlans}
             migMeta={migMeta}
             removeCluster={removeCluster}
-            isExpanded
             clusterCount={clusterList.length}
             toggleAddEditModal={toggleAddEditModal}
           />
