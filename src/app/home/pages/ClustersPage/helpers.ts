@@ -24,3 +24,5 @@ export const getClusterInfo = (cluster, migMeta, associatedPlans) => {
     clusterAzureResourceGroup,
   };
 };
+
+export type IClusterInfo = ReturnType<typeof getClusterInfo>;

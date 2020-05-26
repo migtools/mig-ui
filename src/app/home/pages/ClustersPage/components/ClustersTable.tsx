@@ -1,26 +1,12 @@
-import React, { useEffect, useContext, useState } from 'react';
-import {
-  Button,
-  Pagination,
-  DropdownItem,
-  Flex,
-  FlexItem,
-  Dropdown,
-  KebabToggle,
-  DropdownPosition,
-  Level,
-  LevelItem,
-} from '@patternfly/react-core';
+import React, { useEffect } from 'react';
+import { Button, Pagination, Flex, FlexItem, Level, LevelItem } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import { LinkIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
 import { getClusterInfo } from '../helpers';
-import { useOpenModal } from '../../../duck/hooks';
-import { ClusterContext } from '../../../duck/context';
 import StatusIcon from '../../../../common/components/StatusIcon';
-import AddEditClusterModal from './AddEditClusterModal';
-import ConfirmModal from '../../../../common/components/ConfirmModal';
+import ClusterActionsDropdown from './ClusterActionsDropdown';
 
 // TODO add prop types interface
 const ClustersTable = ({
@@ -52,67 +38,9 @@ const ClustersTable = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy]);
 
-  ////////////////////////
   const rows = currentPageItems.map((cluster) => {
-    const {
-      clusterName,
-      clusterStatus,
-      clusterUrl,
-      clusterSvcToken,
-      clusterRequireSSL,
-      clusterCABundle,
-      associatedPlanCount,
-      isHostCluster,
-      clusterIsAzure,
-      clusterAzureResourceGroup,
-    } = getClusterInfo(cluster, migMeta, associatedPlans);
-
-    const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
-    const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
-
-    const removeMessage = `Removing "${clusterName}" will make it unavailable for migration plans`;
-
-    const handleRemoveCluster = (isConfirmed) => {
-      if (isConfirmed) {
-        removeCluster(clusterName);
-        toggleConfirmOpen();
-      } else {
-        toggleConfirmOpen();
-      }
-    };
-
-    const clusterContext = useContext(ClusterContext);
-
-    const editCluster = () => {
-      clusterContext.watchClusterAddEditStatus(clusterName);
-      toggleIsAddEditOpen();
-    };
-
-    const [kebabIsOpen, setKebabIsOpen] = useState(false);
-
-    const kebabDropdownItems = [
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          editCluster();
-        }}
-        isDisabled={isHostCluster}
-        key="editCluster"
-      >
-        Edit
-      </DropdownItem>,
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleConfirmOpen();
-        }}
-        isDisabled={isHostCluster || associatedPlanCount > 0}
-        key="removeCluster"
-      >
-        Remove
-      </DropdownItem>,
-    ];
-
+    const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
+    const { clusterName, clusterStatus, clusterUrl, associatedPlanCount } = clusterInfo;
     return {
       cells: [
         clusterName,
@@ -149,43 +77,16 @@ const ClustersTable = ({
         },
         {
           title: (
-            <>
-              <Dropdown
-                aria-label="Actions"
-                toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
-                isOpen={kebabIsOpen}
-                isPlain
-                dropdownItems={kebabDropdownItems}
-                position={DropdownPosition.right}
-              />
-              <AddEditClusterModal
-                isOpen={isAddEditOpen}
-                onHandleClose={toggleIsAddEditOpen}
-                cluster={cluster}
-                initialClusterValues={{
-                  clusterName,
-                  clusterUrl,
-                  clusterSvcToken,
-                  clusterIsAzure,
-                  clusterAzureResourceGroup,
-                  clusterRequireSSL,
-                  clusterCABundle,
-                }}
-              />
-              <ConfirmModal
-                title="Remove this cluster?"
-                message={removeMessage}
-                isOpen={isConfirmOpen}
-                onHandleClose={handleRemoveCluster}
-                id="confirm-cluster-removal"
-              />
-            </>
+            <ClusterActionsDropdown
+              cluster={cluster}
+              clusterInfo={clusterInfo}
+              removeCluster={removeCluster}
+            />
           ),
         },
       ],
     };
   });
-  ///////////////////
 
   return (
     <>

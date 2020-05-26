@@ -29,9 +29,6 @@ interface IClustersPageBaseProps {
   removeCluster: (id: string) => void;
 }
 
-// TODO replace the Card > DataList > DataListItem with a table.
-// Use column headers and pagination from https://docs.google.com/presentation/d/1JU_Lw1A-gUO4gBRofZzi74aONcknYRHbqBl_xHxikYQ/edit#slide=id.g8482032e20_0_3
-// Use icons from https://marvelapp.com/58cgihg/screen/61031650
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   clusterList,
   clusterAssociatedPlans,
