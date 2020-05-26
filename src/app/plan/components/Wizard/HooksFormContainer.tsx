@@ -1,6 +1,6 @@
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../common/duck/utils';
-import HooksFormComponent from './HooksFormComponent';
+import HooksFormComponent, { HooksImageType } from './HooksFormComponent';
 interface IHooksFormContainerValues {
   hookName: string;
   hookImageType: string;
@@ -37,6 +37,7 @@ const AddEditHooksFormContainer = withFormik<
       migrationStep: '',
       ansibleFile: '',
     };
+
     if (initialHookValues) {
       values.hookName = initialHookValues.hookName || '';
       values.hookImageType = initialHookValues.hookImageType || 'ansible';
@@ -71,6 +72,7 @@ const AddEditHooksFormContainer = withFormik<
     if (!values.ansibleRuntimeImage) {
       errors.ansibleRuntimeImage = 'Required';
     }
+
     if (values.clusterType === 'source') {
       if (!values.srcServiceAccountName) {
         errors.srcServiceAccountName = 'Required';
@@ -102,6 +104,11 @@ const AddEditHooksFormContainer = withFormik<
     if (!values.migrationStep) {
       errors.migrationStep = 'Required';
     }
+
+    if (values.hookImageType === HooksImageType.Ansible && values.ansibleFile === '') {
+      errors.ansibleFile = 'Ansible file upload required';
+    }
+
     return errors;
   },
 
