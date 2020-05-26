@@ -1,7 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Card, PageSection } from '@patternfly/react-core';
-import { DataListItems } from '../../HomeComponent';
+import {
+  Card,
+  PageSection,
+  TextContent,
+  Text,
+  CardBody,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
+  Button,
+} from '@patternfly/react-core';
+import { AddCircleOIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
@@ -29,22 +40,46 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   removeCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+
   return (
-    <PageSection>
-      <Card>
-        <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-          <ClustersTable
-            clusterList={clusterList}
-            associatedPlans={clusterAssociatedPlans}
-            migMeta={migMeta}
-            removeCluster={removeCluster}
-            clusterCount={clusterList.length}
-            toggleAddEditModal={toggleAddEditModal}
-          />
-          <AddEditClusterModal isOpen={isAddEditModalOpen} onHandleClose={toggleAddEditModal} />
-        </ClusterContext.Provider>
-      </Card>
-    </PageSection>
+    <>
+      <PageSection variant="light">
+        <TextContent>
+          <Text component="h1" className={spacing.mbAuto}>
+            Clusters
+          </Text>
+        </TextContent>
+      </PageSection>
+      <PageSection>
+        <Card>
+          <CardBody>
+            {!clusterList ? null : clusterList.length === 0 ? (
+              <EmptyState variant="full">
+                <EmptyStateIcon icon={AddCircleOIcon} />
+                <Title size="lg">Add source and target clusters for the migration</Title>
+                <Button onClick={toggleAddEditModal} variant="primary">
+                  Add cluster
+                </Button>
+              </EmptyState>
+            ) : (
+              <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+                <ClustersTable
+                  clusterList={clusterList}
+                  associatedPlans={clusterAssociatedPlans}
+                  migMeta={migMeta}
+                  removeCluster={removeCluster}
+                  toggleAddEditModal={toggleAddEditModal}
+                />
+                <AddEditClusterModal
+                  isOpen={isAddEditModalOpen}
+                  onHandleClose={toggleAddEditModal}
+                />
+              </ClusterContext.Provider>
+            )}
+          </CardBody>
+        </Card>
+      </PageSection>
+    </>
   );
 };
 
