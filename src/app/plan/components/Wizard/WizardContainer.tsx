@@ -122,13 +122,15 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     return values;
   },
 
-  validate: (values) => {
+  validate: (values, props) => {
     const errors: any = {};
 
     if (!values.planName) {
       errors.planName = 'Required';
     } else if (!utils.testDNS1123(values.planName)) {
       errors.planName = utils.DNS1123Error(values.planName);
+    } else if (props.planList.some((plan) => plan.MigPlan.metadata.name === values.planName)) {
+      errors.planName = 'Plan with that name already exists! Please pick a different name.';
     }
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
