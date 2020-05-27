@@ -7,6 +7,7 @@ import { usePaginationState, useSortState } from '../../../../common/duck/hooks'
 import { getClusterInfo } from '../helpers';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
+const styles = require('./ClustersTable.module');
 
 // TODO add prop types interface
 const ClustersTable = ({
@@ -19,7 +20,7 @@ const ClustersTable = ({
   const columns = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Location', transforms: [sortable] },
-    { title: 'Associated migration plans', transforms: [sortable] },
+    { title: 'Associated plans', transforms: [sortable] },
     { title: 'Status', transforms: [sortable] },
     { title: '' }, // Actions menu
   ];
@@ -53,26 +54,20 @@ const ClustersTable = ({
         },
         {
           title: (
-            <Flex>
-              <FlexItem>
-                <LinkIcon color="#737679" />
-              </FlexItem>
-              <FlexItem>{associatedPlanCount}</FlexItem>
-            </Flex>
+            <span className={styles.iconWithText}>
+              <LinkIcon color="#737679" />
+              <span className={spacing.mlSm}>{associatedPlanCount}</span>
+            </span>
           ),
         },
         {
           title: (
-            <Flex>
-              <FlexItem>
-                <StatusIcon isReady={clusterStatus} />
-              </FlexItem>
-              <FlexItem>
-                <span id="cluster-status-text">
-                  {clusterStatus ? `Connected` : `Connection Failed`}
-                </span>
-              </FlexItem>
-            </Flex>
+            <span className={styles.iconWithText}>
+              <StatusIcon isReady={clusterStatus} />
+              <span id="cluster-status-text" className={spacing.mlSm}>
+                {clusterStatus ? `Connected` : `Connection Failed`}
+              </span>
+            </span>
           ),
         },
         {
