@@ -50,16 +50,16 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
       <PageSection>
         <Card>
           <CardBody>
-            {!clusterList ? null : clusterList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={AddCircleOIcon} />
-                <Title size="lg">Add source and target clusters for the migration</Title>
-                <Button onClick={toggleAddEditModal} variant="primary">
-                  Add cluster
-                </Button>
-              </EmptyState>
-            ) : (
-              <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+            <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+              {!clusterList ? null : clusterList.length === 0 ? (
+                <EmptyState variant="full">
+                  <EmptyStateIcon icon={AddCircleOIcon} />
+                  <Title size="lg">Add source and target clusters for the migration</Title>
+                  <Button onClick={toggleAddEditModal} variant="primary">
+                    Add cluster
+                  </Button>
+                </EmptyState>
+              ) : (
                 <ClustersTable
                   clusterList={clusterList}
                   associatedPlans={clusterAssociatedPlans}
@@ -67,12 +67,9 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                   removeCluster={removeCluster}
                   toggleAddEditModal={toggleAddEditModal}
                 />
-                <AddEditClusterModal
-                  isOpen={isAddEditModalOpen}
-                  onHandleClose={toggleAddEditModal}
-                />
-              </ClusterContext.Provider>
-            )}
+              )}
+              <AddEditClusterModal isOpen={isAddEditModalOpen} onHandleClose={toggleAddEditModal} />
+            </ClusterContext.Provider>
           </CardBody>
         </Card>
       </PageSection>

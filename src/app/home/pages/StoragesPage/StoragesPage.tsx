@@ -50,33 +50,33 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
       <PageSection>
         <Card>
           <CardBody>
-            {!storageList ? null : storageList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={AddCircleOIcon} />
-                <Title size="lg">Add replication repositories for the migration</Title>
-                <Button onClick={toggleAddEditModal} variant="primary">
-                  Add replication repository
-                </Button>
-              </EmptyState>
-            ) : (
-              <StorageContext.Provider
-                value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
-              >
+            <StorageContext.Provider
+              value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
+            >
+              {!storageList ? null : storageList.length === 0 ? (
+                <EmptyState variant="full">
+                  <EmptyStateIcon icon={AddCircleOIcon} />
+                  <Title size="lg">Add replication repositories for the migration</Title>
+                  <Button onClick={toggleAddEditModal} variant="primary">
+                    Add replication repository
+                  </Button>
+                </EmptyState>
+              ) : (
                 <StoragesTable
                   storageList={storageList}
                   associatedPlans={storageAssociatedPlans}
                   toggleAddEditModal={toggleAddEditModal}
                   removeStorage={removeStorage}
                 />
-                <AddEditStorageModal
-                  isOpen={isAddEditModalOpen}
-                  onHandleClose={() => {
-                    toggleAddEditModal();
-                    setCurrentStorage(null);
-                  }}
-                />
-              </StorageContext.Provider>
-            )}
+              )}
+              <AddEditStorageModal
+                isOpen={isAddEditModalOpen}
+                onHandleClose={() => {
+                  toggleAddEditModal();
+                  setCurrentStorage(null);
+                }}
+              />
+            </StorageContext.Provider>
           </CardBody>
         </Card>
       </PageSection>
