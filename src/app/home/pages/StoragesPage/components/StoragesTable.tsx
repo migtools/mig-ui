@@ -1,6 +1,3 @@
-// TODO base this on ClustersTable, call the getStorageInfo helper and
-// render the StorageActionsDropdown in the rows (all based on StorageItem)
-
 import React, { useEffect } from 'react';
 import { Button, Pagination, Level, LevelItem } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly/react-table';
@@ -15,13 +12,16 @@ import StorageActionsDropdown from './StorageActionsDropdown';
 
 // TODO add prop types interface
 const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, removeStorage }) => {
+  const hasSomeLocationValue = storageList.some(
+    (storage) => !!getStorageInfo(storage, associatedPlans).s3Url
+  );
   const columns = [
     { title: 'Name', transforms: [sortable] },
-    { title: 'Location', transforms: [sortable] },
+    hasSomeLocationValue ? { title: 'Location', transforms: [sortable] } : null,
     { title: 'Associated plans', transforms: [sortable] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
-  ];
+  ].filter((column) => column !== null);
 
   // TODO add type for storage?
   const getSortValues = (storage) => {
@@ -29,7 +29,13 @@ const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, remov
       storage,
       associatedPlans
     );
-    return [storageName, s3Url, associatedPlanCount, storageStatus, ''];
+    return [
+      storageName,
+      hasSomeLocationValue ? s3Url : null,
+      associatedPlanCount,
+      storageStatus,
+      '',
+    ].filter((value) => value !== null);
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(storageList, getSortValues);
@@ -42,13 +48,15 @@ const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, remov
     return {
       cells: [
         storageName,
-        {
-          title: s3Url && (
-            <a target="_blank" href={s3Url}>
-              {s3Url}
-            </a>
-          ),
-        },
+        hasSomeLocationValue
+          ? {
+              title: s3Url && (
+                <a target="_blank" href={s3Url}>
+                  {s3Url}
+                </a>
+              ),
+            }
+          : null,
         {
           title: <IconWithText icon={<LinkIcon color="#737679" />} text={associatedPlanCount} />,
         },
@@ -69,7 +77,7 @@ const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, remov
             />
           ),
         },
-      ],
+      ].filter((cell) => cell !== null),
     };
   });
 
