@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { flatten } from 'lodash';
+import classNames from 'classnames';
 import { Level, LevelItem, Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
@@ -43,31 +44,15 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   const rows = flatten(
     planList.map((plan, planIndex) => {
-      const MigrationsIcon = () => {
-        const migrationCount = plan.Migrations.length || 0;
-        if (migrationCount > 0) {
-          return (
-            <span className="pf-c-icon pf-m-info">
-              <MigrationIcon /> {migrationCount}
-            </span>
-          );
-        } else {
-          return (
-            <span className="pf-c-icon">
-              <MigrationIcon /> {migrationCount}
-            </span>
-          );
-        }
-      };
       const parentIndex = planIndex * 2;
       const planName = plan.MigPlan.metadata.name;
-      const planKey = `${planName}-${planIndex}`;
       const migStorageName = plan.MigPlan.spec.migStorageRef
         ? plan.MigPlan.spec.migStorageRef.name
         : 'N/A';
       const pvCount = plan.MigPlan.spec.persistentVolumes
         ? plan.MigPlan.spec.persistentVolumes.length
         : 0;
+      const migrationCount = plan.Migrations.length || 0;
 
       return [
         {
@@ -75,46 +60,24 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           isOpen: Object.keys(expandedCells).includes(planName),
           cells: [
             {
-              title: (
-                <Flex>
-                  <FlexItem>
-                    <span>{planName}</span>
-                  </FlexItem>
-                </Flex>
-              ),
+              title: planName,
               props: { component: 'th' },
             },
             {
               title: (
-                <Flex>
-                  <FlexItem key={planKey + '-icon'}>
-                    <MigrationsIcon />
-                  </FlexItem>
-                </Flex>
+                <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
+                  <MigrationIcon /> {migrationCount}
+                </span>
               ),
               props: {
                 isOpen: expandedCells[planName] === 1,
                 ariaControls: 'migrations-history-expansion-table',
               },
             },
-            {
-              title: <span>{plan.MigPlan.spec.srcMigClusterRef.name}</span>,
-            },
-            {
-              title: <span>{plan.MigPlan.spec.destMigClusterRef.name}</span>,
-            },
-            {
-              title: <span>{migStorageName}</span>,
-            },
-            {
-              title: (
-                <Flex>
-                  <FlexItem>
-                    <span>{pvCount}</span>
-                  </FlexItem>
-                </Flex>
-              ),
-            },
+            plan.MigPlan.spec.srcMigClusterRef.name,
+            plan.MigPlan.spec.destMigClusterRef.name,
+            migStorageName,
+            pvCount,
             {
               title: <PlanStatus plan={plan} />,
             },
