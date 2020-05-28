@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Button, Pagination, Flex, FlexItem, Level, LevelItem } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { Button, Pagination, Level, LevelItem } from '@patternfly/react-core';
+import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly/react-table';
 import { LinkIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
 import { getClusterInfo } from '../helpers';
 import StatusIcon from '../../../../common/components/StatusIcon';
@@ -22,7 +23,7 @@ const ClustersTable = ({
     { title: 'Location', transforms: [sortable] },
     { title: 'Associated plans', transforms: [sortable] },
     { title: 'Status', transforms: [sortable] },
-    { title: '' }, // Actions menu
+    { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
   ];
 
   // TODO add type for cluster?
