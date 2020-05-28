@@ -1,10 +1,6 @@
 // TODO add type annotations for args?
 export const getClusterInfo = (cluster, migMeta, associatedPlans) => {
   const clusterName = cluster.MigCluster.metadata.name;
-  const associatedPlanCount = associatedPlans[clusterName];
-  const planText = associatedPlanCount === 1 ? 'plan' : 'plans';
-  // TODO move this out to render logic?
-
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
   const clusterAzureResourceGroup = cluster.MigCluster.spec.azureResourceGroup;
 
@@ -18,7 +14,7 @@ export const getClusterInfo = (cluster, migMeta, associatedPlans) => {
       !isHostCluster && cluster.Secret.data.saToken ? atob(cluster.Secret.data.saToken) : null,
     clusterRequireSSL: !cluster.MigCluster.spec.insecure,
     clusterCABundle: cluster.MigCluster.spec.caBundle,
-    associatedPlanCount,
+    associatedPlanCount: associatedPlans[clusterName],
     isHostCluster,
     clusterIsAzure: !!clusterAzureResourceGroup,
     clusterAzureResourceGroup,

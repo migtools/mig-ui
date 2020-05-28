@@ -1,23 +1,20 @@
+// TODO base this on ClustersTable, call the getStorageInfo helper and
+// render the StorageActionsDropdown in the rows (all based on StorageItem)
+
 import React, { useEffect } from 'react';
 import { Button, Pagination, Level, LevelItem } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly/react-table';
 import { LinkIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
-import { getClusterInfo } from '../helpers';
-import StatusIcon from '../../../../common/components/StatusIcon';
-import ClusterActionsDropdown from './ClusterActionsDropdown';
+import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
+import { getStorageInfo } from '../helpers';
 import IconWithText from '../../../../common/components/IconWithText';
+import StatusIcon from '../../../../common/components/StatusIcon';
+import StorageActionsDropdown from './StorageActionsDropdown';
 
 // TODO add prop types interface
-const ClustersTable = ({
-  clusterList,
-  associatedPlans,
-  migMeta,
-  removeCluster,
-  toggleAddEditModal,
-}) => {
+const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, removeStorage }) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Location', transforms: [sortable] },
@@ -26,30 +23,29 @@ const ClustersTable = ({
     { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
   ];
 
-  // TODO add type for cluster?
-  const getSortValues = (cluster) => {
-    const { clusterName, clusterUrl, associatedPlanCount, clusterStatus } = getClusterInfo(
-      cluster,
-      migMeta,
+  // TODO add type for storage?
+  const getSortValues = (storage) => {
+    const { storageName, s3Url, associatedPlanCount, storageStatus } = getStorageInfo(
+      storage,
       associatedPlans
     );
-    return [clusterName, clusterUrl, associatedPlanCount, clusterStatus, ''];
+    return [storageName, s3Url, associatedPlanCount, storageStatus, ''];
   };
 
-  const { sortBy, onSort, sortedItems } = useSortState(clusterList, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(storageList, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy]);
 
-  const rows = currentPageItems.map((cluster) => {
-    const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
-    const { clusterName, clusterStatus, clusterUrl, associatedPlanCount } = clusterInfo;
+  const rows = currentPageItems.map((storage) => {
+    const storageInfo = getStorageInfo(storage, associatedPlans);
+    const { storageName, associatedPlanCount, storageStatus, s3Url } = storageInfo;
     return {
       cells: [
-        clusterName,
+        storageName,
         {
-          title: (
-            <a target="_blank" href={clusterUrl}>
-              {clusterUrl}
+          title: s3Url && (
+            <a target="_blank" href={s3Url}>
+              {s3Url}
             </a>
           ),
         },
@@ -59,17 +55,17 @@ const ClustersTable = ({
         {
           title: (
             <IconWithText
-              icon={<StatusIcon isReady={clusterStatus} />}
-              text={clusterStatus ? `Connected` : `Connection Failed`}
+              icon={<StatusIcon isReady={storageStatus} />}
+              text={storageStatus ? `Connected` : `Connection Failed`}
             />
           ),
         },
         {
           title: (
-            <ClusterActionsDropdown
-              cluster={cluster}
-              clusterInfo={clusterInfo}
-              removeCluster={removeCluster}
+            <StorageActionsDropdown
+              storageInfo={storageInfo}
+              removeStorage={removeStorage}
+              toggleAddEditModal={toggleAddEditModal}
             />
           ),
         },
@@ -81,16 +77,16 @@ const ClustersTable = ({
     <>
       <Level>
         <LevelItem>
-          <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
-            Add cluster
+          <Button id="add-storage-btn" onClick={toggleAddEditModal} variant="secondary">
+            Add replication repository
           </Button>
         </LevelItem>
         <LevelItem>
-          <Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />
+          <Pagination widgetId="storages-table-pagination-top" {...paginationProps} />
         </LevelItem>
       </Level>
       <Table
-        aria-label="Clusters table"
+        aria-label="Replication repositories table"
         cells={columns}
         rows={rows}
         sortBy={sortBy}
@@ -101,7 +97,7 @@ const ClustersTable = ({
         <TableBody />
       </Table>
       <Pagination
-        widgetId="clusters-table-pagination-bottom"
+        widgetId="storages-table-pagination-bottom"
         variant="bottom"
         className={spacing.mtMd}
         {...paginationProps}
@@ -110,4 +106,4 @@ const ClustersTable = ({
   );
 };
 
-export default ClustersTable;
+export default StoragesTable;
