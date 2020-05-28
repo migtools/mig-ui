@@ -1,14 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Card, PageSection, DataList } from '@patternfly/react-core';
+import {
+  Card,
+  PageSection,
+  CardBody,
+  TextContent,
+  Text,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
+  Button,
+} from '@patternfly/react-core';
+import { AddCircleOIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from './types';
-import { DataListItems } from '../../HomeComponent';
 import { PlanContext } from '../../duck/context';
-import PlanDataListItem from './components/PlanDataListItem';
 import planSelectors from '../../../plan/duck/selectors';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import storageSelectors from '../../../storage/duck/selectors';
 import { PlanActions } from '../../../plan/duck';
+import PlansTable from './components/PlansTable';
+import { useOpenModal } from '../../duck/hooks';
+import WizardContainer from './components/Wizard/WizardContainer';
+import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 
 interface IPlansPageBaseProps {
   planList: any[]; // TODO type?
@@ -30,6 +44,8 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   planCloseAndDeleteRequest,
   migrationCancelRequest,
 }: IPlansPageBaseProps) => {
+  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
+
   const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
     isAddPlanDisabled: true,
     disabledText: '',
@@ -57,36 +73,65 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   }, [clusterList, storageList]);
 
   return (
-    <PageSection>
-      <Card>
-        <DataList aria-label="data-list-main-container">
-          <PlanContext.Provider
-            value={{
-              handleStageTriggered: runStageRequest,
-              handleRunMigration: runMigrationRequest,
-              handleDeletePlan: (plan) => {
-                // TODO arg type?
-                planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
-              },
-              handleMigrationCancelRequest: migrationCancelRequest,
-              planList,
-              clusterList,
-              storageList,
-            }}
-          >
-            <PlanDataListItem
-              id={DataListItems.PlanList}
-              planList={planList}
-              clusterList={clusterList}
-              storageList={storageList}
-              addPlanDisabledObj={addPlanDisabledObj}
-              isExpanded
-              planCount={planList.length}
-            />
-          </PlanContext.Provider>
-        </DataList>
-      </Card>
-    </PageSection>
+    <>
+      <PageSection variant="light">
+        <TextContent>
+          <Text component="h1" className={spacing.mbAuto}>
+            Migration plans
+          </Text>
+        </TextContent>
+      </PageSection>
+      <PageSection>
+        <Card>
+          <CardBody>
+            {!planList ? null : planList.length === 0 ? (
+              <EmptyState variant="full">
+                <EmptyStateIcon icon={AddCircleOIcon} />
+                <Title size="lg">No migration plans exist</Title>
+                <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
+                  <Button
+                    isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                    onClick={toggleWizardOpen}
+                    variant="primary"
+                  >
+                    Add migration plan
+                  </Button>
+                </AddPlanDisabledTooltip>
+              </EmptyState>
+            ) : (
+              <PlanContext.Provider
+                value={{
+                  handleStageTriggered: runStageRequest,
+                  handleRunMigration: runMigrationRequest,
+                  handleDeletePlan: (plan) => {
+                    // TODO arg type?
+                    planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
+                  },
+                  handleMigrationCancelRequest: migrationCancelRequest,
+                  planList,
+                  clusterList,
+                  storageList,
+                }}
+              >
+                <PlansTable
+                  planList={planList}
+                  addPlanDisabledObj={addPlanDisabledObj}
+                  toggleWizardOpen={toggleWizardOpen}
+                />
+                <WizardContainer
+                  planList={planList}
+                  clusterList={clusterList}
+                  storageList={storageList}
+                  isEdit={false}
+                  isOpen={isWizardOpen}
+                  onHandleWizardModalClose={toggleWizardOpen}
+                />
+              </PlanContext.Provider>
+            )}
+          </CardBody>
+        </Card>
+      </PageSection>
+    </>
   );
 };
 
