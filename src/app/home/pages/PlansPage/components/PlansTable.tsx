@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
 import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
-import { compoundExpand, Table, TableHeader, TableBody } from '@patternfly/react-table';
+import { compoundExpand, Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import { MigrationIcon } from '@patternfly/react-icons';
 import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';
+import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
+import { getPlanInfo } from '../helpers';
 
 interface IPlansTableProps {
   planList: any[]; // TODO
@@ -29,31 +31,57 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
   const columns = [
-    'Name',
+    { title: 'Name', transforms: [sortable] },
     {
       title: 'Migrations',
+      transforms: [sortable],
       cellTransforms: [compoundExpand],
     },
-    'Source',
-    'Target',
-    'Replication repository',
-    'PVs',
-    'Last state',
+    { title: 'Source', transforms: [sortable] },
+    { title: 'Target', transforms: [sortable] },
+    { title: 'Replication repository', transforms: [sortable] },
+    { title: 'PVs', transforms: [sortable] },
+    { title: 'Last state', transforms: [sortable] },
     '',
   ];
 
-  const rows = flatten(
-    planList.map((plan, planIndex) => {
-      const parentIndex = planIndex * 2;
-      const planName = plan.MigPlan.metadata.name;
-      const migStorageName = plan.MigPlan.spec.migStorageRef
-        ? plan.MigPlan.spec.migStorageRef.name
-        : 'N/A';
-      const pvCount = plan.MigPlan.spec.persistentVolumes
-        ? plan.MigPlan.spec.persistentVolumes.length
-        : 0;
-      const migrationCount = plan.Migrations.length || 0;
+  // TODO add type for plan?
+  const getSortValues = (plan) => {
+    const {
+      planName,
+      migrationCount,
+      sourceClusterName,
+      targetClusterName,
+      storageName,
+      pvCount,
+      statusText,
+    } = getPlanInfo(plan);
+    return [
+      planName,
+      migrationCount,
+      sourceClusterName,
+      targetClusterName,
+      storageName,
+      pvCount,
+      statusText,
+      '',
+    ];
+  };
 
+  const { sortBy, onSort, sortedItems } = useSortState(planList, getSortValues);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [sortBy]);
+
+  const rows = flatten(
+    currentPageItems.map((plan, planIndex) => {
+      const {
+        planName,
+        migrationCount,
+        sourceClusterName,
+        targetClusterName,
+        storageName,
+        pvCount,
+      } = getPlanInfo(plan);
       return [
         {
           meta: { planName },
@@ -74,9 +102,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 ariaControls: 'migrations-history-expansion-table',
               },
             },
-            plan.MigPlan.spec.srcMigClusterRef.name,
-            plan.MigPlan.spec.destMigClusterRef.name,
-            migStorageName,
+            sourceClusterName,
+            targetClusterName,
+            storageName,
             pvCount,
             {
               title: <PlanStatus plan={plan} />,
@@ -90,7 +118,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ],
         },
         {
-          parent: parentIndex,
+          parent: planIndex * 2,
           compoundParent: 1,
           cells: [
             {
@@ -142,7 +170,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           </AddPlanDisabledTooltip>
         </LevelItem>
         <LevelItem>
-          {/*<Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />*/}
+          <Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />
         </LevelItem>
       </Level>
       <Table
@@ -150,19 +178,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         cells={columns}
         rows={rows}
         onExpand={onExpand}
-        //sortBy={sortBy}
-        //onSort={onSort}
+        sortBy={sortBy}
+        onSort={onSort}
         className={`${spacing.mtMd} ${spacing.mbMd}`}
       >
         <TableHeader />
         <TableBody />
       </Table>
-      {/*<Pagination
+      <Pagination
         widgetId="plans-table-pagination-bottom"
         variant="bottom"
         className={spacing.mtMd}
         {...paginationProps}
-      />*/}
+      />
     </>
   );
 };
