@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { flatten } from 'lodash';
 import { Level, LevelItem, Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -16,11 +16,17 @@ interface IPlansTableProps {
   toggleWizardOpen: () => void;
 }
 
+interface IExpandedCells {
+  [planName: string]: number; // Index of expanded column
+}
+
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
   addPlanDisabledObj,
   toggleWizardOpen,
 }: IPlansTableProps) => {
+  const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
+
   const columns = [
     'Name',
     {
@@ -35,10 +41,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     '',
   ];
 
-  const [currentRows, setCurrentRows] = useState([]);
-
-  const buildNewRows = () => {
-    const newRows = planList.map((plan, planIndex) => {
+  const rows = flatten(
+    planList.map((plan, planIndex) => {
       const MigrationsIcon = () => {
         const migrationCount = plan.Migrations.length || 0;
         if (migrationCount > 0) {
@@ -58,35 +62,26 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       const parentIndex = planIndex * 2;
       const planName = plan.MigPlan.metadata.name;
       const planKey = `${planName}-${planIndex}`;
-
-      //check previous expanded value
-      let isOpenPrev = null;
-      if (currentRows.length > 0) {
-        const matchingIndex = currentRows.filter((_row, i) => i === parentIndex);
-        if (matchingIndex[0] && matchingIndex[0].cells.length > 0) {
-          isOpenPrev = matchingIndex[0].cells[1].props.isOpen;
-        }
-      }
-
       const migStorageName = plan.MigPlan.spec.migStorageRef
         ? plan.MigPlan.spec.migStorageRef.name
         : 'N/A';
-
       const pvCount = plan.MigPlan.spec.persistentVolumes
         ? plan.MigPlan.spec.persistentVolumes.length
         : 0;
+
       return [
         {
+          meta: { planName },
+          isOpen: Object.keys(expandedCells).includes(planName),
           cells: [
             {
               title: (
                 <Flex>
                   <FlexItem>
-                    <span>{plan.MigPlan.metadata.name}</span>
+                    <span>{planName}</span>
                   </FlexItem>
                 </Flex>
               ),
-
               props: { component: 'th' },
             },
             {
@@ -97,9 +92,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   </FlexItem>
                 </Flex>
               ),
-
               props: {
-                isOpen: isOpenPrev || false,
+                isOpen: expandedCells[planName] === 1,
                 ariaControls: 'migrations-history-expansion-table',
               },
             },
@@ -126,7 +120,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             },
             {
               title: <PlanActions plan={plan} />,
-
               props: {
                 className: 'pf-c-table__action',
               },
@@ -151,41 +144,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ],
         },
       ];
-    });
+    })
+  );
 
-    return flatten(newRows);
-  };
-
-  useEffect(() => {
-    const newRows = buildNewRows();
-
-    setCurrentRows(newRows);
-  }, [planList]);
-
-  const onExpand = (_event, rowIndex, colIndex, isOpen) => {
-    const newRows = buildNewRows();
-
+  const onExpand = (
+    _event: React.SyntheticEvent,
+    rowIndex: number,
+    colIndex: number,
+    isOpen: boolean
+  ) => {
+    const planName = rows[rowIndex].meta.planName;
     if (!isOpen) {
-      // close all expanded rows
-      newRows.forEach((row) => {
-        //set all other expanded cells false in this row if we are expanding
-        row.cells.forEach((cell) => {
-          if (cell.props) {
-            cell.props.isOpen = false;
-          }
-        });
-        row.isOpen = false;
+      setExpandedCells({
+        [planName]: colIndex,
       });
-      newRows[rowIndex].cells[colIndex].props.isOpen = true;
-      newRows[rowIndex].isOpen = true;
     } else {
-      newRows[rowIndex].cells[colIndex].props.isOpen = false;
-      newRows[rowIndex].isOpen = newRows[rowIndex].cells.some(
-        (cell) => cell.props && cell.props.isOpen
-      );
+      setExpandedCells({});
     }
-
-    setCurrentRows(newRows);
   };
 
   return (
@@ -210,7 +185,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       <Table
         aria-label="Migration plans table"
         cells={columns}
-        rows={currentRows}
+        rows={rows}
         onExpand={onExpand}
         //sortBy={sortBy}
         //onSort={onSort}
