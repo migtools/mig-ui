@@ -40,7 +40,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   const [currentStorage, setCurrentStorage] = useState(null);
   return (
     <>
-      <PageSection>
+      <PageSection variant="light">
         <TextContent>
           <Text component="h1" className={spacing.mbAuto}>
             Replication repositories
