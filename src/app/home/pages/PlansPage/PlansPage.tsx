@@ -84,50 +84,50 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
       <PageSection>
         <Card>
           <CardBody>
-            {!planList ? null : planList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={AddCircleOIcon} />
-                <Title size="lg">No migration plans exist</Title>
-                <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-                  <Button
-                    isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                    onClick={toggleWizardOpen}
-                    variant="primary"
-                  >
-                    Add migration plan
-                  </Button>
-                </AddPlanDisabledTooltip>
-              </EmptyState>
-            ) : (
-              <PlanContext.Provider
-                value={{
-                  handleStageTriggered: runStageRequest,
-                  handleRunMigration: runMigrationRequest,
-                  handleDeletePlan: (plan) => {
-                    // TODO arg type?
-                    planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
-                  },
-                  handleMigrationCancelRequest: migrationCancelRequest,
-                  planList,
-                  clusterList,
-                  storageList,
-                }}
-              >
+            <PlanContext.Provider
+              value={{
+                handleStageTriggered: runStageRequest,
+                handleRunMigration: runMigrationRequest,
+                handleDeletePlan: (plan) => {
+                  // TODO arg type?
+                  planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
+                },
+                handleMigrationCancelRequest: migrationCancelRequest,
+                planList,
+                clusterList,
+                storageList,
+              }}
+            >
+              {!planList ? null : planList.length === 0 ? (
+                <EmptyState variant="full">
+                  <EmptyStateIcon icon={AddCircleOIcon} />
+                  <Title size="lg">No migration plans exist</Title>
+                  <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
+                    <Button
+                      isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                      onClick={toggleWizardOpen}
+                      variant="primary"
+                    >
+                      Add migration plan
+                    </Button>
+                  </AddPlanDisabledTooltip>
+                </EmptyState>
+              ) : (
                 <PlansTable
                   planList={planList}
                   addPlanDisabledObj={addPlanDisabledObj}
                   toggleWizardOpen={toggleWizardOpen}
                 />
-                <WizardContainer
-                  planList={planList}
-                  clusterList={clusterList}
-                  storageList={storageList}
-                  isEdit={false}
-                  isOpen={isWizardOpen}
-                  onHandleWizardModalClose={toggleWizardOpen}
-                />
-              </PlanContext.Provider>
-            )}
+              )}
+              <WizardContainer
+                planList={planList}
+                clusterList={clusterList}
+                storageList={storageList}
+                isEdit={false}
+                isOpen={isWizardOpen}
+                onHandleWizardModalClose={toggleWizardOpen}
+              />
+            </PlanContext.Provider>
           </CardBody>
         </Card>
       </PageSection>
