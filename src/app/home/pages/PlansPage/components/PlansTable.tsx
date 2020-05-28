@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import { Level, LevelItem, Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
+import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
