@@ -245,8 +245,8 @@ const getCounts = createSelector([planSelector], (plans) => {
     inProgress: [],
     completed: [],
   };
-
-  plans.filter((plan = []) => {
+  //@ts-ignore
+  plans.filter((plan: any = []) => {
     let hasErrorCondition = null;
     let hasRunningMigrations = null;
     let hasSucceededMigration = null;

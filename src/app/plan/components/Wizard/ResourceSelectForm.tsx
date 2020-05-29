@@ -9,9 +9,9 @@ import {
   Grid,
   GridItem,
   Title,
+  Spinner,
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps
