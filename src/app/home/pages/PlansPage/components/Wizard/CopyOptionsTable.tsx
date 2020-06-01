@@ -33,7 +33,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
 import { capitalize } from '../../../../../common/duck/utils';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import {
@@ -42,6 +41,8 @@ import {
   FilterToolbar,
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
+import { IMigClusterStorageClass } from '../../../../../cluster/duck/types';
+import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
@@ -52,7 +53,7 @@ interface ICopyOptionsTableProps
       | 'pvVerifyFlagAssignment'
       | 'pvCopyMethodAssignment'
     > {
-  storageClasses: IClusterStorageClass[];
+  storageClasses: IMigClusterStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
@@ -64,7 +65,7 @@ enum VerifyWarningState {
   Dismissed = 'Dismissed',
 }
 
-const storageClassToString = (storageClass: IClusterStorageClass) =>
+const storageClassToString = (storageClass: IMigClusterStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
 const copyMethodToString = (copyMethod: PvCopyMethod) => {

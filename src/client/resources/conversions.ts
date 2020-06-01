@@ -1,9 +1,9 @@
-import { IPlan } from '../../app/home/pages/PlansPage/components/Wizard/types';
 import { IFormValues } from '../../app/home/pages/PlansPage/components/Wizard/WizardContainer';
 import {
   HooksClusterType,
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
+import { IPlan } from '../../app/plan/duck/types';
 
 export function createTokenSecret(
   name: string,
@@ -400,8 +400,12 @@ interface IPlanValues extends IFormValues {
   planClosed?: boolean;
 }
 
-export function updateMigPlanFromValues(migPlan: IPlan, planValues: IPlanValues, currentPlan: any) {
-  const updatedSpec = Object.assign({}, migPlan.spec);
+export function updateMigPlanFromValues(
+  migPlan: IPlan,
+  planValues: IPlanValues,
+  currentPlan: IMigPlan
+) {
+  const updatedSpec: IPlan['spec'] = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
       name: planValues.selectedStorage,

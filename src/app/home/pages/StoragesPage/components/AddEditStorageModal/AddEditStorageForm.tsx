@@ -4,7 +4,7 @@ import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
 import { StorageContext } from '../../../../duck/context';
-import { IStorage } from '../../../../../../models';
+import { IStorage } from '../../../../../storage/duck/types';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 
 interface IOtherProps {

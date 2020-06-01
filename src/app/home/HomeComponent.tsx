@@ -19,13 +19,6 @@ const styles = require('./HomeComponent.module');
 
 const mainContainerId = 'mig-ui-page-main-container';
 
-// TODO remove this when all 3 pages are moved away from DataList
-export enum DataListItems {
-  ClusterList = 'clusterList',
-  StorageList = 'storageList',
-  PlanList = 'planList',
-}
-
 const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
   const match = useRouteMatch({ path: to });
   return (

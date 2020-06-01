@@ -4,14 +4,6 @@ import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
 import { connect } from 'react-redux';
 import utils from '../../../../../common/duck/utils';
-import {
-  IPlan,
-  IPlanPersistentVolume,
-  IPersistentVolumeResource,
-  ISourceClusterNamespace,
-  ICluster,
-  PvCopyMethod,
-} from './types';
 import { ICurrentPlanStatus } from '../../../../../plan/duck/reducers';
 import { IMigHook } from '../../../../../../client/resources/conversions';
 import {
@@ -21,6 +13,14 @@ import {
   AddEditMode,
   isAddEditButtonDisabled,
 } from '../../../../../common/add_edit_state';
+import { IMigCluster } from '../../../../../cluster/duck/types';
+import {
+  PvCopyMethod,
+  IPlanPersistentVolume,
+  IPlan,
+  IPersistentVolumeResource,
+  ISourceClusterNamespace,
+} from '../../../../../plan/duck/types';
 
 export interface IFormValues {
   planName: string;
@@ -46,7 +46,7 @@ export interface IFormValues {
 // TODO add more specific types instead of using `any`
 export interface IOtherProps {
   clusterList: {
-    MigCluster: ICluster;
+    MigCluster: IMigCluster;
     [key: string]: any;
   }[];
   planList: any[];

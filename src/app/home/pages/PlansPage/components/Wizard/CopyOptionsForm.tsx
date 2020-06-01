@@ -3,7 +3,7 @@ import { FormikProps } from 'formik';
 import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
-import { IPlanPersistentVolume } from './types';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 interface ICopyOptionsFormProps
   extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,

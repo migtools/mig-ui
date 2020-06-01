@@ -12,7 +12,7 @@ import {
   Alert,
 } from '@patternfly/react-core';
 import StatusIcon from '../../../../../common/components/StatusIcon';
-import { IPlanPersistentVolume } from './types';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 const styles = require('./VolumesTable.module');
 

@@ -30,9 +30,9 @@ import {
   FilterCategory,
   FilterType,
 } from '../../../../../common/components/FilterToolbar';
-import { IPlanPersistentVolume } from './types';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 const styles = require('./VolumesTable.module');
 

@@ -59,20 +59,3 @@ export interface ISourceClusterNamespace {
   pvcCount: number;
   serviceCount: number;
 }
-
-export interface IClusterStorageClass {
-  name: string;
-  provisioner: string;
-}
-
-export interface ICluster {
-  metadata: {
-    name: string;
-    [key: string]: any;
-  };
-  spec: {
-    storageClasses: IClusterStorageClass[];
-    [key: string]: any;
-  };
-  [key: string]: any;
-}
