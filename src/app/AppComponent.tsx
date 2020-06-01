@@ -17,6 +17,7 @@ import { PlanActions } from './plan/duck/actions';
 import planSagas from './plan/duck/sagas';
 import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
+import { ICluster } from './cluster/duck/types';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -34,7 +35,7 @@ interface IProps {
   updateClusters: (updatedClusters) => void;
   updateStorages: (updatedStorages) => void;
   updatePlans: (updatedPlans) => void;
-  clusterList: any;
+  clusterList: ICluster[];
 }
 
 const AppComponent: React.SFC<IProps> = ({

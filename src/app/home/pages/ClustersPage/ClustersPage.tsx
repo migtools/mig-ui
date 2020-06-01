@@ -20,13 +20,15 @@ import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck/hooks';
+import { ICluster, IClusterAssociatedPlans } from '../../../cluster/duck/types';
+import { IMigMeta } from '../../../../mig_meta';
 
 interface IClustersPageBaseProps {
-  clusterList: any[]; // TODO type?
-  clusterAssociatedPlans: { [clusterName: string]: any }; // TODO types? MigPlan? lift to a common import
-  migMeta: { [key: string]: any }; // TODO types? lift to a common import
-  watchClusterAddEditStatus: (id: string) => void;
-  removeCluster: (id: string) => void;
+  clusterList: ICluster[];
+  clusterAssociatedPlans: IClusterAssociatedPlans;
+  migMeta: IMigMeta;
+  watchClusterAddEditStatus: (clusterName: string) => void;
+  removeCluster: (clusterName: string) => void;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -84,9 +86,10 @@ const mapStateToProps = (state) => ({
   migMeta: state.migMeta,
 });
 
-// TODO types for dispatch arg and args of each action prop?
+// TODO we should install @types/react-redux and use it for things like this dispatch arg, etc.
+// https://redux.js.org/recipes/usage-with-typescript
 const mapDispatchToProps = (dispatch) => ({
-  watchClusterAddEditStatus: (clusterName) => {
+  watchClusterAddEditStatus: (clusterName: string) => {
     // Push the add edit status into watching state, and start watching
     dispatch(
       ClusterActions.setClusterAddEditStatus(
@@ -95,7 +98,8 @@ const mapDispatchToProps = (dispatch) => ({
     );
     dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
   },
-  removeCluster: (name) => dispatch(ClusterActions.removeClusterRequest(name)),
+  removeCluster: (clusterName: string) =>
+    dispatch(ClusterActions.removeClusterRequest(clusterName)),
 });
 
 export const ClustersPage = connect(mapStateToProps, mapDispatchToProps)(ClustersPageBase);

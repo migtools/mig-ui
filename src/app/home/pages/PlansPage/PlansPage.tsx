@@ -23,10 +23,11 @@ import PlansTable from './components/PlansTable';
 import { useOpenModal } from '../../duck/hooks';
 import WizardContainer from './components/Wizard/WizardContainer';
 import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
+import { ICluster } from '../../../cluster/duck/types';
 
 interface IPlansPageBaseProps {
   planList: any[]; // TODO type?
-  clusterList: any[]; // TODO type?
+  clusterList: ICluster[];
   storageList: any[]; // TODO type?
   runStageRequest: (plan) => void; // TODO type?
   runMigrationRequest: (plan, disableQuiesce) => void; // TODO type?

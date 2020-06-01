@@ -9,15 +9,24 @@ import { getClusterInfo } from '../helpers';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
 import IconWithText from '../../../../common/components/IconWithText';
+import { ICluster, IClusterAssociatedPlans } from '../../../../cluster/duck/types';
+import { IMigMeta } from '../../../../../mig_meta';
 
-// TODO add prop types interface
-const ClustersTable = ({
+interface IClustersTableProps {
+  clusterList: ICluster[];
+  associatedPlans: IClusterAssociatedPlans;
+  migMeta: IMigMeta;
+  removeCluster: (clusterName: string) => void;
+  toggleAddEditModal: () => void;
+}
+
+const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   clusterList,
   associatedPlans,
   migMeta,
   removeCluster,
   toggleAddEditModal,
-}) => {
+}: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Location', transforms: [sortable] },
@@ -26,8 +35,7 @@ const ClustersTable = ({
     { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
   ];
 
-  // TODO add type for cluster?
-  const getSortValues = (cluster) => {
+  const getSortValues = (cluster: ICluster) => {
     const { clusterName, clusterUrl, associatedPlanCount, clusterStatus } = getClusterInfo(
       cluster,
       migMeta,
@@ -40,7 +48,7 @@ const ClustersTable = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy]);
 
-  const rows = currentPageItems.map((cluster) => {
+  const rows = currentPageItems.map((cluster: ICluster) => {
     const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
     const { clusterName, clusterStatus, clusterUrl, associatedPlanCount } = clusterInfo;
     return {

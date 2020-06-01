@@ -5,9 +5,10 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck/hooks';
 import { ClusterContext } from '../../../duck/context';
 import { IClusterInfo } from '../helpers';
+import { ICluster } from '../../../../cluster/duck/types';
 
 interface IClusterActionsDropdownProps {
-  cluster: any; // TODO
+  cluster: ICluster;
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
 }

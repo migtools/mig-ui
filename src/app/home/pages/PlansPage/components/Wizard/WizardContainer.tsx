@@ -13,7 +13,7 @@ import {
   AddEditMode,
   isAddEditButtonDisabled,
 } from '../../../../../common/add_edit_state';
-import { IMigCluster } from '../../../../../cluster/duck/types';
+import { ICluster } from '../../../../../cluster/duck/types';
 import {
   PvCopyMethod,
   IPlanPersistentVolume,
@@ -45,10 +45,7 @@ export interface IFormValues {
 
 // TODO add more specific types instead of using `any`
 export interface IOtherProps {
-  clusterList: {
-    MigCluster: IMigCluster;
-    [key: string]: any;
-  }[];
+  clusterList: ICluster[];
   planList: any[];
   storageList: any[];
   isFetchingPVList: boolean;

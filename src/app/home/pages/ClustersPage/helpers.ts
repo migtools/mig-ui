@@ -1,5 +1,11 @@
-// TODO add type annotations for args?
-export const getClusterInfo = (cluster, migMeta, associatedPlans) => {
+import { ICluster, IClusterAssociatedPlans } from '../../../cluster/duck/types';
+import { IMigMeta } from '../../../../mig_meta';
+
+export const getClusterInfo = (
+  cluster: ICluster,
+  migMeta: IMigMeta,
+  associatedPlans: IClusterAssociatedPlans
+) => {
   const clusterName = cluster.MigCluster.metadata.name;
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
   const clusterAzureResourceGroup = cluster.MigCluster.spec.azureResourceGroup;

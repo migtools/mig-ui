@@ -15,6 +15,7 @@ import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
 import openshiftLogo from '../common/components/CAM_LOGO.svg';
+import { ICluster } from '../cluster/duck/types';
 const styles = require('./HomeComponent.module');
 
 const mainContainerId = 'mig-ui-page-main-container';
@@ -29,7 +30,7 @@ const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ t
 };
 
 interface IHomeComponentProps {
-  clusterList: any[]; // TODO
+  clusterList: ICluster[];
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({

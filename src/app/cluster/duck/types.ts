@@ -3,6 +3,14 @@ export interface IMigClusterStorageClass {
   provisioner: string;
 }
 
+export interface IStatusCondition {
+  category: string;
+  lastTransitionTime: string;
+  message: string;
+  status: string;
+  type: string;
+}
+
 export interface IMigCluster {
   apiVersion: string;
   kind: string;
@@ -20,12 +28,37 @@ export interface IMigCluster {
     uid: string;
   };
   spec: {
+    url: string;
     clusterAuthSecretRef: {
       name: string;
       namespace: string;
     };
     clusterUrl: string;
     storageClasses: IMigClusterStorageClass[];
+    isHostCluster: boolean;
+    azureResourceGroup: string;
+    insecure: boolean;
+    caBundle: string;
+  };
+  status: {
+    conditions: IStatusCondition[];
+    observedDigest: string;
   };
   id: string;
+}
+
+export interface ICluster {
+  MigCluster: IMigCluster;
+  ClusterStatus?: {
+    hasReadyCondition: boolean;
+  };
+  Secret?: {
+    data: {
+      saToken: string;
+    };
+  };
+}
+
+export interface IClusterAssociatedPlans {
+  [clusterName: string]: number;
 }
