@@ -1,10 +1,11 @@
-import { ICluster, IClusterAssociatedPlans } from '../../../cluster/duck/types';
+import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../../mig_meta';
+import { IPlanCountByResourceName } from '../../../common/duck/types';
 
 export const getClusterInfo = (
   cluster: ICluster,
   migMeta: IMigMeta,
-  associatedPlans: IClusterAssociatedPlans
+  associatedPlans: IPlanCountByResourceName
 ) => {
   const clusterName = cluster.MigCluster.metadata.name;
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;

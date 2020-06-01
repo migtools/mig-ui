@@ -9,12 +9,13 @@ import { getClusterInfo } from '../helpers';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
 import IconWithText from '../../../../common/components/IconWithText';
-import { ICluster, IClusterAssociatedPlans } from '../../../../cluster/duck/types';
+import { ICluster } from '../../../../cluster/duck/types';
 import { IMigMeta } from '../../../../../mig_meta';
+import { IPlanCountByResourceName } from '../../../../common/duck/types';
 
 interface IClustersTableProps {
   clusterList: ICluster[];
-  associatedPlans: IClusterAssociatedPlans;
+  associatedPlans: IPlanCountByResourceName;
   migMeta: IMigMeta;
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;

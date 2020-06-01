@@ -1,14 +1,8 @@
+import { IStatusCondition } from '../../common/duck/types';
+
 export interface IMigClusterStorageClass {
   name: string;
   provisioner: string;
-}
-
-export interface IStatusCondition {
-  category: string;
-  lastTransitionTime: string;
-  message: string;
-  status: string;
-  type: string;
 }
 
 export interface IMigCluster {
@@ -57,8 +51,4 @@ export interface ICluster {
       saToken: string;
     };
   };
-}
-
-export interface IClusterAssociatedPlans {
-  [clusterName: string]: number;
 }

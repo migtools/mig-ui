@@ -20,12 +20,14 @@ import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/
 import { useOpenModal } from '../../duck/hooks';
 import StoragesTable from './components/StoragesTable';
 import AddEditStorageModal from './components/AddEditStorageModal';
+import { IStorage } from '../../../storage/duck/types';
+import { IPlanCountByResourceName } from '../../../common/duck/types';
 
 interface IStoragesPageBaseProps {
-  storageList: any[]; // TODO type?
-  storageAssociatedPlans: { [clusterName: string]: any }; // TODO types? MigPlan? lift to a common import
-  watchStorageAddEditStatus: (id: string) => void;
-  removeStorage: (id: string) => void;
+  storageList: IStorage[];
+  storageAssociatedPlans: IPlanCountByResourceName;
+  watchStorageAddEditStatus: (storageName: string) => void;
+  removeStorage: (storageName: string) => void;
 }
 
 // TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.

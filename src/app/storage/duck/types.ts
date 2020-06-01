@@ -1,3 +1,5 @@
+import { IStatusCondition } from '../../common/duck/types';
+
 export interface IMigStorage {
   apiVersion: string;
   kind: string;
@@ -39,7 +41,9 @@ export interface IMigStorage {
     };
   };
   id: string;
-  status: string;
+  status: {
+    conditions: IStatusCondition[];
+  };
 }
 
 export interface IStorage {
@@ -51,5 +55,8 @@ export interface IStorage {
       'gcp-credentials': string;
       'azure-credentials': string;
     };
+  };
+  StorageStatus?: {
+    hasReadyCondition: boolean;
   };
 }

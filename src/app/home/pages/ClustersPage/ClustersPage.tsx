@@ -20,13 +20,14 @@ import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck/hooks';
-import { ICluster, IClusterAssociatedPlans } from '../../../cluster/duck/types';
+import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../../mig_meta';
 import { IReduxState } from '../../../../reducers';
+import { IPlanCountByResourceName } from '../../../common/duck/types';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
-  clusterAssociatedPlans: IClusterAssociatedPlans;
+  clusterAssociatedPlans: IPlanCountByResourceName;
   migMeta: IMigMeta;
   watchClusterAddEditStatus: (clusterName: string) => void;
   removeCluster: (clusterName: string) => void;

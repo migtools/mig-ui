@@ -1,5 +1,7 @@
-// TODO add type annotations for args
-export const getStorageInfo = (storage, associatedPlans) => {
+import { IStorage } from '../../../storage/duck/types';
+import { IPlanCountByResourceName } from '../../../common/duck/types';
+
+export const getStorageInfo = (storage: IStorage, associatedPlans: IPlanCountByResourceName) => {
   const storageName = storage.MigStorage.metadata.name;
 
   return {

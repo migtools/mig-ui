@@ -9,9 +9,22 @@ import { getStorageInfo } from '../helpers';
 import IconWithText from '../../../../common/components/IconWithText';
 import StatusIcon from '../../../../common/components/StatusIcon';
 import StorageActionsDropdown from './StorageActionsDropdown';
+import { IStorage } from '../../../../storage/duck/types';
+import { IPlanCountByResourceName } from '../../../../common/duck/types';
 
-// TODO add prop types interface
-const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, removeStorage }) => {
+interface IStoragesTableProps {
+  storageList: IStorage[];
+  associatedPlans: IPlanCountByResourceName;
+  toggleAddEditModal: () => void;
+  removeStorage: (storageName: string) => void;
+}
+
+const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
+  storageList,
+  associatedPlans,
+  toggleAddEditModal,
+  removeStorage,
+}: IStoragesTableProps) => {
   const hasSomeLocationValue = storageList.some(
     (storage) => !!getStorageInfo(storage, associatedPlans).s3Url
   );
@@ -23,8 +36,7 @@ const StoragesTable = ({ storageList, associatedPlans, toggleAddEditModal, remov
     { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
   ].filter((column) => column !== null);
 
-  // TODO add type for storage?
-  const getSortValues = (storage) => {
+  const getSortValues = (storage: IStorage) => {
     const { storageName, s3Url, associatedPlanCount, storageStatus } = getStorageInfo(
       storage,
       associatedPlans

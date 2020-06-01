@@ -11,6 +11,7 @@ import {
 } from '../../../../../common/add_edit_state';
 import { PollingContext } from '../../../../duck/context';
 
+// TODO add types here
 const AddEditClusterModal = ({
   addEditStatus,
   initialClusterValues,
