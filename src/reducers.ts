@@ -8,6 +8,21 @@ import { migMetaReducer } from './mig_meta';
 import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
 import logReducer from './app/logs/duck';
+import { IClusterReducerState } from './app/cluster/duck/reducers';
+
+// TODO we should install @types/react-redux and improve the type safety of our Redux usage.
+// https://redux.js.org/recipes/usage-with-typescript
+
+export interface IReduxState {
+  router: { [property: string]: any };
+  auth: { [property: string]: any };
+  common: { [property: string]: any };
+  cluster: IClusterReducerState;
+  storage: { [property: string]: any };
+  plan: { [property: string]: any };
+  logs: { [property: string]: any };
+  migMeta: { [property: string]: any };
+}
 
 const rootReducer = combineReducers({
   router: connectRouter(history),

@@ -22,6 +22,7 @@ import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck/hooks';
 import { ICluster, IClusterAssociatedPlans } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../../mig_meta';
+import { IReduxState } from '../../../../reducers';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -79,15 +80,12 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   );
 };
 
-// TODO type for state arg? inherit from reducer?
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: IReduxState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   migMeta: state.migMeta,
 });
 
-// TODO we should install @types/react-redux and use it for things like this dispatch arg, etc.
-// https://redux.js.org/recipes/usage-with-typescript
 const mapDispatchToProps = (dispatch) => ({
   watchClusterAddEditStatus: (clusterName: string) => {
     // Push the add edit status into watching state, and start watching
