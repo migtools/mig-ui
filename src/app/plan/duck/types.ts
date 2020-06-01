@@ -1,6 +1,3 @@
-// TODO: Add other properties used by components in this wizard, possibly move this somewhere more common
-//       If we remove the `[key: string]: any;` lines, missing property types will surface elsewhere as errors
-
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
 export interface IPlanPersistentVolume {
@@ -8,28 +5,30 @@ export interface IPlanPersistentVolume {
   pvc: {
     namespace: string;
     name: string;
-    [key: string]: any; // Allow additional unknown properties on each of these for now
   };
   storageClass?: string;
   capacity: string;
   supported: {
     actions: string[];
     copyMethods: PvCopyMethod[];
-    [key: string]: any;
   };
   selection?: {
     action: string;
     storageClass: string;
     copyMethod: PvCopyMethod;
     verify: boolean;
-    [key: string]: any;
   };
-  [key: string]: any;
 }
 
 export interface INameNamespaceRef {
   name: string;
   namespace: string;
+}
+
+export interface IPlanSpecHook {
+  reference: {
+    name: string;
+  };
 }
 
 export interface IPlan {
@@ -43,14 +42,12 @@ export interface IPlan {
     destMigClusterRef?: INameNamespaceRef;
     namespaces?: string[];
     closed?: boolean;
-    [key: string]: any;
+    hooks?: IPlanSpecHook[];
   };
-  [key: string]: any;
 }
 
 export interface IPersistentVolumeResource {
   name: string;
-  [key: string]: any;
 }
 
 export interface ISourceClusterNamespace {
