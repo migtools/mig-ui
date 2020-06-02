@@ -12,6 +12,7 @@ import {
   AddEditState,
   AddEditMode,
   isAddEditButtonDisabled,
+  IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { ICluster } from '../../../../../cluster/duck/types';
 import {
@@ -20,7 +21,9 @@ import {
   IMigPlan,
   IPersistentVolumeResource,
   ISourceClusterNamespace,
+  IPlan,
 } from '../../../../../plan/duck/types';
+import { IStorage } from '../../../../../storage/duck/types';
 
 export interface IFormValues {
   planName: string;
@@ -43,11 +46,10 @@ export interface IFormValues {
   };
 }
 
-// TODO add more specific types instead of using `any`
 export interface IOtherProps {
   clusterList: ICluster[];
-  planList: any[];
-  storageList: any[];
+  planList: IPlan[];
+  storageList: IStorage[];
   isFetchingPVList: boolean;
   isPVPolling: boolean;
   isPollingStatus: boolean;
@@ -78,16 +80,16 @@ export interface IOtherProps {
   sourceClusterNamespaces: ISourceClusterNamespace[];
   pvResourceList: IPersistentVolumeResource[];
   onHandleWizardModalClose: () => void;
-  editPlanObj?: any;
+  editPlanObj?: IMigPlan;
   isEdit: boolean;
-  updateCurrentPlanStatus: any;
+  updateCurrentPlanStatus: (currentPlanStatus: ICurrentPlanStatus) => void;
   addHookRequest: (migHook: IMigHook) => void;
   updateHookRequest: (migHook: IMigHook) => void;
   removeHookRequest: (hookName, migrationStep) => void;
   migHookList: IMigHook[];
   isFetchingHookList: boolean;
   watchHookAddEditStatus: () => void;
-  hookAddEditStatus: any;
+  hookAddEditStatus: IAddEditStatus;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   validatePlanPollStop: () => void;

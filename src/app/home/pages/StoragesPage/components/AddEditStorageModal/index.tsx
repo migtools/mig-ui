@@ -11,6 +11,7 @@ import {
   AddEditState,
 } from '../../../../../common/add_edit_state';
 
+// TODO add types here
 const AddEditStorageModal = ({
   addEditStatus,
   isOpen,
