@@ -6,6 +6,8 @@ interface IProps {
   isDisabled?: boolean;
 }
 
+// NATODO add support for warning state here? use an enum instead of isReady maybe?
+
 const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, isDisabled }) => {
   if (isReady) {
     return (

@@ -12,7 +12,7 @@ import {
   Brand,
 } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
-import { ClustersPage, StoragesPage, PlansPage, LogsPage } from './pages';
+import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
 import openshiftLogo from '../common/components/CAM_LOGO.svg';
 import { ICluster } from '../cluster/duck/types';
@@ -54,6 +54,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <NavItemLink to="/clusters" label="Clusters" />
         <NavItemLink to="/storages" label="Replication repositories" />
         <NavItemLink to="/plans" label="Migration plans" />
+        <NavItemLink to="/tokens" label="Tokens" />
       </NavList>
     </Nav>
   );
@@ -86,6 +87,9 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
           isLoggedIn
           component={LogsPage}
         />
+        <Route exact path="/tokens">
+          <TokensPage />
+        </Route>
       </Switch>
     </Page>
   );
