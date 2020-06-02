@@ -1,8 +1,9 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import ResourceSelectForm from '../ResourceSelectForm';
 import React, { useEffect } from 'react';
-import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 import '@testing-library/jest-dom/extend-expect';
+
+import { planValue } from './planHelper';
 
 describe('<ResourceSelectForm />', () => {
   test('loads resource select form', async () => {
@@ -14,23 +15,12 @@ describe('<ResourceSelectForm />', () => {
 
     const sourceClusterNamespaces = [];
     const storageList = [];
-    const values = {
-      planName: 'plan343',
-      sourceCluster: 'src009',
-      targetCluster: 'host',
-      selectedNamespaces: ['ian-test-3'],
-      selectedStorage: 'src5555',
-      persistentVolumes: [],
-      pvStorageClassAssignment: {},
-      pvVerifyFlagAssignment: {},
-      pvCopyMethodAssignment: {},
-    };
 
     const { getByText, findByText } = render(
       <ResourceSelectForm
         errors={errors}
         touched={errors}
-        values={values}
+        values={planValue}
         clusterList={clusterList}
         fetchNamespacesRequest={fetchNamespacesRequest}
         isEdit

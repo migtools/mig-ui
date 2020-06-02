@@ -3,32 +3,9 @@ import { render, fireEvent } from '@testing-library/react';
 import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
 import '@testing-library/jest-dom';
 
-import { PvCopyMethod } from '../types';
+import { planValue } from './planHelper';
 
 function renderGeneralForm(props: Partial<IGeneralFormProps> = {}) {
-  const pvCopyMethod: PvCopyMethod = 'filesystem';
-
-  const values = {
-    planName: 'test',
-    sourceCluster: 'test',
-    targetCluster: 'test',
-    selectedStorage: 'test',
-    selectedNamespaces: [],
-    persistentVolumes: [],
-    pvStorageClassAssignment: {
-      ['pvNameTest']: {
-        name: 'test',
-        provisioner: 'test',
-      },
-    },
-    pvVerifyFlagAssignment: {
-      ['pvNameTest']: false,
-    },
-    pvCopyMethodAssignment: {
-      ['pvNameTest']: pvCopyMethod,
-    },
-  };
-
   const defaultProps: IGeneralFormProps = {
     handleBlur() {
       return;
@@ -44,7 +21,7 @@ function renderGeneralForm(props: Partial<IGeneralFormProps> = {}) {
     },
     errors: '',
     isEdit: true,
-    values: values,
+    values: planValue,
   };
 
   return render(<GeneralForm {...defaultProps} {...props} />);
@@ -56,7 +33,7 @@ describe('<GeneralForm />', () => {
     const planForm = await findByTestId('plan-form');
 
     expect(planForm).toHaveFormValues({
-      planName: 'test',
+      planName: 'plan-name-test',
     });
   });
 });
