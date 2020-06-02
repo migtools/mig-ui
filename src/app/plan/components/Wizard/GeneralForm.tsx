@@ -6,7 +6,7 @@ interface IProps {
   component: React.ReactNode;
 }
 
-interface IGeneralFormProps
+export interface IGeneralFormProps
   extends Pick<IOtherProps, 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
@@ -34,7 +34,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   }, []);
 
   return (
-    <Form>
+    <Form data-testid="plan-form">
       <Grid lg={10} xl={6}>
         <GridItem>
           <FormGroup

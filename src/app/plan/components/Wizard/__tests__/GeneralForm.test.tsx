@@ -1,54 +1,62 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import GeneralForm from '../GeneralForm';
+import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
+import '@testing-library/jest-dom';
 
 import { PvCopyMethod } from '../types';
 
-describe('<GeneralForm />', () => {
-  test('loads items eventually', async () => {
-    const pvCopyMethod: PvCopyMethod = 'filesystem';
+function renderGeneralForm(props: Partial<IGeneralFormProps> = {}) {
+  const pvCopyMethod: PvCopyMethod = 'filesystem';
 
-    const values = {
-      planName: 'test',
-      sourceCluster: 'test',
-      targetCluster: 'test',
-      selectedStorage: 'test',
-      selectedNamespaces: [],
-      persistentVolumes: [],
-      pvStorageClassAssignment: {
-        ['pvNameTest']: {
-          name: 'test',
-          provisioner: 'test',
-        },
+  const values = {
+    planName: 'test',
+    sourceCluster: 'test',
+    targetCluster: 'test',
+    selectedStorage: 'test',
+    selectedNamespaces: [],
+    persistentVolumes: [],
+    pvStorageClassAssignment: {
+      ['pvNameTest']: {
+        name: 'test',
+        provisioner: 'test',
       },
-      pvVerifyFlagAssignment: {
-        ['pvNameTest']: false,
-      },
-      pvCopyMethodAssignment: {
-        ['pvNameTest']: pvCopyMethod,
-      },
-    };
+    },
+    pvVerifyFlagAssignment: {
+      ['pvNameTest']: false,
+    },
+    pvCopyMethodAssignment: {
+      ['pvNameTest']: pvCopyMethod,
+    },
+  };
 
-    const handleBlur = jest.fn();
-    const handleChange = jest.fn();
-    const setFieldTouched = jest.fn();
-
-    const touched = {
+  const defaultProps: IGeneralFormProps = {
+    handleBlur() {
+      return;
+    },
+    handleChange() {
+      return;
+    },
+    setFieldTouched() {
+      return;
+    },
+    touched: {
       planName: true,
-    };
+    },
+    errors: '',
+    isEdit: true,
+    values: values,
+  };
 
-    const { getByText, findByText } = render(
-      <GeneralForm
-        values={values}
-        errors={''}
-        handleBlur={() => {}}
-        handleChange={() => {}}
-        touched={touched}
-        setFieldTouched={setFieldTouched}
-        isEdit={true}
-      />
-    );
+  return render(<GeneralForm {...defaultProps} {...props} />);
+}
 
-    fireEvent.select(getByText('Plan Name'));
+describe('<GeneralForm />', () => {
+  test('has a plan name', async () => {
+    const { findByTestId } = renderGeneralForm();
+    const planForm = await findByTestId('plan-form');
+
+    expect(planForm).toHaveFormValues({
+      planName: 'test',
+    });
   });
 });
