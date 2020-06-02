@@ -9,6 +9,7 @@ import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
 import logReducer from './app/logs/duck';
 import { IClusterReducerState } from './app/cluster/duck/reducers';
+import { IStorageReducerState } from './app/storage/duck/reducers';
 
 // TODO we should install @types/react-redux and improve the type safety of our Redux usage.
 // https://redux.js.org/recipes/usage-with-typescript
@@ -18,7 +19,7 @@ export interface IReduxState {
   auth: { [property: string]: any };
   common: { [property: string]: any };
   cluster: IClusterReducerState;
-  storage: { [property: string]: any };
+  storage: IStorageReducerState;
   plan: { [property: string]: any };
   logs: { [property: string]: any };
   migMeta: { [property: string]: any };

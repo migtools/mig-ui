@@ -22,6 +22,7 @@ import StoragesTable from './components/StoragesTable';
 import AddEditStorageModal from './components/AddEditStorageModal';
 import { IStorage } from '../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
+import { IReduxState } from '../../../../reducers';
 
 interface IStoragesPageBaseProps {
   storageList: IStorage[];
@@ -86,15 +87,13 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   );
 };
 
-// TODO type for state arg? inherit from reducer?
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: IReduxState) => ({
   storageList: storageSelectors.getAllStorage(state),
   storageAssociatedPlans: storageSelectors.getAssociatedPlans(state),
 });
 
-// TODO types for dispatch arg and args of each action prop?
 const mapDispatchToProps = (dispatch) => ({
-  watchStorageAddEditStatus: (storageName) => {
+  watchStorageAddEditStatus: (storageName: string) => {
     // Push the add edit status into watching state, and start watching
     dispatch(
       StorageActions.setStorageAddEditStatus(
@@ -103,7 +102,8 @@ const mapDispatchToProps = (dispatch) => ({
     );
     dispatch(StorageActions.watchStorageAddEditStatus(storageName));
   },
-  removeStorage: (name) => dispatch(StorageActions.removeStorageRequest(name)),
+  removeStorage: (storageName: string) =>
+    dispatch(StorageActions.removeStorageRequest(storageName)),
 });
 
 export const StoragesPage = connect(mapStateToProps, mapDispatchToProps)(StoragesPageBase);

@@ -1,8 +1,21 @@
-import { fetchingAddEditStatus } from '../../common/add_edit_state';
+import { fetchingAddEditStatus, IAddEditStatus } from '../../common/add_edit_state';
 import { StorageActionTypes } from './actions';
 import { defaultAddEditStatus } from '../../common/add_edit_state';
+import { IStorage } from './types';
 
-export const INITIAL_STATE = {
+export interface IStorageReducerState {
+  isPolling: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  isLoadingStorage: boolean;
+  migStorageList: IStorage[];
+  searchTerm: string;
+  addEditStatus: IAddEditStatus;
+}
+
+type StorageReducerFn = (state: IStorageReducerState, action: any) => IStorageReducerState;
+
+export const INITIAL_STATE: IStorageReducerState = {
   isPolling: false,
   isFetching: false,
   isError: false,
@@ -12,18 +25,18 @@ export const INITIAL_STATE = {
   addEditStatus: defaultAddEditStatus(),
 };
 
-export const migStorageFetchRequest = (state = INITIAL_STATE, action) => {
+export const migStorageFetchRequest: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
-export const migStorageFetchSuccess = (state = INITIAL_STATE, action) => {
+export const migStorageFetchSuccess: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: action.migStorageList,
     isFetching: false,
   };
 };
-export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
+export const migStorageFetchFailure: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isError: true,
@@ -31,21 +44,21 @@ export const migStorageFetchFailure = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const addStorageRequest = (state = INITIAL_STATE, action) => {
+export const addStorageRequest: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: fetchingAddEditStatus(),
     isLoadingStorage: true,
   };
 };
-export const addStorageSuccess = (state = INITIAL_STATE, action) => {
+export const addStorageSuccess: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: [...state.migStorageList, action.newStorage],
     isLoadingStorage: false,
   };
 };
-export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
+export const removeStorageSuccess: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: state.migStorageList.filter(
@@ -53,11 +66,11 @@ export const removeStorageSuccess = (state = INITIAL_STATE, action) => {
     ),
   };
 };
-export const updateSearchTerm = (state = INITIAL_STATE, action) => {
+export const updateSearchTerm: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, searchTerm: action.searchTerm };
 };
 
-export const updateStorageRequest = (state = INITIAL_STATE, action) => {
+export const updateStorageRequest: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: fetchingAddEditStatus(),
@@ -65,7 +78,7 @@ export const updateStorageRequest = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
+export const updateStorageSuccess: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: [
@@ -78,35 +91,35 @@ export const updateStorageSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updateStorages = (state = INITIAL_STATE, action) => {
+export const updateStorages: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     migStorageList: action.updatedStorages,
   };
 };
 
-export const setStorageAddEditStatus = (state = INITIAL_STATE, action) => {
+export const setStorageAddEditStatus: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: action.status,
   };
 };
 
-export const startStoragePolling = (state = INITIAL_STATE, action) => {
+export const startStoragePolling: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: true,
   };
 };
 
-export const stopStoragePolling = (state = INITIAL_STATE, action) => {
+export const stopStoragePolling: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: false,
   };
 };
 
-const storageReducer = (state = INITIAL_STATE, action) => {
+const storageReducer: StorageReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case StorageActionTypes.MIG_STORAGE_FETCH_REQUEST:
       return migStorageFetchRequest(state, action);
