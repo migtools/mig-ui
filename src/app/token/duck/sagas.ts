@@ -52,7 +52,6 @@ function* addTokenRequest(action) {
   const state = yield select();
   const { migMeta } = state;
   const tokenValues: ITokenFormValues = action.tokenValues;
-  console.log('tokenValues: ', tokenValues);
   const client: IClusterClient = ClientFactory.cluster(state);
 
   let migTokenSecretData: string;

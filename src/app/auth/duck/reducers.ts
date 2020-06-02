@@ -5,6 +5,9 @@ const INITIAL_STATE = {
   oauthMeta: null,
   certError: null,
   isAdmin: null,
+  isShowAgain: true,
+  namespaceSelectIsOpen: null,
+  tenantNamespaceList: [],
 };
 
 export const authReducer = (state = INITIAL_STATE, action) => {
@@ -19,6 +22,13 @@ export const authReducer = (state = INITIAL_STATE, action) => {
       return { ...state, isAdmin: action.hasAdmin };
     case AuthActionTypes.CERT_ERROR_OCCURRED:
       return { ...state, certError: { failedUrl: action.failedUrl } };
+    case AuthActionTypes.SET_WELCOME_SCREEN_BOOL:
+      return { ...state, isShowAgain: !action.isShowAgain };
+    case AuthActionTypes.SET_NAMESPACE_SELECT_IS_OPEN:
+      return { ...state, namespaceSelectIsOpen: action.namespaceSelectIsOpen };
+    case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:
+      return { ...state, tenantNamespaceList: action.tenantNamespaceList };
+
     default:
       return state;
   }

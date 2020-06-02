@@ -2,6 +2,7 @@ import axios from 'axios';
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
 import { AlertActions } from '../../common/duck/actions';
+import { setActiveNamespace } from '../../../mig_meta';
 
 import { push } from 'connected-react-router';
 import moment from 'moment';
@@ -48,6 +49,19 @@ export function* initFromStorage(): any {
   }
 }
 
+export function* checkActiveNamespace() {
+  const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+
+  const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+  if (activeNamespace) {
+    yield put(AuthActions.setNamespaceSelectIsOpen(false));
+    yield put(setActiveNamespace(activeNamespace));
+  } else {
+    yield put(AuthActions.setNamespaceSelectIsOpen(true));
+    // yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+  }
+}
+
 export function* fetchIsAdmin(): any {
   const state = yield select();
   const migMeta = state.migMeta;
@@ -80,6 +94,27 @@ export function* fetchIsAdmin(): any {
   }
 }
 
+export function* fetchTenantNamespaces(): any {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  try {
+    const { access_token } = state.auth.user;
+    const tenantNamespacesUrl = `${migMeta.discoveryApi}/namespaces/`;
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + access_token,
+      },
+    };
+    const tenantNamespacesRes = yield axios.get(tenantNamespacesUrl, config);
+
+    const namespaceResourceList = tenantNamespacesRes.data.resources;
+    yield put(AuthActions.fetchTenantNamespacesSuccess(namespaceResourceList));
+  } catch (err) {
+    console.error('Failed to fetch tenant namespaces.');
+  }
+}
+
 export function* logoutUser() {
   localStorage.removeItem(LS_KEY_CURRENT_USER);
   yield put(push('/login?action=refresh'));
@@ -91,6 +126,8 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
   yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
+  yield takeLatest(AuthActionTypes.CHECK_ACTIVE_NAMESPACE, checkActiveNamespace);
+  yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }
 
 export default {

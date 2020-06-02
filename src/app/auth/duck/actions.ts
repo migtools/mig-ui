@@ -11,6 +11,8 @@ interface ILoginParams {
 
 export const AuthActionTypes = {
   FETCH_TOKEN: 'FETCH_TOKEN',
+  FETCH_TENANT_NAMESPACES: 'FETCH_TENANT_NAMESPACES',
+  FETCH_TENANT_NAMESPACES_SUCCESS: 'FETCH_TENANT_NAMESPACES_SUCCESS',
   LOGOUT_USER_REQUEST: 'LOGOUT_USER_REQUEST',
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
@@ -20,6 +22,9 @@ export const AuthActionTypes = {
   FETCH_OAUTH_META: 'FETCH_OAUTH_META',
   FETCH_IS_ADMIN: 'FETCH_IS_ADMIN',
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
+  SET_WELCOME_SCREEN_BOOL: 'SET_WELCOME_SCREEN_BOOL',
+  CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
+  SET_NAMESPACE_SELECT_IS_OPEN: 'SET_NAMESPACE_SELECT_IS_OPEN',
 };
 
 const loginSuccess = (user: ILoginParams) => ({
@@ -42,6 +47,15 @@ const fetchOauthMeta = (clusterApi: string) => ({
 
 const fetchIsAdmin = () => ({
   type: AuthActionTypes.FETCH_IS_ADMIN,
+});
+
+const fetchTenantNamespaces = () => ({
+  type: AuthActionTypes.FETCH_TENANT_NAMESPACES,
+});
+
+const fetchTenantNamespacesSuccess = (tenantNamespaceList: any) => ({
+  type: AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS,
+  tenantNamespaceList,
 });
 
 const setOauthMeta = (oauthMeta: string) => ({
@@ -69,6 +83,20 @@ const setIsAdmin = (hasAdmin: boolean) => ({
   hasAdmin,
 });
 
+const setWelcomeScreenBool = (isShowAgain: boolean) => ({
+  type: AuthActionTypes.SET_WELCOME_SCREEN_BOOL,
+  isShowAgain,
+});
+
+const setNamespaceSelectIsOpen = (namespaceSelectIsOpen: boolean) => ({
+  type: AuthActionTypes.SET_NAMESPACE_SELECT_IS_OPEN,
+  namespaceSelectIsOpen,
+});
+
+const checkActiveNamespace = () => ({
+  type: AuthActionTypes.CHECK_ACTIVE_NAMESPACE,
+});
+
 export const AuthActions = {
   logoutUserRequest,
   initFromStorage,
@@ -79,5 +107,10 @@ export const AuthActions = {
   fetchToken,
   certErrorOccurred,
   setIsAdmin,
+  fetchTenantNamespaces,
+  fetchTenantNamespacesSuccess,
   fetchIsAdmin,
+  setWelcomeScreenBool,
+  checkActiveNamespace,
+  setNamespaceSelectIsOpen,
 };

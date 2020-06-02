@@ -22,6 +22,8 @@ export default function* rootSaga() {
     if (migMeta) {
       yield put(initMigMeta(migMeta));
       yield put(AuthActions.initFromStorage());
+      // yield put(AuthActions.fetchIsAdmin());
+      yield put(AuthActions.checkActiveNamespace());
     }
 
     // Configure token expiry behavior
