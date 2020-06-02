@@ -1,3 +1,5 @@
+import { IMigMigration } from '../../../client/resources/conversions';
+
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
 export interface IPlanPersistentVolume {
@@ -31,7 +33,7 @@ export interface IPlanSpecHook {
   };
 }
 
-export interface IPlan {
+export interface IMigPlan {
   apiVersion: string;
   kind: string;
   metadata: INameNamespaceRef;
@@ -43,6 +45,30 @@ export interface IPlan {
     namespaces?: string[];
     closed?: boolean;
     hooks?: IPlanSpecHook[];
+  };
+}
+
+export interface IPlan {
+  MigPlan: IMigPlan;
+  Migrations: IMigMigration[];
+  PlanStatus: {
+    conflictErrorMsg: string;
+    finalMigrationComplete: boolean;
+    hasCanceledCondition: boolean;
+    hasCancelingCondition: boolean;
+    hasClosedCondition: boolean;
+    hasConflictCondition: boolean;
+    hasFailedCondition: boolean;
+    hasNotReadyCondition: boolean;
+    hasPODWarnCondition: boolean;
+    hasPVWarnCondition: boolean;
+    hasPrevMigrations: boolean;
+    hasReadyCondition: boolean;
+    hasRunningMigrations: boolean;
+    hasSucceededMigration: boolean;
+    hasSucceededStage: boolean;
+    isPlanLocked: boolean;
+    latestType: string;
   };
 }
 

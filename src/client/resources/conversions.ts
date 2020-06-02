@@ -3,7 +3,7 @@ import {
   HooksClusterType,
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
-import { IPlan } from '../../app/plan/duck/types';
+import { IMigPlan } from '../../app/plan/duck/types';
 
 export function createTokenSecret(
   name: string,
@@ -401,11 +401,11 @@ interface IPlanValues extends IFormValues {
 }
 
 export function updateMigPlanFromValues(
-  migPlan: IPlan,
+  migPlan: IMigPlan,
   planValues: IPlanValues,
   currentPlan: IMigPlan
 ) {
-  const updatedSpec: IPlan['spec'] = Object.assign({}, migPlan.spec);
+  const updatedSpec: IMigPlan['spec'] = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
       name: planValues.selectedStorage,
@@ -525,7 +525,7 @@ export function updateMigHook(
   migHook: any,
   currentPlanHookRef: any,
   namespace: string,
-  currentPlan: IPlan
+  currentPlan: IMigPlan
 ) {
   const getImage = (imageType) => {
     if (imageType === HooksImageType.Ansible) {
@@ -683,7 +683,6 @@ export function createMigHook(migHook: any, namespace: string) {
 }
 
 export type IMigHook = ReturnType<typeof createMigHook>;
-export type IMigPlan = ReturnType<typeof createMigPlan>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;

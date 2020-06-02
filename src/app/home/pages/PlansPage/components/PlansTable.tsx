@@ -12,9 +12,10 @@ import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';
 import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
+import { IPlan } from '../../../../plan/duck/types';
 
 interface IPlansTableProps {
-  planList: any[]; // TODO
+  planList: IPlan[];
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleWizardOpen: () => void;
 }
@@ -45,8 +46,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     '',
   ];
 
-  // TODO add type for plan?
-  const getSortValues = (plan) => {
+  const getSortValues = (plan: IPlan) => {
     const {
       planName,
       migrationCount,
@@ -118,7 +118,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ],
         },
         {
-          parent: planIndex * 2,
+          parent: planIndex * 2, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
           compoundParent: 1,
           cells: [
             {

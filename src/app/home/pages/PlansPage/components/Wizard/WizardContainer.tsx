@@ -17,7 +17,7 @@ import { ICluster } from '../../../../../cluster/duck/types';
 import {
   PvCopyMethod,
   IPlanPersistentVolume,
-  IPlan,
+  IMigPlan,
   IPersistentVolumeResource,
   ISourceClusterNamespace,
 } from '../../../../../plan/duck/types';
@@ -59,7 +59,7 @@ export interface IOtherProps {
   isPollingStorage: boolean;
   isPollingClusters: boolean;
   isPollingPlans: boolean;
-  currentPlan: IPlan;
+  currentPlan: IMigPlan;
   currentPlanStatus: ICurrentPlanStatus;
   startPlanStatusPolling: (planName) => void;
   stopPlanStatusPolling: (planName) => void;

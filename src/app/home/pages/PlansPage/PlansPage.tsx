@@ -24,18 +24,19 @@ import { useOpenModal } from '../../duck/hooks';
 import WizardContainer from './components/Wizard/WizardContainer';
 import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 import { ICluster } from '../../../cluster/duck/types';
+import { IPlan } from '../../../plan/duck/types';
+import { IStorage } from '../../../storage/duck/types';
 
 interface IPlansPageBaseProps {
-  planList: any[]; // TODO type?
+  planList: IPlan[];
   clusterList: ICluster[];
-  storageList: any[]; // TODO type?
-  runStageRequest: (plan) => void; // TODO type?
-  runMigrationRequest: (plan, disableQuiesce) => void; // TODO type?
+  storageList: IStorage[];
+  runStageRequest: (plan: IPlan) => void;
+  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
 }
 
-// TODO replace the Card > DataList > DataListItem with a table? Talk to Vince.
 const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   planList,
   clusterList,
@@ -89,8 +90,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
               value={{
                 handleStageTriggered: runStageRequest,
                 handleRunMigration: runMigrationRequest,
-                handleDeletePlan: (plan) => {
-                  // TODO arg type?
+                handleDeletePlan: (plan: IPlan) => {
                   planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
                 },
                 handleMigrationCancelRequest: migrationCancelRequest,
@@ -143,14 +143,13 @@ const mapStateToProps = (state) => ({
   storageList: storageSelectors.getAllStorage(state),
 });
 
-// TODO types for dispatch arg and args of each action prop?
 const mapDispatchToProps = (dispatch) => ({
-  runStageRequest: (plan) => dispatch(PlanActions.runStageRequest(plan)),
-  runMigrationRequest: (plan, disableQuiesce) =>
+  runStageRequest: (plan: IPlan) => dispatch(PlanActions.runStageRequest(plan)),
+  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) =>
     dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
-  planCloseAndDeleteRequest: (planName) =>
+  planCloseAndDeleteRequest: (planName: string) =>
     dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
-  migrationCancelRequest: (migrationName) =>
+  migrationCancelRequest: (migrationName: string) =>
     dispatch(PlanActions.migrationCancelRequest(migrationName)),
 });
 
