@@ -45,6 +45,7 @@ interface IHooksFormOtherProps {
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   currentPlan: any;
+  defaultHookRunnerImage: string;
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -167,6 +168,8 @@ const HooksFormComponent: React.FunctionComponent<
                       label="Upload your Ansible playbook file or paste its contents below."
                       isRequired
                       fieldId={ansibleUploadKey}
+                      helperTextInvalid={touched.ansibleFile && errors.ansibleFile}
+                      isValid={!(touched.ansibleFile && errors.ansibleFile)}
                     >
                       <FileUpload
                         value={values.ansibleFile}
