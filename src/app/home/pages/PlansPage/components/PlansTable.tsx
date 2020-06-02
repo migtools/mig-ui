@@ -94,7 +94,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
-                  <MigrationIcon /> {migrationCount}
+                  <MigrationIcon key="migration-count-icon" /> {migrationCount}
                 </span>
               ),
               props: {
