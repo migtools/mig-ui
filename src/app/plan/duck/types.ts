@@ -1,5 +1,3 @@
-import { IMigMigration } from '../../../client/resources/conversions';
-
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
 export interface IPlanPersistentVolume {
@@ -36,7 +34,11 @@ export interface IPlanSpecHook {
 export interface IMigPlan {
   apiVersion: string;
   kind: string;
-  metadata: INameNamespaceRef;
+  metadata: {
+    name: string;
+    namespace: string;
+    creationTimestamp: string;
+  };
   spec: {
     persistentVolumes?: IPlanPersistentVolume[];
     migStorageRef?: INameNamespaceRef;
@@ -48,9 +50,27 @@ export interface IMigPlan {
   };
 }
 
+export interface IMigration {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+    creationTimestamp: string;
+  };
+  spec: {
+    migPlanRef: {
+      name: string;
+      namespace: string;
+    };
+    quiescePods: boolean;
+    stage: boolean;
+  };
+}
+
 export interface IPlan {
   MigPlan: IMigPlan;
-  Migrations: IMigMigration[];
+  Migrations: IMigration[];
   PlanStatus: {
     conflictErrorMsg: string;
     finalMigrationComplete: boolean;

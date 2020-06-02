@@ -26,6 +26,7 @@ import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 import { ICluster } from '../../../cluster/duck/types';
 import { IPlan } from '../../../plan/duck/types';
 import { IStorage } from '../../../storage/duck/types';
+import { IReduxState } from '../../../../reducers';
 
 interface IPlansPageBaseProps {
   planList: IPlan[];
@@ -136,8 +137,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   );
 };
 
-// TODO type for state arg? inherit from reducer?
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: IReduxState) => ({
   planList: planSelectors.getPlansWithStatus(state),
   clusterList: clusterSelectors.getAllClusters(state),
   storageList: storageSelectors.getAllStorage(state),

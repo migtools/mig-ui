@@ -1,7 +1,7 @@
 import { IMigHook } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
 import { IAddEditStatus } from '../../common/add_edit_state';
-import { IMigPlan } from './types';
+import { IMigPlan, IPlan } from './types';
 
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
@@ -91,7 +91,7 @@ const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
   currentPlanStatus,
 });
 
-const updatePlans = (updatedPlans: IMigPlan[]) => ({
+const updatePlans = (updatedPlans: IPlan[]) => ({
   type: PlanActionTypes.UPDATE_PLANS,
   updatedPlans,
 });
@@ -132,7 +132,7 @@ const updatePlanList = (updatedPlan: IMigPlan) => ({
   updatedPlan,
 });
 
-const updatePlanMigrations = (updatedPlan: IMigPlan) => ({
+const updatePlanMigrations = (updatedPlan: IPlan) => ({
   type: PlanActionTypes.UPDATE_PLAN_MIGRATIONS,
   updatedPlan,
 });
@@ -141,7 +141,7 @@ const migPlanFetchRequest = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_REQUEST,
 });
 
-const migPlanFetchSuccess = (migPlanList: IMigPlan[]) => ({
+const migPlanFetchSuccess = (migPlanList: IPlan[]) => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_SUCCESS,
   migPlanList,
 });
@@ -340,18 +340,18 @@ const resetCurrentPlan = () => ({
   type: PlanActionTypes.RESET_CURRENT_PLAN,
 });
 
-const setCurrentPlan = (currentPlan) => ({
+const setCurrentPlan = (currentPlan: IMigPlan) => ({
   type: PlanActionTypes.SET_CURRENT_PLAN,
   currentPlan,
 });
 
-const runMigrationRequest = (plan, disableQuiesce) => ({
+const runMigrationRequest = (plan: IPlan, disableQuiesce: boolean) => ({
   type: PlanActionTypes.RUN_MIGRATION_REQUEST,
   plan,
   disableQuiesce,
 });
 
-const runStageRequest = (plan) => ({
+const runStageRequest = (plan: IPlan) => ({
   type: PlanActionTypes.RUN_STAGE_REQUEST,
   plan,
 });

@@ -11,9 +11,9 @@ export interface IMigMeta {
 }
 
 const INIT_MIG_META = 'INIT_MIG_META';
-const INITIAL_STATE = {};
+const INITIAL_STATE: IMigMeta = {};
 
-export const initMigMeta = (payload) => {
+export const initMigMeta = (payload: IMigMeta) => {
   return {
     type: INIT_MIG_META,
     payload,
