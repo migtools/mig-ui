@@ -8,9 +8,10 @@ import {
 import { Popover, PopoverPosition } from '@patternfly/react-core';
 
 import { Spinner } from '@patternfly/react-core';
+import { IPlan } from '../../../../plan/duck/types';
 
 interface IProps {
-  plan: any;
+  plan: IPlan;
 }
 
 const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {

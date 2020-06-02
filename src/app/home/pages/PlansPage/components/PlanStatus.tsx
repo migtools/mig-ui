@@ -2,9 +2,10 @@ import React from 'react';
 import PlanStatusIcon from './PlanStatusIcon';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { getPlanStatusText } from '../helpers';
+import { IPlan } from '../../../../plan/duck/types';
 
 interface IProps {
-  plan: any; // TODO add type
+  plan: IPlan;
 }
 
 const PlanStatus: React.FunctionComponent<IProps> = ({ plan }) => (

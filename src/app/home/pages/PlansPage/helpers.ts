@@ -1,5 +1,6 @@
-// TODO add type for plan arg
-export const getPlanStatusText = (plan) => {
+import { IPlan } from '../../../plan/duck/types';
+
+export const getPlanStatusText = (plan: IPlan) => {
   const {
     hasClosedCondition,
     hasReadyCondition,
@@ -29,8 +30,7 @@ export const getPlanStatusText = (plan) => {
   return 'Waiting for status...';
 };
 
-// TODO add type for plan arg
-export const getPlanInfo = (plan) => ({
+export const getPlanInfo = (plan: IPlan) => ({
   planName: plan.MigPlan.metadata.name,
   migrationCount: plan.Migrations.length || 0,
   sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name,

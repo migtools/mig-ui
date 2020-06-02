@@ -89,6 +89,7 @@ export interface IPlan {
     hasSucceededStage: boolean;
     isPlanLocked: boolean;
     latestType: string;
+    latestIsFailed: boolean;
   };
 }
 
