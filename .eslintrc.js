@@ -8,6 +8,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'prettier/@typescript-eslint',
+    'plugin:testing-library/react',
   ],
   rules: {
     'keyword-spacing': 2,

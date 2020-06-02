@@ -87,7 +87,7 @@ const ClusterItem = ({ cluster, clusterIndex, migMeta, removeCluster, ...props }
         setKebabIsOpen(false);
         toggleConfirmOpen();
       }}
-      isDisabled={isHostCluster}
+      isDisabled={isHostCluster || associatedPlanCount > 0}
       key="removeCluster"
     >
       Remove

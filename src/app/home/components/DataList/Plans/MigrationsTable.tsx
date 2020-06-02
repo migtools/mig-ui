@@ -10,13 +10,17 @@ import {
   ProgressVariant,
 } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+const styles = require('./MigrationsTable.module');
+
+import { IMigrationWithStatus } from './types';
 
 interface IProps {
-  migrations: any[];
+  migrations: IMigrationWithStatus[];
   id: string;
   type: string;
   isPlanLocked: boolean;
 }
+
 const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked }) => {
   const [currentRows, setCurrentRows] = useState([]);
 
@@ -36,11 +40,52 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
   useEffect(() => {
     const mappedRows = migrations.map((migration, migrationIndex) => {
       const type = migration.spec.stage ? 'Stage' : 'Migration';
-      const progressVariant = migration.tableStatus.isSucceeded
-        ? ProgressVariant.success
-        : migration.tableStatus.isFailed
-        ? ProgressVariant.danger
-        : ProgressVariant.info;
+      function ProgressWrapper() {
+        switch (migration.tableStatus.migrationState) {
+          case 'success': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.success}
+              />
+            );
+          }
+          case 'error': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.danger}
+              />
+            );
+          }
+          case 'warn': {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.success}
+                className={styles.warnProgressStyle}
+              />
+            );
+          }
+          default: {
+            return (
+              <Progress
+                value={migration.tableStatus.progress}
+                title={migration.tableStatus.stepName}
+                size={ProgressSize.sm}
+                variant={ProgressVariant.info}
+              />
+            );
+          }
+        }
+      }
+
       const rowCells = [
         { title: type },
         { title: migration.tableStatus.start },
@@ -54,12 +99,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
                 {migration.tableStatus.progress === 0 ? (
                   migration.tableStatus.stepName
                 ) : (
-                  <Progress
-                    value={migration.tableStatus.progress}
-                    title={migration.tableStatus.stepName}
-                    size={ProgressSize.sm}
-                    variant={progressVariant}
-                  />
+                  <ProgressWrapper />
                 )}
               </div>
             </div>

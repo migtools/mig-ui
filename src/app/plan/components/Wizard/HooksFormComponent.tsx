@@ -17,7 +17,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../common/add_edit_state';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { QuestionCircleIcon } from '@patternfly/react-icons';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 const classNames = require('classnames');
 
@@ -45,6 +45,7 @@ interface IHooksFormOtherProps {
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   currentPlan: any;
+  defaultHookRunnerImage: string;
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -146,7 +147,7 @@ const HooksFormComponent: React.FunctionComponent<
               }
             >
               <span className={spacing.mlSm}>
-                <OutlinedQuestionCircleIcon />
+                <QuestionCircleIcon />
               </span>
             </Tooltip>
             <Grid>
@@ -167,6 +168,8 @@ const HooksFormComponent: React.FunctionComponent<
                       label="Upload your Ansible playbook file or paste its contents below."
                       isRequired
                       fieldId={ansibleUploadKey}
+                      helperTextInvalid={touched.ansibleFile && errors.ansibleFile}
+                      isValid={!(touched.ansibleFile && errors.ansibleFile)}
                     >
                       <FileUpload
                         value={values.ansibleFile}
@@ -271,7 +274,7 @@ const HooksFormComponent: React.FunctionComponent<
                         content={<div>Service account name used to run the executable hook.</div>}
                       >
                         <span className={spacing.mlSm}>
-                          <OutlinedQuestionCircleIcon />
+                          <QuestionCircleIcon />
                         </span>
                       </Tooltip>
 

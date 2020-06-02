@@ -120,13 +120,17 @@ export function createMigStorage(
   azureStorageAccount?: string
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       return {
         apiVersion: 'migration.openshift.io/v1alpha1',
         kind: 'MigStorage',
         metadata: {
           name,
           namespace,
+          annotations: {
+            'migration.openshift.io/mig-ui.aws-s3': bslProvider === 'aws-s3' ? 'true' : 'false',
+          },
         },
         spec: {
           backupStorageProvider: 'aws',
@@ -225,7 +229,8 @@ export function updateMigStorage(
   caBundle: string
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       return {
         spec: {
           backupStorageConfig: {
@@ -273,7 +278,8 @@ export function createStorageSecret(
   azureBlob?: any
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       const encodedAccessKey = btoa(accessKey);
       const encodedSecretKey = btoa(secretKey);
       return {
@@ -331,7 +337,8 @@ export function updateStorageSecret(
   azureBlob: any
 ) {
   switch (bslProvider) {
-    case 'aws':
+    case 'aws-s3':
+    case 'generic-s3':
       // btoa => to base64, atob => from base64
       const encodedAccessKey = btoa(accessKey);
       const encodedSecretKey = btoa(secretKey);
@@ -576,17 +583,17 @@ export function updateMigHook(
     executionNamespaceValue = executionNamespaceUpdated
       ? migHook.srcServiceAccountNamespace
       : currentExecutionNamespace;
-    serviceAccountUpdated = migHook.srcServiceAccountNames !== currentServiceAccount;
+    serviceAccountUpdated = migHook.srcServiceAccountName !== currentServiceAccount;
     serviceAccountValue = serviceAccountUpdated
       ? migHook.srcServiceAccountName
       : currentServiceAccount;
   }
-  if (migHook.clusterType === HooksClusterType.Source) {
+  if (migHook.clusterType === HooksClusterType.Destination) {
     executionNamespaceUpdated = migHook.destServiceAccountNamespace !== currentExecutionNamespace;
     executionNamespaceValue = executionNamespaceUpdated
       ? migHook.destServiceAccountNamespace
       : currentExecutionNamespace;
-    serviceAccountUpdated = migHook.destServiceAccountNames !== currentServiceAccount;
+    serviceAccountUpdated = migHook.destServiceAccountName !== currentServiceAccount;
     serviceAccountValue = serviceAccountUpdated
       ? migHook.destServiceAccountName
       : currentServiceAccount;
@@ -670,7 +677,7 @@ export function createMigHook(migHook: any, namespace: string) {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigHook',
     metadata: {
-      name: migHook.hookName,
+      generateName: `${migHook.hookName}-`,
       namespace,
     },
     spec: migHookSpec,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormikProps, FormikActions, FormikState } from 'formik';
+import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   Bullseye,
@@ -9,9 +9,9 @@ import {
   Grid,
   GridItem,
   Title,
+  Spinner,
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps

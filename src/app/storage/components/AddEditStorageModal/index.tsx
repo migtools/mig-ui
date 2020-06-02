@@ -67,7 +67,7 @@ const AddEditStorageModal = ({
       isOpen={isOpen}
       onClose={onClose}
       title={modalTitle}
-      className="storage-modal-modifier"
+      className="storage-modal-modifier always-scroll"
     >
       <AddEditStorageForm
         onAddEditSubmit={onAddEditSubmit}

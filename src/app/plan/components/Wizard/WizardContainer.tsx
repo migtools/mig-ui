@@ -67,6 +67,7 @@ export interface IOtherProps {
   startPlanStatusPolling: (planName) => void;
   stopPlanStatusPolling: (planName) => void;
   pvUpdatePollStop: () => void;
+  validatePlanRequest: (values) => void;
   planUpdateRequest: (values, isRerunPVDiscovery) => void;
   resetCurrentPlan: () => void;
   setCurrentPlan: (plan) => void;
@@ -168,7 +169,7 @@ const mapStateToProps = (state) => {
     sourceClusterNamespaces: planSelectors.getFilteredNamespaces(state),
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlan(state),
+    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
     hookList: planSelectors.getHooks(state),
@@ -192,6 +193,7 @@ const mapDispatchToProps = (dispatch) => {
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
     fetchHooksRequest: (currentPlanHooks) =>
       dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
+    validatePlanRequest: (values) => dispatch(PlanActions.validatePlanRequest(values)),
     planUpdateRequest: (values, isRerunPVDiscovery) =>
       dispatch(PlanActions.planUpdateRequest(values, isRerunPVDiscovery)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),

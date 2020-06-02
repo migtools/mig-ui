@@ -4,10 +4,10 @@ import {
   TextInput,
   Form,
   FormGroup,
-  Tooltip,
-  TooltipPosition,
   Grid,
   GridItem,
+  Flex,
+  FlexModifiers,
 } from '@patternfly/react-core';
 import KeyDisplayIcon from '../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../common/components/HideWrapper';
@@ -19,7 +19,6 @@ import {
   isCheckConnectionButtonDisabled,
 } from '../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../common/duck/utils';
 import storageUtils from '../../../duck/utils';
@@ -60,7 +59,7 @@ interface IOtherProps {
   addEditStatus: any;
   initialStorageValues: any;
   checkConnection: (name) => void;
-  currentStorage: any;
+  currentStorage?: any;
   provider: string;
 }
 
@@ -162,62 +161,39 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           isValid={!(touched.gcpBlob && errors.gcpBlob)}
         />
       </FormGroup>
-      <Grid gutter="md">
-        <GridItem>
-          <Button
-            type="submit"
-            isDisabled={isAddEditButtonDisabled(
-              currentStatus,
-              errors,
-              touched,
-              valuesHaveUpdate(values, currentStorage)
-            )}
-            style={{ marginRight: '10px' }}
-          >
-            {addEditButtonTextFn(currentStatus)}
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Add or edit your storage details</div>}
-          >
-            <span className="pf-c-icon">
-              <OutlinedQuestionCircleIcon />
-            </span>
-          </Tooltip>
-          <Button
-            style={{ marginLeft: '10px', marginRight: '10px' }}
-            isDisabled={isCheckConnectionButtonDisabled(
-              currentStatus,
-              valuesHaveUpdate(values, currentStorage)
-            )}
-            onClick={() => checkConnection(values.name)}
-          >
-            Check Connection
-          </Button>
-          <Tooltip
-            position={TooltipPosition.top}
-            content={<div>Re-check your storage connection state</div>}
-          >
-            <OutlinedQuestionCircleIcon />
-          </Tooltip>
-        </GridItem>
-        <GridItem>
-          <ConnectionStatusLabel
-            status={currentStatus}
-            statusText={currentStatusFn(currentStatus)}
-          />
-        </GridItem>
-        <GridItem>
-          <Button variant="primary" onClick={onClose}>
-            Close
-          </Button>
-        </GridItem>
-      </Grid>
+      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+        <Button
+          variant="primary"
+          type="submit"
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, currentStorage)
+          )}
+        >
+          {addEditButtonTextFn(currentStatus)}
+        </Button>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(
+            currentStatus,
+            valuesHaveUpdate(values, currentStorage)
+          )}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check Connection
+        </Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };
 
-const GCPForm: any = withFormik({
+const GCPForm = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialStorageValues, provider }) => {
     const values = {
       name: '',

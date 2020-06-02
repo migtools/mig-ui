@@ -54,7 +54,6 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   }, []);
 
   const discoveredPersistentVolumes = (currentPlan && currentPlan.spec.persistentVolumes) || [];
-
   useEffect(() => {
     if (discoveredPersistentVolumes.length > 0) {
       getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
@@ -64,12 +63,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
             const rowVal = values.persistentVolumes.find((v) => v.name === planVolume.name);
-            if (rowVal && rowVal.selection) {
-              pvAction = rowVal.selection.action;
-            } else {
-              if (rowVal && rowVal.type) {
-                pvAction = rowVal.type;
-              }
+            if (rowVal && planVolume.selection.action) {
+              pvAction = planVolume.selection.action;
             }
           }
           // TODO do we really need to generate these meta-objects and keep them in formik?
@@ -103,7 +98,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       }
       setFieldValue('persistentVolumes', mappedPVs);
     }
-  }, [discoveredPersistentVolumes.length]); // Only re-run the effect if fetching value changes
+  }, [discoveredPersistentVolumes, currentPlanStatus]); // Only re-run the effect if fetching value changes
 
   //TODO: added this component level error state to handle the case of no PVs
   // showing up after 3 checks of the interval. When the isPVError flag is checked,

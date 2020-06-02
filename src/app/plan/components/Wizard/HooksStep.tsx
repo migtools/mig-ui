@@ -3,6 +3,7 @@ import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { connect } from 'react-redux';
 
 import {
   Grid,
@@ -13,23 +14,17 @@ import {
   Bullseye,
   EmptyState,
   EmptyStateVariant,
-  EmptyStateBody,
   Title,
   Button,
   EmptyStateIcon,
-  InputGroup,
-  TextInput,
-  Flex,
-  FlexItem,
-  FlexModifiers,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import { AddEditMode } from '../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
-import { max } from 'moment';
 import { IMigHook } from '../../../../client/resources/conversions';
 
 const classNames = require('classnames');
+
+const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 
 const HooksStep = (props) => {
   const {
@@ -44,8 +39,10 @@ const HooksStep = (props) => {
     watchHookAddEditStatus,
     isAddHooksOpen,
     setIsAddHooksOpen,
+    migMeta,
   } = props;
 
+  const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
 
   useEffect(() => {
@@ -150,6 +147,7 @@ const HooksStep = (props) => {
       {isAddHooksOpen && (
         <GridItem className={hooksFormContainerStyles}>
           <HooksFormContainer
+            defaultHookRunnerImage={defaultHookRunnerImage}
             onAddEditHookSubmit={onAddEditHookSubmit}
             initialHookValues={initialHookValues}
             setInitialHookValues={setInitialHookValues}
@@ -201,4 +199,7 @@ const HooksStep = (props) => {
     </Grid>
   );
 };
-export default HooksStep;
+
+export default connect((state) => ({
+  migMeta: state.migMeta,
+}))(HooksStep);

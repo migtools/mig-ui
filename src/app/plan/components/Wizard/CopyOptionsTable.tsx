@@ -15,7 +15,6 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
-  SelectOptionObject,
   Checkbox,
   Flex,
   Tooltip,
@@ -25,14 +24,18 @@ import {
   BaseSizes,
 } from '@patternfly/react-core';
 import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+import {
+  InfoCircleIcon,
+  QuestionCircleIcon,
+  ExclamationTriangleIcon,
+} from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState, usePaginationState } from '../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { IPlanPersistentVolume, IClusterStorageClass, PvCopyMethod } from './types';
 import { capitalize } from '../../../common/duck/utils';
-import SimpleSelect from '../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../common/components/SimpleSelect';
 import {
   FilterCategory,
   FilterType,
@@ -53,10 +56,6 @@ interface ICopyOptionsTableProps
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-}
-
-interface OptionWithValue extends SelectOptionObject {
-  value: string;
 }
 
 enum VerifyWarningState {
@@ -319,7 +318,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           title="Copy performance warning"
           header={
             <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
-              <WarningTriangleIcon
+              <ExclamationTriangleIcon
                 color="var(--pf-global--warning-color--100)"
                 className={spacing.mrMd}
               />

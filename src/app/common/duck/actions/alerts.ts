@@ -2,12 +2,14 @@ export const AlertActionTypes = {
   ALERT_SUCCESS: 'ALERT_SUCCESS',
   ALERT_ERROR: 'ALERT_ERROR',
   ALERT_PROGRESS: 'ALERT_PROGRESS',
+  ALERT_WARN: 'ALERT_WARN',
   ALERT_CLEAR: 'ALERT_CLEAR',
   ALERT_ERROR_MODAL: 'ALERT_ERROR_MODAL',
   ERROR_MODAL_CLEAR: 'ERROR_MODAL_CLEAR',
   ALERT_PROGRESS_TIMEOUT: 'ALERT_PROGRESS_TIMEOUT',
   ALERT_ERROR_TIMEOUT: 'ALERT_ERROR_TIMEOUT',
   ALERT_SUCCESS_TIMEOUT: 'ALERT_SUCCESS_TIMEOUT',
+  ALERT_WARN_TIMEOUT: 'ALERT_WARN_TIMEOUT',
 };
 
 const alertSuccess = (text: string) => ({
@@ -25,6 +27,11 @@ const alertProgress = (text: string) => ({
   text,
 });
 
+const alertWarn = (text: string) => ({
+  type: AlertActionTypes.ALERT_WARN,
+  text,
+});
+
 const alertClear = () => ({
   type: AlertActionTypes.ALERT_CLEAR,
 });
@@ -36,6 +43,11 @@ const alertProgressTimeout = (params?: any) => ({
 
 const alertErrorTimeout = (params?: any) => ({
   type: AlertActionTypes.ALERT_ERROR_TIMEOUT,
+  params,
+});
+
+const alertWarnTimeout = (params?: any) => ({
+  type: AlertActionTypes.ALERT_WARN_TIMEOUT,
   params,
 });
 
@@ -57,10 +69,12 @@ export const AlertActions = {
   alertSuccess,
   alertError,
   alertProgress,
+  alertWarn,
   alertClear,
   errorModalClear,
   alertErrorModal,
   alertSuccessTimeout,
   alertErrorTimeout,
   alertProgressTimeout,
+  alertWarnTimeout,
 };
