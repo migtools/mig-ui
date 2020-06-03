@@ -11,6 +11,7 @@ export interface IStorageReducerState {
   migStorageList: IStorage[];
   searchTerm: string;
   addEditStatus: IAddEditStatus;
+  isFetchingInitialStorages: boolean;
 }
 
 type StorageReducerFn = (state: IStorageReducerState, action: any) => IStorageReducerState;
@@ -23,6 +24,7 @@ export const INITIAL_STATE: IStorageReducerState = {
   migStorageList: [],
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
+  isFetchingInitialStorages: true,
 };
 
 export const migStorageFetchRequest: StorageReducerFn = (state = INITIAL_STATE, action) => {
@@ -94,6 +96,7 @@ export const updateStorageSuccess: StorageReducerFn = (state = INITIAL_STATE, ac
 export const updateStorages: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
+    isFetchingInitialStorages: false,
     migStorageList: action.updatedStorages,
   };
 };
