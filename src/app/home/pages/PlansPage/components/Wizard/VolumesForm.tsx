@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import VolumesTable from './VolumesTable';
 import {
+  Bullseye,
+  Button,
+  EmptyState,
   Grid,
   GridItem,
-  Bullseye,
-  EmptyState,
+  Modal,
   Spinner,
   Title,
-  Alert,
 } from '@patternfly/react-core';
 import StatusIcon, { StatusType } from '../../../../../common/components/StatusIcon';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
@@ -42,6 +43,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   pvDiscoveryRequest,
   isPollingStatus,
 }: IVolumesFormProps) => {
+  const [isPopUpModalOpen, setIsPopUpModalOpen] = useState(true);
+
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
     pvDiscoveryRequest(values);
@@ -126,13 +129,27 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       </Bullseye>
     );
   }
+
+  const handleModalToggle = () => {
+    setIsPopUpModalOpen(!isPopUpModalOpen);
+  };
+
   if (currentPlanStatus.state === 'Critical') {
     return (
-      <Bullseye>
-        <EmptyState variant="large">
-          <Alert variant="danger" isInline title={currentPlanStatus.errorMessage} />
-        </EmptyState>
-      </Bullseye>
+      <Modal
+        isSmall
+        title={currentPlanStatus.state}
+        isOpen={isPopUpModalOpen}
+        onClose={handleModalToggle}
+        actions={[
+          <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+            Close
+          </Button>,
+        ]}
+        isFooterLeftAligned
+      >
+        {currentPlanStatus.errorMessage}
+      </Modal>
     );
   }
 
