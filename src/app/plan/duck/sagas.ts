@@ -817,6 +817,16 @@ function* migrationPoll(action) {
         );
         yield put(PlanActions.stopMigrationPolling());
         break;
+      case 'WARN':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `${pollingStatusObj.errorMessage || 'Migration succeeded with warnings'}`
+          )
+        );
+        yield put(PlanActions.stopStagePolling());
+        break;
+
       default:
         break;
     }
