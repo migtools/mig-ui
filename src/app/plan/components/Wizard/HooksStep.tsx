@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { connect } from 'react-redux';

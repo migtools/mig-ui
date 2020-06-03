@@ -8,7 +8,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { PersistGate } from 'redux-persist/es/integration/react';
 import configureStore from './configureStore';
 const { persistor, store } = configureStore();
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 
 import './global.scss';
 
