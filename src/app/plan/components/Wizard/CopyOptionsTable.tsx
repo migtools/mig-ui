@@ -117,7 +117,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             content={
               <div>
                 Checksum verification is available for PVs that will be copied using a filesystem
-                copy method. Note that selecting this option will greatly reduce the copy
+                copy method. Each file is verified with a checksum, which significantly reduces
                 performance. See the product documentation for more information.
               </div>
             }

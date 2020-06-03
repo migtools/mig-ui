@@ -5,7 +5,7 @@ import {
 } from '@patternfly/react-icons';
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 const styles = require('./ConnectionStatusLabel.module');
 
 interface IProps {
