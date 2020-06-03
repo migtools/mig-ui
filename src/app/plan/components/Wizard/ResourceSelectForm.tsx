@@ -14,7 +14,7 @@ import {
 import NamespaceTable from './NameSpaceTable';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
-interface IResourceSelectFormProps
+export interface IResourceSelectFormProps
   extends Pick<
       IOtherProps,
       | 'clusterList'
