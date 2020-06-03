@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-icons';
 import { Popover, PopoverPosition } from '@patternfly/react-core';
 
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 
 interface IProps {
   plan: any;
