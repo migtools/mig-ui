@@ -193,7 +193,15 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <TableBody />
           </Table>
         ) : (
-          <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
+          <TableEmptyState
+            onClearFiltersClick={() => setFilterValues({})}
+            isHiddenActions={persistentVolumes.length === 0}
+            titleText={persistentVolumes.length === 0 && 'No persistent volumes found'}
+            bodyText={
+              persistentVolumes.length === 0 &&
+              'No persistent volumes are attached to the selected projects. Click Next to continue.'
+            }
+          />
         )}
         <Pagination
           widgetId="pv-table-pagination-bottom"
