@@ -824,7 +824,7 @@ function* migrationPoll(action) {
             `Migration succeeded with warnings. ${pollingStatusObj.errorMessage}`
           )
         );
-        yield put(PlanActions.stopStagePolling());
+        yield put(PlanActions.stopMigrationPolling());
         break;
 
       default:
