@@ -740,7 +740,6 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       } else if (hasSucceededCondition) {
         statusObj.status = 'SUCCESS';
       }
-      statusObj.planName = matchingPlan.MigPlan.metadata.name;
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
       );
@@ -751,6 +750,16 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
         statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
       }
+      const hasWarnCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.category === 'Warn'
+      );
+      const warnCondition = matchingMigration.status.conditions.find((c) => c.category === 'Warn');
+
+      if (hasWarnCondition) {
+        statusObj.status = 'WARN';
+        statusObj.errorMessage = warnCondition.message;
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
     }
   }
   return statusObj;
