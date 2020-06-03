@@ -9,7 +9,7 @@ import {
   ProgressSize,
   ProgressVariant,
 } from '@patternfly/react-core';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 const styles = require('./MigrationsTable.module');
 
 import { IMigrationWithStatus } from './types';

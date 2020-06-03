@@ -13,7 +13,7 @@ import MigrationStatus from './Status/MigrationStatus';
 import CardFooterText from './CardFooterText';
 import HeaderText from './HeaderText';
 import StatusIcon from '../../../common/components/StatusIcon';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 
 interface IProps {
   title: string;

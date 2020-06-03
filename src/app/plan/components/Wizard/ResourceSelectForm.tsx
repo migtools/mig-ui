@@ -11,7 +11,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import NamespaceTable from './NameSpaceTable';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 import SimpleSelect from '../../../common/components/SimpleSelect';
 
 interface IResourceSelectFormProps
