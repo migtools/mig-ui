@@ -10,6 +10,8 @@ import {
   EmptyStateIcon,
   Title,
   Button,
+  Bullseye,
+  Spinner,
 } from '@patternfly/react-core';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -36,6 +38,7 @@ interface IPlansPageBaseProps {
   runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
+  isFetchingInitialPlans: boolean;
 }
 
 const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
@@ -46,6 +49,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   runMigrationRequest,
   planCloseAndDeleteRequest,
   migrationCancelRequest,
+  isFetchingInitialPlans,
 }: IPlansPageBaseProps) => {
   const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
 
@@ -85,53 +89,66 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
         </TextContent>
       </PageSection>
       <PageSection>
-        <Card>
-          <CardBody>
-            <PlanContext.Provider
-              value={{
-                handleStageTriggered: runStageRequest,
-                handleRunMigration: runMigrationRequest,
-                handleDeletePlan: (plan: IPlan) => {
-                  planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
-                },
-                handleMigrationCancelRequest: migrationCancelRequest,
-                planList,
-                clusterList,
-                storageList,
-              }}
-            >
-              {!planList ? null : planList.length === 0 ? (
-                <EmptyState variant="full">
-                  <EmptyStateIcon icon={AddCircleOIcon} />
-                  <Title size="lg">No migration plans exist</Title>
-                  <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-                    <Button
-                      isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                      onClick={toggleWizardOpen}
-                      variant="primary"
-                    >
-                      Add migration plan
-                    </Button>
-                  </AddPlanDisabledTooltip>
-                </EmptyState>
-              ) : (
-                <PlansTable
+        {isFetchingInitialPlans ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        ) : (
+          <Card>
+            <CardBody>
+              <PlanContext.Provider
+                value={{
+                  handleStageTriggered: runStageRequest,
+                  handleRunMigration: runMigrationRequest,
+                  handleDeletePlan: (plan: IPlan) => {
+                    planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
+                  },
+                  handleMigrationCancelRequest: migrationCancelRequest,
+                  planList,
+                  clusterList,
+                  storageList,
+                }}
+              >
+                {!planList ? null : planList.length === 0 ? (
+                  <EmptyState variant="full">
+                    <EmptyStateIcon icon={AddCircleOIcon} />
+                    <Title size="lg">No migration plans exist</Title>
+                    <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
+                      <Button
+                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                        onClick={toggleWizardOpen}
+                        variant="primary"
+                      >
+                        Add migration plan
+                      </Button>
+                    </AddPlanDisabledTooltip>
+                  </EmptyState>
+                ) : (
+                  <PlansTable
+                    planList={planList}
+                    addPlanDisabledObj={addPlanDisabledObj}
+                    toggleWizardOpen={toggleWizardOpen}
+                  />
+                )}
+                <WizardContainer
                   planList={planList}
-                  addPlanDisabledObj={addPlanDisabledObj}
-                  toggleWizardOpen={toggleWizardOpen}
+                  clusterList={clusterList}
+                  storageList={storageList}
+                  isEdit={false}
+                  isOpen={isWizardOpen}
+                  onHandleWizardModalClose={toggleWizardOpen}
                 />
-              )}
-              <WizardContainer
-                planList={planList}
-                clusterList={clusterList}
-                storageList={storageList}
-                isEdit={false}
-                isOpen={isWizardOpen}
-                onHandleWizardModalClose={toggleWizardOpen}
-              />
-            </PlanContext.Provider>
-          </CardBody>
-        </Card>
+              </PlanContext.Provider>
+            </CardBody>
+          </Card>
+        )}
       </PageSection>
     </>
   );
@@ -141,6 +158,7 @@ const mapStateToProps = (state: IReduxState) => ({
   planList: planSelectors.getPlansWithStatus(state),
   clusterList: clusterSelectors.getAllClusters(state),
   storageList: storageSelectors.getAllStorage(state),
+  isFetchingInitialPlans: state.plan.isFetchingInitialPlans,
 });
 
 const mapDispatchToProps = (dispatch) => ({
