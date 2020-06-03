@@ -3,7 +3,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { Bullseye, Title, Button, Flex, FlexModifiers, FlexItem } from '@patternfly/react-core';
 import ConditionsGrid from './ConditionsGrid';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../duck/reducers';
-import { Spinner } from '@patternfly/react-core/dist/esm/experimental';
+import { Spinner } from '@patternfly/react-core';
 import {
   IconSize,
   CheckCircleIcon,

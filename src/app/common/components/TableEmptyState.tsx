@@ -18,6 +18,7 @@ export interface ITableEmptyStateProps {
   titleText?: string;
   bodyText?: string;
   onClearFiltersClick?: () => void;
+  isHiddenActions?: boolean;
 }
 
 const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
@@ -25,6 +26,7 @@ const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
   titleText = 'No results found',
   bodyText = 'No results match the filter criteria. Remove filters or clear all filters to show results.',
   onClearFiltersClick,
+  isHiddenActions = false,
 }: ITableEmptyStateProps) => (
   <Flex className={flex.justifyContentCenter}>
     <FlexItem>
@@ -34,7 +36,7 @@ const TableEmptyState: React.FunctionComponent<ITableEmptyStateProps> = ({
           {titleText}
         </Title>
         <EmptyStateBody>{bodyText}</EmptyStateBody>
-        {onClearFiltersClick && (
+        {onClearFiltersClick && !isHiddenActions && (
           <Button variant="link" onClick={onClearFiltersClick}>
             Clear all filters
           </Button>
