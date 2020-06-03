@@ -6,6 +6,8 @@ export interface IMigrationWithStatus extends IMigMigration {
     end: string;
     isFailed: boolean;
     isSucceeded: boolean;
+    isCanceled: boolean;
+    isCanceling: boolean;
     migrationState: string;
     moved: number;
     progress: number;

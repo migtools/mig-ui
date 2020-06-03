@@ -304,6 +304,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       stepName: 'Not started',
       isFailed: false,
       isSucceeded: false,
+      isCanceled: false,
+      isCanceling: false,
       migrationState: null,
     };
     const zone = moment.tz.guess();
@@ -343,6 +345,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         // For canceled migrations, show 0% progress and `Canceled` step
         if (canceledCondition) {
           status.progress = 0;
+          status.isCanceled = true;
           status.stepName = 'Canceled';
           return status;
         }
@@ -387,6 +390,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.stepName = runningCondition.reason;
           if (cancelingCondition) {
             status.stepName = 'Canceling' + status.stepName;
+            status.isCanceling = true;
           }
           // Match string in format 'Step: 16/26'. Capture both numbers.
           const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
