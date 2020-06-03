@@ -46,7 +46,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
-    planUpdateRequest,
+    pvDiscoveryRequest,
     validatePlanRequest,
     pvResourceList,
     addPlanRequest,
@@ -161,7 +161,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                 pvResourceList={pvResourceList}
                 isFetchingPVResources={isFetchingPVList}
                 isPollingStatus={isPollingStatus}
-                planUpdateRequest={planUpdateRequest}
+                pvDiscoveryRequest={pvDiscoveryRequest}
                 currentPlanStatus={currentPlanStatus}
               />
             </WizardStepContainer>

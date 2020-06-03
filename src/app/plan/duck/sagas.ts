@@ -120,9 +120,7 @@ function* planPatchClose(planValues) {
       closedPlanSpecObj
     );
     yield put(PlanActions.updatePlanList(patchPlanResponse.data));
-    yield put(PlanActions.planUpdateSuccess());
   } catch (err) {
-    yield put(PlanActions.planUpdateFailure(err));
     throw err;
   }
 }
@@ -173,19 +171,15 @@ function* validatePlanSaga(action) {
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes = yield call(getPlanSaga, planValues.planName);
-          const updatedMigPlan = updateMigPlanFromValues(
-            getPlanRes.data,
-            planValues,
-            //TODO: refactor isRerunPVDiscovery boolean in seperate PR
-            false
-          );
+          const { currentPlan } = state.plan;
+          const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, currentPlan);
           yield client.patch(
             new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
             getPlanRes.data.metadata.name,
             updatedMigPlan
           );
         } catch (err) {
-          yield put(PlanActions.planUpdateFailure(err));
+          yield put(PlanActions.validatePlanFailure(err));
           throw err;
         }
       },
@@ -198,7 +192,7 @@ function* validatePlanSaga(action) {
     };
     yield put(PlanActions.validatePlanPollStart(params));
   } catch (error) {
-    yield put(PlanActions.planUpdateFailure(error));
+    yield put(PlanActions.validatePlanFailure(error));
   }
 }
 
@@ -249,63 +243,109 @@ function* validatePlanPoll(action) {
   }
 }
 
-function* planUpdateRetry(action) {
+function* pvDiscoveryRequest(action) {
   try {
     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
     yield retry(
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
-      function* (planValues, isRerunPVDiscovery) {
+      function* (planValues) {
         const state = yield select();
         const migMeta = state.migMeta;
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
-          const getPlanRes = yield call(getPlanSaga, planValues.planName);
-          const updatedMigPlan = updateMigPlanFromValues(
-            getPlanRes.data,
-            planValues,
-            isRerunPVDiscovery
+          const getPlanRes: any = yield call(getPlanSaga, planValues.planName);
+          const { currentPlan } = state.plan;
+          const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, currentPlan);
+          yield client.patch(
+            new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+            getPlanRes.data.metadata.name,
+            updatedMigPlan
           );
-          if (isRerunPVDiscovery) {
-            if (
-              JSON.stringify(getPlanRes.data.spec.namespaces) !==
-                JSON.stringify(planValues.selectedNamespaces) ||
-              JSON.stringify(getPlanRes.data.spec.destMigClusterRef.name) !==
-                JSON.stringify(planValues.targetCluster) ||
-              JSON.stringify(getPlanRes.data.spec.srcMigClusterRef.name) !==
-                JSON.stringify(planValues.sourceCluster)
-            ) {
-              yield client.patch(
-                new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-                getPlanRes.data.metadata.name,
-                updatedMigPlan
-              );
-              yield put(PlanActions.planUpdateSuccess());
-              yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
-              yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
-            } else {
-              yield put(PlanActions.pvUpdateRequest(false));
-              yield take(PlanActionTypes.PV_UPDATE_SUCCESS);
-            }
-          } else {
-            yield client.patch(
-              new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-              getPlanRes.data.metadata.name,
-              updatedMigPlan
-            );
-            yield put(PlanActions.pvUpdateRequest(isRerunPVDiscovery));
-          }
+          const pvUpdatePollingInterval = 5000;
+          const params = {
+            delay: pvUpdatePollingInterval,
+            initialGetPlanRes: getPlanRes,
+            planValues,
+          };
+
+          yield put(PlanActions.pvDiscoverySuccess());
+          yield put(PlanActions.pvUpdatePollStart(params));
         } catch (err) {
-          yield put(PlanActions.planUpdateFailure(err));
+          yield put(PlanActions.pvDiscoveryFailure(err));
           throw err;
         }
       },
-      action.planValues,
-      action.isRerunPVDiscovery
+      action.planValues
     );
   } catch (error) {
-    yield put(PlanActions.planUpdateFailure(error));
+    yield put(PlanActions.pvDiscoveryFailure(error));
+  }
+}
+
+function* pvUpdatePoll(action) {
+  let tries = 0;
+  const TicksUntilTimeout = 240;
+  const { initialGetPlanRes, planValues } = action.params;
+
+  while (true) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      const state = yield select();
+      const { currentPlan } = state.plan;
+      if (currentPlan) {
+        const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
+        const updatedPlan = getPlanResponse.data;
+        if (currentPlan.status) {
+          // if currentPlan has status, this is not the initial run of pv discovery.
+          // check for updated values & poll until observed digest changes if so.
+          const updatedValues =
+            JSON.stringify(initialGetPlanRes.data.spec.namespaces) !==
+              JSON.stringify(planValues.selectedNamespaces) ||
+            JSON.stringify(initialGetPlanRes.data.spec.destMigClusterRef.name) !==
+              JSON.stringify(planValues.targetCluster) ||
+            JSON.stringify(initialGetPlanRes.data.spec.srcMigClusterRef.name) !==
+              JSON.stringify(planValues.sourceCluster);
+
+          if (updatedValues) {
+            const updatedObservedDigest = updatedPlan.status.observedDigest;
+            const oldObservedDigest = currentPlan.status.observedDigest;
+
+            if (updatedObservedDigest !== oldObservedDigest) {
+              // if plan values changed, hydrate redux store with updated controller data
+              yield put(PlanActions.setCurrentPlan(updatedPlan));
+              yield put(PlanActions.updatePlanList(updatedPlan));
+              yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+              yield put(PlanActions.pvUpdatePollStop());
+            }
+          } else {
+            // no values updated
+            yield put(PlanActions.setCurrentPlan(updatedPlan));
+            yield put(PlanActions.updatePlanList(updatedPlan));
+            yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+            yield put(PlanActions.pvUpdatePollStop());
+          }
+        } else {
+          //initial pv set. Poll until initial status is set.
+          if (updatedPlan.status) {
+            yield put(PlanActions.setCurrentPlan(updatedPlan));
+            yield put(PlanActions.updatePlanList(updatedPlan));
+            yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+            yield put(PlanActions.pvUpdatePollStop());
+          }
+        }
+      }
+    } else {
+      //timeout case
+      yield put(PlanActions.pvUpdatePollStop());
+      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
+      yield put(PlanActions.pvUpdatePollStop());
+    }
+
+    const PollingInterval = 1000;
+    yield delay(PollingInterval);
   }
 }
 
@@ -348,61 +388,6 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
     return false;
   }
 };
-
-function* pvUpdatePoll(action) {
-  let tries = 0;
-  const TicksUntilTimeout = 240;
-  const { isRerunPVDiscovery } = action;
-  while (true) {
-    if (tries < TicksUntilTimeout) {
-      tries += 1;
-      const state = yield select();
-      const { currentPlan } = state.plan;
-      let updatedPlan = null;
-      if (currentPlan) {
-        const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
-        updatedPlan = getPlanResponse.data;
-      }
-
-      if (updatedPlan) {
-        const isUpdatedPVList = () => {
-          // TODO: refactor this function to improve logic.
-          if (updatedPlan.status) {
-            if (isRerunPVDiscovery) {
-              const updatedObservedDigest = updatedPlan.status.observedDigest;
-              const oldObservedDigest = currentPlan.status.observedDigest;
-              if (updatedObservedDigest === oldObservedDigest) {
-                return false;
-              } else {
-                return true;
-              }
-            } else {
-              return true;
-            }
-          } else {
-            return false;
-          }
-        };
-        if (isUpdatedPVList()) {
-          yield put(PlanActions.setCurrentPlan(updatedPlan));
-          yield put(PlanActions.pvUpdateSuccess());
-          yield put(PlanActions.updatePlanList(updatedPlan));
-          yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-          yield put(PlanActions.pvUpdatePollStop());
-        }
-      }
-    } else {
-      yield put(PlanActions.pvUpdatePollStop());
-      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
-      //failed to update
-      yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
-      yield put(PlanActions.pvUpdatePollStop());
-    }
-
-    const PollingInterval = 1000;
-    yield delay(PollingInterval);
-  }
-}
 
 function* checkPlanStatus(action) {
   let planStatusComplete = false;
@@ -1139,13 +1124,13 @@ function* watchPlanStatus() {
   }
 }
 
-function* watchPlanUpdate() {
-  yield takeEvery(PlanActionTypes.PLAN_UPDATE_REQUEST, planUpdateRetry);
+function* watchPvDiscoveryRequest() {
+  yield takeEvery(PlanActionTypes.PV_DISCOVERY_REQUEST, pvDiscoveryRequest);
 }
 
 function* watchPVUpdatePolling() {
   while (true) {
-    const data = yield take(PlanActionTypes.PV_UPDATE_REQUEST);
+    const data = yield take(PlanActionTypes.PV_UPDATE_POLL_START);
     yield race([call(pvUpdatePoll, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
   }
 }
@@ -1188,7 +1173,7 @@ export default {
   watchRunStageRequest,
   watchRunMigrationRequest,
   watchAddPlanRequest,
-  watchPlanUpdate,
+  watchPvDiscoveryRequest,
   watchPlanCloseAndDelete,
   watchPlanStatus,
   watchMigrationCancel,

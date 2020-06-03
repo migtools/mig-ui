@@ -400,11 +400,7 @@ interface IPlanValues extends IFormValues {
   planClosed?: boolean;
 }
 
-export function updateMigPlanFromValues(
-  migPlan: IPlan,
-  planValues: IPlanValues,
-  isRerunPVDiscovery: boolean
-) {
+export function updateMigPlanFromValues(migPlan: IPlan, planValues: IPlanValues, currentPlan: any) {
   const updatedSpec = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
@@ -424,7 +420,7 @@ export function updateMigPlanFromValues(
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (isRerunPVDiscovery) {
+  if (currentPlan) {
     //rerun pv discovery
     updatedSpec.namespaces = planValues.selectedNamespaces;
   } else {
