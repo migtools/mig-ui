@@ -701,7 +701,9 @@ function* stagePoll(action) {
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
         yield put(
           AlertActions.alertWarn(
-            `${pollingStatusObj.errorMessage || 'Staging succeeded with warnings'}`
+            `Staging succeeded with warnings. ${
+              pollingStatusObj.errorMessage || 'Staging succeeded with warnings'
+            }`
           )
         );
         yield put(PlanActions.stopStagePolling());
@@ -821,7 +823,9 @@ function* migrationPoll(action) {
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
         yield put(
           AlertActions.alertWarn(
-            `${pollingStatusObj.errorMessage || 'Migration succeeded with warnings'}`
+            `Migration succeeded with warnings. ${
+              pollingStatusObj.errorMessage || 'Migration succeeded with warnings'
+            }`
           )
         );
         yield put(PlanActions.stopStagePolling());
