@@ -178,6 +178,7 @@ function* validatePlanSaga(action) {
             getPlanRes.data.metadata.name,
             updatedMigPlan
           );
+          yield put(PlanActions.validatePlanSuccess());
         } catch (err) {
           yield put(PlanActions.validatePlanFailure(err));
           throw err;

@@ -64,6 +64,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     cancelAddEditWatch,
     resetAddEditState,
     removeHookRequest,
+    validatePlanPollStop,
   } = props;
 
   enum stepId {
@@ -82,6 +83,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetForm();
     resetCurrentPlan();
     stopPlanStatusPolling(props.values.planName);
+    validatePlanPollStop();
     pvUpdatePollStop();
   };
 
