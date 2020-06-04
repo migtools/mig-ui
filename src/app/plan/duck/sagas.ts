@@ -738,7 +738,19 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       if (hasCanceledCondition) {
         statusObj.status = 'CANCELED';
       } else if (hasSucceededCondition) {
-        statusObj.status = 'SUCCESS';
+        const hasWarnCondition = !!matchingMigration.status.conditions.some(
+          (c) => c.category === 'Warn'
+        );
+        const warnCondition = matchingMigration.status.conditions.find(
+          (c) => c.category === 'Warn'
+        );
+
+        if (hasWarnCondition) {
+          statusObj.status = 'WARN';
+          statusObj.errorMessage = warnCondition.message;
+        } else {
+          statusObj.status = 'SUCCESS';
+        }
       }
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
@@ -749,15 +761,6 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       if (hasErrorCondition) {
         statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
-      }
-      const hasWarnCondition = !!matchingMigration.status.conditions.some(
-        (c) => c.category === 'Warn'
-      );
-      const warnCondition = matchingMigration.status.conditions.find((c) => c.category === 'Warn');
-
-      if (hasWarnCondition) {
-        statusObj.status = 'WARN';
-        statusObj.errorMessage = warnCondition.message;
       }
       statusObj.planName = matchingPlan.MigPlan.metadata.name;
     }
