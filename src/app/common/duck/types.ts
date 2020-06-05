@@ -9,3 +9,8 @@ export interface IStatusCondition {
 export interface IPlanCountByResourceName {
   [resourceName: string]: number;
 }
+
+export interface INameNamespaceRef {
+  name: string;
+  namespace: string;
+}

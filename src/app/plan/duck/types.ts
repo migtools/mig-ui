@@ -1,3 +1,5 @@
+import { INameNamespaceRef } from '../../common/duck/types';
+
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
 export interface IPlanPersistentVolume {
@@ -18,11 +20,6 @@ export interface IPlanPersistentVolume {
     copyMethod: PvCopyMethod;
     verify: boolean;
   };
-}
-
-export interface INameNamespaceRef {
-  name: string;
-  namespace: string;
 }
 
 export interface IPlanSpecHook {
