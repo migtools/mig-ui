@@ -178,6 +178,7 @@ function* validatePlanSaga(action) {
             getPlanRes.data.metadata.name,
             updatedMigPlan
           );
+          yield put(PlanActions.validatePlanSuccess());
         } catch (err) {
           yield put(PlanActions.validatePlanFailure(err));
           throw err;
@@ -701,7 +702,7 @@ function* stagePoll(action) {
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
         yield put(
           AlertActions.alertWarn(
-            `${pollingStatusObj.errorMessage || 'Staging succeeded with warnings'}`
+            `Staging succeeded with warnings. ${pollingStatusObj.errorMessage}`
           )
         );
         yield put(PlanActions.stopStagePolling());
@@ -738,9 +739,20 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       if (hasCanceledCondition) {
         statusObj.status = 'CANCELED';
       } else if (hasSucceededCondition) {
-        statusObj.status = 'SUCCESS';
+        const hasWarnCondition = !!matchingMigration.status.conditions.some(
+          (c) => c.category === 'Warn'
+        );
+        const warnCondition = matchingMigration.status.conditions.find(
+          (c) => c.category === 'Warn'
+        );
+
+        if (hasWarnCondition) {
+          statusObj.status = 'WARN';
+          statusObj.errorMessage = warnCondition.message;
+        } else {
+          statusObj.status = 'SUCCESS';
+        }
       }
-      statusObj.planName = matchingPlan.MigPlan.metadata.name;
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
       );
@@ -751,6 +763,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
         statusObj.status = 'FAILURE';
         statusObj.errorMessage = errorCondition.message;
       }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
     }
   }
   return statusObj;
@@ -817,6 +830,16 @@ function* migrationPoll(action) {
         );
         yield put(PlanActions.stopMigrationPolling());
         break;
+      case 'WARN':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `Migration succeeded with warnings. ${pollingStatusObj.errorMessage}`
+          )
+        );
+        yield put(PlanActions.stopMigrationPolling());
+        break;
+
       default:
         break;
     }

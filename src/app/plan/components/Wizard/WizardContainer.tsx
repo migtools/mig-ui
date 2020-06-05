@@ -93,6 +93,7 @@ export interface IOtherProps {
   hookAddEditStatus: any;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
+  validatePlanPollStop: () => void;
 }
 
 const WizardContainer = withFormik<IOtherProps, IFormValues>({
@@ -218,6 +219,7 @@ const mapDispatchToProps = (dispatch) => {
     removeHookRequest: (name, migrationStep) =>
       dispatch(PlanActions.removeHookRequest(name, migrationStep)),
     updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+    validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
   };
 };
 

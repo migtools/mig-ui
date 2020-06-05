@@ -420,33 +420,31 @@ export function updateMigPlanFromValues(migPlan: IPlan, planValues: IPlanValues,
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (currentPlan) {
-    //rerun pv discovery
+  if (updatedSpec.namespaces) {
     updatedSpec.namespaces = planValues.selectedNamespaces;
-  } else {
-    if (updatedSpec.persistentVolumes) {
-      updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
-        const userPv = planValues.persistentVolumes.find((upv) => upv.name === v.name);
-        if (userPv) {
-          v.selection.action = userPv.type;
-          const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
-          if (selectedCopyMethod) {
-            v.selection.copyMethod = selectedCopyMethod;
-          }
-
-          v.selection.verify =
-            selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
-
-          const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
-          if (selectedStorageClassObj) {
-            v.selection.storageClass = selectedStorageClassObj.name;
-          } else {
-            v.selection.storageClass = '';
-          }
+  }
+  if (updatedSpec.persistentVolumes) {
+    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
+      const userPv = planValues.persistentVolumes.find((upv) => upv.name === v.name);
+      if (userPv) {
+        v.selection.action = userPv.type;
+        const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
+        if (selectedCopyMethod) {
+          v.selection.copyMethod = selectedCopyMethod;
         }
-        return v;
-      });
-    }
+
+        v.selection.verify =
+          selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
+
+        const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
+        if (selectedStorageClassObj) {
+          v.selection.storageClass = selectedStorageClassObj.name;
+        } else {
+          v.selection.storageClass = '';
+        }
+      }
+      return v;
+    });
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;
