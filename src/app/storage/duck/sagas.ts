@@ -8,6 +8,7 @@ import {
   createMigStorage,
   updateMigStorage,
   updateStorageSecret,
+  getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
 import { StorageActions, StorageActionTypes } from './actions';
 import { AlertActions } from '../../common/duck/actions';
@@ -85,8 +86,18 @@ function* removeStorageSaga(action) {
     );
     const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
-    const arr = yield Promise.all([
-      client.delete(secretResource, name),
+    const secretResourceList = yield client.list(
+      secretResource,
+      getTokenSecretLabelSelector(MigResourceKind.MigStorage, name)
+    );
+
+    const secretResourceName =
+      secretResourceList.data.items && secretResourceList.data.items.length > 0
+        ? secretResourceList.data.items[0].metadata.name
+        : '';
+
+    yield Promise.all([
+      client.delete(secretResource, secretResourceName),
       client.delete(migStorageResource, name),
     ]);
 
@@ -139,15 +150,29 @@ function* addStorageRequest(action) {
   // Ensure that none of the objects that make up storage already exist
   try {
     const getResults = yield Q.allSettled([
+      client.list(
+        secretResource,
+        getTokenSecretLabelSelector(MigResourceKind.MigStorage, migStorage.metadata.name)
+      ),
       client.get(migStorageResource, migStorage.metadata.name),
-      client.get(secretResource, storageSecret.metadata.name),
     ]);
 
     const alreadyExists = getResults.reduce((exists, res) => {
-      return res.value && res.value.status === 200
-        ? [...exists, { kind: res.value.data.kind, name: res.value.data.metadata.name }]
+      return res && res.status === 200
+        ? [
+            ...exists, 
+            { 
+              kind: res.value.data.kind, 
+              name: 
+                res.value.data.items && res.value.data.items.length > 0
+                ? res.value.data.items[0].metadata.name
+                : res.value.data.metadata.name
+            }
+          ]
         : exists;
     }, []);
+
+    console.log(alreadyExists);
 
     if (alreadyExists.length > 0) {
       throw new Error(
@@ -170,18 +195,36 @@ function* addStorageRequest(action) {
   // If any of the objects actually fail creation, we need to rollback the others
   // so the storage is created, or fails atomically
   try {
-    const storageAddResults = yield Q.allSettled([
-      client.create(secretResource, storageSecret),
-      client.create(migStorageResource, migStorage),
-    ]);
+    const storageAddResults = [];
+    const storageSecretAddResult = yield client.create(secretResource, storageSecret);
+
+    if (storageSecretAddResult.status === 201) {
+      storageAddResults.push(storageSecretAddResult);
+      
+      Object.assign(migStorage.spec.backupStorageConfig.credsSecretRef, {
+        name: storageSecretAddResult.data.metadata.name, 
+        namespace: storageSecretAddResult.data.metadata.namespace,
+      });
+
+      Object.assign(migStorage.spec.volumeSnapshotConfig.credsSecretRef, {
+        name: storageSecretAddResult.data.metadata.name, 
+        namespace: storageSecretAddResult.data.metadata.namespace,
+      });
+
+      const storageAddResult = yield client.create(migStorageResource, migStorage);
+
+      if (storageAddResult.status === 201) {
+        storageAddResults.push(storageAddResult);
+      }
+    }
 
     // If any of the attempted object creation promises have failed, we need to
     // rollback those that succeeded so we don't have a halfway created "Storage"
     // A rollback is only required if some objects have actually *succeeded*,
     // as well as failed.
     const isRollbackRequired =
-      storageAddResults.find((res) => res.state === 'rejected') &&
-      storageAddResults.find((res) => res.state === 'fulfilled');
+      storageAddResults.find((res) => res.status === 201) &&
+      storageAddResults.find((res) => res.status !== 201);
 
     if (isRollbackRequired) {
       const kindToResourceMap = {
@@ -192,7 +235,7 @@ function* addStorageRequest(action) {
       // The objects that need to be rolled back are those that were fulfilled
       const rollbackObjs = storageAddResults.reduce((rollbackAccum, res) => {
         return res.state === 'fulfilled'
-          ? [...rollbackAccum, { kind: res.value.data.kind, name: res.value.data.metadata.name }]
+          ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]
           : rollbackAccum;
       }, []);
 
@@ -221,7 +264,7 @@ function* addStorageRequest(action) {
     } // End rollback handling
 
     const storage = storageAddResults.reduce((accum, res) => {
-      const data = res.value.data;
+      const data = res.data;
       accum[data.kind] = data;
       return accum;
     }, {});
@@ -385,7 +428,7 @@ function* updateStorageRequest(action) {
     );
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(secretResource, storageValues.name, updatedSecret));
+    updatePromises.push(() => client.patch(secretResource, currentStorage.MigStorage.spec.backupStorageConfig.credsSecretRef.name, updatedSecret));
   }
 
   try {
