@@ -172,8 +172,6 @@ function* addStorageRequest(action) {
         : exists;
     }, []);
 
-    console.log(alreadyExists);
-
     if (alreadyExists.length > 0) {
       throw new Error(
         alreadyExists.reduce((msg, v) => {
