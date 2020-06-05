@@ -41,6 +41,7 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
   touched,
   values,
 }: IResourceSelectFormProps) => {
+  debugger;
   useEffect(() => {
     if (isEdit) {
       fetchNamespacesRequest(values.sourceCluster);
@@ -115,6 +116,7 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
                 isValid={!(touched.sourceCluster && errors.sourceCluster)}
               >
                 <SimpleSelect
+                  data-testid="source-cluster-select"
                   id="sourceCluster"
                   onChange={handleSourceChange}
                   options={srcClusterOptions}

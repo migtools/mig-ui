@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
 import '@testing-library/jest-dom';
 
@@ -29,8 +29,8 @@ function renderGeneralForm(props: Partial<IGeneralFormProps> = {}) {
 
 describe('<GeneralForm />', () => {
   test('has a plan name', async () => {
-    const { findByTestId } = renderGeneralForm();
-    const planForm = await findByTestId('plan-form');
+    renderGeneralForm();
+    const planForm = await screen.findByTestId('plan-form');
 
     expect(planForm).toHaveFormValues({
       planName: 'plan-name-test',
