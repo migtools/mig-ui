@@ -73,8 +73,6 @@ const fakeTokens = [
       kind: 'MigToken',
       metadata: {
         name: 'My Token',
-        type: 'OAuth',
-        expirationTimestamp: '2020-06-08T20:55:53.825Z',
       },
       spec: {
         migClusterRef: { name: 'cluster-name', namespace: 'some-namespace' },
@@ -82,6 +80,8 @@ const fakeTokens = [
       },
       status: {
         observedDigest: 'foo',
+        type: 'OAuth',
+        expiresAt: '2020-06-08T20:55:53.825Z',
       },
     },
   },

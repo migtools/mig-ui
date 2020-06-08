@@ -3,7 +3,7 @@ import { IToken } from '../../../token/duck/types';
 import { StatusType } from '../../../common/components/StatusIcon';
 
 export const getTokenInfo = (token: IToken) => {
-  const expirationTimestamp = token.MigToken.metadata.expirationTimestamp;
+  const expirationTimestamp = token.MigToken.status.expiresAt;
   const expirationMoment = moment(expirationTimestamp);
   const formattedExpiration = expirationMoment
     .tz(moment.tz.guess())
@@ -25,7 +25,7 @@ export const getTokenInfo = (token: IToken) => {
   // NATODO not sure if these are the real paths for all of these, see comments in token/duck/types.ts
   return {
     tokenName: token.MigToken.metadata.name,
-    type: token.MigToken.metadata.type,
+    type: token.MigToken.status.type,
     expirationTimestamp,
     formattedExpiration,
     associatedClusterName: token.MigToken.spec.migClusterRef.name,
