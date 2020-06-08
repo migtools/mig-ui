@@ -7,6 +7,7 @@ import { usePaginationState, useSortState } from '../../../../common/duck/hooks'
 import StatusIcon from '../../../../common/components/StatusIcon';
 import IconWithText from '../../../../common/components/IconWithText';
 import { IToken } from '../../../../token/duck/types';
+import { getTokenInfo } from '../helpers';
 
 interface ITokensTableProps {
   tokenList: IToken[];
@@ -27,8 +28,14 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   ];
 
   const getSortValues = (token: IToken) => {
-    // NATODO add a getTokenInfo helper call here
-    return ['', '', '', '', '', ''];
+    const {
+      tokenName,
+      type,
+      associatedClusterName,
+      expirationTimestamp,
+      tokenStatus,
+    } = getTokenInfo(token);
+    return [tokenName, type, associatedClusterName, expirationTimestamp, tokenStatus, ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(tokenList, getSortValues);
@@ -36,14 +43,21 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   useEffect(() => setPageNumber(1), [sortBy]);
 
   const rows = currentPageItems.map((token: IToken) => {
-    // NATODO add a getTokenInfo helper call here
+    const {
+      tokenName,
+      type,
+      associatedClusterName,
+      formattedExpiration,
+      tokenStatus,
+    } = getTokenInfo(token);
     return {
       cells: [
-        '[NAME]',
-        '[TYPE]',
-        '[ASSOCIATED CLUSTER]',
-        '[EXPIRATION]',
+        tokenName,
+        type,
+        associatedClusterName,
+        formattedExpiration,
         {
+          // NATODO how to deal with status?
           title: (
             <IconWithText
               icon={<StatusIcon isReady={true} /> /* NATODO pass real ready/warning state here */}

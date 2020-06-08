@@ -9,9 +9,8 @@ import {
   EmptyState,
   EmptyStateIcon,
   Title,
-  Button,
 } from '@patternfly/react-core';
-import { AddCircleOIcon, WrenchIcon } from '@patternfly/react-icons';
+import { WrenchIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import TokensTable from './components/TokensTable';
@@ -26,14 +25,10 @@ interface ITokensPageBaseProps {
 }
 
 const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
-  // tokenList, // NATODO
+  tokenList,
   clusterList,
 }: ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-
-  // Stub data, modal toggle button will switch between empty state and table view
-  // NATODO remove this and use real data
-  const tokenList = isAddEditModalOpen ? [{ MigToken: { fake: 'token' } }] : [];
 
   return (
     <>
@@ -59,19 +54,6 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
                   </Text>
                 </TextContent>
               </EmptyState>
-            ) : tokenList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={AddCircleOIcon} />
-                <Title size="lg">No tokens</Title>
-                <TextContent className={spacing.mtMd}>
-                  <Text component="p">
-                    Add tokens to authenticate to source and target clusters.
-                  </Text>
-                </TextContent>
-                <Button onClick={toggleAddEditModal} variant="primary">
-                  Add token
-                </Button>
-              </EmptyState>
             ) : (
               <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
             )}
@@ -83,8 +65,30 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   );
 };
 
+const fakeTokens = [
+  {
+    MigToken: {
+      apiVersion: '1.0',
+      kind: 'MigToken',
+      metadata: {
+        name: 'My Token',
+        type: 'OAuth',
+        expirationTimestamp: '2020-06-08T19:12:05.758Z',
+      },
+      spec: {
+        migClusterRef: { name: 'cluster-name', namespace: 'some-namespace' },
+        secretRef: { name: 'secret-name', namespace: 'some-namespace' },
+      },
+      status: {
+        conditions: [],
+        observedDigest: 'foo',
+      },
+    },
+  },
+];
+
 const mapStateToProps = (state: IReduxState) => ({
-  tokenList: null, // NATODO pull real data from redux here
+  tokenList: fakeTokens, // NATODO pull real data from redux here
   clusterList: clusterSelectors.getAllClusters(state),
 });
 
