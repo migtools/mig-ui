@@ -1,1 +1,2 @@
 // NATODO
+export default {};
