@@ -160,14 +160,14 @@ function* addStorageRequest(action) {
     const alreadyExists = getResults.reduce((exists, res) => {
       return res && res.status === 200
         ? [
-            ...exists, 
-            { 
-              kind: res.value.data.kind, 
-              name: 
+            ...exists,
+            {
+              kind: res.value.data.kind,
+              name:
                 res.value.data.items && res.value.data.items.length > 0
-                ? res.value.data.items[0].metadata.name
-                : res.value.data.metadata.name
-            }
+                  ? res.value.data.items[0].metadata.name
+                  : res.value.data.metadata.name,
+            },
           ]
         : exists;
     }, []);
@@ -198,14 +198,14 @@ function* addStorageRequest(action) {
 
     if (storageSecretAddResult.status === 201) {
       storageAddResults.push(storageSecretAddResult);
-      
+
       Object.assign(migStorage.spec.backupStorageConfig.credsSecretRef, {
-        name: storageSecretAddResult.data.metadata.name, 
+        name: storageSecretAddResult.data.metadata.name,
         namespace: storageSecretAddResult.data.metadata.namespace,
       });
 
       Object.assign(migStorage.spec.volumeSnapshotConfig.credsSecretRef, {
-        name: storageSecretAddResult.data.metadata.name, 
+        name: storageSecretAddResult.data.metadata.name,
         namespace: storageSecretAddResult.data.metadata.namespace,
       });
 
@@ -426,7 +426,13 @@ function* updateStorageRequest(action) {
     );
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() => client.patch(secretResource, currentStorage.MigStorage.spec.backupStorageConfig.credsSecretRef.name, updatedSecret));
+    updatePromises.push(() =>
+      client.patch(
+        secretResource,
+        currentStorage.MigStorage.spec.backupStorageConfig.credsSecretRef.name,
+        updatedSecret
+      )
+    );
   }
 
   try {
