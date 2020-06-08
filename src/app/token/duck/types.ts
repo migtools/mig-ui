@@ -1,4 +1,4 @@
-import { INameNamespaceRef, IStatusCondition } from '../../common/duck/types';
+import { INameNamespaceRef } from '../../common/duck/types';
 
 // NATODO
 //   based on CRD here: https://github.com/konveyor/mig-controller/blob/non-admin/config/crds/migration_v1alpha1_migtoken.yaml#L16
@@ -19,7 +19,6 @@ export interface IMigToken {
     secretRef: INameNamespaceRef;
   };
   status: {
-    conditions: IStatusCondition[]; // NATODO *
     observedDigest: string;
   };
 }

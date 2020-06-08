@@ -1,27 +1,45 @@
-import * as React from 'react';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
+import React from 'react';
+import {
+  CheckCircleIcon,
+  WarningTriangleIcon,
+  ExclamationCircleIcon,
+} from '@patternfly/react-icons';
 const styles = require('./StatusIcon.module');
+
+export enum StatusType {
+  OK = 'OK',
+  WARNING = 'WARNING',
+  ERROR = 'ERROR',
+}
+
 interface IProps {
-  isReady: boolean;
+  status: StatusType;
   isDisabled?: boolean;
 }
 
-// NATODO add support for warning state here? use an enum instead of isReady maybe?
-
-const StatusIcon: React.FunctionComponent<IProps> = ({ isReady, isDisabled }) => {
-  if (isReady) {
+const StatusIcon: React.FunctionComponent<IProps> = ({ status, isDisabled }) => {
+  if (status === StatusType.OK) {
     return (
       <span className="pf-c-icon pf-m-success">
         <CheckCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );
-  } else {
+  }
+  if (status === StatusType.WARNING) {
+    return (
+      <span className="pf-c-icon pf-m-warning">
+        <WarningTriangleIcon className={isDisabled && styles.disabled} />
+      </span>
+    );
+  }
+  if (status === StatusType.ERROR) {
     return (
       <span className="pf-c-icon pf-m-danger">
         <ExclamationCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );
   }
+  return null;
 };
 
 export default StatusIcon;

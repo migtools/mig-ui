@@ -7,7 +7,7 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
 import { getStorageInfo } from '../helpers';
 import IconWithText from '../../../../common/components/IconWithText';
-import StatusIcon from '../../../../common/components/StatusIcon';
+import StatusIcon, { StatusType } from '../../../../common/components/StatusIcon';
 import StorageActionsDropdown from './StorageActionsDropdown';
 import { IStorage } from '../../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
@@ -75,7 +75,7 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
         {
           title: (
             <IconWithText
-              icon={<StatusIcon isReady={storageStatus} />}
+              icon={<StatusIcon status={storageStatus ? StatusType.OK : StatusType.ERROR} />}
               text={storageStatus ? `Connected` : `Connection Failed`}
             />
           ),

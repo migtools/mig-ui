@@ -33,9 +33,9 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
       type,
       associatedClusterName,
       expirationTimestamp,
-      tokenStatus,
+      statusText,
     } = getTokenInfo(token);
-    return [tokenName, type, associatedClusterName, expirationTimestamp, tokenStatus, ''];
+    return [tokenName, type, associatedClusterName, expirationTimestamp, statusText, ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(tokenList, getSortValues);
@@ -48,7 +48,8 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
       type,
       associatedClusterName,
       formattedExpiration,
-      tokenStatus,
+      statusType,
+      statusText,
     } = getTokenInfo(token);
     return {
       cells: [
@@ -57,13 +58,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
         associatedClusterName,
         formattedExpiration,
         {
-          // NATODO how to deal with status?
-          title: (
-            <IconWithText
-              icon={<StatusIcon isReady={true} /> /* NATODO pass real ready/warning state here */}
-              text="[STATUS]" // NATODO real status text here
-            />
-          ),
+          title: <IconWithText icon={<StatusIcon status={statusType} />} text={statusText} />,
         },
         '', // NATODO create a TokenActionsDropdown to render here
       ],

@@ -65,6 +65,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   );
 };
 
+// NATODO remove this when we have real data
 const fakeTokens = [
   {
     MigToken: {
@@ -73,14 +74,13 @@ const fakeTokens = [
       metadata: {
         name: 'My Token',
         type: 'OAuth',
-        expirationTimestamp: '2020-06-08T19:12:05.758Z',
+        expirationTimestamp: '2020-06-08T20:55:53.825Z',
       },
       spec: {
         migClusterRef: { name: 'cluster-name', namespace: 'some-namespace' },
         secretRef: { name: 'secret-name', namespace: 'some-namespace' },
       },
       status: {
-        conditions: [],
         observedDigest: 'foo',
       },
     },

@@ -1,20 +1,37 @@
 import moment from 'moment-timezone';
 import { IToken } from '../../../token/duck/types';
+import { StatusType } from '../../../common/components/StatusIcon';
 
 export const getTokenInfo = (token: IToken) => {
-  // NATODO not sure if these are the real paths for all of these, see comments in token/duck/types.ts
   const expirationTimestamp = token.MigToken.metadata.expirationTimestamp;
-  const formattedExpiration = moment(expirationTimestamp)
+  const expirationMoment = moment(expirationTimestamp);
+  const formattedExpiration = expirationMoment
     .tz(moment.tz.guess())
     .format('DD MMM YYYY, hh:mm:ss A z');
+  const hoursUntilExpiration = expirationMoment.diff(moment(), 'hours', true);
+  let statusType: StatusType;
+  let statusText: string;
+  if (hoursUntilExpiration < 0) {
+    statusType = StatusType.ERROR;
+    statusText = 'Expired';
+  } else if (hoursUntilExpiration < 1) {
+    // NATODO is 1 hour the correct threshold here?
+    statusType = StatusType.WARNING;
+    statusText = 'Expiring soon';
+  } else {
+    statusType = StatusType.OK;
+    statusText = 'OK';
+  }
+  // NATODO not sure if these are the real paths for all of these, see comments in token/duck/types.ts
   return {
     tokenName: token.MigToken.metadata.name,
     type: token.MigToken.metadata.type,
     expirationTimestamp,
     formattedExpiration,
     associatedClusterName: token.MigToken.spec.migClusterRef.name,
-    tokenStatus: !token.MigToken.status
-      ? null
-      : token.MigToken.status.conditions.filter((c) => c.type === 'Ready').length > 0,
+    statusType,
+    statusText,
   };
 };
+
+export type ITokenInfo = ReturnType<typeof getTokenInfo>;
