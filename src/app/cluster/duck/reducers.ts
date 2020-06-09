@@ -1,7 +1,23 @@
 import { ClusterActionTypes } from './actions';
-import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
+import {
+  defaultAddEditStatus,
+  fetchingAddEditStatus,
+  IAddEditStatus,
+} from '../../common/add_edit_state';
+import { ICluster } from './types';
 
-export const INITIAL_STATE = {
+export interface IClusterReducerState {
+  isPolling: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  clusterList: ICluster[];
+  searchTerm: string;
+  addEditStatus: IAddEditStatus;
+}
+
+type ClusterReducerFn = (state: IClusterReducerState, action: any) => IClusterReducerState;
+
+export const INITIAL_STATE: IClusterReducerState = {
   isPolling: false,
   isError: false,
   isFetching: false,
@@ -10,46 +26,46 @@ export const INITIAL_STATE = {
   addEditStatus: defaultAddEditStatus(),
 };
 
-export const clusterFetchSuccess = (state = INITIAL_STATE, action) => {
+export const clusterFetchSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, clusterList: action.clusterList, isFetching: false };
 };
 
-export const clusterFetchFailure = (state = INITIAL_STATE, action) => {
+export const clusterFetchFailure: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, isError: true, isFetching: false };
 };
 
-export const clusterFetchRequest = (state = INITIAL_STATE, action) => {
+export const clusterFetchRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, isFetching: true };
 };
 
-export const addClusterRequest = (state = INITIAL_STATE, action) => {
+export const addClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: fetchingAddEditStatus(),
   };
 };
-export const addClusterSuccess = (state = INITIAL_STATE, action) => {
+export const addClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [...state.clusterList, action.newCluster],
   };
 };
 
-export const removeClusterSuccess = (state = INITIAL_STATE, action) => {
+export const removeClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: state.clusterList.filter((item) => item.MigCluster.metadata.name !== action.name),
   };
 };
 
-export const updateClusterRequest = (state = INITIAL_STATE, action) => {
+export const updateClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: fetchingAddEditStatus(),
   };
 };
 
-export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
+export const updateClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: [
@@ -61,35 +77,35 @@ export const updateClusterSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updateClusters = (state = INITIAL_STATE, action) => {
+export const updateClusters: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     clusterList: action.updatedClusters,
   };
 };
 
-export const setClusterAddEditStatus = (state = INITIAL_STATE, action) => {
+export const setClusterAddEditStatus: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     addEditStatus: action.status,
   };
 };
 
-export const startClusterPolling = (state = INITIAL_STATE, action) => {
+export const startClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: true,
   };
 };
 
-export const stopClusterPolling = (state = INITIAL_STATE, action) => {
+export const stopClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: false,
   };
 };
 
-export const clusterReducer = (state = INITIAL_STATE, action) => {
+export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ClusterActionTypes.ADD_CLUSTER_REQUEST:
       return addClusterRequest(state, action);

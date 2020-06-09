@@ -1,9 +1,9 @@
-import { IPlan } from '../../app/plan/components/Wizard/types';
-import { IFormValues } from '../../app/plan/components/Wizard/WizardContainer';
+import { IFormValues } from '../../app/home/pages/PlansPage/components/Wizard/WizardContainer';
 import {
   HooksClusterType,
   HooksImageType,
-} from '../../app/plan/components/Wizard/HooksFormComponent';
+} from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
+import { IMigPlan } from '../../app/plan/duck/types';
 
 export function createTokenSecret(
   name: string,
@@ -400,8 +400,12 @@ interface IPlanValues extends IFormValues {
   planClosed?: boolean;
 }
 
-export function updateMigPlanFromValues(migPlan: IPlan, planValues: IPlanValues, currentPlan: any) {
-  const updatedSpec = Object.assign({}, migPlan.spec);
+export function updateMigPlanFromValues(
+  migPlan: IMigPlan,
+  planValues: IPlanValues,
+  currentPlan: IMigPlan
+) {
+  const updatedSpec: IMigPlan['spec'] = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
       name: planValues.selectedStorage,
@@ -521,7 +525,7 @@ export function updateMigHook(
   migHook: any,
   currentPlanHookRef: any,
   namespace: string,
-  currentPlan: IPlan
+  currentPlan: IMigPlan
 ) {
   const getImage = (imageType) => {
     if (imageType === HooksImageType.Ansible) {
@@ -679,7 +683,6 @@ export function createMigHook(migHook: any, namespace: string) {
 }
 
 export type IMigHook = ReturnType<typeof createMigHook>;
-export type IMigPlan = ReturnType<typeof createMigPlan>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;

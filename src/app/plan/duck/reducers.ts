@@ -1,6 +1,18 @@
 import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
-import { defaultAddEditStatus, fetchingAddEditStatus } from '../../common/add_edit_state';
+import {
+  defaultAddEditStatus,
+  fetchingAddEditStatus,
+  IAddEditStatus,
+} from '../../common/add_edit_state';
+import {
+  IPlan,
+  ISourceClusterNamespace,
+  IMigPlan,
+  IPersistentVolumeResource,
+  IMigration,
+} from './types';
+import { IMigHook } from '../../../client/resources/conversions';
 
 export enum CurrentPlanState {
   Pending = 'Pending',
@@ -16,7 +28,31 @@ export interface ICurrentPlanStatus {
   warnMessage?: string;
 }
 
-export const INITIAL_STATE = {
+export interface IPlanReducerState {
+  isPVError: boolean;
+  isFetchingPVList: boolean;
+  isPVPolling: boolean;
+  isFetchingPVResources: boolean;
+  isCheckingPlanStatus: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  migPlanList: IPlan[];
+  planSearchText: string;
+  sourceClusterNamespaces: ISourceClusterNamespace[];
+  currentPlan: IMigPlan;
+  isPollingStatus: boolean;
+  isPolling: boolean;
+  pvResourceList: IPersistentVolumeResource[];
+  currentPlanStatus: ICurrentPlanStatus;
+  lockedPlanList: string[]; // Plan names
+  isFetchingHookList: boolean;
+  migHookList: IMigHook[];
+  hookAddEditStatus: IAddEditStatus;
+}
+
+type PlanReducerFn = (state: IPlanReducerState, action: any) => IPlanReducerState;
+
+export const INITIAL_STATE: IPlanReducerState = {
   isPVError: false,
   isFetchingPVList: false,
   isPVPolling: false,
@@ -41,55 +77,55 @@ export const INITIAL_STATE = {
   hookAddEditStatus: defaultAddEditStatus(),
 };
 
-const sortPlans = (planList) =>
+const sortPlans = (planList: IPlan[]) =>
   planList.sort((left, right) => {
     return moment
       .utc(right.MigPlan.metadata.creationTimestamp)
       .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
   });
-const sortMigrations = (migList) =>
+const sortMigrations = (migList: IMigration[]) =>
   migList.sort((left, right) => {
     return moment
       .utc(right.metadata.creationTimestamp)
       .diff(moment.utc(left.metadata.creationTimestamp));
   });
 
-export const migPlanFetchRequest = (
+export const migPlanFetchRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migPlanFetchRequest>
 ) => {
   return { ...state, isFetching: true };
 };
 
-export const migPlanFetchSuccess = (
+export const migPlanFetchSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migPlanFetchSuccess>
 ) => {
   const sortedList = sortPlans(action.migPlanList);
   return { ...state, migPlanList: sortedList, isFetching: false };
 };
-export const migPlanFetchFailure = (
+export const migPlanFetchFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migPlanFetchFailure>
 ) => {
   return { ...state, isError: true, isFetching: false };
 };
 
-export const addPlanRequest = (
+export const addPlanRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addPlanRequest>
 ) => {
   return { ...state };
 };
 
-export const addPlanSuccess = (
+export const addPlanSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addPlanSuccess>
 ) => {
   const newPlan = {
     MigPlan: action.newPlan,
     Migrations: [],
-  };
+  } as IPlan;
 
   return {
     ...state,
@@ -97,7 +133,7 @@ export const addPlanSuccess = (
   };
 };
 
-export const addPlanFailure = (
+export const addPlanFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addPlanFailure>
 ) => {
@@ -106,14 +142,14 @@ export const addPlanFailure = (
   };
 };
 
-export const removePlanSuccess = (
+export const removePlanSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removePlanSuccess>
 ) => {
   return { ...state };
 };
 
-export const namespaceFetchRequest = (
+export const namespaceFetchRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.namespaceFetchRequest>
 ) => {
@@ -124,7 +160,7 @@ export const namespaceFetchRequest = (
     isFetchingNamespaceList: true,
   };
 };
-export const namespaceFetchSuccess = (
+export const namespaceFetchSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.namespaceFetchSuccess>
 ) => {
@@ -134,7 +170,7 @@ export const namespaceFetchSuccess = (
     isFetchingNamespaceList: false,
   };
 };
-export const namespaceFetchFailure = (
+export const namespaceFetchFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.namespaceFetchFailure>
 ) => {
@@ -145,16 +181,16 @@ export const namespaceFetchFailure = (
   };
 };
 
-export const updatePlanList = (
+export const updatePlanList: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.updatePlanList>
 ) => {
-  const updatedPlanList = state.migPlanList.map((p) => {
+  const updatedPlanList = state.migPlanList.map((p: IPlan) => {
     if (p.MigPlan.metadata.name === action.updatedPlan.metadata.name) {
       return {
         MigPlan: action.updatedPlan,
         Migrations: [],
-      };
+      } as IPlan;
     } else {
       return p;
     }
@@ -167,9 +203,9 @@ export const updatePlanList = (
   };
 };
 
-export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
+export const updatePlanMigrations: PlanReducerFn = (state = INITIAL_STATE, action) => {
   // TODO: add migplan and migmigration typing
-  const updatedPlanList = state.migPlanList.map((p) => {
+  const updatedPlanList = state.migPlanList.map((p: IPlan) => {
     if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
       //filter migrations
       // TODO: fix api for MigPlan: should not contain migrations to be sane kubeApi resource
@@ -188,7 +224,7 @@ export const updatePlanMigrations = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const updatePlans = (state = INITIAL_STATE, action) => {
+export const updatePlans: PlanReducerFn = (state = INITIAL_STATE, action) => {
   const updatedPlanList = action.updatedPlans.map((p) => {
     //filter migrations
     p.Migrations = sortMigrations(p.Migrations);
@@ -203,7 +239,7 @@ export const updatePlans = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const initStage = (
+export const initStage: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.initStage>
 ) => {
@@ -221,7 +257,7 @@ export const initStage = (
   };
 };
 
-export const initMigration = (
+export const initMigration: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.initMigration>
 ) => {
@@ -238,7 +274,7 @@ export const initMigration = (
     migPlanList: sortedPlans,
   };
 };
-export const stagingSuccess = (
+export const stagingSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.stagingSuccess>
 ) => {
@@ -255,14 +291,14 @@ export const stagingSuccess = (
     migPlanList: sortedPlans,
   };
 };
-export const stagingFailure = (
+export const stagingFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.stagingFailure>
 ) => {
   return { ...state };
 };
 
-export const migrationSuccess = (
+export const migrationSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migrationSuccess>
 ) => {
@@ -279,63 +315,63 @@ export const migrationSuccess = (
     migPlanList: sortedPlans,
   };
 };
-export const migrationFailure = (
+export const migrationFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migrationFailure>
 ) => {
   return { ...state };
 };
 
-export const planStatusPollStart = (
+export const planStatusPollStart: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.startPlanStatusPolling>
 ) => {
   return { ...state, isPollingStatus: true };
 };
 
-export const planStatusPollStop = (
+export const planStatusPollStop: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.stopPlanStatusPolling>
 ) => {
   return { ...state, isPollingStatus: false };
 };
 
-export const getPVResourcesRequest = (
+export const getPVResourcesRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.getPVResourcesRequest>
 ) => {
   return { ...state, isFetchingPVResources: true };
 };
 
-export const getPVResourcesSuccess = (
+export const getPVResourcesSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.getPVResourcesSuccess>
 ) => {
   return { ...state, isFetchingPVResources: false, pvResourceList: action.pvResources };
 };
 
-export const getPVResourcesFailure = (
+export const getPVResourcesFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.getPVResourcesFailure>
 ) => {
   return { ...state, isFetchingPVResources: false };
 };
 
-export const startPlanPolling = (state = INITIAL_STATE, action) => {
+export const startPlanPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: true,
   };
 };
 
-export const stopPlanPolling = (state = INITIAL_STATE, action) => {
+export const stopPlanPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isPolling: false,
   };
 };
 
-export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
+export const resetCurrentPlan: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     currentPlan: null,
@@ -343,14 +379,14 @@ export const resetCurrentPlan = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const setCurrentPlan = (state = INITIAL_STATE, action) => {
+export const setCurrentPlan: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     currentPlan: action.currentPlan,
   };
 };
 
-export const updateCurrentPlanStatus = (
+export const updateCurrentPlanStatus: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.updateCurrentPlanStatus>
 ) => {
@@ -360,7 +396,7 @@ export const updateCurrentPlanStatus = (
   };
 };
 
-const lockPlan = (state = INITIAL_STATE, planName: string) => {
+const lockPlan: PlanReducerFn = (state = INITIAL_STATE, planName: string) => {
   let updatedLockedPlans = state.lockedPlanList;
   if (state.lockedPlanList.indexOf(planName) === -1) {
     updatedLockedPlans = [...updatedLockedPlans, planName];
@@ -368,7 +404,7 @@ const lockPlan = (state = INITIAL_STATE, planName: string) => {
   return { ...state, lockedPlanList: updatedLockedPlans };
 };
 
-const unlockPlan = (state = INITIAL_STATE, planName: string) => {
+const unlockPlan: PlanReducerFn = (state = INITIAL_STATE, planName: string) => {
   const filteredLockedPlans = state.lockedPlanList.filter(
     (lockedPlanName) => lockedPlanName !== planName
   );
@@ -378,14 +414,14 @@ const unlockPlan = (state = INITIAL_STATE, planName: string) => {
   };
 };
 
-export const planCloseAndDeleteRequest = (
+export const planCloseAndDeleteRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.planCloseAndDeleteRequest>
 ) => {
   return lockPlan(state, action.planName);
 };
 
-export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
+export const planCloseAndDeleteSuccess: PlanReducerFn = (state = INITIAL_STATE, action) => {
   state = unlockPlan(state, action.planName);
 
   return {
@@ -394,7 +430,7 @@ export const planCloseAndDeleteSuccess = (state = INITIAL_STATE, action) => {
   };
 };
 
-export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
+export const planCloseAndDeleteFailure: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return unlockPlan(state, action.planName);
 };
 
@@ -402,7 +438,7 @@ export const planCloseAndDeleteFailure = (state = INITIAL_STATE, action) => {
 Hook Reducers
 */
 
-export const removeHookRequest = (
+export const removeHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removeHookRequest>
 ) => {
@@ -413,7 +449,7 @@ export const removeHookRequest = (
   };
 };
 
-export const removeHookSuccess = (
+export const removeHookSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removeHookSuccess>
 ) => {
@@ -423,7 +459,7 @@ export const removeHookSuccess = (
   };
 };
 
-export const removeHookFailure = (
+export const removeHookFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removeHookFailure>
 ) => {
@@ -433,7 +469,7 @@ export const removeHookFailure = (
   };
 };
 
-export const addHookRequest = (
+export const addHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addHookRequest>
 ) => {
@@ -444,7 +480,7 @@ export const addHookRequest = (
   };
 };
 
-export const addHookSuccess = (
+export const addHookSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addHookSuccess>
 ) => {
@@ -454,7 +490,7 @@ export const addHookSuccess = (
   };
 };
 
-export const addHookFailure = (
+export const addHookFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addHookFailure>
 ) => {
@@ -464,7 +500,7 @@ export const addHookFailure = (
   };
 };
 
-export const hookFetchRequest = (
+export const hookFetchRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.hookFetchRequest>
 ) => {
@@ -474,7 +510,7 @@ export const hookFetchRequest = (
     isFetchingHookList: true,
   };
 };
-export const hookFetchSuccess = (
+export const hookFetchSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.hookFetchSuccess>
 ) => {
@@ -484,7 +520,7 @@ export const hookFetchSuccess = (
     isFetchingHookList: false,
   };
 };
-export const hookFetchFailure = (
+export const hookFetchFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.hookFetchFailure>
 ) => {
@@ -495,14 +531,14 @@ export const hookFetchFailure = (
   };
 };
 
-export const setHookAddEditStatus = (state = INITIAL_STATE, action) => {
+export const setHookAddEditStatus: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     hookAddEditStatus: action.status,
   };
 };
 
-export const updateHookRequest = (
+export const updateHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.updateHookRequest>
 ) => {
@@ -512,7 +548,7 @@ export const updateHookRequest = (
     isFetchingHookList: true,
   };
 };
-export const updateHookSuccess = (
+export const updateHookSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.updateHookSuccess>
 ) => {
@@ -522,7 +558,7 @@ export const updateHookSuccess = (
   };
 };
 
-export const updateHookFailure = (
+export const updateHookFailure: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.updateHookSuccess>
 ) => {
@@ -532,7 +568,7 @@ export const updateHookFailure = (
   };
 };
 
-const planReducer = (state = INITIAL_STATE, action) => {
+const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST:
       return addPlanRequest(state, action);

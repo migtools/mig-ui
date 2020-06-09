@@ -29,7 +29,10 @@ export const useFilterState = (items: any[], filterCategories: FilterCategory[])
   return { filterValues, setFilterValues, filteredItems };
 };
 
-export const useSortState = (items: any[], getSortValues: (item: any) => string[]) => {
+export const useSortState = (
+  items: any[],
+  getSortValues: (item: any) => (string | number | boolean)[]
+) => {
   const [sortBy, setSortBy] = useState<ISortBy>({});
   const onSort = (event: React.SyntheticEvent, index: number, direction: SortByDirection) => {
     setSortBy({ index, direction });
