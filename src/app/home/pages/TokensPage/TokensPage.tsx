@@ -28,7 +28,11 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
 }: ITokensPageBaseProps) => {
-  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const [isAddEditModalOpen, reallyToggleAddEditModal] = useOpenModal(false);
+  const toggleAddEditModal = () => {
+    alert('NATODO: modal still being implemented!');
+    reallyToggleAddEditModal();
+  };
 
   return (
     <>
