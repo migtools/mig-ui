@@ -1,12 +1,14 @@
 import { TokenActionTypes } from './actions';
 import { IToken } from './types';
+import { IAddEditStatus, defaultAddEditStatus } from '../../common/add_edit_state';
 
 export interface ITokenReducerState {
   isPolling: boolean;
   isError: boolean;
   isFetching: boolean;
   tokenList: IToken[];
-  // NATODO searchTerm? addEditStatus?
+  addEditStatus: IAddEditStatus;
+  // NATODO searchTerm? other state?
 }
 
 type TokenReducerFn = (state: ITokenReducerState, action: any) => ITokenReducerState;
@@ -16,6 +18,7 @@ export const INITIAL_STATE: ITokenReducerState = {
   isError: false,
   isFetching: false,
   tokenList: [],
+  addEditStatus: defaultAddEditStatus(),
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?

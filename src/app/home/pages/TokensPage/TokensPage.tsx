@@ -18,6 +18,7 @@ import { useOpenModal } from '../../duck/hooks';
 import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
+import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
 
 interface ITokensPageBaseProps {
   tokenList: IToken[];
@@ -28,11 +29,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
 }: ITokensPageBaseProps) => {
-  const [isAddEditModalOpen, reallyToggleAddEditModal] = useOpenModal(false);
-  const toggleAddEditModal = () => {
-    alert('NATODO: modal still being implemented!');
-    reallyToggleAddEditModal();
-  };
+  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
   return (
     <>
@@ -46,22 +43,24 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
       <PageSection>
         <Card>
           <CardBody>
-            {/* NATODO add a TokenContext provider here when that becomes necessary? */}
-            {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={WrenchIcon} />
-                <Title size="lg">No clusters have been added</Title>
-                <TextContent className={spacing.mtMd}>
-                  <Text component="p">
-                    An administrator must add clusters for migration before you can add tokens.
-                    Contact the cluster administrator for assistance.
-                  </Text>
-                </TextContent>
-              </EmptyState>
-            ) : (
-              <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
-            )}
-            {/* NATODO render an add/edit modal here */}
+            <>
+              {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
+              {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
+                <EmptyState variant="full">
+                  <EmptyStateIcon icon={WrenchIcon} />
+                  <Title size="lg">No clusters have been added</Title>
+                  <TextContent className={spacing.mtMd}>
+                    <Text component="p">
+                      An administrator must add clusters for migration before you can add tokens.
+                      Contact the cluster administrator for assistance.
+                    </Text>
+                  </TextContent>
+                </EmptyState>
+              ) : (
+                <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
+              )}
+              <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
+            </>
           </CardBody>
         </Card>
       </PageSection>
