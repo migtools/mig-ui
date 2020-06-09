@@ -20,6 +20,7 @@ import { useOpenModal } from '../../duck/hooks';
 import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
+import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
 
 interface ITokensPageBaseProps {
   tokenList: IToken[];
@@ -34,11 +35,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
 }: //NATODO: implement loading state for tokens
 // isFetchingInitialTokens,
 ITokensPageBaseProps) => {
-  const [isAddEditModalOpen, reallyToggleAddEditModal] = useOpenModal(false);
-  const toggleAddEditModal = () => {
-    alert('NATODO: modal still being implemented!');
-    reallyToggleAddEditModal();
-  };
+  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   //NATODO: implement loading state for tokens
   const isFetchingInitialTokens = false;
 
@@ -66,7 +63,7 @@ ITokensPageBaseProps) => {
         ) : (
           <Card>
             <CardBody>
-              {/* NATODO add a TokenContext provider here when that becomes necessary? */}
+              {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
               {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
                 <EmptyState variant="full">
                   <EmptyStateIcon icon={WrenchIcon} />
@@ -81,7 +78,7 @@ ITokensPageBaseProps) => {
               ) : (
                 <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
               )}
-              {/* NATODO render an add/edit modal here */}
+              <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
             </CardBody>
           </Card>
         )}
