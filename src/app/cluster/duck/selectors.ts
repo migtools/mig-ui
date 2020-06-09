@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
+import { ICluster } from './types';
 
 const clusterSelectorWithStatus = (state) =>
-  state.cluster.clusterList.map((cluster) => {
+  state.cluster.clusterList.map((cluster: ICluster) => {
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
 
@@ -33,7 +34,7 @@ const getAllClusters = createSelector([clusterSelectorWithStatus], (clusters) =>
 const getAssociatedPlans = createSelector(
   [clusterSelectorWithStatus, planSelector],
   (clusterList, plans) => {
-    return clusterList.reduce((associatedPlans, cluster) => {
+    return clusterList.reduce((associatedPlans, cluster: ICluster) => {
       const clusterName = cluster.MigCluster.metadata.name;
       associatedPlans[clusterName] = plans.reduce((count, plan) => {
         const isAssociated =

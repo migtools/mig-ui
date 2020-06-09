@@ -1,130 +1,99 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
-import { Card, Page, PageSection, Grid, GridItem } from '@patternfly/react-core';
-import HeaderComponent from '../common/components/HeaderComponent';
-import DetailViewComponent from './DetailViewComponent';
-import DashboardCard from './components/Card/DashboardCard';
-import clusterSelectors from '../cluster/duck/selectors';
-import storageSelectors from '../storage/duck/selectors';
-import planSelectors from '../plan/duck/selectors';
+import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  Nav,
+  NavList,
+  NavItem,
+  Page,
+  PageSidebar,
+  SkipToContent,
+  PageHeader,
+  Brand,
+} from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
+import { ClustersPage, StoragesPage, PlansPage, LogsPage } from './pages';
+import RefreshRoute from '../auth/RefreshRoute';
+import openshiftLogo from '../common/components/CAM_LOGO.svg';
+import { ICluster } from '../cluster/duck/types';
+const styles = require('./HomeComponent.module');
 
-interface IProps {
-  allClusters: any[];
-  allStorage: any[];
-  allPlans: any[];
-  isFetchingClusters: boolean;
-  isFetchingStorage: boolean;
-  isFetchingPlans: boolean;
-  isClusterError: boolean;
-  isStorageError: boolean;
-  isPlanError: boolean;
-  planStatusCounts: any;
+const mainContainerId = 'mig-ui-page-main-container';
+
+const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
+  const match = useRouteMatch({ path: to });
+  return (
+    <NavItem isActive={!!match}>
+      <Link to={to}>{label}</Link>
+    </NavItem>
+  );
+};
+
+interface IHomeComponentProps {
+  clusterList: ICluster[];
 }
-export const DataItemsLength = 3;
-export enum DataListItems {
-  ClusterList = 'clusterList',
-  StorageList = 'storageList',
-  PlanList = 'planList',
-}
 
-const HomeComponent: React.FunctionComponent<IProps> = (props) => {
-  const {
-    allClusters,
-    allStorage,
-    allPlans,
-    isFetchingClusters,
-    isFetchingStorage,
-    isFetchingPlans,
-    isClusterError,
-    isStorageError,
-    isPlanError,
-    planStatusCounts,
-  } = props;
-
+const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
+  clusterList,
+}: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
-  const [expandedStateObj, setExpandedStateObj] = useState({
-    clusterList: false,
-    storageList: false,
-    planList: false,
-  });
 
-  const handleExpand = (id: string) => {
-    const expanded = !expandedStateObj[id];
-    const newExpanded = Object.assign({}, expandedStateObj);
-    Object.values(DataListItems).map((expandItem) => (newExpanded[expandItem] = false));
-    newExpanded[id] = expanded;
-    setExpandedStateObj(newExpanded);
-  };
+  const header = (
+    <PageHeader
+      logo={<Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />}
+      showNavToggle
+    />
+  );
+
+  const nav = (
+    <Nav aria-label="Page navigation" theme="dark">
+      <NavList>
+        <NavItemLink to="/clusters" label="Clusters" />
+        <NavItemLink to="/storages" label="Replication repositories" />
+        <NavItemLink to="/plans" label="Migration plans" />
+      </NavList>
+    </Nav>
+  );
 
   return (
-    <Page header={HeaderComponent}>
-      <PageSection>
-        <Grid gutter="lg" md={6} lg={4}>
-          <GridItem>
-            <DashboardCard
-              type="clusters"
-              title="Clusters"
-              dataList={allClusters}
-              isFetching={isFetchingClusters}
-              isError={isClusterError}
-              expandDetails={() => handleExpand(DataListItems.ClusterList)}
-              loadingTitle="Loading clusters..."
-            />
-          </GridItem>
-          <GridItem>
-            <DashboardCard
-              title="Replication repositories"
-              type="repositories"
-              dataList={allStorage}
-              isFetching={isFetchingStorage}
-              isError={isStorageError}
-              expandDetails={() => handleExpand(DataListItems.StorageList)}
-              loadingTitle="Loading replication repositories..."
-            />
-          </GridItem>
-          <GridItem>
-            <DashboardCard
-              type="plans"
-              title="Migration Plans"
-              planStatusCounts={planStatusCounts}
-              dataList={allPlans}
-              isFetching={isFetchingPlans}
-              isError={isPlanError}
-              expandDetails={() => handleExpand(DataListItems.PlanList)}
-              loadingTitle="Loading migration plans..."
-            />
-          </GridItem>
-          <GridItem span={12}>
-            <Card>
-              <DetailViewComponent expanded={expandedStateObj} handleExpandDetails={handleExpand} />
-            </Card>
-          </GridItem>
-        </Grid>
-      </PageSection>
-      <PageSection></PageSection>
+    <Page
+      header={header}
+      sidebar={<PageSidebar nav={nav} theme="dark" />}
+      isManagedSidebar
+      skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
+      mainContainerId={mainContainerId}
+    >
+      <Switch>
+        <Route exact path="/">
+          <Redirect to="/clusters" />
+        </Route>
+        <Route exact path="/clusters">
+          <ClustersPage />
+        </Route>
+        <Route exact path="/storages">
+          <StoragesPage />
+        </Route>
+        <Route exact path="/plans">
+          <PlansPage />
+        </Route>
+        <RefreshRoute
+          exact
+          path="/logs/:planId"
+          clusterList={clusterList}
+          isLoggedIn
+          component={LogsPage}
+        />
+      </Switch>
     </Page>
   );
 };
 
+// TODO does this component need to be connected to redux? Leaving for the onLogout stub.
 export default connect(
-  (state) => ({
-    planStatusCounts: planSelectors.getCounts(state),
-    allClusters: clusterSelectors.getAllClusters(state),
-    allStorage: storageSelectors.getAllStorage(state),
-    allPlans: planSelectors.getPlansWithStatus(state),
-    loggingIn: state.auth.loggingIn,
-    user: state.auth.user,
-    isFetchingClusters: state.cluster.isFetching,
-    isFetchingStorage: state.storage.isFetching,
-    isFetchingPlans: state.plan.isFetching,
-    isClusterError: state.cluster.isError,
-    isStorageError: state.storage.isError,
-    isPlanError: state.plan.isError,
-  }),
+  (state) => ({}),
   (dispatch) => ({
     onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
   })
