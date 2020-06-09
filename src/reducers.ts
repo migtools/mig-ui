@@ -1,16 +1,14 @@
 import { combineReducers } from 'redux';
 import authReducer from './app/auth/duck';
 import commonReducer from './app/common/duck';
-import clusterReducer from './app/cluster/duck';
-import storageReducer from './app/storage/duck';
-import planReducer from './app/plan/duck';
+import clusterReducer, { IClusterReducerState } from './app/cluster/duck';
+import storageReducer, { IStorageReducerState } from './app/storage/duck';
+import planReducer, { IPlanReducerState } from './app/plan/duck';
+import tokenReducer, { ITokenReducerState } from './app/token/duck';
 import { migMetaReducer, IMigMeta } from './mig_meta';
 import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
 import logReducer from './app/logs/duck';
-import { IClusterReducerState } from './app/cluster/duck/reducers';
-import { IStorageReducerState } from './app/storage/duck/reducers';
-import { IPlanReducerState } from './app/plan/duck/reducers';
 
 // TODO we should install @types/react-redux and improve the type safety of our Redux usage.
 // https://redux.js.org/recipes/usage-with-typescript
@@ -22,6 +20,7 @@ export interface IReduxState {
   cluster: IClusterReducerState;
   storage: IStorageReducerState;
   plan: IPlanReducerState;
+  token: ITokenReducerState;
   logs: { [property: string]: any }; // TODO add types for logs reducer state
   migMeta: IMigMeta;
 }
@@ -33,6 +32,7 @@ const rootReducer = combineReducers({
   cluster: clusterReducer,
   storage: storageReducer,
   plan: planReducer,
+  token: tokenReducer,
   logs: logReducer,
   migMeta: migMetaReducer,
 });
