@@ -2,6 +2,8 @@ import moment from 'moment-timezone';
 import { IToken } from '../../../token/duck/types';
 import { StatusType } from '../../../common/components/StatusIcon';
 
+const EXPIRATION_WARNING_THRESHOLD_HOURS = 1;
+
 export const getTokenInfo = (token: IToken) => {
   const expirationTimestamp = token.MigToken.status.expiresAt;
   const expirationMoment = moment(expirationTimestamp);
@@ -14,15 +16,13 @@ export const getTokenInfo = (token: IToken) => {
   if (hoursUntilExpiration < 0) {
     statusType = StatusType.ERROR;
     statusText = 'Expired';
-  } else if (hoursUntilExpiration < 1) {
-    // NATODO is 1 hour the correct threshold here?
+  } else if (hoursUntilExpiration < EXPIRATION_WARNING_THRESHOLD_HOURS) {
     statusType = StatusType.WARNING;
     statusText = 'Expiring soon';
   } else {
     statusType = StatusType.OK;
     statusText = 'OK';
   }
-  // NATODO not sure if these are the real paths for all of these, see comments in token/duck/types.ts
   return {
     tokenName: token.MigToken.metadata.name,
     type: token.MigToken.status.type,
