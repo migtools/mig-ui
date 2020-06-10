@@ -63,6 +63,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   const formikSetFieldTouched = (key: FieldKey) => () => setFieldTouched(key, true, true);
 
   const onLogInClick = () => {
+    // NATODO
     alert('NATODO: not yet implemented');
   };
 

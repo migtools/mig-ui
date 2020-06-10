@@ -45,6 +45,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         addEditStatus={addEditStatus}
         onAddEditSubmit={() => {
           // NATODO
+          alert('NATODO: not yet implemented');
         }}
         onClose={onClose}
       />
