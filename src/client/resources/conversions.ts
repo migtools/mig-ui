@@ -4,7 +4,6 @@ import {
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
-import { MigResourceKind } from './mig';
 
 export function createTokenSecret(
   name: string,
