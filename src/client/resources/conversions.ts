@@ -293,10 +293,6 @@ export function createStorageSecret(
         metadata: {
           generateName: `${name}-`,
           namespace,
-          labels: {
-            createdForResourceType: MigResourceKind.MigStorage,
-            createdForResource: `${name}`,
-          },
         },
         type: 'Opaque',
       };
@@ -312,10 +308,6 @@ export function createStorageSecret(
         metadata: {
           generateName: `${name}-`,
           namespace,
-          labels: {
-            createdForResourceType: MigResourceKind.MigStorage,
-            createdForResource: `${name}`,
-          },
         },
         type: 'Opaque',
       };
@@ -331,10 +323,6 @@ export function createStorageSecret(
         metadata: {
           generateName: `${name}-`,
           namespace,
-          labels: {
-            createdForResourceType: MigResourceKind.MigStorage,
-            createdForResource: `${name}`,
-          },
         },
         type: 'Opaque',
       };

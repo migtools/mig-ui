@@ -8,7 +8,6 @@ import {
   createMigStorage,
   updateMigStorage,
   updateStorageSecret,
-  getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
 import { StorageActions, StorageActionTypes } from './actions';
 import { AlertActions } from '../../common/duck/actions';
@@ -86,18 +85,17 @@ function* removeStorageSaga(action) {
     );
     const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
-    const secretResourceList = yield client.list(
-      secretResource,
-      getTokenSecretLabelSelector(MigResourceKind.MigStorage, name)
-    );
+    const getMigStorageResult = yield client.get(migStorageResource, name);
 
-    const secretResourceName =
-      secretResourceList.data.items && secretResourceList.data.items.length > 0
-        ? secretResourceList.data.items[0].metadata.name
-        : '';
+    if (getMigStorageResult.status !== 200) {
+      throw new Error('Error retrieving MigStorage object');
+    }
 
     yield Promise.all([
-      client.delete(secretResource, secretResourceName),
+      client.delete(
+        secretResource,
+        getMigStorageResult.data.spec.backupStorageConfig.credsSecretRef.name
+      ),
       client.delete(migStorageResource, name),
     ]);
 
@@ -147,119 +145,54 @@ function* addStorageRequest(action) {
   );
   const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
 
-  // Ensure that none of the objects that make up storage already exist
+  // Ensure that an existing storage with same name does not exist
   try {
-    const getResults = yield Q.allSettled([
-      client.list(
-        secretResource,
-        getTokenSecretLabelSelector(MigResourceKind.MigStorage, migStorage.metadata.name)
-      ),
-      client.get(migStorageResource, migStorage.metadata.name),
-    ]);
+    const getResult = yield client.get(migStorageResource, migStorage.metadata.name);
 
-    const alreadyExists = getResults.reduce((exists, res) => {
-      return res && res.status === 200
-        ? [
-            ...exists,
-            {
-              kind: res.value.data.kind,
-              name:
-                res.value.data.items && res.value.data.items.length > 0
-                  ? res.value.data.items[0].metadata.name
-                  : res.value.data.metadata.name,
-            },
-          ]
-        : exists;
-    }, []);
-
-    if (alreadyExists.length > 0) {
-      throw new Error(
-        alreadyExists.reduce((msg, v) => {
-          return msg + `- kind: "${v.kind}", name: "${v.name}"`;
-        }, 'Some storage objects already exist ')
+    if (getResult.status === 200) {
+      const message = 'Storage object with this name already exists';
+      console.error(message);
+      yield put(
+        StorageActions.setStorageAddEditStatus(
+          createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, message, '')
+        )
       );
+      return;
     }
   } catch (err) {
     console.error(err.message);
-    yield put(
-      StorageActions.setStorageAddEditStatus(
-        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
-      )
-    );
+  }
+
+  const storageAddResults = [];
+
+  // Attempt creating a storage secret, return on failure
+  try {
+    storageAddResults.push(yield client.create(secretResource, storageSecret));
+  } catch (err) {
+    console.error('Storage Secret failed creation with error', err);
+    put(AlertActions.alertErrorTimeout('Storage Secret failed creation'));
     return;
   }
 
-  // None of the objects already exist, so try to create all of the objects
-  // If any of the objects actually fail creation, we need to rollback the others
-  // so the storage is created, or fails atomically
+  const createdStorageSecret = storageAddResults[0].data;
   try {
-    const storageAddResults = [];
-    const storageSecretAddResult = yield client.create(secretResource, storageSecret);
-
-    if (storageSecretAddResult.status === 201) {
-      storageAddResults.push(storageSecretAddResult);
-
+    // Attempt creating the storage, rollback previously created secret on failure
+    try {
       Object.assign(migStorage.spec.backupStorageConfig.credsSecretRef, {
-        name: storageSecretAddResult.data.metadata.name,
-        namespace: storageSecretAddResult.data.metadata.namespace,
+        name: createdStorageSecret.metadata.name,
+        namespace: createdStorageSecret.metadata.namespace,
       });
 
       Object.assign(migStorage.spec.volumeSnapshotConfig.credsSecretRef, {
-        name: storageSecretAddResult.data.metadata.name,
-        namespace: storageSecretAddResult.data.metadata.namespace,
+        name: createdStorageSecret.metadata.name,
+        namespace: createdStorageSecret.metadata.namespace,
       });
 
-      const storageAddResult = yield client.create(migStorageResource, migStorage);
-
-      if (storageAddResult.status === 201) {
-        storageAddResults.push(storageAddResult);
-      }
+      storageAddResults.push(yield client.create(migStorageResource, migStorage));
+    } catch {
+      // attempt rolling back secret
+      yield client.delete(secretResource, createdStorageSecret.metadata.name);
     }
-
-    // If any of the attempted object creation promises have failed, we need to
-    // rollback those that succeeded so we don't have a halfway created "Storage"
-    // A rollback is only required if some objects have actually *succeeded*,
-    // as well as failed.
-    const isRollbackRequired =
-      storageAddResults.find((res) => res.status === 201) &&
-      storageAddResults.find((res) => res.status !== 201);
-
-    if (isRollbackRequired) {
-      const kindToResourceMap = {
-        MigStorage: migStorageResource,
-        Secret: secretResource,
-      };
-
-      // The objects that need to be rolled back are those that were fulfilled
-      const rollbackObjs = storageAddResults.reduce((rollbackAccum, res) => {
-        return res.state === 'fulfilled'
-          ? [...rollbackAccum, { kind: res.data.kind, name: res.data.metadata.name }]
-          : rollbackAccum;
-      }, []);
-
-      const rollbackResults = yield Q.allSettled(
-        rollbackObjs.map((r) => {
-          return client.delete(kindToResourceMap[r.kind], r.name);
-        })
-      );
-
-      // Something went wrong with rollback, not much we can do at this point
-      // except inform the user about what's gone wrong so they can take manual action
-      if (rollbackResults.find((res) => res.state === 'rejected')) {
-        throw new Error(
-          rollbackResults.reduce((msg, r) => {
-            const kind = r.reason.request.response.kind;
-            const name = r.reason.request.response.details.name;
-            return msg + `- kind: ${kind}, name: ${name}`;
-          }, 'Attempted to rollback objects, but failed ')
-        );
-      } else {
-        // One of the objects failed, but rollback was successful. Need to alert
-        // the user that something went wrong, but we were able to recover with
-        // a rollback
-        throw Error(storageAddResults.find((res) => res.state === 'rejected').reason);
-      }
-    } // End rollback handling
 
     const storage = storageAddResults.reduce((accum, res) => {
       const data = res.data;
