@@ -1,22 +1,12 @@
 import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  Page,
-  PageSidebar,
-  SkipToContent,
-  PageHeader,
-  Brand,
-} from '@patternfly/react-core';
+import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
-import openshiftLogo from '../common/components/CAM_LOGO.svg';
 import { ICluster } from '../cluster/duck/types';
-const styles = require('./HomeComponent.module');
+import PageHeaderComponent from '../common/components/PageHeaderComponent';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -41,13 +31,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
     pollingContext.startAllDefaultPolling();
   }, []);
 
-  const header = (
-    <PageHeader
-      logo={<Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />}
-      showNavToggle
-    />
-  );
-
   const nav = (
     <Nav aria-label="Page navigation" theme="dark">
       <NavList>
@@ -61,7 +44,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
   return (
     <Page
-      header={header}
+      header={<PageHeaderComponent showNavToggle />}
       sidebar={<PageSidebar nav={nav} theme="dark" />}
       isManagedSidebar
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
