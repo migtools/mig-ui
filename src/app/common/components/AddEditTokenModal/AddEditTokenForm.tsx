@@ -138,7 +138,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         <Radio
           id={`${FieldKey.tokenType}-${TokenType.serviceAccount}`}
           name={FieldKey.tokenType}
-          isChecked={values.tokenType === TokenType.oAuth}
+          isChecked={values.tokenType === TokenType.serviceAccount}
           onChange={(checked) => {
             if (checked) setFieldValue(FieldKey.tokenType, TokenType.serviceAccount);
           }}
