@@ -131,7 +131,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             variant="secondary"
             className={spacing.mtSm}
             onClick={onLogInClick}
-            isDisabled={values.tokenType !== TokenType.oAuth}
+            isDisabled={values.tokenType !== TokenType.oAuth || !values.associatedClusterName}
           >
             Log in
           </Button>
