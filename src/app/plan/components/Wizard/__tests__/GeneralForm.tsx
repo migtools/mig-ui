@@ -4,7 +4,7 @@ import { render, cleanup, screen, fireEvent } from '@testing-library/react';
 import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
 import '@testing-library/jest-dom';
 import renderer from 'react-test-renderer';
-import { planValue } from './planHelper';
+import { planValue } from './__helpers__/planHelper';
 
 const defaultProps: IGeneralFormProps = {
   handleBlur() {

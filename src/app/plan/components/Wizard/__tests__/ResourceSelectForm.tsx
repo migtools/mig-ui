@@ -3,7 +3,7 @@ import ResourceSelectForm, { IResourceSelectFormProps } from '../ResourceSelectF
 import React, { useEffect } from 'react';
 import '@testing-library/jest-dom/extend-expect';
 
-import { planValue } from './planHelper';
+import { planValue } from './__helpers__/planHelper';
 import axios from 'axios';
 
 jest.mock('axios');
@@ -88,9 +88,9 @@ describe('<ResourceSelectForm />', () => {
     const Loader = await screen.findByText(/Loading/);
     expect(Loader).toHaveTextContent('Loading');
 
-    fireEvent.change(screen.getByTestId('source-cluster-select'), {
-      target: { value: 'ocp311' },
-    });
+    // fireEvent.change(screen.getByTestId('source-cluster-select'), {
+    //   target: { value: 'ocp311' },
+    // });
 
     // mockedAxios.get.mockResolvedValueOnce({
     //   data: { greeting: 'hello there' },

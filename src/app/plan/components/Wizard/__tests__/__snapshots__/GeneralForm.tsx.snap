@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<GeneralForm /> render snapshot 1`] = `
+exports[`<GeneralForm /> renders snapshot 1`] = `
 <form
   className="pf-c-form"
   data-testid="plan-form"

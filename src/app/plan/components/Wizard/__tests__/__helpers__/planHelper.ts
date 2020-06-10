@@ -1,4 +1,4 @@
-import { PvCopyMethod } from '../types';
+import { PvCopyMethod } from '../../types';
 
 const pvCopyMethod: PvCopyMethod = 'filesystem';
 

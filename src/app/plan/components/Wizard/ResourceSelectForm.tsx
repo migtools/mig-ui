@@ -41,7 +41,6 @@ const ResourceSelectForm: React.FunctionComponent<IResourceSelectFormProps> = ({
   touched,
   values,
 }: IResourceSelectFormProps) => {
-  debugger;
   useEffect(() => {
     if (isEdit) {
       fetchNamespacesRequest(values.sourceCluster);

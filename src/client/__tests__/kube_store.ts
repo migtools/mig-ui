@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { KubeStore, LocalStorageMockedDataKey } from './kube_store';
-import { MigResource, MigResourceKind } from './resources';
+import { KubeStore, LocalStorageMockedDataKey } from '../kube_store';
+import { MigResource, MigResourceKind } from '../resources';
 
 const examplePlan = {
   apiVersion: 'migration.openshift.io/v1alpha1',
