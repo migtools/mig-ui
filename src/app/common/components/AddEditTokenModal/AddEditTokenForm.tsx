@@ -19,6 +19,7 @@ import {
   isAddEditButtonDisabled,
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
+import utils from '../../duck/utils';
 
 enum FieldKey {
   name = 'name',
@@ -189,7 +190,26 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
     tokenType: TokenType.oAuth,
     serviceAccountToken: '',
   }),
-  validate: (values: ITokenFormValues) => ({}), // NATODO add validation logic
+  validate: (values: ITokenFormValues) => {
+    const errors: { [key in FieldKey]?: string } = {};
+    if (!values.name) {
+      errors.name = 'Required';
+    } else if (!utils.testDNS1123(values.name)) {
+      errors.name = utils.DNS1123Error(values.name);
+    }
+
+    if (!values.associatedClusterName) {
+      errors.associatedClusterName = 'Required';
+    }
+
+    if (values.tokenType === TokenType.serviceAccount && !values.serviceAccountToken) {
+      errors.serviceAccountToken = 'Required';
+    }
+
+    // NATODO validate whether the OAuth login was completed
+
+    return errors;
+  },
   handleSubmit: (values: ITokenFormValues, formikBag: FormikBag<IOtherProps, ITokenFormValues>) => {
     // Formik will set isSubmitting to true, so we need to flip this back off
     formikBag.setSubmitting(false);
