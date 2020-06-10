@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { history } from '../helpers';
 import { ConnectedRouter } from 'connected-react-router';
 import CertErrorComponent from './auth/CertErrorComponent';
+import OAuthLandingPage from './token/OAuthLandingPage';
 import { PollingContext } from './home/duck/context';
 import { StatusPollingInterval } from './common/duck/sagas';
 import { clusterSagas } from './cluster/duck';
@@ -151,6 +152,7 @@ const AppComponent: React.SFC<IProps> = ({
           <Switch>
             <Route path="/login" component={LoginComponent} />
             <Route path="/cert-error" component={CertErrorComponent} />
+            <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
               path="/"
               isLoggedIn={isLoggedIn}
