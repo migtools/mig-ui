@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<GeneralForm /> render snapshot 1`] = `
+<form
+  className="pf-c-form"
+  data-testid="plan-form"
+  noValidate={true}
+>
+  <div
+    className="pf-l-grid pf-m-all-10-col-on-lg pf-m-all-6-col-on-xl"
+  >
+    <div
+      className="pf-l-grid__item"
+    >
+      <div
+        className="pf-c-form__group"
+      >
+        <label
+          className="pf-c-form__label"
+          htmlFor="planName"
+        >
+          <span
+            className="pf-c-form__label-text"
+          >
+            Plan Name
+          </span>
+          <span
+            aria-hidden="true"
+            className="pf-c-form__label-required"
+          >
+            *
+          </span>
+        </label>
+        <input
+          aria-invalid={false}
+          aria-label={null}
+          className="pf-c-form-control"
+          disabled={true}
+          id="planName"
+          name="planName"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onInput={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value="plan-name-test"
+        />
+        
+      </div>
+    </div>
+  </div>
+</form>
+`;

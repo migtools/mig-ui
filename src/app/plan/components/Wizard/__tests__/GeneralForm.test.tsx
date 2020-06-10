@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { render, cleanup, screen, fireEvent } from '@testing-library/react';
 import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
 import '@testing-library/jest-dom';
-
+import renderer from 'react-test-renderer';
 import { planValue } from './planHelper';
 
 const defaultProps: IGeneralFormProps = {
@@ -45,12 +45,8 @@ describe('<GeneralForm />', () => {
     });
   });
 
-  it('has a plan name', async () => {
-    renderGeneralForm();
-    const planForm = await screen.findByTestId('plan-form');
-
-    expect(planForm).toHaveFormValues({
-      planName: 'plan-name-test',
-    });
+  it('renders snapshot', async () => {
+    const tree = renderer.create(<GeneralForm {...defaultProps}></GeneralForm>).toJSON();
+    expect(tree).toMatchSnapshot();
   });
 });
