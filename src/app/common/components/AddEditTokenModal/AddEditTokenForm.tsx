@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Form,
   FormGroup,
@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { FormikProps, withFormik, FormikBag } from 'formik';
+import shortid from 'shortid';
 import {
   IAddEditStatus,
   AddEditMode,
@@ -63,10 +64,38 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key: FieldKey) => () => setFieldTouched(key, true, true);
 
+  const [oAuthResponseCode, setOAuthResponseCode] = useState<string>(null);
+  const loginAttemptIdRef = useRef<string>();
+  const loginWindowRef = useRef<Window>();
+
   const onLogInClick = () => {
-    // NATODO
-    alert('NATODO: not yet implemented');
+    const clusterLoginUrl = 'https://cam-oauth-testing-login.surge.sh/'; // NATODO use a real login page
+    const attemptId = shortid.generate();
+    loginAttemptIdRef.current = attemptId;
+    setOAuthResponseCode(null);
+    const searchParams = new URLSearchParams({ state: attemptId });
+    const loginUrl = `${clusterLoginUrl}?${searchParams.toString()}`;
+    const loginWindow = window.open(loginUrl, '_blank');
+    loginWindow.focus();
+    loginWindowRef.current = loginWindow;
   };
+
+  const handleStorageChanged = () => {
+    if (loginAttemptIdRef.current && loginWindowRef.current) {
+      const authCode = window.localStorage.getItem(`oauth-code-${loginAttemptIdRef.current}`);
+      if (authCode) {
+        setOAuthResponseCode(authCode);
+        loginWindowRef.current.close();
+        window.localStorage.removeItem(`oauth-code-${loginAttemptIdRef.current}`);
+        loginAttemptIdRef.current = null;
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageChanged);
+    return () => window.removeEventListener('storage', handleStorageChanged);
+  }, []);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -135,6 +164,13 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           >
             Log in
           </Button>
+          {oAuthResponseCode && (
+            <div style={{ color: 'green' }}>
+              <p>
+                <strong>TODO: Handle this response code! {oAuthResponseCode}</strong>
+              </p>
+            </div>
+          )}
         </div>
         <Radio
           id={`${FieldKey.tokenType}-${TokenType.serviceAccount}`}
