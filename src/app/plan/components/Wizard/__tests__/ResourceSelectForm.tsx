@@ -3,7 +3,7 @@ import ResourceSelectForm, { IResourceSelectFormProps } from '../ResourceSelectF
 import React, { useEffect } from 'react';
 import '@testing-library/jest-dom/extend-expect';
 
-import { planValue } from './__helpers__/planHelper';
+import { planValue } from './planHelper';
 import axios from 'axios';
 
 jest.mock('axios');
