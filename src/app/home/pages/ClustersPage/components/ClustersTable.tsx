@@ -6,7 +6,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
 import { getClusterInfo } from '../helpers';
-import StatusIcon from '../../../../common/components/StatusIcon';
+import StatusIcon, { StatusType } from '../../../../common/components/StatusIcon';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
 import IconWithText from '../../../../common/components/IconWithText';
 import { ICluster } from '../../../../cluster/duck/types';
@@ -68,7 +68,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
         {
           title: (
             <IconWithText
-              icon={<StatusIcon isReady={clusterStatus} />}
+              icon={<StatusIcon status={clusterStatus ? StatusType.OK : StatusType.ERROR} />}
               text={clusterStatus ? `Connected` : `Connection Failed`}
             />
           ),
