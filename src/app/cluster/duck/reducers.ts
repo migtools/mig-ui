@@ -7,6 +7,7 @@ import {
 import { ICluster } from './types';
 
 export interface IClusterReducerState {
+  isFetchingInitialClusters: boolean;
   isPolling: boolean;
   isError: boolean;
   isFetching: boolean;
@@ -18,6 +19,7 @@ export interface IClusterReducerState {
 type ClusterReducerFn = (state: IClusterReducerState, action: any) => IClusterReducerState;
 
 export const INITIAL_STATE: IClusterReducerState = {
+  isFetchingInitialClusters: true,
   isPolling: false,
   isError: false,
   isFetching: false,
@@ -80,6 +82,7 @@ export const updateClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, ac
 export const updateClusters: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
+    isFetchingInitialClusters: false,
     clusterList: action.updatedClusters,
   };
 };

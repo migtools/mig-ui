@@ -10,6 +10,8 @@ import {
   EmptyStateIcon,
   Title,
   Button,
+  Bullseye,
+  Spinner,
 } from '@patternfly/react-core';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -29,6 +31,7 @@ interface IStoragesPageBaseProps {
   storageAssociatedPlans: IPlanCountByResourceName;
   watchStorageAddEditStatus: (storageName: string) => void;
   removeStorage: (storageName: string) => void;
+  isFetchingInitialStorages: boolean;
 }
 
 // TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
@@ -38,6 +41,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   storageAssociatedPlans,
   watchStorageAddEditStatus,
   removeStorage,
+  isFetchingInitialStorages,
 }: IStoragesPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [currentStorage, setCurrentStorage] = useState(null);
@@ -51,37 +55,50 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
         </TextContent>
       </PageSection>
       <PageSection>
-        <Card>
-          <CardBody>
-            <StorageContext.Provider
-              value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
-            >
-              {!storageList ? null : storageList.length === 0 ? (
-                <EmptyState variant="full">
-                  <EmptyStateIcon icon={AddCircleOIcon} />
-                  <Title size="lg">Add replication repositories for the migration</Title>
-                  <Button onClick={toggleAddEditModal} variant="primary">
-                    Add replication repository
-                  </Button>
-                </EmptyState>
-              ) : (
-                <StoragesTable
-                  storageList={storageList}
-                  associatedPlans={storageAssociatedPlans}
-                  toggleAddEditModal={toggleAddEditModal}
-                  removeStorage={removeStorage}
+        {isFetchingInitialStorages ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        ) : (
+          <Card>
+            <CardBody>
+              <StorageContext.Provider
+                value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
+              >
+                {!storageList ? null : storageList.length === 0 ? (
+                  <EmptyState variant="full">
+                    <EmptyStateIcon icon={AddCircleOIcon} />
+                    <Title size="lg">Add replication repositories for the migration</Title>
+                    <Button onClick={toggleAddEditModal} variant="primary">
+                      Add replication repository
+                    </Button>
+                  </EmptyState>
+                ) : (
+                  <StoragesTable
+                    storageList={storageList}
+                    associatedPlans={storageAssociatedPlans}
+                    toggleAddEditModal={toggleAddEditModal}
+                    removeStorage={removeStorage}
+                  />
+                )}
+                <AddEditStorageModal
+                  isOpen={isAddEditModalOpen}
+                  onHandleClose={() => {
+                    toggleAddEditModal();
+                    setCurrentStorage(null);
+                  }}
                 />
-              )}
-              <AddEditStorageModal
-                isOpen={isAddEditModalOpen}
-                onHandleClose={() => {
-                  toggleAddEditModal();
-                  setCurrentStorage(null);
-                }}
-              />
-            </StorageContext.Provider>
-          </CardBody>
-        </Card>
+              </StorageContext.Provider>
+            </CardBody>
+          </Card>
+        )}
       </PageSection>
     </>
   );
@@ -90,6 +107,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
 const mapStateToProps = (state: IReduxState) => ({
   storageList: storageSelectors.getAllStorage(state),
   storageAssociatedPlans: storageSelectors.getAssociatedPlans(state),
+  isFetchingInitialStorages: state.storage.isFetchingInitialStorages,
 });
 
 const mapDispatchToProps = (dispatch) => ({

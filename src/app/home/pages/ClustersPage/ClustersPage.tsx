@@ -10,6 +10,8 @@ import {
   EmptyStateIcon,
   Title,
   Button,
+  Bullseye,
+  Spinner,
 } from '@patternfly/react-core';
 import { AddCircleOIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -31,6 +33,7 @@ interface IClustersPageBaseProps {
   migMeta: IMigMeta;
   watchClusterAddEditStatus: (clusterName: string) => void;
   removeCluster: (clusterName: string) => void;
+  isFetchingInitialClusters: boolean;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -39,6 +42,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   migMeta,
   watchClusterAddEditStatus,
   removeCluster,
+  isFetchingInitialClusters,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -52,30 +56,46 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
         </TextContent>
       </PageSection>
       <PageSection>
-        <Card>
-          <CardBody>
-            <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-              {!clusterList ? null : clusterList.length === 0 ? (
-                <EmptyState variant="full">
-                  <EmptyStateIcon icon={AddCircleOIcon} />
-                  <Title size="lg">Add source and target clusters for the migration</Title>
-                  <Button onClick={toggleAddEditModal} variant="primary">
-                    Add cluster
-                  </Button>
-                </EmptyState>
-              ) : (
-                <ClustersTable
-                  clusterList={clusterList}
-                  associatedPlans={clusterAssociatedPlans}
-                  migMeta={migMeta}
-                  removeCluster={removeCluster}
-                  toggleAddEditModal={toggleAddEditModal}
+        {isFetchingInitialClusters ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        ) : (
+          <Card>
+            <CardBody>
+              <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
+                {!clusterList ? null : clusterList.length === 0 ? (
+                  <EmptyState variant="full">
+                    <EmptyStateIcon icon={AddCircleOIcon} />
+                    <Title size="lg">Add source and target clusters for the migration</Title>
+                    <Button onClick={toggleAddEditModal} variant="primary">
+                      Add cluster
+                    </Button>
+                  </EmptyState>
+                ) : (
+                  <ClustersTable
+                    clusterList={clusterList}
+                    associatedPlans={clusterAssociatedPlans}
+                    migMeta={migMeta}
+                    removeCluster={removeCluster}
+                    toggleAddEditModal={toggleAddEditModal}
+                  />
+                )}
+                <AddEditClusterModal
+                  isOpen={isAddEditModalOpen}
+                  onHandleClose={toggleAddEditModal}
                 />
-              )}
-              <AddEditClusterModal isOpen={isAddEditModalOpen} onHandleClose={toggleAddEditModal} />
-            </ClusterContext.Provider>
-          </CardBody>
-        </Card>
+              </ClusterContext.Provider>
+            </CardBody>
+          </Card>
+        )}
       </PageSection>
     </>
   );
@@ -84,6 +104,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
 const mapStateToProps = (state: IReduxState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
+  isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.migMeta,
 });
 
