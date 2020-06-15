@@ -290,7 +290,7 @@ export function createStorageSecret(
         },
         kind: 'Secret',
         metadata: {
-          name,
+          generateName: `${name}-`,
           namespace,
         },
         type: 'Opaque',
@@ -305,7 +305,7 @@ export function createStorageSecret(
         },
         kind: 'Secret',
         metadata: {
-          name,
+          generateName: `${name}-`,
           namespace,
         },
         type: 'Opaque',
@@ -320,7 +320,7 @@ export function createStorageSecret(
         },
         kind: 'Secret',
         metadata: {
-          name,
+          generateName: `${name}-`,
           namespace,
         },
         type: 'Opaque',
