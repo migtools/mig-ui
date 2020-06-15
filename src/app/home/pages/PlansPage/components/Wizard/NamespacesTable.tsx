@@ -22,15 +22,15 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 
-interface INamespaceTableProps
+interface INamespacesTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
     Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
 
-const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
+const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   setFieldValue,
   sourceClusterNamespaces,
   values,
-}: INamespaceTableProps) => {
+}: INamespacesTableProps) => {
   if (values.sourceCluster === null) return null;
 
   const columns = [
@@ -152,4 +152,4 @@ const NamespaceTable: React.FunctionComponent<INamespaceTableProps> = ({
   );
 };
 
-export default NamespaceTable;
+export default NamespacesTable;

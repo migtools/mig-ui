@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Wizard } from '@patternfly/react-core';
+import { Wizard, WizardStepFunctionType } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
-import ResourceSelectForm from './ResourceSelectForm';
+import NamespacesForm from './NamespacesForm';
 import VolumesForm from './VolumesForm';
 import CopyOptionsForm from './CopyOptionsForm';
 import HooksStep from './HooksStep';
@@ -69,7 +69,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
   enum stepId {
     General = 1,
-    MigrationSource,
+    Namespaces,
     PersistentVolumes,
     StorageClass,
     MigrationTarget,
@@ -93,6 +93,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     }
   }, [isOpen]);
 
+  const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
+    fieldKeys.every((fieldKey) => !errors[fieldKey] && (touched[fieldKey] || isEdit === true));
+
   useEffect(
     () => {
       const steps = [
@@ -102,52 +105,42 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           component: (
             <WizardStepContainer title="General">
               <GeneralForm
+                clusterList={clusterList}
+                storageList={storageList}
                 values={values}
                 errors={errors}
                 touched={touched}
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 setFieldTouched={setFieldTouched}
+                setFieldValue={setFieldValue}
                 isEdit={isEdit}
               />
             </WizardStepContainer>
           ),
-          enableNext: !errors.planName && (touched.planName === true || isEdit === true),
+          enableNext: areFieldsTouchedAndValid([
+            'planName',
+            'sourceCluster',
+            'targetCluster',
+            'selectedStorage',
+          ]),
         },
         {
-          id: stepId.MigrationSource,
-          name: 'Resources',
+          id: stepId.Namespaces,
+          name: 'Namespaces',
           component: (
-            <WizardStepContainer title="Resources">
-              <ResourceSelectForm
+            <WizardStepContainer title="Namespaces">
+              <NamespacesForm
                 values={values}
-                errors={errors}
-                touched={touched}
                 setFieldValue={setFieldValue}
-                setFieldTouched={setFieldTouched}
-                clusterList={clusterList}
-                storageList={storageList}
                 isFetchingNamespaceList={isFetchingNamespaceList}
                 fetchNamespacesRequest={fetchNamespacesRequest}
                 sourceClusterNamespaces={sourceClusterNamespaces}
-                isEdit={isEdit}
               />
             </WizardStepContainer>
           ),
-          enableNext:
-            (!errors.selectedStorage &&
-              touched.selectedStorage === true &&
-              !errors.targetCluster &&
-              touched.targetCluster === true &&
-              !errors.sourceCluster &&
-              touched.sourceCluster === true &&
-              !errors.selectedNamespaces) ||
-            (isEdit &&
-              !errors.selectedStorage &&
-              !errors.targetCluster &&
-              !errors.sourceCluster &&
-              !errors.selectedNamespaces),
-          canJumpTo: stepIdReached >= stepId.MigrationSource,
+          enableNext: !errors.selectedNamespaces,
+          canJumpTo: stepIdReached >= stepId.Namespaces,
         },
         {
           id: stepId.PersistentVolumes,
@@ -257,19 +250,19 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     ]
   );
 
-  const onMove = (curr, prev) => {
+  const onMove: WizardStepFunctionType = (newStep, prevStep) => {
     //stop pv polling when navigating
     pvUpdatePollStop();
     //
-    if (stepIdReached < curr.id) {
-      setStepIdReached(curr.id);
+    if (stepIdReached < newStep.id) {
+      setStepIdReached(newStep.id as number);
     }
 
-    if (curr.id === stepId.MigrationSource && isEdit) {
+    if (newStep.id === stepId.Namespaces && isEdit) {
       setCurrentPlan(editPlanObj);
     }
 
-    if (prev.prevId === stepId.MigrationSource && curr.id !== stepId.General) {
+    if (prevStep.prevId === stepId.Namespaces && newStep.id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
 
@@ -283,12 +276,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         });
       }
     }
-    if (curr.id === stepId.Results) {
+    if (newStep.id === stepId.Results) {
       updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
       validatePlanRequest(props.values);
     }
-    if (prev.prevId === stepId.Hooks && curr.id === stepId.StorageClass) {
+    if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
     }
   };
