@@ -7,6 +7,7 @@ export interface ITokenReducerState {
   isFetching: boolean;
   tokenList: IToken[];
   // NATODO searchTerm? addEditStatus?
+  isFetchingInitialTokens: boolean;
 }
 
 type TokenReducerFn = (state: ITokenReducerState, action: any) => ITokenReducerState;
@@ -16,6 +17,7 @@ export const INITIAL_STATE: ITokenReducerState = {
   isError: false,
   isFetching: false,
   tokenList: [],
+  isFetchingInitialTokens: true,
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?

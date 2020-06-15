@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
+  Bullseye,
   Card,
   PageSection,
   TextContent,
@@ -9,6 +10,7 @@ import {
   EmptyState,
   EmptyStateIcon,
   Title,
+  Spinner,
 } from '@patternfly/react-core';
 import { WrenchIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -22,17 +24,23 @@ import { ICluster } from '../../../cluster/duck/types';
 interface ITokensPageBaseProps {
   tokenList: IToken[];
   clusterList: ICluster[];
+  //NATODO: implement loading state for tokens
+  // isFetchingInitialTokens: boolean;
 }
 
 const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
-}: ITokensPageBaseProps) => {
+}: //NATODO: implement loading state for tokens
+// isFetchingInitialTokens,
+ITokensPageBaseProps) => {
   const [isAddEditModalOpen, reallyToggleAddEditModal] = useOpenModal(false);
   const toggleAddEditModal = () => {
     alert('NATODO: modal still being implemented!');
     reallyToggleAddEditModal();
   };
+  //NATODO: implement loading state for tokens
+  const isFetchingInitialTokens = false;
 
   return (
     <>
@@ -44,26 +52,39 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
         </TextContent>
       </PageSection>
       <PageSection>
-        <Card>
-          <CardBody>
-            {/* NATODO add a TokenContext provider here when that becomes necessary? */}
-            {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
-              <EmptyState variant="full">
-                <EmptyStateIcon icon={WrenchIcon} />
-                <Title size="lg">No clusters have been added</Title>
-                <TextContent className={spacing.mtMd}>
-                  <Text component="p">
-                    An administrator must add clusters for migration before you can add tokens.
-                    Contact the cluster administrator for assistance.
-                  </Text>
-                </TextContent>
-              </EmptyState>
-            ) : (
-              <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
-            )}
-            {/* NATODO render an add/edit modal here */}
-          </CardBody>
-        </Card>
+        {isFetchingInitialTokens ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <div className="pf-c-empty-state__icon">
+                <Spinner size="xl" />
+              </div>
+              <Title headingLevel="h2" size="xl">
+                Loading...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        ) : (
+          <Card>
+            <CardBody>
+              {/* NATODO add a TokenContext provider here when that becomes necessary? */}
+              {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
+                <EmptyState variant="full">
+                  <EmptyStateIcon icon={WrenchIcon} />
+                  <Title size="lg">No clusters have been added</Title>
+                  <TextContent className={spacing.mtMd}>
+                    <Text component="p">
+                      An administrator must add clusters for migration before you can add tokens.
+                      Contact the cluster administrator for assistance.
+                    </Text>
+                  </TextContent>
+                </EmptyState>
+              ) : (
+                <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
+              )}
+              {/* NATODO render an add/edit modal here */}
+            </CardBody>
+          </Card>
+        )}
       </PageSection>
     </>
   );
@@ -94,6 +115,8 @@ const fakeTokens = [
 const mapStateToProps = (state: IReduxState) => ({
   tokenList: fakeTokens, // NATODO pull real data from redux here
   clusterList: clusterSelectors.getAllClusters(state),
+  //NATODO: implement loading state for tokens
+  // isFetchingInitialTokens: state.token.isFetchingInitialTokens,
 });
 
 const mapDispatchToProps = (dispatch) => ({});
