@@ -1,4 +1,4 @@
-import { MigResource, MigResourceKind } from './mig';
+import { MigResource, MigResourceKind } from '../mig';
 
 test('MigResource namedPath should be correct', () => {
   const ns = 'test-ns';
