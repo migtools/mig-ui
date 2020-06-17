@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Form, FormGroup, Grid, GridItem, TextInput, Title, Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
+import { useOpenModal } from '../../../../duck/hooks';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
@@ -108,11 +110,22 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     return tokenOptions.find((option) => option.value === tokenName);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onAddSourceTokenClick = () => {};
+  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const [newTokenField, setNewTokenField] = useState<'sourceToken' | 'targetToken'>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onAddTargetTokenClick = () => {};
+  const onAddSourceTokenClick = () => {
+    setNewTokenField('sourceToken');
+    toggleAddEditModal();
+  };
+
+  const onAddTargetTokenClick = () => {
+    setNewTokenField('targetToken');
+    toggleAddEditModal();
+  };
+
+  const onTokenCreated = (tokenName: string) => {
+    setFieldValue(newTokenField, tokenName);
+  };
 
   const sourceTokenOptions = getTokenOptionsForCluster(values.sourceCluster, onAddSourceTokenClick);
   const targetTokenOptions = getTokenOptionsForCluster(values.targetCluster, onAddTargetTokenClick);
@@ -213,6 +226,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               value={selectedSourceTokenOption}
               placeholderText="Select token..."
               isDisabled={!values.sourceCluster}
+            />
+            <AddEditTokenModal
+              isOpen={isAddEditModalOpen}
+              onClose={toggleAddEditModal}
+              onTokenCreated={onTokenCreated}
             />
           </FormGroup>
         </GridItem>

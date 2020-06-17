@@ -61,3 +61,7 @@ $mig-ui-breakpoint-list: build-breakpoint-map('base', 'sm', 'md', 'lg', 'xl', '2
 .always-scroll .pf-c-modal-box__body {
   overflow-y: scroll;
 }
+
+.modal-in-modal-container .pf-c-backdrop {
+  z-index: 600;
+}
