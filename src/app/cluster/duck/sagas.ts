@@ -4,7 +4,7 @@ import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import {
-  createTokenSecret,
+  createMigClusterSecret,
   createMigCluster,
   updateTokenSecret,
   getTokenSecretLabelSelector,
@@ -116,7 +116,7 @@ function* addClusterRequest(action) {
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  const tokenSecret = createTokenSecret(
+  const tokenSecret = createMigClusterSecret(
     clusterValues.name,
     migMeta.configNamespace,
     clusterValues.token,

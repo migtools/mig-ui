@@ -5,7 +5,7 @@ import {
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
 
-export function createTokenSecret(
+export function createMigClusterSecret(
   name: string,
   namespace: string,
   rawToken: string,
@@ -679,6 +679,50 @@ export function createMigHook(migHook: any, namespace: string) {
       namespace,
     },
     spec: migHookSpec,
+  };
+}
+
+export function createMigTokenSecret(name: string, namespace: string, rawToken: string) {
+  // btoa => to base64, atob => from base64
+  const encodedToken = btoa(rawToken);
+  return {
+    apiVersion: 'v1',
+    data: {
+      token: encodedToken,
+    },
+    kind: 'Secret',
+    metadata: {
+      generateName: `${name}-`,
+      namespace,
+    },
+    type: 'Opaque',
+  };
+}
+
+export function createMigToken(
+  name: string,
+  namespace: string,
+  migTokenSecretName: string,
+  migTokenSecretNamespace: string,
+  migClusterName: string
+) {
+  return {
+    apiVersion: 'migration.openshift.io/v1alpha1',
+    kind: 'MigToken',
+    metadata: {
+      name,
+      namespace,
+    },
+    spec: {
+      migClusterRef: {
+        name: migClusterName,
+        namespace,
+      },
+      secretRef: {
+        name: migTokenSecretName,
+        namespace: migTokenSecretNamespace,
+      },
+    },
   };
 }
 

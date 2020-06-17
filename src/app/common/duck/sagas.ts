@@ -1,15 +1,11 @@
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
-import {
-  AlertActions,
-  PollingActions,
-  PollingActionTypes,
-  AlertActionTypes,
-} from '../../common/duck/actions';
+import { AlertActions, AlertActionTypes } from '../../common/duck/actions';
 import { AuthActions } from '../../auth/duck/actions';
 
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
+import { TokenActionTypes, TokenActions } from '../../token/duck/actions';
 import utils from '../../common/duck/utils';
 
 export const StatusPollingInterval = 4000;
@@ -37,6 +33,7 @@ function* poll(action) {
         yield put(PlanActions.stopPlanPolling());
         yield put(ClusterActions.stopClusterPolling());
         yield put(StorageActions.stopStoragePolling());
+        yield put(TokenActions.stopTokenPolling());
       }
       //TODO: Handle "secrets not found error" & any other fetch errors here
     }
@@ -61,6 +58,13 @@ function* watchClustersPolling() {
   while (true) {
     const action = yield take(ClusterActionTypes.CLUSTER_POLL_START);
     yield race([call(poll, action), take(ClusterActionTypes.CLUSTER_POLL_STOP)]);
+  }
+}
+
+function* watchTokenPolling() {
+  while (true) {
+    const action = yield take(TokenActionTypes.TOKEN_POLL_START);
+    yield race([call(poll, action), take(TokenActionTypes.TOKEN_POLL_STOP)]);
   }
 }
 
@@ -104,5 +108,6 @@ export default {
   watchStoragePolling,
   watchClustersPolling,
   watchPlanPolling,
+  watchTokenPolling,
   watchAlerts,
 };
