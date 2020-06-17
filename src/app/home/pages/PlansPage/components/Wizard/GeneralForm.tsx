@@ -1,14 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/react-core';
+import { Form, FormGroup, Grid, GridItem, TextInput, Title, Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 const styles = require('./GeneralForm.module');
-
-interface IProps {
-  component: React.ReactNode;
-}
 
 interface IGeneralFormProps
   extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'tokenList' | 'isEdit'>,
@@ -71,15 +67,57 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       .map((storage) => storage.MigStorage.metadata.name);
   }
 
-  const getTokenOptionsForCluster = (clusterName: string): string[] => {
-    if (!clusterName || !tokenList) return [];
-    return tokenList
-      .filter((token) => token.MigToken.spec.migClusterRef.name === clusterName)
-      .map((token) => token.MigToken.metadata.name);
+  const getTokenOptionsForCluster = (
+    clusterName: string,
+    onAddTokenClick: () => void
+  ): OptionWithValue[] => {
+    const empty: OptionWithValue = {
+      toString: () => 'No tokens found for the selected cluster',
+      value: null,
+      props: {
+        className: styles.nonSelectable,
+        isDisabled: true, // NATODO does this make it stay open after the modal closes?
+        children: (
+          <>
+            <span className="pf-m-disabled">No tokens found for the selected cluster.</span>
+            <Button
+              variant="link"
+              isInline
+              className={styles.addTokenOptionLink}
+              onClick={onAddTokenClick}
+            >
+              Add token
+            </Button>
+          </>
+        ),
+      },
+    };
+    if (!clusterName || !tokenList) return [empty];
+    const availableTokens = tokenList.filter(
+      (token) => token.MigToken.spec.migClusterRef.name === clusterName
+    );
+    if (availableTokens.length === 0) return [empty];
+    return availableTokens.map((token) => ({
+      toString: () => token.MigToken.metadata.name,
+      value: token.MigToken.metadata.name,
+    }));
   };
 
-  const sourceTokenOptions = getTokenOptionsForCluster(values.sourceCluster);
-  const targetTokenOptions = getTokenOptionsForCluster(values.targetCluster);
+  const getSelectedTokenOption = (tokenName: string, tokenOptions: OptionWithValue[]) => {
+    if (!tokenName) return null;
+    return tokenOptions.find((option) => option.value === tokenName);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const onAddSourceTokenClick = () => {};
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const onAddTargetTokenClick = () => {};
+
+  const sourceTokenOptions = getTokenOptionsForCluster(values.sourceCluster, onAddSourceTokenClick);
+  const targetTokenOptions = getTokenOptionsForCluster(values.targetCluster, onAddTargetTokenClick);
+  const selectedSourceTokenOption = getSelectedTokenOption(values.sourceToken, sourceTokenOptions);
+  const selectedTargetTokenOption = getSelectedTokenOption(values.targetToken, targetTokenOptions);
 
   const handleStorageChange = (value) => {
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
@@ -165,12 +203,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           >
             <SimpleSelect
               id="sourceToken"
-              onChange={(selection) => {
-                setFieldValue('sourceToken', selection);
-                setFieldTouched('sourceToken');
+              onChange={(selection: OptionWithValue) => {
+                if (selection.value) {
+                  setFieldValue('sourceToken', selection.value);
+                  setFieldTouched('sourceToken');
+                }
               }}
               options={sourceTokenOptions}
-              value={values.sourceToken}
+              value={selectedSourceTokenOption}
               placeholderText="Select token..."
               isDisabled={!values.sourceCluster}
             />
@@ -202,12 +242,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           >
             <SimpleSelect
               id="targetToken"
-              onChange={(selection: string) => {
-                setFieldValue('targetToken', selection);
-                setFieldTouched('targetToken');
+              onChange={(selection: OptionWithValue) => {
+                if (selection.value) {
+                  setFieldValue('targetToken', selection.value);
+                  setFieldTouched('targetToken');
+                }
               }}
               options={targetTokenOptions}
-              value={values.targetToken}
+              value={selectedTargetTokenOption}
               placeholderText="Select token..."
               isDisabled={!values.targetCluster}
             />
