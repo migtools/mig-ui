@@ -70,8 +70,7 @@ const mapStateToProps = (state: IReduxState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addToken: (tokenValues: ITokenFormValues) =>
-    dispatch(TokenActions.addTokenRequest(tokenValues))
+  addToken: (tokenValues: ITokenFormValues) => dispatch(TokenActions.addTokenRequest(tokenValues)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEditTokenModal);

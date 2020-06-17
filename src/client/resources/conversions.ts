@@ -682,11 +682,7 @@ export function createMigHook(migHook: any, namespace: string) {
   };
 }
 
-export function createMigTokenSecret(
-  name: string,
-  namespace: string,
-  rawToken: string,
-) {
+export function createMigTokenSecret(name: string, namespace: string, rawToken: string) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
   return {
@@ -708,7 +704,7 @@ export function createMigToken(
   namespace: string,
   migTokenSecretName: string,
   migTokenSecretNamespace: string,
-  migClusterName: string,
+  migClusterName: string
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -725,8 +721,8 @@ export function createMigToken(
       secretRef: {
         name: migTokenSecretName,
         namespace: migTokenSecretNamespace,
-      }
-    }
+      },
+    },
   };
 }
 

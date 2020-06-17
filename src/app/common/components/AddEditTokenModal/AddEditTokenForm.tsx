@@ -22,11 +22,7 @@ import {
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
-import {
-  ITokenFormValues,
-  TokenFieldKey,
-  TokenType,
- } from '../../../token/duck/types';
+import { ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 
 interface IOtherProps {
   addEditStatus: IAddEditStatus;

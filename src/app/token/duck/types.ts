@@ -36,7 +36,6 @@ export interface IToken {
   };
 }
 
-
 export enum TokenFieldKey {
   Name = 'name',
   AssociatedClusterName = 'associatedClusterName',

@@ -55,13 +55,12 @@ const migTokenFetchFailure = () => ({
 
 const startTokenPolling = (params) => ({
   type: TokenActionTypes.TOKEN_POLL_START,
-  params
+  params,
 });
 
 const stopTokenPolling = () => ({
   type: TokenActionTypes.TOKEN_POLL_STOP,
 });
-
 
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {

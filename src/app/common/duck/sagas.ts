@@ -1,8 +1,5 @@
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
-import {
-  AlertActions,
-  AlertActionTypes,
-} from '../../common/duck/actions';
+import { AlertActions, AlertActionTypes } from '../../common/duck/actions';
 import { AuthActions } from '../../auth/duck/actions';
 
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
