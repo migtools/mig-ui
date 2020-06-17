@@ -11,7 +11,6 @@ import {
   createAddEditStatus,
   AddEditState,
   AddEditMode,
-  isAddEditButtonDisabled,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { ICluster } from '../../../../../cluster/duck/types';
@@ -24,14 +23,20 @@ import {
   IPlan,
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
+import { IReduxState } from '../../../../../../reducers';
+import { IToken } from '../../../../../token/duck/types';
 
+// NATODO make sure new fields make it to the API:
+//   sourceToken, targetToken
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
+  sourceToken: string;
   targetCluster: string;
+  targetToken: string;
   selectedStorage: string;
   selectedNamespaces: string[];
-  persistentVolumes: any[]; // TODO replace this with selections-only version after refactor
+  persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
   pvStorageClassAssignment: {
     [pvName: string]: {
       name: string;
@@ -50,6 +55,7 @@ export interface IOtherProps {
   clusterList: ICluster[];
   planList: IPlan[];
   storageList: IStorage[];
+  tokenList: IToken[];
   isFetchingPVList: boolean;
   isPVPolling: boolean;
   isPollingStatus: boolean;
@@ -100,7 +106,9 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     const values: IFormValues = {
       planName: '',
       sourceCluster: null,
+      sourceToken: null,
       targetCluster: null,
+      targetToken: null,
       selectedNamespaces: [],
       selectedStorage: null,
       persistentVolumes: [],
@@ -155,7 +163,7 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
   enableReinitialize: true,
 })(WizardComponent);
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: IReduxState) => {
   return {
     planName: '',
     sourceCluster: null,
@@ -176,10 +184,10 @@ const mapStateToProps = (state) => {
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
     hookList: planSelectors.getHooks(state),
-    newHookList: state.plan.newHookList,
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     migHookList: state.plan.migHookList,
+    tokenList: state.token.tokenList, // NATODO do we also need to bring in fetch/polling stuff for tokens to the wizard?
   };
 };
 const mapDispatchToProps = (dispatch) => {

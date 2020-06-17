@@ -1,24 +1,32 @@
 import React, { useEffect, useRef } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { Form, FormGroup, Grid, GridItem, TextInput } from '@patternfly/react-core';
+import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
+const styles = require('./GeneralForm.module');
+
 interface IProps {
   component: React.ReactNode;
 }
 
 interface IGeneralFormProps
-  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>,
+  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'tokenList' | 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
-      'handleBlur' | 'handleChange' | 'setFieldTouched' | 'setFieldValue' | 'values' | 'touched'
-    > {
-  errors: any;
-}
+      | 'handleBlur'
+      | 'handleChange'
+      | 'setFieldTouched'
+      | 'setFieldValue'
+      | 'values'
+      | 'touched'
+      | 'errors'
+    > {}
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   clusterList,
   storageList,
+  tokenList,
   errors,
   handleBlur,
   handleChange,
@@ -63,6 +71,16 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       .map((storage) => storage.MigStorage.metadata.name);
   }
 
+  const getTokenOptionsForCluster = (clusterName: string): string[] => {
+    if (!clusterName || !tokenList) return [];
+    return tokenList
+      .filter((token) => token.MigToken.spec.migClusterRef.name === clusterName)
+      .map((token) => token.MigToken.metadata.name);
+  };
+
+  const sourceTokenOptions = getTokenOptionsForCluster(values.sourceCluster);
+  const targetTokenOptions = getTokenOptionsForCluster(values.targetCluster);
+
   const handleStorageChange = (value) => {
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
@@ -89,12 +107,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   };
 
   return (
-    // TODO revisit grid layout, make sure source and target wrap in order on small screens
     <Form>
-      <Grid lg={10} xl={6}>
+      <Title size="md" className={styles.fieldGridTitle}>
+        Give your plan a name
+      </Title>
+      <Grid md={6} gutter="md" className={spacing.mbMd}>
         <GridItem>
           <FormGroup
-            label="Plan Name"
+            label="Plan name"
             isRequired
             fieldId="planName"
             helperTextInvalid={touched.planName && errors.planName}
@@ -115,7 +135,10 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
         </GridItem>
       </Grid>
-      <Grid md={6} gutter="md">
+      <Title size="md" className={styles.fieldGridTitle}>
+        Select source and target clusters
+      </Title>
+      <Grid md={6} gutter="md" className={spacing.mbMd}>
         <GridItem>
           <FormGroup
             label="Source cluster"
@@ -132,8 +155,27 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select source..."
             />
           </FormGroup>
+          <FormGroup
+            className={spacing.mtMd}
+            label="Authentication token"
+            isRequired
+            fieldId="sourceToken"
+            helperTextInvalid={touched.sourceToken && errors.sourceToken}
+            isValid={!(touched.sourceToken && errors.sourceToken)}
+          >
+            <SimpleSelect
+              id="sourceToken"
+              onChange={(selection) => {
+                setFieldValue('sourceToken', selection);
+                setFieldTouched('sourceToken');
+              }}
+              options={sourceTokenOptions}
+              value={values.sourceToken}
+              placeholderText="Select token..."
+              isDisabled={!values.sourceCluster}
+            />
+          </FormGroup>
         </GridItem>
-
         <GridItem>
           <FormGroup
             label="Target cluster"
@@ -150,11 +192,35 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select target..."
             />
           </FormGroup>
+          <FormGroup
+            className={spacing.mtMd}
+            label="Authentication token"
+            isRequired
+            fieldId="targetToken"
+            helperTextInvalid={touched.targetToken && errors.targetToken}
+            isValid={!(touched.targetToken && errors.targetToken)}
+          >
+            <SimpleSelect
+              id="targetToken"
+              onChange={(selection: string) => {
+                setFieldValue('targetToken', selection);
+                setFieldTouched('targetToken');
+              }}
+              options={targetTokenOptions}
+              value={values.targetToken}
+              placeholderText="Select token..."
+              isDisabled={!values.targetCluster}
+            />
+          </FormGroup>
         </GridItem>
-
+      </Grid>
+      <Title size="md" className={styles.fieldGridTitle}>
+        Select a replication repository
+      </Title>
+      <Grid md={6} gutter="md">
         <GridItem>
           <FormGroup
-            label="Replication repository"
+            label="Repository"
             isRequired
             fieldId="selectedStorage"
             helperTextInvalid={touched.selectedStorage && errors.selectedStorage}

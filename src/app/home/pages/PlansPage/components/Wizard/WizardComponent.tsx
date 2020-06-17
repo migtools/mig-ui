@@ -33,6 +33,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     currentPlan,
     currentPlanStatus,
     storageList,
+    tokenList,
     isOpen,
     isFetchingPVList,
     isFetchingNamespaceList,
@@ -107,6 +108,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               <GeneralForm
                 clusterList={clusterList}
                 storageList={storageList}
+                tokenList={tokenList}
                 values={values}
                 errors={errors}
                 touched={touched}

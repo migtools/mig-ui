@@ -38,6 +38,7 @@ export interface IPlanReducerState {
   isFetching: boolean;
   migPlanList: IPlan[];
   planSearchText: string;
+  isFetchingNamespaceList: boolean;
   sourceClusterNamespaces: ISourceClusterNamespace[];
   currentPlan: IMigPlan;
   isPollingStatus: boolean;
@@ -63,6 +64,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   isFetching: false,
   migPlanList: [],
   planSearchText: '',
+  isFetchingNamespaceList: false,
   sourceClusterNamespaces: [],
   currentPlan: null,
   isPollingStatus: false,
