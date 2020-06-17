@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
+  Button,
   Bullseye,
   Card,
   PageSection,
@@ -12,7 +13,7 @@ import {
   Title,
   Spinner,
 } from '@patternfly/react-core';
-import { WrenchIcon } from '@patternfly/react-icons';
+import { WrenchIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import TokensTable from './components/TokensTable';
@@ -35,6 +36,34 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+
+  const renderTokenCardBody = () => {
+    if (clusterList.length === 0) {
+      return (
+        <EmptyState variant="full">
+          <EmptyStateIcon icon={WrenchIcon} />
+          <Title size="lg">No clusters have been added</Title>
+          <TextContent className={spacing.mtMd}>
+            <Text component="p">
+              An administrator must add clusters for migration before you can add tokens. Contact
+              the cluster administrator for assistance.
+            </Text>
+          </TextContent>
+        </EmptyState>
+      );
+    } else if (tokenList.length === 0) {
+      return (
+        <EmptyState variant="full">
+          <EmptyStateIcon icon={AddCircleOIcon} />
+          <Title size="lg">Add token</Title>
+          <Button onClick={toggleAddEditModal} variant="primary">
+            Add token
+          </Button>
+        </EmptyState>
+      );
+    }
+    return <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />;
+  };
 
   return (
     <>
@@ -61,20 +90,7 @@ ITokensPageBaseProps) => {
           <Card>
             <CardBody>
               {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
-              {!clusterList || !tokenList ? null : clusterList.length === 0 ? (
-                <EmptyState variant="full">
-                  <EmptyStateIcon icon={WrenchIcon} />
-                  <Title size="lg">No clusters have been added</Title>
-                  <TextContent className={spacing.mtMd}>
-                    <Text component="p">
-                      An administrator must add clusters for migration before you can add tokens.
-                      Contact the cluster administrator for assistance.
-                    </Text>
-                  </TextContent>
-                </EmptyState>
-              ) : (
-                <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />
-              )}
+              {renderTokenCardBody()}
               <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
             </CardBody>
           </Card>
