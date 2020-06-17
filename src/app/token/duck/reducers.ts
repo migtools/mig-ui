@@ -39,6 +39,22 @@ const tokenActionHandlers: { [actionType: string]: TokenReducerFn } = {
   [TokenActionTypes.MIG_TOKEN_FETCH_FAILURE]: (state = INITIAL_STATE, action) => {
     return { ...state, isError: true, isFetching: false };
   },
+  [TokenActionTypes.ADD_TOKEN_SUCCESS]: (state = INITIAL_STATE, action) => {
+    return { ...state, tokenList: [...state.tokenList, action.newMigToken]};
+  },
+  [TokenActionTypes.TOKEN_POLL_START]: (state = INITIAL_STATE) => {
+    return { ...state, isPolling: true };
+  },
+  [TokenActionTypes.TOKEN_POLL_STOP]: (state = INITIAL_STATE, action) => {
+    return { ...state, isPolling: false };
+  },
+  [TokenActionTypes.UPDATE_TOKENS]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      isFetchingInitialTokens: false,
+      tokenList: action.updatedTokens,
+     };
+  },
   // NATODO add handlers for the other actions
 };
 

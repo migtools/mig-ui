@@ -21,29 +21,17 @@ import {
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
-
-enum FieldKey {
-  name = 'name',
-  associatedClusterName = 'associatedClusterName',
-  tokenType = 'tokenType',
-  serviceAccountToken = 'serviceAccountToken',
-}
-
-enum TokenType {
-  oAuth = 'oAuth',
-  serviceAccount = 'serviceAccount',
-}
-
-interface ITokenFormValues {
-  [FieldKey.name]: string;
-  [FieldKey.associatedClusterName]: string;
-  [FieldKey.tokenType]: TokenType;
-  [FieldKey.serviceAccountToken]: string;
-}
+import { ICluster } from '../../../cluster/duck/types';
+import {
+  ITokenFormValues,
+  TokenFieldKey,
+  TokenType,
+ } from '../../../token/duck/types';
 
 interface IOtherProps {
   addEditStatus: IAddEditStatus;
   onAddEditSubmit: (values: ITokenFormValues) => void;
+  clusterList: ICluster[];
   onClose: () => void;
 }
 
@@ -60,9 +48,10 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   setFieldTouched,
   setFieldValue,
   onClose,
+  clusterList,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key: FieldKey) => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key: TokenFieldKey) => () => setFieldTouched(key, true, true);
 
   const [oAuthResponseCode, setOAuthResponseCode] = useState<string>(null);
   const loginAttemptIdRef = useRef<string>();
@@ -97,23 +86,25 @@ const InnerAddEditTokenForm: React.FunctionComponent<
     return () => window.removeEventListener('storage', handleStorageChanged);
   }, []);
 
+  const clusterNames = clusterList.map((c) => c.MigCluster.metadata.name);
+
   return (
     <Form onSubmit={handleSubmit}>
       <FormGroup
         label="Name"
         isRequired
-        fieldId={FieldKey.name}
+        fieldId={TokenFieldKey.Name}
         helperTextInvalid={touched.name && errors.name}
         isValid={!(touched.name && errors.name)}
       >
         <TextInput
           onChange={formikHandleChange}
-          onInput={formikSetFieldTouched(FieldKey.name)}
+          onInput={formikSetFieldTouched(TokenFieldKey.Name)}
           onBlur={handleBlur}
           value={values.name}
-          name={FieldKey.name}
+          name={TokenFieldKey.Name}
           type="text"
-          id={FieldKey.name}
+          id={TokenFieldKey.Name}
           isDisabled={addEditStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -121,14 +112,14 @@ const InnerAddEditTokenForm: React.FunctionComponent<
       <FormGroup
         label="Associate with cluster"
         isRequired
-        fieldId={FieldKey.associatedClusterName}
+        fieldId={TokenFieldKey.AssociatedClusterName}
         helperTextInvalid={touched.associatedClusterName && errors.associatedClusterName}
         isValid={!(touched.associatedClusterName && errors.associatedClusterName)}
       >
         <SimpleSelect
-          id={FieldKey.associatedClusterName}
-          onChange={(selection) => setFieldValue(FieldKey.associatedClusterName, selection)}
-          options={['foo', 'bar', 'baz']} // NATODO
+          id={TokenFieldKey.AssociatedClusterName}
+          onChange={(selection) => setFieldValue(TokenFieldKey.AssociatedClusterName, selection)}
+          options={clusterNames}
           value={values.associatedClusterName}
           placeholderText="Select cluster..."
         />
@@ -136,16 +127,16 @@ const InnerAddEditTokenForm: React.FunctionComponent<
       <FormGroup
         label="Token type"
         isRequired
-        fieldId={FieldKey.tokenType}
+        fieldId={TokenFieldKey.TokenType}
         helperTextInvalid={touched.tokenType && errors.tokenType}
         isValid={!(touched.tokenType && errors.tokenType)}
       >
         <Radio
-          id={`${FieldKey.tokenType}-${TokenType.oAuth}`}
-          name={FieldKey.tokenType}
-          isChecked={values.tokenType === TokenType.oAuth}
+          id={`${TokenFieldKey.TokenType}-${TokenType.OAuth}`}
+          name={TokenFieldKey.TokenType}
+          isChecked={values.tokenType === TokenType.OAuth}
           onChange={(checked) => {
-            if (checked) setFieldValue(FieldKey.tokenType, TokenType.oAuth);
+            if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.OAuth);
           }}
           label="OAuth"
         />
@@ -160,7 +151,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             variant="secondary"
             className={spacing.mtSm}
             onClick={onLogInClick}
-            isDisabled={values.tokenType !== TokenType.oAuth || !values.associatedClusterName}
+            isDisabled={values.tokenType !== TokenType.OAuth || !values.associatedClusterName}
           >
             Log in
           </Button>
@@ -173,31 +164,31 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           )}
         </div>
         <Radio
-          id={`${FieldKey.tokenType}-${TokenType.serviceAccount}`}
-          name={FieldKey.tokenType}
-          isChecked={values.tokenType === TokenType.serviceAccount}
+          id={`${TokenFieldKey.TokenType}-${TokenType.ServiceAccount}`}
+          name={TokenFieldKey.TokenType}
+          isChecked={values.tokenType === TokenType.ServiceAccount}
           onChange={(checked) => {
-            if (checked) setFieldValue(FieldKey.tokenType, TokenType.serviceAccount);
+            if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.ServiceAccount);
           }}
           label="Service account"
         />
         <FormGroup
           className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}
-          fieldId={FieldKey.serviceAccountToken}
-          isRequired={values.tokenType === TokenType.serviceAccount}
+          fieldId={TokenFieldKey.ServiceAccountToken}
+          isRequired={values.tokenType === TokenType.ServiceAccount}
           helperText="Enter the token string."
           helperTextInvalid={touched.serviceAccountToken && errors.serviceAccountToken}
           isValid={!(touched.serviceAccountToken && errors.serviceAccountToken)}
         >
           <TextInput
             onChange={formikHandleChange}
-            onInput={formikSetFieldTouched(FieldKey.serviceAccountToken)}
+            onInput={formikSetFieldTouched(TokenFieldKey.ServiceAccountToken)}
             onBlur={handleBlur}
             value={values.serviceAccountToken}
-            name={FieldKey.serviceAccountToken}
+            name={TokenFieldKey.ServiceAccountToken}
             type="text"
-            id={FieldKey.serviceAccountToken}
-            isDisabled={values.tokenType !== TokenType.serviceAccount}
+            id={TokenFieldKey.ServiceAccountToken}
+            isDisabled={values.tokenType !== TokenType.ServiceAccount}
             isValid={!(touched.serviceAccountToken && errors.serviceAccountToken)}
           />
         </FormGroup>
@@ -223,11 +214,11 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
     // NATODO initialize here from existing token for editing?
     name: '',
     associatedClusterName: '',
-    tokenType: TokenType.oAuth,
+    tokenType: TokenType.OAuth,
     serviceAccountToken: '',
   }),
   validate: (values: ITokenFormValues) => {
-    const errors: { [key in FieldKey]?: string } = {};
+    const errors: { [key in TokenFieldKey]?: string } = {};
     if (!values.name) {
       errors.name = 'Required';
     } else if (!utils.testDNS1123(values.name)) {
@@ -238,7 +229,7 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
       errors.associatedClusterName = 'Required';
     }
 
-    if (values.tokenType === TokenType.serviceAccount && !values.serviceAccountToken) {
+    if (values.tokenType === TokenType.ServiceAccount && !values.serviceAccountToken) {
       errors.serviceAccountToken = 'Required';
     }
 

@@ -25,19 +25,16 @@ import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
 interface ITokensPageBaseProps {
   tokenList: IToken[];
   clusterList: ICluster[];
-  //NATODO: implement loading state for tokens
-  // isFetchingInitialTokens: boolean;
+  isFetchingInitialTokens: boolean;
 }
 
 const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
+  isFetchingInitialTokens,
 }: //NATODO: implement loading state for tokens
-// isFetchingInitialTokens,
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  //NATODO: implement loading state for tokens
-  const isFetchingInitialTokens = false;
 
   return (
     <>
@@ -87,33 +84,10 @@ ITokensPageBaseProps) => {
   );
 };
 
-// NATODO remove this when we have real data
-const fakeTokens = [
-  {
-    MigToken: {
-      apiVersion: '1.0',
-      kind: 'MigToken',
-      metadata: {
-        name: 'My Token',
-      },
-      spec: {
-        migClusterRef: { name: 'cluster-name', namespace: 'some-namespace' },
-        secretRef: { name: 'secret-name', namespace: 'some-namespace' },
-      },
-      status: {
-        observedDigest: 'foo',
-        type: 'OAuth',
-        expiresAt: '2020-06-08T20:55:53.825Z',
-      },
-    },
-  },
-];
-
 const mapStateToProps = (state: IReduxState) => ({
-  tokenList: fakeTokens, // NATODO pull real data from redux here
+  tokenList: state.token.tokenList,
   clusterList: clusterSelectors.getAllClusters(state),
-  //NATODO: implement loading state for tokens
-  // isFetchingInitialTokens: state.token.isFetchingInitialTokens,
+  isFetchingInitialTokens: state.token.isFetchingInitialTokens,
 });
 
 const mapDispatchToProps = (dispatch) => ({});
