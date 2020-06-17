@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Form, FormGroup, Grid, GridItem, TextInput, Title, Button } from '@patternfly/react-core';
+import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
 import { useOpenModal } from '../../../../duck/hooks';
+import IconWithText from '../../../../../common/components/IconWithText';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
@@ -146,6 +148,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
+      setNewTokenField(null);
     }
   };
 
@@ -154,6 +157,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
       setFieldTouched('targetCluster');
+      setNewTokenField(null);
     }
   };
 
@@ -162,6 +166,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       <Title size="md" className={styles.fieldGridTitle}>
         Give your plan a name
       </Title>
+
       <Grid md={6} gutter="md" className={spacing.mbMd}>
         <GridItem>
           <FormGroup
@@ -186,9 +191,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
         </GridItem>
       </Grid>
+
       <Title size="md" className={styles.fieldGridTitle}>
         Select source and target clusters
       </Title>
+
       <Grid md={6} gutter="md" className={spacing.mbMd}>
         <GridItem>
           <FormGroup
@@ -233,7 +240,20 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               onTokenCreated={onTokenCreated}
             />
           </FormGroup>
+          {newTokenField === 'sourceToken' && values.sourceToken && (
+            <div className={spacing.mSm}>
+              <IconWithText
+                icon={
+                  <span className="pf-c-icon pf-m-success">
+                    <CheckIcon />
+                  </span>
+                }
+                text="Token associated"
+              />
+            </div>
+          )}
         </GridItem>
+
         <GridItem>
           <FormGroup
             label="Target cluster"
@@ -272,11 +292,25 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               isDisabled={!values.targetCluster}
             />
           </FormGroup>
+          {newTokenField === 'targetToken' && values.targetToken && (
+            <div className={spacing.mSm}>
+              <IconWithText
+                icon={
+                  <span className="pf-c-icon pf-m-success">
+                    <CheckIcon />
+                  </span>
+                }
+                text="Token associated"
+              />
+            </div>
+          )}
         </GridItem>
       </Grid>
+
       <Title size="md" className={styles.fieldGridTitle}>
         Select a replication repository
       </Title>
+
       <Grid md={6} gutter="md">
         <GridItem>
           <FormGroup

@@ -52,6 +52,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
     onTokenCreated && onTokenCreated(tokenValues.name);
+    onClose();
   };
 
   return (
