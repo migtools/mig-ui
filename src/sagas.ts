@@ -5,6 +5,7 @@ import planSagas from './app/plan/duck/sagas';
 import logSagas from './app/logs/duck/sagas';
 import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
+import tokenSagas from './app/token/duck/sagas';
 import { initMigMeta } from './mig_meta';
 import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
@@ -37,6 +38,7 @@ export default function* rootSaga() {
     commonSagas.watchPlanPolling(),
     commonSagas.watchClustersPolling(),
     commonSagas.watchStoragePolling(),
+    commonSagas.watchTokenPolling(),
     commonSagas.watchAlerts(),
     planSagas.watchStagePolling(),
     planSagas.watchMigrationPolling(),
@@ -68,6 +70,7 @@ export default function* rootSaga() {
     storageSagas.watchAddStorageRequest(),
     storageSagas.watchStorageAddEditStatus(),
     storageSagas.watchUpdateStorageRequest(),
+    tokenSagas.watchAddTokenRequest(),
     authSagas.watchAuthEvents(),
   ]);
 }
