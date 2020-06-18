@@ -17,22 +17,21 @@ export const getTokenInfo = (token: IToken) => {
 
   if (token.MigToken.status) {
     const expirationTimestamp = token.MigToken.status.expiresAt;
-    const expirationMoment = moment(expirationTimestamp);
+    const expirationMoment = expirationTimestamp && moment(expirationTimestamp);
     const formattedExpiration = expirationMoment
-      .tz(moment.tz.guess())
-      .format('DD MMM YYYY, hh:mm:ss A z');
-    const hoursUntilExpiration = expirationMoment.diff(moment(), 'hours', true);
-    let statusType: StatusType;
-    let statusText: string;
-    if (hoursUntilExpiration < 0) {
-      statusType = StatusType.ERROR;
-      statusText = 'Expired';
-    } else if (hoursUntilExpiration < EXPIRATION_WARNING_THRESHOLD_HOURS) {
-      statusType = StatusType.WARNING;
-      statusText = 'Expiring soon';
-    } else {
-      statusType = StatusType.OK;
-      statusText = 'OK';
+      ? expirationMoment.tz(moment.tz.guess()).format('DD MMM YYYY, hh:mm:ss A z')
+      : 'N/A';
+    let statusType = StatusType.OK;
+    let statusText = 'OK';
+    if (expirationMoment) {
+      const hoursUntilExpiration = expirationMoment.diff(moment(), 'hours', true);
+      if (hoursUntilExpiration < 0) {
+        statusType = StatusType.ERROR;
+        statusText = 'Expired';
+      } else if (hoursUntilExpiration < EXPIRATION_WARNING_THRESHOLD_HOURS) {
+        statusType = StatusType.WARNING;
+        statusText = 'Expiring soon';
+      }
     }
 
     retTokenInfo.expirationTimestamp = expirationTimestamp;
