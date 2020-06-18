@@ -16,7 +16,9 @@ export const AuthActionTypes = {
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
   LOGIN_FAILURE: 'LOGIN_FAILURE',
   SET_OAUTH_META: 'SET_OAUTH_META',
+  SET_IS_ADMIN: 'SET_IS_ADMIN',
   FETCH_OAUTH_META: 'FETCH_OAUTH_META',
+  FETCH_IS_ADMIN: 'FETCH_IS_ADMIN',
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
 };
 
@@ -36,6 +38,10 @@ const logoutUserRequest = () => ({
 const fetchOauthMeta = (clusterApi: string) => ({
   type: AuthActionTypes.FETCH_OAUTH_META,
   clusterApi,
+});
+
+const fetchIsAdmin = () => ({
+  type: AuthActionTypes.FETCH_IS_ADMIN,
 });
 
 const setOauthMeta = (oauthMeta: string) => ({
@@ -58,6 +64,11 @@ const fetchToken = (oauthClient: any, coreRedirect: any) => ({
   coreRedirect,
 });
 
+const setIsAdmin = (hasAdmin: boolean) => ({
+  type: AuthActionTypes.SET_IS_ADMIN,
+  hasAdmin,
+});
+
 export const AuthActions = {
   logoutUserRequest,
   initFromStorage,
@@ -67,4 +78,6 @@ export const AuthActions = {
   fetchOauthMeta,
   fetchToken,
   certErrorOccurred,
+  setIsAdmin,
+  fetchIsAdmin,
 };

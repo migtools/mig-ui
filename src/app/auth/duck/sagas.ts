@@ -46,6 +46,24 @@ export function* initFromStorage(): any {
   }
 }
 
+export function* fetchIsAdmin(): any {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  const { access_token } = state.auth.user;
+  const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
+
+  const config = {
+    headers: {
+      Authorization: 'Bearer ' + access_token,
+    },
+  };
+  const isAdminRes = yield axios.get(isAdminUrl, config);
+
+  if (isAdminRes.data) {
+    yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+  }
+}
+
 export function* logoutUser() {
   localStorage.removeItem(LS_KEY_CURRENT_USER);
   yield put(push('/login?action=refresh'));
@@ -56,6 +74,7 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
+  yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
 }
 
 export default {
