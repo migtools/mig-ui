@@ -86,6 +86,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
+      setFieldValue('sourceToken', null);
     }
   };
 
@@ -94,6 +95,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
       setFieldTouched('targetCluster');
+      setFieldValue('targetToken', null);
     }
   };
 

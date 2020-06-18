@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, Button, Level, LevelItem } from '@patternfly/react-core';
+import { FormGroup, Button, Level, LevelItem, Flex, FlexItem } from '@patternfly/react-core';
 import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import flexStyles from '@patternfly/react-styles/css/layouts/Flex/flex';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
 import IconWithText from '../../../../../common/components/IconWithText';
@@ -157,20 +158,32 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         </div>
       )}
       {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.WARNING && (
-        <div className={spacing.mSm}>
-          <IconWithText
-            icon={<StatusIcon status={StatusType.WARNING} />}
-            text={expiringSoonMessage} // NATODO add the Regenerate link here
-          />
-        </div>
+        <Flex className={`${spacing.mSm} ${flexStyles.modifiers.alignItemsCenter}`}>
+          <FlexItem>
+            <StatusIcon status={StatusType.WARNING} />
+          </FlexItem>
+          <FlexItem>
+            {expiringSoonMessage}
+            <br />
+            <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
+              Regenerate
+            </Button>
+          </FlexItem>
+        </Flex>
       )}
       {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.ERROR && (
-        <div className={spacing.mSm}>
-          <IconWithText
-            icon={<StatusIcon status={StatusType.ERROR} />}
-            text={expiredMessage} // NATODO add the Regenerate link here
-          />
-        </div>
+        <Flex className={`${spacing.mSm} ${flexStyles.modifiers.alignItemsCenter}`}>
+          <FlexItem>
+            <StatusIcon status={StatusType.ERROR} />
+          </FlexItem>
+          <FlexItem>
+            {expiredMessage}
+            <br />
+            <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
+              Regenerate
+            </Button>
+          </FlexItem>
+        </Flex>
       )}
     </>
   );
