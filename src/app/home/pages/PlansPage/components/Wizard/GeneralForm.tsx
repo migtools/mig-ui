@@ -155,7 +155,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             fieldId="sourceToken"
             tokenList={tokenList}
             clusterName={values.sourceCluster}
-            value={values.sourceTokenRef.name}
+            value={values.sourceTokenRef && values.sourceTokenRef.name}
             onChange={(tokenRef) => {
               setFieldTouched('sourceTokenRef');
               setFieldValue('sourceTokenRef', tokenRef);
@@ -187,7 +187,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             fieldId="targetToken"
             tokenList={tokenList}
             clusterName={values.targetCluster}
-            value={values.targetTokenRef.name}
+            value={values.targetTokenRef && values.targetTokenRef.name}
             onChange={(tokenRef) => {
               setFieldTouched('targetTokenRef');
               setFieldValue('targetTokenRef', tokenRef);
