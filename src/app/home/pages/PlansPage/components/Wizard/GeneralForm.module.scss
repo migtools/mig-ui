@@ -1,16 +1,3 @@
 .fieldGridTitle {
   margin-bottom: -1rem;
 }
-
-.nonSelectable {
-  &:hover {
-    background-color: transparent;
-    cursor: auto;
-  }
-
-  .addTokenOptionLink {
-    margin-left: 10px;
-    cursor: pointer;
-    pointer-events: auto;
-  }
-}

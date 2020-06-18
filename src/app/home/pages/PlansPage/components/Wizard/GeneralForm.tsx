@@ -8,6 +8,7 @@ import SimpleSelect, { OptionWithValue } from '../../../../../common/components/
 import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
 import { useOpenModal } from '../../../../duck/hooks';
 import IconWithText from '../../../../../common/components/IconWithText';
+import TokenSelect from './TokenSelect';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
@@ -71,69 +72,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       .map((storage) => storage.MigStorage.metadata.name);
   }
 
-  const getTokenOptionsForCluster = (
-    clusterName: string,
-    onAddTokenClick: () => void
-  ): OptionWithValue[] => {
-    const empty: OptionWithValue = {
-      toString: () => 'No tokens found for the selected cluster',
-      value: null,
-      props: {
-        className: styles.nonSelectable,
-        isDisabled: true, // NATODO does this make it stay open after the modal closes?
-        children: (
-          <>
-            <span className="pf-m-disabled">No tokens found for the selected cluster.</span>
-            <Button
-              variant="link"
-              isInline
-              className={styles.addTokenOptionLink}
-              onClick={onAddTokenClick}
-            >
-              Add token
-            </Button>
-          </>
-        ),
-      },
-    };
-    if (!clusterName || !tokenList) return [empty];
-    const availableTokens = tokenList.filter(
-      (token) => token.MigToken.spec.migClusterRef.name === clusterName
-    );
-    if (availableTokens.length === 0) return [empty];
-    return availableTokens.map((token) => ({
-      toString: () => token.MigToken.metadata.name,
-      value: token.MigToken.metadata.name,
-    }));
-  };
-
-  const getSelectedTokenOption = (tokenName: string, tokenOptions: OptionWithValue[]) => {
-    if (!tokenName) return null;
-    return tokenOptions.find((option) => option.value === tokenName);
-  };
-
-  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [newTokenField, setNewTokenField] = useState<'sourceToken' | 'targetToken'>(null);
-
-  const onAddSourceTokenClick = () => {
-    setNewTokenField('sourceToken');
-    toggleAddEditModal();
-  };
-
-  const onAddTargetTokenClick = () => {
-    setNewTokenField('targetToken');
-    toggleAddEditModal();
-  };
-
-  const onTokenCreated = (tokenName: string) => {
-    setFieldValue(newTokenField, tokenName);
-  };
-
-  const sourceTokenOptions = getTokenOptionsForCluster(values.sourceCluster, onAddSourceTokenClick);
-  const targetTokenOptions = getTokenOptionsForCluster(values.targetCluster, onAddTargetTokenClick);
-  const selectedSourceTokenOption = getSelectedTokenOption(values.sourceToken, sourceTokenOptions);
-  const selectedTargetTokenOption = getSelectedTokenOption(values.targetToken, targetTokenOptions);
-
   const handleStorageChange = (value) => {
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
@@ -148,7 +86,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
-      setNewTokenField(null);
     }
   };
 
@@ -157,7 +94,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
       setFieldTouched('targetCluster');
-      setNewTokenField(null);
     }
   };
 
@@ -213,45 +149,40 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select source..."
             />
           </FormGroup>
-          <FormGroup
-            className={spacing.mtMd}
-            label="Authentication token"
-            isRequired
+          <TokenSelect
             fieldId="sourceToken"
-            helperTextInvalid={touched.sourceToken && errors.sourceToken}
-            isValid={!(touched.sourceToken && errors.sourceToken)}
-          >
-            <SimpleSelect
-              id="sourceToken"
-              onChange={(selection: OptionWithValue) => {
-                if (selection.value) {
-                  setFieldValue('sourceToken', selection.value);
-                  setFieldTouched('sourceToken');
-                }
-              }}
-              options={sourceTokenOptions}
-              value={selectedSourceTokenOption}
-              placeholderText="Select token..."
-              isDisabled={!values.sourceCluster}
-            />
-            <AddEditTokenModal
-              isOpen={isAddEditModalOpen}
-              onClose={toggleAddEditModal}
-              onTokenCreated={onTokenCreated}
-            />
-          </FormGroup>
-          {newTokenField === 'sourceToken' && values.sourceToken && (
-            <div className={spacing.mSm}>
-              <IconWithText
-                icon={
-                  <span className="pf-c-icon pf-m-success">
-                    <CheckIcon />
-                  </span>
-                }
-                text="Token associated"
-              />
-            </div>
-          )}
+            tokenList={[
+              // NATODO just pass in tokenList prop
+              {
+                MigToken: {
+                  apiVersion: '1.0',
+                  kind: 'MigToken',
+                  metadata: {
+                    name: 'My Token',
+                  },
+                  spec: {
+                    migClusterRef: { name: 'host', namespace: 'some-namespace' },
+                    secretRef: { name: 'secret-name', namespace: 'some-namespace' },
+                  },
+                  status: {
+                    observedDigest: 'foo',
+                    type: 'OAuth',
+                    expiresAt: '2020-06-08T20:55:53.825Z',
+                  },
+                },
+              },
+            ]}
+            clusterName={values.sourceCluster}
+            value={values.sourceToken}
+            onChange={(tokenName) => {
+              setFieldTouched('sourceToken');
+              setFieldValue('sourceToken', tokenName);
+            }}
+            touched={touched.sourceToken}
+            error={errors.sourceToken}
+            expiringSoonMessage="The users's selected token on cluster source will expire soon."
+            expiredMessage="The user's selected token on cluster source is expired."
+          />
         </GridItem>
 
         <GridItem>
@@ -270,40 +201,20 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select target..."
             />
           </FormGroup>
-          <FormGroup
-            className={spacing.mtMd}
-            label="Authentication token"
-            isRequired
+          <TokenSelect
             fieldId="targetToken"
-            helperTextInvalid={touched.targetToken && errors.targetToken}
-            isValid={!(touched.targetToken && errors.targetToken)}
-          >
-            <SimpleSelect
-              id="targetToken"
-              onChange={(selection: OptionWithValue) => {
-                if (selection.value) {
-                  setFieldValue('targetToken', selection.value);
-                  setFieldTouched('targetToken');
-                }
-              }}
-              options={targetTokenOptions}
-              value={selectedTargetTokenOption}
-              placeholderText="Select token..."
-              isDisabled={!values.targetCluster}
-            />
-          </FormGroup>
-          {newTokenField === 'targetToken' && values.targetToken && (
-            <div className={spacing.mSm}>
-              <IconWithText
-                icon={
-                  <span className="pf-c-icon pf-m-success">
-                    <CheckIcon />
-                  </span>
-                }
-                text="Token associated"
-              />
-            </div>
-          )}
+            tokenList={tokenList}
+            clusterName={values.targetCluster}
+            value={values.targetToken}
+            onChange={(tokenName) => {
+              setFieldTouched('targetToken');
+              setFieldValue('targetToken', tokenName);
+            }}
+            touched={touched.targetToken}
+            error={errors.targetToken}
+            expiringSoonMessage="The users's selected token on cluster target will expire soon."
+            expiredMessage="The user's selected token on cluster target is expired."
+          />
         </GridItem>
       </Grid>
 
