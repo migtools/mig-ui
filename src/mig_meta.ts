@@ -39,5 +39,4 @@ export const migMetaReducer = (state = INITIAL_STATE, action) => {
     default:
       return state;
   }
-  // return action.type === INIT_MIG_META ? action.payload : state;
 };

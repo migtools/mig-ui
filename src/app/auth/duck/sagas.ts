@@ -58,7 +58,6 @@ export function* checkActiveNamespace() {
     yield put(setActiveNamespace(activeNamespace));
   } else {
     yield put(AuthActions.setNamespaceSelectIsOpen(true));
-    // yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
   }
 }
 
