@@ -119,15 +119,19 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                 {!planList ? null : planList.length === 0 ? (
                   <EmptyState variant="full">
                     <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg">No migration plans exist</Title>
+                    <Title size="lg" className={spacing.mbLg}>
+                      No migration plans exist
+                    </Title>
                     <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-                      <Button
-                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                        onClick={toggleWizardOpen}
-                        variant="primary"
-                      >
-                        Add migration plan
-                      </Button>
+                      <div>
+                        <Button
+                          isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                          onClick={toggleWizardOpen}
+                          variant="primary"
+                        >
+                          Add migration plan
+                        </Button>
+                      </div>
                     </AddPlanDisabledTooltip>
                   </EmptyState>
                 ) : (
