@@ -43,33 +43,35 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
-    yield put(AuthActions.fetchIsAdmin());
   }
+  yield put(AuthActions.fetchIsAdmin());
 }
 
 export function* fetchIsAdmin(): any {
   const state = yield select();
   const migMeta = state.migMeta;
-  const { access_token } = state.auth.user;
-  const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
-  const config = {
-    headers: {
-      Authorization: 'Bearer ' + access_token,
-    },
-  };
+  if (state.auth.user) {
+    const { access_token } = state.auth.user;
+    const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + access_token,
+      },
+    };
 
-  let isAdminRes;
-  try {
-    isAdminRes = yield axios.get(isAdminUrl, config);
-  } catch (err) {
-    if (isSelfSignedCertError(err)) {
-      yield put(AuthActions.certErrorOccurred(isAdminUrl));
-      yield put(push('/cert-error'));
-      return;
+    let isAdminRes;
+    try {
+      isAdminRes = yield axios.get(isAdminUrl, config);
+    } catch (err) {
+      if (isSelfSignedCertError(err)) {
+        yield put(AuthActions.certErrorOccurred(isAdminUrl));
+        yield put(push('/cert-error'));
+        return;
+      }
     }
-  }
-  if (isAdminRes.data) {
-    yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+    if (isAdminRes.data) {
+      yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+    }
   }
 }
 
