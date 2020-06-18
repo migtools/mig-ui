@@ -36,6 +36,7 @@ export function* fetchToken(action) {
   user.expiry_time = expiryUnixTime;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
+  yield put(AuthActions.fetchIsAdmin());
   yield put(push('/'));
 }
 
@@ -43,24 +44,39 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
+    yield put(AuthActions.fetchIsAdmin());
   }
 }
 
 export function* fetchIsAdmin(): any {
   const state = yield select();
   const migMeta = state.migMeta;
-  const { access_token } = state.auth.user;
-  const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
+  if (state.auth.user) {
+    const { access_token } = state.auth.user;
+    const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + access_token,
+      },
+    };
 
-  const config = {
-    headers: {
-      Authorization: 'Bearer ' + access_token,
-    },
-  };
-  const isAdminRes = yield axios.get(isAdminUrl, config);
-
-  if (isAdminRes.data) {
-    yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+    let isAdminRes;
+    try {
+      isAdminRes = yield axios.get(isAdminUrl, config);
+    } catch (err) {
+      if (isSelfSignedCertError(err)) {
+        yield put(AuthActions.certErrorOccurred(isAdminUrl));
+        yield put(push('/cert-error'));
+        return;
+      }
+    }
+    if (isAdminRes.data) {
+      yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+    } else {
+      console.error('No data in admin auth response.');
+    }
+  } else {
+    console.error('Attempted to fetch "isAdmin" without a logged in user!');
   }
 }
 
