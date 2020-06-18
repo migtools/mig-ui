@@ -52,14 +52,22 @@ export function* fetchIsAdmin(): any {
   const migMeta = state.migMeta;
   const { access_token } = state.auth.user;
   const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
-
   const config = {
     headers: {
       Authorization: 'Bearer ' + access_token,
     },
   };
-  const isAdminRes = yield axios.get(isAdminUrl, config);
 
+  let isAdminRes;
+  try {
+    isAdminRes = yield axios.get(isAdminUrl, config);
+  } catch (err) {
+    if (isSelfSignedCertError(err)) {
+      yield put(AuthActions.certErrorOccurred(isAdminUrl));
+      yield put(push('/cert-error'));
+      return;
+    }
+  }
   if (isAdminRes.data) {
     yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
   }
