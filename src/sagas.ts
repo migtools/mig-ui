@@ -23,7 +23,6 @@ export default function* rootSaga() {
       yield put(initMigMeta(migMeta));
       yield put(AuthActions.initFromStorage());
     }
-    yield put(AuthActions.fetchIsAdmin());
 
     // Configure token expiry behavior
     setTokenExpiryHandler(() => {

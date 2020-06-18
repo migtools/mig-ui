@@ -36,6 +36,7 @@ export function* fetchToken(action) {
   user.expiry_time = expiryUnixTime;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
+  yield put(AuthActions.fetchIsAdmin());
   yield put(push('/'));
 }
 
@@ -43,6 +44,7 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
+    yield put(AuthActions.fetchIsAdmin());
   }
 }
 
@@ -70,6 +72,8 @@ export function* fetchIsAdmin(): any {
     }
     if (isAdminRes.data) {
       yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
+    } else {
+      console.error('Attempted to fetch "isAdmin" without a logged in user!');
     }
   }
 }
