@@ -156,6 +156,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             tokenList={[
               // NATODO just pass in tokenList prop
               {
+                Secret: { data: { token: 'foo' } },
                 MigToken: {
                   apiVersion: '1.0',
                   kind: 'MigToken',
