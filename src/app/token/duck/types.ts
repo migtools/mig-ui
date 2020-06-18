@@ -3,9 +3,7 @@ import { INameNamespaceRef } from '../../common/duck/types';
 export interface IMigToken {
   apiVersion: string;
   kind: string;
-  metadata: {
-    name: string;
-  };
+  metadata: INameNamespaceRef;
   spec: {
     migClusterRef: INameNamespaceRef;
     migrationControllerRef?: INameNamespaceRef;

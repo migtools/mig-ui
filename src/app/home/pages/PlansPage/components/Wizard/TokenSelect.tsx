@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { FormGroup, Button, Level, LevelItem, Flex, FlexItem } from '@patternfly/react-core';
 import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -10,6 +11,10 @@ import { IToken } from '../../../../../token/duck/types';
 import { useOpenModal } from '../../../../duck/hooks';
 import { getTokenInfo } from '../../../TokensPage/helpers';
 import StatusIcon, { StatusType } from '../../../../../common/components/StatusIcon';
+import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { FormikTouched, FormikErrors } from 'formik';
+import { IReduxState } from '../../../../../../reducers';
+import { IMigMeta } from '../../../../../../mig_meta';
 const styles = require('./TokenSelect.module');
 
 interface ITokenSelectProps {
@@ -17,11 +22,12 @@ interface ITokenSelectProps {
   tokenList: IToken[];
   clusterName: string;
   value: string;
-  onChange: (tokenName: string) => void;
-  touched: boolean;
-  error?: string;
+  onChange: (tokenRef: INameNamespaceRef) => void;
+  touched: FormikTouched<INameNamespaceRef>;
+  error?: FormikErrors<INameNamespaceRef>;
   expiringSoonMessage: string;
   expiredMessage: string;
+  migMeta: IMigMeta;
 }
 
 const getTokenOptionsForCluster = (
@@ -89,6 +95,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   error,
   expiringSoonMessage,
   expiredMessage,
+  migMeta,
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [tokenJustCreated, setTokenJustCreated] = useState(false);
@@ -98,9 +105,13 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
     setTokenJustCreated(false);
   }, [clusterName]);
 
+  const handleChange = (tokenName: string) => {
+    onChange({ name: tokenName, namespace: migMeta.namespace });
+  };
+
   const onSelectionChange = (selection: OptionWithValue) => {
     if (selection.value) {
-      onChange(selection.value);
+      handleChange(selection.value);
       setTokenJustCreated(false);
     }
   };
@@ -111,7 +122,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   };
 
   const onTokenCreated = (tokenName: string) => {
-    onChange(tokenName);
+    handleChange(tokenName);
     setTokenJustCreated(true);
   };
 
@@ -120,11 +131,12 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
     ? tokenList.find((token) => token.MigToken.metadata.name === value)
     : null;
   const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
+  const isLoadingNewToken = value && !selectedToken;
 
   useEffect(() => {
     // If there's only one token available, pre-select it.
     if (!value && tokenOptions.length === 1 && tokenOptions[0].value !== null) {
-      onChange(tokenOptions[0].value);
+      handleChange(tokenOptions[0].value);
     }
   }, [tokenList, clusterName]);
 
@@ -144,7 +156,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           options={tokenOptions}
           value={getSelectedTokenOption(value, tokenOptions)}
           placeholderText="Select token..."
-          isDisabled={!clusterName}
+          isDisabled={!clusterName || isLoadingNewToken}
         />
         <AddEditTokenModal
           isOpen={isAddEditModalOpen}
@@ -153,7 +165,8 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           preSelectedClusterName={clusterName}
         />
       </FormGroup>
-      {tokenJustCreated && value && (
+      {isLoadingNewToken && <div className={spacing.mSm}>Loading...</div>}
+      {tokenJustCreated && value && !isLoadingNewToken && (
         <div className={spacing.mSm}>
           <IconWithText
             icon={
@@ -197,4 +210,10 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   );
 };
 
-export default TokenSelect;
+const mapStateToProps = (state: IReduxState) => ({
+  migMeta: state.migMeta,
+});
+
+const mapDispatchToProps = () => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TokenSelect);

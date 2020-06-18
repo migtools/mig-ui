@@ -25,15 +25,14 @@ import {
 import { IStorage } from '../../../../../storage/duck/types';
 import { IReduxState } from '../../../../../../reducers';
 import { IToken } from '../../../../../token/duck/types';
+import { INameNamespaceRef } from '../../../../../common/duck/types';
 
-// NATODO make sure new fields make it to the API:
-//   sourceToken, targetToken
 export interface IFormValues {
   planName: string;
   sourceCluster: string;
-  sourceToken: string;
+  sourceTokenRef: INameNamespaceRef;
   targetCluster: string;
-  targetToken: string;
+  targetTokenRef: INameNamespaceRef;
   selectedStorage: string;
   selectedNamespaces: string[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
@@ -106,9 +105,9 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     const values: IFormValues = {
       planName: '',
       sourceCluster: null,
-      sourceToken: null,
+      sourceTokenRef: null,
       targetCluster: null,
-      targetToken: null,
+      targetTokenRef: null,
       selectedNamespaces: [],
       selectedStorage: null,
       persistentVolumes: [],
@@ -144,8 +143,8 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
     }
-    if (!values.sourceToken) {
-      errors.sourceToken = 'Required';
+    if (!values.sourceTokenRef) {
+      errors.sourceTokenRef = 'Required';
     }
     if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
       errors.selectedNamespaces = 'Required';
@@ -153,8 +152,8 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     if (!values.targetCluster) {
       errors.targetCluster = 'Required';
     }
-    if (!values.targetToken) {
-      errors.targetToken = 'Required';
+    if (!values.targetTokenRef) {
+      errors.targetTokenRef = 'Required';
     }
     if (!values.selectedStorage) {
       errors.selectedStorage = 'Required';

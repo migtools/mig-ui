@@ -86,7 +86,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
       setFieldTouched('sourceCluster');
-      setFieldValue('sourceToken', null);
+      setFieldValue('sourceTokenRef', null);
     }
   };
 
@@ -95,7 +95,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
       setFieldTouched('targetCluster');
-      setFieldValue('targetToken', null);
+      setFieldValue('targetTokenRef', null);
     }
   };
 
@@ -155,13 +155,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             fieldId="sourceToken"
             tokenList={tokenList}
             clusterName={values.sourceCluster}
-            value={values.sourceToken}
-            onChange={(tokenName) => {
-              setFieldTouched('sourceToken');
-              setFieldValue('sourceToken', tokenName);
+            value={values.sourceTokenRef.name}
+            onChange={(tokenRef) => {
+              setFieldTouched('sourceTokenRef');
+              setFieldValue('sourceTokenRef', tokenRef);
             }}
-            touched={touched.sourceToken}
-            error={errors.sourceToken}
+            touched={touched.sourceTokenRef}
+            error={errors.sourceTokenRef}
             expiringSoonMessage="The users's selected token on cluster source will expire soon."
             expiredMessage="The user's selected token on cluster source is expired."
           />
@@ -187,13 +187,13 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             fieldId="targetToken"
             tokenList={tokenList}
             clusterName={values.targetCluster}
-            value={values.targetToken}
-            onChange={(tokenName) => {
-              setFieldTouched('targetToken');
-              setFieldValue('targetToken', tokenName);
+            value={values.targetTokenRef.name}
+            onChange={(tokenRef) => {
+              setFieldTouched('targetTokenRef');
+              setFieldValue('targetTokenRef', tokenRef);
             }}
-            touched={touched.targetToken}
-            error={errors.targetToken}
+            touched={touched.targetTokenRef}
+            error={errors.targetTokenRef}
             expiringSoonMessage="The users's selected token on cluster target will expire soon."
             expiredMessage="The user's selected token on cluster target is expired."
           />

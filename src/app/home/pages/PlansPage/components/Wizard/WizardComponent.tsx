@@ -13,6 +13,7 @@ import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
 import { StatusType } from '../../../../../common/components/StatusIcon';
 import { getTokenInfo } from '../../../TokensPage/helpers';
+import { INameNamespaceRef } from '../../../../../common/duck/types';
 
 const styles = require('./WizardComponent.module');
 
@@ -101,9 +102,14 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
   const areSelectedTokensValid = (fieldKeys: (keyof IFormValues)[]) =>
     fieldKeys.every((fieldKey) => {
+      const tokenRef = values[fieldKey] as INameNamespaceRef;
       const selectedToken =
-        values[fieldKey] &&
-        tokenList.find((token) => token.MigToken.metadata.name === values[fieldKey]);
+        tokenRef &&
+        tokenList.find(
+          (token) =>
+            token.MigToken.metadata.name === tokenRef.name &&
+            token.MigToken.metadata.namespace === tokenRef.namespace
+        );
       const tokenInfo = selectedToken && getTokenInfo(selectedToken);
       return tokenInfo && tokenInfo.statusType !== StatusType.ERROR;
     });
@@ -135,11 +141,11 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
             areFieldsTouchedAndValid([
               'planName',
               'sourceCluster',
-              'sourceToken',
+              'sourceTokenRef',
               'targetCluster',
-              'targetToken',
+              'targetTokenRef',
               'selectedStorage',
-            ]) && areSelectedTokensValid(['sourceToken', 'targetToken']),
+            ]) && areSelectedTokensValid(['sourceTokenRef', 'targetTokenRef']),
         },
         {
           id: stepId.Namespaces,
@@ -286,7 +292,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
         addPlanRequest({
           planName: props.values.planName,
           sourceCluster: props.values.sourceCluster,
+          sourceTokenRef: props.values.sourceTokenRef,
           targetCluster: props.values.targetCluster,
+          targetTokenRef: props.values.targetTokenRef,
           selectedStorage: props.values.selectedStorage,
           namespaces: props.values.selectedNamespaces,
         });
