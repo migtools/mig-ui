@@ -32,6 +32,7 @@ const getTokenOptionsForCluster = (
     toString: () => 'No tokens found for the selected cluster',
     value: null,
     props: {
+      component: 'span',
       isDisabled: true,
       children: (
         <>
@@ -39,7 +40,7 @@ const getTokenOptionsForCluster = (
           <Button
             variant="link"
             isInline
-            className={styles.addTokenOptionLink}
+            className={`${styles.addTokenOptionLink} ${spacing.mtSm} ${spacing.mbSm}`}
             onClick={onAddTokenClick}
           >
             Add token
