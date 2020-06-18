@@ -11,6 +11,8 @@ import { FormikProps } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
+import { StatusType } from '../../../../../common/components/StatusIcon';
+import { getTokenInfo } from '../../../TokensPage/helpers';
 
 const styles = require('./WizardComponent.module');
 
@@ -97,6 +99,15 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
     fieldKeys.every((fieldKey) => !errors[fieldKey] && (touched[fieldKey] || isEdit === true));
 
+  const areSelectedTokensValid = (fieldKeys: (keyof IFormValues)[]) =>
+    fieldKeys.every((fieldKey) => {
+      const selectedToken =
+        values[fieldKey] &&
+        tokenList.find((token) => token.MigToken.metadata.name === values[fieldKey]);
+      const tokenInfo = selectedToken && getTokenInfo(selectedToken);
+      return tokenInfo && tokenInfo.statusType !== StatusType.ERROR;
+    });
+
   useEffect(
     () => {
       const steps = [
@@ -120,14 +131,15 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               />
             </WizardStepContainer>
           ),
-          enableNext: areFieldsTouchedAndValid([
-            'planName',
-            'sourceCluster',
-            'sourceToken',
-            'targetCluster',
-            'targetToken',
-            'selectedStorage',
-          ]),
+          enableNext:
+            areFieldsTouchedAndValid([
+              'planName',
+              'sourceCluster',
+              'sourceToken',
+              'targetCluster',
+              'targetToken',
+              'selectedStorage',
+            ]) && areSelectedTokensValid(['sourceToken', 'targetToken']),
         },
         {
           id: stepId.Namespaces,
