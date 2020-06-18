@@ -73,8 +73,10 @@ export function* fetchIsAdmin(): any {
     if (isAdminRes.data) {
       yield put(AuthActions.setIsAdmin(isAdminRes.data.hasAdmin));
     } else {
-      console.error('Attempted to fetch "isAdmin" without a logged in user!');
+      console.error('No data in admin auth response.');
     }
+  } else {
+    console.error('Attempted to fetch "isAdmin" without a logged in user!');
   }
 }
 
