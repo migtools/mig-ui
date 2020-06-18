@@ -121,6 +121,13 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
     : null;
   const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
 
+  useEffect(() => {
+    // If there's only one token available, pre-select it.
+    if (!value && tokenOptions.length === 1 && tokenOptions[0].value !== null) {
+      onChange(tokenOptions[0].value);
+    }
+  }, [tokenList, clusterName]);
+
   return (
     <>
       <FormGroup
