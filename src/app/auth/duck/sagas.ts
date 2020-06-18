@@ -43,6 +43,7 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
+    yield put(AuthActions.fetchIsAdmin());
   }
 }
 
