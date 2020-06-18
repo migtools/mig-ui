@@ -153,28 +153,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
           <TokenSelect
             fieldId="sourceToken"
-            tokenList={[
-              // NATODO just pass in tokenList prop
-              {
-                Secret: { data: { token: 'foo' } },
-                MigToken: {
-                  apiVersion: '1.0',
-                  kind: 'MigToken',
-                  metadata: {
-                    name: 'My Token',
-                  },
-                  spec: {
-                    migClusterRef: { name: 'host', namespace: 'some-namespace' },
-                    secretRef: { name: 'secret-name', namespace: 'some-namespace' },
-                  },
-                  status: {
-                    observedDigest: 'foo',
-                    type: 'OAuth',
-                    expiresAt: '2020-06-08T20:55:53.825Z',
-                  },
-                },
-              },
-            ]}
+            tokenList={tokenList}
             clusterName={values.sourceCluster}
             value={values.sourceToken}
             onChange={(tokenName) => {
