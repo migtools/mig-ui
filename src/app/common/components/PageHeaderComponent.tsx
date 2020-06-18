@@ -5,6 +5,7 @@ const styles = require('./PageHeaderComponent.module');
 
 type PageHeaderComponentProps = Omit<PageHeaderProps, 'logo'>;
 
+// NATODO: Remove WIP header
 const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (props) => (
   <PageHeader
     logo={
