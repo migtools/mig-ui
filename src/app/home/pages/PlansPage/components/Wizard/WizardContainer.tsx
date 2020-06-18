@@ -144,11 +144,17 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
     }
+    if (!values.sourceToken) {
+      errors.sourceToken = 'Required';
+    }
     if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
       errors.selectedNamespaces = 'Required';
     }
     if (!values.targetCluster) {
       errors.targetCluster = 'Required';
+    }
+    if (!values.targetToken) {
+      errors.targetToken = 'Required';
     }
     if (!values.selectedStorage) {
       errors.selectedStorage = 'Required';

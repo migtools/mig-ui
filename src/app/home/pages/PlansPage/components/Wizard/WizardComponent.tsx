@@ -123,7 +123,9 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           enableNext: areFieldsTouchedAndValid([
             'planName',
             'sourceCluster',
+            'sourceToken',
             'targetCluster',
+            'targetToken',
             'selectedStorage',
           ]),
         },
