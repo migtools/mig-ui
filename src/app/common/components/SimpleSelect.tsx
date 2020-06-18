@@ -5,10 +5,12 @@ import {
   SelectOptionObject,
   SelectProps,
   Omit,
+  SelectOptionProps,
 } from '@patternfly/react-core';
 
 export interface OptionWithValue extends SelectOptionObject {
   value: string;
+  props?: Partial<SelectOptionProps>; // Extra props for <SelectOption>, e.g. children, className
 }
 
 type OptionLike = string | SelectOptionObject | OptionWithValue;
@@ -45,7 +47,11 @@ const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
       {...props}
     >
       {options.map((option) => (
-        <SelectOption key={option.toString()} value={option} />
+        <SelectOption
+          key={option.toString()}
+          value={option}
+          {...(typeof option === 'object' && (option as OptionWithValue).props)}
+        />
       ))}
     </Select>
   );

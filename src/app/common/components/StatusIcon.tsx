@@ -15,26 +15,31 @@ export enum StatusType {
 interface IProps {
   status: StatusType;
   isDisabled?: boolean;
+  className?: string;
 }
 
-const StatusIcon: React.FunctionComponent<IProps> = ({ status, isDisabled }) => {
+const StatusIcon: React.FunctionComponent<IProps> = ({
+  status,
+  isDisabled,
+  className = '',
+}: IProps) => {
   if (status === StatusType.OK) {
     return (
-      <span className="pf-c-icon pf-m-success">
+      <span className={`pf-c-icon pf-m-success ${className}`}>
         <CheckCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );
   }
   if (status === StatusType.WARNING) {
     return (
-      <span className="pf-c-icon pf-m-warning">
+      <span className={`pf-c-icon pf-m-warning ${className}`}>
         <WarningTriangleIcon className={isDisabled && styles.disabled} />
       </span>
     );
   }
   if (status === StatusType.ERROR) {
     return (
-      <span className="pf-c-icon pf-m-danger">
+      <span className={`pf-c-icon pf-m-danger ${className}`}>
         <ExclamationCircleIcon className={isDisabled && styles.disabled} />
       </span>
     );

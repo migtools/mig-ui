@@ -4,6 +4,7 @@ import {
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
+import { INameNamespaceRef } from '../../app/common/duck/types';
 
 export function createMigClusterSecret(
   name: string,
@@ -365,37 +366,6 @@ export function updateStorageSecret(
   }
 }
 
-export function createMigPlan(
-  name: string,
-  namespace: string,
-  sourceClusterObj: any,
-  destinationClusterObj: any,
-  storageObj: any
-) {
-  return {
-    apiVersion: 'migration.openshift.io/v1alpha1',
-    kind: 'MigPlan',
-    metadata: {
-      name,
-      namespace,
-    },
-    spec: {
-      srcMigClusterRef: {
-        name: sourceClusterObj,
-        namespace,
-      },
-      destMigClusterRef: {
-        name: destinationClusterObj,
-        namespace,
-      },
-      migStorageRef: {
-        name: storageObj,
-        namespace,
-      },
-    },
-  };
-}
-
 interface IPlanValues extends IFormValues {
   planClosed?: boolean;
 }
@@ -418,11 +388,17 @@ export function updateMigPlanFromValues(
       namespace: migPlan.metadata.namespace,
     };
   }
+  if (planValues.sourceTokenRef) {
+    updatedSpec.srcMigTokenRef = { ...planValues.sourceTokenRef };
+  }
   if (planValues.targetCluster) {
     updatedSpec.destMigClusterRef = {
       name: planValues.targetCluster,
       namespace: migPlan.metadata.namespace,
     };
+  }
+  if (planValues.targetTokenRef) {
+    updatedSpec.destMigTokenRef = { ...planValues.targetTokenRef };
   }
   if (updatedSpec.namespaces) {
     updatedSpec.namespaces = planValues.selectedNamespaces;
@@ -466,7 +442,9 @@ export function createInitialMigPlan(
   name: string,
   namespace: string,
   sourceClusterObj: any,
+  sourceTokenRef: INameNamespaceRef,
   destinationClusterObj: any,
+  destinationTokenRef: INameNamespaceRef,
   storageObj: any,
   namespaces: string[]
 ) {
@@ -482,10 +460,12 @@ export function createInitialMigPlan(
         name: sourceClusterObj,
         namespace,
       },
+      srcMigTokenRef: { ...sourceTokenRef },
       destMigClusterRef: {
         name: destinationClusterObj,
         namespace,
       },
+      destMigTokenRef: { ...destinationTokenRef },
       migStorageRef: {
         name: storageObj,
         namespace,

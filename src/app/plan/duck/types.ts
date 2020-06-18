@@ -40,7 +40,9 @@ export interface IMigPlan {
     persistentVolumes?: IPlanPersistentVolume[];
     migStorageRef?: INameNamespaceRef;
     srcMigClusterRef?: INameNamespaceRef;
+    srcMigTokenRef?: INameNamespaceRef;
     destMigClusterRef?: INameNamespaceRef;
+    destMigTokenRef?: INameNamespaceRef;
     namespaces?: string[];
     closed?: boolean;
     hooks?: IPlanSpecHook[];

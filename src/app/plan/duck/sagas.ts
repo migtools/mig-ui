@@ -54,7 +54,9 @@ function* addPlanSaga(action) {
       migPlan.planName,
       migMeta.namespace,
       migPlan.sourceCluster,
+      migPlan.sourceTokenRef,
       migPlan.targetCluster,
+      migPlan.targetTokenRef,
       migPlan.selectedStorage,
       migPlan.namespaces
     );

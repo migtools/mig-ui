@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
 import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
@@ -16,6 +16,8 @@ interface IAddEditTokenModalProps {
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
+  onTokenCreated?: (tokenName: string) => void;
+  preSelectedClusterName?: string;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -25,7 +27,19 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   isOpen,
   isPolling,
   onClose,
+  onTokenCreated,
+  preSelectedClusterName,
 }: IAddEditTokenModalProps) => {
+  const containerRef = useRef(document.createElement('div'));
+  useEffect(() => {
+    // Hack to make it possible to show this modal on top of the wizard...
+    containerRef.current.className = 'modal-in-modal-container';
+    document.body.appendChild(containerRef.current);
+    return () => {
+      document.body.removeChild(containerRef.current);
+    };
+  }, []);
+
   const pollingContext = useContext(PollingContext);
 
   useEffect(() => {
@@ -39,10 +53,13 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
+    onTokenCreated && onTokenCreated(tokenValues.name);
+    onClose();
   };
 
   return (
     <Modal
+      appendTo={containerRef.current}
       isSmall
       isOpen={isOpen}
       onClose={() => {
@@ -58,6 +75,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
         onClose={onClose}
+        preSelectedClusterName={preSelectedClusterName}
       />
     </Modal>
   );
