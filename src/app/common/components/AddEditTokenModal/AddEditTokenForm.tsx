@@ -29,6 +29,7 @@ interface IOtherProps {
   onAddEditSubmit: (values: ITokenFormValues) => void;
   clusterList: ICluster[];
   onClose: () => void;
+  preSelectedClusterName?: string;
 }
 
 const InnerAddEditTokenForm: React.FunctionComponent<
@@ -45,6 +46,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   setFieldValue,
   onClose,
   clusterList,
+  preSelectedClusterName,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key: TokenFieldKey) => () => setFieldTouched(key, true, true);
@@ -78,6 +80,9 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   };
 
   useEffect(() => {
+    if (preSelectedClusterName) {
+      setFieldValue(TokenFieldKey.AssociatedClusterName, preSelectedClusterName);
+    }
     window.addEventListener('storage', handleStorageChanged);
     return () => window.removeEventListener('storage', handleStorageChanged);
   }, []);
@@ -118,6 +123,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           options={clusterNames}
           value={values.associatedClusterName}
           placeholderText="Select cluster..."
+          isDisabled={!!preSelectedClusterName}
         />
       </FormGroup>
       <FormGroup

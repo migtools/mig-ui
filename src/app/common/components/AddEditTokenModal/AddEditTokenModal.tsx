@@ -17,6 +17,7 @@ interface IAddEditTokenModalProps {
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
   onTokenCreated?: (tokenName: string) => void;
+  preSelectedClusterName?: string;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -27,6 +28,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   isPolling,
   onClose,
   onTokenCreated,
+  preSelectedClusterName,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -73,6 +75,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
         onClose={onClose}
+        preSelectedClusterName={preSelectedClusterName}
       />
     </Modal>
   );

@@ -143,6 +143,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           isOpen={isAddEditModalOpen}
           onClose={toggleAddEditModal}
           onTokenCreated={onTokenCreated}
+          preSelectedClusterName={clusterName}
         />
       </FormGroup>
       {tokenJustCreated && value && (
