@@ -20,7 +20,7 @@ export const getTokenInfo = (token: IToken) => {
     const expirationMoment = expirationTimestamp && moment(expirationTimestamp);
     const formattedExpiration = expirationMoment
       ? expirationMoment.tz(moment.tz.guess()).format('DD MMM YYYY, hh:mm:ss A z')
-      : 'N/A';
+      : 'Never';
     let statusType = StatusType.OK;
     let statusText = 'OK';
     if (expirationMoment) {
