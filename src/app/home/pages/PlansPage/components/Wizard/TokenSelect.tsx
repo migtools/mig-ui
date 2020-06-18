@@ -71,7 +71,9 @@ const getTokenOptionsForCluster = (
           <Level>
             <LevelItem>{token.MigToken.metadata.name}</LevelItem>
             <LevelItem>
-              <StatusIcon status={statusType} className={spacing.mlSm} />
+              {statusType !== StatusType.OK && (
+                <StatusIcon status={statusType} className={spacing.mlSm} />
+              )}
             </LevelItem>
           </Level>
         ),
