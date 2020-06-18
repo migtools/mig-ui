@@ -1,13 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FormikProps } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { Form, FormGroup, Grid, GridItem, TextInput, Title, Button } from '@patternfly/react-core';
-import { CheckIcon } from '@patternfly/react-icons';
+import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
-import { useOpenModal } from '../../../../duck/hooks';
-import IconWithText from '../../../../../common/components/IconWithText';
+import SimpleSelect from '../../../../../common/components/SimpleSelect';
 import TokenSelect from './TokenSelect';
 const styles = require('./GeneralForm.module');
 
