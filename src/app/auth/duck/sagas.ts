@@ -44,7 +44,6 @@ export function* initFromStorage(): any {
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
   }
-  yield put(AuthActions.fetchIsAdmin());
 }
 
 export function* fetchIsAdmin(): any {
