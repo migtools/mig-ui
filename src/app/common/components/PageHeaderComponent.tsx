@@ -26,36 +26,38 @@ interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
 }
 
 // NATODO: Remove WIP header
-const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (props, isAdmin) => {
-  const PageToolbar = (
-    <Toolbar>
-      <ToolbarGroup>
-        {isAdmin !== null && (
-          <ToolbarItem>
-            <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
-          </ToolbarItem>
-        )}
-      </ToolbarGroup>
-
-      <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
-        <ToolbarItem>
-          <Button
-            id="default-example-uid-02"
-            aria-label="Settings actions"
-            variant={ButtonVariant.plain}
-            onClick={() => {
-              props.setNamespaceSelectIsOpen(true);
-            }}
-          >
-            <CogIcon />
-          </Button>
-        </ToolbarItem>
-      </ToolbarGroup>
-    </Toolbar>
-  );
+// const PageHeaderComPonent: React.FunctionComponent<PageHeaderComponentProps> = (props, isAdmin) => {
+const PageHeaderComponent = ({ setNamespaceSelectisOpen, isAdmin, ...props }) => {
   return (
     <PageHeader
-      toolbar={PageToolbar}
+      toolbar={
+        <Toolbar>
+          <ToolbarGroup>
+            {isAdmin !== null && (
+              <ToolbarItem>
+                <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
+              </ToolbarItem>
+            )}
+          </ToolbarGroup>
+
+          <ToolbarGroup
+            className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}
+          >
+            <ToolbarItem>
+              <Button
+                id="default-example-uid-02"
+                aria-label="Settings actions"
+                variant={ButtonVariant.plain}
+                onClick={() => {
+                  setNamespaceSelectisOpen(true);
+                }}
+              >
+                <CogIcon />
+              </Button>
+            </ToolbarItem>
+          </ToolbarGroup>
+        </Toolbar>
+      }
       logo={
         <>
           <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
@@ -67,7 +69,6 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
           </Title>
         </>
       }
-      {...props}
     />
   );
 };
