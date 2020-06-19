@@ -1,5 +1,4 @@
 ---
-
 # TODO: Really want to improve this so that the user doesn't have to
 # explicitly set this.
 - name: Verify the cluster API has been provided
@@ -35,19 +34,19 @@
 
 - name: Output resolved mig-ui route
   debug:
-    msg: "{{ resolved_mig_ui_route }}"
+    msg: '{{ resolved_mig_ui_route }}'
 
 - name: Set mig_ui_oauth_redirect_url
   set_fact:
-    mig_ui_oauth_redirect_url: "{{ resolved_mig_ui_route }}/login/callback"
+    mig_ui_oauth_redirect_url: '{{ resolved_mig_ui_route }}/login/callback'
 
 - name: Output resolved redirect route
   debug:
-    msg: "{{ mig_ui_oauth_redirect_url }}"
+    msg: '{{ mig_ui_oauth_redirect_url }}'
 
 - name: Generate random secret value for oauth client
   set_fact:
-    mig_ui_oauth_secret: "{{ 99999999 | random | to_uuid | b64encode }}"
+    mig_ui_oauth_secret: '{{ 99999999 | random | to_uuid | b64encode }}'
 
 - name: Include variables from migmeta.yml
   include_vars: migmeta.yaml
@@ -68,7 +67,7 @@
     state: 'absent'
     api_version: 'oauth.openshift.io/v1'
     kind: OAuthClient
-    name: "{{ mig_ui_oauth_client_id }}"
+    name: '{{ mig_ui_oauth_client_id }}'
 
 - name: 'Set mig-ui object state={{ state }}'
   k8s:

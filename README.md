@@ -25,7 +25,6 @@ Consistent styles are enforced by travis and will gate PR merges. To check your 
 to submission, run:
 `yarn lint`
 
-
 ### UI development server
 
 ```bash

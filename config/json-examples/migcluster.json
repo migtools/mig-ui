@@ -1,26 +1,26 @@
 {
-    "apiVersion": "migration.openshift.io/v1alpha1",
-    "kind": "MigCluster",
-    "metadata": {
-        "creationTimestamp": "2019-04-02T19:09:32Z",
-        "generation": 1,
-        "labels": {
-            "controller-tools.k8s.io": "1.0"
-        },
-        "name": "my-cluster",
-        "namespace": "mig",
-        "resourceVersion": "888505",
-        "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters/my-cluster",
-        "uid": "d8bb1118-557a-11e9-b5e8-028f25dd2ca2"
+  "apiVersion": "migration.openshift.io/v1alpha1",
+  "kind": "MigCluster",
+  "metadata": {
+    "creationTimestamp": "2019-04-02T19:09:32Z",
+    "generation": 1,
+    "labels": {
+      "controller-tools.k8s.io": "1.0"
     },
-    "spec": {
-        "clusterRef": {
-            "name": "my-cluster",
-            "namespace": "mig"
-        },
-        "serviceAccountSecretRef": {
-            "name": "my-cluster",
-            "namespace": "openshift-config"
-        }
+    "name": "my-cluster",
+    "namespace": "mig",
+    "resourceVersion": "888505",
+    "selfLink": "/apis/migration.openshift.io/v1alpha1/namespaces/mig/migclusters/my-cluster",
+    "uid": "d8bb1118-557a-11e9-b5e8-028f25dd2ca2"
+  },
+  "spec": {
+    "clusterRef": {
+      "name": "my-cluster",
+      "namespace": "mig"
+    },
+    "serviceAccountSecretRef": {
+      "name": "my-cluster",
+      "namespace": "openshift-config"
     }
+  }
 }

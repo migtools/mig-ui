@@ -6,7 +6,6 @@ const HOST = process.env.HOST || 'localhost';
 const localConfigFileName = 'config.dev.json';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
 // json mock server as its host cluster. Intended for pure
@@ -31,8 +30,8 @@ if (!fs.existsSync(configPath)) {
   console.error('ERROR: config/config.dev.json is missing');
   console.error(
     'Copy config/config.dev.json.example to config/config.dev.json' +
-    ' and optionally configure your dev settings. A valid clusterUrl is ' +
-    ' required for start:remote.'
+      ' and optionally configure your dev settings. A valid clusterUrl is ' +
+      ' required for start:remote.'
   );
   process.exit(1);
 }
@@ -61,8 +60,8 @@ const plugins = [
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
   new MiniCssExtractPlugin({
     filename: '[name].css',
-    chunkFilename: '[id].css'
-  })
+    chunkFilename: '[id].css',
+  }),
 ];
 
 // Replace the normal OAuth login component with a mocked out login for local dev
@@ -106,16 +105,16 @@ const webpackConfig = {
             loader: 'css-loader',
             options: {
               modules: true,
-              sourceMap: true
-            }
+              sourceMap: true,
+            },
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.s(a|c)ss$/,
@@ -126,10 +125,10 @@ const webpackConfig = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.css$/,
@@ -140,12 +139,24 @@ const webpackConfig = {
           path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
           path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+          ),
         ],
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
