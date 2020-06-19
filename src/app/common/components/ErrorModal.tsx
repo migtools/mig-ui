@@ -12,7 +12,7 @@ import { ErrorCircleOIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-import { PollingContext } from '../../home/duck/context';
+import { PollingContext } from '../../home/duck';
 const styles = require('./ErrorModal.module');
 
 interface IProps {

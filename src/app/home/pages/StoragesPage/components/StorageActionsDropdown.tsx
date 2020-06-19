@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import { IStorageInfo } from '../helpers';
-import { useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck';
 import { StorageContext } from '../../../duck/context';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 

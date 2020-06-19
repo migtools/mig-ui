@@ -9,7 +9,7 @@ import {
   Flex,
   FlexItem,
 } from '@patternfly/react-core';
-import { useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck';
 import MigrateModal from './MigrateModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';

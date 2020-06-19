@@ -17,7 +17,7 @@ import { WrenchIcon, AddCircleOIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import TokensTable from './components/TokensTable';
-import { useOpenModal } from '../../duck/hooks';
+import { useOpenModal } from '../../duck';
 import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
