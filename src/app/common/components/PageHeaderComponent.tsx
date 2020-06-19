@@ -26,52 +26,52 @@ interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
 }
 
 // NATODO: Remove WIP header
-// const PageHeaderComPonent: React.FunctionComponent<PageHeaderComponentProps> = (props, isAdmin) => {
-const PageHeaderComponent = ({ setNamespaceSelectisOpen, isAdmin, ...props }) => {
-  return (
-    <PageHeader
-      toolbar={
-        <Toolbar>
-          <ToolbarGroup>
-            {isAdmin !== null && (
-              <ToolbarItem>
-                <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
-              </ToolbarItem>
-            )}
-          </ToolbarGroup>
-
-          <ToolbarGroup
-            className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}
-          >
+const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = ({
+  isAdmin,
+  setNamespaceSelectIsOpen,
+  ...props
+}) => (
+  <PageHeader
+    toolbar={
+      <Toolbar>
+        <ToolbarGroup>
+          {isAdmin !== null && (
             <ToolbarItem>
-              <Button
-                id="default-example-uid-02"
-                aria-label="Settings actions"
-                variant={ButtonVariant.plain}
-                onClick={() => {
-                  setNamespaceSelectisOpen(true);
-                }}
-              >
-                <CogIcon />
-              </Button>
+              <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
             </ToolbarItem>
-          </ToolbarGroup>
-        </Toolbar>
-      }
-      logo={
-        <>
-          <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
-          <Title
-            size="2xl"
-            style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
-          >
-            WORK IN PROGRESS
-          </Title>
-        </>
-      }
-    />
-  );
-};
+          )}
+        </ToolbarGroup>
+
+        <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
+          <ToolbarItem>
+            <Button
+              id="default-example-uid-02"
+              aria-label="Settings actions"
+              variant={ButtonVariant.plain}
+              onClick={() => {
+                setNamespaceSelectIsOpen(true);
+              }}
+            >
+              <CogIcon />
+            </Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+      </Toolbar>
+    }
+    logo={
+      <>
+        <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
+        <Title
+          size="2xl"
+          style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
+        >
+          WORK IN PROGRESS
+        </Title>
+      </>
+    }
+    {...props}
+  />
+);
 
 const mapStateToProps = (state: IReduxState) => ({ isAdmin: state.auth.isAdmin });
 const mapDispatchToProps = () => ({});

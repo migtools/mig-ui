@@ -18,6 +18,7 @@ import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import { AuthActions } from '../auth/duck/actions';
+import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -34,12 +35,14 @@ interface IHomeComponentProps {
   clusterList: ICluster[];
   isShowAgain: boolean;
   setNamespaceSelectIsOpen: (val) => null;
+  namespaceSelectIsOpen: boolean;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   clusterList,
   isShowAgain,
   setNamespaceSelectIsOpen,
+  namespaceSelectIsOpen,
 }: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
@@ -87,6 +90,8 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
+      <ActiveNamespaceModal namespaceSelectIsOpen={namespaceSelectIsOpen} />
+
       <Switch>
         <Route exact path="/">
           {/* NATODO: update this boolean to persist across multiple sessions. 
@@ -123,6 +128,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 // TODO does this component need to be connected to redux? Leaving for the onLogout stub.
 const mapStateToProps = (state: IReduxState) => ({
   isShowAgain: state.auth.isShowAgain,
+  namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
 });
 
 export default connect(mapStateToProps, (dispatch) => ({

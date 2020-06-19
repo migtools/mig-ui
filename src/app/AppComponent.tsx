@@ -20,7 +20,6 @@ import { PlanActions } from './plan/duck/actions';
 import { TokenActions } from './token/duck/actions';
 import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
-import ActiveNamespaceModal from './common/components/ActiveNamespaceModal';
 import { ICluster } from './cluster/duck/types';
 
 interface IProps {
@@ -43,7 +42,6 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   updateTokens: (updatedTokens) => void;
   clusterList: ICluster[];
-  namespaceSelectIsOpen: boolean;
 }
 
 const AppComponent: React.SFC<IProps> = ({
@@ -66,7 +64,6 @@ const AppComponent: React.SFC<IProps> = ({
   updatePlans,
   updateTokens,
   clusterList,
-  namespaceSelectIsOpen,
 }) => {
   const handlePlanPoll = (response) => {
     if (response) {
@@ -183,7 +180,6 @@ const AppComponent: React.SFC<IProps> = ({
           },
         }}
       >
-        <ActiveNamespaceModal namespaceSelectIsOpen={namespaceSelectIsOpen} />
         <ErrorModal errorModalObj={errorModalObject} isOpen />
 
         <ConnectedRouter history={history}>
@@ -207,7 +203,6 @@ const AppComponent: React.SFC<IProps> = ({
 export default connect(
   (state) => ({
     isLoggedIn: !!state.auth.user,
-    namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
     warnMessage: state.common.warnText,
     errorMessage: state.common.errorText,
     errorModalObject: state.common.errorModalObject,
