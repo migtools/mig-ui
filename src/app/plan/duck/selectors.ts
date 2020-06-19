@@ -239,7 +239,7 @@ const getPlansWithPlanStatus = createSelector(
   }
 );
 
-const getCounts = createSelector([planSelector], (plans) => {
+const getCounts = createSelector([planSelector], (plans: any[]) => {
   const counts = {
     notStarted: [],
     inProgress: [],
