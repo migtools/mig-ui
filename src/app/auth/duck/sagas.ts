@@ -38,6 +38,7 @@ export function* fetchToken(action) {
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
   yield put(AuthActions.fetchIsAdmin());
+  yield put(AuthActions.checkActiveNamespace());
   yield put(push('/'));
 }
 
@@ -46,6 +47,7 @@ export function* initFromStorage(): any {
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
     yield put(AuthActions.fetchIsAdmin());
+    yield put(AuthActions.checkActiveNamespace());
   }
 }
 
