@@ -42,6 +42,11 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   useEffect(() => {
     fetchTenantNamespaces();
     pollingContext.stopAllPolling();
+    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+    if (activeNamespace) {
+      setSelectedActiveNamespace(activeNamespace);
+    }
   }, [user]);
 
   const tenantNamespaceOptions = tenantNamespaceList.map((ns) => ns.name);
