@@ -21,7 +21,6 @@ const styles = require('./WelcomePage.module');
 interface IWelcomePageBaseProps {
   isHideWelcomeScreen: boolean;
   setWelcomeScreenBool: (value) => void;
-  handleGetStartedClick: () => void;
 }
 
 // TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
@@ -29,11 +28,9 @@ interface IWelcomePageBaseProps {
 const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   isHideWelcomeScreen,
   setWelcomeScreenBool,
-  handleGetStartedClick,
 }: IWelcomePageBaseProps) => {
   const onHandleClose = (e) => {
     history.push('/clusters');
-    handleGetStartedClick();
   };
 
   return (

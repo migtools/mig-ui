@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { history } from '../../helpers';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { IReduxState } from '../../reducers';
@@ -58,34 +59,30 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       </NavList>
     </Nav>
   );
-
-  //NATODO only show the welcome screen on initial login
-  const isFirstTimeLoggingIn = true;
+  const isWelcomeScreen = history.location.pathname === '/welcome';
   const [isShowNav, setIsShowNav] = useState(false);
 
-  const handleGetStartedClick = () => {
-    // setIsShowNav(true);
+  useEffect(() => {
+    if (isWelcomeScreen) {
+      setIsShowNav(false);
+    }
+  }, [isWelcomeScreen]);
+
+  const onNavToggle = () => {
+    setIsShowNav(!isShowNav);
   };
+
   return (
     <Page
       header={
         <PageHeaderComponent
-          //NATODO only disable sidebar when welcome screen is shown
-          // showNavToggle={isShowNav}
+          onNavToggle={onNavToggle}
+          showNavToggle={!isWelcomeScreen}
           setNamespaceSelectIsOpen={setNamespaceSelectIsOpen}
         />
       }
-      sidebar={
-        <PageSidebar
-          nav={nav}
-          //NATODO only disable sidebar when welcome screen is shown
-          // isNavOpen={isShowNav}
-          theme="dark"
-        />
-      }
-      isManagedSidebar
-      //NATODO only disable sidebar when welcome screen is shown
-      // isManagedSidebar={isShowNav}
+      sidebar={<PageSidebar nav={nav} isNavOpen={!isWelcomeScreen} theme="dark" />}
+      isManagedSidebar={isShowNav}
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
@@ -98,7 +95,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
           {isHideWelcomeScreen ? <ClustersPage /> : <Redirect to="/welcome" />}
         </Route>
         <Route exact path="/welcome">
-          <WelcomePage handleGetStartedClick={handleGetStartedClick} />
+          <WelcomePage />
         </Route>
         <Route exact path="/clusters">
           <ClustersPage />
