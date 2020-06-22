@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
+import { PlanActionTypes } from '../../..../../plan/duck/actions';
 import { AlertActions } from '../../common/duck/actions';
-import { setActiveNamespace } from '../../../mig_meta';
 
 import { push } from 'connected-react-router';
 import moment from 'moment';
@@ -49,7 +49,7 @@ export function* initFromStorage(): any {
 
 export function* fetchTenantNamespaces(): any {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const { migMeta } = state.auth;
   try {
     const { access_token } = state.auth.user;
     const tenantNamespacesUrl = `${migMeta.discoveryApi}/namespaces/`;
@@ -92,7 +92,7 @@ export function* checkActiveNamespace() {
   const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
   if (activeNamespace) {
     yield put(AuthActions.setNamespaceSelectIsOpen(false));
-    yield put(setActiveNamespace(activeNamespace));
+    yield put(AuthActions.setActiveNamespace(activeNamespace));
   } else {
     yield put(AuthActions.setNamespaceSelectIsOpen(true));
   }
@@ -100,7 +100,7 @@ export function* checkActiveNamespace() {
 
 export function* fetchIsAdmin(): any {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const { migMeta } = state.auth;
   if (state.auth.user) {
     const { access_token } = state.auth.user;
     const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
@@ -136,6 +136,16 @@ export function* loginSuccess() {
   yield put(AuthActions.checkActiveNamespace());
 }
 
+// export function* setActiveNamespace() {
+//   while (true) {
+//     // yield take(PlanActionTypes.UPDATE_PLANS);
+//     // yield put(AuthActions.updateNamespaceSuccess());
+//     // ... perform the login logic
+//     // yield take('LOGOUT');
+//     // ... perform the logout logic
+//   }
+// }
+
 function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.LOGOUT_USER_REQUEST, logoutUser);
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
@@ -146,6 +156,7 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.CHECK_ACTIVE_NAMESPACE, checkActiveNamespace);
   yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
+  // yield takeLatest(AuthActionTypes.SET_ACTIVE_NAMESPACE, setActiveNamespace);
 }
 
 export default {

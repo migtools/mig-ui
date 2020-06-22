@@ -97,14 +97,14 @@ function* namespaceFetchRequest(action) {
 
 function* getPlanSaga(planName) {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
 function* planPatchClose(planValues) {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
@@ -129,7 +129,7 @@ function* planPatchClose(planValues) {
 
 function* migrationCancel(action) {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
     const migration = yield client.get(
@@ -168,7 +168,7 @@ function* validatePlanSaga(action) {
       PlanUpdateRetryPeriodSeconds * 1000,
       function* (planValues) {
         const state = yield select();
-        const migMeta = state.migMeta;
+        const migMeta = state.auth.migMeta;
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
@@ -254,7 +254,7 @@ function* pvDiscoveryRequest(action) {
       PlanUpdateRetryPeriodSeconds * 1000,
       function* (planValues) {
         const state = yield select();
-        const migMeta = state.migMeta;
+        const migMeta = state.auth.migMeta;
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
@@ -513,7 +513,7 @@ function* planCloseSaga(action) {
 
 function* planDeleteAfterClose(planName) {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   yield client.delete(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
@@ -582,11 +582,11 @@ function* fetchPlansGenerator() {
 
   const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigPlan, state.migMeta.namespace);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
   try {
     let planList = yield client.list(resource);
     planList = yield planList.data.items;
-    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.migMeta, planList));
+    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.auth.migMeta, planList));
     const groupedPlans = yield planUtils.groupPlans(planList, refs);
     return { updatedPlans: groupedPlans };
   } catch (e) {

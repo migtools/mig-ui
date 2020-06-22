@@ -1,3 +1,4 @@
+import { IMigMeta } from '../../auth/duck/types';
 interface ILoginParams {
   token?: string;
   username?: string;
@@ -26,6 +27,9 @@ export const AuthActionTypes = {
   CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
   SET_NAMESPACE_SELECT_IS_OPEN: 'SET_NAMESPACE_SELECT_IS_OPEN',
   CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
+  INIT_MIG_META: 'INIT_MIG_META',
+  SET_ACTIVE_NAMESPACE: 'SET_ACTIVE_NAMESPACE',
+  UPDATE_NAMESPACE_SUCCESS: 'UPDATE_NAMESPACE_SUCCESS',
 };
 
 const loginSuccess = (user: ILoginParams) => ({
@@ -101,6 +105,26 @@ const checkHasLoggedIn = () => ({
   type: AuthActionTypes.CHECK_HAS_LOGGED_IN,
 });
 
+const initMigMeta = (migMeta: IMigMeta) => {
+  return {
+    type: AuthActionTypes.INIT_MIG_META,
+    migMeta,
+  };
+};
+
+const setActiveNamespace = (activeNamespace) => {
+  return {
+    type: AuthActionTypes.SET_ACTIVE_NAMESPACE,
+    activeNamespace,
+  };
+};
+
+const updateNamespaceSuccess = () => {
+  return {
+    type: AuthActionTypes.UPDATE_NAMESPACE_SUCCESS,
+  };
+};
+
 export const AuthActions = {
   logoutUserRequest,
   initFromStorage,
@@ -118,4 +142,7 @@ export const AuthActions = {
   checkActiveNamespace,
   setNamespaceSelectIsOpen,
   checkHasLoggedIn,
+  initMigMeta,
+  setActiveNamespace,
+  updateNamespaceSuccess,
 };

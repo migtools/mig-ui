@@ -60,11 +60,11 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 function* fetchStorageGenerator() {
   const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigStorage, state.migMeta.namespace);
+  const resource = new MigResource(MigResourceKind.MigStorage, state.auth.migMeta.namespace);
   try {
     let storageList = yield client.list(resource);
     storageList = yield storageList.data.items;
-    const refs = yield Promise.all(fetchMigStorageRefs(client, state.migMeta, storageList));
+    const refs = yield Promise.all(fetchMigStorageRefs(client, state.auth.migMeta, storageList));
     const groupedStorages = groupStorages(storageList, refs);
     return { updatedStorages: groupedStorages };
   } catch (e) {

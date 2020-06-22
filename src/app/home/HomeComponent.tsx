@@ -12,6 +12,9 @@ import {
   SkipToContent,
   PageHeader,
   Brand,
+  Bullseye,
+  EmptyState,
+  Spinner,
 } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage, WelcomePage } from './pages';
@@ -36,6 +39,7 @@ interface IHomeComponentProps {
   isHideWelcomeScreen: boolean;
   setNamespaceSelectIsOpen: (val) => null;
   namespaceSelectIsOpen: boolean;
+  isUpdatingNamespace: boolean;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
@@ -43,6 +47,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   isHideWelcomeScreen,
   setNamespaceSelectIsOpen,
   namespaceSelectIsOpen,
+  isUpdatingNamespace,
 }: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
@@ -71,6 +76,23 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   const onNavToggle = () => {
     setIsShowNav(!isShowNav);
   };
+
+  console.log('isUpdatingNAS', isUpdatingNamespace);
+  // if (isUpdatingNamespace) {
+  //   return (
+  //     <Bullseye>
+  //       <EmptyState variant="small">
+  //         <div className="pf-c-empty-state__icon">
+  //           <Spinner size="xl" />
+  //         </div>
+
+  //         {/* <Title headingLevel="h2" size="xl">
+  //         TODO: ** need to evaluate what text to show here **
+  //         </Title> */}
+  //       </EmptyState>
+  //     </Bullseye>
+  //   );
+  // }
 
   return (
     <Page
@@ -125,6 +147,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
   namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
+  isUpdatingNamespace: state.auth.isUpdatingNamespace,
 });
 
 export default connect(mapStateToProps, (dispatch) => ({

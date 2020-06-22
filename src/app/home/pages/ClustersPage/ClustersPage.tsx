@@ -23,7 +23,7 @@ import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
 import { ICluster } from '../../../cluster/duck/types';
-import { IMigMeta } from '../../../../mig_meta';
+import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 
@@ -105,7 +105,7 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
-  migMeta: state.migMeta,
+  migMeta: state.auth.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({

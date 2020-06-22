@@ -5,10 +5,10 @@ import clusterReducer, { IClusterReducerState } from './app/cluster/duck';
 import storageReducer, { IStorageReducerState } from './app/storage/duck';
 import planReducer, { IPlanReducerState } from './app/plan/duck';
 import tokenReducer, { ITokenReducerState } from './app/token/duck';
-import { migMetaReducer, IMigMeta } from './mig_meta';
 import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
 import logReducer from './app/logs/duck';
+import { IMigMeta } from './app/auth/duck/types';
 
 // TODO we should install @types/react-redux and improve the type safety of our Redux usage.
 // https://redux.js.org/recipes/usage-with-typescript
@@ -34,7 +34,6 @@ const rootReducer = combineReducers({
   plan: planReducer,
   token: tokenReducer,
   logs: logReducer,
-  migMeta: migMetaReducer,
 });
 
 export default rootReducer;

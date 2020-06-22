@@ -61,12 +61,14 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
 function* fetchClustersGenerator() {
   const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigCluster, state.migMeta.namespace);
+  const resource = new MigResource(MigResourceKind.MigCluster, state.auth.migMeta.namespace);
   try {
     let clusterList = yield client.list(resource);
     clusterList = yield clusterList.data.items;
     const nonHostClusters = clusterList.filter((c) => !c.spec.isHostCluster);
-    const refs = yield Promise.all(fetchMigClusterRefs(client, state.migMeta, nonHostClusters));
+    const refs = yield Promise.all(
+      fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters)
+    );
     const groupedClusters = groupClusters(clusterList, refs);
     return { updatedClusters: groupedClusters };
   } catch (e) {

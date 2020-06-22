@@ -6,7 +6,6 @@ import logSagas from './app/logs/duck/sagas';
 import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
 import tokenSagas from './app/token/duck/sagas';
-import { initMigMeta } from './mig_meta';
 import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
 import { history } from './helpers';
@@ -20,7 +19,7 @@ export default function* rootSaga() {
     // Will only be present in remote-dev and production scenarios where
     // oauth meta must be loaded
     if (migMeta) {
-      yield put(initMigMeta(migMeta));
+      yield put(AuthActions.initMigMeta(migMeta));
       yield put(AuthActions.initFromStorage());
     }
 

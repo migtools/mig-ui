@@ -14,7 +14,6 @@ import { PollingContext } from '../../home/duck/context';
 import SimpleSelect from './SimpleSelect';
 const styles = require('./ErrorModal.module');
 import authSelectors from '../../auth/duck/selectors';
-import { setActiveNamespace } from '../../../mig_meta';
 
 interface IProps {
   onHandleClose: () => null;
@@ -39,18 +38,21 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
     setActiveNamespace,
   } = props;
 
+  const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+  const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+
   useEffect(() => {
     fetchTenantNamespaces();
     pollingContext.stopAllPolling();
-    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
     if (activeNamespace) {
       setSelectedActiveNamespace(activeNamespace);
     }
   }, [user]);
 
   const tenantNamespaceOptions = tenantNamespaceList.map((ns) => ns.name);
-  const currentTitle = 'Before you begin....';
+  const currentTitle = selectedActiveNamespace
+    ? 'Update your active namespace'
+    : 'Before you begin....';
   const header = (
     <React.Fragment>
       <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
@@ -59,7 +61,14 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
     </React.Fragment>
   );
   return (
-    <Modal header={header} isSmall isOpen={namespaceSelectIsOpen} title={`${currentTitle}`}>
+    <Modal
+      showClose={selectedActiveNamespace && activeNamespace ? true : false}
+      header={header}
+      isSmall
+      isOpen={namespaceSelectIsOpen}
+      title={`${currentTitle}`}
+      onClose={() => setNamespaceSelectIsOpen(false)}
+    >
       <Grid gutter="md">
         <form>
           <GridItem className={styles.modalHeader}>
@@ -70,7 +79,13 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
             Tell us in which namespace you'd like to store these objects.
             <SimpleSelect
               id="id"
-              onChange={(selection) => setSelectedActiveNamespace(selection)}
+              onChange={(selection) => {
+                // const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+                // console.log('selection', selection);
+                // localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, JSON.stringify(selection));
+                setSelectedActiveNamespace(selection);
+                // setActiveNamespace(selection);
+              }}
               options={tenantNamespaceOptions}
               value={selectedActiveNamespace}
               placeholderText="Select active namespace..."
@@ -82,6 +97,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
               <GridItem span={5}>
                 <Button
                   variant="primary"
+                  isDisabled={selectedActiveNamespace ? false : true}
                   onClick={() => {
                     const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
                     localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, selectedActiveNamespace);
@@ -90,17 +106,6 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
                   }}
                 >
                   Save
-                </Button>
-              </GridItem>
-              <GridItem span={4}>
-                <Button
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => {
-                    setNamespaceSelectIsOpen(false);
-                  }}
-                >
-                  Cancel
                 </Button>
               </GridItem>
             </Grid>
@@ -113,13 +118,12 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
 
 export default connect(
   (state) => ({
-    migMeta: state.migMeta,
     user: state.auth.user,
     tenantNamespaceList: authSelectors.tenantNamespacesSelector(state),
   }),
   (dispatch) => ({
     fetchTenantNamespaces: () => dispatch(AuthActions.fetchTenantNamespaces()),
     setNamespaceSelectIsOpen: (val) => dispatch(AuthActions.setNamespaceSelectIsOpen(val)),
-    setActiveNamespace: (val) => dispatch(setActiveNamespace(val)),
+    setActiveNamespace: (val) => dispatch(AuthActions.setActiveNamespace(val)),
   })
 )(ActiveNamespaceModal);

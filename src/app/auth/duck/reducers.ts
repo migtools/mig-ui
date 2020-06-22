@@ -1,4 +1,5 @@
 import { AuthActionTypes } from './actions';
+import { IMigMeta } from './types';
 
 const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
 const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
@@ -11,6 +12,8 @@ const INITIAL_STATE = {
   isHideWelcomeScreen: hasLoggedIn ? hasLoggedIn.isHideWelcomeScreen : true,
   namespaceSelectIsOpen: null,
   tenantNamespaceList: [],
+  migMeta: {},
+  isUpdatingNamespace: null,
 };
 
 export const authReducer = (state = INITIAL_STATE, action) => {
@@ -31,6 +34,16 @@ export const authReducer = (state = INITIAL_STATE, action) => {
       return { ...state, namespaceSelectIsOpen: action.namespaceSelectIsOpen };
     case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:
       return { ...state, tenantNamespaceList: action.tenantNamespaceList };
+    case AuthActionTypes.INIT_MIG_META:
+      return { ...state, migMeta: action.migMeta };
+    case AuthActionTypes.SET_ACTIVE_NAMESPACE:
+      return {
+        ...state,
+        migMeta: { ...state.migMeta, namespace: action.activeNamespace },
+        // isUpdatingNamespace: true,
+      };
+    case AuthActionTypes.UPDATE_NAMESPACE_SUCCESS:
+      return { ...state, isUpdatingNamespace: false };
 
     default:
       return state;
