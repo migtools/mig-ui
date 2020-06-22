@@ -19,7 +19,6 @@ import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import { AuthActions } from '../auth/duck/actions';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
-
 const mainContainerId = 'mig-ui-page-main-container';
 
 const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
@@ -33,14 +32,14 @@ const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ t
 
 interface IHomeComponentProps {
   clusterList: ICluster[];
-  isShowAgain: boolean;
+  isHideWelcomeScreen: boolean;
   setNamespaceSelectIsOpen: (val) => null;
   namespaceSelectIsOpen: boolean;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   clusterList,
-  isShowAgain,
+  isHideWelcomeScreen,
   setNamespaceSelectIsOpen,
   namespaceSelectIsOpen,
 }: IHomeComponentProps) => {
@@ -65,7 +64,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   const [isShowNav, setIsShowNav] = useState(false);
 
   const handleGetStartedClick = () => {
-    setIsShowNav(true);
+    // setIsShowNav(true);
   };
   return (
     <Page
@@ -96,7 +95,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <Route exact path="/">
           {/* NATODO: update this boolean to persist across multiple sessions. 
           Also depends on the isAdmin boolean for displaying.*/}
-          {isShowAgain ? <Redirect to="/welcome" /> : <ClustersPage />}
+          {isHideWelcomeScreen ? <ClustersPage /> : <Redirect to="/welcome" />}
         </Route>
         <Route exact path="/welcome">
           <WelcomePage handleGetStartedClick={handleGetStartedClick} />
@@ -127,7 +126,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
 // TODO does this component need to be connected to redux? Leaving for the onLogout stub.
 const mapStateToProps = (state: IReduxState) => ({
-  isShowAgain: state.auth.isShowAgain,
+  isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
   namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
 });
 

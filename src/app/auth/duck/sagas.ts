@@ -37,8 +37,6 @@ export function* fetchToken(action) {
   user.expiry_time = expiryUnixTime;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
-  yield put(AuthActions.fetchIsAdmin());
-  yield put(AuthActions.checkActiveNamespace());
   yield put(push('/'));
 }
 
@@ -46,8 +44,45 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
-    yield put(AuthActions.fetchIsAdmin());
-    yield put(AuthActions.checkActiveNamespace());
+  }
+}
+
+export function* fetchTenantNamespaces(): any {
+  const state = yield select();
+  const migMeta = state.migMeta;
+  try {
+    const { access_token } = state.auth.user;
+    const tenantNamespacesUrl = `${migMeta.discoveryApi}/namespaces/`;
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + access_token,
+      },
+    };
+    const tenantNamespacesRes = yield axios.get(tenantNamespacesUrl, config);
+
+    const namespaceResourceList = tenantNamespacesRes.data.resources;
+    yield put(AuthActions.fetchTenantNamespacesSuccess(namespaceResourceList));
+  } catch (err) {
+    console.error('Failed to fetch tenant namespaces.');
+  }
+}
+
+export function* logoutUser() {
+  localStorage.removeItem(LS_KEY_CURRENT_USER);
+  yield put(push('/login?action=refresh'));
+}
+
+export function* checkHasLoggedIn() {
+  const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
+
+  const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
+  if (hasLoggedIn) {
+    yield put(AuthActions.setWelcomeScreenBool(hasLoggedIn.isHideWelcomeScreen));
+  } else {
+    const loginInfoObject = { isHideWelcomeScreen: false };
+    localStorage.setItem(LS_KEY_HAS_LOGGED_IN, JSON.stringify(loginInfoObject));
+    yield put(AuthActions.setWelcomeScreenBool(false));
   }
 }
 
@@ -95,30 +130,10 @@ export function* fetchIsAdmin(): any {
   }
 }
 
-export function* fetchTenantNamespaces(): any {
-  const state = yield select();
-  const migMeta = state.migMeta;
-  try {
-    const { access_token } = state.auth.user;
-    const tenantNamespacesUrl = `${migMeta.discoveryApi}/namespaces/`;
-
-    const config = {
-      headers: {
-        Authorization: 'Bearer ' + access_token,
-      },
-    };
-    const tenantNamespacesRes = yield axios.get(tenantNamespacesUrl, config);
-
-    const namespaceResourceList = tenantNamespacesRes.data.resources;
-    yield put(AuthActions.fetchTenantNamespacesSuccess(namespaceResourceList));
-  } catch (err) {
-    console.error('Failed to fetch tenant namespaces.');
-  }
-}
-
-export function* logoutUser() {
-  localStorage.removeItem(LS_KEY_CURRENT_USER);
-  yield put(push('/login?action=refresh'));
+export function* loginSuccess() {
+  yield put(AuthActions.checkHasLoggedIn());
+  yield put(AuthActions.fetchIsAdmin());
+  yield put(AuthActions.checkActiveNamespace());
 }
 
 function* watchAuthEvents() {
@@ -127,7 +142,9 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
   yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
+  yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
   yield takeLatest(AuthActionTypes.CHECK_ACTIVE_NAMESPACE, checkActiveNamespace);
+  yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }
 

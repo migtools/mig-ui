@@ -25,6 +25,7 @@ export const AuthActionTypes = {
   SET_WELCOME_SCREEN_BOOL: 'SET_WELCOME_SCREEN_BOOL',
   CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
   SET_NAMESPACE_SELECT_IS_OPEN: 'SET_NAMESPACE_SELECT_IS_OPEN',
+  CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
 };
 
 const loginSuccess = (user: ILoginParams) => ({
@@ -83,9 +84,9 @@ const setIsAdmin = (hasAdmin: boolean) => ({
   hasAdmin,
 });
 
-const setWelcomeScreenBool = (isShowAgain: boolean) => ({
+const setWelcomeScreenBool = (isHideWelcomeScreen: boolean) => ({
   type: AuthActionTypes.SET_WELCOME_SCREEN_BOOL,
-  isShowAgain,
+  isHideWelcomeScreen,
 });
 
 const setNamespaceSelectIsOpen = (namespaceSelectIsOpen: boolean) => ({
@@ -95,6 +96,9 @@ const setNamespaceSelectIsOpen = (namespaceSelectIsOpen: boolean) => ({
 
 const checkActiveNamespace = () => ({
   type: AuthActionTypes.CHECK_ACTIVE_NAMESPACE,
+});
+const checkHasLoggedIn = () => ({
+  type: AuthActionTypes.CHECK_HAS_LOGGED_IN,
 });
 
 export const AuthActions = {
@@ -113,4 +117,5 @@ export const AuthActions = {
   setWelcomeScreenBool,
   checkActiveNamespace,
   setNamespaceSelectIsOpen,
+  checkHasLoggedIn,
 };

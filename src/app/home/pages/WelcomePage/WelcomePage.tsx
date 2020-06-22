@@ -19,7 +19,7 @@ import { history } from '../../../../helpers';
 const styles = require('./WelcomePage.module');
 
 interface IWelcomePageBaseProps {
-  isShowAgain: boolean;
+  isHideWelcomeScreen: boolean;
   setWelcomeScreenBool: (value) => void;
   handleGetStartedClick: () => void;
 }
@@ -27,7 +27,7 @@ interface IWelcomePageBaseProps {
 // TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
 
 const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
-  isShowAgain,
+  isHideWelcomeScreen,
   setWelcomeScreenBool,
   handleGetStartedClick,
 }: IWelcomePageBaseProps) => {
@@ -89,8 +89,13 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
               label="Don't show this page again."
               aria-label="show-page"
               id="show-page-checkbox"
-              isChecked={isShowAgain}
-              onChange={() => setWelcomeScreenBool(isShowAgain)}
+              isChecked={isHideWelcomeScreen}
+              onChange={() => {
+                setWelcomeScreenBool(!isHideWelcomeScreen);
+                const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
+                const loginInfoObject = { isHideWelcomeScreen: !isHideWelcomeScreen };
+                localStorage.setItem(LS_KEY_HAS_LOGGED_IN, JSON.stringify(loginInfoObject));
+              }}
             />
           </FlexItem>
         </Flex>
@@ -100,13 +105,13 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
 };
 
 const mapStateToProps = (state: IReduxState) => ({
-  isShowAgain: state.auth.isShowAgain,
+  isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setWelcomeScreenBool: (isShowAgain: boolean) => {
+  setWelcomeScreenBool: (isHideWelcomeScreen: boolean) => {
     // Push the add edit status into watching state, and start watching
-    dispatch(AuthActions.setWelcomeScreenBool(isShowAgain));
+    dispatch(AuthActions.setWelcomeScreenBool(isHideWelcomeScreen));
   },
 });
 

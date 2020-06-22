@@ -1,11 +1,14 @@
 import { AuthActionTypes } from './actions';
 
+const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
+const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
+
 const INITIAL_STATE = {
   user: null,
   oauthMeta: null,
   certError: null,
   isAdmin: null,
-  isShowAgain: true,
+  isHideWelcomeScreen: hasLoggedIn ? hasLoggedIn.isHideWelcomeScreen : true,
   namespaceSelectIsOpen: null,
   tenantNamespaceList: [],
 };
@@ -23,7 +26,7 @@ export const authReducer = (state = INITIAL_STATE, action) => {
     case AuthActionTypes.CERT_ERROR_OCCURRED:
       return { ...state, certError: { failedUrl: action.failedUrl } };
     case AuthActionTypes.SET_WELCOME_SCREEN_BOOL:
-      return { ...state, isShowAgain: !action.isShowAgain };
+      return { ...state, isHideWelcomeScreen: action.isHideWelcomeScreen };
     case AuthActionTypes.SET_NAMESPACE_SELECT_IS_OPEN:
       return { ...state, namespaceSelectIsOpen: action.namespaceSelectIsOpen };
     case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:
