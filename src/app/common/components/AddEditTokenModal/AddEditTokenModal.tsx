@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
 import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
-import { PollingContext } from '../../../home/duck/context';
+import { PollingContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
 import { ITokenFormValues } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';

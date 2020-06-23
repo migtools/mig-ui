@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
-import { PollingContext } from '../home/duck/context';
+import { PollingContext } from '../home/duck';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';

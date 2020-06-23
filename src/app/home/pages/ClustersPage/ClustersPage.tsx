@@ -21,7 +21,7 @@ import { ClusterActions } from '../../../cluster/duck/actions';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
-import { useOpenModal } from '../../duck/hooks';
+import { useOpenModal } from '../../duck';
 import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../../mig_meta';
 import { IReduxState } from '../../../../reducers';

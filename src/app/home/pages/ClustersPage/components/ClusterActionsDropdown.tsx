@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
 import AddEditClusterModal from './AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-import { useOpenModal } from '../../../duck/hooks';
+import { useOpenModal } from '../../../duck';
 import { ClusterContext } from '../../../duck/context';
 import { IClusterInfo } from '../helpers';
 import { ICluster } from '../../../../cluster/duck/types';

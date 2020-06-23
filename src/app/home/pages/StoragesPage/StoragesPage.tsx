@@ -19,7 +19,7 @@ import { StorageContext } from '../../duck/context';
 import storageSelectors from '../../../storage/duck/selectors';
 import { StorageActions } from '../../../storage/duck/actions';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
-import { useOpenModal } from '../../duck/hooks';
+import { useOpenModal } from '../../duck';
 import StoragesTable from './components/StoragesTable';
 import AddEditStorageModal from './components/AddEditStorageModal';
 import { IStorage } from '../../../storage/duck/types';

@@ -8,7 +8,7 @@ import { history } from '../helpers';
 import { ConnectedRouter } from 'connected-react-router';
 import CertErrorComponent from './auth/CertErrorComponent';
 import OAuthLandingPage from './token/OAuthLandingPage';
-import { PollingContext } from './home/duck/context';
+import { PollingContext } from './home/duck';
 import { StatusPollingInterval } from './common/duck/sagas';
 import { clusterSagas } from './cluster/duck';
 import { storageSagas } from './storage/duck';

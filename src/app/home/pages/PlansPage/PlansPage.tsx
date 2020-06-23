@@ -22,7 +22,7 @@ import clusterSelectors from '../../../cluster/duck/selectors';
 import storageSelectors from '../../../storage/duck/selectors';
 import { PlanActions } from '../../../plan/duck';
 import PlansTable from './components/PlansTable';
-import { useOpenModal } from '../../duck/hooks';
+import { useOpenModal } from '../../duck';
 import WizardContainer from './components/Wizard/WizardContainer';
 import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 import { ICluster } from '../../../cluster/duck/types';
