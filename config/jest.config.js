@@ -8,6 +8,6 @@ module.exports = {
   modulePaths: ['<rootDir>/src', '<rootDir>/test'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '\\.(css|sass)$': 'identity-obj-proxy',
+    '\\.(css|sass|module)$': 'identity-obj-proxy',
   },
 };
