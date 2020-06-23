@@ -155,7 +155,6 @@ const AppComponent: React.SFC<IProps> = ({
       <AlertModal alertMessage={errorMessage} alertType="danger" />
       <AlertModal alertMessage={successMessage} alertType="success" />
       <AlertModal alertMessage={warnMessage} alertType="warning" />
-
       <PollingContext.Provider
         value={{
           startDefaultClusterPolling: () => startDefaultClusterPolling(),

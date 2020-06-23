@@ -29,7 +29,6 @@ export const AuthActionTypes = {
   CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
   INIT_MIG_META: 'INIT_MIG_META',
   SET_ACTIVE_NAMESPACE: 'SET_ACTIVE_NAMESPACE',
-  UPDATE_NAMESPACE_SUCCESS: 'UPDATE_NAMESPACE_SUCCESS',
 };
 
 const loginSuccess = (user: ILoginParams) => ({
@@ -119,12 +118,6 @@ const setActiveNamespace = (activeNamespace) => {
   };
 };
 
-const updateNamespaceSuccess = () => {
-  return {
-    type: AuthActionTypes.UPDATE_NAMESPACE_SUCCESS,
-  };
-};
-
 export const AuthActions = {
   logoutUserRequest,
   initFromStorage,
@@ -144,5 +137,4 @@ export const AuthActions = {
   checkHasLoggedIn,
   initMigMeta,
   setActiveNamespace,
-  updateNamespaceSuccess,
 };

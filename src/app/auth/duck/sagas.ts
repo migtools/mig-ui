@@ -136,16 +136,6 @@ export function* loginSuccess() {
   yield put(AuthActions.checkActiveNamespace());
 }
 
-// export function* setActiveNamespace() {
-//   while (true) {
-//     // yield take(PlanActionTypes.UPDATE_PLANS);
-//     // yield put(AuthActions.updateNamespaceSuccess());
-//     // ... perform the login logic
-//     // yield take('LOGOUT');
-//     // ... perform the logout logic
-//   }
-// }
-
 function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.LOGOUT_USER_REQUEST, logoutUser);
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
@@ -156,7 +146,6 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.CHECK_ACTIVE_NAMESPACE, checkActiveNamespace);
   yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
-  // yield takeLatest(AuthActionTypes.SET_ACTIVE_NAMESPACE, setActiveNamespace);
 }
 
 export default {

@@ -80,11 +80,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
             <SimpleSelect
               id="id"
               onChange={(selection) => {
-                // const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-                // console.log('selection', selection);
-                // localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, JSON.stringify(selection));
                 setSelectedActiveNamespace(selection);
-                // setActiveNamespace(selection);
               }}
               options={tenantNamespaceOptions}
               value={selectedActiveNamespace}

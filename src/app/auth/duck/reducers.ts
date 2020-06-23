@@ -40,11 +40,7 @@ export const authReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         migMeta: { ...state.migMeta, namespace: action.activeNamespace },
-        // isUpdatingNamespace: true,
       };
-    case AuthActionTypes.UPDATE_NAMESPACE_SUCCESS:
-      return { ...state, isUpdatingNamespace: false };
-
     default:
       return state;
   }

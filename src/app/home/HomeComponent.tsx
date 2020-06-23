@@ -77,23 +77,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
     setIsShowNav(!isShowNav);
   };
 
-  console.log('isUpdatingNAS', isUpdatingNamespace);
-  // if (isUpdatingNamespace) {
-  //   return (
-  //     <Bullseye>
-  //       <EmptyState variant="small">
-  //         <div className="pf-c-empty-state__icon">
-  //           <Spinner size="xl" />
-  //         </div>
-
-  //         {/* <Title headingLevel="h2" size="xl">
-  //         TODO: ** need to evaluate what text to show here **
-  //         </Title> */}
-  //       </EmptyState>
-  //     </Bullseye>
-  //   );
-  // }
-
   return (
     <Page
       header={
@@ -112,8 +95,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
       <Switch>
         <Route exact path="/">
-          {/* NATODO: update this boolean to persist across multiple sessions. 
-          Also depends on the isAdmin boolean for displaying.*/}
+          {/* NATODO: Are we showing the welcome screen for all users? */}
           {isHideWelcomeScreen ? <ClustersPage /> : <Redirect to="/welcome" />}
         </Route>
         <Route exact path="/welcome">
