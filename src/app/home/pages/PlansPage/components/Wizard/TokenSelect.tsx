@@ -25,7 +25,6 @@ import StatusIcon, { StatusType } from '../../../../../common/components/StatusI
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
-import { IMigMeta } from '../../../../../../mig_meta';
 import { isSameResource } from '../../../../../common/helpers';
 const styles = require('./TokenSelect.module');
 
@@ -39,7 +38,6 @@ interface ITokenSelectProps extends ISimpleSelectProps {
   error?: FormikErrors<INameNamespaceRef>;
   expiringSoonMessage: string;
   expiredMessage: string;
-  migMeta: IMigMeta;
 }
 
 const getTokenOptionsForCluster = (
@@ -114,7 +112,6 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   error,
   expiringSoonMessage,
   expiredMessage,
-  migMeta,
   ...props
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
@@ -203,10 +200,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         {isAddEditModalOpen && (
           <AddEditTokenModal
             onClose={toggleAddEditModal}
-            onTokenCreated={(tokenName: string) => {
-              // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
-              setTokenJustCreatedRef({ name: tokenName, namespace: migMeta.namespace });
-            }}
+            onTokenCreated={setTokenJustCreatedRef}
             preSelectedClusterName={clusterName}
             preventPollingWhileOpen={false}
           />
@@ -257,7 +251,6 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
 };
 
 const mapStateToProps = (state: IReduxState): Partial<ITokenSelectProps> => ({
-  migMeta: state.migMeta,
   tokenList: state.token.tokenList,
 });
 

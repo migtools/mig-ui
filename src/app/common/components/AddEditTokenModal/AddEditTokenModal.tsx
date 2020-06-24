@@ -8,6 +8,8 @@ import { ITokenFormValues } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
+import { INameNamespaceRef } from '../../duck/types';
+import { IMigMeta } from '../../../../mig_meta';
 
 interface IAddEditTokenModalProps {
   addEditStatus: IAddEditStatus;
@@ -16,8 +18,9 @@ interface IAddEditTokenModalProps {
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
-  onTokenCreated?: (tokenName: string) => void;
+  onTokenCreated?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
+  migMeta: IMigMeta;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -29,6 +32,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   onClose,
   onTokenCreated,
   preSelectedClusterName,
+  migMeta,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -54,7 +58,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
-    onTokenCreated && onTokenCreated(tokenValues.name);
+    onTokenCreated && onTokenCreated({ name: tokenValues.name, namespace: migMeta.namespace });
     onClose();
   };
 
@@ -86,6 +90,7 @@ const mapStateToProps = (state: IReduxState) => ({
   addEditStatus: state.token.addEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
+  migMeta: state.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({
