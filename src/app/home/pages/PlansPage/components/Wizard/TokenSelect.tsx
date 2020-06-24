@@ -234,8 +234,9 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({
+const mapStateToProps = (state: IReduxState): Partial<ITokenSelectProps> => ({
   migMeta: state.migMeta,
+  tokenList: state.token.tokenList,
 });
 
 const mapDispatchToProps = () => ({});

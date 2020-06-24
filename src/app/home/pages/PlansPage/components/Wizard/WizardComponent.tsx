@@ -125,7 +125,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               <GeneralForm
                 clusterList={clusterList}
                 storageList={storageList}
-                tokenList={tokenList}
                 values={values}
                 errors={errors}
                 touched={touched}
@@ -254,6 +253,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setUpdatedSteps(steps);
     },
     //****************** Don't forget to update this array if you add changes to wizard children!!! */
+    // TODO: we should really remove this and just define steps outside the useEffect, if that doesn't break anything
     [
       currentPlan,
       values,

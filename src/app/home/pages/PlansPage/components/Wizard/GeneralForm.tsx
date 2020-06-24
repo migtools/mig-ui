@@ -8,7 +8,7 @@ import TokenSelect from './TokenSelect';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
-  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'tokenList' | 'isEdit'>,
+  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
       | 'handleBlur'
@@ -23,7 +23,6 @@ interface IGeneralFormProps
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   clusterList,
   storageList,
-  tokenList,
   errors,
   handleBlur,
   handleChange,
@@ -149,7 +148,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
           <TokenSelect
             fieldId="sourceToken"
-            tokenList={tokenList}
             clusterName={values.sourceCluster}
             value={values.sourceTokenRef && values.sourceTokenRef.name}
             onChange={(tokenRef) => {
@@ -181,7 +179,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
           <TokenSelect
             fieldId="targetToken"
-            tokenList={tokenList}
             clusterName={values.targetCluster}
             value={values.targetTokenRef && values.targetTokenRef.name}
             onChange={(tokenRef) => {
