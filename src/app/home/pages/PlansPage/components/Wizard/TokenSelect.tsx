@@ -200,15 +200,17 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           isDisabled={!clusterName || isLoadingNewToken}
           {...props}
         />
-        <AddEditTokenModal
-          isOpen={isAddEditModalOpen}
-          onClose={toggleAddEditModal}
-          onTokenCreated={(tokenName: string) => {
-            // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
-            setTokenJustCreatedRef({ name: tokenName, namespace: migMeta.namespace });
-          }}
-          preSelectedClusterName={clusterName}
-        />
+        {isAddEditModalOpen && (
+          <AddEditTokenModal
+            onClose={toggleAddEditModal}
+            onTokenCreated={(tokenName: string) => {
+              // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
+              setTokenJustCreatedRef({ name: tokenName, namespace: migMeta.namespace });
+            }}
+            preSelectedClusterName={clusterName}
+            preventPollingWhileOpen={false}
+          />
+        )}
       </FormGroup>
       {newToken && newToken === selectedToken && (
         <div className={spacing.mSm}>

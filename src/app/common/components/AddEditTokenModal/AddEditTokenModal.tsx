@@ -11,8 +11,8 @@ import { TokenActions } from '../../../token/duck/actions';
 
 interface IAddEditTokenModalProps {
   addEditStatus: IAddEditStatus;
-  isOpen: boolean;
   isPolling: boolean;
+  preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
@@ -24,8 +24,8 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   addEditStatus,
   addToken,
   clusterList,
-  isOpen,
   isPolling,
+  preventPollingWhileOpen = true,
   onClose,
   onTokenCreated,
   preSelectedClusterName,
@@ -43,10 +43,11 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const pollingContext = useContext(PollingContext);
 
   useEffect(() => {
-    if (isOpen && isPolling) {
+    if (isPolling && preventPollingWhileOpen) {
       pollingContext.stopAllPolling();
+      return () => pollingContext.startAllDefaultPolling();
     }
-  });
+  }, []);
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
 
@@ -61,7 +62,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     <Modal
       appendTo={containerRef.current}
       isSmall
-      isOpen={isOpen}
+      isOpen
       onClose={() => {
         // NATODO cancel/reset add/edit watch/state
         onClose();

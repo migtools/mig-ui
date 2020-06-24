@@ -91,7 +91,7 @@ ITokensPageBaseProps) => {
             <CardBody>
               {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
               {renderTokenCardBody()}
-              <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
+              {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
             </CardBody>
           </Card>
         )}
