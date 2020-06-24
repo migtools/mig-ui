@@ -97,9 +97,6 @@ const setNamespaceSelectIsOpen = (namespaceSelectIsOpen: boolean) => ({
   namespaceSelectIsOpen,
 });
 
-const checkActiveNamespace = () => ({
-  type: AuthActionTypes.CHECK_ACTIVE_NAMESPACE,
-});
 const checkHasLoggedIn = () => ({
   type: AuthActionTypes.CHECK_HAS_LOGGED_IN,
 });
@@ -132,7 +129,6 @@ export const AuthActions = {
   fetchTenantNamespacesSuccess,
   fetchIsAdmin,
   setWelcomeScreenBool,
-  checkActiveNamespace,
   setNamespaceSelectIsOpen,
   checkHasLoggedIn,
   initMigMeta,

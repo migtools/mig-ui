@@ -21,6 +21,7 @@ const styles = require('./WelcomePage.module');
 interface IWelcomePageBaseProps {
   isHideWelcomeScreen: boolean;
   setWelcomeScreenBool: (value) => void;
+  setNamespaceSelectIsOpen: (value) => void;
 }
 
 // TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
@@ -28,9 +29,16 @@ interface IWelcomePageBaseProps {
 const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   isHideWelcomeScreen,
   setWelcomeScreenBool,
+  setNamespaceSelectIsOpen,
 }: IWelcomePageBaseProps) => {
-  const onHandleClose = (e) => {
-    history.push('/clusters');
+  const onHandleGetStarted = (e) => {
+    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+    if (activeNamespace) {
+      history.push('/clusters');
+    } else {
+      setNamespaceSelectIsOpen(true);
+    }
   };
 
   return (
@@ -77,7 +85,7 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
             </TextContent>
           </FlexItem>
           <FlexItem className={`${spacing.myLg}`}>
-            <Button key="confirm" variant="primary" onClick={(e) => onHandleClose(e)}>
+            <Button key="confirm" variant="primary" onClick={(e) => onHandleGetStarted(e)}>
               Get started
             </Button>
           </FlexItem>
@@ -103,12 +111,15 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
 
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
+  namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setWelcomeScreenBool: (isHideWelcomeScreen: boolean) => {
-    // Push the add edit status into watching state, and start watching
     dispatch(AuthActions.setWelcomeScreenBool(isHideWelcomeScreen));
+  },
+  setNamespaceSelectIsOpen: (namespaceSelectIsOpen: boolean) => {
+    dispatch(AuthActions.setNamespaceSelectIsOpen(namespaceSelectIsOpen));
   },
 });
 

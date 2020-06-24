@@ -79,22 +79,18 @@ export function* checkHasLoggedIn() {
   const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
   if (hasLoggedIn) {
     yield put(AuthActions.setWelcomeScreenBool(hasLoggedIn.isHideWelcomeScreen));
+    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+    if (activeNamespace) {
+      yield put(AuthActions.setNamespaceSelectIsOpen(false));
+      yield put(AuthActions.setActiveNamespace(activeNamespace));
+    } else {
+      yield put(AuthActions.setNamespaceSelectIsOpen(true));
+    }
   } else {
     const loginInfoObject = { isHideWelcomeScreen: false };
     localStorage.setItem(LS_KEY_HAS_LOGGED_IN, JSON.stringify(loginInfoObject));
     yield put(AuthActions.setWelcomeScreenBool(false));
-  }
-}
-
-export function* checkActiveNamespace() {
-  const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-
-  const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
-  if (activeNamespace) {
-    yield put(AuthActions.setNamespaceSelectIsOpen(false));
-    yield put(AuthActions.setActiveNamespace(activeNamespace));
-  } else {
-    yield put(AuthActions.setNamespaceSelectIsOpen(true));
   }
 }
 
@@ -133,7 +129,6 @@ export function* fetchIsAdmin(): any {
 export function* loginSuccess() {
   yield put(AuthActions.checkHasLoggedIn());
   yield put(AuthActions.fetchIsAdmin());
-  yield put(AuthActions.checkActiveNamespace());
 }
 
 function* watchAuthEvents() {
@@ -143,7 +138,6 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
   yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
   yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
-  yield takeLatest(AuthActionTypes.CHECK_ACTIVE_NAMESPACE, checkActiveNamespace);
   yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }

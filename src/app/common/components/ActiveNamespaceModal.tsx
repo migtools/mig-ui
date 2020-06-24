@@ -9,15 +9,18 @@ import {
   BaseSizes,
 } from '@patternfly/react-core';
 import { AuthActions } from '../../auth/duck/actions';
+import { ClusterActions } from '../../cluster/duck/actions';
 import { connect } from 'react-redux';
 import { PollingContext } from '../../home/duck/context';
 import SimpleSelect from './SimpleSelect';
 const styles = require('./ErrorModal.module');
 import authSelectors from '../../auth/duck/selectors';
+import { history } from '../../../helpers';
 
 interface IProps {
   onHandleClose: () => null;
   fetchTenantNamespaces: () => null;
+  fetchClusters: () => null;
   tenantNamespaceList: any;
   namespaceSelectIsOpen: boolean;
   setNamespaceSelectIsOpen: (val) => null;
@@ -36,6 +39,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
     setNamespaceSelectIsOpen,
     user,
     setActiveNamespace,
+    fetchClusters,
   } = props;
 
   const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
@@ -62,7 +66,6 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   );
   return (
     <Modal
-      showClose={selectedActiveNamespace && activeNamespace ? true : false}
       header={header}
       isSmall
       isOpen={namespaceSelectIsOpen}
@@ -99,6 +102,8 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
                     localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, selectedActiveNamespace);
                     setNamespaceSelectIsOpen(false);
                     setActiveNamespace(selectedActiveNamespace);
+                    fetchClusters();
+                    history.push('/clusters');
                   }}
                 >
                   Save
@@ -121,5 +126,6 @@ export default connect(
     fetchTenantNamespaces: () => dispatch(AuthActions.fetchTenantNamespaces()),
     setNamespaceSelectIsOpen: (val) => dispatch(AuthActions.setNamespaceSelectIsOpen(val)),
     setActiveNamespace: (val) => dispatch(AuthActions.setActiveNamespace(val)),
+    fetchClusters: () => dispatch(ClusterActions.clusterFetchRequest()),
   })
 )(ActiveNamespaceModal);

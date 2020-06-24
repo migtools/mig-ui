@@ -84,6 +84,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
           onNavToggle={onNavToggle}
           showNavToggle={!isWelcomeScreen}
           setNamespaceSelectIsOpen={setNamespaceSelectIsOpen}
+          isWelcomeScreen={isWelcomeScreen}
         />
       }
       sidebar={<PageSidebar nav={nav} isNavOpen={!isWelcomeScreen} theme="dark" />}

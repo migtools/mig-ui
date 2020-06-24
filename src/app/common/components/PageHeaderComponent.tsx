@@ -22,6 +22,7 @@ const styles = require('./PageHeaderComponent.module');
 
 interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
   isAdmin: boolean;
+  isWelcomeScreen: boolean;
   setNamespaceSelectIsOpen?: (val) => void;
 }
 
@@ -29,6 +30,7 @@ interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
 const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = ({
   isAdmin,
   setNamespaceSelectIsOpen,
+  isWelcomeScreen,
   ...props
 }) => (
   <PageHeader
@@ -43,18 +45,20 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
         </ToolbarGroup>
 
         <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
-          <ToolbarItem>
-            <Button
-              id="default-example-uid-02"
-              aria-label="Settings actions"
-              variant={ButtonVariant.plain}
-              onClick={() => {
-                setNamespaceSelectIsOpen(true);
-              }}
-            >
-              <CogIcon />
-            </Button>
-          </ToolbarItem>
+          {!isWelcomeScreen && (
+            <ToolbarItem>
+              <Button
+                id="default-example-uid-02"
+                aria-label="Settings actions"
+                variant={ButtonVariant.plain}
+                onClick={() => {
+                  setNamespaceSelectIsOpen(true);
+                }}
+              >
+                <CogIcon />
+              </Button>
+            </ToolbarItem>
+          )}
         </ToolbarGroup>
       </Toolbar>
     }
