@@ -18,7 +18,7 @@ interface IAddEditTokenModalProps {
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
-  onTokenCreated?: (tokenRef: INameNamespaceRef) => void;
+  onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
   migMeta: IMigMeta;
 }
@@ -30,7 +30,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   isPolling,
   preventPollingWhileOpen = true,
   onClose,
-  onTokenCreated,
+  onTokenAdded,
   preSelectedClusterName,
   migMeta,
 }: IAddEditTokenModalProps) => {
@@ -58,7 +58,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
-    onTokenCreated && onTokenCreated({ name: tokenValues.name, namespace: migMeta.namespace });
+    onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
     onClose();
   };
 

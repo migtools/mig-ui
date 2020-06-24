@@ -115,7 +115,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   ...props
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [tokenJustCreatedRef, setTokenJustCreatedRef] = useState<INameNamespaceRef>(null);
+  const [tokenJustAddedRef, setTokenJustAddedRef] = useState<INameNamespaceRef>(null);
 
   const handleChange = (token: IToken) => {
     const { name, namespace } = token.MigToken.metadata;
@@ -123,7 +123,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   };
 
   const onAddTokenClick = () => {
-    setTokenJustCreatedRef(null);
+    setTokenJustAddedRef(null);
     toggleAddEditModal();
   };
 
@@ -142,9 +142,9 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
 
   const newToken: IToken =
-    tokenJustCreatedRef &&
-    tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenJustCreatedRef));
-  const isLoadingNewToken = !!tokenJustCreatedRef && !newToken;
+    tokenJustAddedRef &&
+    tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenJustAddedRef));
+  const isLoadingNewToken = !!tokenJustAddedRef && !newToken;
 
   useEffect(() => {
     if (newToken && !selectedToken) {
@@ -154,14 +154,14 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
       } else {
         // It's not associated with the selected cluster, so give up on selecting it.
         // Might be impossible? Prevents a forever-spinner if that changes.
-        setTokenJustCreatedRef(null);
+        setTokenJustAddedRef(null);
       }
     }
   }, [newToken]);
 
   useEffect(() => {
     // Clear any messages about freshly created tokens if the cluster selection changes
-    setTokenJustCreatedRef(null);
+    setTokenJustAddedRef(null);
   }, [clusterName]);
 
   return (
@@ -179,7 +179,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           onChange={(selection: OptionWithValue<IToken>) => {
             if (selection.value) {
               handleChange(selection.value);
-              setTokenJustCreatedRef(null);
+              setTokenJustAddedRef(null);
             }
           }}
           options={tokenOptions}
@@ -200,7 +200,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         {isAddEditModalOpen && (
           <AddEditTokenModal
             onClose={toggleAddEditModal}
-            onTokenCreated={setTokenJustCreatedRef}
+            onTokenAdded={setTokenJustAddedRef}
             preSelectedClusterName={clusterName}
             preventPollingWhileOpen={false}
           />
