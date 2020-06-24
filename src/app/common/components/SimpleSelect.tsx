@@ -8,8 +8,8 @@ import {
   SelectOptionProps,
 } from '@patternfly/react-core';
 
-export interface OptionWithValue extends SelectOptionObject {
-  value: string;
+export interface OptionWithValue<T = string> extends SelectOptionObject {
+  value: T;
   props?: Partial<SelectOptionProps>; // Extra props for <SelectOption>, e.g. children, className
 }
 

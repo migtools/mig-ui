@@ -15,13 +15,14 @@ import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
 import { IMigMeta } from '../../../../../../mig_meta';
+import { isSameResource } from '../../../../../common/helpers';
 const styles = require('./TokenSelect.module');
 
 interface ITokenSelectProps {
   fieldId: string;
   tokenList: IToken[];
   clusterName: string;
-  value: string;
+  value: INameNamespaceRef;
   onChange: (tokenRef: INameNamespaceRef) => void;
   touched: FormikTouched<INameNamespaceRef>;
   error?: FormikErrors<INameNamespaceRef>;
@@ -34,8 +35,8 @@ const getTokenOptionsForCluster = (
   tokenList: IToken[],
   clusterName: string,
   onAddTokenClick: () => void
-): OptionWithValue[] => {
-  const empty: OptionWithValue = {
+): OptionWithValue<IToken>[] => {
+  const empty: OptionWithValue<IToken> = {
     toString: () => 'No tokens found for the selected cluster',
     value: null,
     props: {
@@ -65,7 +66,7 @@ const getTokenOptionsForCluster = (
     const { statusType } = getTokenInfo(token);
     return {
       toString: () => token.MigToken.metadata.name,
-      value: token.MigToken.metadata.name,
+      value: token,
       props: {
         children: (
           <Level>
@@ -82,9 +83,14 @@ const getTokenOptionsForCluster = (
   });
 };
 
-const getSelectedTokenOption = (tokenName: string, tokenOptions: OptionWithValue[]) => {
-  if (!tokenName) return null;
-  return tokenOptions.find((option) => option.value === tokenName);
+const getSelectedTokenOption = (
+  selectedTokenRef: INameNamespaceRef,
+  tokenOptions: OptionWithValue<IToken>[]
+) => {
+  if (!selectedTokenRef) return null;
+  return tokenOptions.find((option) =>
+    isSameResource(option.value.MigToken.metadata, selectedTokenRef)
+  );
 };
 
 const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
@@ -102,9 +108,9 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [tokenJustCreatedRef, setTokenJustCreatedRef] = useState<INameNamespaceRef>(null);
 
-  const handleChange = (tokenName: string) => {
-    // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
-    onChange({ name: tokenName, namespace: migMeta.namespace });
+  const handleChange = (token: IToken) => {
+    const { name, namespace } = token.MigToken.metadata;
+    onChange({ name, namespace });
   };
 
   const onAddTokenClick = () => {
@@ -122,30 +128,23 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   }, [tokenList, clusterName]);
 
   const selectedToken: IToken = value
-    ? tokenList.find((token) => token.MigToken.metadata.name === value)
+    ? tokenList.find((token) => isSameResource(token.MigToken.metadata, value))
     : null;
   const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
 
   const newToken: IToken =
     tokenJustCreatedRef &&
-    tokenList.find((token) => {
-      const { name, namespace } = token.MigToken.metadata;
-      return name === tokenJustCreatedRef.name && namespace === tokenJustCreatedRef.namespace;
-    });
+    tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenJustCreatedRef));
   const isLoadingNewToken = !!tokenJustCreatedRef && !newToken;
-
-  console.log({ tokenJustCreatedRef, newToken, selectedToken, tokenList });
 
   useEffect(() => {
     if (newToken && !selectedToken) {
-      console.log('NEW TOKEN LOADED!');
       if (newToken.MigToken.spec.migClusterRef.name === clusterName) {
         // The token we just created is in memory now and matches the selected cluster, so select it.
-        console.log('SELECTING IT!');
-        handleChange(newToken.MigToken.metadata.name);
+        handleChange(newToken);
       } else {
         // It's not associated with the selected cluster, so give up on selecting it.
-        console.log('GIVING UP!');
+        // Might be impossible? Prevents a forever-spinner if that changes.
         setTokenJustCreatedRef(null);
       }
     }
@@ -168,7 +167,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
       >
         <SimpleSelect
           id={fieldId}
-          onChange={(selection: OptionWithValue) => {
+          onChange={(selection: OptionWithValue<IToken>) => {
             if (selection.value) {
               handleChange(selection.value);
               setTokenJustCreatedRef(null);
