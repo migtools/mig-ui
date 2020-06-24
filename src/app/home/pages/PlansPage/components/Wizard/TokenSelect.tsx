@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { FormGroup, Button, Level, LevelItem, Flex, FlexItem } from '@patternfly/react-core';
+import {
+  FormGroup,
+  Button,
+  Level,
+  LevelItem,
+  Flex,
+  FlexItem,
+  Spinner,
+} from '@patternfly/react-core';
 import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flexStyles from '@patternfly/react-styles/css/layouts/Flex/flex';
@@ -175,7 +183,16 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           }}
           options={tokenOptions}
           value={getSelectedTokenOption(value, tokenOptions)}
-          placeholderText="Select token..."
+          placeholderText={
+            isLoadingNewToken ? (
+              <Flex className={`${spacing.mlSm} ${flexStyles.modifiers.alignItemsCenter}`}>
+                <Spinner size="md" />
+                <FlexItem>Adding token...</FlexItem>
+              </Flex>
+            ) : (
+              'Select token...'
+            )
+          }
           isDisabled={!clusterName || isLoadingNewToken}
         />
         <AddEditTokenModal
@@ -188,7 +205,6 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           preSelectedClusterName={clusterName}
         />
       </FormGroup>
-      {isLoadingNewToken && <div className={spacing.mSm}>Loading...</div>}
       {newToken && newToken === selectedToken && (
         <div className={spacing.mSm}>
           <IconWithText

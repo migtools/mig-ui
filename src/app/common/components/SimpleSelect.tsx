@@ -23,7 +23,6 @@ interface SimpleSelectProps
   onChange: (selection: OptionLike) => void;
   options: OptionLike[];
   value: OptionLike | OptionLike[];
-  placeholderText?: string;
 }
 
 const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
