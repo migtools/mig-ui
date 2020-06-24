@@ -133,7 +133,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
     ? tokenList.find((token) => token.MigToken.metadata.name === value)
     : null;
   const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
-  const isLoadingNewToken = value && !selectedToken;
+  const isLoadingNewToken = !!value && !selectedToken;
 
   useEffect(() => {
     // If there's only one token available, pre-select it.
