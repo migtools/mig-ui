@@ -266,6 +266,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       touched,
       currentPlanStatus,
       migHookList,
+      tokenList,
       hookAddEditStatus,
       isAddHooksOpen,
       isFetchingHookList,

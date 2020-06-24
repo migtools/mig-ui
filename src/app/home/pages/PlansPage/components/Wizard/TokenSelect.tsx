@@ -100,47 +100,61 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   migMeta,
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [tokenJustCreated, setTokenJustCreated] = useState(false);
-
-  useEffect(() => {
-    // Clear token messages if the cluster selection changes
-    setTokenJustCreated(false);
-  }, [clusterName]);
+  const [tokenJustCreatedRef, setTokenJustCreatedRef] = useState<INameNamespaceRef>(null);
 
   const handleChange = (tokenName: string) => {
+    // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
     onChange({ name: tokenName, namespace: migMeta.namespace });
   };
 
-  const onSelectionChange = (selection: OptionWithValue) => {
-    if (selection.value) {
-      handleChange(selection.value);
-      setTokenJustCreated(false);
-    }
-  };
-
   const onAddTokenClick = () => {
-    setTokenJustCreated(false);
+    setTokenJustCreatedRef(null);
     toggleAddEditModal();
   };
 
-  const onTokenCreated = (tokenName: string) => {
-    handleChange(tokenName);
-    setTokenJustCreated(true);
-  };
-
   const tokenOptions = getTokenOptionsForCluster(tokenList, clusterName, onAddTokenClick);
-  const selectedToken = value
-    ? tokenList.find((token) => token.MigToken.metadata.name === value)
-    : null;
-  const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
-  const isLoadingNewToken = value && !selectedToken;
 
   useEffect(() => {
-    // If there's only one token available, pre-select it.
+    // If there's only one token available for the cluster, pre-select it.
     if (!value && tokenOptions.length === 1 && tokenOptions[0].value !== null) {
       handleChange(tokenOptions[0].value);
     }
   }, [tokenList, clusterName]);
+
+  const selectedToken: IToken = value
+    ? tokenList.find((token) => token.MigToken.metadata.name === value)
+    : null;
+  const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
+
+  const newToken: IToken =
+    tokenJustCreatedRef &&
+    tokenList.find((token) => {
+      const { name, namespace } = token.MigToken.metadata;
+      return name === tokenJustCreatedRef.name && namespace === tokenJustCreatedRef.namespace;
+    });
+  const isLoadingNewToken = !!tokenJustCreatedRef && !newToken;
+
+  console.log({ tokenJustCreatedRef, newToken, selectedToken, tokenList });
+
+  useEffect(() => {
+    if (newToken && !selectedToken) {
+      console.log('NEW TOKEN LOADED!');
+      if (newToken.MigToken.spec.migClusterRef.name === clusterName) {
+        // The token we just created is in memory now and matches the selected cluster, so select it.
+        console.log('SELECTING IT!');
+        handleChange(newToken.MigToken.metadata.name);
+      } else {
+        // It's not associated with the selected cluster, so give up on selecting it.
+        console.log('GIVING UP!');
+        setTokenJustCreatedRef(null);
+      }
+    }
+  }, [newToken]);
+
+  useEffect(() => {
+    // Clear any messages about freshly created tokens if the cluster selection changes
+    setTokenJustCreatedRef(null);
+  }, [clusterName]);
 
   return (
     <>
@@ -154,7 +168,12 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
       >
         <SimpleSelect
           id={fieldId}
-          onChange={onSelectionChange}
+          onChange={(selection: OptionWithValue) => {
+            if (selection.value) {
+              handleChange(selection.value);
+              setTokenJustCreatedRef(null);
+            }
+          }}
           options={tokenOptions}
           value={getSelectedTokenOption(value, tokenOptions)}
           placeholderText="Select token..."
@@ -163,12 +182,15 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         <AddEditTokenModal
           isOpen={isAddEditModalOpen}
           onClose={toggleAddEditModal}
-          onTokenCreated={onTokenCreated}
+          onTokenCreated={(tokenName: string) => {
+            // NATODO should we include the namespace from the MigToken in the select options and everything, to be future proof?
+            setTokenJustCreatedRef({ name: tokenName, namespace: migMeta.namespace });
+          }}
           preSelectedClusterName={clusterName}
         />
       </FormGroup>
       {isLoadingNewToken && <div className={spacing.mSm}>Loading...</div>}
-      {tokenJustCreated && value && !isLoadingNewToken && (
+      {newToken && newToken === selectedToken && (
         <div className={spacing.mSm}>
           <IconWithText
             icon={
