@@ -15,7 +15,7 @@ export interface OptionWithValue<T = string> extends SelectOptionObject {
 
 type OptionLike = string | SelectOptionObject | OptionWithValue;
 
-interface SimpleSelectProps
+export interface ISimpleSelectProps
   extends Omit<
     SelectProps,
     'onChange' | 'isExpanded' | 'onToggle' | 'onSelect' | 'selections' | 'value'
@@ -25,7 +25,7 @@ interface SimpleSelectProps
   value: OptionLike | OptionLike[];
 }
 
-const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
+const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
   onChange,
   options,
   value,

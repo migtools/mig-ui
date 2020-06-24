@@ -71,7 +71,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
       setFieldValue('selectedStorage', value);
-      setFieldTouched('selectedStorage');
     }
   };
 
@@ -80,7 +79,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('sourceCluster', value);
       setFieldValue('selectedNamespaces', []);
-      setFieldTouched('sourceCluster');
       setFieldValue('sourceTokenRef', null);
     }
   };
@@ -89,7 +87,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
-      setFieldTouched('targetCluster');
       setFieldValue('targetTokenRef', null);
     }
   };
@@ -141,6 +138,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="sourceCluster"
               onChange={handleSourceChange}
+              onBlur={() => setFieldTouched('sourceCluster', true, true)}
               options={srcClusterOptions}
               value={values.sourceCluster}
               placeholderText="Select source..."
@@ -172,6 +170,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="targetCluster"
               onChange={handleTargetChange}
+              onBlur={() => setFieldTouched('sourceCluster', true, true)}
               options={targetClusterOptions}
               value={values.targetCluster}
               placeholderText="Select target..."
@@ -209,6 +208,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="selectedStorage"
               onChange={handleStorageChange}
+              onBlur={() => setFieldTouched('selectedStorage', true, true)}
               options={storageOptions}
               value={values.selectedStorage}
               placeholderText="Select repository..."

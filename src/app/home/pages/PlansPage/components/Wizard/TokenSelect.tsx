@@ -12,7 +12,10 @@ import {
 import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flexStyles from '@patternfly/react-styles/css/layouts/Flex/flex';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, {
+  OptionWithValue,
+  ISimpleSelectProps,
+} from '../../../../../common/components/SimpleSelect';
 import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
 import IconWithText from '../../../../../common/components/IconWithText';
 import { IToken } from '../../../../../token/duck/types';
@@ -26,7 +29,7 @@ import { IMigMeta } from '../../../../../../mig_meta';
 import { isSameResource } from '../../../../../common/helpers';
 const styles = require('./TokenSelect.module');
 
-interface ITokenSelectProps {
+interface ITokenSelectProps extends ISimpleSelectProps {
   fieldId: string;
   tokenList: IToken[];
   clusterName: string;
@@ -112,6 +115,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   expiringSoonMessage,
   expiredMessage,
   migMeta,
+  ...props
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [tokenJustCreatedRef, setTokenJustCreatedRef] = useState<INameNamespaceRef>(null);
@@ -194,6 +198,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
             )
           }
           isDisabled={!clusterName || isLoadingNewToken}
+          {...props}
         />
         <AddEditTokenModal
           isOpen={isAddEditModalOpen}
