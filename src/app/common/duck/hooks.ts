@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PaginationProps } from '@patternfly/react-core';
 import { IFilterValues, FilterCategory } from '../components/FilterToolbar';
 import { ISortBy, SortByDirection } from '@patternfly/react-table';
@@ -66,4 +66,17 @@ export const usePaginationState = (items: any[], initialItemsPerPage: number) =>
   };
 
   return { currentPageItems, setPageNumber, paginationProps };
+};
+
+export const useForcedValidationOnChange = <T>(values: T, validateForm: () => void) => {
+  // This is a hack to fix https://github.com/konveyor/mig-ui/issues/941.
+  // TODO: We should either figure out how to let Formik properly validate itself on Select elements,
+  //       or we should replace Formik.
+  const lastValidatedValuesRef = useRef<T>(values);
+  useEffect(() => {
+    if (values !== lastValidatedValuesRef.current) {
+      validateForm();
+      lastValidatedValuesRef.current = values;
+    }
+  }, [values]);
 };
