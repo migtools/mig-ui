@@ -6,6 +6,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
 import TokenSelect from './TokenSelect';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
@@ -19,6 +20,7 @@ interface IGeneralFormProps
       | 'values'
       | 'touched'
       | 'errors'
+      | 'validateForm'
     > {}
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
@@ -32,7 +34,10 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   setFieldValue,
   touched,
   values,
+  validateForm,
 }: IGeneralFormProps) => {
+  useForcedValidationOnChange<IFormValues>(values, validateForm);
+
   const planNameInputRef = useRef(null);
   useEffect(() => {
     planNameInputRef.current.focus();

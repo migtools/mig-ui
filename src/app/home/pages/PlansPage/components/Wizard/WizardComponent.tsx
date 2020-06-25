@@ -70,6 +70,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetAddEditState,
     removeHookRequest,
     validatePlanPollStop,
+    validateForm,
   } = props;
 
   enum stepId {
@@ -128,6 +129,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
                 handleChange={handleChange}
                 setFieldTouched={setFieldTouched}
                 setFieldValue={setFieldValue}
+                validateForm={validateForm}
                 isEdit={isEdit}
               />
             </WizardStepContainer>
