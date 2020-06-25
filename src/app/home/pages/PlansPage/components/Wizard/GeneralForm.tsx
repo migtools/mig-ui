@@ -5,6 +5,7 @@ import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/r
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
 import TokenSelect from './TokenSelect';
+import { INameNamespaceRef } from '../../../../../common/duck/types';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
@@ -71,6 +72,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
       setFieldValue('selectedStorage', value);
+      setFieldTouched('selectedStorage', true, true);
     }
   };
 
@@ -78,6 +80,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('sourceCluster', value);
+      setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
       setFieldValue('sourceTokenRef', null);
     }
@@ -87,6 +90,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
+      setFieldTouched('targetCluster', true, true);
       setFieldValue('targetTokenRef', null);
     }
   };
@@ -138,7 +142,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="sourceCluster"
               onChange={handleSourceChange}
-              onBlur={() => setFieldTouched('sourceCluster', true, true)}
               options={srcClusterOptions}
               value={values.sourceCluster}
               placeholderText="Select source..."
@@ -148,9 +151,9 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             fieldId="sourceToken"
             clusterName={values.sourceCluster}
             value={values.sourceTokenRef}
-            onChange={(tokenRef) => {
-              setFieldTouched('sourceTokenRef');
+            onChange={(tokenRef: INameNamespaceRef) => {
               setFieldValue('sourceTokenRef', tokenRef);
+              setFieldTouched('sourceTokenRef', true, true);
             }}
             touched={touched.sourceTokenRef}
             error={errors.sourceTokenRef}
@@ -170,7 +173,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="targetCluster"
               onChange={handleTargetChange}
-              onBlur={() => setFieldTouched('sourceCluster', true, true)}
               options={targetClusterOptions}
               value={values.targetCluster}
               placeholderText="Select target..."
@@ -181,8 +183,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             clusterName={values.targetCluster}
             value={values.targetTokenRef}
             onChange={(tokenRef) => {
-              setFieldTouched('targetTokenRef');
               setFieldValue('targetTokenRef', tokenRef);
+              setFieldTouched('targetTokenRef', true, true);
             }}
             touched={touched.targetTokenRef}
             error={errors.targetTokenRef}
@@ -208,7 +210,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             <SimpleSelect
               id="selectedStorage"
               onChange={handleStorageChange}
-              onBlur={() => setFieldTouched('selectedStorage', true, true)}
               options={storageOptions}
               value={values.selectedStorage}
               placeholderText="Select repository..."

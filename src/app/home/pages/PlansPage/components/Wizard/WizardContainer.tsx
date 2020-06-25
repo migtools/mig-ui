@@ -1,4 +1,4 @@
-import { withFormik } from 'formik';
+import { withFormik, FormikErrors } from 'formik';
 import WizardComponent from './WizardComponent';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
@@ -130,7 +130,9 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
   },
 
   validate: (values, props) => {
-    const errors: any = {};
+    const errors: any = {}; // TODO figure out why using FormikErrors<IFormValues> here causes type errors below
+
+    console.log('VALIDATING!', values);
 
     if (!values.planName) {
       errors.planName = 'Required';
