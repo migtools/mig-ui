@@ -8,14 +8,14 @@ import {
   SelectOptionProps,
 } from '@patternfly/react-core';
 
-export interface OptionWithValue extends SelectOptionObject {
-  value: string;
+export interface OptionWithValue<T = string> extends SelectOptionObject {
+  value: T;
   props?: Partial<SelectOptionProps>; // Extra props for <SelectOption>, e.g. children, className
 }
 
 type OptionLike = string | SelectOptionObject | OptionWithValue;
 
-interface SimpleSelectProps
+export interface ISimpleSelectProps
   extends Omit<
     SelectProps,
     'onChange' | 'isExpanded' | 'onToggle' | 'onSelect' | 'selections' | 'value'
@@ -23,10 +23,9 @@ interface SimpleSelectProps
   onChange: (selection: OptionLike) => void;
   options: OptionLike[];
   value: OptionLike | OptionLike[];
-  placeholderText?: string;
 }
 
-const SimpleSelect: React.FunctionComponent<SimpleSelectProps> = ({
+const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
   onChange,
   options,
   value,

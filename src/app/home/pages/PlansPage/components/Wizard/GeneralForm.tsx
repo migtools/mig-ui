@@ -5,10 +5,11 @@ import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/r
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
 import TokenSelect from './TokenSelect';
+import { INameNamespaceRef } from '../../../../../common/duck/types';
 const styles = require('./GeneralForm.module');
 
 interface IGeneralFormProps
-  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'tokenList' | 'isEdit'>,
+  extends Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>,
     Pick<
       FormikProps<IFormValues>,
       | 'handleBlur'
@@ -23,7 +24,6 @@ interface IGeneralFormProps
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   clusterList,
   storageList,
-  tokenList,
   errors,
   handleBlur,
   handleChange,
@@ -72,7 +72,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
       setFieldValue('selectedStorage', value);
-      setFieldTouched('selectedStorage');
+      setFieldTouched('selectedStorage', true, true);
     }
   };
 
@@ -80,8 +80,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('sourceCluster', value);
+      setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
-      setFieldTouched('sourceCluster');
       setFieldValue('sourceTokenRef', null);
     }
   };
@@ -90,7 +90,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
     if (matchingCluster) {
       setFieldValue('targetCluster', value);
-      setFieldTouched('targetCluster');
+      setFieldTouched('targetCluster', true, true);
       setFieldValue('targetTokenRef', null);
     }
   };
@@ -149,12 +149,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
           <TokenSelect
             fieldId="sourceToken"
-            tokenList={tokenList}
             clusterName={values.sourceCluster}
-            value={values.sourceTokenRef && values.sourceTokenRef.name}
-            onChange={(tokenRef) => {
-              setFieldTouched('sourceTokenRef');
+            value={values.sourceTokenRef}
+            onChange={(tokenRef: INameNamespaceRef) => {
               setFieldValue('sourceTokenRef', tokenRef);
+              setFieldTouched('sourceTokenRef', true, true);
             }}
             touched={touched.sourceTokenRef}
             error={errors.sourceTokenRef}
@@ -181,12 +180,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           </FormGroup>
           <TokenSelect
             fieldId="targetToken"
-            tokenList={tokenList}
             clusterName={values.targetCluster}
-            value={values.targetTokenRef && values.targetTokenRef.name}
+            value={values.targetTokenRef}
             onChange={(tokenRef) => {
-              setFieldTouched('targetTokenRef');
               setFieldValue('targetTokenRef', tokenRef);
+              setFieldTouched('targetTokenRef', true, true);
             }}
             touched={touched.targetTokenRef}
             error={errors.targetTokenRef}

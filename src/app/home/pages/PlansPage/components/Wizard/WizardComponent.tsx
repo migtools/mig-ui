@@ -14,6 +14,7 @@ import WizardStepContainer from './WizardStepContainer';
 import { StatusType } from '../../../../../common/components/StatusIcon';
 import { getTokenInfo } from '../../../TokensPage/helpers';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { isSameResource } from '../../../../../common/helpers';
 
 const styles = require('./WizardComponent.module');
 
@@ -104,12 +105,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     fieldKeys.every((fieldKey) => {
       const tokenRef = values[fieldKey] as INameNamespaceRef;
       const selectedToken =
-        tokenRef &&
-        tokenList.find(
-          (token) =>
-            token.MigToken.metadata.name === tokenRef.name &&
-            token.MigToken.metadata.namespace === tokenRef.namespace
-        );
+        tokenRef && tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenRef));
       const tokenInfo = selectedToken && getTokenInfo(selectedToken);
       return tokenInfo && tokenInfo.statusType !== StatusType.ERROR;
     });
@@ -125,7 +121,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
               <GeneralForm
                 clusterList={clusterList}
                 storageList={storageList}
-                tokenList={tokenList}
                 values={values}
                 errors={errors}
                 touched={touched}
@@ -254,6 +249,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       setUpdatedSteps(steps);
     },
     //****************** Don't forget to update this array if you add changes to wizard children!!! */
+    // TODO: we should really remove this and just define steps outside the useEffect, if that doesn't break anything
     [
       currentPlan,
       values,
@@ -266,6 +262,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       touched,
       currentPlanStatus,
       migHookList,
+      tokenList,
       hookAddEditStatus,
       isAddHooksOpen,
       isFetchingHookList,

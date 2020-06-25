@@ -144,10 +144,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         />
         <div className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}>
           <TextContent>
-            <Text component="p">
-              Log in to the cluster to automatically generate the token, or enter the token string
-              in the field.
-            </Text>
+            <Text component="p">Log in to the cluster to automatically generate the token.</Text>
           </TextContent>
           <Button
             variant="secondary"

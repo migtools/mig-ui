@@ -8,27 +8,31 @@ import { ITokenFormValues } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
+import { INameNamespaceRef } from '../../duck/types';
+import { IMigMeta } from '../../../../mig_meta';
 
 interface IAddEditTokenModalProps {
   addEditStatus: IAddEditStatus;
-  isOpen: boolean;
   isPolling: boolean;
+  preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
-  onTokenCreated?: (tokenName: string) => void;
+  onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
+  migMeta: IMigMeta;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   addEditStatus,
   addToken,
   clusterList,
-  isOpen,
   isPolling,
+  preventPollingWhileOpen = true,
   onClose,
-  onTokenCreated,
+  onTokenAdded,
   preSelectedClusterName,
+  migMeta,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -43,17 +47,18 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const pollingContext = useContext(PollingContext);
 
   useEffect(() => {
-    if (isOpen && isPolling) {
+    if (isPolling && preventPollingWhileOpen) {
       pollingContext.stopAllPolling();
+      return () => pollingContext.startAllDefaultPolling();
     }
-  });
+  }, []);
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
 
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
-    onTokenCreated && onTokenCreated(tokenValues.name);
+    onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
     onClose();
   };
 
@@ -61,7 +66,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     <Modal
       appendTo={containerRef.current}
       isSmall
-      isOpen={isOpen}
+      isOpen
       onClose={() => {
         // NATODO cancel/reset add/edit watch/state
         onClose();
@@ -85,6 +90,7 @@ const mapStateToProps = (state: IReduxState) => ({
   addEditStatus: state.token.addEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
+  migMeta: state.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({

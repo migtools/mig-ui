@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { FormGroup, Button, Level, LevelItem, Flex, FlexItem } from '@patternfly/react-core';
+import {
+  FormGroup,
+  Button,
+  Level,
+  LevelItem,
+  Flex,
+  FlexItem,
+  Spinner,
+} from '@patternfly/react-core';
 import { CheckIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flexStyles from '@patternfly/react-styles/css/layouts/Flex/flex';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, {
+  OptionWithValue,
+  ISimpleSelectProps,
+} from '../../../../../common/components/SimpleSelect';
 import AddEditTokenModal from '../../../../../common/components/AddEditTokenModal';
 import IconWithText from '../../../../../common/components/IconWithText';
 import { IToken } from '../../../../../token/duck/types';
@@ -14,28 +25,27 @@ import StatusIcon, { StatusType } from '../../../../../common/components/StatusI
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
-import { IMigMeta } from '../../../../../../mig_meta';
+import { isSameResource } from '../../../../../common/helpers';
 const styles = require('./TokenSelect.module');
 
-interface ITokenSelectProps {
+interface ITokenSelectProps extends ISimpleSelectProps {
   fieldId: string;
   tokenList: IToken[];
   clusterName: string;
-  value: string;
+  value: INameNamespaceRef;
   onChange: (tokenRef: INameNamespaceRef) => void;
   touched: FormikTouched<INameNamespaceRef>;
   error?: FormikErrors<INameNamespaceRef>;
   expiringSoonMessage: string;
   expiredMessage: string;
-  migMeta: IMigMeta;
 }
 
 const getTokenOptionsForCluster = (
   tokenList: IToken[],
   clusterName: string,
   onAddTokenClick: () => void
-): OptionWithValue[] => {
-  const empty: OptionWithValue = {
+): OptionWithValue<IToken>[] => {
+  const empty: OptionWithValue<IToken> = {
     toString: () => 'No tokens found for the selected cluster',
     value: null,
     props: {
@@ -65,7 +75,7 @@ const getTokenOptionsForCluster = (
     const { statusType } = getTokenInfo(token);
     return {
       toString: () => token.MigToken.metadata.name,
-      value: token.MigToken.metadata.name,
+      value: token,
       props: {
         children: (
           <Level>
@@ -82,9 +92,14 @@ const getTokenOptionsForCluster = (
   });
 };
 
-const getSelectedTokenOption = (tokenName: string, tokenOptions: OptionWithValue[]) => {
-  if (!tokenName) return null;
-  return tokenOptions.find((option) => option.value === tokenName);
+const getSelectedTokenOption = (
+  selectedTokenRef: INameNamespaceRef,
+  tokenOptions: OptionWithValue<IToken>[]
+) => {
+  if (!selectedTokenRef) return null;
+  return tokenOptions.find((option) =>
+    isSameResource(option.value.MigToken.metadata, selectedTokenRef)
+  );
 };
 
 const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
@@ -97,50 +112,57 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   error,
   expiringSoonMessage,
   expiredMessage,
-  migMeta,
+  ...props
 }: ITokenSelectProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [tokenJustCreated, setTokenJustCreated] = useState(false);
+  const [tokenJustAddedRef, setTokenJustAddedRef] = useState<INameNamespaceRef>(null);
 
-  useEffect(() => {
-    // Clear token messages if the cluster selection changes
-    setTokenJustCreated(false);
-  }, [clusterName]);
-
-  const handleChange = (tokenName: string) => {
-    onChange({ name: tokenName, namespace: migMeta.namespace });
-  };
-
-  const onSelectionChange = (selection: OptionWithValue) => {
-    if (selection.value) {
-      handleChange(selection.value);
-      setTokenJustCreated(false);
-    }
+  const handleChange = (token: IToken) => {
+    const { name, namespace } = token.MigToken.metadata;
+    onChange({ name, namespace });
   };
 
   const onAddTokenClick = () => {
-    setTokenJustCreated(false);
+    setTokenJustAddedRef(null);
     toggleAddEditModal();
   };
 
-  const onTokenCreated = (tokenName: string) => {
-    handleChange(tokenName);
-    setTokenJustCreated(true);
-  };
-
   const tokenOptions = getTokenOptionsForCluster(tokenList, clusterName, onAddTokenClick);
-  const selectedToken = value
-    ? tokenList.find((token) => token.MigToken.metadata.name === value)
-    : null;
-  const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
-  const isLoadingNewToken = value && !selectedToken;
 
   useEffect(() => {
-    // If there's only one token available, pre-select it.
+    // If there's only one token available for the cluster, pre-select it.
     if (!value && tokenOptions.length === 1 && tokenOptions[0].value !== null) {
       handleChange(tokenOptions[0].value);
     }
   }, [tokenList, clusterName]);
+
+  const selectedToken: IToken = value
+    ? tokenList.find((token) => isSameResource(token.MigToken.metadata, value))
+    : null;
+  const selectedTokenInfo = selectedToken && getTokenInfo(selectedToken);
+
+  const newToken: IToken =
+    tokenJustAddedRef &&
+    tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenJustAddedRef));
+  const isLoadingNewToken = !!tokenJustAddedRef && !newToken;
+
+  useEffect(() => {
+    if (newToken && !selectedToken) {
+      if (newToken.MigToken.spec.migClusterRef.name === clusterName) {
+        // The token we just created is in memory now and matches the selected cluster, so select it.
+        handleChange(newToken);
+      } else {
+        // It's not associated with the selected cluster, so give up on selecting it.
+        // Might be impossible? Prevents a forever-spinner if that changes.
+        setTokenJustAddedRef(null);
+      }
+    }
+  }, [newToken]);
+
+  useEffect(() => {
+    // Clear any messages about freshly created tokens if the cluster selection changes
+    setTokenJustAddedRef(null);
+  }, [clusterName]);
 
   return (
     <>
@@ -154,21 +176,37 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
       >
         <SimpleSelect
           id={fieldId}
-          onChange={onSelectionChange}
+          onChange={(selection: OptionWithValue<IToken>) => {
+            if (selection.value) {
+              handleChange(selection.value);
+              setTokenJustAddedRef(null);
+            }
+          }}
           options={tokenOptions}
           value={getSelectedTokenOption(value, tokenOptions)}
-          placeholderText="Select token..."
+          placeholderText={
+            isLoadingNewToken ? (
+              <Flex className={`${spacing.mlSm} ${flexStyles.modifiers.alignItemsCenter}`}>
+                <Spinner size="md" />
+                <FlexItem>Adding token...</FlexItem>
+              </Flex>
+            ) : (
+              'Select token...'
+            )
+          }
           isDisabled={!clusterName || isLoadingNewToken}
+          {...props}
         />
-        <AddEditTokenModal
-          isOpen={isAddEditModalOpen}
-          onClose={toggleAddEditModal}
-          onTokenCreated={onTokenCreated}
-          preSelectedClusterName={clusterName}
-        />
+        {isAddEditModalOpen && (
+          <AddEditTokenModal
+            onClose={toggleAddEditModal}
+            onTokenAdded={setTokenJustAddedRef}
+            preSelectedClusterName={clusterName}
+            preventPollingWhileOpen={false}
+          />
+        )}
       </FormGroup>
-      {isLoadingNewToken && <div className={spacing.mSm}>Loading...</div>}
-      {tokenJustCreated && value && !isLoadingNewToken && (
+      {newToken && newToken === selectedToken && (
         <div className={spacing.mSm}>
           <IconWithText
             icon={
@@ -212,8 +250,8 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({
-  migMeta: state.migMeta,
+const mapStateToProps = (state: IReduxState): Partial<ITokenSelectProps> => ({
+  tokenList: state.token.tokenList,
 });
 
 const mapDispatchToProps = () => ({});
