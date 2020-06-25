@@ -112,7 +112,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
   useEffect(
     () => {
-      console.log({ touched, errors, values });
       const steps = [
         {
           id: stepId.General,

@@ -132,8 +132,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
   validate: (values, props) => {
     const errors: any = {}; // TODO figure out why using FormikErrors<IFormValues> here causes type errors below
 
-    console.log('VALIDATING!', values);
-
     if (!values.planName) {
       errors.planName = 'Required';
     } else if (!utils.testDNS1123(values.planName)) {
