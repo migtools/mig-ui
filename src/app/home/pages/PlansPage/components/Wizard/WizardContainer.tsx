@@ -161,8 +161,6 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     if (!values.selectedStorage) {
       errors.selectedStorage = 'Required';
     }
-    console.log('return error', errors);
-    console.log('return props', props);
     return errors;
   },
 
