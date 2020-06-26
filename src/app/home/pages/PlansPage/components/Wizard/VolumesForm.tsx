@@ -51,6 +51,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   }, []);
 
   const discoveredPersistentVolumes = (currentPlan && currentPlan.spec.persistentVolumes) || [];
+
   useEffect(() => {
     if (discoveredPersistentVolumes.length > 0) {
       getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
@@ -115,6 +116,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       </Grid>
     );
   }
+
   if (isPollingStatus || currentPlanStatus.state === 'Pending') {
     return (
       <Bullseye>
@@ -133,12 +135,11 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   const handleModalToggle = () => {
     setIsPopUpModalOpen(!isPopUpModalOpen);
   };
-
   if (currentPlanStatus.state === 'Critical') {
     return (
       <Modal
         isSmall
-        title={currentPlanStatus.state}
+        title={`Uh oh. We weren't able to retrieve the migration resources.`}
         isOpen={isPopUpModalOpen}
         onClose={handleModalToggle}
         actions={[
@@ -146,9 +147,24 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
             Close
           </Button>,
         ]}
-        isFooterLeftAligned
       >
-        {currentPlanStatus.errorMessage}
+        <div>
+          <p>there are few reasons why this might happens:</p>
+          <br />
+          <ul>
+            <li>A migration controller error occured.</li>
+            <li>
+              Namespaces in the current plan are included in a different plan, causing a conflict.
+            </li>
+            <br />
+            <p>
+              Check the migration controller. If the migration controller is OK, verify that there
+              are no conflicting namespaces in the plan.
+            </p>
+            <br />
+            <p>Close this dialog to return to the Namespaces page.</p>
+          </ul>
+        </div>
       </Modal>
     );
   }
