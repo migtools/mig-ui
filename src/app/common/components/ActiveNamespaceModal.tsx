@@ -2,18 +2,20 @@ import React, { useEffect, useContext, useState } from 'react';
 import {
   Modal,
   Button,
-  Grid,
-  GridItem,
   Title,
   TitleLevel,
   BaseSizes,
+  TextContent,
+  Text,
+  Form,
 } from '@patternfly/react-core';
+import { CogIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AuthActions } from '../../auth/duck/actions';
 import { ClusterActions } from '../../cluster/duck/actions';
 import { connect } from 'react-redux';
 import { PollingContext } from '../../home/duck/context';
 import SimpleSelect from './SimpleSelect';
-const styles = require('./ErrorModal.module');
 import authSelectors from '../../auth/duck/selectors';
 import { history } from '../../../helpers';
 
@@ -71,48 +73,51 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
       isOpen={namespaceSelectIsOpen}
       title={`${currentTitle}`}
       onClose={() => setNamespaceSelectIsOpen(false)}
+      actions={[
+        <Button
+          variant="primary"
+          isDisabled={selectedActiveNamespace ? false : true}
+          onClick={() => {
+            const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
+            localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, selectedActiveNamespace);
+            setNamespaceSelectIsOpen(false);
+            setActiveNamespace(selectedActiveNamespace);
+            fetchClusters();
+            history.push('/clusters');
+          }}
+        >
+          Save
+        </Button>,
+      ]}
+      isFooterLeftAligned
     >
-      <Grid gutter="md">
-        <form>
-          <GridItem className={styles.modalHeader}>
+      <Form className={spacing.pb_2xl}>
+        <TextContent>
+          <Text component="p">
             As part of the migration process, the Migration Toolkit for Containers will create a
             number of Kubernetes objects that need to be stored in one of your namespaces.
-          </GridItem>
-          <GridItem className={styles.gridMargin}>
-            Tell us in which namespace you'd like to store these objects.
-            <SimpleSelect
-              id="id"
-              onChange={(selection) => {
-                setSelectedActiveNamespace(selection);
-              }}
-              options={tenantNamespaceOptions}
-              value={selectedActiveNamespace}
-              placeholderText="Select active namespace..."
-            />
-          </GridItem>
-
-          <GridItem className={styles.actionButtons}>
-            <Grid gutter="md">
-              <GridItem span={5}>
-                <Button
-                  variant="primary"
-                  isDisabled={selectedActiveNamespace ? false : true}
-                  onClick={() => {
-                    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-                    localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, selectedActiveNamespace);
-                    setNamespaceSelectIsOpen(false);
-                    setActiveNamespace(selectedActiveNamespace);
-                    fetchClusters();
-                    history.push('/clusters');
-                  }}
-                >
-                  Save
-                </Button>
-              </GridItem>
-            </Grid>
-          </GridItem>
-        </form>
-      </Grid>
+          </Text>
+          <Text component="p">Tell us in which namespace you'd like to store these objects.</Text>
+        </TextContent>
+        <SimpleSelect
+          id="id"
+          onChange={(selection) => {
+            setSelectedActiveNamespace(selection);
+          }}
+          options={tenantNamespaceOptions}
+          value={selectedActiveNamespace}
+          placeholderText="Select active namespace..."
+        />
+        <TextContent>
+          <Text component="p">
+            Note: you can change your selection later by selecting the{' '}
+            <span className={`${spacing.plXs} ${spacing.prXs}`}>
+              <CogIcon />
+            </span>{' '}
+            icon in the page header.
+          </Text>
+        </TextContent>
+      </Form>
     </Modal>
   );
 };
