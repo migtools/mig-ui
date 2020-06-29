@@ -13,7 +13,6 @@ const INITIAL_STATE = {
   namespaceSelectIsOpen: null,
   tenantNamespaceList: [],
   migMeta: {},
-  isUpdatingNamespace: null,
 };
 
 export const authReducer = (state = INITIAL_STATE, action) => {

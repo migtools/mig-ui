@@ -27,7 +27,6 @@ interface IHomeComponentProps {
   isHideWelcomeScreen: boolean;
   setNamespaceSelectIsOpen: (val) => null;
   namespaceSelectIsOpen: boolean;
-  isUpdatingNamespace: boolean;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
@@ -35,7 +34,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   isHideWelcomeScreen,
   setNamespaceSelectIsOpen,
   namespaceSelectIsOpen,
-  isUpdatingNamespace,
 }: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
@@ -106,7 +104,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
   namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
-  isUpdatingNamespace: state.auth.isUpdatingNamespace,
 });
 
 export default connect(mapStateToProps, (dispatch) => ({
