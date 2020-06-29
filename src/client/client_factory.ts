@@ -60,12 +60,17 @@ export const ClientFactory = {
     if (!state.migMeta.discoveryApi) {
       throw new ClientFactoryMissingDiscoveryApi();
     }
-    const matchingToken = state.token.tokenList.find(
-      (token) => token.MigToken.spec.migClusterRef.name === clusterName
-    );
-    const { token } = matchingToken.Secret.data;
-    const decodedToken = atob(token);
 
+    let decodedToken = null;
+    if (clusterName) {
+      const matchingToken = state.token.tokenList.find(
+        (token) => token.MigToken.spec.migClusterRef.name === clusterName
+      );
+      if (matchingToken) {
+        const { token } = matchingToken.Secret.data;
+        decodedToken = atob(token);
+      }
+    }
     const discoveryClient = new DiscoveryClient(
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
