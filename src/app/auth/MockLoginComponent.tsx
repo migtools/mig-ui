@@ -6,7 +6,6 @@ import { push } from 'connected-react-router';
 // import openShiftLogo from '../../assets/OpenShiftLogo.svg';
 
 interface IProps {
-  migMeta: any;
   auth: any;
   router: any;
   loginUser: (any) => void;
@@ -34,7 +33,6 @@ class LoginComponent extends React.Component<IProps> {
 
 export default connect(
   (state) => ({
-    migMeta: state.migMeta,
     auth: state.auth,
     router: state.router,
   }),

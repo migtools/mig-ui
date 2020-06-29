@@ -67,7 +67,7 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) 
   return null;
 });
 
-const getMigMeta = (state) => state.migMeta;
+const getMigMeta = (state) => state.auth.migMeta;
 
 const lockedPlansSelector = (state) => state.plan.lockedPlanList;
 

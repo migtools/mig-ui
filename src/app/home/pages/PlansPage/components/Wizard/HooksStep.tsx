@@ -201,5 +201,5 @@ const HooksStep = (props) => {
 };
 
 export default connect((state) => ({
-  migMeta: state.migMeta,
+  migMeta: state.auth.migMeta,
 }))(HooksStep);

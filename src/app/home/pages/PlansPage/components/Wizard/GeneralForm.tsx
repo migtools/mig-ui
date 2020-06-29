@@ -36,7 +36,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   values,
   validateForm,
 }: IGeneralFormProps) => {
-  useForcedValidationOnChange<IFormValues>(values, validateForm);
+  useForcedValidationOnChange<IFormValues>(values, isEdit, validateForm);
 
   const planNameInputRef = useRef(null);
   useEffect(() => {

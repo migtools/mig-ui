@@ -37,7 +37,7 @@ export const clusterFetchFailure: ClusterReducerFn = (state = INITIAL_STATE, act
 };
 
 export const clusterFetchRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return { ...state, isFetching: true };
+  return { ...state, isFetchingInitialClusters: true };
 };
 
 export const addClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
