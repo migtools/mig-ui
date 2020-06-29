@@ -1,21 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { history } from '../../helpers';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { IReduxState } from '../../reducers';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  Page,
-  PageSidebar,
-  SkipToContent,
-  PageHeader,
-  Brand,
-  Bullseye,
-  EmptyState,
-  Spinner,
-} from '@patternfly/react-core';
+import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage, WelcomePage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
@@ -65,30 +53,18 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
     </Nav>
   );
   const isWelcomeScreen = history.location.pathname === '/welcome';
-  const [isShowNav, setIsShowNav] = useState(false);
-
-  useEffect(() => {
-    if (isWelcomeScreen) {
-      setIsShowNav(false);
-    }
-  }, [isWelcomeScreen]);
-
-  const onNavToggle = () => {
-    setIsShowNav(!isShowNav);
-  };
 
   return (
     <Page
       header={
         <PageHeaderComponent
-          onNavToggle={onNavToggle}
           showNavToggle={!isWelcomeScreen}
           setNamespaceSelectIsOpen={setNamespaceSelectIsOpen}
           isWelcomeScreen={isWelcomeScreen}
         />
       }
       sidebar={<PageSidebar nav={nav} isNavOpen={!isWelcomeScreen} theme="dark" />}
-      isManagedSidebar={isShowNav}
+      isManagedSidebar={!isWelcomeScreen}
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
