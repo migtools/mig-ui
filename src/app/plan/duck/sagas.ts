@@ -47,7 +47,7 @@ function* addPlanSaga(action) {
   const { migPlan } = action;
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
     const migPlanObj = createInitialMigPlan(
@@ -645,7 +645,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
 function* runStageSaga(action) {
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
 
@@ -775,7 +775,7 @@ function* runMigrationSaga(action) {
   try {
     const { plan, disableQuiesce } = action;
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(AlertActions.alertProgressTimeout('Migration Started'));
@@ -856,7 +856,7 @@ function* migrationPoll(action) {
 function* fetchHooksSaga(action) {
   const state = yield select();
   try {
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
     const { currentPlan } = state.plan;
@@ -926,7 +926,7 @@ function* addHookSaga(action) {
   const { migHook } = action;
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
     // add hook
@@ -1010,7 +1010,7 @@ function* addHookSaga(action) {
 function* removeHookSaga(action) {
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -1053,7 +1053,7 @@ function* removeHookSaga(action) {
 
 function* updateHookRequest(action) {
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
   const currentHook = state.plan.migHookList.find((hook) => {

@@ -50,7 +50,7 @@ function* fetchTokensGenerator() {
 
 function* addTokenRequest(action) {
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const tokenValues: ITokenFormValues = action.tokenValues;
   const client: IClusterClient = ClientFactory.cluster(state);
 

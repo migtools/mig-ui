@@ -75,7 +75,7 @@ function* fetchStorageGenerator() {
 function* removeStorageSaga(action) {
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -110,7 +110,7 @@ function* removeStorageSaga(action) {
 
 function* addStorageRequest(action) {
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -226,7 +226,7 @@ const secretAccessKeySecretField = 'aws-secret-access-key';
 function* updateStorageRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -409,7 +409,7 @@ function* pollStorageAddEditStatus(action) {
   while (true) {
     try {
       const state = yield select();
-      const { migMeta } = state;
+      const { migMeta } = state.auth;
       const { storageName } = action;
 
       const client: IClusterClient = ClientFactory.cluster(state);

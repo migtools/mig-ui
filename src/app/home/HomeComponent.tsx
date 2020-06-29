@@ -9,7 +9,6 @@ import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage, WelcomePag
 import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
-import { AuthActions } from '../auth/duck/actions';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 import { getActiveNamespaceFromStorage } from '../common/helpers';
 const mainContainerId = 'mig-ui-page-main-container';

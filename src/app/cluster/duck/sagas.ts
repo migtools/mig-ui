@@ -79,7 +79,7 @@ function* fetchClustersGenerator() {
 function* removeClusterSaga(action) {
   try {
     const state = yield select();
-    const { migMeta } = state;
+    const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -114,7 +114,7 @@ function* removeClusterSaga(action) {
 
 function* addClusterRequest(action) {
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -281,7 +281,7 @@ function* watchAddClusterRequest() {
 function* updateClusterRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
   const state = yield select();
-  const { migMeta } = state;
+  const { migMeta } = state.auth;
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -401,7 +401,7 @@ function* pollClusterAddEditStatus(action) {
   while (true) {
     try {
       const state = yield select();
-      const { migMeta } = state;
+      const { migMeta } = state.auth;
       const { clusterName } = action;
 
       const client: IClusterClient = ClientFactory.cluster(state);

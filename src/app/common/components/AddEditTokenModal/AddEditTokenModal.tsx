@@ -90,7 +90,7 @@ const mapStateToProps = (state: IReduxState) => ({
   addEditStatus: state.token.addEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
-  migMeta: state.migMeta,
+  migMeta: state.auth.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({
