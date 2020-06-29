@@ -21,25 +21,25 @@ import { history } from '../../../helpers';
 import { getActiveNamespaceFromStorage, setActiveNamespaceInStorage } from '../helpers';
 
 interface IProps {
-  onHandleClose: () => null;
-  fetchTenantNamespaces: () => null;
-  fetchClusters: () => null;
+  onHandleClose: () => void;
+  fetchTenantNamespaces: () => void;
+  fetchClusters: () => void;
   tenantNamespaceList: any;
-  namespaceSelectIsOpen: boolean;
-  setNamespaceSelectIsOpen: (val) => null;
-  setActiveNamespace: (val) => null;
+  isOpen: boolean;
+  onClose: () => void;
+  setActiveNamespace: (val: string) => void;
   user: any;
 }
 
 const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   const pollingContext = useContext(PollingContext);
-  const [selectedActiveNamespace, setSelectedActiveNamespace] = useState(null);
+  const [selectedActiveNamespace, setSelectedActiveNamespace] = useState<string>(null);
 
   const {
     tenantNamespaceList,
     fetchTenantNamespaces,
-    namespaceSelectIsOpen,
-    setNamespaceSelectIsOpen,
+    isOpen,
+    onClose,
     user,
     setActiveNamespace,
     fetchClusters,
@@ -68,16 +68,16 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
     <Modal
       header={header}
       isSmall
-      isOpen={namespaceSelectIsOpen}
+      isOpen={isOpen}
       title={`${currentTitle}`}
-      onClose={() => setNamespaceSelectIsOpen(false)}
+      onClose={onClose}
       actions={[
         <Button
           variant="primary"
           isDisabled={selectedActiveNamespace ? false : true}
           onClick={() => {
             setActiveNamespaceInStorage(selectedActiveNamespace);
-            setNamespaceSelectIsOpen(false);
+            onClose();
             setActiveNamespace(selectedActiveNamespace);
             fetchClusters();
             history.push('/clusters');
@@ -98,7 +98,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
         </TextContent>
         <SimpleSelect
           id="id"
-          onChange={(selection) => {
+          onChange={(selection: string) => {
             setSelectedActiveNamespace(selection);
           }}
           options={tenantNamespaceOptions}
@@ -126,7 +126,6 @@ export default connect(
   }),
   (dispatch) => ({
     fetchTenantNamespaces: () => dispatch(AuthActions.fetchTenantNamespaces()),
-    setNamespaceSelectIsOpen: (val) => dispatch(AuthActions.setNamespaceSelectIsOpen(val)),
     setActiveNamespace: (val) => dispatch(AuthActions.setActiveNamespace(val)),
     fetchClusters: () => dispatch(ClusterActions.clusterFetchRequest()),
   })

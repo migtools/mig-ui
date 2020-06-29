@@ -24,21 +24,21 @@ import { getActiveNamespaceFromStorage } from '../../../common/helpers';
 
 interface IWelcomePageBaseProps {
   isHideWelcomeScreen: boolean;
-  setWelcomeScreenBool: (value) => void;
-  setNamespaceSelectIsOpen: (value) => void;
+  setWelcomeScreenBool: (value: boolean) => void;
+  openNamespaceSelect: () => void;
 }
 
 const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   isHideWelcomeScreen,
   setWelcomeScreenBool,
-  setNamespaceSelectIsOpen,
+  openNamespaceSelect,
 }: IWelcomePageBaseProps) => {
   const onHandleGetStarted = (e) => {
     const activeNamespace = getActiveNamespaceFromStorage();
     if (activeNamespace) {
       history.push('/clusters');
     } else {
-      setNamespaceSelectIsOpen(true);
+      openNamespaceSelect();
     }
   };
 
@@ -110,15 +110,11 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
 
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
-  namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setWelcomeScreenBool: (isHideWelcomeScreen: boolean) => {
     dispatch(AuthActions.setWelcomeScreenBool(isHideWelcomeScreen));
-  },
-  setNamespaceSelectIsOpen: (namespaceSelectIsOpen: boolean) => {
-    dispatch(AuthActions.setNamespaceSelectIsOpen(namespaceSelectIsOpen));
   },
 });
 

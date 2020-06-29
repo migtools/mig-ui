@@ -23,13 +23,13 @@ const styles = require('./PageHeaderComponent.module');
 interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
   isAdmin: boolean;
   isWelcomeScreen: boolean;
-  setNamespaceSelectIsOpen?: (val) => void;
+  openNamespaceSelect: () => void;
 }
 
 // NATODO: Remove WIP header
 const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = ({
   isAdmin,
-  setNamespaceSelectIsOpen,
+  openNamespaceSelect,
   isWelcomeScreen,
   ...props
 }) => (
@@ -51,9 +51,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
                 id="default-example-uid-02"
                 aria-label="Settings actions"
                 variant={ButtonVariant.plain}
-                onClick={() => {
-                  setNamespaceSelectIsOpen(true);
-                }}
+                onClick={openNamespaceSelect}
               >
                 <CogIcon />
               </Button>

@@ -10,7 +10,6 @@ const INITIAL_STATE = {
   certError: null,
   isAdmin: null,
   isHideWelcomeScreen: hasLoggedIn ? hasLoggedIn.isHideWelcomeScreen : true,
-  namespaceSelectIsOpen: null,
   tenantNamespaceList: [],
   migMeta: {},
 };
@@ -29,8 +28,6 @@ export const authReducer = (state = INITIAL_STATE, action) => {
       return { ...state, certError: { failedUrl: action.failedUrl } };
     case AuthActionTypes.SET_WELCOME_SCREEN_BOOL:
       return { ...state, isHideWelcomeScreen: action.isHideWelcomeScreen };
-    case AuthActionTypes.SET_NAMESPACE_SELECT_IS_OPEN:
-      return { ...state, namespaceSelectIsOpen: action.namespaceSelectIsOpen };
     case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:
       return { ...state, tenantNamespaceList: action.tenantNamespaceList };
     case AuthActionTypes.INIT_MIG_META:

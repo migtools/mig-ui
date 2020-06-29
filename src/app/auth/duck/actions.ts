@@ -25,7 +25,6 @@ export const AuthActionTypes = {
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
   SET_WELCOME_SCREEN_BOOL: 'SET_WELCOME_SCREEN_BOOL',
   CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
-  SET_NAMESPACE_SELECT_IS_OPEN: 'SET_NAMESPACE_SELECT_IS_OPEN',
   CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
   INIT_MIG_META: 'INIT_MIG_META',
   SET_ACTIVE_NAMESPACE: 'SET_ACTIVE_NAMESPACE',
@@ -92,11 +91,6 @@ const setWelcomeScreenBool = (isHideWelcomeScreen: boolean) => ({
   isHideWelcomeScreen,
 });
 
-const setNamespaceSelectIsOpen = (namespaceSelectIsOpen: boolean) => ({
-  type: AuthActionTypes.SET_NAMESPACE_SELECT_IS_OPEN,
-  namespaceSelectIsOpen,
-});
-
 const checkHasLoggedIn = () => ({
   type: AuthActionTypes.CHECK_HAS_LOGGED_IN,
 });
@@ -129,7 +123,6 @@ export const AuthActions = {
   fetchTenantNamespacesSuccess,
   fetchIsAdmin,
   setWelcomeScreenBool,
-  setNamespaceSelectIsOpen,
   checkHasLoggedIn,
   initMigMeta,
   setActiveNamespace,

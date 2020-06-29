@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { history } from '../../helpers';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
@@ -26,16 +26,12 @@ const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ t
 interface IHomeComponentProps {
   clusterList: ICluster[];
   isHideWelcomeScreen: boolean;
-  setNamespaceSelectIsOpen: (val) => null;
-  namespaceSelectIsOpen: boolean;
   activeNamespace: string;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   clusterList,
   isHideWelcomeScreen,
-  setNamespaceSelectIsOpen,
-  namespaceSelectIsOpen,
 }: IHomeComponentProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
@@ -53,15 +49,15 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
     </Nav>
   );
   const isWelcomeScreen = history.location.pathname === '/welcome';
-
   const activeNamespace = getActiveNamespaceFromStorage();
+  const [namespaceSelectIsOpen, setNamespaceSelectIsOpen] = useState(false);
 
   return (
     <Page
       header={
         <PageHeaderComponent
           showNavToggle={!isWelcomeScreen}
-          setNamespaceSelectIsOpen={setNamespaceSelectIsOpen}
+          openNamespaceSelect={() => setNamespaceSelectIsOpen(true)}
           isWelcomeScreen={isWelcomeScreen}
         />
       }
@@ -70,7 +66,10 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
-      <ActiveNamespaceModal namespaceSelectIsOpen={namespaceSelectIsOpen} />
+      <ActiveNamespaceModal
+        isOpen={namespaceSelectIsOpen}
+        onClose={() => setNamespaceSelectIsOpen(false)}
+      />
 
       <Switch>
         <Route exact path="/">
@@ -81,7 +80,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
           )}
         </Route>
         <Route exact path="/welcome">
-          <WelcomePage />
+          <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
         </Route>
         {!!activeNamespace && (
           // Don't render any route other than /welcome until the user selects a namespace
@@ -117,10 +116,8 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
-  namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
 });
 
 export default connect(mapStateToProps, (dispatch) => ({
   onLogout: () => console.debug('TODO: IMPLEMENT: user logged out.'),
-  setNamespaceSelectIsOpen: (val) => dispatch(AuthActions.setNamespaceSelectIsOpen(val)),
 }))(HomeComponent);
