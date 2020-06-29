@@ -70,8 +70,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
       <Switch>
         <Route exact path="/">
-          {/* NATODO: Are we showing the welcome screen for all users? */}
-          {isHideWelcomeScreen ? <ClustersPage /> : <Redirect to="/welcome" />}
+          {isHideWelcomeScreen ? <Redirect to="/clusters" /> : <Redirect to="/welcome" />}
         </Route>
         <Route exact path="/welcome">
           <WelcomePage />
@@ -95,12 +94,14 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <Route exact path="/tokens">
           <TokensPage />
         </Route>
+        <Route path="*">
+          <Redirect to="/" />
+        </Route>
       </Switch>
     </Page>
   );
 };
 
-// TODO does this component need to be connected to redux? Leaving for the onLogout stub.
 const mapStateToProps = (state: IReduxState) => ({
   isHideWelcomeScreen: state.auth.isHideWelcomeScreen,
   namespaceSelectIsOpen: state.auth.namespaceSelectIsOpen,
