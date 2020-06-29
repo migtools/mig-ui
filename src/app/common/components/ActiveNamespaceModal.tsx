@@ -56,9 +56,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   }, [user]);
 
   const tenantNamespaceOptions = tenantNamespaceList.map((ns) => ns.name);
-  const currentTitle = selectedActiveNamespace
-    ? 'Update your active namespace'
-    : 'Before you begin....';
+  const currentTitle = activeNamespace ? 'Update your active namespace' : 'Before you begin....';
   const header = (
     <React.Fragment>
       <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
