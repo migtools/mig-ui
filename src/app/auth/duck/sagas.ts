@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
 import { AuthActions, AuthActionTypes } from './actions';
+import { PlanActionTypes } from '../../..../../plan/duck/actions';
 import { AlertActions } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
 import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
+import { getActiveNamespaceFromStorage } from '../../common/helpers';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -36,7 +38,6 @@ export function* fetchToken(action) {
   user.expiry_time = expiryUnixTime;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
-  yield put(AuthActions.fetchIsAdmin());
   yield put(push('/'));
 }
 
@@ -44,13 +45,55 @@ export function* initFromStorage(): any {
   const currentUser = localStorage.getItem(LS_KEY_CURRENT_USER);
   if (currentUser) {
     yield put(AuthActions.loginSuccess(JSON.parse(currentUser)));
-    yield put(AuthActions.fetchIsAdmin());
+  }
+}
+
+export function* fetchTenantNamespaces(): any {
+  const state = yield select();
+  const { migMeta } = state.auth;
+  try {
+    const { access_token } = state.auth.user;
+    const tenantNamespacesUrl = `${migMeta.discoveryApi}/namespaces/`;
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + access_token,
+      },
+    };
+    const tenantNamespacesRes = yield axios.get(tenantNamespacesUrl, config);
+
+    const namespaceResourceList = tenantNamespacesRes.data.resources;
+    yield put(AuthActions.fetchTenantNamespacesSuccess(namespaceResourceList));
+  } catch (err) {
+    console.error('Failed to fetch tenant namespaces.');
+  }
+}
+
+export function* logoutUser() {
+  localStorage.removeItem(LS_KEY_CURRENT_USER);
+  yield put(push('/login?action=refresh'));
+}
+
+export function* checkHasLoggedIn() {
+  const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
+
+  const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
+  if (hasLoggedIn) {
+    yield put(AuthActions.setWelcomeScreenBool(hasLoggedIn.isHideWelcomeScreen));
+    const activeNamespace = getActiveNamespaceFromStorage();
+    if (activeNamespace) {
+      yield put(AuthActions.setActiveNamespace(activeNamespace));
+    }
+  } else {
+    const loginInfoObject = { isHideWelcomeScreen: false };
+    localStorage.setItem(LS_KEY_HAS_LOGGED_IN, JSON.stringify(loginInfoObject));
+    yield put(AuthActions.setWelcomeScreenBool(false));
   }
 }
 
 export function* fetchIsAdmin(): any {
   const state = yield select();
-  const migMeta = state.migMeta;
+  const { migMeta } = state.auth;
   if (state.auth.user) {
     const { access_token } = state.auth.user;
     const isAdminUrl = `${migMeta.discoveryApi}/namespaces/openshift-migration/auth`;
@@ -80,9 +123,9 @@ export function* fetchIsAdmin(): any {
   }
 }
 
-export function* logoutUser() {
-  localStorage.removeItem(LS_KEY_CURRENT_USER);
-  yield put(push('/login?action=refresh'));
+export function* loginSuccess() {
+  yield put(AuthActions.checkHasLoggedIn());
+  yield put(AuthActions.fetchIsAdmin());
 }
 
 function* watchAuthEvents() {
@@ -91,6 +134,9 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
   yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
+  yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
+  yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
+  yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }
 
 export default {

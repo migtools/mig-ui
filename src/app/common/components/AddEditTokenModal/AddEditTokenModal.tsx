@@ -9,7 +9,7 @@ import { IReduxState } from '../../../../reducers';
 import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
 import { INameNamespaceRef } from '../../duck/types';
-import { IMigMeta } from '../../../../mig_meta';
+import { IMigMeta } from '../../../auth/duck/types';
 
 interface IAddEditTokenModalProps {
   addEditStatus: IAddEditStatus;
@@ -90,7 +90,7 @@ const mapStateToProps = (state: IReduxState) => ({
   addEditStatus: state.token.addEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
-  migMeta: state.migMeta,
+  migMeta: state.auth.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({

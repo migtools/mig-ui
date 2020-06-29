@@ -26,6 +26,7 @@ import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
 import { isSameResource } from '../../../../../common/helpers';
+import { IMigMeta } from '../../../../../auth/duck/types';
 const styles = require('./TokenSelect.module');
 
 interface ITokenSelectProps extends ISimpleSelectProps {
@@ -38,6 +39,7 @@ interface ITokenSelectProps extends ISimpleSelectProps {
   error?: FormikErrors<INameNamespaceRef>;
   expiringSoonMessage: string;
   expiredMessage: string;
+  migMeta: IMigMeta;
 }
 
 const getTokenOptionsForCluster = (
@@ -254,6 +256,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
 
 const mapStateToProps = (state: IReduxState): Partial<ITokenSelectProps> => ({
   tokenList: state.token.tokenList,
+  migMeta: state.auth.migMeta,
 });
 
 const mapDispatchToProps = () => ({});

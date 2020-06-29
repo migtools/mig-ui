@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
-import authReducer from './app/auth/duck';
+import authReducer, { IAuthReducerState } from './app/auth/duck';
 import commonReducer from './app/common/duck';
 import clusterReducer, { IClusterReducerState } from './app/cluster/duck';
 import storageReducer, { IStorageReducerState } from './app/storage/duck';
 import planReducer, { IPlanReducerState } from './app/plan/duck';
 import tokenReducer, { ITokenReducerState } from './app/token/duck';
-import { migMetaReducer, IMigMeta } from './mig_meta';
 import { connectRouter } from 'connected-react-router';
 import { history } from './helpers';
 import logReducer from './app/logs/duck';
@@ -15,14 +14,13 @@ import logReducer from './app/logs/duck';
 
 export interface IReduxState {
   router: { [property: string]: any }; // TODO add types for router reducer state
-  auth: { [property: string]: any }; // TODO add types for auth reducer state
+  auth: IAuthReducerState;
   common: { [property: string]: any }; // TODO add types for common reducer state
   cluster: IClusterReducerState;
   storage: IStorageReducerState;
   plan: IPlanReducerState;
   token: ITokenReducerState;
   logs: { [property: string]: any }; // TODO add types for logs reducer state
-  migMeta: IMigMeta;
 }
 
 const rootReducer = combineReducers({
@@ -34,7 +32,6 @@ const rootReducer = combineReducers({
   plan: planReducer,
   token: tokenReducer,
   logs: logReducer,
-  migMeta: migMetaReducer,
 });
 
 export default rootReducer;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Card,
@@ -18,12 +18,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
+import { AuthActions } from '../../../auth/duck/actions';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
 import { ICluster } from '../../../cluster/duck/types';
-import { IMigMeta } from '../../../../mig_meta';
+import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 
@@ -105,7 +106,7 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
-  migMeta: state.migMeta,
+  migMeta: state.auth.migMeta,
 });
 
 const mapDispatchToProps = (dispatch) => ({
