@@ -20,6 +20,7 @@ import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { IReduxState } from '../../../../reducers';
 import { AuthActions } from '../../../auth/duck/actions';
 import { history } from '../../../../helpers';
+import { getActiveNamespaceFromStorage } from '../../../common/helpers';
 
 interface IWelcomePageBaseProps {
   isHideWelcomeScreen: boolean;
@@ -33,8 +34,7 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   setNamespaceSelectIsOpen,
 }: IWelcomePageBaseProps) => {
   const onHandleGetStarted = (e) => {
-    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+    const activeNamespace = getActiveNamespaceFromStorage();
     if (activeNamespace) {
       history.push('/clusters');
     } else {

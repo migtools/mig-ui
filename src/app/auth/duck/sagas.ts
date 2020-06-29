@@ -8,6 +8,7 @@ import { push } from 'connected-react-router';
 import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
+import { getActiveNamespaceFromStorage } from '../../common/helpers';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -79,13 +80,9 @@ export function* checkHasLoggedIn() {
   const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
   if (hasLoggedIn) {
     yield put(AuthActions.setWelcomeScreenBool(hasLoggedIn.isHideWelcomeScreen));
-    const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-    const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+    const activeNamespace = getActiveNamespaceFromStorage();
     if (activeNamespace) {
-      yield put(AuthActions.setNamespaceSelectIsOpen(false));
       yield put(AuthActions.setActiveNamespace(activeNamespace));
-    } else {
-      yield put(AuthActions.setNamespaceSelectIsOpen(true));
     }
   } else {
     const loginInfoObject = { isHideWelcomeScreen: false };

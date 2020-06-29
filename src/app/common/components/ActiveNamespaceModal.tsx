@@ -18,6 +18,7 @@ import { PollingContext } from '../../home/duck/context';
 import SimpleSelect from './SimpleSelect';
 import authSelectors from '../../auth/duck/selectors';
 import { history } from '../../../helpers';
+import { getActiveNamespaceFromStorage, setActiveNamespaceInStorage } from '../helpers';
 
 interface IProps {
   onHandleClose: () => null;
@@ -44,8 +45,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
     fetchClusters,
   } = props;
 
-  const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-  const activeNamespace = localStorage.getItem(LS_KEY_ACTIVE_NAMESPACE);
+  const activeNamespace = getActiveNamespaceFromStorage();
 
   useEffect(() => {
     fetchTenantNamespaces();
@@ -76,8 +76,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
           variant="primary"
           isDisabled={selectedActiveNamespace ? false : true}
           onClick={() => {
-            const LS_KEY_ACTIVE_NAMESPACE = 'activeNamespace';
-            localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, selectedActiveNamespace);
+            setActiveNamespaceInStorage(selectedActiveNamespace);
             setNamespaceSelectIsOpen(false);
             setActiveNamespace(selectedActiveNamespace);
             fetchClusters();

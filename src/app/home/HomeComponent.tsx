@@ -11,6 +11,7 @@ import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import { AuthActions } from '../auth/duck/actions';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
+import { getActiveNamespaceFromStorage } from '../common/helpers';
 const mainContainerId = 'mig-ui-page-main-container';
 
 const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
@@ -27,6 +28,7 @@ interface IHomeComponentProps {
   isHideWelcomeScreen: boolean;
   setNamespaceSelectIsOpen: (val) => null;
   namespaceSelectIsOpen: boolean;
+  activeNamespace: string;
 }
 
 const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
@@ -52,6 +54,8 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   );
   const isWelcomeScreen = history.location.pathname === '/welcome';
 
+  const activeNamespace = getActiveNamespaceFromStorage();
+
   return (
     <Page
       header={
@@ -70,30 +74,39 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
 
       <Switch>
         <Route exact path="/">
-          {isHideWelcomeScreen ? <Redirect to="/clusters" /> : <Redirect to="/welcome" />}
+          {!isHideWelcomeScreen || !activeNamespace ? (
+            <Redirect to="/welcome" />
+          ) : (
+            <Redirect to="/clusters" />
+          )}
         </Route>
         <Route exact path="/welcome">
           <WelcomePage />
         </Route>
-        <Route exact path="/clusters">
-          <ClustersPage />
-        </Route>
-        <Route exact path="/storages">
-          <StoragesPage />
-        </Route>
-        <Route exact path="/plans">
-          <PlansPage />
-        </Route>
-        <RefreshRoute
-          exact
-          path="/logs/:planId"
-          clusterList={clusterList}
-          isLoggedIn
-          component={LogsPage}
-        />
-        <Route exact path="/tokens">
-          <TokensPage />
-        </Route>
+        {!!activeNamespace && (
+          // Don't render any route other than /welcome until the user selects a namespace
+          <>
+            <Route exact path="/clusters">
+              <ClustersPage />
+            </Route>
+            <Route exact path="/storages">
+              <StoragesPage />
+            </Route>
+            <Route exact path="/plans">
+              <PlansPage />
+            </Route>
+            <RefreshRoute
+              exact
+              path="/logs/:planId"
+              clusterList={clusterList}
+              isLoggedIn
+              component={LogsPage}
+            />
+            <Route exact path="/tokens">
+              <TokensPage />
+            </Route>
+          </>
+        )}
         <Route path="*">
           <Redirect to="/" />
         </Route>
