@@ -102,6 +102,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="cluster-name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
@@ -157,6 +158,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="url"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(urlKey)}
           onBlur={handleBlur}
@@ -181,6 +183,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="token"
           value={values.token}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(tokenKey)}
