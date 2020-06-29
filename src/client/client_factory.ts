@@ -74,7 +74,7 @@ export const ClientFactory = {
     const discoveryClient = new DiscoveryClient(
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
-      decodedToken || state.auth.user.access_token,
+      decodedToken ? decodedToken : state.auth.user.access_token,
       customResponseType
     );
 
