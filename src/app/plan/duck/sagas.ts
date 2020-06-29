@@ -75,7 +75,7 @@ function* addPlanSaga(action) {
 
 function* namespaceFetchRequest(action) {
   const state = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state, action.clusterName);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
     const res = yield discoveryClient.get(namespaces);
@@ -544,7 +544,7 @@ function* planCloseAndCheck(action) {
 
 function* getPVResourcesRequest(action) {
   const state = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state, action.clusterName);
   try {
     const pvResourceRefs = action.pvList.map((pv) => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
