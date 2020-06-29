@@ -73,6 +73,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
       onClose={onClose}
       actions={[
         <Button
+          key="save-button"
           variant="primary"
           isDisabled={selectedActiveNamespace ? false : true}
           onClick={() => {
