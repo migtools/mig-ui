@@ -53,7 +53,7 @@ export const ClientFactory = {
 
     return newClient;
   },
-  discovery: (state: any, customResponseType: ResponseType = 'json') => {
+  discovery: (state: any, clusterName?: string, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -61,10 +61,20 @@ export const ClientFactory = {
       throw new ClientFactoryMissingDiscoveryApi();
     }
 
+    let decodedToken = null;
+    if (clusterName) {
+      const matchingToken = state.token.tokenList.find(
+        (token) => token.MigToken.spec.migClusterRef.name === clusterName
+      );
+      if (matchingToken) {
+        const { token } = matchingToken.Secret.data;
+        decodedToken = atob(token);
+      }
+    }
     const discoveryClient = new DiscoveryClient(
       state.migMeta.discoveryApi,
       state.migMeta.namespace,
-      state.auth.user.access_token,
+      decodedToken ? decodedToken : state.auth.user.access_token,
       customResponseType
     );
 
