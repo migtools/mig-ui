@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import authReducer from './app/auth/duck';
+import authReducer, { IAuthReducerState } from './app/auth/duck';
 import commonReducer from './app/common/duck';
 import clusterReducer, { IClusterReducerState } from './app/cluster/duck';
 import storageReducer, { IStorageReducerState } from './app/storage/duck';
@@ -14,7 +14,7 @@ import logReducer from './app/logs/duck';
 
 export interface IReduxState {
   router: { [property: string]: any }; // TODO add types for router reducer state
-  auth: { [property: string]: any }; // TODO add types for auth reducer state
+  auth: IAuthReducerState;
   common: { [property: string]: any }; // TODO add types for common reducer state
   cluster: IClusterReducerState;
   storage: IStorageReducerState;

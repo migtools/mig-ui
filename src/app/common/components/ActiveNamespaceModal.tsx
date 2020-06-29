@@ -24,7 +24,7 @@ interface IProps {
   onHandleClose: () => void;
   fetchTenantNamespaces: () => void;
   fetchClusters: () => void;
-  tenantNamespaceList: any;
+  tenantNamespaceList: { name: string }[];
   isOpen: boolean;
   onClose: () => void;
   setActiveNamespace: (val: string) => void;

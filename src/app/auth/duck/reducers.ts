@@ -1,10 +1,26 @@
 import { AuthActionTypes } from './actions';
-import { IMigMeta } from './types';
+import { IMigMeta, ILoginParams } from './types';
 
 const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
 const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
 
-const INITIAL_STATE = {
+export interface IAuthReducerState {
+  user: ILoginParams;
+  oauthMeta: string;
+  certError: {
+    failedUrl: string;
+  };
+  isAdmin: boolean;
+  isHideWelcomeScreen: boolean;
+  tenantNamespaceList: {
+    name: string;
+  }[];
+  migMeta: IMigMeta;
+}
+
+type AuthReducerFn = (state: IAuthReducerState, action: any) => IAuthReducerState;
+
+const INITIAL_STATE: IAuthReducerState = {
   user: null,
   oauthMeta: null,
   certError: null,
@@ -14,7 +30,7 @@ const INITIAL_STATE = {
   migMeta: {},
 };
 
-export const authReducer = (state = INITIAL_STATE, action) => {
+export const authReducer: AuthReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case AuthActionTypes.LOGIN_SUCCESS:
       return { ...state, user: action.user };

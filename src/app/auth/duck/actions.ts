@@ -1,14 +1,5 @@
-import { IMigMeta } from '../../auth/duck/types';
-interface ILoginParams {
-  token?: string;
-  username?: string;
-  access_token?: string;
-  expires_in?: number;
-  expiry_time?: number;
-  login_time?: number;
-  scope?: string;
-  token_type?: string;
-}
+import { ILoginParams, IMigMeta } from './types';
+import { IAuthReducerState } from './reducers';
 
 export const AuthActionTypes = {
   FETCH_TOKEN: 'FETCH_TOKEN',
@@ -56,7 +47,9 @@ const fetchTenantNamespaces = () => ({
   type: AuthActionTypes.FETCH_TENANT_NAMESPACES,
 });
 
-const fetchTenantNamespacesSuccess = (tenantNamespaceList: any) => ({
+const fetchTenantNamespacesSuccess = (
+  tenantNamespaceList: IAuthReducerState['tenantNamespaceList']
+) => ({
   type: AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS,
   tenantNamespaceList,
 });

@@ -1,3 +1,14 @@
+export interface ILoginParams {
+  token?: string;
+  username?: string;
+  access_token?: string;
+  expires_in?: number;
+  expiry_time?: number;
+  login_time?: number;
+  scope?: string;
+  token_type?: string;
+}
+
 export interface IMigMeta {
   clusterApi?: string;
   namespace?: string;
