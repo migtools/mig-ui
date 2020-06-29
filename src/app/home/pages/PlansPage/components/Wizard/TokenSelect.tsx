@@ -97,9 +97,11 @@ const getSelectedTokenOption = (
   tokenOptions: OptionWithValue<IToken>[]
 ) => {
   if (!selectedTokenRef) return null;
-  return tokenOptions.find((option) =>
-    isSameResource(option.value.MigToken.metadata, selectedTokenRef)
-  );
+  return tokenOptions.find((option) => {
+    if (option.value) {
+      isSameResource(option.value.MigToken.metadata, selectedTokenRef);
+    }
+  });
 };
 
 const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
