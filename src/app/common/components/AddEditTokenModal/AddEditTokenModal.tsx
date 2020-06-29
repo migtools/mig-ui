@@ -9,7 +9,7 @@ import { IReduxState } from '../../../../reducers';
 import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
 import { INameNamespaceRef } from '../../duck/types';
-import { IMigMeta } from '../../../../mig_meta';
+import { IMigMeta } from '../../../auth/duck/types';
 
 interface IAddEditTokenModalProps {
   addEditStatus: IAddEditStatus;
