@@ -20,6 +20,7 @@ const logIndex = 8;
 
 function* downloadLog(action) {
   const state = yield select();
+  //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const logPath: string = action.logPath;
   try {
@@ -41,6 +42,7 @@ function* downloadLog(action) {
 
 function* downloadLogs(action) {
   const state = yield select();
+  //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const report: IPlanLogSources = action.report;
   try {
@@ -72,6 +74,7 @@ function* downloadLogs(action) {
 
 function* extractLogs(action) {
   const state = yield select();
+  //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const { logPath } = action;
   try {
@@ -91,6 +94,7 @@ function* extractLogs(action) {
 function* collectReport(action) {
   const { planName } = action;
   const state = yield select();
+  //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const planPodReportDiscovery = new PlanPodReportDiscovery(planName);
   try {
