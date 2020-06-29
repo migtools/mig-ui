@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
   PageSection,
@@ -6,25 +6,26 @@ import {
   FlexItem,
   Text,
   TextContent,
-  TextVariants,
   Button,
   Checkbox,
+  Bullseye,
+  Title,
+  List,
+  ListItem,
 } from '@patternfly/react-core';
 import logoMA from '../../../common/components/logoMA.svg';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { IReduxState } from '../../../../reducers';
 import { AuthActions } from '../../../auth/duck/actions';
 import { history } from '../../../../helpers';
-const styles = require('./WelcomePage.module');
 
 interface IWelcomePageBaseProps {
   isHideWelcomeScreen: boolean;
   setWelcomeScreenBool: (value) => void;
   setNamespaceSelectIsOpen: (value) => void;
 }
-
-// TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
 
 const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   isHideWelcomeScreen,
@@ -42,14 +43,10 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
   };
 
   return (
-    <>
-      <PageSection>
+    <PageSection>
+      <Bullseye>
         <Flex
           className={`
-            ${spacing.mtXl} 
-            ${spacing.mbXl} 
-            ${flex.alignContentCenter} 
-            ${flex.justifyContentCenter} 
             ${flex.alignItemsCenter} 
             ${flex.flexDirectionColumn} 
           `}
@@ -58,30 +55,32 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
             <img src={logoMA} style={{ height: 90 }} />
           </FlexItem>
           <FlexItem>
-            <TextContent>
-              <Text component="h1" className={`${spacing.myXl} ${styles.titleStyle}`}>
-                Welcome to Cluster Application Migration
-              </Text>
-            </TextContent>
+            <Title
+              headingLevel="h1"
+              size="4xl"
+              className={`${alignment.textAlignCenter} ${spacing.myXl}`}
+            >
+              Welcome to Cluster Application Migration
+            </Title>
           </FlexItem>
           <FlexItem>
             <TextContent>
-              <Text component="p" className={`${spacing.mAuto} $`}>
+              <Text component="p" className={`${spacing.mAuto}`}>
                 Migrating clusters is a multi-step process.
               </Text>
-              <ol>
-                <li>Add or verify source and target clusters for the migration.</li>
-                <li>
+              <List component="ol">
+                <ListItem>Add or verify source and target clusters for the migration.</ListItem>
+                <ListItem>
                   Add service account or Oauth tokens to authenticate to the source and target
                   clusters.
-                </li>
-                <li>
+                </ListItem>
+                <ListItem>
                   Add a replication repository as a temporary storage space for clusters being
                   migrated.
-                </li>
-                <li>Create a migration plan with (optional) hooks.</li>
-                <li>Run the migration plan.</li>
-              </ol>
+                </ListItem>
+                <ListItem>Create a migration plan with (optional) hooks.</ListItem>
+                <ListItem>Run the migration plan.</ListItem>
+              </List>
             </TextContent>
           </FlexItem>
           <FlexItem className={`${spacing.myLg}`}>
@@ -104,8 +103,8 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
             />
           </FlexItem>
         </Flex>
-      </PageSection>
-    </>
+      </Bullseye>
+    </PageSection>
   );
 };
 

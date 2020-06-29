@@ -34,8 +34,6 @@ interface IStoragesPageBaseProps {
   isFetchingInitialStorages: boolean;
 }
 
-// TODO each of these pages flashes the empty state while loading, we should show a loading spinner instead somehow.
-
 const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   storageList,
   storageAssociatedPlans,
