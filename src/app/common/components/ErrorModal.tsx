@@ -89,7 +89,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
 
 export default connect(
   (state) => ({
-    migMeta: state.migMeta,
+    migMeta: state.auth.migMeta,
   }),
   (dispatch) => ({
     clearErrors: () => dispatch(AlertActions.errorModalClear()),

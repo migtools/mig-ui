@@ -1,5 +1,5 @@
 import { ICluster } from '../../../cluster/duck/types';
-import { IMigMeta } from '../../../../mig_meta';
+import { IMigMeta } from '../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 
 export const getClusterInfo = (

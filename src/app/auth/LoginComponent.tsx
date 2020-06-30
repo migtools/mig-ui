@@ -4,7 +4,6 @@ import { AuthActions } from './duck/actions';
 import ClientOAuth2 from 'client-oauth2';
 
 interface IProps {
-  migMeta: any;
   auth: any;
   router: any;
   fetchOauthMeta: (string) => void;
@@ -14,7 +13,7 @@ interface IProps {
 class LoginComponent extends React.Component<IProps> {
   componentDidMount = () => {
     const oauthMeta = this.props.auth.oauthMeta;
-    const migMeta = this.props.migMeta;
+    const migMeta = this.props.auth.migMeta;
 
     if (!oauthMeta) {
       this.props.fetchOauthMeta(migMeta.clusterApi);
@@ -23,7 +22,7 @@ class LoginComponent extends React.Component<IProps> {
   };
 
   componentDidUpdate = (prevProps) => {
-    const migMeta = this.props.migMeta;
+    const migMeta = this.props.auth.migMeta;
     const routerLoc = this.props.router.location;
     const oauthMeta = this.props.auth.oauthMeta;
     if (!oauthMeta) {
@@ -70,7 +69,6 @@ class LoginComponent extends React.Component<IProps> {
 
 export default connect(
   (state) => ({
-    migMeta: state.migMeta,
     auth: state.auth,
     router: state.router,
   }),

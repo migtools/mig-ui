@@ -20,7 +20,7 @@ function* poll(action) {
       params.callback(response);
     } catch (err) {
       const state = yield select();
-      const migMeta = state.migMeta;
+      const migMeta = state.auth.migMeta;
       //handle selfSignedCert error & network connectivity error
       if (utils.isSelfSignedCertError(err)) {
         const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
