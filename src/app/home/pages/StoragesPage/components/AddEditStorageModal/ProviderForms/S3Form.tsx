@@ -101,6 +101,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="storage-name-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
@@ -122,6 +123,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="storage-bucket-name-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketNameKey)}
           onBlur={handleBlur}
@@ -141,6 +143,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="storage-bucket-region-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketRegionKey)}
           onBlur={handleBlur}
@@ -162,6 +165,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           {/*
             // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
           <TextInput
+            data-testid="storage-s3-url-input"
             onChange={formikHandleChange}
             onInput={formikSetFieldTouched(s3UrlKey)}
             onBlur={handleBlur}
@@ -187,6 +191,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
+          data-testid="storage-access-key-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(accessKeyKey)}
           onBlur={handleBlur}
@@ -210,6 +215,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          data-testid="storage-secret-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}
           onBlur={handleBlur}
