@@ -32,7 +32,7 @@ describe('<AddEditClusterModal />', () => {
     expect(screen.getByDisplayValue('clustername')).toBeInTheDocument;
     expect(screen.getByDisplayValue('http://example.com')).toBeInTheDocument;
     expect(screen.getByDisplayValue('qwertyuiop')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add cluster' })).not.toBeDisabled;
+    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeEnabled;
   });
 
   it('cannot add a cluster with unvalid cluster name', () => {
@@ -98,6 +98,6 @@ describe('<AddEditClusterModal />', () => {
     expect(screen.getByDisplayValue('existing-clustername')).toBeInTheDocument;
     expect(screen.getByDisplayValue('http://existing.example.com')).toBeInTheDocument;
     expect(screen.getByDisplayValue('existing-token')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add cluster' })).not.toBeDisabled;
+    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeEnabled;
   });
 });
