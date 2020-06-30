@@ -15,8 +15,6 @@ describe('<AddEditClusterModal />', () => {
   it('adds a cluster with valid values', () => {
     const initialProps = {
       isOpen: true,
-      onHandleClose: jest.fn(),
-      cluster: jest.fn(),
     };
 
     render(
@@ -38,8 +36,6 @@ describe('<AddEditClusterModal />', () => {
   it('cannot add a cluster with unvalid cluster name', () => {
     const initialProps = {
       isOpen: true,
-      onHandleClose: jest.fn(),
-      cluster: jest.fn(),
     };
 
     render(
@@ -57,8 +53,6 @@ describe('<AddEditClusterModal />', () => {
   it('cannot add a cluster with unvalid cluster url', () => {
     const initialProps = {
       isOpen: true,
-      onHandleClose: jest.fn(),
-      cluster: jest.fn(),
     };
 
     render(
@@ -75,8 +69,6 @@ describe('<AddEditClusterModal />', () => {
   it('updates a cluster with valid fields', () => {
     const initialProps = {
       isOpen: true,
-      onHandleClose: jest.fn(),
-      cluster: jest.fn(),
     };
 
     const testInitialClusterValues = {
