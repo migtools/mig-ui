@@ -12,16 +12,10 @@ import AddEditStorageModal from '../index';
 const store = createStore(rootReducer, {});
 
 describe('<AddEditStorageModal />', () => {
-  it('adds a S3 type storage', () => {
-    const initialProps = {
-      isOpen: true,
-      onHandleClose: jest.fn(),
-      cluster: jest.fn(),
-    };
-
+  it('allows filling a S3 form with valid values', () => {
     render(
       <Provider store={store}>
-        <AddEditStorageModal {...initialProps} />
+        <AddEditStorageModal isOpen={true} />
       </Provider>
     );
 
