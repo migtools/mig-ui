@@ -12,7 +12,7 @@ import AddEditClusterModal from '../index';
 const store = createStore(rootReducer, {});
 
 describe('<AddEditClusterModal />', () => {
-  it('adds a cluster with valid values', () => {
+  it('allows filling form with valid values', () => {
     const initialProps = {
       isOpen: true,
     };
@@ -33,7 +33,7 @@ describe('<AddEditClusterModal />', () => {
     expect(screen.getByRole('button', { name: 'Add cluster' })).toBeEnabled;
   });
 
-  it('cannot add a cluster with unvalid cluster name', () => {
+  it('forbids filling from with unvalid name', () => {
     const initialProps = {
       isOpen: true,
     };
@@ -66,7 +66,7 @@ describe('<AddEditClusterModal />', () => {
     expect(screen.getByRole('button', { name: 'Add cluster' })).toBeDisabled;
   });
 
-  it('updates a cluster with valid fields', () => {
+  it('allows updating form with valid values', () => {
     const initialProps = {
       isOpen: true,
     };
