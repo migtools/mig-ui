@@ -101,7 +101,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-name-input"
+          aria-label="Replication repository name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
@@ -123,7 +123,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-bucket-name-input"
+          aria-label="S3 bucket name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketNameKey)}
           onBlur={handleBlur}
@@ -143,7 +143,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-bucket-region-input"
+          aria-label="S3 bucket region"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketRegionKey)}
           onBlur={handleBlur}
@@ -165,7 +165,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           {/*
             // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
           <TextInput
-            data-testid="storage-s3-url-input"
+            aria-label="S3 endpoint"
             onChange={formikHandleChange}
             onInput={formikSetFieldTouched(s3UrlKey)}
             onBlur={handleBlur}
@@ -191,7 +191,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
-          data-testid="storage-access-key-input"
+          aria-label="S3 provider access key"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(accessKeyKey)}
           onBlur={handleBlur}
@@ -215,7 +215,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-secret-input"
+          aria-label="S3 provider secret access key"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}
           onBlur={handleBlur}

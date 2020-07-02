@@ -21,16 +21,16 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('S3'));
-    userEvent.type(screen.getByTestId('storage-name-input'), 'storage-name');
-    userEvent.type(screen.getByTestId('storage-bucket-name-input'), 'storage-bucket-name');
-    userEvent.type(screen.getByTestId('storage-bucket-region-input'), 'storage-bucket-region');
-    userEvent.type(screen.getByTestId('storage-s3-url-input'), 'storage-s3-url');
-    userEvent.type(screen.getByTestId('storage-access-key-input'), 'storage-s3-user');
-    userEvent.type(screen.getByTestId('storage-secret-input'), 'storage-s3-password');
+    userEvent.type(screen.getByLabelText('Replication repository name'), 'storage-s3-name');
+    userEvent.type(screen.getByLabelText('S3 bucket name'), 'storage-s3-bucket-name');
+    userEvent.type(screen.getByLabelText('S3 bucket region'), 'storage-s3-bucket-region');
+    userEvent.type(screen.getByLabelText('S3 endpoint'), 'storage-s3-url');
+    userEvent.type(screen.getByLabelText('S3 provider access key'), 'storage-s3-user');
+    userEvent.type(screen.getByLabelText('S3 provider secret access key'), 'storage-s3-password');
 
-    expect(screen.getByDisplayValue('storage-name')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-bucket-name')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-bucket-region')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('storage-s3-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('storage-s3-bucket-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('storage-s3-bucket-region')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-url')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-user')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-password')).toBeInTheDocument;
