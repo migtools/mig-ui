@@ -159,25 +159,30 @@ function* removeTokenSaga(action) {
     );
     const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
 
-    const secretResourceList = yield client.list(
-      secretResource,
-      getTokenSecretLabelSelector(MigResourceKind.MigToken, name)
-    );
+    const secretResourceList = yield client.list(secretResource);
 
-    const secretResourceName =
-      secretResourceList.data.items && secretResourceList.data.items.length > 0
-        ? secretResourceList.data.items[0].metadata.name
-        : '';
+    // const secretResourceName =
+    //   secretResourceList.data.items && secretResourceList.data.items.length > 0
+    //     ? secretResourceList.data.items[0].metadata.name
+    //     : '';
+    if (secretResourceList.data.items && secretResourceList.data.items.length > 0) {
+      const matchingSecretResource = secretResourceList.data.items.find(
+        (secret) => secret.metadata.generateName === name + '-'
+      );
 
-    console.log('delete sec', secretResource, ' sec name', secretResourceName);
-    console.log('delete tok ', migTokenResource, 'tok name', name);
-    // yield Promise.all([
-    //   client.delete(secretResource, secretResourceName),
-    //   client.delete(migTokenResource, name),
-    // ]);
+      console.log('delete sec', secretResource, ' sec name', matchingSecretResource.metadata.name);
+      console.log('delete tok ', migTokenResource, 'tok name', name);
+      yield Promise.all([
+        client.delete(secretResource, matchingSecretResource.metadata.name),
+        client.delete(migTokenResource, name),
+      ]);
 
-    yield put(TokenActions.removeTokenSuccess(name));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+      yield put(TokenActions.removeTokenSuccess(name));
+      yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+    } else {
+      yield put(AlertActions.alertErrorTimeout('No token found!'));
+      yield put(TokenActions.removeTokenFailure('No token found!'));
+    }
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(TokenActions.removeTokenFailure(err));
