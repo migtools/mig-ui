@@ -46,20 +46,17 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('AWS S3'));
-    userEvent.type(screen.getByLabelText('Replication repository name'), 'storage-AWS-S3-name');
-    userEvent.type(screen.getByLabelText('S3 bucket name'), 'storage-AWS-S3-bucket-name');
-    userEvent.type(screen.getByLabelText('S3 bucket region'), 'storage-AWS-S3-bucket-region');
-    userEvent.type(screen.getByLabelText('S3 provider access key'), 'storage-AWS-S3-user');
-    userEvent.type(
-      screen.getByLabelText('S3 provider secret access key'),
-      'storage-AWS-S3-password'
-    );
+    userEvent.type(screen.getByLabelText('Replication repository name'), 'AWS-S3-name');
+    userEvent.type(screen.getByLabelText('S3 bucket name'), 'AWS-S3-bucket-name');
+    userEvent.type(screen.getByLabelText('S3 bucket region'), 'AWS-S3-bucket-region');
+    userEvent.type(screen.getByLabelText('S3 provider access key'), 'AWS-S3-user');
+    userEvent.type(screen.getByLabelText('S3 provider secret access key'), 'AWS-S3-password');
 
-    expect(screen.getByDisplayValue('storage-AWS-S3-name')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-AWS-S3-bucket-name')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-AWS-S3-bucket-region')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-AWS-S3-user')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('storage-AWS-S3-password')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('AWS-S3-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('AWS-S3-bucket-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('AWS-S3-bucket-region')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('AWS-S3-user')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('AWS-S3-password')).toBeInTheDocument;
     expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
   });
 
