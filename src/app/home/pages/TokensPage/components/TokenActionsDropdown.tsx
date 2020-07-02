@@ -1,5 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import {
+  Tooltip,
+  Dropdown,
+  KebabToggle,
+  DropdownItem,
+  DropdownPosition,
+} from '@patternfly/react-core';
 import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
@@ -10,11 +16,13 @@ import { IToken } from '../../../../token/duck/types';
 interface ITokenActionsDropdownProps {
   token: IToken;
   removeToken: (tokenName: string) => void;
+  associatedClusterName: string;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
   token,
   removeToken,
+  associatedClusterName,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
 
@@ -37,7 +45,7 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
   //   tokenContext.watchtokenAddEditStatus(tokenName);
   //   toggleIsAddEditOpen();
   // };
-
+  const isRemoveDisabled = token.isAssociatedPlans;
   return (
     <>
       <Dropdown
@@ -47,24 +55,31 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         isPlain
         dropdownItems={[
           <DropdownItem
+            isDisabled={true}
             onClick={() => {
               setKebabIsOpen(false);
               // editToken();
             }}
-            isDisabled={true}
             key="editToken"
           >
             Edit
           </DropdownItem>,
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleConfirmOpen();
-            }}
-            key="removetoken"
+          <Tooltip
+            isVisible={isRemoveDisabled}
+            position="top"
+            content={<div>Token is associated with a plan and cannot be removed.</div>}
           >
-            Remove
-          </DropdownItem>,
+            <DropdownItem
+              isDisabled={isRemoveDisabled}
+              onClick={() => {
+                setKebabIsOpen(false);
+                toggleConfirmOpen();
+              }}
+              key="removeToken"
+            >
+              Remove
+            </DropdownItem>
+          </Tooltip>,
         ]}
         position={DropdownPosition.right}
       />

@@ -22,7 +22,8 @@ import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
 import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+// import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+import tokenSelectors from '../../../token/duck/selectors';
 
 import { TokenActions } from '../../../token/duck/actions';
 
@@ -112,7 +113,8 @@ ITokensPageBaseProps) => {
 };
 
 const mapStateToProps = (state: IReduxState) => ({
-  tokenList: state.token.tokenList,
+  tokenList: tokenSelectors.getTokensWithStatus(state),
+  // tokenList: state.token.tokenList,
   clusterList: clusterSelectors.getAllClusters(state),
   isFetchingInitialTokens: state.token.isFetchingInitialTokens,
 });

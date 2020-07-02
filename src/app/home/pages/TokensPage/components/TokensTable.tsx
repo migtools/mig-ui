@@ -64,7 +64,13 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
           title: <IconWithText icon={<StatusIcon status={statusType} />} text={statusText} />,
         },
         {
-          title: <TokenActionsDropdown token={token} removeToken={removeToken} />,
+          title: (
+            <TokenActionsDropdown
+              associatedClusterName={associatedClusterName}
+              token={token}
+              removeToken={removeToken}
+            />
+          ),
         },
       ],
     };
