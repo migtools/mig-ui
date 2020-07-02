@@ -101,14 +101,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-name-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -123,14 +122,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-bucket-name-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketNameKey)}
           onBlur={handleBlur}
           value={values.awsBucketName}
           name={awsBucketNameKey}
           type="text"
-          id="storage-bucket-name-input"
+          id={awsBucketNameKey}
           isValid={!(touched.awsBucketName && errors.awsBucketName)}
         />
       </FormGroup>
@@ -143,14 +141,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-bucket-region-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(awsBucketRegionKey)}
           onBlur={handleBlur}
           value={values.awsBucketRegion}
           name={awsBucketRegionKey}
           type="text"
-          id="storage-bucket-region-input"
+          id={awsBucketRegionKey}
           isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
         />
       </FormGroup>
@@ -165,14 +162,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           {/*
             // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
           <TextInput
-            data-testid="storage-s3-url-input"
             onChange={formikHandleChange}
             onInput={formikSetFieldTouched(s3UrlKey)}
             onBlur={handleBlur}
             value={values.s3Url}
             name={s3UrlKey}
             type="text"
-            id="storage-s3-url-input"
+            id={s3UrlKey}
             isValid={!(touched.s3Url && errors.s3Url)}
           />
         </FormGroup>
@@ -191,14 +187,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
-          data-testid="storage-access-key-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(accessKeyKey)}
           onBlur={handleBlur}
           value={values.accessKey}
           name={accessKeyKey}
           type={isAccessKeyHidden ? 'password' : 'text'}
-          id="storage-access-key-input"
+          id={accessKeyKey}
           isValid={!(touched.accessKey && errors.accessKey)}
         />
       </FormGroup>
@@ -215,14 +210,13 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="storage-secret-input"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(secretKey)}
           onBlur={handleBlur}
           value={values.secret}
           name={secretKey}
           type={isSecretHidden ? 'password' : 'text'}
-          id="storage-secret-input"
+          id={secretKey}
           isValid={!(touched.secret && errors.secret)}
         />
       </FormGroup>
@@ -266,6 +260,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       )}
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="S3 Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
