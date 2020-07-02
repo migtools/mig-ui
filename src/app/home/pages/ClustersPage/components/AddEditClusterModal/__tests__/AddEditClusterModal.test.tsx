@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -7,89 +7,121 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from '../../../../../../../reducers';
 
-import AddEditClusterModal from '../index';
+import AddEditClusterModal from '../AddEditClusterForm';
 
 const store = createStore(rootReducer, {});
 
 describe('<AddEditClusterModal />', () => {
   it('allows filling form with valid values', () => {
-    const initialProps = {
+    const props = {
       isOpen: true,
+      addEditStatus: {
+        state: 'pending',
+        mode: 'add',
+      },
     };
 
     render(
       <Provider store={store}>
-        <AddEditClusterModal {...initialProps} />
+        <AddEditClusterModal {...props} />
       </Provider>
     );
 
-    userEvent.type(screen.getByTestId('cluster-name'), 'clustername');
-    userEvent.type(screen.getByTestId('url'), 'http://example.com');
-    userEvent.type(screen.getByTestId('token'), 'qwertyuiop');
+    const name = screen.getByLabelText(/Cluster name/);
+    const url = screen.getByLabelText(/URL/);
+    const passwd = screen.getByLabelText(/Service account token/);
+    const addButton = screen.getByRole('button', { name: /Add cluster/ });
 
-    expect(screen.getByDisplayValue('clustername')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('http://example.com')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('qwertyuiop')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeEnabled;
+    expect(addButton).toHaveAttribute('disabled');
+
+    userEvent.type(name, 'clustername');
+    userEvent.type(url, 'http://example.com');
+    userEvent.type(passwd, 'secret-test');
+
+    expect(name).toHaveValue('clustername');
+    expect(url).toHaveValue('http://example.com');
+    expect(passwd).toHaveValue('secret-test');
+    expect(addButton).not.toHaveAttribute('disabled');
   });
 
-  it('forbids filling from with unvalid name', () => {
-    const initialProps = {
+  it('triggers validation messages when using wrong values', async () => {
+    const props = {
       isOpen: true,
+      addEditStatus: {
+        state: 'pending',
+        mode: 'add',
+      },
     };
 
     render(
       <Provider store={store}>
-        <AddEditClusterModal {...initialProps} />
+        <AddEditClusterModal {...props} />
       </Provider>
     );
 
-    userEvent.type(screen.getByTestId('cluster-name'), '-clustername');
-    userEvent.type(screen.getByTestId('url'), 'example.com');
+    const name = screen.getByLabelText(/Cluster name/);
+    const url = screen.getByLabelText(/URL/);
 
-    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeDisabled;
+    userEvent.type(name, 'BAD-NAME');
+    fireEvent.blur(name);
+
+    userEvent.type(url, 'example.com');
+    fireEvent.blur(url);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid character: "BAD-NAME"/)).not.toBeNull();
+      expect(screen.getByText(/Not a valid URL/)).not.toBeNull();
+      expect(screen.getByRole('button', { name: /Add cluster/ })).toHaveAttribute('disabled');
+    });
   });
 
-  it('cannot add a cluster with unvalid cluster url', () => {
-    const initialProps = {
-      isOpen: true,
+  it('loads form with existing values and allows changes', () => {
+    const props = {
+      isOpen: false,
+      isPolling: false,
+      initialClusterValues: {
+        clusterName: 'existing-clustername',
+        clusterUrl: 'http://existing.example.com',
+        clusterSvcToken: 'existing-secret',
+        clusterIsAzure: true,
+        clusterAzureResourceGroup: 'Azure-resource-group',
+        clusterRequireSSL: true,
+        clusterCABundle: 'V2tWRk9WQlhWVDF6dA==',
+      },
+      addEditStatus: {
+        state: 'ready',
+        mode: 'edit',
+        message: 'The cluster is ready.',
+        reason: '',
+      },
     };
 
     render(
       <Provider store={store}>
-        <AddEditClusterModal {...initialProps} />
+        <AddEditClusterModal {...props} />
       </Provider>
     );
 
-    userEvent.type(screen.getByTestId('url'), 'example.com');
+    const name = screen.getByLabelText(/Cluster name/);
+    const url = screen.getByLabelText(/URL/);
+    const passwd = screen.getByLabelText(/Service account token/);
+    const azure = screen.getByLabelText(/Azure cluster/);
+    const azureGroup = screen.getByLabelText(/Azure resource group/);
+    const ssl = screen.getByLabelText(/Require SSL verification/);
+    const ca = screen.getByLabelText(/Upload CA bundle/);
+    const updateButton = screen.getByRole('button', { name: /Update cluster/ });
 
-    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeDisabled;
-  });
+    expect(updateButton).toHaveAttribute('disabled');
 
-  it('allows updating form with valid values', () => {
-    const initialProps = {
-      isOpen: true,
-    };
+    expect(name).toHaveValue('existing-clustername');
+    expect(url).toHaveValue('http://existing.example.com');
+    expect(passwd).toHaveValue('existing-secret');
+    expect(azure).toBeChecked();
+    expect(azureGroup).toHaveValue('Azure-resource-group');
+    expect(ssl).toBeChecked();
+    expect(ca).toHaveValue('V2tWRk9WQlhWVDF6dA==');
 
-    const testInitialClusterValues = {
-      clusterName: 'existing-clustername',
-      clusterUrl: 'http://existing.example.com',
-      clusterSvcToken: 'existing-token',
-      clusterIsAzure: null,
-      clusterAzureResourceGroup: null,
-      clusterRequireSSL: null,
-      clusterCABundle: null,
-    };
-
-    render(
-      <Provider store={store}>
-        <AddEditClusterModal {...initialProps} initialClusterValues={testInitialClusterValues} />
-      </Provider>
-    );
-
-    expect(screen.getByDisplayValue('existing-clustername')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('http://existing.example.com')).toBeInTheDocument;
-    expect(screen.getByDisplayValue('existing-token')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add cluster' })).toBeEnabled;
+    userEvent.type(url, 'http://change.example.com');
+    expect(updateButton).not.toHaveAttribute('disabled');
   });
 });

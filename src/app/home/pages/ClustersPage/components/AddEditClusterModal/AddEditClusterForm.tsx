@@ -25,6 +25,7 @@ import CertificateUpload from '../../../../../common/components/CertificateUploa
 const nameKey = 'name';
 const urlKey = 'url';
 const tokenKey = 'token';
+const azureTokenKey = 'azureToken';
 const isAzureKey = 'isAzure';
 const azureResourceGroupKey = 'azureResourceGroup';
 const requireSSLKey = 'requireSSL';
@@ -102,14 +103,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="cluster-name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
-          id="cluster-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -118,7 +118,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <Checkbox
           label="Azure cluster"
           aria-label="Azure cluster"
-          id="azure-cluster-checkbox"
+          id={azureTokenKey}
           name={isAzureKey}
           isChecked={values.isAzure}
           onChange={formikHandleChange}
@@ -141,7 +141,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             onInput={formikSetFieldTouched(azureResourceGroupKey)}
             onBlur={handleBlur}
             name={azureResourceGroupKey}
-            id="azure-token-input"
+            id={azureResourceGroupKey}
             type="text"
             isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
           />
@@ -158,14 +158,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="url"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(urlKey)}
           onBlur={handleBlur}
           value={values.url}
           name={urlKey}
           type="text"
-          id="url-input"
+          id={urlKey}
           isValid={!(touched.url && errors.url)}
         />
       </FormGroup>
@@ -183,13 +182,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="token"
+          data-testid="account-token"
           value={values.token}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(tokenKey)}
           onBlur={handleBlur}
           name={tokenKey}
-          id="token-input"
+          id={tokenKey}
           type={isTokenHidden ? 'password' : 'text'}
           isValid={!(touched.token && errors.token)}
         />
@@ -211,7 +210,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isChecked={values.requireSSL}
           name={requireSSLKey}
           label="Require SSL verification"
-          id="require-ssl-input"
+          id={requireSSLKey}
         />
       </FormGroup>
       {values.requireSSL && (
