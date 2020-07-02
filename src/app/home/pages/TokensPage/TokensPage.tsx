@@ -21,11 +21,13 @@ import { useOpenModal } from '../../duck';
 import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
-import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
+import AddEditTokenModal from './components/AddEditTokenModal';
+import { TokenActions } from '../../../token/duck/actions';
 
 interface ITokensPageBaseProps {
   tokenList: IToken[];
   clusterList: ICluster[];
+  removeToken: (tokenName: string) => void;
   isFetchingInitialTokens: boolean;
 }
 
@@ -33,6 +35,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
   isFetchingInitialTokens,
+  removeToken,
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
@@ -62,7 +65,13 @@ ITokensPageBaseProps) => {
         </EmptyState>
       );
     }
-    return <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />;
+    return (
+      <TokensTable
+        tokenList={tokenList}
+        toggleAddEditModal={toggleAddEditModal}
+        removeToken={removeToken}
+      />
+    );
   };
 
   return (
@@ -91,7 +100,7 @@ ITokensPageBaseProps) => {
             <CardBody>
               {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
               {renderTokenCardBody()}
-              {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
+              <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
             </CardBody>
           </Card>
         )}
@@ -106,6 +115,8 @@ const mapStateToProps = (state: IReduxState) => ({
   isFetchingInitialTokens: state.token.isFetchingInitialTokens,
 });
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
+});
 
 export const TokensPage = connect(mapStateToProps, mapDispatchToProps)(TokensPageBase);

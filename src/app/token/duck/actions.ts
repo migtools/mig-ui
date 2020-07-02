@@ -17,6 +17,9 @@ export const TokenActionTypes = {
   UPDATE_TOKENS: 'UPDATE_TOKENS',
   TOKEN_POLL_START: 'TOKEN_POLL_START',
   TOKEN_POLL_STOP: 'TOKEN_POLL_STOP',
+  SET_TOKEN_ADD_EDIT_STATUS: 'SET_TOKEN_ADD_EDIT_STATUS',
+  WATCH_TOKEN_ADD_EDIT_STATUS: 'WATCH_TOKEN_ADD_EDIT_STATUS',
+  CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS: 'CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS',
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?
@@ -62,11 +65,26 @@ const stopTokenPolling = () => ({
   type: TokenActionTypes.TOKEN_POLL_STOP,
 });
 
+const removeTokenRequest = (name) => ({
+  type: TokenActionTypes.REMOVE_TOKEN_REQUEST,
+  name,
+});
+
+const removeTokenSuccess = (name) => ({
+  type: TokenActionTypes.REMOVE_TOKEN_SUCCESS,
+  name,
+});
+
+const removeTokenFailure = (err) => ({
+  type: TokenActionTypes.REMOVE_TOKEN_FAILURE,
+  err,
+});
+
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
-  // removeClusterRequest,
-  // removeClusterSuccess,
-  // removeClusterFailure,
+  removeTokenRequest,
+  removeTokenSuccess,
+  removeTokenFailure,
   // updateClusterSuccess,
   // updateSearchTerm,
   // setClusterAddEditStatus,
