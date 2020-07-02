@@ -68,6 +68,7 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
             isVisible={isRemoveDisabled}
             position="top"
             content={<div>Token is associated with a plan and cannot be removed.</div>}
+            key="removeTokenTooltip"
           >
             <DropdownItem
               isDisabled={isRemoveDisabled}

@@ -153,54 +153,6 @@ function* removeTokenSaga(action) {
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
-    //remove token from plan
-
-    const { migPlanList } = state.plan;
-
-    const destTokenAssociatedPlan = migPlanList.find((plan) => {
-      if (plan.MigPlan.spec.destMigTokenRef && plan.MigPlan.spec.destMigTokenRef.name) {
-        return plan.MigPlan.spec.destMigTokenRef.name === name;
-      }
-    });
-
-    const srcTokenAssociatedPlan = migPlanList.find((plan) => {
-      if (plan.MigPlan.spec.srcMigTokenRef && plan.MigPlan.spec.srcMigTokenRef.name) {
-        return plan.MigPlan.spec.srcMigTokenRef.name === name;
-      }
-    });
-
-    const createUpdatedSpec = () => {
-      let updatedSpec;
-      if (destTokenAssociatedPlan) {
-        updatedSpec = Object.assign({}, destTokenAssociatedPlan.MigPlan.spec);
-        updatedSpec.destMigTokenRef = null;
-      }
-      if (srcTokenAssociatedPlan) {
-        updatedSpec = Object.assign({}, srcTokenAssociatedPlan.MigPlan.spec);
-        updatedSpec.srcMigTokenRef = null;
-      }
-
-      const updatedTokenSpec = {
-        spec: updatedSpec,
-      };
-      return updatedTokenSpec;
-    };
-
-    if (destTokenAssociatedPlan) {
-      yield client.patch(
-        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        destTokenAssociatedPlan.MigPlan.metadata.name,
-        createUpdatedSpec()
-      );
-    }
-
-    if (srcTokenAssociatedPlan) {
-      yield client.patch(
-        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-        srcTokenAssociatedPlan.MigPlan.metadata.name,
-        createUpdatedSpec()
-      );
-    }
     //remove token
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
