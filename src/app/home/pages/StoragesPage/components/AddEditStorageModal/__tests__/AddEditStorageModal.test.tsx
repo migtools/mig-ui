@@ -81,4 +81,26 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('GCP-credentials')).toBeInTheDocument;
     expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
   });
+
+  it('allows filling an Azure form with valid values', () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('Azure'));
+    userEvent.click(screen.getByLabelText('Repository information'));
+    userEvent.type(screen.getByLabelText('Repository name'), 'azure-name');
+    userEvent.type(screen.getByLabelText('Azure resource group'), 'azure-resource-group');
+    userEvent.type(screen.getByLabelText('Azure storage account name'), 'azure-account-name');
+    userEvent.type(screen.getByLabelText(/Azure credentials /), 'azure-credentials');
+
+    expect(screen.getByDisplayValue('azure-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('azure-resource-group')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('azure-account-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('azure-credentials')).toBeInTheDocument;
+    // expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+  });
 });

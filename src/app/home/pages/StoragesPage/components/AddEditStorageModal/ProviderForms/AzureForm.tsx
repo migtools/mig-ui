@@ -22,7 +22,7 @@ import ConnectionStatusLabel from '../../../../../../common/components/Connectio
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 
-/* 
+/*
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
 const CREDENTIAL_DOCUMENTATION_URL =
@@ -114,6 +114,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          aria-label="Repository name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
@@ -135,6 +136,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          aria-label="Azure resource group"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureResourceGroupKey)}
           onBlur={handleBlur}
@@ -155,6 +157,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          aria-label="Azure storage account name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureStorageAccountKey)}
           onBlur={handleBlur}
@@ -173,6 +176,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.azureBlob && errors.azureBlob)}
       >
         <TextArea
+          aria-label="Azure credentials (Copy and paste .INI file contents here)"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureBlobKey)}
           onBlur={handleBlur}
@@ -218,7 +222,12 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           isOpen={isPopUpModalOpen}
           onClose={handleModalToggle}
           actions={[
-            <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+            <Button
+              aria-label="Repository information"
+              key="confirm"
+              variant="primary"
+              onClick={handleModalToggle}
+            >
               Close
             </Button>,
           ]}
