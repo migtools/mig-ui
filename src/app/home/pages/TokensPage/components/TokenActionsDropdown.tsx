@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
-import AddEditTokenModal from './AddEditTokenModal';
+import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
 // import { tokenContext } from '../../../duck/context';
@@ -9,13 +9,11 @@ import { IToken } from '../../../../Token/duck/types';
 
 interface ITokenActionsDropdownProps {
   token: IToken;
-  // tokenInfo: ITokenInfo;
   removeToken: (tokenName: string) => void;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
   token,
-  // tokenInfo,
   removeToken,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
@@ -51,10 +49,10 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
-              // edittoken();
+              // editToken();
             }}
-            // isDisabled={isHosttoken}
-            key="edittoken"
+            isDisabled={true}
+            key="editToken"
           >
             Edit
           </DropdownItem>,
@@ -63,7 +61,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
               setKebabIsOpen(false);
               toggleConfirmOpen();
             }}
-            // isDisabled={isHosttoken || associatedPlanCount > 0}
             key="removetoken"
           >
             Remove
@@ -77,12 +74,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         token={token}
         initialtokenValues={{
           name,
-          // tokenUrl,
-          // tokenSvctoken,
-          // tokenIsAzure,
-          // tokenAzureResourceGroup,
-          // tokenRequireSSL,
-          // tokenCABundle,
         }}
       /> */}
       <ConfirmModal

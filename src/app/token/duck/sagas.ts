@@ -6,7 +6,12 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import { IToken, IMigToken, ITokenFormValues, TokenType } from './types';
 import { TokenActionTypes, TokenActions } from './actions';
-import { createMigTokenSecret, createMigToken } from '../../../client/resources/conversions';
+import {
+  createMigTokenSecret,
+  createMigToken,
+  getTokenSecretLabelSelector,
+} from '../../../client/resources/conversions';
+import { AlertActions } from '../../common/duck/actions';
 
 function fetchTokenSecrets(client: IClusterClient, migTokens): Array<Promise<any>> {
   const secretRefs: Array<Promise<any>> = [];
@@ -141,13 +146,53 @@ function* addTokenRequest(action) {
   );
 }
 
+function* removeTokenSaga(action) {
+  try {
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace
+    );
+    const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+
+    const secretResourceList = yield client.list(
+      secretResource,
+      getTokenSecretLabelSelector(MigResourceKind.MigToken, name)
+    );
+
+    const secretResourceName =
+      secretResourceList.data.items && secretResourceList.data.items.length > 0
+        ? secretResourceList.data.items[0].metadata.name
+        : '';
+
+    yield Promise.all([
+      client.delete(secretResource, secretResourceName),
+      client.delete(migTokenResource, name),
+    ]);
+
+    yield put(TokenActions.removeTokenSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(TokenActions.removeTokenFailure(err));
+  }
+}
+
 function* watchAddTokenRequest() {
   yield takeLatest(TokenActionTypes.ADD_TOKEN_REQUEST, addTokenRequest);
 }
 
+function* watchRemoveTokenRequest() {
+  yield takeLatest(TokenActionTypes.REMOVE_TOKEN_REQUEST, removeTokenSaga);
+}
+
 export default {
   // NATODO: Implement and/or remove unecessary copies
-  // watchRemoveClusterRequest,
+  watchRemoveTokenRequest,
   watchAddTokenRequest,
   // watchUpdateClusterRequest,
   // watchClusterAddEditStatus,

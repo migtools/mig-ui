@@ -21,7 +21,8 @@ import { useOpenModal } from '../../duck';
 import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
-import AddEditTokenModal from './components/AddEditTokenModal';
+import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
+
 import { TokenActions } from '../../../token/duck/actions';
 
 interface ITokensPageBaseProps {
@@ -100,7 +101,7 @@ ITokensPageBaseProps) => {
             <CardBody>
               {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
               {renderTokenCardBody()}
-              <AddEditTokenModal isOpen={isAddEditModalOpen} onClose={toggleAddEditModal} />
+              {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
             </CardBody>
           </Card>
         )}
