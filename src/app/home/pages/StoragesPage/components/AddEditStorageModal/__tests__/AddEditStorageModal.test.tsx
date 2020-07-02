@@ -48,7 +48,7 @@ describe('<AddEditStorageModal />', () => {
     userEvent.click(screen.getByText('S3'));
 
     const repoName = screen.getByLabelText(/Replication repository name/);
-    userEvent.type(repoName, 'STORAGE-S3-BAD-NAME');
+    userEvent.type(repoName, 'S3-BAD-NAME');
     fireEvent.blur(repoName);
 
     const bucketName = screen.getByLabelText(/S3 bucket name/);
@@ -60,7 +60,7 @@ describe('<AddEditStorageModal />', () => {
     fireEvent.blur(endpoint);
 
     await waitFor(() => {
-      expect(screen.getByText(/Invalid character: "STORAGE-S3-BAD-NAME"/)).not.toBeNull();
+      expect(screen.getByText(/Invalid character: "S3-BAD-NAME"/)).not.toBeNull();
       expect(
         screen.getByText('The bucket name can be between 3 and 63 characters long.')
       ).not.toBeNull();
@@ -103,7 +103,7 @@ describe('<AddEditStorageModal />', () => {
     userEvent.click(screen.getByText('AWS S3'));
 
     const repoName = screen.getByLabelText(/Replication repository name/);
-    userEvent.type(repoName, 'STORAGE-AWS-S3-BAD-NAME');
+    userEvent.type(repoName, 'AWS-S3-BAD-NAME');
     fireEvent.blur(repoName);
 
     const bucketName = screen.getByLabelText(/S3 bucket name/);
@@ -111,7 +111,7 @@ describe('<AddEditStorageModal />', () => {
     fireEvent.blur(bucketName);
 
     await waitFor(() => {
-      expect(screen.getByText(/Invalid character: "STORAGE-AWS-S3-BAD-NAME"/)).not.toBeNull();
+      expect(screen.getByText(/Invalid character: "AWS-S3-BAD-NAME"/)).not.toBeNull();
       expect(
         screen.getByText('The bucket name can be between 3 and 63 characters long.')
       ).not.toBeNull();
@@ -135,6 +135,33 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('GCP-bucket-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('GCP-credentials')).toBeInTheDocument;
     expect(screen.getByLabelText('GCP Storage Submit Form')).toBeEnabled;
+  });
+
+  it('forbids filling a GCP form with unvalid values', async () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('GCP'));
+
+    const repoName = screen.getByLabelText(/Repository name/);
+    userEvent.type(repoName, 'GCP-BAD-NAME');
+    fireEvent.blur(repoName);
+
+    const bucketName = screen.getByLabelText(/GCP bucket name/);
+    userEvent.type(bucketName, 'ab');
+    fireEvent.blur(bucketName);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid character: "GCP-BAD-NAME"/)).not.toBeNull();
+      expect(
+        screen.getByText('The bucket name can be between 3 and 63 characters long.')
+      ).not.toBeNull();
+      expect(screen.getByLabelText('GCP Storage Submit Form')).toBeEnabled;
+    });
   });
 
   it('allows filling an Azure form with valid values', () => {
