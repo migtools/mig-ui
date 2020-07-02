@@ -5,7 +5,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
 // import { tokenContext } from '../../../duck/context';
 import { ITokenInfo } from '../helpers';
-import { IToken } from '../../../../Token/duck/types';
+import { IToken } from '../../../../token/duck/types';
 
 interface ITokenActionsDropdownProps {
   token: IToken;

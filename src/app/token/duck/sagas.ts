@@ -153,36 +153,70 @@ function* removeTokenSaga(action) {
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
+    //remove token from plan
+
+    const { migPlanList } = state.plan;
+
+    const destTokenAssociatedPlan = migPlanList.find((plan) => {
+      if (plan.MigPlan.spec.destMigTokenRef && plan.MigPlan.spec.destMigTokenRef.name) {
+        return plan.MigPlan.spec.destMigTokenRef.name === name;
+      }
+    });
+
+    const srcTokenAssociatedPlan = migPlanList.find((plan) => {
+      if (plan.MigPlan.spec.srcMigTokenRef && plan.MigPlan.spec.srcMigTokenRef.name) {
+        return plan.MigPlan.spec.srcMigTokenRef.name === name;
+      }
+    });
+
+    const createUpdatedSpec = () => {
+      let updatedSpec;
+      if (destTokenAssociatedPlan) {
+        updatedSpec = Object.assign({}, destTokenAssociatedPlan.MigPlan.spec);
+        updatedSpec.destMigTokenRef = null;
+      }
+      if (srcTokenAssociatedPlan) {
+        updatedSpec = Object.assign({}, srcTokenAssociatedPlan.MigPlan.spec);
+        updatedSpec.srcMigTokenRef = null;
+      }
+
+      const updatedTokenSpec = {
+        spec: updatedSpec,
+      };
+      return updatedTokenSpec;
+    };
+
+    if (destTokenAssociatedPlan) {
+      yield client.patch(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        destTokenAssociatedPlan.MigPlan.metadata.name,
+        createUpdatedSpec()
+      );
+    }
+
+    if (srcTokenAssociatedPlan) {
+      yield client.patch(
+        new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+        srcTokenAssociatedPlan.MigPlan.metadata.name,
+        createUpdatedSpec()
+      );
+    }
+    //remove token
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
       migMeta.configNamespace
     );
     const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
 
-    const secretResourceList = yield client.list(secretResource);
+    const tokenRes = yield client.get(migTokenResource, name);
 
-    // const secretResourceName =
-    //   secretResourceList.data.items && secretResourceList.data.items.length > 0
-    //     ? secretResourceList.data.items[0].metadata.name
-    //     : '';
-    if (secretResourceList.data.items && secretResourceList.data.items.length > 0) {
-      const matchingSecretResource = secretResourceList.data.items.find(
-        (secret) => secret.metadata.generateName === name + '-'
-      );
+    yield Promise.all([
+      client.delete(secretResource, tokenRes.data.spec.secretRef.name),
+      client.delete(migTokenResource, name),
+    ]);
 
-      console.log('delete sec', secretResource, ' sec name', matchingSecretResource.metadata.name);
-      console.log('delete tok ', migTokenResource, 'tok name', name);
-      yield Promise.all([
-        client.delete(secretResource, matchingSecretResource.metadata.name),
-        client.delete(migTokenResource, name),
-      ]);
-
-      yield put(TokenActions.removeTokenSuccess(name));
-      yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
-    } else {
-      yield put(AlertActions.alertErrorTimeout('No token found!'));
-      yield put(TokenActions.removeTokenFailure('No token found!'));
-    }
+    yield put(TokenActions.removeTokenSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(TokenActions.removeTokenFailure(err));
