@@ -34,7 +34,7 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('storage-s3-url')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-user')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-password')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+    expect(screen.getByLabelText('S3 Storage Submit Form')).toBeEnabled;
   });
 
   it('allows filling an AWS S3 form with valid values', () => {
@@ -57,7 +57,7 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('AWS-S3-bucket-region')).toBeInTheDocument;
     expect(screen.getByDisplayValue('AWS-S3-user')).toBeInTheDocument;
     expect(screen.getByDisplayValue('AWS-S3-password')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+    expect(screen.getByLabelText('S3 Storage Submit Form')).toBeEnabled;
   });
 
   it('allows filling a GCP form with valid values', () => {

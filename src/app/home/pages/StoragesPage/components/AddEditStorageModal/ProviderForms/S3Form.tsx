@@ -266,6 +266,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       )}
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="S3 Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
