@@ -22,6 +22,7 @@ import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
 import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 
 import { TokenActions } from '../../../token/duck/actions';
 
@@ -117,6 +118,15 @@ const mapStateToProps = (state: IReduxState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  // watchTokenAddEditStatus: (tokenName: string) => {
+  // Push the add edit status into watching state, and start watching
+  // dispatch(
+  //   TokenActions.setAddEditStatus(
+  //     createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+  //   )
+  // );
+  // dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
+  // },
   removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
 });
 

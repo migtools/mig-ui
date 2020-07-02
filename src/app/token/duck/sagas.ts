@@ -169,10 +169,12 @@ function* removeTokenSaga(action) {
         ? secretResourceList.data.items[0].metadata.name
         : '';
 
-    yield Promise.all([
-      client.delete(secretResource, secretResourceName),
-      client.delete(migTokenResource, name),
-    ]);
+    console.log('delete sec', secretResource, ' sec name', secretResourceName);
+    console.log('delete tok ', migTokenResource, 'tok name', name);
+    // yield Promise.all([
+    //   client.delete(secretResource, secretResourceName),
+    //   client.delete(migTokenResource, name),
+    // ]);
 
     yield put(TokenActions.removeTokenSuccess(name));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
