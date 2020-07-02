@@ -179,6 +179,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           {addEditButtonTextFn(currentStatus)}
         </Button>
         <Button
+          aria-label="GCP Storage Submit Form"
           variant="secondary"
           isDisabled={isCheckConnectionButtonDisabled(
             currentStatus,

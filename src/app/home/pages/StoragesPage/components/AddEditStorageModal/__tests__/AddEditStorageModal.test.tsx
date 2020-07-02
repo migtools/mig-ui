@@ -76,7 +76,7 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('GCP-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('GCP-bucket-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('GCP-credentials')).toBeInTheDocument;
-    expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+    expect(screen.getByLabelText('GCP Storage Submit Form')).toBeEnabled;
   });
 
   it('allows filling an Azure form with valid values', () => {
