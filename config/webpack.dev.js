@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const HOST = process.env.HOST || 'localhost';
 const localConfigFileName = 'config.dev.json';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const helpers = require('./helpers');
 
 
 // Two dev modes: local | remote
@@ -26,30 +27,7 @@ const htmlWebpackPluginOpt = {
   favicon: 'public/favicon.ico',
 };
 
-const configPath = path.join(__dirname, localConfigFileName);
-if (!fs.existsSync(configPath)) {
-  console.error('ERROR: config/config.dev.json is missing');
-  console.error(
-    'Copy config/config.dev.json.example to config/config.dev.json' +
-    ' and optionally configure your dev settings. A valid clusterUrl is ' +
-    ' required for start:remote.'
-  );
-  process.exit(1);
-}
-
-const localConfig = require(configPath);
-const startRemoteClientSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
-const migMeta = require('./mig_meta')(localConfig.clusterApi);
-migMeta.oauth = {
-  clientId: localConfig.oauthClientId,
-  redirectUri: localConfig.redirectUri,
-  userScope: localConfig.userScope,
-  clientSecret: startRemoteClientSecret,
-};
-migMeta.namespace = localConfig.namespace;
-migMeta.configNamespace = localConfig.configNamespace;
-migMeta.discoveryApi = localConfig.discoveryApi;
-migMeta.hookRunnerImage = localConfig.hookRunnerImage;
+const { localConfig, migMeta } = helpers.getLocalConfig();
 
 htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
 const PORT = process.env.PORT || localConfig.devServerPort;

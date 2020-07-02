@@ -1,9 +1,9 @@
 const path = require('path');
-const fs = require('fs');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const helpers = require('./helpers');
 
 module.exports = env => {
   const plugins = [
@@ -15,39 +15,13 @@ module.exports = env => {
     })
   ];
   if (env.TARGET === 'localprod') {
-    const localConfigFileName = 'config.dev.json';
-
     const htmlWebpackPluginOpt = {
       template: `public/index.dev.html`,
       title: 'MIG UI',
       inject: 'body',
       favicon: 'public/favicon.ico',
     };
-
-    const configPath = path.join(__dirname, localConfigFileName);
-    if (!fs.existsSync(configPath)) {
-      console.error('ERROR: config/config.dev.json is missing');
-      console.error(
-        'Copy config/config.dev.json.example to config/config.dev.json' +
-        ' and optionally configure your dev settings. A valid clusterUrl is ' +
-        ' required for start:remote.'
-      );
-      process.exit(1);
-    }
-
-    const localConfig = require(configPath);
-    const startRemoteClientSecret = 'bWlncmF0aW9ucy5vcGVuc2hpZnQuaW8K';
-    const migMeta = require('./mig_meta')(localConfig.clusterApi);
-    migMeta.oauth = {
-      clientId: localConfig.oauthClientId,
-      redirectUri: localConfig.redirectUri,
-      userScope: localConfig.userScope,
-      clientSecret: startRemoteClientSecret,
-    };
-    migMeta.namespace = localConfig.namespace;
-    migMeta.configNamespace = localConfig.configNamespace;
-    migMeta.discoveryApi = localConfig.discoveryApi;
-
+    const { migMeta } = helpers.getLocalConfig();
     htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
     plugins.push(
       new HtmlWebpackPlugin(htmlWebpackPluginOpt),
