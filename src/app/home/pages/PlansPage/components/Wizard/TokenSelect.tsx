@@ -101,7 +101,7 @@ const getSelectedTokenOption = (
   if (!selectedTokenRef) return null;
   return tokenOptions.find((option) => {
     if (option.value) {
-      isSameResource(option.value.MigToken.metadata, selectedTokenRef);
+      return isSameResource(option.value.MigToken.metadata, selectedTokenRef);
     }
   });
 };
