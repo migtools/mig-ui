@@ -60,7 +60,7 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
   });
 
-  it('allows filling an GCP form with valid values', () => {
+  it('allows filling a GCP form with valid values', () => {
     render(
       <Provider store={store}>
         <AddEditStorageModal isOpen={true} />
