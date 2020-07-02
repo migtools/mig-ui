@@ -106,6 +106,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
+          aria-label="Repository name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
@@ -128,11 +129,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
+          aria-label="GCP bucket name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBucketKey)}
           onBlur={handleBlur}
           value={values.gcpBucket}
           name={gcpBucketKey}
+          // name="type"
           type="text"
           id="storage-bucket-name-input"
           isValid={!(touched.gcpBucket && errors.gcpBucket)}
@@ -151,6 +154,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
+          aria-label="GCP credential JSON blob"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBlobKey)}
           onBlur={handleBlur}

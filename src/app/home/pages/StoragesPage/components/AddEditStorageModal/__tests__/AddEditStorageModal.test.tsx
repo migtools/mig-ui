@@ -62,4 +62,23 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('storage-AWS-S3-password')).toBeInTheDocument;
     expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
   });
+
+  it('allows filling an GCP form with valid values', () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('GCP'));
+    userEvent.type(screen.getByLabelText('Repository name'), 'GCP-name');
+    userEvent.type(screen.getByLabelText('GCP bucket name'), 'GCP-bucket-name');
+    userEvent.type(screen.getByLabelText('GCP credential JSON blob'), 'GCP-credentials');
+
+    expect(screen.getByDisplayValue('GCP-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('GCP-bucket-name')).toBeInTheDocument;
+    expect(screen.getByDisplayValue('GCP-credentials')).toBeInTheDocument;
+    expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+  });
 });
