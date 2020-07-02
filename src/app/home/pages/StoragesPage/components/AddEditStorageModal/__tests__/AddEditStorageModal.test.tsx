@@ -92,6 +92,33 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByLabelText('S3 Storage Submit Form')).toBeEnabled;
   });
 
+  it('forbids filling an AWS S3 form with unvalid values', async () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('AWS S3'));
+
+    const repoName = screen.getByLabelText(/Replication repository name/);
+    userEvent.type(repoName, 'STORAGE-AWS-S3-BAD-NAME');
+    fireEvent.blur(repoName);
+
+    const bucketName = screen.getByLabelText(/S3 bucket name/);
+    userEvent.type(bucketName, 'ab');
+    fireEvent.blur(bucketName);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid character: "STORAGE-AWS-S3-BAD-NAME"/)).not.toBeNull();
+      expect(
+        screen.getByText('The bucket name can be between 3 and 63 characters long.')
+      ).not.toBeNull();
+      expect(screen.getByLabelText('S3 Storage Submit Form')).toBeDisabled;
+    });
+  });
+
   it('allows filling a GCP form with valid values', () => {
     render(
       <Provider store={store}>
