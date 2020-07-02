@@ -189,6 +189,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
       </FormGroup>
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="Azure Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(

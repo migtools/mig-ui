@@ -98,6 +98,6 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('azure-resource-group')).toBeInTheDocument;
     expect(screen.getByDisplayValue('azure-account-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('azure-credentials')).toBeInTheDocument;
-    // expect(screen.getByRole('button', { name: 'Add Repository' })).toBeEnabled;
+    expect(screen.getByLabelText('Azure Storage Submit Form')).toBeEnabled;
   });
 });
