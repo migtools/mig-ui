@@ -114,14 +114,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          aria-label="Repository name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -136,14 +135,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          aria-label="Azure resource group"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureResourceGroupKey)}
           onBlur={handleBlur}
           value={values.azureResourceGroup}
           name={azureResourceGroupKey}
           type="text"
-          id="azure-resource-group-input"
+          id={azureResourceGroupKey}
           isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
         />
       </FormGroup>
@@ -157,14 +155,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          aria-label="Azure storage account name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureStorageAccountKey)}
           onBlur={handleBlur}
           value={values.azureStorageAccount}
           name={azureStorageAccountKey}
           type="text"
-          id="azure-storage-input"
+          id={azureStorageAccountKey}
           isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
         />
       </FormGroup>
@@ -176,14 +173,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isValid={!(touched.azureBlob && errors.azureBlob)}
       >
         <TextArea
-          aria-label="Azure credentials (Copy and paste .INI file contents here)"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(azureBlobKey)}
           onBlur={handleBlur}
           value={values.azureBlob}
           name={azureBlobKey}
           type="text"
-          id="storage-blob-input"
+          id={azureBlobKey}
           isValid={!(touched.azureBlob && errors.azureBlob)}
         />
       </FormGroup>

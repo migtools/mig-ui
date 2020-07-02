@@ -21,12 +21,12 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('S3'));
-    userEvent.type(screen.getByLabelText('Replication repository name'), 'storage-s3-name');
-    userEvent.type(screen.getByLabelText('S3 bucket name'), 'storage-s3-bucket-name');
-    userEvent.type(screen.getByLabelText('S3 bucket region'), 'storage-s3-bucket-region');
-    userEvent.type(screen.getByLabelText('S3 endpoint'), 'storage-s3-url');
-    userEvent.type(screen.getByLabelText('S3 provider access key'), 'storage-s3-user');
-    userEvent.type(screen.getByLabelText('S3 provider secret access key'), 'storage-s3-password');
+    userEvent.type(screen.getByLabelText(/Replication repository name/), 'storage-s3-name');
+    userEvent.type(screen.getByLabelText(/S3 bucket name/), 'storage-s3-bucket-name');
+    userEvent.type(screen.getByLabelText(/S3 bucket region/), 'storage-s3-bucket-region');
+    userEvent.type(screen.getByLabelText(/S3 endpoint/), 'storage-s3-url');
+    userEvent.type(screen.getByLabelText(/S3 provider access key/), 'storage-s3-user');
+    userEvent.type(screen.getByLabelText(/S3 provider secret access key/), 'storage-s3-password');
 
     expect(screen.getByDisplayValue('storage-s3-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-bucket-name')).toBeInTheDocument;
@@ -46,11 +46,11 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('AWS S3'));
-    userEvent.type(screen.getByLabelText('Replication repository name'), 'AWS-S3-name');
-    userEvent.type(screen.getByLabelText('S3 bucket name'), 'AWS-S3-bucket-name');
-    userEvent.type(screen.getByLabelText('S3 bucket region'), 'AWS-S3-bucket-region');
-    userEvent.type(screen.getByLabelText('S3 provider access key'), 'AWS-S3-user');
-    userEvent.type(screen.getByLabelText('S3 provider secret access key'), 'AWS-S3-password');
+    userEvent.type(screen.getByLabelText(/Replication repository name/), 'AWS-S3-name');
+    userEvent.type(screen.getByLabelText(/S3 bucket name/), 'AWS-S3-bucket-name');
+    userEvent.type(screen.getByLabelText(/S3 bucket region/), 'AWS-S3-bucket-region');
+    userEvent.type(screen.getByLabelText(/S3 provider access key/), 'AWS-S3-user');
+    userEvent.type(screen.getByLabelText(/S3 provider secret access key/), 'AWS-S3-password');
 
     expect(screen.getByDisplayValue('AWS-S3-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('AWS-S3-bucket-name')).toBeInTheDocument;
@@ -69,10 +69,9 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('GCP'));
-    userEvent.type(screen.getByLabelText('Repository name'), 'GCP-name');
-    userEvent.type(screen.getByLabelText('GCP bucket name'), 'GCP-bucket-name');
-    userEvent.type(screen.getByLabelText('GCP credential JSON blob'), 'GCP-credentials');
-
+    userEvent.type(screen.getByLabelText(/Repository name/), 'GCP-name');
+    userEvent.type(screen.getByLabelText(/GCP bucket name/), 'GCP-bucket-name');
+    userEvent.type(screen.getByLabelText(/GCP credential JSON blob/), 'GCP-credentials');
     expect(screen.getByDisplayValue('GCP-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('GCP-bucket-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('GCP-credentials')).toBeInTheDocument;
@@ -88,11 +87,11 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('Azure'));
-    userEvent.click(screen.getByLabelText('Repository information'));
-    userEvent.type(screen.getByLabelText('Repository name'), 'azure-name');
-    userEvent.type(screen.getByLabelText('Azure resource group'), 'azure-resource-group');
-    userEvent.type(screen.getByLabelText('Azure storage account name'), 'azure-account-name');
-    userEvent.type(screen.getByLabelText(/Azure credentials /), 'azure-credentials');
+    userEvent.click(screen.getByRole('dialog', { name: /Repository information/ }));
+    userEvent.type(screen.getByLabelText(/Repository name/), 'azure-name');
+    userEvent.type(screen.getByLabelText(/Azure resource group/), 'azure-resource-group');
+    userEvent.type(screen.getByLabelText(/Azure storage account name/), 'azure-account-name');
+    userEvent.type(screen.getByLabelText(/Azure credentials/), 'azure-credentials');
 
     expect(screen.getByDisplayValue('azure-name')).toBeInTheDocument;
     expect(screen.getByDisplayValue('azure-resource-group')).toBeInTheDocument;

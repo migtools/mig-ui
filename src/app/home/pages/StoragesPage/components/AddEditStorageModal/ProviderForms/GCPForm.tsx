@@ -106,14 +106,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
-          aria-label="Repository name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(nameKey)}
           onBlur={handleBlur}
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -129,15 +128,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
         <TextInput
-          aria-label="GCP bucket name"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBucketKey)}
           onBlur={handleBlur}
           value={values.gcpBucket}
           name={gcpBucketKey}
-          // name="type"
           type="text"
-          id="storage-bucket-name-input"
+          id={gcpBucketKey}
           isValid={!(touched.gcpBucket && errors.gcpBucket)}
         />
       </FormGroup>
@@ -154,14 +151,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          aria-label="GCP credential JSON blob"
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(gcpBlobKey)}
           onBlur={handleBlur}
           value={values.gcpBlob}
           name={gcpBlobKey}
           type={isBlobHidden ? 'password' : 'text'}
-          id="storage-blob-input"
+          id={gcpBlobKey}
           isValid={!(touched.gcpBlob && errors.gcpBlob)}
         />
       </FormGroup>
