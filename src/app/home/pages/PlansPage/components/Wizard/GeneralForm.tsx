@@ -10,7 +10,7 @@ import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
 import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 const styles = require('./GeneralForm.module');
 
-type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
+export type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   clusterList,
