@@ -16,17 +16,19 @@ const getLocalConfig = () => {
     process.exit(1);
   }
   const localConfig = require(configPath);
-  const migMeta = require('./mig_meta')(localConfig.clusterApi); // TODO What does this do? just create a new object? can we just use a literal?
-  migMeta.oauth = {
-    clientId: localConfig.oauthClientId,
-    redirectUri: localConfig.redirectUri,
-    userScope: localConfig.userScope,
-    clientSecret: startRemoteClientSecret,
+  const migMeta = {
+    clusterApi: localConfig.clusterApi,
+    oauth: {
+      clientId: localConfig.oauthClientId,
+      redirectUri: localConfig.redirectUri,
+      userScope: localConfig.userScope,
+      clientSecret: startRemoteClientSecret,
+    },
+    namespace: localConfig.namespace,
+    configNamespace: localConfig.configNamespace,
+    discoveryApi: localConfig.discoveryApi,
+    hookRunnerImage: localConfig.hookRunnerImage,
   };
-  migMeta.namespace = localConfig.namespace;
-  migMeta.configNamespace = localConfig.configNamespace;
-  migMeta.discoveryApi = localConfig.discoveryApi;
-  migMeta.hookRunnerImage = localConfig.hookRunnerImage;
   return { localConfig, migMeta };
 };
 
