@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { createStore } from 'redux';
@@ -35,6 +35,38 @@ describe('<AddEditStorageModal />', () => {
     expect(screen.getByDisplayValue('storage-s3-user')).toBeInTheDocument;
     expect(screen.getByDisplayValue('storage-s3-password')).toBeInTheDocument;
     expect(screen.getByLabelText('S3 Storage Submit Form')).toBeEnabled;
+  });
+
+  it('forbids filling a S3 form with unvalid values', async () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('S3'));
+
+    const repoName = screen.getByLabelText(/Replication repository name/);
+    userEvent.type(repoName, 'STORAGE-S3-BAD-NAME');
+    fireEvent.blur(repoName);
+
+    const bucketName = screen.getByLabelText(/S3 bucket name/);
+    userEvent.type(bucketName, 'ab');
+    fireEvent.blur(bucketName);
+
+    const endpoint = screen.getByLabelText(/S3 endpoint/);
+    userEvent.type(endpoint, 'not-a-url');
+    fireEvent.blur(endpoint);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid character: "STORAGE-S3-BAD-NAME"/)).not.toBeNull();
+      expect(
+        screen.getByText('The bucket name can be between 3 and 63 characters long.')
+      ).not.toBeNull();
+      expect(screen.getByText('S3 Endpoint must be a valid URL.')).not.toBeNull();
+      expect(screen.getByLabelText('S3 Storage Submit Form')).toBeDisabled;
+    });
   });
 
   it('allows filling an AWS S3 form with valid values', () => {
