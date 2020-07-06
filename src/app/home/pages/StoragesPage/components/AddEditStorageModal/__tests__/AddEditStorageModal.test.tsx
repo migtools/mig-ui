@@ -128,15 +128,11 @@ describe('<AddEditStorageModal />', () => {
 
     const repoName = screen.getByLabelText(/Replication repository name/);
     userEvent.type(repoName, 'S3-BAD-NAME');
-    fireEvent.blur(repoName);
-
     const bucketName = screen.getByLabelText(/S3 bucket name/);
     userEvent.type(bucketName, 'ab');
-    fireEvent.blur(bucketName);
 
     const endpoint = screen.getByLabelText(/S3 endpoint/);
     userEvent.type(endpoint, 'not-a-url');
-    fireEvent.blur(endpoint);
 
     await waitFor(() => {
       expect(screen.getByText(/Invalid character: "S3-BAD-NAME"/)).not.toBeNull();
@@ -204,11 +200,9 @@ describe('<AddEditStorageModal />', () => {
 
     const repoName = screen.getByLabelText(/Replication repository name/);
     userEvent.type(repoName, 'AWS-S3-BAD-NAME');
-    fireEvent.blur(repoName);
 
     const bucketName = screen.getByLabelText(/S3 bucket name/);
     userEvent.type(bucketName, 'ab');
-    fireEvent.blur(bucketName);
 
     await waitFor(() => {
       expect(screen.getByText(/Invalid character: "AWS-S3-BAD-NAME"/)).not.toBeNull();
@@ -270,11 +264,9 @@ describe('<AddEditStorageModal />', () => {
 
     const repoName = screen.getByLabelText(/Repository name/);
     userEvent.type(repoName, 'GCP-BAD-NAME');
-    fireEvent.blur(repoName);
 
     const bucketName = screen.getByLabelText(/GCP bucket name/);
     userEvent.type(bucketName, 'ab');
-    fireEvent.blur(bucketName);
 
     await waitFor(() => {
       expect(screen.getByText(/Invalid character: "GCP-BAD-NAME"/)).not.toBeNull();
@@ -340,7 +332,6 @@ describe('<AddEditStorageModal />', () => {
 
     const repoName = screen.getByLabelText(/Repository name/);
     userEvent.type(repoName, 'AZURE-BAD-NAME');
-    fireEvent.blur(repoName);
 
     await waitFor(() => {
       expect(screen.getByText(/Invalid character: "AZURE-BAD-NAME"/)).not.toBeNull();
