@@ -16,7 +16,7 @@ module.exports = env => {
   ];
   if (env.TARGET === 'localprod') {
     const { migMeta } = helpers.getLocalConfig();
-    plugins.push(new GenerateJsonPlugin('migmeta.json', migMeta));
+    plugins.push(new GenerateJsonPlugin('../tmp/migmeta.json', migMeta));
   }
 
 
