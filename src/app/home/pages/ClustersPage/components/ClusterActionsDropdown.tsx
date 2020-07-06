@@ -6,6 +6,7 @@ import { useOpenModal } from '../../../duck';
 import { ClusterContext } from '../../../duck/context';
 import { IClusterInfo } from '../helpers';
 import { ICluster } from '../../../../cluster/duck/types';
+import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
 
 interface IClusterActionsDropdownProps {
   cluster: ICluster;
@@ -32,6 +33,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
+  const [isAddEditTokenModalOpen, toggleAddEditTokenModal] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const handleRemoveCluster = (isConfirmed) => {
@@ -58,6 +60,15 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
+          <DropdownItem
+            onClick={() => {
+              setKebabIsOpen(false);
+              toggleAddEditTokenModal();
+            }}
+            key="addToken"
+          >
+            Add token
+          </DropdownItem>,
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
@@ -102,6 +113,9 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         onHandleClose={handleRemoveCluster}
         id="confirm-cluster-removal"
       />
+      {isAddEditTokenModalOpen && (
+        <AddEditTokenModal onClose={toggleAddEditTokenModal} preSelectedClusterName={clusterName} />
+      )}
     </>
   );
 };
