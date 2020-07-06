@@ -22,10 +22,15 @@ import { IReduxState } from '../../../../reducers';
 import { IToken } from '../../../token/duck/types';
 import { ICluster } from '../../../cluster/duck/types';
 import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
+// import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+import tokenSelectors from '../../../token/duck/selectors';
+
+import { TokenActions } from '../../../token/duck/actions';
 
 interface ITokensPageBaseProps {
   tokenList: IToken[];
   clusterList: ICluster[];
+  removeToken: (tokenName: string) => void;
   isFetchingInitialTokens: boolean;
 }
 
@@ -33,6 +38,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   tokenList,
   clusterList,
   isFetchingInitialTokens,
+  removeToken,
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
@@ -62,7 +68,13 @@ ITokensPageBaseProps) => {
         </EmptyState>
       );
     }
-    return <TokensTable tokenList={tokenList} toggleAddEditModal={toggleAddEditModal} />;
+    return (
+      <TokensTable
+        tokenList={tokenList}
+        toggleAddEditModal={toggleAddEditModal}
+        removeToken={removeToken}
+      />
+    );
   };
 
   return (
@@ -101,11 +113,23 @@ ITokensPageBaseProps) => {
 };
 
 const mapStateToProps = (state: IReduxState) => ({
-  tokenList: state.token.tokenList,
+  tokenList: tokenSelectors.getTokensWithStatus(state),
+  // tokenList: state.token.tokenList,
   clusterList: clusterSelectors.getAllClusters(state),
   isFetchingInitialTokens: state.token.isFetchingInitialTokens,
 });
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  // watchTokenAddEditStatus: (tokenName: string) => {
+  // Push the add edit status into watching state, and start watching
+  // dispatch(
+  //   TokenActions.setAddEditStatus(
+  //     createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+  //   )
+  // );
+  // dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
+  // },
+  removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
+});
 
 export const TokensPage = connect(mapStateToProps, mapDispatchToProps)(TokensPageBase);

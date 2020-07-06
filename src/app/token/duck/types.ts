@@ -32,6 +32,7 @@ export interface IToken {
       token: string;
     };
   };
+  isAssociatedPlans?: boolean;
 }
 
 export enum TokenFieldKey {
