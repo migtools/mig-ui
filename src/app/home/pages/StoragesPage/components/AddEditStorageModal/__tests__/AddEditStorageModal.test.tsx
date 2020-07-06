@@ -248,8 +248,53 @@ describe('<AddEditStorageModal />', () => {
     expect(name).toHaveValue('gcp-name');
     expect(bucket).toHaveValue('gcp-bucket-name');
     expect(creds).toHaveValue('GCP-credentials');
-    // TODO: Complete form for submit button to be enabled
-    // expect(addButton).not.toHaveAttribute('disabled');
+    expect(addButton).not.toHaveAttribute('disabled');
+  });
+
+  describe('<GCPForm />', () => {
+    it('allows editing a GCPForm component form with valid values', async () => {
+      const props = {
+        provider: 'gcp',
+        initialStorageValues: {
+          name: 'gcp-name',
+          gcpBucket: 'gcp-bucket',
+          gcpBlob: 'GCP-creds',
+        },
+        onClose: jest.fn(),
+        onAddEditSubmit: jest.fn(),
+        addEditStatus: {
+          state: 'ready',
+          mode: 'edit',
+          message: 'The storage is ready.',
+          reason: '',
+        },
+        checkConnection: jest.fn(),
+      };
+
+      render(
+        <Provider store={store}>
+          <GCPForm {...props} />
+        </Provider>
+      );
+
+      const name = screen.getByLabelText(/Repository name/);
+      const bucket = screen.getByLabelText(/GCP bucket name/);
+      const creds = screen.getByLabelText(/GCP credential JSON blob/);
+      const addButton = screen.getByRole('button', { name: /GCP Storage Submit Form/ });
+
+      expect(addButton).toHaveAttribute('disabled');
+      userEvent.clear(bucket);
+      userEvent.type(bucket, 'new-bucket');
+      userEvent.click(addButton);
+
+      await waitFor(() => {
+        expect(name).toHaveValue('gcp-name');
+        expect(bucket).toHaveValue('new-bucket');
+        expect(creds).toHaveValue('GCP-creds');
+        expect(addButton).not.toHaveAttribute('disabled');
+        expect(props.onAddEditSubmit).toHaveBeenCalled();
+      });
+    });
   });
 
   it('forbids filling a GCP form with unvalid values', async () => {
