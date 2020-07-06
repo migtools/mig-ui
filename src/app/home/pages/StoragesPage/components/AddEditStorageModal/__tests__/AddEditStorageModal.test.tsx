@@ -97,12 +97,12 @@ describe('<AddEditStorageModal />', () => {
       const url = screen.getByLabelText(/S3 endpoint/);
       const accessKey = screen.getByLabelText(/S3 provider access key/);
       const secretKey = screen.getByLabelText(/S3 provider secret access key/);
-      const addButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
+      const editButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
 
-      expect(addButton).toHaveAttribute('disabled');
+      expect(editButton).toHaveAttribute('disabled');
       userEvent.clear(bucketName);
       userEvent.type(bucketName, 'new-bucket');
-      userEvent.click(addButton);
+      userEvent.click(editButton);
 
       await waitFor(() => {
         expect(name).toHaveValue('s3-name');
@@ -111,7 +111,7 @@ describe('<AddEditStorageModal />', () => {
         expect(url).toHaveValue('http://s3.example.com');
         expect(accessKey).toHaveValue('s3-user');
         expect(secretKey).toHaveValue('s3-secret');
-        expect(addButton).not.toHaveAttribute('disabled');
+        expect(editButton).not.toHaveAttribute('disabled');
         expect(props.onAddEditSubmit).toHaveBeenCalled();
       });
     });
@@ -281,18 +281,18 @@ describe('<AddEditStorageModal />', () => {
       const name = screen.getByLabelText(/Repository name/);
       const bucket = screen.getByLabelText(/GCP bucket name/);
       const creds = screen.getByLabelText(/GCP credential JSON blob/);
-      const addButton = screen.getByRole('button', { name: /GCP Storage Submit Form/ });
+      const editButton = screen.getByRole('button', { name: /GCP Storage Submit Form/ });
 
-      expect(addButton).toHaveAttribute('disabled');
+      expect(editButton).toHaveAttribute('disabled');
       userEvent.clear(bucket);
       userEvent.type(bucket, 'new-bucket');
-      userEvent.click(addButton);
+      userEvent.click(editButton);
 
       await waitFor(() => {
         expect(name).toHaveValue('gcp-name');
         expect(bucket).toHaveValue('new-bucket');
         expect(creds).toHaveValue('GCP-creds');
-        expect(addButton).not.toHaveAttribute('disabled');
+        expect(editButton).not.toHaveAttribute('disabled');
         expect(props.onAddEditSubmit).toHaveBeenCalled();
       });
     });
