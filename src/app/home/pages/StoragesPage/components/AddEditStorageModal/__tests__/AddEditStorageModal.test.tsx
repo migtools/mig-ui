@@ -8,6 +8,8 @@ import { Provider } from 'react-redux';
 import rootReducer from '../../../../../../../reducers';
 
 import AddEditStorageModal from '../index';
+import S3Form from '../ProviderForms/S3Form';
+import GCPForm from '../ProviderForms/GCPForm';
 
 const store = createStore(rootReducer, {});
 
@@ -55,6 +57,63 @@ describe('<AddEditStorageModal />', () => {
     expect(accessKey).toHaveValue('storage-s3-user');
     expect(secretKey).toHaveValue('storage-s3-password');
     expect(addButton).not.toHaveAttribute('disabled');
+  });
+
+  describe('<S3Form />', () => {
+    it('allows editing a S3 form with valid values', async () => {
+      const props = {
+        provider: 'generic-s3',
+        initialStorageValues: {
+          name: 's3-name',
+          awsBucketName: 's3-bucket-name',
+          awsBucketRegion: 's3-bucket-region',
+          s3Url: 'http://s3.example.com',
+          accessKey: 's3-user',
+          secret: 's3-secret',
+          requireSSL: false,
+        },
+        isAWS: false,
+        onAddEditSubmit: jest.fn(),
+        onClose: jest.fn(),
+        addEditStatus: {
+          state: 'ready',
+          mode: 'edit',
+          message: 'The storage is ready.',
+          reason: '',
+        },
+        checkConnection: jest.fn(),
+      };
+
+      render(
+        <Provider store={store}>
+          <S3Form {...props} />
+        </Provider>
+      );
+
+      const name = screen.getByLabelText(/Replication repository name/);
+      const bucketName = screen.getByLabelText(/S3 bucket name/);
+      const bucketRegion = screen.getByLabelText(/S3 bucket region/);
+      const url = screen.getByLabelText(/S3 endpoint/);
+      const accessKey = screen.getByLabelText(/S3 provider access key/);
+      const secretKey = screen.getByLabelText(/S3 provider secret access key/);
+      const addButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
+
+      expect(addButton).toHaveAttribute('disabled');
+      userEvent.clear(bucketName);
+      userEvent.type(bucketName, 'new-bucket');
+      userEvent.click(addButton);
+
+      await waitFor(() => {
+        expect(name).toHaveValue('s3-name');
+        expect(bucketName).toHaveValue('new-bucket');
+        expect(bucketRegion).toHaveValue('s3-bucket-region');
+        expect(url).toHaveValue('http://s3.example.com');
+        expect(accessKey).toHaveValue('s3-user');
+        expect(secretKey).toHaveValue('s3-secret');
+        expect(addButton).not.toHaveAttribute('disabled');
+        expect(props.onAddEditSubmit).toHaveBeenCalled();
+      });
+    });
   });
 
   it('forbids filling a S3 form with unvalid values', async () => {
