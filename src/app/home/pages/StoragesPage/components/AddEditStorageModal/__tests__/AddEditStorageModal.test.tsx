@@ -10,6 +10,7 @@ import rootReducer from '../../../../../../../reducers';
 import AddEditStorageModal from '../index';
 import S3Form from '../ProviderForms/S3Form';
 import GCPForm from '../ProviderForms/GCPForm';
+import AzureForm from '../ProviderForms/AzureForm';
 
 const store = createStore(rootReducer, {});
 
@@ -364,6 +365,80 @@ describe('<AddEditStorageModal />', () => {
     expect(addButton).not.toHaveAttribute('disabled');
   });
 
+  describe('<AzureForm />', () => {
+    it('allows editing a GCPForm component form with valid values', async () => {
+      const props = {
+        provider: 'azure',
+        initialStorageValues: {
+          name: 'azure-name',
+          azureResourceGroup: 'azure-resource-group',
+          azureStorageAccount: 'azure-account-name',
+          azureBlob: 'azure-credentials',
+        },
+        onAddEditSubmit: jest.fn(),
+        onClose: jest.fn(),
+        addEditStatus: {
+          state: 'ready',
+          mode: 'edit',
+          message: 'The storage is ready.',
+          reason: '',
+        },
+        checkConnection: jest.fn(),
+      };
+
+      render(
+        <Provider store={store}>
+          <AzureForm {...props} />
+        </Provider>
+      );
+
+      const name = screen.getByLabelText(/Repository name/);
+      const group = screen.getByLabelText(/Azure resource group/);
+      const account = screen.getByLabelText(/Azure storage account name/);
+      const creds = screen.getByLabelText(/Azure credentials/);
+      const editButton = screen.getByLabelText(/Azure Storage Submit Form/);
+
+      userEvent.clear(group);
+      userEvent.type(group, 'azure-resource-group-new');
+      userEvent.click(editButton);
+
+      await waitFor(() => {
+        expect(name).toHaveValue('azure-name');
+        expect(group).toHaveValue('azure-resource-group-new');
+        expect(account).toHaveValue('azure-account-name');
+        expect(creds).toHaveValue('azure-credentials');
+        expect(editButton).not.toHaveAttribute('disabled');
+        expect(props.onAddEditSubmit).toHaveBeenCalled();
+      });
+    });
+  });
+
+  it('forbids filling a GCP form with unvalid values', async () => {
+    render(
+      <Provider store={store}>
+        <AddEditStorageModal isOpen={true} />
+      </Provider>
+    );
+
+    userEvent.click(screen.getByText('Select a type...'));
+    userEvent.click(screen.getByText('GCP'));
+
+    const repoName = screen.getByLabelText(/Repository name/);
+    userEvent.type(repoName, 'GCP-BAD-NAME');
+
+    const bucketName = screen.getByLabelText(/GCP bucket name/);
+    userEvent.type(bucketName, 'ab');
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid character: "GCP-BAD-NAME"/)).not.toBeNull();
+      expect(
+        screen.getByText('The bucket name can be between 3 and 63 characters long.')
+      ).not.toBeNull();
+      expect(screen.getByRole('button', { name: /GCP Storage Submit Form/ })).toHaveAttribute(
+        'disabled'
+      );
+    });
+  });
   it('forbids filling an Azure form with unvalid values', async () => {
     render(
       <Provider store={store}>
