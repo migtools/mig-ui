@@ -4,7 +4,7 @@ const fs = require('fs');
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
 const staticDir = process.env['STATIC_DIR'] || '/srv/static';
-const migMetaStr = fs.readFileSync(migMetaFile, 'utf8')
+const migMetaStr = fs.readFileSync(migMetaFile, 'utf8');
 
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
@@ -25,5 +25,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });

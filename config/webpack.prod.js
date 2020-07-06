@@ -5,27 +5,26 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 const helpers = require('./helpers');
 
-module.exports = env => {
+module.exports = (env) => {
   const plugins = [
     new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].css',
-      chunkFilename: '[id].css'
-    })
+      chunkFilename: '[id].css',
+    }),
   ];
   if (env.TARGET === 'localprod') {
     const { migMeta } = helpers.getLocalConfig();
     plugins.push(new GenerateJsonPlugin('../tmp/migmeta.json', migMeta));
   }
 
-
   return {
     entry: './src/index.tsx',
     output: {
       path: path.resolve(__dirname, '../dist'),
       filename: 'app.bundle.js',
-      publicPath: '/'
+      publicPath: '/',
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.scss'],
@@ -50,16 +49,16 @@ module.exports = env => {
               loader: 'css-loader',
               options: {
                 modules: true,
-                sourceMap: false
-              }
+                sourceMap: false,
+              },
             },
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: false
-              }
-            }
-          ]
+                sourceMap: false,
+              },
+            },
+          ],
         },
         {
           test: /\.s(a|c)ss$/,
@@ -70,10 +69,10 @@ module.exports = env => {
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: false
-              }
-            }
-          ]
+                sourceMap: false,
+              },
+            },
+          ],
         },
         {
           test: /\.css$/,
@@ -84,12 +83,24 @@ module.exports = env => {
             path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
             path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
             path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
-            path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
-            path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
-            path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-            path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+            path.resolve(
+              __dirname,
+              '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+            ),
+            path.resolve(
+              __dirname,
+              '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+            ),
+            path.resolve(
+              __dirname,
+              '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+            ),
+            path.resolve(
+              __dirname,
+              '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+            ),
           ],
-          use: ["style-loader", "css-loader"]
+          use: ['style-loader', 'css-loader'],
         },
 
         {
@@ -105,7 +116,6 @@ module.exports = env => {
         },
       ],
     },
-    plugins: plugins
+    plugins: plugins,
   };
-
-}
+};
