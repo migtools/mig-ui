@@ -2,8 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const GenerateJsonPlugin = require('generate-json-webpack-plugin');
-const helpers = require('./helpers');
 
 module.exports = (env) => {
   const plugins = [
@@ -14,10 +12,6 @@ module.exports = (env) => {
       chunkFilename: '[id].css',
     }),
   ];
-  if (env.TARGET === 'localprod') {
-    const { migMeta } = helpers.getLocalConfig();
-    plugins.push(new GenerateJsonPlugin('../tmp/migmeta.json', migMeta));
-  }
 
   return {
     entry: './src/index.tsx',

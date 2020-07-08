@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const execSync = require('child_process').execSync;
+const helpers = require('../config/helpers');
 
 // Init some consts
 const configDir = path.join(__dirname, '..', 'config');
@@ -105,11 +106,19 @@ function setupCors() {
   }
 }
 
+function generateMigMeta() {
+  const { migMeta } = helpers.getLocalConfig();
+  const migMetaJson = JSON.stringify(migMeta);
+  execSync(`mkdir -p ${path.join(__dirname, '../tmp')}`);
+  fs.writeFileSync(path.join(__dirname, '../tmp/migmeta.json'), migMetaJson, 'utf8');
+}
+
 // Main
 
 function main() {
   setupOAuthClient();
   setupCors();
+  generateMigMeta();
 }
 
 main();
