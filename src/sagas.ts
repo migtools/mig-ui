@@ -69,6 +69,7 @@ export default function* rootSaga() {
     storageSagas.watchStorageAddEditStatus(),
     storageSagas.watchUpdateStorageRequest(),
     tokenSagas.watchAddTokenRequest(),
+    tokenSagas.watchRemoveTokenRequest(),
     authSagas.watchAuthEvents(),
   ]);
 }
