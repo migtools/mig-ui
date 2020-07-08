@@ -1,9 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const HOST = process.env.HOST || 'localhost';
-const localConfigFileName = 'config.dev.json';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const helpers = require('./helpers');
 
@@ -31,6 +29,7 @@ const { localConfig, migMeta } = helpers.getLocalConfig();
 
 htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
 const PORT = process.env.PORT || localConfig.devServerPort;
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001
 
 const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
@@ -153,6 +152,11 @@ const webpackConfig = {
       // legitimate typescript exports to trigger warnings in webpack
       warningsFilter: /export .* was not found in/,
     },
+    proxy: [{
+      // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
+      context: ['/hello'], // NATODO remove this /hello example once we have some real routes here
+      target: `http://localhost:${EXPRESS_PORT}`
+    }]
   },
   plugins,
 };
