@@ -8,15 +8,18 @@ import StatusIcon from '../../../../common/components/StatusIcon';
 import IconWithText from '../../../../common/components/IconWithText';
 import { IToken } from '../../../../token/duck/types';
 import { getTokenInfo } from '../helpers';
+import TokenActionsDropdown from './TokenActionsDropdown';
 
 interface ITokensTableProps {
   tokenList: IToken[];
   toggleAddEditModal: () => void;
+  removeToken: (tokenName: string) => void;
 }
 
 const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   tokenList,
   toggleAddEditModal,
+  removeToken,
 }: ITokensTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -60,7 +63,15 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
         {
           title: <IconWithText icon={<StatusIcon status={statusType} />} text={statusText} />,
         },
-        '', // NATODO create a TokenActionsDropdown to render here
+        {
+          title: (
+            <TokenActionsDropdown
+              associatedClusterName={associatedClusterName}
+              token={token}
+              removeToken={removeToken}
+            />
+          ),
+        },
       ],
     };
   });

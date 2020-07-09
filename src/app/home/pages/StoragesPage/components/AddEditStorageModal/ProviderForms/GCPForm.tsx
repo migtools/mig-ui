@@ -163,6 +163,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
       </FormGroup>
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="GCP Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(
@@ -175,7 +176,6 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           {addEditButtonTextFn(currentStatus)}
         </Button>
         <Button
-          aria-label="GCP Storage Submit Form"
           variant="secondary"
           isDisabled={isCheckConnectionButtonDisabled(
             currentStatus,
