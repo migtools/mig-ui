@@ -182,7 +182,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
-          data-testid="account-token"
           value={values.token}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(tokenKey)}
