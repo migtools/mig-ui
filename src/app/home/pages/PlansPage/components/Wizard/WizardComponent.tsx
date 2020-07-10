@@ -25,19 +25,7 @@ const WizardComponent = (props: IOtherProps) => {
   const pollingContext = useContext(PollingContext);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleBlur,
-    setFieldTouched,
-    setFieldValue,
-    resetForm,
-    validateForm,
-  } = useFormikContext<IFormValues>();
-  // TODO we should call useFormikContext in each step's form component to get these
-  //   instead of passing them down as props through all the layers
+  const { values, touched, errors, resetForm } = useFormikContext<IFormValues>();
 
   const {
     clusterList,
@@ -125,19 +113,7 @@ const WizardComponent = (props: IOtherProps) => {
           name: 'General',
           component: (
             <WizardStepContainer title="General">
-              <GeneralForm
-                clusterList={clusterList}
-                storageList={storageList}
-                values={values}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                setFieldTouched={setFieldTouched}
-                setFieldValue={setFieldValue}
-                validateForm={validateForm}
-                isEdit={isEdit}
-              />
+              <GeneralForm clusterList={clusterList} storageList={storageList} isEdit={isEdit} />
             </WizardStepContainer>
           ),
           enableNext: NON_ADMIN_ENABLED
@@ -162,8 +138,6 @@ const WizardComponent = (props: IOtherProps) => {
           component: (
             <WizardStepContainer title="Namespaces">
               <NamespacesForm
-                values={values}
-                setFieldValue={setFieldValue}
                 isFetchingNamespaceList={isFetchingNamespaceList}
                 fetchNamespacesRequest={fetchNamespacesRequest}
                 sourceClusterNamespaces={sourceClusterNamespaces}
@@ -179,8 +153,6 @@ const WizardComponent = (props: IOtherProps) => {
           component: (
             <WizardStepContainer title="Persistent volumes">
               <VolumesForm
-                values={values}
-                setFieldValue={setFieldValue}
                 currentPlan={currentPlan}
                 isPVError={isPVError}
                 getPVResourcesRequest={getPVResourcesRequest}
@@ -204,8 +176,6 @@ const WizardComponent = (props: IOtherProps) => {
           component: (
             <WizardStepContainer title="Copy options">
               <CopyOptionsForm
-                values={values}
-                setFieldValue={setFieldValue}
                 currentPlan={currentPlan}
                 isFetchingPVList={isFetchingPVList}
                 clusterList={clusterList}
@@ -248,8 +218,6 @@ const WizardComponent = (props: IOtherProps) => {
           isFinishedStep: true,
           component: (
             <ResultsStep
-              values={values}
-              errors={errors}
               currentPlan={currentPlan}
               currentPlanStatus={currentPlanStatus}
               isPollingStatus={isPollingStatus}

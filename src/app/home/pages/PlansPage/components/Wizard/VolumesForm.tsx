@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import VolumesTable from './VolumesTable';
 import {
@@ -16,23 +16,19 @@ import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 const styles = require('./VolumesTable.module');
 
-interface IVolumesFormProps
-  extends Pick<
-      IOtherProps,
-      | 'isPVError'
-      | 'currentPlan'
-      | 'currentPlanStatus'
-      | 'getPVResourcesRequest'
-      | 'pvResourceList'
-      | 'isFetchingPVResources'
-      | 'pvDiscoveryRequest'
-      | 'isPollingStatus'
-    >,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+type IVolumesFormProps = Pick<
+  IOtherProps,
+  | 'isPVError'
+  | 'currentPlan'
+  | 'currentPlanStatus'
+  | 'getPVResourcesRequest'
+  | 'pvResourceList'
+  | 'isFetchingPVResources'
+  | 'pvDiscoveryRequest'
+  | 'isPollingStatus'
+>;
 
 const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
-  setFieldValue,
-  values,
   isPVError,
   currentPlan,
   currentPlanStatus,
@@ -42,6 +38,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   pvDiscoveryRequest,
   isPollingStatus,
 }: IVolumesFormProps) => {
+  const { setFieldValue, values } = useFormikContext<IFormValues>();
+
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
     pvDiscoveryRequest(values);
