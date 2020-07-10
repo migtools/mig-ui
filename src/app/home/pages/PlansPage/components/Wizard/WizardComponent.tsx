@@ -7,7 +7,7 @@ import CopyOptionsForm from './CopyOptionsForm';
 import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../../duck/context';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
@@ -19,7 +19,7 @@ import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 const styles = require('./WizardComponent.module');
 
-const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
+const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [updatedSteps, setUpdatedSteps] = useState([]);
   const pollingContext = useContext(PollingContext);
@@ -34,6 +34,12 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     setFieldTouched,
     setFieldValue,
     resetForm,
+    validateForm,
+  } = useFormikContext<IFormValues>();
+  // TODO we should call useFormikContext in each step's form component to get these
+  //   instead of passing them down as props through all the layers
+
+  const {
     clusterList,
     currentPlan,
     currentPlanStatus,
@@ -71,7 +77,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetAddEditState,
     removeHookRequest,
     validatePlanPollStop,
-    validateForm,
   } = props;
 
   enum stepId {
@@ -89,7 +94,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
-    stopPlanStatusPolling(props.values.planName);
+    stopPlanStatusPolling(values.planName);
     validatePlanPollStop();
     pvUpdatePollStop();
   };
@@ -296,24 +301,24 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
       if (!currentPlan && !isEdit) {
         addPlanRequest({
-          planName: props.values.planName,
-          sourceCluster: props.values.sourceCluster,
-          targetCluster: props.values.targetCluster,
-          selectedStorage: props.values.selectedStorage,
-          namespaces: props.values.selectedNamespaces,
+          planName: values.planName,
+          sourceCluster: values.sourceCluster,
+          targetCluster: values.targetCluster,
           ...(NON_ADMIN_ENABLED
             ? {
-                sourceTokenRef: props.values.sourceTokenRef,
-                targetTokenRef: props.values.targetTokenRef,
+                sourceTokenRef: values.sourceTokenRef,
+                targetTokenRef: values.targetTokenRef,
               }
             : {}),
+          selectedStorage: values.selectedStorage,
+          namespaces: values.selectedNamespaces,
         });
       }
     }
     if (newStep.id === stepId.Results) {
       updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
-      validatePlanRequest(props.values);
+      validatePlanRequest(values);
     }
     if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
