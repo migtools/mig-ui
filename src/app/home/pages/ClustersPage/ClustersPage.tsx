@@ -108,6 +108,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     migMeta={migMeta}
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
+                    isAdmin={isAdmin}
                   />
                 )}
                 <AddEditClusterModal

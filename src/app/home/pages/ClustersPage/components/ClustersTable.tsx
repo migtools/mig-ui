@@ -19,6 +19,7 @@ interface IClustersTableProps {
   migMeta: IMigMeta;
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;
+  isAdmin: boolean;
 }
 
 const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
@@ -27,6 +28,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   migMeta,
   removeCluster,
   toggleAddEditModal,
+  isAdmin,
 }: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -79,6 +81,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               cluster={cluster}
               clusterInfo={clusterInfo}
               removeCluster={removeCluster}
+              isAdmin={isAdmin}
             />
           ),
         },
@@ -90,9 +93,11 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
-            Add cluster
-          </Button>
+          {isAdmin && (
+            <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
+              Add cluster
+            </Button>
+          )}
         </LevelItem>
         <LevelItem>
           <Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />

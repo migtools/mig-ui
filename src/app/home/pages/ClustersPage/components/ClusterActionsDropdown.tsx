@@ -12,12 +12,14 @@ interface IClusterActionsDropdownProps {
   cluster: ICluster;
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
+  isAdmin: boolean;
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
   cluster,
   clusterInfo,
   removeCluster,
+  isAdmin,
 }: IClusterActionsDropdownProps) => {
   const {
     clusterName,
@@ -69,26 +71,30 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
           >
             Add token
           </DropdownItem>,
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              editCluster();
-            }}
-            isDisabled={isHostCluster}
-            key="editCluster"
-          >
-            Edit
-          </DropdownItem>,
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleConfirmOpen();
-            }}
-            isDisabled={isHostCluster || associatedPlanCount > 0}
-            key="removeCluster"
-          >
-            Remove
-          </DropdownItem>,
+          ...(isAdmin
+            ? [
+                <DropdownItem
+                  onClick={() => {
+                    setKebabIsOpen(false);
+                    editCluster();
+                  }}
+                  isDisabled={isHostCluster}
+                  key="editCluster"
+                >
+                  Edit
+                </DropdownItem>,
+                <DropdownItem
+                  onClick={() => {
+                    setKebabIsOpen(false);
+                    toggleConfirmOpen();
+                  }}
+                  isDisabled={isHostCluster || associatedPlanCount > 0}
+                  key="removeCluster"
+                >
+                  Remove
+                </DropdownItem>,
+              ]
+            : []),
         ]}
         position={DropdownPosition.right}
       />
