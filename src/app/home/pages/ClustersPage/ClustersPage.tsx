@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
   Card,
@@ -12,13 +12,13 @@ import {
   Button,
   Bullseye,
   Spinner,
+  EmptyStateBody,
 } from '@patternfly/react-core';
-import { AddCircleOIcon } from '@patternfly/react-icons';
+import { AddCircleOIcon, SearchIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
-import { AuthActions } from '../../../auth/duck/actions';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
@@ -35,6 +35,7 @@ interface IClustersPageBaseProps {
   watchClusterAddEditStatus: (clusterName: string) => void;
   removeCluster: (clusterName: string) => void;
   isFetchingInitialClusters: boolean;
+  isAdmin: boolean;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -44,8 +45,34 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   watchClusterAddEditStatus,
   removeCluster,
   isFetchingInitialClusters,
+  isAdmin,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+
+  const renderEmptyState = () =>
+    isAdmin ? (
+      <EmptyState variant="full" className={spacing.my_2xl}>
+        <EmptyStateIcon icon={AddCircleOIcon} />
+        <Title size="lg">Add source and target clusters for the migration</Title>
+        <Button onClick={toggleAddEditModal} variant="primary">
+          Add cluster
+        </Button>
+      </EmptyState>
+    ) : (
+      <EmptyState variant="full" className={spacing.my_2xl}>
+        <EmptyStateIcon icon={SearchIcon} />
+        <Title size="lg">No clusters</Title>
+        <EmptyStateBody>
+          <TextContent>
+            <Text component="p">
+              You must have administrator rights to the cluster where the migration controller is
+              installed in order to add clusters for migration. Contact the cluster administrator
+              for assistance.
+            </Text>
+          </TextContent>
+        </EmptyStateBody>
+      </EmptyState>
+    );
 
   return (
     <>
@@ -73,13 +100,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
             <CardBody>
               <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
                 {!clusterList ? null : clusterList.length === 0 ? (
-                  <EmptyState variant="full">
-                    <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg">Add source and target clusters for the migration</Title>
-                    <Button onClick={toggleAddEditModal} variant="primary">
-                      Add cluster
-                    </Button>
-                  </EmptyState>
+                  renderEmptyState()
                 ) : (
                   <ClustersTable
                     clusterList={clusterList}
@@ -87,6 +108,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     migMeta={migMeta}
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
+                    isAdmin={isAdmin}
                   />
                 )}
                 <AddEditClusterModal
@@ -107,6 +129,7 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.auth.migMeta,
+  isAdmin: state.auth.isAdmin,
 });
 
 const mapDispatchToProps = (dispatch) => ({

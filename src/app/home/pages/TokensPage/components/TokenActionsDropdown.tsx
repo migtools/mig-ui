@@ -46,6 +46,21 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
   //   toggleIsAddEditOpen();
   // };
   const isRemoveDisabled = token.isAssociatedPlans;
+  const removeItem = (
+    <DropdownItem
+      isDisabled={isRemoveDisabled}
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      key="removeToken"
+    >
+      Remove
+    </DropdownItem>
+  );
+
+  console.log(token);
+
   return (
     <>
       <Dropdown
@@ -64,23 +79,17 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
           >
             Edit
           </DropdownItem>,
-          <Tooltip
-            isVisible={isRemoveDisabled}
-            position="top"
-            content={<div>Token is associated with a plan and cannot be removed.</div>}
-            key="removeTokenTooltip"
-          >
-            <DropdownItem
-              isDisabled={isRemoveDisabled}
-              onClick={() => {
-                setKebabIsOpen(false);
-                toggleConfirmOpen();
-              }}
-              key="removeToken"
+          isRemoveDisabled ? (
+            <Tooltip
+              position="top"
+              content={<div>Token is associated with a plan and cannot be removed.</div>}
+              key="removeTokenTooltip"
             >
-              Remove
-            </DropdownItem>
-          </Tooltip>,
+              {removeItem}
+            </Tooltip>
+          ) : (
+            removeItem
+          ),
         ]}
         position={DropdownPosition.right}
       />
