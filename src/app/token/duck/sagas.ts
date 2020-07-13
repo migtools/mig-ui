@@ -168,7 +168,7 @@ function* removeTokenSaga(action) {
     ]);
 
     yield put(TokenActions.removeTokenSuccess(name));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed token "${name}"!`));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(TokenActions.removeTokenFailure(err));
