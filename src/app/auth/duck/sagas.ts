@@ -9,6 +9,7 @@ import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { getActiveNamespaceFromStorage } from '../../common/helpers';
+import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -125,7 +126,9 @@ export function* fetchIsAdmin(): any {
 
 export function* loginSuccess() {
   yield put(AuthActions.checkHasLoggedIn());
-  yield put(AuthActions.fetchIsAdmin());
+  if (NON_ADMIN_ENABLED) {
+    yield put(AuthActions.fetchIsAdmin());
+  }
 }
 
 function* watchAuthEvents() {
