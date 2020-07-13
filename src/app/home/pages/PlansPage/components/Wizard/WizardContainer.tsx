@@ -26,6 +26,7 @@ import { IStorage } from '../../../../../storage/duck/types';
 import { IReduxState } from '../../../../../../reducers';
 import { IToken } from '../../../../../token/duck/types';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 export interface IFormValues {
   planName: string;
@@ -146,17 +147,19 @@ const WizardContainer = withFormik<IOtherProps, IFormValues>({
     if (!values.sourceCluster) {
       errors.sourceCluster = 'Required';
     }
-    if (!values.sourceTokenRef) {
-      errors.sourceTokenRef = 'Required';
-    }
     if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
       errors.selectedNamespaces = 'Required';
     }
     if (!values.targetCluster) {
       errors.targetCluster = 'Required';
     }
-    if (!values.targetTokenRef) {
-      errors.targetTokenRef = 'Required';
+    if (NON_ADMIN_ENABLED) {
+      if (!values.sourceTokenRef) {
+        errors.sourceTokenRef = 'Required';
+      }
+      if (!values.targetTokenRef) {
+        errors.targetTokenRef = 'Required';
+      }
     }
     if (!values.selectedStorage) {
       errors.selectedStorage = 'Required';
