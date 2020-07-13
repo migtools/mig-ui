@@ -46,7 +46,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
         </ToolbarGroup>
 
         <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
-          {!isWelcomeScreen && (
+          {NON_ADMIN_ENABLED && !isWelcomeScreen && (
             <ToolbarItem>
               <Button
                 id="default-example-uid-02"

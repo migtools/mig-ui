@@ -125,8 +125,8 @@ export function* fetchIsAdmin(): any {
 }
 
 export function* loginSuccess() {
-  yield put(AuthActions.checkHasLoggedIn());
   if (NON_ADMIN_ENABLED) {
+    yield put(AuthActions.checkHasLoggedIn());
     yield put(AuthActions.fetchIsAdmin());
   }
 }
@@ -136,9 +136,11 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
-  yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
   yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
-  yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
+  if (NON_ADMIN_ENABLED) {
+    yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
+    yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
+  }
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }
 

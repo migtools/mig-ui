@@ -68,24 +68,28 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
-      <ActiveNamespaceModal
-        isOpen={namespaceSelectIsOpen}
-        onClose={() => setNamespaceSelectIsOpen(false)}
-      />
+      {NON_ADMIN_ENABLED && (
+        <ActiveNamespaceModal
+          isOpen={namespaceSelectIsOpen}
+          onClose={() => setNamespaceSelectIsOpen(false)}
+        />
+      )}
 
       <Switch>
         <Route exact path="/">
-          {!isHideWelcomeScreen || !activeNamespace ? (
+          {NON_ADMIN_ENABLED && (!isHideWelcomeScreen || !activeNamespace) ? (
             <Redirect to="/welcome" />
           ) : (
             <Redirect to="/clusters" />
           )}
         </Route>
-        <Route exact path="/welcome">
-          <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
-        </Route>
+        {NON_ADMIN_ENABLED && (
+          <Route exact path="/welcome">
+            <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
+          </Route>
+        )}
         <Route path="*">
-          {activeNamespace ? (
+          {activeNamespace || !NON_ADMIN_ENABLED ? (
             // Don't render any route other than /welcome until the user selects a namespace
             <Switch>
               <Route exact path="/clusters">
