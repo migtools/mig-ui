@@ -81,32 +81,36 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <Route exact path="/welcome">
           <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
         </Route>
-        {!!activeNamespace && (
-          // Don't render any route other than /welcome until the user selects a namespace
-          <>
-            <Route exact path="/clusters">
-              <ClustersPage />
-            </Route>
-            <Route exact path="/storages">
-              <StoragesPage />
-            </Route>
-            <Route exact path="/plans">
-              <PlansPage />
-            </Route>
-            <RefreshRoute
-              exact
-              path="/logs/:planId"
-              clusterList={clusterList}
-              isLoggedIn
-              component={LogsPage}
-            />
-            <Route exact path="/tokens">
-              <TokensPage />
-            </Route>
-          </>
-        )}
         <Route path="*">
-          <Redirect to="/" />
+          {activeNamespace ? (
+            // Don't render any route other than /welcome until the user selects a namespace
+            <Switch>
+              <Route exact path="/clusters">
+                <ClustersPage />
+              </Route>
+              <Route exact path="/storages">
+                <StoragesPage />
+              </Route>
+              <Route exact path="/plans">
+                <PlansPage />
+              </Route>
+              <RefreshRoute
+                exact
+                path="/logs/:planId"
+                clusterList={clusterList}
+                isLoggedIn
+                component={LogsPage}
+              />
+              <Route exact path="/tokens">
+                <TokensPage />
+              </Route>
+              <Route path="*">
+                <Redirect to="/" />
+              </Route>
+            </Switch>
+          ) : (
+            <Redirect to="/" />
+          )}
         </Route>
       </Switch>
     </Page>
