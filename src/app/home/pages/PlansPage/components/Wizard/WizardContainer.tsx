@@ -123,6 +123,8 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     initialValues.selectedNamespaces = editPlanObj.spec.namespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
+    initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
+    initialValues.sourceTokenRef = editPlanObj.spec.srcMigTokenRef || null;
     // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
     // See https://github.com/konveyor/mig-ui/issues/797
     // initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
