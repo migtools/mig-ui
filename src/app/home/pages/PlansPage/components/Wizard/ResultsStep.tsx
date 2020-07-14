@@ -1,6 +1,6 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Bullseye, Title, Button, Flex, FlexModifiers, FlexItem } from '@patternfly/react-core';
+import { Bullseye, Title, Button, Flex, FlexModifiers } from '@patternfly/react-core';
 import ConditionsGrid from './ConditionsGrid';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../../../../plan/duck/reducers';
 import { Spinner } from '@patternfly/react-core';
@@ -10,10 +10,10 @@ import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
 } from '@patternfly/react-icons';
+import { useFormikContext } from 'formik';
+import { IFormValues } from './WizardContainer';
 
 interface IProps {
-  values: any;
-  errors: any;
   startPlanStatusPolling: (planName) => void;
   onClose: () => void;
   currentPlan: any;
@@ -21,15 +21,14 @@ interface IProps {
   isPollingStatus: boolean;
 }
 
-const ResultsStep: React.FunctionComponent<IProps> = (props) => {
-  const {
-    values,
-    currentPlan,
-    currentPlanStatus,
-    isPollingStatus,
-    startPlanStatusPolling,
-    onClose,
-  } = props;
+const ResultsStep: React.FunctionComponent<IProps> = ({
+  currentPlan,
+  currentPlanStatus,
+  isPollingStatus,
+  startPlanStatusPolling,
+  onClose,
+}: IProps) => {
+  const { values } = useFormikContext<IFormValues>();
 
   const handlePollRestart = () => {
     startPlanStatusPolling(values.planName);

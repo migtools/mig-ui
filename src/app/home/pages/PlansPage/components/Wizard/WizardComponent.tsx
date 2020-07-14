@@ -7,7 +7,7 @@ import CopyOptionsForm from './CopyOptionsForm';
 import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
 import { PollingContext } from '../../../../duck/context';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
@@ -19,21 +19,14 @@ import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 const styles = require('./WizardComponent.module');
 
-const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
+const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
-  const [updatedSteps, setUpdatedSteps] = useState([]);
   const pollingContext = useContext(PollingContext);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
+  const { values, touched, errors, resetForm } = useFormikContext<IFormValues>();
+
   const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleBlur,
-    setFieldTouched,
-    setFieldValue,
-    resetForm,
     clusterList,
     currentPlan,
     currentPlanStatus,
@@ -71,7 +64,6 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     resetAddEditState,
     removeHookRequest,
     validatePlanPollStop,
-    validateForm,
   } = props;
 
   enum stepId {
@@ -89,7 +81,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
     pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
-    stopPlanStatusPolling(props.values.planName);
+    stopPlanStatusPolling(values.planName);
     validatePlanPollStop();
     pvUpdatePollStop();
   };
@@ -112,171 +104,126 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
       return tokenInfo && tokenInfo.statusType !== StatusType.ERROR;
     });
 
-  useEffect(
-    () => {
-      const steps = [
-        {
-          id: stepId.General,
-          name: 'General',
-          component: (
-            <WizardStepContainer title="General">
-              <GeneralForm
-                clusterList={clusterList}
-                storageList={storageList}
-                values={values}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                setFieldTouched={setFieldTouched}
-                setFieldValue={setFieldValue}
-                validateForm={validateForm}
-                isEdit={isEdit}
-              />
-            </WizardStepContainer>
-          ),
-          enableNext: NON_ADMIN_ENABLED
-            ? areFieldsTouchedAndValid([
-                'planName',
-                'sourceCluster',
-                'sourceTokenRef',
-                'targetCluster',
-                'targetTokenRef',
-                'selectedStorage',
-              ]) && areSelectedTokensValid(['sourceTokenRef', 'targetTokenRef'])
-            : areFieldsTouchedAndValid([
-                'planName',
-                'sourceCluster',
-                'targetCluster',
-                'selectedStorage',
-              ]),
-        },
-        {
-          id: stepId.Namespaces,
-          name: 'Namespaces',
-          component: (
-            <WizardStepContainer title="Namespaces">
-              <NamespacesForm
-                values={values}
-                setFieldValue={setFieldValue}
-                isFetchingNamespaceList={isFetchingNamespaceList}
-                fetchNamespacesRequest={fetchNamespacesRequest}
-                sourceClusterNamespaces={sourceClusterNamespaces}
-              />
-            </WizardStepContainer>
-          ),
-          enableNext: !errors.selectedNamespaces,
-          canJumpTo: stepIdReached >= stepId.Namespaces,
-        },
-        {
-          id: stepId.PersistentVolumes,
-          name: 'Persistent volumes',
-          component: (
-            <WizardStepContainer title="Persistent volumes">
-              <VolumesForm
-                values={values}
-                setFieldValue={setFieldValue}
-                currentPlan={currentPlan}
-                isPVError={isPVError}
-                getPVResourcesRequest={getPVResourcesRequest}
-                pvResourceList={pvResourceList}
-                isFetchingPVResources={isFetchingPVList}
-                isPollingStatus={isPollingStatus}
-                pvDiscoveryRequest={pvDiscoveryRequest}
-                currentPlanStatus={currentPlanStatus}
-              />
-            </WizardStepContainer>
-          ),
-          enableNext:
-            !isFetchingPVList &&
-            currentPlanStatus.state !== 'Pending' &&
-            currentPlanStatus.state !== 'Critical',
-          canJumpTo: stepIdReached >= stepId.PersistentVolumes,
-        },
-        {
-          id: stepId.StorageClass,
-          name: 'Copy options',
-          component: (
-            <WizardStepContainer title="Copy options">
-              <CopyOptionsForm
-                values={values}
-                setFieldValue={setFieldValue}
-                currentPlan={currentPlan}
-                isFetchingPVList={isFetchingPVList}
-                clusterList={clusterList}
-              />
-            </WizardStepContainer>
-          ),
-          canJumpTo: stepIdReached >= stepId.StorageClass,
-        },
-        {
-          id: stepId.Hooks,
-          name: 'Hooks',
-          component: (
-            <WizardStepContainer title="Hooks">
-              <HooksStep
-                removeHookRequest={removeHookRequest}
-                addHookRequest={addHookRequest}
-                updateHookRequest={updateHookRequest}
-                isFetchingHookList={isFetchingHookList}
-                migHookList={migHookList}
-                fetchHooksRequest={fetchHooksRequest}
-                watchHookAddEditStatus={watchHookAddEditStatus}
-                hookAddEditStatus={hookAddEditStatus}
-                cancelAddEditWatch={cancelAddEditWatch}
-                resetAddEditState={resetAddEditState}
-                currentPlan={currentPlan}
-                isAddHooksOpen={isAddHooksOpen}
-                setIsAddHooksOpen={setIsAddHooksOpen}
-              />
-            </WizardStepContainer>
-          ),
-          canJumpTo: stepIdReached >= stepId.Hooks,
-          enableNext: !isAddHooksOpen,
-          hideBackButton: isAddHooksOpen,
-          hideCancelButton: isAddHooksOpen,
-          nextButtonText: 'Finish',
-        },
-        {
-          id: stepId.Results,
-          name: 'Results',
-          isFinishedStep: true,
-          component: (
-            <ResultsStep
-              values={values}
-              errors={errors}
-              currentPlan={currentPlan}
-              currentPlanStatus={currentPlanStatus}
-              isPollingStatus={isPollingStatus}
-              startPlanStatusPolling={startPlanStatusPolling}
-              onClose={handleClose}
-            />
-          ),
-        },
-      ];
-
-      setUpdatedSteps(steps);
+  const steps = [
+    {
+      id: stepId.General,
+      name: 'General',
+      component: (
+        <WizardStepContainer title="General">
+          <GeneralForm clusterList={clusterList} storageList={storageList} isEdit={isEdit} />
+        </WizardStepContainer>
+      ),
+      enableNext: NON_ADMIN_ENABLED
+        ? areFieldsTouchedAndValid([
+            'planName',
+            'sourceCluster',
+            'sourceTokenRef',
+            'targetCluster',
+            'targetTokenRef',
+            'selectedStorage',
+          ]) && areSelectedTokensValid(['sourceTokenRef', 'targetTokenRef'])
+        : areFieldsTouchedAndValid([
+            'planName',
+            'sourceCluster',
+            'targetCluster',
+            'selectedStorage',
+          ]),
     },
-    //****************** Don't forget to update this array if you add changes to wizard children!!! */
-    // TODO: we should really remove this and just define steps outside the useEffect, if that doesn't break anything
-    [
-      currentPlan,
-      values,
-      isPVError,
-      isFetchingPVList,
-      isPollingStatus,
-      isFetchingNamespaceList,
-      pvResourceList,
-      errors,
-      touched,
-      currentPlanStatus,
-      migHookList,
-      tokenList,
-      hookAddEditStatus,
-      isAddHooksOpen,
-      isFetchingHookList,
-    ]
-  );
+    {
+      id: stepId.Namespaces,
+      name: 'Namespaces',
+      component: (
+        <WizardStepContainer title="Namespaces">
+          <NamespacesForm
+            isFetchingNamespaceList={isFetchingNamespaceList}
+            fetchNamespacesRequest={fetchNamespacesRequest}
+            sourceClusterNamespaces={sourceClusterNamespaces}
+          />
+        </WizardStepContainer>
+      ),
+      enableNext: !errors.selectedNamespaces,
+      canJumpTo: stepIdReached >= stepId.Namespaces,
+    },
+    {
+      id: stepId.PersistentVolumes,
+      name: 'Persistent volumes',
+      component: (
+        <WizardStepContainer title="Persistent volumes">
+          <VolumesForm
+            currentPlan={currentPlan}
+            isPVError={isPVError}
+            getPVResourcesRequest={getPVResourcesRequest}
+            pvResourceList={pvResourceList}
+            isFetchingPVResources={isFetchingPVList}
+            isPollingStatus={isPollingStatus}
+            pvDiscoveryRequest={pvDiscoveryRequest}
+            currentPlanStatus={currentPlanStatus}
+          />
+        </WizardStepContainer>
+      ),
+      enableNext:
+        !isFetchingPVList &&
+        currentPlanStatus.state !== 'Pending' &&
+        currentPlanStatus.state !== 'Critical',
+      canJumpTo: stepIdReached >= stepId.PersistentVolumes,
+    },
+    {
+      id: stepId.StorageClass,
+      name: 'Copy options',
+      component: (
+        <WizardStepContainer title="Copy options">
+          <CopyOptionsForm
+            currentPlan={currentPlan}
+            isFetchingPVList={isFetchingPVList}
+            clusterList={clusterList}
+          />
+        </WizardStepContainer>
+      ),
+      canJumpTo: stepIdReached >= stepId.StorageClass,
+    },
+    {
+      id: stepId.Hooks,
+      name: 'Hooks',
+      component: (
+        <WizardStepContainer title="Hooks">
+          <HooksStep
+            removeHookRequest={removeHookRequest}
+            addHookRequest={addHookRequest}
+            updateHookRequest={updateHookRequest}
+            isFetchingHookList={isFetchingHookList}
+            migHookList={migHookList}
+            fetchHooksRequest={fetchHooksRequest}
+            watchHookAddEditStatus={watchHookAddEditStatus}
+            hookAddEditStatus={hookAddEditStatus}
+            cancelAddEditWatch={cancelAddEditWatch}
+            resetAddEditState={resetAddEditState}
+            currentPlan={currentPlan}
+            isAddHooksOpen={isAddHooksOpen}
+            setIsAddHooksOpen={setIsAddHooksOpen}
+          />
+        </WizardStepContainer>
+      ),
+      canJumpTo: stepIdReached >= stepId.Hooks,
+      enableNext: !isAddHooksOpen,
+      hideBackButton: isAddHooksOpen,
+      hideCancelButton: isAddHooksOpen,
+      nextButtonText: 'Finish',
+    },
+    {
+      id: stepId.Results,
+      name: 'Results',
+      isFinishedStep: true,
+      component: (
+        <ResultsStep
+          currentPlan={currentPlan}
+          currentPlanStatus={currentPlanStatus}
+          isPollingStatus={isPollingStatus}
+          startPlanStatusPolling={startPlanStatusPolling}
+          onClose={handleClose}
+        />
+      ),
+    },
+  ];
 
   const onMove: WizardStepFunctionType = (newStep, prevStep) => {
     //stop pv polling when navigating
@@ -296,24 +243,24 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
 
       if (!currentPlan && !isEdit) {
         addPlanRequest({
-          planName: props.values.planName,
-          sourceCluster: props.values.sourceCluster,
-          targetCluster: props.values.targetCluster,
-          selectedStorage: props.values.selectedStorage,
-          namespaces: props.values.selectedNamespaces,
+          planName: values.planName,
+          sourceCluster: values.sourceCluster,
+          targetCluster: values.targetCluster,
           ...(NON_ADMIN_ENABLED
             ? {
-                sourceTokenRef: props.values.sourceTokenRef,
-                targetTokenRef: props.values.targetTokenRef,
+                sourceTokenRef: values.sourceTokenRef,
+                targetTokenRef: values.targetTokenRef,
               }
             : {}),
+          selectedStorage: values.selectedStorage,
+          namespaces: values.selectedNamespaces,
         });
       }
     }
     if (newStep.id === stepId.Results) {
       updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
-      validatePlanRequest(props.values);
+      validatePlanRequest(values);
     }
     if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
@@ -328,7 +275,7 @@ const WizardComponent = (props: IOtherProps & FormikProps<IFormValues>) => {
           onBack={onMove}
           title="Create a migration plan"
           onClose={handleClose}
-          steps={updatedSteps}
+          steps={steps}
           isFullWidth
           isCompactNav
           className={styles.wizardModifier}

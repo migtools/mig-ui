@@ -1,21 +1,19 @@
 import React, { useEffect } from 'react';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
-interface ICopyOptionsFormProps
-  extends Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+type ICopyOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>;
 
 const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   clusterList,
   currentPlan,
   isFetchingPVList,
-  setFieldValue,
-  values,
 }: ICopyOptionsFormProps) => {
+  const { setFieldValue, values } = useFormikContext<IFormValues>();
+
   const migPlanPvs = currentPlan.spec.persistentVolumes;
 
   const destCluster = clusterList.find(
