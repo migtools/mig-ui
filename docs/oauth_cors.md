@@ -52,6 +52,8 @@ a standard location:
 
 The contents of this request are described in the [OCP 4.1 docs](https://access.redhat.com/documentation/en-us/openshift_container_platform/4.1/html/authentication/configuring-internal-oauth#oauth-server-metadata_configuring-internal-oauth).
 
+### TODO -- update this to reflect the OAuth client being in the express server now
+
 Now given the coordinates of the cluster's OAuth server in addition to the
 `client_id` and `secret`, we're able to construct an OAuth client in the front-end
 and initiate an "Authorization Code Grant" flow. The gist of this is:

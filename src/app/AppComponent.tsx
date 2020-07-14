@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import HomeComponent from './home/HomeComponent';
-import LoginComponent from './auth/LoginComponent';
+import LoginSuccessComponent from './auth/LoginSuccessComponent';
 import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './auth/PrivateRoute';
 import { connect } from 'react-redux';
@@ -190,7 +190,7 @@ const AppComponent: React.SFC<IProps> = ({
 
         <ConnectedRouter history={history}>
           <Switch>
-            <Route path="/login" component={LoginComponent} />
+            <Route path="/login-success" component={LoginSuccessComponent} />
             <Route path="/cert-error" component={CertErrorComponent} />
             <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute

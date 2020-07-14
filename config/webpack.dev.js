@@ -41,11 +41,9 @@ const plugins = [
   }),
 ];
 
-// Replace the normal OAuth login component with a mocked out login for local dev
 if (devMode === 'local') {
-  plugins.push(
-    new webpack.NormalModuleReplacementPlugin(/LoginComponent.tsx/, 'MockLoginComponent.tsx')
-  );
+  // TODO/FIXME since moving login flow to express server, local dev mode is broken.
+  //   We would probably need to mock the express route /login to just redirect to /login-success with bogus token data.
   plugins.push(
     new webpack.NormalModuleReplacementPlugin(/client_factory.ts/, 'client_factory.mock.ts')
   );
@@ -166,7 +164,7 @@ const webpackConfig = {
     proxy: [
       {
         // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
-        context: ['/hello'], // NATODO remove this /hello example once we have some real routes here
+        context: ['/login', '/login/callback'],
         target: `http://localhost:${EXPRESS_PORT}`,
       },
     ],
