@@ -11,6 +11,9 @@ import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 import { getActiveNamespaceFromStorage } from '../common/helpers';
+
+import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
+
 const mainContainerId = 'mig-ui-page-main-container';
 
 const NavItemLink: React.FunctionComponent<{ to: string; label: string }> = ({ to, label }) => {
@@ -43,7 +46,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <NavItemLink to="/clusters" label="Clusters" />
         <NavItemLink to="/storages" label="Replication repositories" />
         <NavItemLink to="/plans" label="Migration plans" />
-        <NavItemLink to="/tokens" label="Tokens" />
+        {NON_ADMIN_ENABLED && <NavItemLink to="/tokens" label="Tokens" />}
       </NavList>
     </Nav>
   );
@@ -65,24 +68,28 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
-      <ActiveNamespaceModal
-        isOpen={namespaceSelectIsOpen}
-        onClose={() => setNamespaceSelectIsOpen(false)}
-      />
+      {NON_ADMIN_ENABLED && (
+        <ActiveNamespaceModal
+          isOpen={namespaceSelectIsOpen}
+          onClose={() => setNamespaceSelectIsOpen(false)}
+        />
+      )}
 
       <Switch>
         <Route exact path="/">
-          {!isHideWelcomeScreen || !activeNamespace ? (
+          {NON_ADMIN_ENABLED && (!isHideWelcomeScreen || !activeNamespace) ? (
             <Redirect to="/welcome" />
           ) : (
             <Redirect to="/clusters" />
           )}
         </Route>
-        <Route exact path="/welcome">
-          <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
-        </Route>
+        {NON_ADMIN_ENABLED && (
+          <Route exact path="/welcome">
+            <WelcomePage openNamespaceSelect={() => setNamespaceSelectIsOpen(true)} />
+          </Route>
+        )}
         <Route path="*">
-          {activeNamespace ? (
+          {activeNamespace || !NON_ADMIN_ENABLED ? (
             // Don't render any route other than /welcome until the user selects a namespace
             <Switch>
               <Route exact path="/clusters">
@@ -101,9 +108,11 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
                 isLoggedIn
                 component={LogsPage}
               />
-              <Route exact path="/tokens">
-                <TokensPage />
-              </Route>
+              {NON_ADMIN_ENABLED && (
+                <Route exact path="/tokens">
+                  <TokensPage />
+                </Route>
+              )}
               <Route path="*">
                 <Redirect to="/" />
               </Route>

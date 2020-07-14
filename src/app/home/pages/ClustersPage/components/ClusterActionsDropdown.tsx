@@ -7,6 +7,7 @@ import { ClusterContext } from '../../../duck/context';
 import { IClusterInfo } from '../helpers';
 import { ICluster } from '../../../../cluster/duck/types';
 import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
+import { NON_ADMIN_ENABLED } from '../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 interface IClusterActionsDropdownProps {
   cluster: ICluster;
@@ -62,15 +63,19 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleAddEditTokenModal();
-            }}
-            key="addToken"
-          >
-            Add token
-          </DropdownItem>,
+          ...(NON_ADMIN_ENABLED
+            ? [
+                <DropdownItem
+                  onClick={() => {
+                    setKebabIsOpen(false);
+                    toggleAddEditTokenModal();
+                  }}
+                  key="addToken"
+                >
+                  Add token
+                </DropdownItem>,
+              ]
+            : []),
           ...(isAdmin
             ? [
                 <DropdownItem

@@ -33,6 +33,7 @@ import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
 import _ from 'lodash';
+import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -75,7 +76,9 @@ function* addPlanSaga(action) {
 
 function* namespaceFetchRequest(action) {
   const state = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state, action.clusterName);
+  const discoveryClient: IDiscoveryClient = NON_ADMIN_ENABLED
+    ? ClientFactory.discovery(state, action.clusterName)
+    : ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
     const res = yield discoveryClient.get(namespaces);
@@ -544,7 +547,9 @@ function* planCloseAndCheck(action) {
 
 function* getPVResourcesRequest(action) {
   const state = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state, action.clusterName);
+  const discoveryClient: IDiscoveryClient = NON_ADMIN_ENABLED
+    ? ClientFactory.discovery(state, action.clusterName)
+    : ClientFactory.discovery(state);
   try {
     const pvResourceRefs = action.pvList.map((pv) => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);

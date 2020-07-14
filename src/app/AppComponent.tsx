@@ -21,6 +21,7 @@ import { TokenActions } from './token/duck/actions';
 import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
 import { ICluster } from './cluster/duck/types';
+import { NON_ADMIN_ENABLED } from '../TEMPORARY_GLOBAL_FLAGS';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -137,16 +138,18 @@ const AppComponent: React.SFC<IProps> = ({
   };
 
   const startDefaultTokenPolling = () => {
-    const tokenPollParams = {
-      asyncFetch: tokenSagas.fetchTokensGenerator,
-      callback: handleTokenPoll,
-      delay: StatusPollingInterval,
-      retryOnFailure: true,
-      retryAfter: 5,
-      stopAfterRetries: 2,
-      pollName: 'token',
-    };
-    startTokenPolling(tokenPollParams);
+    if (NON_ADMIN_ENABLED) {
+      const tokenPollParams = {
+        asyncFetch: tokenSagas.fetchTokensGenerator,
+        callback: handleTokenPoll,
+        delay: StatusPollingInterval,
+        retryOnFailure: true,
+        retryAfter: 5,
+        stopAfterRetries: 2,
+        pollName: 'token',
+      };
+      startTokenPolling(tokenPollParams);
+    }
   };
 
   return (
