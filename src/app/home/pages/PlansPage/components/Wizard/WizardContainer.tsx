@@ -116,7 +116,7 @@ export const defaultInitialValues: IFormValues = {
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
   const { editPlanObj, isEdit, planList } = props;
-  const initialValues = defaultInitialValues;
+  const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit) {
     initialValues.planName = editPlanObj.metadata.name || '';
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
