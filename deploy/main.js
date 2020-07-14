@@ -33,7 +33,9 @@ app.get('/login', async (req, res, next) => {
     const uri = clusterAuth.code.getUri();
     res.redirect(uri);
   } catch (error) {
+    console.error(error);
     next(error);
+    // TODO redirect to /handle-login?error=... instead (move to helper function)
   }
 });
 
@@ -49,7 +51,7 @@ app.get('/login/callback', async (req, res, next) => {
     };
     console.log('Login callback: ', user);
     const params = new URLSearchParams({ user: JSON.stringify(user) });
-    const uri = `/login-success?${params.toString()}`;
+    const uri = `/handle-login?${params.toString()}`;
     res.redirect(uri);
   } catch (error) {
     next(error);
