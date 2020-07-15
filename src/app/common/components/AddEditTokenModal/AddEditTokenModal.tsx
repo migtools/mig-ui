@@ -24,6 +24,7 @@ interface IAddEditTokenModalProps {
   preSelectedClusterName?: string;
   migMeta: IMigMeta;
   setInitialTokenValues: any;
+  initialTokenValues?: any;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -39,6 +40,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   setInitialTokenValues,
   cancelAddEditWatch,
   resetAddEditState,
+  initialTokenValues,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {

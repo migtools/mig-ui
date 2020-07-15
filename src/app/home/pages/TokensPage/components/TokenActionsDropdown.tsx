@@ -19,6 +19,7 @@ interface ITokenActionsDropdownProps {
   toggleAddEditModal: () => void;
   associatedClusterName: string;
   watchTokenAddEditStatus: (name: string) => void;
+  setInitialTokenValues: (values: any) => void;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
@@ -27,12 +28,12 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
   associatedClusterName,
   toggleAddEditModal,
   watchTokenAddEditStatus,
+  setInitialTokenValues,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
-  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>({});
 
   const handleRemoveToken = (isConfirmed) => {
     if (isConfirmed) {

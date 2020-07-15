@@ -22,7 +22,8 @@ import {
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
-import { ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
+import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
+import { Token } from 'client-oauth2';
 
 interface IOtherProps {
   tokenAddEditStatus: IAddEditStatus;
@@ -30,7 +31,7 @@ interface IOtherProps {
   clusterList: ICluster[];
   onClose: () => void;
   preSelectedClusterName?: string;
-  initialTokenValues?: any;
+  initialTokenValues?: IToken;
 }
 
 const InnerAddEditTokenForm: React.FunctionComponent<
@@ -219,10 +220,13 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
     };
     // NATODO initialize here from existing token for editing?
     if (initialTokenValues) {
-      values.name = initialTokenValues.name || '';
-      values.associatedClusterName = initialTokenValues.associatedClusterName || '';
-      values.tokenType = initialTokenValues.tokenType || '';
-      values.serviceAccountToken = initialTokenValues.serviceAccountToken || '';
+      values.name = initialTokenValues.MigToken.metadata.name || '';
+      values.associatedClusterName = initialTokenValues.MigToken.spec.migClusterRef.name || '';
+      values.tokenType =
+        initialTokenValues.MigToken.status.type === 'ServiceAccount'
+          ? TokenType.ServiceAccount
+          : TokenType.OAuth;
+      values.serviceAccountToken = initialTokenValues.Secret.data.token || '';
     }
     return values;
   },

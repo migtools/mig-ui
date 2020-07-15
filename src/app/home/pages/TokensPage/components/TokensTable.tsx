@@ -15,6 +15,7 @@ interface ITokensTableProps {
   toggleAddEditModal: () => void;
   removeToken: (tokenName: string) => void;
   watchTokenAddEditStatus: (tokenName: string) => void;
+  setInitialTokenValues: (tokenValues: any) => void;
 }
 
 const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
@@ -22,6 +23,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   toggleAddEditModal,
   removeToken,
   watchTokenAddEditStatus,
+  setInitialTokenValues,
 }: ITokensTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -73,6 +75,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
               removeToken={removeToken}
               toggleAddEditModal={toggleAddEditModal}
               watchTokenAddEditStatus={watchTokenAddEditStatus}
+              setInitialTokenValues={setInitialTokenValues}
             />
           ),
         },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -44,6 +44,7 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>({});
 
   const renderTokenCardBody = () => {
     if (clusterList.length === 0) {
@@ -76,6 +77,7 @@ ITokensPageBaseProps) => {
         toggleAddEditModal={toggleAddEditModal}
         removeToken={removeToken}
         watchTokenAddEditStatus={watchTokenAddEditStatus}
+        setInitialTokenValues={setInitialTokenValues}
       />
     );
   };
@@ -106,7 +108,12 @@ ITokensPageBaseProps) => {
             <CardBody>
               {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
               {renderTokenCardBody()}
-              {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
+              {isAddEditModalOpen && (
+                <AddEditTokenModal
+                  initialTokenValues={initialTokenValues}
+                  onClose={toggleAddEditModal}
+                />
+              )}
             </CardBody>
           </Card>
         )}
