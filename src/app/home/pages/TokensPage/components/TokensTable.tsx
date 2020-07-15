@@ -14,12 +14,14 @@ interface ITokensTableProps {
   tokenList: IToken[];
   toggleAddEditModal: () => void;
   removeToken: (tokenName: string) => void;
+  watchTokenAddEditStatus: (tokenName: string) => void;
 }
 
 const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   tokenList,
   toggleAddEditModal,
   removeToken,
+  watchTokenAddEditStatus,
 }: ITokensTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -69,6 +71,8 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
               associatedClusterName={associatedClusterName}
               token={token}
               removeToken={removeToken}
+              toggleAddEditModal={toggleAddEditModal}
+              watchTokenAddEditStatus={watchTokenAddEditStatus}
             />
           ),
         },

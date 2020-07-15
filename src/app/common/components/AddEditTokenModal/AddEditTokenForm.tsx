@@ -25,7 +25,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 
 interface IOtherProps {
-  addEditStatus: IAddEditStatus;
+  tokenAddEditStatus: IAddEditStatus;
   onAddEditSubmit: (values: ITokenFormValues) => void;
   clusterList: ICluster[];
   onClose: () => void;
@@ -35,7 +35,7 @@ interface IOtherProps {
 const InnerAddEditTokenForm: React.FunctionComponent<
   IOtherProps & FormikProps<ITokenFormValues>
 > = ({
-  addEditStatus,
+  tokenAddEditStatus,
   values,
   touched,
   errors,
@@ -106,7 +106,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           name={TokenFieldKey.Name}
           type="text"
           id={TokenFieldKey.Name}
-          isDisabled={addEditStatus.mode === AddEditMode.Edit}
+          isDisabled={tokenAddEditStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
       </FormGroup>
@@ -196,9 +196,9 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         <Button
           variant="primary"
           type="submit"
-          isDisabled={isAddEditButtonDisabled(addEditStatus, errors, touched, true)}
+          isDisabled={isAddEditButtonDisabled(tokenAddEditStatus, errors, touched, true)}
         >
-          {addEditButtonText('token')(addEditStatus)}
+          {addEditButtonText('token')(tokenAddEditStatus)}
         </Button>
         <Button variant="secondary" onClick={onClose}>
           Close

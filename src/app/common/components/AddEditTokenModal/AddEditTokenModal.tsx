@@ -12,7 +12,7 @@ import { INameNamespaceRef } from '../../duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
 
 interface IAddEditTokenModalProps {
-  addEditStatus: IAddEditStatus;
+  tokenAddEditStatus: IAddEditStatus;
   isPolling: boolean;
   preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
@@ -24,7 +24,7 @@ interface IAddEditTokenModalProps {
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
-  addEditStatus,
+  tokenAddEditStatus,
   addToken,
   clusterList,
   isPolling,
@@ -53,7 +53,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     }
   }, []);
 
-  const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
+  const modalTitle = tokenAddEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
 
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
     // NATODO: Switch on add or edit, for now just add
@@ -69,6 +69,10 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       isOpen
       onClose={() => {
         // NATODO cancel/reset add/edit watch/state
+        // setIsAddHooksOpen(false);
+        // cancelAddEditWatch();
+        // resetAddEditState();
+        // setInitialHookValues({});
         onClose();
         pollingContext.startAllDefaultPolling();
       }}
@@ -76,7 +80,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       className="always-scroll"
     >
       <AddEditTokenForm
-        addEditStatus={addEditStatus}
+        tokenAddEditStatus={tokenAddEditStatus}
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
         onClose={onClose}
@@ -87,7 +91,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
 };
 
 const mapStateToProps = (state: IReduxState) => ({
-  addEditStatus: state.token.addEditStatus,
+  tokenAddEditStatus: state.token.tokenAddEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
   migMeta: state.auth.migMeta,

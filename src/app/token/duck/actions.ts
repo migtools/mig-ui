@@ -1,4 +1,5 @@
 import { IToken, ITokenFormValues } from './types';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const TokenActionTypes = {
   MIG_TOKEN_FETCH_REQUEST: 'MIG_TOKEN_FETCH_REQUEST',
@@ -80,6 +81,20 @@ const removeTokenFailure = (err) => ({
   err,
 });
 
+const setTokenAddEditStatus = (status: IAddEditStatus) => ({
+  type: TokenActionTypes.SET_TOKEN_ADD_EDIT_STATUS,
+  status,
+});
+
+const watchTokenAddEditStatus = (tokenName: string) => ({
+  type: TokenActionTypes.WATCH_TOKEN_ADD_EDIT_STATUS,
+  tokenName,
+});
+
+const cancelWatchTokenAddEditStatus = () => ({
+  type: TokenActionTypes.CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS,
+});
+
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
   removeTokenRequest,
@@ -87,9 +102,9 @@ export const TokenActions = {
   removeTokenFailure,
   // updateClusterSuccess,
   // updateSearchTerm,
-  // setClusterAddEditStatus,
-  // watchClusterAddEditStatus,
-  // cancelWatchClusterAddEditStatus,
+  setTokenAddEditStatus,
+  watchTokenAddEditStatus,
+  cancelWatchTokenAddEditStatus,
   // clusterFetchSuccess,
   // clusterFetchRequest,
   // clusterFetchFailure,

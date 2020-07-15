@@ -11,24 +11,28 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
 // import { tokenContext } from '../../../duck/context';
 import { ITokenInfo } from '../helpers';
-import { IToken } from '../../../../token/duck/types';
+import { IToken, IMigToken } from '../../../../token/duck/types';
 
 interface ITokenActionsDropdownProps {
   token: IToken;
   removeToken: (tokenName: string) => void;
+  toggleAddEditModal: () => void;
   associatedClusterName: string;
+  watchTokenAddEditStatus: (name: string) => void;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
   token,
   removeToken,
   associatedClusterName,
+  toggleAddEditModal,
+  watchTokenAddEditStatus,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
-  const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
+  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>({});
 
   const handleRemoveToken = (isConfirmed) => {
     if (isConfirmed) {
@@ -70,9 +74,12 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         isPlain
         dropdownItems={[
           <DropdownItem
-            isDisabled={true}
+            isDisabled={false}
             onClick={() => {
               setKebabIsOpen(false);
+              toggleAddEditModal();
+              setInitialTokenValues(token);
+              watchTokenAddEditStatus(name);
               // editToken();
             }}
             key="editToken"
@@ -93,14 +100,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         ]}
         position={DropdownPosition.right}
       />
-      {/* <AddEditTokenModal
-        isOpen={isAddEditOpen}
-        onHandleClose={toggleIsAddEditOpen}
-        token={token}
-        initialtokenValues={{
-          name,
-        }}
-      /> */}
       <ConfirmModal
         title="Remove this token?"
         message={`Removing "${name}" will make it unavailable for migration plans`}
