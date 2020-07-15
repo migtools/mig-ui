@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
 import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
@@ -18,9 +18,12 @@ interface IAddEditTokenModalProps {
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
   onClose: () => void;
+  cancelAddEditWatch: () => void;
+  resetAddEditState: () => void;
   onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
   migMeta: IMigMeta;
+  setInitialTokenValues: any;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -33,6 +36,9 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   onTokenAdded,
   preSelectedClusterName,
   migMeta,
+  setInitialTokenValues,
+  cancelAddEditWatch,
+  resetAddEditState,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -70,9 +76,9 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       onClose={() => {
         // NATODO cancel/reset add/edit watch/state
         // setIsAddHooksOpen(false);
-        // cancelAddEditWatch();
+        cancelAddEditWatch();
         // resetAddEditState();
-        // setInitialHookValues({});
+        setInitialTokenValues({});
         onClose();
         pollingContext.startAllDefaultPolling();
       }}
@@ -83,6 +89,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         tokenAddEditStatus={tokenAddEditStatus}
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
+        initialTokenValues={initialTokenValues}
         onClose={onClose}
         preSelectedClusterName={preSelectedClusterName}
       />

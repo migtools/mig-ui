@@ -30,6 +30,7 @@ interface IOtherProps {
   clusterList: ICluster[];
   onClose: () => void;
   preSelectedClusterName?: string;
+  initialTokenValues?: any;
 }
 
 const InnerAddEditTokenForm: React.FunctionComponent<
@@ -209,13 +210,23 @@ const InnerAddEditTokenForm: React.FunctionComponent<
 };
 
 const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
-  mapPropsToValues: () => ({
+  mapPropsToValues: ({ initialTokenValues }) => {
+    const values: ITokenFormValues = {
+      name: '',
+      associatedClusterName: '',
+      tokenType: TokenType.OAuth,
+      serviceAccountToken: '',
+    };
     // NATODO initialize here from existing token for editing?
-    name: '',
-    associatedClusterName: '',
-    tokenType: TokenType.OAuth,
-    serviceAccountToken: '',
-  }),
+    if (initialTokenValues) {
+      values.name = initialTokenValues.name || '';
+      values.associatedClusterName = initialTokenValues.associatedClusterName || '';
+      values.tokenType = initialTokenValues.tokenType || '';
+      values.serviceAccountToken = initialTokenValues.serviceAccountToken || '';
+    }
+    return values;
+  },
+
   validate: (values: ITokenFormValues) => {
     const errors: { [key in TokenFieldKey]?: string } = {};
     if (!values.name) {
