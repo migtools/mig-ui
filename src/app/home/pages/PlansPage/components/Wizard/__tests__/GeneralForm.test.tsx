@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import WizardFormik, { IWizardFormikProps } from '../WizardFormik';
+import { defaultInitialValues } from '../WizardContainer';
 
 import GeneralForm, { IGeneralFormProps } from '../GeneralForm';
 
@@ -13,33 +14,15 @@ const initialGeneralFormProps: IGeneralFormProps = {
   isEdit: false,
 };
 
+const initialFormikProps: IWizardFormikProps = {
+  initialValues: defaultInitialValues,
+  isEdit: false,
+  planList: [],
+  children: Children,
+};
+
 describe('<GeneralForm />', () => {
   it('allows filling new form with valid values', () => {
-    const initialFormikProps: IWizardFormikProps = {
-      initialValues: {
-        planName: '',
-        sourceCluster: '',
-        sourceTokenRef: {
-          name: '',
-          namespace: '',
-        },
-        targetCluster: '',
-        targetTokenRef: {
-          name: '',
-          namespace: '',
-        },
-        selectedStorage: '',
-        selectedNamespaces: [],
-        persistentVolumes: [],
-        pvStorageClassAssignment: {},
-        pvVerifyFlagAssignment: {},
-        pvCopyMethodAssignment: {},
-      },
-      isEdit: false,
-      planList: [],
-      children: Children,
-    };
-
     const clusterListProps: Partial<IGeneralFormProps> = {
       clusterList: [
         {
@@ -215,6 +198,13 @@ describe('<GeneralForm />', () => {
       ],
     };
 
+    const initialFormikProps: IWizardFormikProps = {
+      initialValues: { ...defaultInitialValues },
+      isEdit: false,
+      planList: [],
+      children: Children,
+    };
+
     render(
       <WizardFormik {...initialFormikProps}>
         <GeneralForm {...initialGeneralFormProps} {...clusterListProps} {...storageListProps} />
@@ -241,26 +231,23 @@ describe('<GeneralForm />', () => {
   });
 
   it('allows editing form with valid values', () => {
-    const initialFormikProps: IWizardFormikProps = {
-      initialValues: {
-        planName: 'plan-name-test',
-        sourceCluster: 'src-cluster-test',
-        sourceTokenRef: {
-          name: 'token1',
-          namespace: 'openshift-migration',
-        },
-        targetCluster: 'dst-cluster-test',
-        targetTokenRef: {
-          name: 'token2',
-          namespace: 'openshift-migration',
-        },
-        selectedStorage: 'storage-test',
-        selectedNamespaces: [],
-        persistentVolumes: [],
-        pvStorageClassAssignment: {},
-        pvVerifyFlagAssignment: {},
-        pvCopyMethodAssignment: {},
+    const editValues = {
+      planName: 'plan-name-test',
+      sourceCluster: 'src-cluster-test',
+      sourceTokenRef: {
+        name: 'token1',
+        namespace: 'openshift-migration',
       },
+      targetCluster: 'dst-cluster-test',
+      targetTokenRef: {
+        name: 'token2',
+        namespace: 'openshift-migration',
+      },
+      selectedStorage: 'storage-test',
+    };
+
+    const initialFormikProps: IWizardFormikProps = {
+      initialValues: { ...defaultInitialValues, ...editValues },
       isEdit: true,
       planList: [],
       children: Children,
