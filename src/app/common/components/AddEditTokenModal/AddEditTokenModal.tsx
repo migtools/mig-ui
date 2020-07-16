@@ -35,8 +35,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   onTokenAdded,
   preSelectedClusterName,
   migMeta,
-  cancelAddEditWatch,
-  resetAddEditState,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {

@@ -16,14 +16,20 @@ import shortid from 'shortid';
 import {
   IAddEditStatus,
   AddEditMode,
-  addEditButtonText,
   isAddEditButtonDisabled,
+  addEditStatusText,
+  addEditButtonText,
+  isCheckConnectionButtonDisabled,
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
 import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 import { Token } from 'client-oauth2';
+import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+
+const currentStatusFn = addEditStatusText('token');
+const addEditButtonTextFn = addEditButtonText('token');
 
 interface IOtherProps {
   tokenAddEditStatus: IAddEditStatus;
@@ -37,7 +43,7 @@ interface IOtherProps {
 const InnerAddEditTokenForm: React.FunctionComponent<
   IOtherProps & FormikProps<ITokenFormValues>
 > = ({
-  tokenAddEditStatus,
+  tokenAddEditStatus: currentStatus,
   values,
   touched,
   errors,
@@ -108,7 +114,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           name={TokenFieldKey.Name}
           type="text"
           id={TokenFieldKey.Name}
-          isDisabled={tokenAddEditStatus.mode === AddEditMode.Edit}
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
       </FormGroup>
@@ -198,14 +204,26 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         <Button
           variant="primary"
           type="submit"
-          isDisabled={isAddEditButtonDisabled(tokenAddEditStatus, errors, touched, true)}
+          isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
         >
-          {addEditButtonText('token')(tokenAddEditStatus)}
+          {addEditButtonText('token')(currentStatus)}
         </Button>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(
+            currentStatus,
+            valuesHaveUpdate(values, currentCluster)
+          )}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check connection
+        </Button>
+
         <Button variant="secondary" onClick={onClose}>
           Close
         </Button>
       </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };

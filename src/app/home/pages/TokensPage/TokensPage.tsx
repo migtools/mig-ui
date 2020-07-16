@@ -34,6 +34,7 @@ interface ITokensPageBaseProps {
   removeToken: (tokenName: string) => void;
   isFetchingInitialTokens: boolean;
   watchTokenAddEditStatus: (tokenName: string) => void;
+  checkConnection: (tokenName: string) => void;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
 }
@@ -46,11 +47,11 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   watchTokenAddEditStatus,
   cancelAddEditWatch,
   resetAddEditState,
+  checkConnection,
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>(null);
-  const tokenContext = useContext(TokenContext);
 
   const renderTokenCardBody = () => {
     if (clusterList.length === 0) {
@@ -118,6 +119,7 @@ ITokensPageBaseProps) => {
                   initialTokenValues,
                   cancelAddEditWatch,
                   resetAddEditState,
+                  checkConnection,
                 }}
               >
                 {renderTokenCardBody()}
@@ -147,6 +149,15 @@ const mapDispatchToProps = (dispatch) => ({
     );
     dispatch(TokenActions.watchTokenAddEditStatus(tokenName));
   },
+  checkConnection: (tokenName: string) => {
+    dispatch(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
+      )
+    );
+    dispatch(TokenActions.watchTokenAddEditStatus(tokenName));
+  },
+
   cancelAddEditWatch: () => dispatch(TokenActions.cancelWatchTokenAddEditStatus()),
   resetAddEditState: () => {
     dispatch(TokenActions.setTokenAddEditStatus(defaultAddEditStatus()));
