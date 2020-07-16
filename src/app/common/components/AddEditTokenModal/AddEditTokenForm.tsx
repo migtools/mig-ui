@@ -224,7 +224,12 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         <Button
           variant="primary"
           type="submit"
-          isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, initialTokenValues)
+          )}
         >
           {addEditButtonText('token')(currentStatus)}
         </Button>
