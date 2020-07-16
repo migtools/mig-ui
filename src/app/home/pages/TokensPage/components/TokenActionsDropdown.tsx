@@ -44,12 +44,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
     }
   };
 
-  // const tokenContext = useContext(tokenContext);
-
-  // const edittoken = () => {
-  //   tokenContext.watchtokenAddEditStatus(tokenName);
-  //   toggleIsAddEditOpen();
-  // };
   const isRemoveDisabled = token.isAssociatedPlans;
   const removeItem = (
     <DropdownItem
@@ -63,8 +57,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
       Remove
     </DropdownItem>
   );
-
-  console.log(token);
 
   return (
     <>

@@ -270,66 +270,48 @@ function* updateTokenRequest(action) {
   const { tokenValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  const currentToken = state.token.tokenList.find((t) => {
-    return t.MigCluster.metadata.name === tokenValues.name;
+  const currentToken: IToken = state.token.tokenList.find((t: IToken) => {
+    return t.MigToken.metadata.name === tokenValues.name;
   });
 
-  const rawCurrentToken = atob(currentToken.Secret.data.token);
-  const tokenUpdated = tokenValues.token !== rawCurrentToken;
-
-  if (!tokenUpdated) {
-    console.warn('A token update was requested, but nothing was changed');
-    return;
-  }
-
-  const updatePromises = [];
-
-  if (tokenUpdated) {
-    const newTokenSecret = updateTokenSecret(tokenValues.token);
-    const secretResource = new CoreNamespacedResource(
-      CoreNamespacedResourceKind.Secret,
-      migMeta.configNamespace
-    );
-
-    // Pushing a request fn to delay the call until its yielded in a batch at same time
-    updatePromises.push(() =>
-      client.patch(
-        secretResource,
-        currentCluster.MigCluster.spec.serviceAccountSecretRef.name,
-        newTokenSecret
-      )
-    );
-  }
-
   try {
-    // Convert reqfns to promises, executing the requsts in the process
-    // Then yield a wrapper all promise to the saga middleware and wait
-    // on the results
-    const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
+    if (tokenValues.tokenType === 'serviceAccount') {
+      const rawCurrentToken = atob(currentToken.Secret.data.token);
+      const tokenUpdated = tokenValues.serviceAccountToken !== rawCurrentToken;
 
-    const groupedResults = results.reduce((accum, res) => {
-      accum[res.data.kind] = res.data;
-      return accum;
-    }, {});
+      if (!tokenUpdated) {
+        console.warn('A token update was requested, but nothing was changed');
+        return;
+      }
+      if (tokenUpdated) {
+        const newTokenSecret = updateTokenSecret(tokenValues.serviceAccountToken, true);
+        const secretResource = new CoreNamespacedResource(
+          CoreNamespacedResourceKind.Secret,
+          migMeta.configNamespace
+        );
 
-    // Need to merge the grouped results onto the currentCluster since
-    // its possible the grouped results was only a partial update
-    // Ex: could have just been a Cluster or a Secret
-    const updatedCluster = { ...currentCluster, ...groupedResults };
+        const patchRes = yield client.patch(
+          secretResource,
+          currentToken.MigToken.spec.secretRef.name,
+          newTokenSecret
+        );
+        console.log('patchRes', patchRes);
+        yield put(TokenActions.updateTokenSuccess());
+        yield put(
+          TokenActions.setTokenAddEditStatus(
+            createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+          )
+        );
+        yield put(TokenActions.watchTokenAddEditStatus(tokenValues.name));
+      }
+    } else {
+      yield put(AlertActions.alertWarnTimeout(`NATODO: Implement oauth regeneration "${name}"!`));
+    }
 
     // Update the state tree with the updated cluster, and start to watch
     // again to check for its condition after edits
-    yield put(ClusterActions.updateClusterSuccess(updatedCluster));
-    yield put(
-      ClusterActions.setClusterAddEditStatus(
-        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-      )
-    );
-    yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch (err) {
-    console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
-    // TODO: What are we planning on doing in the event of an update failure?
-    // TODO: We probably even need retry logic here...
+    yield put(TokenActions.updateTokenFailure(err));
   }
 }
 

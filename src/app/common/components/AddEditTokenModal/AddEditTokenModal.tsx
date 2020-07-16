@@ -67,6 +67,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       case AddEditMode.Add: {
         addToken(tokenValues);
         onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
+        // tokenContext.toggleAddEditModal();
         break;
       }
       default: {
@@ -75,8 +76,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         );
       }
     }
-    // NATODO: Switch on add or edit, for now just add
-    tokenContext.toggleAddEditModal();
   };
 
   const handleClose = () => {

@@ -124,9 +124,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         onHandleClose={handleRemoveCluster}
         id="confirm-cluster-removal"
       />
-      {isAddEditTokenModalOpen && (
-        <AddEditTokenModal onClose={toggleAddEditTokenModal} preSelectedClusterName={clusterName} />
-      )}
+      {isAddEditTokenModalOpen && <AddEditTokenModal preSelectedClusterName={clusterName} />}
     </>
   );
 };

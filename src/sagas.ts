@@ -75,6 +75,7 @@ export default function* rootSaga() {
           tokenSagas.watchAddTokenRequest(),
           tokenSagas.watchRemoveTokenRequest(),
           tokenSagas.watchTokenAddEditStatus(),
+          tokenSagas.watchUpdateTokenRequest(),
         ]
       : []),
   ]);

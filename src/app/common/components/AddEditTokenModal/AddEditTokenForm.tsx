@@ -20,6 +20,7 @@ import {
   addEditStatusText,
   addEditButtonText,
   isCheckConnectionButtonDisabled,
+  AddEditState,
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
@@ -274,7 +275,7 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
         initialTokenValues.MigToken.status.type === 'ServiceAccount'
           ? TokenType.ServiceAccount
           : TokenType.OAuth;
-      values.serviceAccountToken = initialTokenValues.Secret.data.token || '';
+      values.serviceAccountToken = atob(initialTokenValues.Secret.data.token) || '';
     }
     return values;
   },
