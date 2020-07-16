@@ -16,6 +16,7 @@ interface IAddEditTokenModalProps {
   isPolling: boolean;
   preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
+  updateToken: (tokenValues: ITokenFormValues) => void;
   addToken: (tokenValues: ITokenFormValues) => void;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
@@ -27,6 +28,7 @@ interface IAddEditTokenModalProps {
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   tokenAddEditStatus,
   addToken,
+  updateToken,
   clusterList,
   isPolling,
   preventPollingWhileOpen = true,
@@ -57,9 +59,23 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   const modalTitle = tokenAddEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
 
   const handleAddEditSubmit = (tokenValues: ITokenFormValues) => {
+    switch (tokenAddEditStatus.mode) {
+      case AddEditMode.Edit: {
+        updateToken(tokenValues);
+        break;
+      }
+      case AddEditMode.Add: {
+        addToken(tokenValues);
+        onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
+        break;
+      }
+      default: {
+        console.warn(
+          `onAddEditSubmit, but unknown mode was found: ${tokenAddEditStatus.mode}. Ignoring.`
+        );
+      }
+    }
     // NATODO: Switch on add or edit, for now just add
-    addToken(tokenValues);
-    onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
     tokenContext.toggleAddEditModal();
   };
 
@@ -102,6 +118,8 @@ const mapStateToProps = (state: IReduxState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addToken: (tokenValues: ITokenFormValues) => dispatch(TokenActions.addTokenRequest(tokenValues)),
+  updateToken: (tokenValues: ITokenFormValues) =>
+    dispatch(TokenActions.updateTokenRequest(tokenValues)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEditTokenModal);

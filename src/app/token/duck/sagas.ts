@@ -10,6 +10,7 @@ import {
   createMigTokenSecret,
   createMigToken,
   getTokenSecretLabelSelector,
+  updateTokenSecret,
 } from '../../../client/resources/conversions';
 import {
   createAddEditStatus,
@@ -262,6 +263,80 @@ function* startWatchingTokenAddEditStatus(action) {
   yield put(TokenActions.setTokenAddEditStatus(statusToDispatch));
 }
 
+function* updateTokenRequest(action) {
+  // TODO: Probably need rollback logic here too if any fail
+  const state = yield select();
+  const { migMeta } = state.auth;
+  const { tokenValues } = action;
+  const client: IClusterClient = ClientFactory.cluster(state);
+
+  const currentToken = state.token.tokenList.find((t) => {
+    return t.MigCluster.metadata.name === tokenValues.name;
+  });
+
+  const rawCurrentToken = atob(currentToken.Secret.data.token);
+  const tokenUpdated = tokenValues.token !== rawCurrentToken;
+
+  if (!tokenUpdated) {
+    console.warn('A token update was requested, but nothing was changed');
+    return;
+  }
+
+  const updatePromises = [];
+
+  if (tokenUpdated) {
+    const newTokenSecret = updateTokenSecret(tokenValues.token);
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace
+    );
+
+    // Pushing a request fn to delay the call until its yielded in a batch at same time
+    updatePromises.push(() =>
+      client.patch(
+        secretResource,
+        currentCluster.MigCluster.spec.serviceAccountSecretRef.name,
+        newTokenSecret
+      )
+    );
+  }
+
+  try {
+    // Convert reqfns to promises, executing the requsts in the process
+    // Then yield a wrapper all promise to the saga middleware and wait
+    // on the results
+    const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
+
+    const groupedResults = results.reduce((accum, res) => {
+      accum[res.data.kind] = res.data;
+      return accum;
+    }, {});
+
+    // Need to merge the grouped results onto the currentCluster since
+    // its possible the grouped results was only a partial update
+    // Ex: could have just been a Cluster or a Secret
+    const updatedCluster = { ...currentCluster, ...groupedResults };
+
+    // Update the state tree with the updated cluster, and start to watch
+    // again to check for its condition after edits
+    yield put(ClusterActions.updateClusterSuccess(updatedCluster));
+    yield put(
+      ClusterActions.setClusterAddEditStatus(
+        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+      )
+    );
+    yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
+  } catch (err) {
+    console.error('NOT IMPLEMENTED: An error occurred during updateClusterRequest:', err);
+    // TODO: What are we planning on doing in the event of an update failure?
+    // TODO: We probably even need retry logic here...
+  }
+}
+
+function* watchUpdateTokenRequest() {
+  yield takeLatest(TokenActionTypes.UPDATE_TOKEN_REQUEST, updateTokenRequest);
+}
+
 function* watchAddTokenRequest() {
   yield takeLatest(TokenActionTypes.ADD_TOKEN_REQUEST, addTokenRequest);
 }
@@ -278,7 +353,7 @@ export default {
   // NATODO: Implement and/or remove unecessary copies
   watchRemoveTokenRequest,
   watchAddTokenRequest,
-  // watchUpdateClusterRequest,
+  watchUpdateTokenRequest,
   watchTokenAddEditStatus,
   fetchTokensGenerator,
 };

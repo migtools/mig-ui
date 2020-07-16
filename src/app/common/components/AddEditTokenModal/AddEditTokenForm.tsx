@@ -154,7 +154,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           options={clusterNames}
           value={values.associatedClusterName}
           placeholderText="Select cluster..."
-          isDisabled={!!preSelectedClusterName}
+          isDisabled={!!preSelectedClusterName || currentStatus.mode === AddEditMode.Edit}
         />
       </FormGroup>
       <FormGroup
@@ -172,6 +172,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.OAuth);
           }}
           label="OAuth"
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
         />
         <div className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}>
           <TextContent>
@@ -201,6 +202,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.ServiceAccount);
           }}
           label="Service account"
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
         />
         <FormGroup
           className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}

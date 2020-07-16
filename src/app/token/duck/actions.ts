@@ -95,12 +95,29 @@ const cancelWatchTokenAddEditStatus = () => ({
   type: TokenActionTypes.CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS,
 });
 
+const updateTokenRequest = (updatedToken: ITokenFormValues) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_REQUEST,
+  updatedToken,
+});
+
+const updateTokenFailure = (err) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_FAILURE,
+  err,
+});
+
+const updateTokenSuccess = (updatedToken: IToken) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_SUCCESS,
+  updatedToken,
+});
+
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
   removeTokenRequest,
   removeTokenSuccess,
   removeTokenFailure,
-  // updateClusterSuccess,
+  updateTokenRequest,
+  updateTokenSuccess,
+  updateTokenFailure,
   // updateSearchTerm,
   setTokenAddEditStatus,
   watchTokenAddEditStatus,
