@@ -147,7 +147,10 @@ const InnerAddEditTokenForm: React.FunctionComponent<
       >
         <SimpleSelect
           id={TokenFieldKey.AssociatedClusterName}
-          onChange={(selection) => setFieldValue(TokenFieldKey.AssociatedClusterName, selection)}
+          onChange={(selection) => {
+            setFieldValue(TokenFieldKey.AssociatedClusterName, selection);
+            setFieldTouched(TokenFieldKey.AssociatedClusterName);
+          }}
           options={clusterNames}
           value={values.associatedClusterName}
           placeholderText="Select cluster..."
