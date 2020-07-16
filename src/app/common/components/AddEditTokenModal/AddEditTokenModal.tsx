@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
 import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
-import { PollingContext } from '../../../home/duck/';
+import { PollingContext, TokenContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
 import { ITokenFormValues } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
@@ -23,8 +23,6 @@ interface IAddEditTokenModalProps {
   onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
   migMeta: IMigMeta;
-  setInitialTokenValues: any;
-  initialTokenValues?: any;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -37,10 +35,8 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   onTokenAdded,
   preSelectedClusterName,
   migMeta,
-  setInitialTokenValues,
   cancelAddEditWatch,
   resetAddEditState,
-  initialTokenValues,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -53,6 +49,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   }, []);
 
   const pollingContext = useContext(PollingContext);
+  const tokenContext = useContext(TokenContext);
 
   useEffect(() => {
     if (isPolling && preventPollingWhileOpen) {
@@ -77,12 +74,11 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       isOpen
       onClose={() => {
         // NATODO cancel/reset add/edit watch/state
-        // setIsAddHooksOpen(false);
-        cancelAddEditWatch();
-        // resetAddEditState();
-        setInitialTokenValues({});
-        onClose();
+        tokenContext.resetAddEditState();
+        tokenContext.cancelAddEditWatch();
+        tokenContext.setInitialTokenValues(null);
         pollingContext.startAllDefaultPolling();
+        onClose();
       }}
       title={modalTitle}
       className="always-scroll"
@@ -91,7 +87,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         tokenAddEditStatus={tokenAddEditStatus}
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
-        initialTokenValues={initialTokenValues}
+        initialTokenValues={tokenContext.initialTokenValues}
         onClose={onClose}
         preSelectedClusterName={preSelectedClusterName}
       />

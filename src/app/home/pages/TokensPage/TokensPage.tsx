@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -24,8 +24,9 @@ import { ICluster } from '../../../cluster/duck/types';
 import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import tokenSelectors from '../../../token/duck/selectors';
-
+import { TokenContext } from '../../duck/context';
 import { TokenActions } from '../../../token/duck/actions';
+import { defaultAddEditStatus } from '../../../common/add_edit_state';
 
 interface ITokensPageBaseProps {
   tokenList: IToken[];
@@ -33,6 +34,8 @@ interface ITokensPageBaseProps {
   removeToken: (tokenName: string) => void;
   isFetchingInitialTokens: boolean;
   watchTokenAddEditStatus: (tokenName: string) => void;
+  cancelAddEditWatch: () => void;
+  resetAddEditState: () => void;
 }
 
 const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
@@ -41,10 +44,13 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   isFetchingInitialTokens,
   removeToken,
   watchTokenAddEditStatus,
+  cancelAddEditWatch,
+  resetAddEditState,
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>({});
+  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>(null);
+  const tokenContext = useContext(TokenContext);
 
   const renderTokenCardBody = () => {
     if (clusterList.length === 0) {
@@ -106,14 +112,17 @@ ITokensPageBaseProps) => {
         ) : (
           <Card>
             <CardBody>
-              {/* NATODO add a TokenContext provider here when we wire up watchAddEditStatus */}
-              {renderTokenCardBody()}
-              {isAddEditModalOpen && (
-                <AddEditTokenModal
-                  initialTokenValues={initialTokenValues}
-                  onClose={toggleAddEditModal}
-                />
-              )}
+              <TokenContext.Provider
+                value={{
+                  setInitialTokenValues,
+                  initialTokenValues,
+                  cancelAddEditWatch,
+                  resetAddEditState,
+                }}
+              >
+                {renderTokenCardBody()}
+                {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
+              </TokenContext.Provider>
             </CardBody>
           </Card>
         )}
@@ -138,16 +147,10 @@ const mapDispatchToProps = (dispatch) => ({
     );
     dispatch(TokenActions.watchTokenAddEditStatus(tokenName));
   },
-
-  // watchTokenAddEditStatus: (tokenName: string) => {
-  // Push the add edit status into watching state, and start watching
-  // dispatch(
-  //   TokenActions.setAddEditStatus(
-  //     createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-  //   )
-  // );
-  // dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
-  // },
+  cancelAddEditWatch: () => dispatch(TokenActions.cancelWatchTokenAddEditStatus()),
+  resetAddEditState: () => {
+    dispatch(TokenActions.setTokenAddEditStatus(defaultAddEditStatus()));
+  },
   removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
 });
 
