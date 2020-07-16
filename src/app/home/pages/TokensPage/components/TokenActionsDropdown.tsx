@@ -81,7 +81,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
               toggleAddEditModal();
               setInitialTokenValues(token);
               watchTokenAddEditStatus(name);
-              // editToken();
             }}
             key="editToken"
           >

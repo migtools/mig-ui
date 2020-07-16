@@ -120,10 +120,11 @@ ITokensPageBaseProps) => {
                   cancelAddEditWatch,
                   resetAddEditState,
                   checkConnection,
+                  toggleAddEditModal,
                 }}
               >
                 {renderTokenCardBody()}
-                {isAddEditModalOpen && <AddEditTokenModal onClose={toggleAddEditModal} />}
+                {isAddEditModalOpen && <AddEditTokenModal />}
               </TokenContext.Provider>
             </CardBody>
           </Card>

@@ -17,7 +17,6 @@ interface IAddEditTokenModalProps {
   preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
   addToken: (tokenValues: ITokenFormValues) => void;
-  onClose: () => void;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
@@ -31,7 +30,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   clusterList,
   isPolling,
   preventPollingWhileOpen = true,
-  onClose,
   onTokenAdded,
   preSelectedClusterName,
   migMeta,
@@ -62,7 +60,16 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     // NATODO: Switch on add or edit, for now just add
     addToken(tokenValues);
     onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
-    onClose();
+    tokenContext.toggleAddEditModal();
+  };
+
+  const handleClose = () => {
+    // NATODO cancel/reset add/edit watch/state
+    tokenContext.resetAddEditState();
+    tokenContext.cancelAddEditWatch();
+    tokenContext.setInitialTokenValues(null);
+    tokenContext.toggleAddEditModal();
+    pollingContext.startAllDefaultPolling();
   };
 
   return (
@@ -70,14 +77,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       appendTo={containerRef.current}
       isSmall
       isOpen
-      onClose={() => {
-        // NATODO cancel/reset add/edit watch/state
-        tokenContext.resetAddEditState();
-        tokenContext.cancelAddEditWatch();
-        tokenContext.setInitialTokenValues(null);
-        pollingContext.startAllDefaultPolling();
-        onClose();
-      }}
+      onClose={handleClose}
       title={modalTitle}
       className="always-scroll"
     >
@@ -86,7 +86,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
         initialTokenValues={tokenContext.initialTokenValues}
-        onClose={onClose}
+        handleClose={handleClose}
         preSelectedClusterName={preSelectedClusterName}
       />
     </Modal>

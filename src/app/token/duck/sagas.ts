@@ -11,6 +11,18 @@ import {
   createMigToken,
   getTokenSecretLabelSelector,
 } from '../../../client/resources/conversions';
+import {
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  IAddEditStatus,
+  AddEditWatchTimeout,
+  AddEditWatchTimeoutPollInterval,
+  AddEditConditionCritical,
+  createAddEditStatusWithMeta,
+  AddEditConditionReady,
+  AddEditDebounceWait,
+} from '../../common/add_edit_state';
 import { AlertActions } from '../../common/duck/actions';
 
 function fetchTokenSecrets(client: IClusterClient, migTokens): Array<Promise<any>> {
@@ -175,8 +187,87 @@ function* removeTokenSaga(action) {
   }
 }
 
+function* pollTokenAddEditStatus(action) {
+  // Give the controller some time to bounce
+  yield delay(AddEditDebounceWait);
+  while (true) {
+    try {
+      const state = yield select();
+      const { migMeta } = state.auth;
+      const { tokenName } = action;
+
+      const client: IClusterClient = ClientFactory.cluster(state);
+      const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+      const tokenPollResult = yield client.get(migTokenResource, tokenName);
+
+      const hasStatusAndConditions =
+        tokenPollResult.data.status && tokenPollResult.data.status.conditions;
+
+      if (hasStatusAndConditions) {
+        const criticalCond = tokenPollResult.data.status.conditions.find((cond) => {
+          return cond.category === AddEditConditionCritical;
+        });
+
+        if (criticalCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Critical,
+            AddEditMode.Edit,
+            criticalCond.message,
+            criticalCond.reason
+          );
+        }
+
+        const readyCond = tokenPollResult.data.status.conditions.find((cond) => {
+          return cond.type === AddEditConditionReady;
+        });
+
+        if (readyCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Ready,
+            AddEditMode.Edit,
+            readyCond.message,
+            '' // Ready has no reason
+          );
+        }
+      }
+
+      // No conditions found, let's wait a bit and keep checking
+      yield delay(AddEditWatchTimeoutPollInterval);
+    } catch (err) {
+      // TODO: what happens when the poll fails? Back into that hard error state?
+      console.error('Hard error branch hit in poll cluster add edit', err);
+      return;
+    }
+  }
+}
+
+function* startWatchingTokenAddEditStatus(action) {
+  // Start a race, poll until the watch is cancelled (by closing the modal),
+  // polling times out, or the condition is added, in that order of precedence.
+  const raceResult = yield race({
+    addEditResult: call(pollTokenAddEditStatus, action),
+    timeout: delay(AddEditWatchTimeout),
+    cancel: take(TokenActionTypes.CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS),
+  });
+
+  if (raceResult.cancel) {
+    return;
+  }
+
+  const addEditResult: IAddEditStatus = raceResult.addEditResult;
+
+  const statusToDispatch =
+    addEditResult || createAddEditStatus(AddEditState.TimedOut, AddEditMode.Edit);
+
+  yield put(TokenActions.setTokenAddEditStatus(statusToDispatch));
+}
+
 function* watchAddTokenRequest() {
   yield takeLatest(TokenActionTypes.ADD_TOKEN_REQUEST, addTokenRequest);
+}
+
+function* watchTokenAddEditStatus() {
+  yield takeLatest(TokenActionTypes.WATCH_TOKEN_ADD_EDIT_STATUS, startWatchingTokenAddEditStatus);
 }
 
 function* watchRemoveTokenRequest() {
@@ -188,6 +279,6 @@ export default {
   watchRemoveTokenRequest,
   watchAddTokenRequest,
   // watchUpdateClusterRequest,
-  // watchClusterAddEditStatus,
+  watchTokenAddEditStatus,
   fetchTokensGenerator,
 };

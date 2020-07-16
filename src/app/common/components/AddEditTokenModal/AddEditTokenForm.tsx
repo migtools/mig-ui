@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import {
   Form,
   FormGroup,
@@ -27,6 +27,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 import { Token } from 'client-oauth2';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+import { PollingContext, TokenContext } from '../../../home/duck/';
 
 const currentStatusFn = addEditStatusText('token');
 const addEditButtonTextFn = addEditButtonText('token');
@@ -35,10 +36,26 @@ interface IOtherProps {
   tokenAddEditStatus: IAddEditStatus;
   onAddEditSubmit: (values: ITokenFormValues) => void;
   clusterList: ICluster[];
-  onClose: () => void;
+  handleClose: () => void;
   preSelectedClusterName?: string;
   initialTokenValues?: IToken;
 }
+const valuesHaveUpdate = (values, currentToken: IToken) => {
+  if (!currentToken) {
+    return true;
+  }
+  const tokenName = currentToken.MigToken.metadata.name;
+  const rawToken = atob(currentToken.Secret.data.token);
+  const tokenType = currentToken.MigToken.status.type;
+  const associatedClusterName = currentToken.MigToken.spec.migClusterRef.name;
+
+  return (
+    values.name !== tokenName ||
+    values.serviceAccountToken !== rawToken ||
+    values.tokenType !== tokenType ||
+    values.associatedClusterName !== associatedClusterName
+  );
+};
 
 const InnerAddEditTokenForm: React.FunctionComponent<
   IOtherProps & FormikProps<ITokenFormValues>
@@ -52,10 +69,13 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   handleBlur,
   setFieldTouched,
   setFieldValue,
-  onClose,
+  handleClose,
   clusterList,
   preSelectedClusterName,
+  initialTokenValues,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
+  const tokenContext = useContext(TokenContext);
+
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key: TokenFieldKey) => () => setFieldTouched(key, true, true);
 
@@ -212,14 +232,14 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           variant="secondary"
           isDisabled={isCheckConnectionButtonDisabled(
             currentStatus,
-            valuesHaveUpdate(values, currentCluster)
+            valuesHaveUpdate(values, initialTokenValues)
           )}
-          onClick={() => checkConnection(values.name)}
+          onClick={() => tokenContext.checkConnection(values.name)}
         >
           Check connection
         </Button>
 
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
       </Flex>
