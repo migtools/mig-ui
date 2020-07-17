@@ -4,7 +4,7 @@ import { Modal } from '@patternfly/react-core';
 import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
 import { PollingContext, TokenContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
-import { ITokenFormValues } from '../../../token/duck/types';
+import { ITokenFormValues, IToken } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
@@ -16,6 +16,7 @@ interface IAddEditTokenModalProps {
   isPolling: boolean;
   preventPollingWhileOpen?: boolean;
   clusterList: ICluster[];
+  tokenList: IToken[];
   updateToken: (tokenValues: ITokenFormValues) => void;
   addToken: (tokenValues: ITokenFormValues) => void;
   cancelAddEditWatch: () => void;
@@ -35,7 +36,18 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   onTokenAdded,
   preSelectedClusterName,
   migMeta,
+  tokenList,
 }: IAddEditTokenModalProps) => {
+  const tokenContext = useContext(TokenContext);
+
+  const [currentTokenName, setCurrentTokenName] = useState(
+    tokenContext.initialTokenValues ? tokenContext.initialTokenValues.tokenName : null
+  );
+
+  const currentToken = tokenList.find((t: IToken) => {
+    return t.MigToken.metadata.name === currentTokenName;
+  });
+
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
     // Hack to make it possible to show this modal on top of the wizard...
@@ -47,7 +59,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   }, []);
 
   const pollingContext = useContext(PollingContext);
-  const tokenContext = useContext(TokenContext);
 
   useEffect(() => {
     if (isPolling && preventPollingWhileOpen) {
@@ -103,6 +114,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         initialTokenValues={tokenContext.initialTokenValues}
         handleClose={handleClose}
         preSelectedClusterName={preSelectedClusterName}
+        currentToken={currentToken}
       />
     </Modal>
   );
@@ -112,6 +124,7 @@ const mapStateToProps = (state: IReduxState) => ({
   tokenAddEditStatus: state.token.tokenAddEditStatus,
   isPolling: state.token.isPolling,
   clusterList: state.cluster.clusterList,
+  tokenList: state.token.tokenList,
   migMeta: state.auth.migMeta,
 });
 

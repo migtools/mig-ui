@@ -105,8 +105,9 @@ const updateTokenFailure = (err) => ({
   err,
 });
 
-const updateTokenSuccess = () => ({
+const updateTokenSuccess = (updatedToken: IToken) => ({
   type: TokenActionTypes.UPDATE_TOKEN_SUCCESS,
+  updatedToken,
 });
 
 // NATODO: Implement and/or remove unecessary copies

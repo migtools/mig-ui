@@ -295,8 +295,10 @@ function* updateTokenRequest(action) {
           currentToken.MigToken.spec.secretRef.name,
           newTokenSecret
         );
+        const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+        const updatedTokenRes = yield client.get(migTokenResource, tokenValues.name);
         console.log('patchRes', patchRes);
-        yield put(TokenActions.updateTokenSuccess());
+        yield put(TokenActions.updateTokenSuccess(updatedTokenRes.data));
         yield put(
           TokenActions.setTokenAddEditStatus(
             createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)

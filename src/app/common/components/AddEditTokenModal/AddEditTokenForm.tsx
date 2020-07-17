@@ -40,6 +40,7 @@ interface IOtherProps {
   handleClose: () => void;
   preSelectedClusterName?: string;
   initialTokenValues?: IToken;
+  currentToken?: IToken;
 }
 const valuesHaveUpdate = (values, currentToken: IToken) => {
   if (!currentToken) {
@@ -74,6 +75,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   clusterList,
   preSelectedClusterName,
   initialTokenValues,
+  currentToken,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
   const tokenContext = useContext(TokenContext);
 
@@ -234,7 +236,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             currentStatus,
             errors,
             touched,
-            valuesHaveUpdate(values, initialTokenValues)
+            valuesHaveUpdate(values, currentToken)
           )}
         >
           {addEditButtonText('token')(currentStatus)}
@@ -243,7 +245,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           variant="secondary"
           isDisabled={isCheckConnectionButtonDisabled(
             currentStatus,
-            valuesHaveUpdate(values, initialTokenValues)
+            valuesHaveUpdate(values, currentToken)
           )}
           onClick={() => tokenContext.checkConnection(values.name)}
         >
