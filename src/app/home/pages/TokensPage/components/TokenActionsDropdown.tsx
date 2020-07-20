@@ -16,19 +16,19 @@ import { IToken, IMigToken } from '../../../../token/duck/types';
 interface ITokenActionsDropdownProps {
   token: IToken;
   removeToken: (tokenName: string) => void;
-  toggleAddEditModal: () => void;
+  toggleAddEditTokenModal: () => void;
   associatedClusterName: string;
   watchTokenAddEditStatus: (name: string) => void;
-  setInitialTokenValues: (values: any) => void;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
   token,
   removeToken,
   associatedClusterName,
-  toggleAddEditModal,
+  toggleAddEditTokenModal,
   watchTokenAddEditStatus,
-  setInitialTokenValues,
+  setCurrentToken,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
 
@@ -70,8 +70,8 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
             isDisabled={false}
             onClick={() => {
               setKebabIsOpen(false);
-              toggleAddEditModal();
-              setInitialTokenValues(token);
+              toggleAddEditTokenModal();
+              setCurrentToken(token);
               watchTokenAddEditStatus(name);
             }}
             key="editToken"

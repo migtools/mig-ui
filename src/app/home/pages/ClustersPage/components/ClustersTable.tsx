@@ -19,6 +19,8 @@ interface IClustersTableProps {
   migMeta: IMigMeta;
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
   isAdmin: boolean;
 }
 
@@ -28,6 +30,8 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   migMeta,
   removeCluster,
   toggleAddEditModal,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
   isAdmin,
 }: IClustersTableProps) => {
   const columns = [
@@ -82,6 +86,8 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               clusterInfo={clusterInfo}
               removeCluster={removeCluster}
               isAdmin={isAdmin}
+              toggleAddEditTokenModal={toggleAddEditTokenModal}
+              isAddEditTokenModalOpen={isAddEditTokenModalOpen}
             />
           ),
         },

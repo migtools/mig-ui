@@ -39,7 +39,6 @@ interface IOtherProps {
   clusterList: ICluster[];
   handleClose: () => void;
   preSelectedClusterName?: string;
-  initialTokenValues?: IToken;
   currentToken?: IToken;
 }
 const valuesHaveUpdate = (values, currentToken: IToken) => {
@@ -74,7 +73,6 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   handleClose,
   clusterList,
   preSelectedClusterName,
-  initialTokenValues,
   currentToken,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
   const tokenContext = useContext(TokenContext);
@@ -262,7 +260,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
 };
 
 const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
-  mapPropsToValues: ({ initialTokenValues }) => {
+  mapPropsToValues: ({ currentToken }) => {
     const values: ITokenFormValues = {
       name: '',
       associatedClusterName: '',
@@ -270,14 +268,14 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
       serviceAccountToken: '',
     };
     // NATODO initialize here from existing token for editing?
-    if (initialTokenValues) {
-      values.name = initialTokenValues.MigToken.metadata.name || '';
-      values.associatedClusterName = initialTokenValues.MigToken.spec.migClusterRef.name || '';
+    if (currentToken) {
+      values.name = currentToken.MigToken.metadata.name || '';
+      values.associatedClusterName = currentToken.MigToken.spec.migClusterRef.name || '';
       values.tokenType =
-        initialTokenValues.MigToken.status.type === 'ServiceAccount'
+        currentToken.MigToken.status.type === 'ServiceAccount'
           ? TokenType.ServiceAccount
           : TokenType.OAuth;
-      values.serviceAccountToken = atob(initialTokenValues.Secret.data.token) || '';
+      values.serviceAccountToken = atob(currentToken.Secret.data.token) || '';
     }
     return values;
   },

@@ -2,6 +2,9 @@ import { IToken, ITokenFormValues } from './types';
 import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const TokenActionTypes = {
+  TOGGLE_ADD_EDIT_TOKEN_MODAL: 'TOGGLE_ADD_EDIT_TOKEN_MODAL',
+  RESET_CURRENT_TOKEN: 'RESET_CURRENT_TOKEN',
+  SET_CURRENT_TOKEN: 'SET_CURRENT_TOKEN',
   MIG_TOKEN_FETCH_REQUEST: 'MIG_TOKEN_FETCH_REQUEST',
   MIG_TOKEN_FETCH_SUCCESS: 'MIG_TOKEN_FETCH_SUCCESS',
   MIG_TOKEN_FETCH_FAILURE: 'MIG_TOKEN_FETCH_FAILURE',
@@ -110,6 +113,14 @@ const updateTokenSuccess = (updatedToken: IToken) => ({
   updatedToken,
 });
 
+const toggleAddEditTokenModal = () => ({
+  type: TokenActionTypes.TOGGLE_ADD_EDIT_TOKEN_MODAL,
+});
+
+const setCurrentToken = (currentToken: IToken) => ({
+  type: TokenActionTypes.SET_CURRENT_TOKEN,
+  currentToken,
+});
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
   removeTokenRequest,
@@ -132,4 +143,6 @@ export const TokenActions = {
   updateTokens,
   startTokenPolling,
   stopTokenPolling,
+  toggleAddEditTokenModal,
+  setCurrentToken,
 };

@@ -9,6 +9,8 @@ export interface ITokenReducerState {
   tokenList: IToken[];
   isFetchingInitialTokens: boolean;
   tokenAddEditStatus: IAddEditStatus;
+  isAddEditTokenModalOpen: boolean;
+  currentToken: IToken;
   // NATODO searchTerm? other state?
 }
 
@@ -21,6 +23,8 @@ export const INITIAL_STATE: ITokenReducerState = {
   tokenList: [],
   isFetchingInitialTokens: true,
   tokenAddEditStatus: defaultAddEditStatus(),
+  currentToken: null,
+  isAddEditTokenModalOpen: false,
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?
@@ -71,6 +75,25 @@ const tokenActionHandlers: { [actionType: string]: TokenReducerFn } = {
     return {
       ...state,
       tokenAddEditStatus: action.status,
+    };
+  },
+  [TokenActionTypes.SET_CURRENT_TOKEN]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      currentToken: action.currentToken,
+    };
+  },
+  [TokenActionTypes.RESET_CURRENT_TOKEN]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      currentToken: null,
+    };
+  },
+
+  [TokenActionTypes.TOGGLE_ADD_EDIT_TOKEN_MODAL]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      isAddEditTokenModalOpen: !state.isAddEditTokenModalOpen,
     };
   },
 

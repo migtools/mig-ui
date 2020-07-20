@@ -12,18 +12,18 @@ import TokenActionsDropdown from './TokenActionsDropdown';
 
 interface ITokensTableProps {
   tokenList: IToken[];
-  toggleAddEditModal: () => void;
+  toggleAddEditTokenModal: () => void;
   removeToken: (tokenName: string) => void;
   watchTokenAddEditStatus: (tokenName: string) => void;
-  setInitialTokenValues: (tokenValues: any) => void;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   tokenList,
-  toggleAddEditModal,
+  toggleAddEditTokenModal,
   removeToken,
   watchTokenAddEditStatus,
-  setInitialTokenValues,
+  setCurrentToken,
 }: ITokensTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -73,9 +73,9 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
               associatedClusterName={associatedClusterName}
               token={token}
               removeToken={removeToken}
-              toggleAddEditModal={toggleAddEditModal}
+              toggleAddEditTokenModal={toggleAddEditTokenModal}
               watchTokenAddEditStatus={watchTokenAddEditStatus}
-              setInitialTokenValues={setInitialTokenValues}
+              setCurrentToken={setCurrentToken}
             />
           ),
         },
@@ -87,7 +87,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button id="add-token-btn" onClick={toggleAddEditModal} variant="secondary">
+          <Button id="add-token-btn" onClick={toggleAddEditTokenModal} variant="secondary">
             Add token
           </Button>
         </LevelItem>

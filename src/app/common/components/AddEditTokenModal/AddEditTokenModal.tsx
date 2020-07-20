@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
-import { IAddEditStatus, AddEditMode } from '../../add_edit_state';
 import { PollingContext, TokenContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
 import { ITokenFormValues, IToken } from '../../../token/duck/types';
@@ -10,6 +9,13 @@ import { ICluster } from '../../../cluster/duck/types';
 import { TokenActions } from '../../../token/duck/actions';
 import { INameNamespaceRef } from '../../duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
+import {
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  IAddEditStatus,
+  defaultAddEditStatus,
+} from '../../../common/add_edit_state';
 
 interface IAddEditTokenModalProps {
   tokenAddEditStatus: IAddEditStatus;
@@ -24,6 +30,10 @@ interface IAddEditTokenModalProps {
   onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
   preSelectedClusterName?: string;
   migMeta: IMigMeta;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
+  currentToken: IToken;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -37,16 +47,14 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   preSelectedClusterName,
   migMeta,
   tokenList,
+  cancelAddEditWatch,
+  resetAddEditState,
+  isAddEditTokenModalOpen,
+  toggleAddEditTokenModal,
+  currentToken,
+  setCurrentToken,
 }: IAddEditTokenModalProps) => {
   const tokenContext = useContext(TokenContext);
-
-  const [currentTokenName, setCurrentTokenName] = useState(
-    tokenContext.initialTokenValues ? tokenContext.initialTokenValues.tokenName : null
-  );
-
-  const currentToken = tokenList.find((t: IToken) => {
-    return t.MigToken.metadata.name === currentTokenName;
-  });
 
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -90,11 +98,10 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   };
 
   const handleClose = () => {
-    // NATODO cancel/reset add/edit watch/state
-    tokenContext.resetAddEditState();
-    tokenContext.cancelAddEditWatch();
-    tokenContext.setInitialTokenValues(null);
-    tokenContext.toggleAddEditModal();
+    resetAddEditState();
+    cancelAddEditWatch();
+    setCurrentToken(null);
+    toggleAddEditTokenModal();
     pollingContext.startAllDefaultPolling();
   };
 
@@ -111,7 +118,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         tokenAddEditStatus={tokenAddEditStatus}
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
-        initialTokenValues={tokenContext.initialTokenValues}
         handleClose={handleClose}
         preSelectedClusterName={preSelectedClusterName}
         currentToken={currentToken}
@@ -126,12 +132,20 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterList: state.cluster.clusterList,
   tokenList: state.token.tokenList,
   migMeta: state.auth.migMeta,
+  currentToken: state.token.currentToken,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   addToken: (tokenValues: ITokenFormValues) => dispatch(TokenActions.addTokenRequest(tokenValues)),
   updateToken: (tokenValues: ITokenFormValues) =>
     dispatch(TokenActions.updateTokenRequest(tokenValues)),
+  cancelAddEditWatch: () => dispatch(TokenActions.cancelWatchTokenAddEditStatus()),
+  resetAddEditState: () => {
+    dispatch(TokenActions.setTokenAddEditStatus(defaultAddEditStatus()));
+  },
+  removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
+  setCurrentToken: (currentToken: IToken) => dispatch(TokenActions.setCurrentToken(currentToken)),
+  toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEditTokenModal);

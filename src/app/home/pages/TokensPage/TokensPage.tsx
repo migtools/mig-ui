@@ -24,7 +24,6 @@ import { ICluster } from '../../../cluster/duck/types';
 import AddEditTokenModal from '../../../common/components/AddEditTokenModal';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import tokenSelectors from '../../../token/duck/selectors';
-import { TokenContext } from '../../duck/context';
 import { TokenActions } from '../../../token/duck/actions';
 import { defaultAddEditStatus } from '../../../common/add_edit_state';
 
@@ -37,6 +36,10 @@ interface ITokensPageBaseProps {
   checkConnection: (tokenName: string) => void;
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
+  currentToken: IToken;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
@@ -45,14 +48,11 @@ const TokensPageBase: React.FunctionComponent<ITokensPageBaseProps> = ({
   isFetchingInitialTokens,
   removeToken,
   watchTokenAddEditStatus,
-  cancelAddEditWatch,
-  resetAddEditState,
-  checkConnection,
+  isAddEditTokenModalOpen,
+  toggleAddEditTokenModal,
+  setCurrentToken,
 }: //NATODO: implement loading state for tokens
 ITokensPageBaseProps) => {
-  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [initialTokenValues, setInitialTokenValues] = useState<Partial<IToken>>(null);
-
   const renderTokenCardBody = () => {
     if (clusterList.length === 0) {
       return (
@@ -72,7 +72,7 @@ ITokensPageBaseProps) => {
         <EmptyState variant="full">
           <EmptyStateIcon icon={AddCircleOIcon} />
           <Title size="lg">Add token</Title>
-          <Button onClick={toggleAddEditModal} variant="primary">
+          <Button onClick={toggleAddEditTokenModal} variant="primary">
             Add token
           </Button>
         </EmptyState>
@@ -81,10 +81,10 @@ ITokensPageBaseProps) => {
     return (
       <TokensTable
         tokenList={tokenList}
-        toggleAddEditModal={toggleAddEditModal}
+        toggleAddEditTokenModal={toggleAddEditTokenModal}
         removeToken={removeToken}
         watchTokenAddEditStatus={watchTokenAddEditStatus}
-        setInitialTokenValues={setInitialTokenValues}
+        setCurrentToken={setCurrentToken}
       />
     );
   };
@@ -113,19 +113,8 @@ ITokensPageBaseProps) => {
         ) : (
           <Card>
             <CardBody>
-              <TokenContext.Provider
-                value={{
-                  setInitialTokenValues,
-                  initialTokenValues,
-                  cancelAddEditWatch,
-                  resetAddEditState,
-                  checkConnection,
-                  toggleAddEditModal,
-                }}
-              >
-                {renderTokenCardBody()}
-                {isAddEditModalOpen && <AddEditTokenModal />}
-              </TokenContext.Provider>
+              {renderTokenCardBody()}
+              {isAddEditTokenModalOpen && <AddEditTokenModal />}
             </CardBody>
           </Card>
         )}
@@ -135,6 +124,8 @@ ITokensPageBaseProps) => {
 };
 
 const mapStateToProps = (state: IReduxState) => ({
+  isAddEditTokenModalOpen: state.token.isAddEditTokenModalOpen,
+  currentToken: state.token.currentToken,
   tokenList: tokenSelectors.getTokensWithStatus(state),
   clusterList: clusterSelectors.getAllClusters(state),
   isFetchingInitialTokens: state.token.isFetchingInitialTokens,
@@ -163,7 +154,9 @@ const mapDispatchToProps = (dispatch) => ({
   resetAddEditState: () => {
     dispatch(TokenActions.setTokenAddEditStatus(defaultAddEditStatus()));
   },
+  toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
   removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
+  setCurrentToken: (currentToken: IToken) => dispatch(TokenActions.setCurrentToken(currentToken)),
 });
 
 export const TokensPage = connect(mapStateToProps, mapDispatchToProps)(TokensPageBase);

@@ -14,6 +14,8 @@ interface IClusterActionsDropdownProps {
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
   isAdmin: boolean;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
@@ -21,6 +23,8 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
   clusterInfo,
   removeCluster,
   isAdmin,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
 }: IClusterActionsDropdownProps) => {
   const {
     clusterName,
@@ -36,7 +40,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
-  const [isAddEditTokenModalOpen, toggleAddEditTokenModal] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const handleRemoveCluster = (isConfirmed) => {
