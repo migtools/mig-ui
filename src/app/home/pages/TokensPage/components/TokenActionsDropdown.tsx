@@ -9,7 +9,6 @@ import {
 import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
-// import { tokenContext } from '../../../duck/context';
 import { ITokenInfo } from '../helpers';
 import { IToken, IMigToken } from '../../../../token/duck/types';
 

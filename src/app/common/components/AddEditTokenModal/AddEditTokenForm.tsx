@@ -28,7 +28,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 import { Token } from 'client-oauth2';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
-import { PollingContext, TokenContext } from '../../../home/duck/';
+import { PollingContext } from '../../../home/duck/';
 
 const currentStatusFn = addEditStatusText('token');
 const addEditButtonTextFn = addEditButtonText('token');
@@ -40,6 +40,7 @@ interface IOtherProps {
   handleClose: () => void;
   preSelectedClusterName?: string;
   currentToken?: IToken;
+  checkConnection: (tokenName: string) => void;
 }
 const valuesHaveUpdate = (values, currentToken: IToken) => {
   if (!currentToken) {
@@ -47,7 +48,12 @@ const valuesHaveUpdate = (values, currentToken: IToken) => {
   }
   const tokenName = currentToken.MigToken.metadata.name;
   const rawToken = atob(currentToken.Secret.data.token);
-  const tokenType = currentToken.MigToken.status.type;
+  const tokenType = TokenType.ServiceAccount;
+  if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
+    //NATODO update when adding Oauth
+    // const currentTokenType = currentToken.MigToken.status.type;
+    // tokenType = currentToken.MigToken.status.type;
+  }
   const associatedClusterName = currentToken.MigToken.spec.migClusterRef.name;
 
   return (
@@ -74,9 +80,8 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   clusterList,
   preSelectedClusterName,
   currentToken,
+  checkConnection,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
-  const tokenContext = useContext(TokenContext);
-
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key: TokenFieldKey) => () => setFieldTouched(key, true, true);
 
@@ -245,7 +250,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             currentStatus,
             valuesHaveUpdate(values, currentToken)
           )}
-          onClick={() => tokenContext.checkConnection(values.name)}
+          onClick={() => checkConnection(values.name)}
         >
           Check connection
         </Button>
@@ -271,10 +276,12 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
     if (currentToken) {
       values.name = currentToken.MigToken.metadata.name || '';
       values.associatedClusterName = currentToken.MigToken.spec.migClusterRef.name || '';
-      values.tokenType =
-        currentToken.MigToken.status.type === 'ServiceAccount'
-          ? TokenType.ServiceAccount
-          : TokenType.OAuth;
+      if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
+        values.tokenType =
+          currentToken.MigToken.status.type === 'ServiceAccount'
+            ? TokenType.ServiceAccount
+            : TokenType.OAuth;
+      }
       values.serviceAccountToken = atob(currentToken.Secret.data.token) || '';
     }
     return values;

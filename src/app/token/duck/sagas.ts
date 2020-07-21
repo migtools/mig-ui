@@ -109,7 +109,8 @@ function* addTokenRequest(action) {
     // This should never happen -- we're using generateName which should ensure
     // that the secret's name that's created is unique, but just in case...
     if (migTokenLookup.status === 200) {
-      throw new Error(`MigToken "${tokenValues.name} already exists`);
+      const migTokenError = `MigToken "${tokenValues.name} already exists`;
+      yield put(AlertActions.alertErrorTimeout(migTokenError));
     }
   } catch (err) {
     //  If response is anything but a 404 response (the normal path), rethrow
@@ -130,6 +131,12 @@ function* addTokenRequest(action) {
   } catch (err) {
     console.error(err.response);
     yield put(TokenActions.addTokenFailure(`Failed to add token: ${err.message}`));
+    yield put(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
+
     return;
   }
 
@@ -148,14 +155,25 @@ function* addTokenRequest(action) {
     console.error(err.response);
     yield client.delete(secretResource, migTokenSecretResult.data.metadata.name);
     yield put(TokenActions.addTokenFailure(`Failed to add token: ${err.message}`));
+    yield put(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
     return;
   }
 
+  yield put(AlertActions.alertSuccessTimeout(`Successfully added token "${migTokenResult.data}"!`));
+  const newMigToken = {
+    MigToken: migTokenResult.data,
+    Secret: migTokenSecretResult.data,
+  };
+
+  yield put(TokenActions.addTokenSuccess(newMigToken));
+  yield put(TokenActions.setCurrentToken(newMigToken));
+
   yield put(
-    TokenActions.addTokenSuccess({
-      MigToken: migTokenResult.data,
-      Secret: migTokenSecretResult.data,
-    })
+    TokenActions.setTokenAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Edit))
   );
 }
 
@@ -275,7 +293,7 @@ function* updateTokenRequest(action) {
   });
 
   try {
-    if (tokenValues.tokenType === 'serviceAccount') {
+    if (tokenValues.tokenType === TokenType.ServiceAccount) {
       const rawCurrentToken = atob(currentToken.Secret.data.token);
       const tokenUpdated = tokenValues.serviceAccountToken !== rawCurrentToken;
 

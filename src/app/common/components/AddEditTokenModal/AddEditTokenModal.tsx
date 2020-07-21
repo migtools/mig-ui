@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
-import { PollingContext, TokenContext } from '../../../home/duck/';
+import { PollingContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
 import { ITokenFormValues, IToken } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
@@ -34,6 +34,7 @@ interface IAddEditTokenModalProps {
   isAddEditTokenModalOpen: boolean;
   currentToken: IToken;
   setCurrentToken: (currentToken: IToken) => void;
+  checkConnection: (tokenName: string) => void;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -53,9 +54,8 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   toggleAddEditTokenModal,
   currentToken,
   setCurrentToken,
+  checkConnection,
 }: IAddEditTokenModalProps) => {
-  const tokenContext = useContext(TokenContext);
-
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
     // Hack to make it possible to show this modal on top of the wizard...
@@ -86,7 +86,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
       case AddEditMode.Add: {
         addToken(tokenValues);
         onTokenAdded && onTokenAdded({ name: tokenValues.name, namespace: migMeta.namespace });
-        // tokenContext.toggleAddEditModal();
         break;
       }
       default: {
@@ -121,6 +120,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         handleClose={handleClose}
         preSelectedClusterName={preSelectedClusterName}
         currentToken={currentToken}
+        checkConnection={checkConnection}
       />
     </Modal>
   );
@@ -146,6 +146,14 @@ const mapDispatchToProps = (dispatch) => ({
   removeToken: (tokenName: string) => dispatch(TokenActions.removeTokenRequest(tokenName)),
   setCurrentToken: (currentToken: IToken) => dispatch(TokenActions.setCurrentToken(currentToken)),
   toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
+  checkConnection: (tokenName: string) => {
+    dispatch(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
+      )
+    );
+    dispatch(TokenActions.watchTokenAddEditStatus(tokenName));
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEditTokenModal);

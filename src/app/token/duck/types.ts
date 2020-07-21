@@ -44,7 +44,7 @@ export enum TokenFieldKey {
 
 export enum TokenType {
   OAuth = 'oAuth',
-  ServiceAccount = 'serviceAccount',
+  ServiceAccount = 'ServiceAccount',
 }
 
 export interface ITokenFormValues {
