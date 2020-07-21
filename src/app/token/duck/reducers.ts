@@ -62,12 +62,6 @@ const tokenActionHandlers: { [actionType: string]: TokenReducerFn } = {
   [TokenActionTypes.UPDATE_TOKEN_SUCCESS]: (state = INITIAL_STATE, action) => {
     return {
       ...state,
-      tokenList: [
-        ...state.tokenList.filter(
-          (t) => t.MigToken.metadata.name !== action.updatedToken.metadata.name
-        ),
-        { ...action.updatedToken },
-      ],
       isFetchingInitialTokens: false,
     };
   },

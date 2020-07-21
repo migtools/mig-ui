@@ -163,7 +163,11 @@ function* addTokenRequest(action) {
     return;
   }
 
-  yield put(AlertActions.alertSuccessTimeout(`Successfully added token "${migTokenResult.data}"!`));
+  yield put(
+    AlertActions.alertSuccessTimeout(
+      `Successfully added token "${migTokenResult.data.metadata.name}"!`
+    )
+  );
   const newMigToken = {
     MigToken: migTokenResult.data,
     Secret: migTokenSecretResult.data,
@@ -288,13 +292,28 @@ function* updateTokenRequest(action) {
   const { tokenValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  const currentToken: IToken = state.token.tokenList.find((t: IToken) => {
-    return t.MigToken.metadata.name === tokenValues.name;
-  });
+  // const currentToken: IToken = state.token.tokenList.find((t: IToken) => {
+  //   return t.MigToken.metadata.name === tokenValues.name;
+  // });
+  const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+  const getTokenRes = yield client.get(migTokenResource, tokenValues.name);
+  const secretResource = new CoreNamespacedResource(
+    CoreNamespacedResourceKind.Secret,
+    migMeta.configNamespace
+  );
+  const updatedMigTokenSecretResult = yield client.get(
+    secretResource,
+    getTokenRes.data.spec.secretRef.name
+  );
+  const currentToken = {
+    MigToken: getTokenRes.data,
+    Secret: updatedMigTokenSecretResult.data,
+  };
 
   try {
     if (tokenValues.tokenType === TokenType.ServiceAccount) {
       const rawCurrentToken = atob(currentToken.Secret.data.token);
+
       const tokenUpdated = tokenValues.serviceAccountToken !== rawCurrentToken;
 
       if (!tokenUpdated) {
@@ -315,8 +334,18 @@ function* updateTokenRequest(action) {
         );
         const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
         const updatedTokenRes = yield client.get(migTokenResource, tokenValues.name);
-        console.log('patchRes', patchRes);
+        const updatedMigTokenSecretResult = yield client.get(
+          secretResource,
+          updatedTokenRes.data.spec.secretRef.name
+        );
         yield put(TokenActions.updateTokenSuccess(updatedTokenRes.data));
+        const updatedMigToken = {
+          MigToken: updatedTokenRes.data,
+          Secret: updatedMigTokenSecretResult.data,
+        };
+
+        yield put(TokenActions.setCurrentToken(updatedMigToken));
+
         yield put(
           TokenActions.setTokenAddEditStatus(
             createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)

@@ -115,6 +115,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
 
   useEffect(() => {
     if (preSelectedClusterName) {
+      //NATODO: This value is not being set correctly.
       setFieldValue(TokenFieldKey.AssociatedClusterName, preSelectedClusterName);
     }
     window.addEventListener('storage', handleStorageChanged);
