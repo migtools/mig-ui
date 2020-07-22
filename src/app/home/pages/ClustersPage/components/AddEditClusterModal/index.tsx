@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
-import AddEditClusterForm from './AddEditClusterForm';
+import AddEditClusterForm, { IFormValues } from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
 import { ClusterActions } from '../../../../../cluster/duck/actions';
 import {
@@ -8,47 +8,55 @@ import {
   AddEditMode,
   createAddEditStatus,
   AddEditState,
+  IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { PollingContext } from '../../../../duck/context';
 import { IReduxState } from '../../../../../../reducers';
+import { ICluster } from '../../../../../cluster/duck/types';
+import { IClusterInfo } from '../../helpers';
 
-// TODO add types here
-const AddEditClusterModal = ({
+interface IAddEditClusterModal {
+  addEditStatus: IAddEditStatus;
+  initialClusterValues: IClusterInfo;
+  isOpen: boolean;
+  isPolling: boolean;
+  checkConnection: (name) => void;
+  clusterList: ICluster[];
+  isAdmin: boolean;
+  addCluster: (cluster) => void;
+  cancelAddEditWatch: () => void;
+  onHandleClose: () => void;
+  resetAddEditState: () => void;
+  updateCluster: (updatedCluster) => void;
+}
+
+const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   addEditStatus,
   initialClusterValues,
   isOpen,
   isPolling,
   checkConnection,
   clusterList,
-  cluster,
   isAdmin,
-  ...props
-}) => {
+  addCluster,
+  cancelAddEditWatch,
+  onHandleClose,
+  resetAddEditState,
+  updateCluster,
+}: IAddEditClusterModal) => {
   if (!isAdmin) return null;
 
   const pollingContext = useContext(PollingContext);
-  const [currentClusterName, setCurrentClusterName] = useState(
-    initialClusterValues ? initialClusterValues.clusterName : null
-  );
-  useEffect(() => {
-    /* currentClusterName was not gettting set when exiting and re-entering the modal. 
-    Fixed by passing in cluster to modal component to trigger rerender when it changes & set 
-    cluster name inside this useEffect. 
-    
-   */
-    if (initialClusterValues) {
-      setCurrentClusterName(initialClusterValues.clusterName);
-    }
-  });
+  const [currentClusterName, setCurrentClusterName] = useState();
 
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
-        props.updateCluster(clusterValues);
+        updateCluster(clusterValues);
         break;
       }
       case AddEditMode.Add: {
-        props.addCluster(clusterValues);
+        addCluster(clusterValues);
         setCurrentClusterName(clusterValues.name);
         break;
       }
@@ -67,10 +75,10 @@ const AddEditClusterModal = ({
   });
 
   const onClose = () => {
-    props.cancelAddEditWatch();
-    props.resetAddEditState();
+    cancelAddEditWatch();
+    resetAddEditState();
     setCurrentClusterName(null);
-    props.onHandleClose();
+    onHandleClose();
     pollingContext.startAllDefaultPolling();
   };
 

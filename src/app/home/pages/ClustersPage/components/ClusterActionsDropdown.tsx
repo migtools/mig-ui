@@ -106,7 +106,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
       <AddEditClusterModal
         isOpen={isAddEditOpen}
         onHandleClose={toggleIsAddEditOpen}
-        cluster={cluster}
         initialClusterValues={{
           clusterName,
           clusterUrl,
