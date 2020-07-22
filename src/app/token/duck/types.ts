@@ -1,3 +1,4 @@
+import { IStatusCondition } from '../../common/duck/types';
 import { INameNamespaceRef } from '../../common/duck/types';
 
 export interface IMigToken {
@@ -10,6 +11,7 @@ export interface IMigToken {
     secretRef: INameNamespaceRef;
   };
   status: {
+    conditions: IStatusCondition[];
     observedDigest: string;
     type: string;
     expiresAt: string;
