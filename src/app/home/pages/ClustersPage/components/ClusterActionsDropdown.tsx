@@ -17,7 +17,6 @@ interface IClusterActionsDropdownProps {
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
-  cluster,
   clusterInfo,
   removeCluster,
   isAdmin,
