@@ -292,9 +292,6 @@ function* updateTokenRequest(action) {
   const { tokenValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  // const currentToken: IToken = state.token.tokenList.find((t: IToken) => {
-  //   return t.MigToken.metadata.name === tokenValues.name;
-  // });
   const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
   const getTokenRes = yield client.get(migTokenResource, tokenValues.name);
   const secretResource = new CoreNamespacedResource(
