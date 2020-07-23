@@ -103,7 +103,9 @@ describe('<AddEditClusterModal />', () => {
     expect(ssl).toBeChecked();
     expect(ca).toHaveValue('V2tWRk9WQlhWVDF6dA==');
 
-    userEvent.type(url, 'http://change.example.com');
+    userEvent.type(url, ':443');
+    expect(url).toHaveValue('http://existing.example.com:443');
+
     expect(updateButton).not.toHaveAttribute('disabled');
   });
 });
