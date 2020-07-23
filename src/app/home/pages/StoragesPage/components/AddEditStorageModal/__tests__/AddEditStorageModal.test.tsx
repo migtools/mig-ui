@@ -413,32 +413,6 @@ describe('<AddEditStorageModal />', () => {
     });
   });
 
-  it('forbids filling a GCP form with unvalid values', async () => {
-    render(
-      <Provider store={store}>
-        <AddEditStorageModal isOpen={true} />
-      </Provider>
-    );
-
-    userEvent.click(screen.getByText('Select a type...'));
-    userEvent.click(screen.getByText('GCP'));
-
-    const repoName = screen.getByLabelText(/Repository name/);
-    userEvent.type(repoName, 'GCP-BAD-NAME');
-
-    const bucketName = screen.getByLabelText(/GCP bucket name/);
-    userEvent.type(bucketName, 'ab');
-
-    await waitFor(() => {
-      expect(screen.getByText(/Invalid character: "GCP-BAD-NAME"/)).not.toBeNull();
-      expect(
-        screen.getByText('The bucket name can be between 3 and 63 characters long.')
-      ).not.toBeNull();
-      expect(screen.getByRole('button', { name: /GCP Storage Submit Form/ })).toHaveAttribute(
-        'disabled'
-      );
-    });
-  });
   it('forbids filling an Azure form with unvalid values', async () => {
     render(
       <Provider store={store}>
