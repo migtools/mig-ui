@@ -3,7 +3,7 @@ import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const TokenActionTypes = {
   TOGGLE_ADD_EDIT_TOKEN_MODAL: 'TOGGLE_ADD_EDIT_TOKEN_MODAL',
-  RESET_CURRENT_TOKEN: 'RESET_CURRENT_TOKEN',
+  SET_ASSOCIATED_CLUSTER: 'SET_ASSOCIATED_CLUSTER',
   SET_CURRENT_TOKEN: 'SET_CURRENT_TOKEN',
   MIG_TOKEN_FETCH_REQUEST: 'MIG_TOKEN_FETCH_REQUEST',
   MIG_TOKEN_FETCH_SUCCESS: 'MIG_TOKEN_FETCH_SUCCESS',
@@ -121,6 +121,12 @@ const setCurrentToken = (currentToken: IToken) => ({
   type: TokenActionTypes.SET_CURRENT_TOKEN,
   currentToken,
 });
+
+const setAssociatedCluster = (associatedCluster: string) => ({
+  type: TokenActionTypes.SET_ASSOCIATED_CLUSTER,
+  associatedCluster,
+});
+
 // NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
   removeTokenRequest,
@@ -145,4 +151,5 @@ export const TokenActions = {
   stopTokenPolling,
   toggleAddEditTokenModal,
   setCurrentToken,
+  setAssociatedCluster,
 };

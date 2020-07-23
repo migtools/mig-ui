@@ -11,6 +11,7 @@ export interface ITokenReducerState {
   tokenAddEditStatus: IAddEditStatus;
   isAddEditTokenModalOpen: boolean;
   currentToken: IToken;
+  associatedCluster: string;
   // NATODO searchTerm? other state?
 }
 
@@ -25,6 +26,7 @@ export const INITIAL_STATE: ITokenReducerState = {
   tokenAddEditStatus: defaultAddEditStatus(),
   currentToken: null,
   isAddEditTokenModalOpen: false,
+  associatedCluster: null,
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?
@@ -77,10 +79,10 @@ const tokenActionHandlers: { [actionType: string]: TokenReducerFn } = {
       currentToken: action.currentToken,
     };
   },
-  [TokenActionTypes.RESET_CURRENT_TOKEN]: (state = INITIAL_STATE, action) => {
+  [TokenActionTypes.SET_ASSOCIATED_CLUSTER]: (state = INITIAL_STATE, action) => {
     return {
       ...state,
-      currentToken: null,
+      associatedCluster: action.associatedCluster,
     };
   },
 

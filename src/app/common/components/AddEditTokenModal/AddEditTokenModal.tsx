@@ -35,6 +35,8 @@ interface IAddEditTokenModalProps {
   currentToken: IToken;
   setCurrentToken: (currentToken: IToken) => void;
   checkConnection: (tokenName: string) => void;
+  setAssociatedCluster: (clusterName: string) => void;
+  associatedCluster: string;
 }
 
 const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
@@ -55,6 +57,8 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   currentToken,
   setCurrentToken,
   checkConnection,
+  associatedCluster,
+  setAssociatedCluster,
 }: IAddEditTokenModalProps) => {
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
@@ -100,6 +104,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     resetAddEditState();
     cancelAddEditWatch();
     setCurrentToken(null);
+    setAssociatedCluster(null);
     toggleAddEditTokenModal();
     pollingContext.startAllDefaultPolling();
   };
@@ -118,7 +123,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
         clusterList={clusterList}
         onAddEditSubmit={handleAddEditSubmit}
         handleClose={handleClose}
-        preSelectedClusterName={preSelectedClusterName}
+        preSelectedClusterName={associatedCluster}
         currentToken={currentToken}
         checkConnection={checkConnection}
       />
@@ -133,6 +138,7 @@ const mapStateToProps = (state: IReduxState) => ({
   tokenList: state.token.tokenList,
   migMeta: state.auth.migMeta,
   currentToken: state.token.currentToken,
+  associatedCluster: state.token.associatedCluster,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -154,6 +160,8 @@ const mapDispatchToProps = (dispatch) => ({
     );
     dispatch(TokenActions.watchTokenAddEditStatus(tokenName));
   },
+  setAssociatedCluster: (associatedCluster: string) =>
+    dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEditTokenModal);

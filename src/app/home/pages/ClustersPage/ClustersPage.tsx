@@ -39,6 +39,7 @@ interface IClustersPageBaseProps {
   isAdmin: boolean;
   isAddEditTokenModalOpen: boolean;
   toggleAddEditTokenModal: () => void;
+  setAssociatedCluster: (clusterName: string) => void;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -51,6 +52,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   isAdmin,
   toggleAddEditTokenModal,
   isAddEditTokenModalOpen,
+  setAssociatedCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -116,6 +118,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     isAdmin={isAdmin}
                     toggleAddEditTokenModal={toggleAddEditTokenModal}
                     isAddEditTokenModalOpen={isAddEditTokenModalOpen}
+                    setAssociatedCluster={setAssociatedCluster}
                   />
                 )}
                 <AddEditClusterModal
@@ -153,6 +156,8 @@ const mapDispatchToProps = (dispatch) => ({
   removeCluster: (clusterName: string) =>
     dispatch(ClusterActions.removeClusterRequest(clusterName)),
   toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
+  setAssociatedCluster: (associatedCluster: string) =>
+    dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
 });
 
 export const ClustersPage = connect(mapStateToProps, mapDispatchToProps)(ClustersPageBase);
