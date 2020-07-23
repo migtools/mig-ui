@@ -8,7 +8,6 @@ export const TokenActionTypes = {
   MIG_TOKEN_FETCH_REQUEST: 'MIG_TOKEN_FETCH_REQUEST',
   MIG_TOKEN_FETCH_SUCCESS: 'MIG_TOKEN_FETCH_SUCCESS',
   MIG_TOKEN_FETCH_FAILURE: 'MIG_TOKEN_FETCH_FAILURE',
-  // NATODO actions for add/edit status?
   UPDATE_TOKEN_REQUEST: 'UPDATE_TOKEN_REQUEST',
   UPDATE_TOKEN_SUCCESS: 'UPDATE_TOKEN_SUCCESS',
   UPDATE_TOKEN_FAILURE: 'UPDATE_TOKEN_FAILURE',
@@ -45,19 +44,6 @@ const addTokenFailure = (error) => ({
 const updateTokens = (updatedTokens: IToken[]) => ({
   type: TokenActionTypes.UPDATE_TOKENS,
   updatedTokens,
-});
-
-const migTokenFetchRequest = () => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_REQUEST,
-});
-
-const migTokenFetchSuccess = (tokenList: IToken[]) => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_SUCCESS,
-  tokenList,
-});
-
-const migTokenFetchFailure = () => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_FAILURE,
 });
 
 const startTokenPolling = (params) => ({
@@ -127,7 +113,6 @@ const setAssociatedCluster = (associatedCluster: string) => ({
   associatedCluster,
 });
 
-// NATODO: Implement and/or remove unecessary copies
 export const TokenActions = {
   removeTokenRequest,
   removeTokenSuccess,
@@ -135,14 +120,9 @@ export const TokenActions = {
   updateTokenRequest,
   updateTokenSuccess,
   updateTokenFailure,
-  // updateSearchTerm,
   setTokenAddEditStatus,
   watchTokenAddEditStatus,
   cancelWatchTokenAddEditStatus,
-  // clusterFetchSuccess,
-  // clusterFetchRequest,
-  // clusterFetchFailure,
-  // updateClusterRequest,
   addTokenSuccess,
   addTokenFailure,
   addTokenRequest,

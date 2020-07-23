@@ -213,7 +213,6 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           <AddEditTokenModal
             onClose={toggleAddEditTokenModal}
             onTokenAdded={setTokenJustAddedRef}
-            // preventPollingWhileOpen={false}
           />
         )}
       </FormGroup>

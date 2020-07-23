@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
 import { PollingContext } from '../../../home/duck/';
@@ -28,7 +28,6 @@ interface IAddEditTokenModalProps {
   cancelAddEditWatch: () => void;
   resetAddEditState: () => void;
   onTokenAdded?: (tokenRef: INameNamespaceRef) => void;
-  preSelectedClusterName?: string;
   migMeta: IMigMeta;
   toggleAddEditTokenModal: () => void;
   isAddEditTokenModalOpen: boolean;
@@ -47,12 +46,9 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   isPolling,
   preventPollingWhileOpen = true,
   onTokenAdded,
-  preSelectedClusterName,
   migMeta,
-  tokenList,
   cancelAddEditWatch,
   resetAddEditState,
-  isAddEditTokenModalOpen,
   toggleAddEditTokenModal,
   currentToken,
   setCurrentToken,

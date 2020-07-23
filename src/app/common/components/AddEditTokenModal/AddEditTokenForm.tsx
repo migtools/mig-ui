@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Form,
   FormGroup,
@@ -20,15 +20,12 @@ import {
   addEditStatusText,
   addEditButtonText,
   isCheckConnectionButtonDisabled,
-  AddEditState,
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
 import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
-import { Token } from 'client-oauth2';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
-import { PollingContext } from '../../../home/duck/';
 
 const currentStatusFn = addEditStatusText('token');
 const addEditButtonTextFn = addEditButtonText('token');
@@ -48,6 +45,7 @@ const valuesHaveUpdate = (values, currentToken: IToken) => {
   }
   const tokenName = currentToken.MigToken.metadata.name;
   const rawToken = atob(currentToken.Secret.data.token);
+  //NATODO hardcode token type until we are adding Oauth
   const tokenType = TokenType.ServiceAccount;
   if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
     //NATODO update when adding Oauth
@@ -115,7 +113,6 @@ const InnerAddEditTokenForm: React.FunctionComponent<
 
   useEffect(() => {
     if (preSelectedClusterName) {
-      //NATODO: This value is not being set correctly.
       setFieldValue(TokenFieldKey.AssociatedClusterName, preSelectedClusterName);
     }
     window.addEventListener('storage', handleStorageChanged);
@@ -270,7 +267,8 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
     const values: ITokenFormValues = {
       name: '',
       associatedClusterName: '',
-      tokenType: TokenType.OAuth,
+      //NATODO hardcode serviceaccount token type until OAuth support is added
+      tokenType: TokenType.ServiceAccount,
       serviceAccountToken: '',
     };
     // NATODO initialize here from existing token for editing?
@@ -278,10 +276,12 @@ const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
       values.name = currentToken.MigToken.metadata.name || '';
       values.associatedClusterName = currentToken.MigToken.spec.migClusterRef.name || '';
       if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
-        values.tokenType =
-          currentToken.MigToken.status.type === 'ServiceAccount'
-            ? TokenType.ServiceAccount
-            : TokenType.OAuth;
+        //NATODO hardcode serviceaccount token type until OAuth support is added
+        values.tokenType = TokenType.ServiceAccount;
+        // values.tokenType =
+        //   currentToken.MigToken.status.type === 'ServiceAccount'
+        //     ? TokenType.ServiceAccount
+        //     : TokenType.OAuth;
       }
       values.serviceAccountToken = atob(currentToken.Secret.data.token) || '';
     }

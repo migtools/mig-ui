@@ -66,7 +66,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         isPlain
         dropdownItems={[
           <DropdownItem
-            isDisabled={false}
             onClick={() => {
               setKebabIsOpen(false);
               toggleAddEditTokenModal();
