@@ -43,14 +43,22 @@ export function getTokenSecretLabelSelector(
   };
 }
 
-export function updateTokenSecret(rawToken: string) {
+export function updateTokenSecret(rawToken: string, isMigTokenSecret?: boolean) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
-  return {
-    data: {
-      saToken: encodedToken,
-    },
-  };
+  if (isMigTokenSecret) {
+    return {
+      data: {
+        token: encodedToken,
+      },
+    };
+  } else {
+    return {
+      data: {
+        saToken: encodedToken,
+      },
+    };
+  }
 }
 
 export function tokenFromSecret(secret: any) {

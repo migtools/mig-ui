@@ -14,12 +14,18 @@ interface IClusterActionsDropdownProps {
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
   isAdmin: boolean;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
+  setAssociatedCluster: (clusterName: string) => void;
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
   clusterInfo,
   removeCluster,
   isAdmin,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
+  setAssociatedCluster,
 }: IClusterActionsDropdownProps) => {
   const {
     clusterName,
@@ -35,7 +41,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
-  const [isAddEditTokenModalOpen, toggleAddEditTokenModal] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const handleRemoveCluster = (isConfirmed) => {
@@ -68,6 +73,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
                   onClick={() => {
                     setKebabIsOpen(false);
                     toggleAddEditTokenModal();
+                    setAssociatedCluster(clusterName);
                   }}
                   key="addToken"
                 >
@@ -122,9 +128,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         onHandleClose={handleRemoveCluster}
         id="confirm-cluster-removal"
       />
-      {isAddEditTokenModalOpen && (
-        <AddEditTokenModal onClose={toggleAddEditTokenModal} preSelectedClusterName={clusterName} />
-      )}
+      {isAddEditTokenModalOpen && <AddEditTokenModal />}
     </>
   );
 };
