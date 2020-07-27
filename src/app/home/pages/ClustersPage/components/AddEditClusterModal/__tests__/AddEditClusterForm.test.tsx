@@ -3,13 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import rootReducer from '../../../../../../../reducers';
-
-import AddEditClusterModal from '../AddEditClusterForm';
-
-const store = createStore(rootReducer, {});
+import AddEditClusterForm from '../AddEditClusterForm';
 
 describe('<AddEditClusterModal />', () => {
   it('allows filling form with valid values', () => {
@@ -21,11 +15,7 @@ describe('<AddEditClusterModal />', () => {
       },
     };
 
-    render(
-      <Provider store={store}>
-        <AddEditClusterModal {...props} />
-      </Provider>
-    );
+    render(<AddEditClusterForm {...props} />);
 
     const name = screen.getByLabelText(/Cluster name/);
     const url = screen.getByLabelText(/URL/);
@@ -53,11 +43,7 @@ describe('<AddEditClusterModal />', () => {
       },
     };
 
-    render(
-      <Provider store={store}>
-        <AddEditClusterModal {...props} />
-      </Provider>
-    );
+    render(<AddEditClusterForm {...props} />);
 
     const name = screen.getByLabelText(/Cluster name/);
     const url = screen.getByLabelText(/URL/);
@@ -96,11 +82,7 @@ describe('<AddEditClusterModal />', () => {
       },
     };
 
-    render(
-      <Provider store={store}>
-        <AddEditClusterModal {...props} />
-      </Provider>
-    );
+    render(<AddEditClusterForm {...props} />);
 
     const name = screen.getByLabelText(/Cluster name/);
     const url = screen.getByLabelText(/URL/);
@@ -121,7 +103,9 @@ describe('<AddEditClusterModal />', () => {
     expect(ssl).toBeChecked();
     expect(ca).toHaveValue('V2tWRk9WQlhWVDF6dA==');
 
-    userEvent.type(url, 'http://change.example.com');
+    userEvent.type(url, ':443');
+    expect(url).toHaveValue('http://existing.example.com:443');
+
     expect(updateButton).not.toHaveAttribute('disabled');
   });
 });
