@@ -10,6 +10,7 @@ import {
   AddEditState,
 } from '../../../../../common/add_edit_state';
 import { PollingContext } from '../../../../duck/context';
+import { IReduxState } from '../../../../../../reducers';
 
 // TODO add types here
 const AddEditClusterModal = ({
@@ -20,8 +21,11 @@ const AddEditClusterModal = ({
   checkConnection,
   clusterList,
   cluster,
+  isAdmin,
   ...props
 }) => {
+  if (!isAdmin) return null;
+
   const pollingContext = useContext(PollingContext);
   const [currentClusterName, setCurrentClusterName] = useState(
     initialClusterValues ? initialClusterValues.clusterName : null
@@ -91,11 +95,12 @@ const AddEditClusterModal = ({
 };
 
 export default connect(
-  (state) => {
+  (state: IReduxState) => {
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,
       clusterList: state.cluster.clusterList,
+      isAdmin: state.auth.isAdmin,
     };
   },
   (dispatch) => ({

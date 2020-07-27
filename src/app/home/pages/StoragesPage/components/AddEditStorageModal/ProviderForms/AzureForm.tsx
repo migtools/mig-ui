@@ -22,7 +22,7 @@ import ConnectionStatusLabel from '../../../../../../common/components/Connectio
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 
-/* 
+/*
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
 */
 const CREDENTIAL_DOCUMENTATION_URL =
@@ -120,7 +120,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -141,7 +141,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.azureResourceGroup}
           name={azureResourceGroupKey}
           type="text"
-          id="azure-resource-group-input"
+          id={azureResourceGroupKey}
           isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
         />
       </FormGroup>
@@ -161,7 +161,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.azureStorageAccount}
           name={azureStorageAccountKey}
           type="text"
-          id="azure-storage-input"
+          id={azureStorageAccountKey}
           isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
         />
       </FormGroup>
@@ -179,12 +179,13 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.azureBlob}
           name={azureBlobKey}
           type="text"
-          id="storage-blob-input"
+          id={azureBlobKey}
           isValid={!(touched.azureBlob && errors.azureBlob)}
         />
       </FormGroup>
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="Azure Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(
@@ -218,7 +219,12 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           isOpen={isPopUpModalOpen}
           onClose={handleModalToggle}
           actions={[
-            <Button key="confirm" variant="primary" onClick={handleModalToggle}>
+            <Button
+              aria-label="Repository information"
+              key="confirm"
+              variant="primary"
+              onClick={handleModalToggle}
+            >
               Close
             </Button>,
           ]}

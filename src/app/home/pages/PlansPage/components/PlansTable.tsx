@@ -17,7 +17,7 @@ import { IPlan } from '../../../../plan/duck/types';
 interface IPlansTableProps {
   planList: IPlan[];
   addPlanDisabledObj: IAddPlanDisabledObjModel;
-  toggleWizardOpen: () => void;
+  toggleAddWizardOpen: () => void;
 }
 
 interface IExpandedCells {
@@ -27,7 +27,7 @@ interface IExpandedCells {
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
   addPlanDisabledObj,
-  toggleWizardOpen,
+  toggleAddWizardOpen,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
@@ -161,7 +161,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
             <Button
               id="add-plan-btn"
-              onClick={toggleWizardOpen}
+              onClick={toggleAddWizardOpen}
               isDisabled={addPlanDisabledObj.isAddPlanDisabled}
               variant="secondary"
             >

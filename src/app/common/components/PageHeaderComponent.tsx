@@ -18,6 +18,7 @@ import {
 import accessibleStyles from '@patternfly/react-styles/css/utilities/Accessibility/accessibility';
 
 import { css } from '@patternfly/react-styles';
+import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 const styles = require('./PageHeaderComponent.module');
 
 interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
@@ -37,7 +38,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
     toolbar={
       <Toolbar>
         <ToolbarGroup>
-          {isAdmin !== null && (
+          {NON_ADMIN_ENABLED && isAdmin !== null && (
             <ToolbarItem>
               <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
             </ToolbarItem>
@@ -45,7 +46,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
         </ToolbarGroup>
 
         <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
-          {!isWelcomeScreen && (
+          {NON_ADMIN_ENABLED && !isWelcomeScreen && (
             <ToolbarItem>
               <Button
                 id="default-example-uid-02"
@@ -63,12 +64,14 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
     logo={
       <>
         <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
-        <Title
-          size="2xl"
-          style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
-        >
-          WORK IN PROGRESS
-        </Title>
+        {NON_ADMIN_ENABLED && (
+          <Title
+            size="2xl"
+            style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
+          >
+            WORK IN PROGRESS
+          </Title>
+        )}
       </>
     }
     {...props}

@@ -27,6 +27,8 @@ import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
 import { isSameResource } from '../../../../../common/helpers';
 import { IMigMeta } from '../../../../../auth/duck/types';
+import { TokenActions } from '../../../../../token/duck/actions';
+
 const styles = require('./TokenSelect.module');
 
 interface ITokenSelectProps extends ISimpleSelectProps {
@@ -40,6 +42,9 @@ interface ITokenSelectProps extends ISimpleSelectProps {
   expiringSoonMessage: string;
   expiredMessage: string;
   migMeta: IMigMeta;
+  isAddEditTokenModalOpen: boolean;
+  toggleAddEditTokenModal: () => void;
+  setAssociatedCluster: (clusterName: string) => void;
 }
 
 const getTokenOptionsForCluster = (
@@ -101,7 +106,7 @@ const getSelectedTokenOption = (
   if (!selectedTokenRef) return null;
   return tokenOptions.find((option) => {
     if (option.value) {
-      isSameResource(option.value.MigToken.metadata, selectedTokenRef);
+      return isSameResource(option.value.MigToken.metadata, selectedTokenRef);
     }
   });
 };
@@ -116,9 +121,11 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
   error,
   expiringSoonMessage,
   expiredMessage,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
+  setAssociatedCluster,
   ...props
 }: ITokenSelectProps) => {
-  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [tokenJustAddedRef, setTokenJustAddedRef] = useState<INameNamespaceRef>(null);
 
   const handleChange = (token: IToken) => {
@@ -128,7 +135,8 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
 
   const onAddTokenClick = () => {
     setTokenJustAddedRef(null);
-    toggleAddEditModal();
+    toggleAddEditTokenModal();
+    setAssociatedCluster(clusterName);
   };
 
   const tokenOptions = getTokenOptionsForCluster(tokenList, clusterName, onAddTokenClick);
@@ -201,12 +209,10 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           isDisabled={!clusterName || isLoadingNewToken}
           {...props}
         />
-        {isAddEditModalOpen && (
+        {isAddEditTokenModalOpen && (
           <AddEditTokenModal
-            onClose={toggleAddEditModal}
+            onClose={toggleAddEditTokenModal}
             onTokenAdded={setTokenJustAddedRef}
-            preSelectedClusterName={clusterName}
-            preventPollingWhileOpen={false}
           />
         )}
       </FormGroup>
@@ -256,9 +262,14 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
 
 const mapStateToProps = (state: IReduxState): Partial<ITokenSelectProps> => ({
   tokenList: state.token.tokenList,
+  isAddEditTokenModalOpen: state.token.isAddEditTokenModalOpen,
   migMeta: state.auth.migMeta,
 });
 
-const mapDispatchToProps = () => ({});
+const mapDispatchToProps = (dispatch) => ({
+  toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
+  setAssociatedCluster: (associatedCluster: string) =>
+    dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(TokenSelect);

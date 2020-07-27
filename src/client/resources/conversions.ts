@@ -5,6 +5,7 @@ import {
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
+import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 
 export function createMigClusterSecret(
   name: string,
@@ -42,14 +43,22 @@ export function getTokenSecretLabelSelector(
   };
 }
 
-export function updateTokenSecret(rawToken: string) {
+export function updateTokenSecret(rawToken: string, isMigTokenSecret?: boolean) {
   // btoa => to base64, atob => from base64
   const encodedToken = btoa(rawToken);
-  return {
-    data: {
-      saToken: encodedToken,
-    },
-  };
+  if (isMigTokenSecret) {
+    return {
+      data: {
+        token: encodedToken,
+      },
+    };
+  } else {
+    return {
+      data: {
+        saToken: encodedToken,
+      },
+    };
+  }
 }
 
 export function tokenFromSecret(secret: any) {
@@ -388,17 +397,19 @@ export function updateMigPlanFromValues(
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (planValues.sourceTokenRef) {
-    updatedSpec.srcMigTokenRef = { ...planValues.sourceTokenRef };
-  }
   if (planValues.targetCluster) {
     updatedSpec.destMigClusterRef = {
       name: planValues.targetCluster,
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (planValues.targetTokenRef) {
-    updatedSpec.destMigTokenRef = { ...planValues.targetTokenRef };
+  if (NON_ADMIN_ENABLED) {
+    if (planValues.sourceTokenRef) {
+      updatedSpec.srcMigTokenRef = { ...planValues.sourceTokenRef };
+    }
+    if (planValues.targetTokenRef) {
+      updatedSpec.destMigTokenRef = { ...planValues.targetTokenRef };
+    }
   }
   if (updatedSpec.namespaces) {
     updatedSpec.namespaces = planValues.selectedNamespaces;
@@ -460,12 +471,16 @@ export function createInitialMigPlan(
         name: sourceClusterObj,
         namespace,
       },
-      srcMigTokenRef: { ...sourceTokenRef },
       destMigClusterRef: {
         name: destinationClusterObj,
         namespace,
       },
-      destMigTokenRef: { ...destinationTokenRef },
+      ...(NON_ADMIN_ENABLED
+        ? {
+            srcMigTokenRef: { ...sourceTokenRef },
+            destMigTokenRef: { ...destinationTokenRef },
+          }
+        : {}),
       migStorageRef: {
         name: storageObj,
         namespace,

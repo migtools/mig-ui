@@ -9,6 +9,7 @@ import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { getActiveNamespaceFromStorage } from '../../common/helpers';
+import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -124,8 +125,10 @@ export function* fetchIsAdmin(): any {
 }
 
 export function* loginSuccess() {
-  yield put(AuthActions.checkHasLoggedIn());
-  yield put(AuthActions.fetchIsAdmin());
+  if (NON_ADMIN_ENABLED) {
+    yield put(AuthActions.checkHasLoggedIn());
+    yield put(AuthActions.fetchIsAdmin());
+  }
 }
 
 function* watchAuthEvents() {
@@ -133,9 +136,11 @@ function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
   yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
   yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
-  yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
   yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
-  yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
+  if (NON_ADMIN_ENABLED) {
+    yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);
+    yield takeLatest(AuthActionTypes.FETCH_IS_ADMIN, fetchIsAdmin);
+  }
   yield takeLatest(AuthActionTypes.FETCH_TENANT_NAMESPACES, fetchTenantNamespaces);
 }
 

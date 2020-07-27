@@ -107,7 +107,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -128,7 +128,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           value={values.awsBucketName}
           name={awsBucketNameKey}
           type="text"
-          id="storage-bucket-name-input"
+          id={awsBucketNameKey}
           isValid={!(touched.awsBucketName && errors.awsBucketName)}
         />
       </FormGroup>
@@ -147,7 +147,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           value={values.awsBucketRegion}
           name={awsBucketRegionKey}
           type="text"
-          id="storage-bucket-region-input"
+          id={awsBucketRegionKey}
           isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
         />
       </FormGroup>
@@ -168,7 +168,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
             value={values.s3Url}
             name={s3UrlKey}
             type="text"
-            id="storage-s3-url-input"
+            id={s3UrlKey}
             isValid={!(touched.s3Url && errors.s3Url)}
           />
         </FormGroup>
@@ -193,7 +193,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           value={values.accessKey}
           name={accessKeyKey}
           type={isAccessKeyHidden ? 'password' : 'text'}
-          id="storage-access-key-input"
+          id={accessKeyKey}
           isValid={!(touched.accessKey && errors.accessKey)}
         />
       </FormGroup>
@@ -216,7 +216,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           value={values.secret}
           name={secretKey}
           type={isSecretHidden ? 'password' : 'text'}
-          id="storage-secret-input"
+          id={secretKey}
           isValid={!(touched.secret && errors.secret)}
         />
       </FormGroup>
@@ -260,6 +260,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       )}
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="S3 Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}

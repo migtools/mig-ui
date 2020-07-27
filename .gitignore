@@ -11,3 +11,4 @@ lib/
 cypress/fixtures
 cypress/screenshots
 config/migmeta.yaml
+tmp/

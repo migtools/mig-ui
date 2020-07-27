@@ -51,7 +51,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   migrationCancelRequest,
   isFetchingInitialPlans,
 }: IPlansPageBaseProps) => {
-  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
+  const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
 
   const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
     isAddPlanDisabled: true,
@@ -126,7 +126,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                       <div>
                         <Button
                           isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                          onClick={toggleWizardOpen}
+                          onClick={toggleAddWizardOpen}
                           variant="primary"
                         >
                           Add migration plan
@@ -138,7 +138,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                   <PlansTable
                     planList={planList}
                     addPlanDisabledObj={addPlanDisabledObj}
-                    toggleWizardOpen={toggleWizardOpen}
+                    toggleAddWizardOpen={toggleAddWizardOpen}
                   />
                 )}
                 <WizardContainer
@@ -146,8 +146,8 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                   clusterList={clusterList}
                   storageList={storageList}
                   isEdit={false}
-                  isOpen={isWizardOpen}
-                  onHandleWizardModalClose={toggleWizardOpen}
+                  isOpen={isAddWizardOpen}
+                  onHandleWizardModalClose={toggleAddWizardOpen}
                 />
               </PlanContext.Provider>
             </CardBody>

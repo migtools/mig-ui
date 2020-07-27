@@ -18,7 +18,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
-  const [isWizardOpen, toggleWizardOpen] = useOpenModal(false);
+  const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
     hasClosedCondition,
@@ -31,7 +31,7 @@ const PlanActions = ({ plan, history }) => {
   } = plan.PlanStatus;
 
   const editPlan = () => {
-    toggleWizardOpen();
+    toggleEditWizardOpen();
   };
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -118,8 +118,8 @@ const PlanActions = ({ plan, history }) => {
           planList={planContext.planList}
           clusterList={planContext.clusterList}
           storageList={planContext.storageList}
-          isOpen={isWizardOpen}
-          onHandleWizardModalClose={toggleWizardOpen}
+          isOpen={isEditWizardOpen}
+          onHandleWizardModalClose={toggleEditWizardOpen}
           editPlanObj={plan.MigPlan}
           isEdit={true}
         />

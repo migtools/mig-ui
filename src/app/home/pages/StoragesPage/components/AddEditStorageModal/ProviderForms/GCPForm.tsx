@@ -112,7 +112,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.name}
           name={nameKey}
           type="text"
-          id="storage-name-input"
+          id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
@@ -134,7 +134,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.gcpBucket}
           name={gcpBucketKey}
           type="text"
-          id="storage-bucket-name-input"
+          id={gcpBucketKey}
           isValid={!(touched.gcpBucket && errors.gcpBucket)}
         />
       </FormGroup>
@@ -157,12 +157,13 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           value={values.gcpBlob}
           name={gcpBlobKey}
           type={isBlobHidden ? 'password' : 'text'}
-          id="storage-blob-input"
+          id={gcpBlobKey}
           isValid={!(touched.gcpBlob && errors.gcpBlob)}
         />
       </FormGroup>
       <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
         <Button
+          aria-label="GCP Storage Submit Form"
           variant="primary"
           type="submit"
           isDisabled={isAddEditButtonDisabled(

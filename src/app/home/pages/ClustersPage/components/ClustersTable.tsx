@@ -19,6 +19,10 @@ interface IClustersTableProps {
   migMeta: IMigMeta;
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
+  isAdmin: boolean;
+  setAssociatedCluster: (clusterName: string) => void;
 }
 
 const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
@@ -27,6 +31,10 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   migMeta,
   removeCluster,
   toggleAddEditModal,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
+  isAdmin,
+  setAssociatedCluster,
 }: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -79,6 +87,10 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               cluster={cluster}
               clusterInfo={clusterInfo}
               removeCluster={removeCluster}
+              isAdmin={isAdmin}
+              toggleAddEditTokenModal={toggleAddEditTokenModal}
+              isAddEditTokenModalOpen={isAddEditTokenModalOpen}
+              setAssociatedCluster={setAssociatedCluster}
             />
           ),
         },
@@ -90,9 +102,11 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
-            Add cluster
-          </Button>
+          {isAdmin && (
+            <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
+              Add cluster
+            </Button>
+          )}
         </LevelItem>
         <LevelItem>
           <Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />

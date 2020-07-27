@@ -6,7 +6,25 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import { IToken, IMigToken, ITokenFormValues, TokenType } from './types';
 import { TokenActionTypes, TokenActions } from './actions';
-import { createMigTokenSecret, createMigToken } from '../../../client/resources/conversions';
+import {
+  createMigTokenSecret,
+  createMigToken,
+  getTokenSecretLabelSelector,
+  updateTokenSecret,
+} from '../../../client/resources/conversions';
+import {
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  IAddEditStatus,
+  AddEditWatchTimeout,
+  AddEditWatchTimeoutPollInterval,
+  AddEditConditionCritical,
+  createAddEditStatusWithMeta,
+  AddEditConditionReady,
+  AddEditDebounceWait,
+} from '../../common/add_edit_state';
+import { AlertActions } from '../../common/duck/actions';
 
 function fetchTokenSecrets(client: IClusterClient, migTokens): Array<Promise<any>> {
   const secretRefs: Array<Promise<any>> = [];
@@ -91,7 +109,8 @@ function* addTokenRequest(action) {
     // This should never happen -- we're using generateName which should ensure
     // that the secret's name that's created is unique, but just in case...
     if (migTokenLookup.status === 200) {
-      throw new Error(`MigToken "${tokenValues.name} already exists`);
+      const migTokenError = `MigToken "${tokenValues.name} already exists`;
+      yield put(AlertActions.alertErrorTimeout(migTokenError));
     }
   } catch (err) {
     //  If response is anything but a 404 response (the normal path), rethrow
@@ -112,6 +131,12 @@ function* addTokenRequest(action) {
   } catch (err) {
     console.error(err.response);
     yield put(TokenActions.addTokenFailure(`Failed to add token: ${err.message}`));
+    yield put(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
+
     return;
   }
 
@@ -130,26 +155,233 @@ function* addTokenRequest(action) {
     console.error(err.response);
     yield client.delete(secretResource, migTokenSecretResult.data.metadata.name);
     yield put(TokenActions.addTokenFailure(`Failed to add token: ${err.message}`));
+    yield put(
+      TokenActions.setTokenAddEditStatus(
+        createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
+      )
+    );
     return;
   }
 
   yield put(
-    TokenActions.addTokenSuccess({
-      MigToken: migTokenResult.data,
-      Secret: migTokenSecretResult.data,
-    })
+    AlertActions.alertSuccessTimeout(
+      `Successfully added token "${migTokenResult.data.metadata.name}"!`
+    )
   );
+  const newMigToken = {
+    MigToken: migTokenResult.data,
+    Secret: migTokenSecretResult.data,
+  };
+
+  yield put(TokenActions.addTokenSuccess(newMigToken));
+  yield put(TokenActions.setCurrentToken(newMigToken));
+
+  yield put(
+    TokenActions.setTokenAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Edit))
+  );
+}
+
+function* removeTokenSaga(action) {
+  try {
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    //remove token
+    const secretResource = new CoreNamespacedResource(
+      CoreNamespacedResourceKind.Secret,
+      migMeta.configNamespace
+    );
+    const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+
+    const tokenRes = yield client.get(migTokenResource, name);
+
+    yield Promise.all([
+      client.delete(secretResource, tokenRes.data.spec.secretRef.name),
+      client.delete(migTokenResource, name),
+    ]);
+
+    yield put(TokenActions.removeTokenSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed token "${name}"!`));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(TokenActions.removeTokenFailure(err));
+  }
+}
+
+function* pollTokenAddEditStatus(action) {
+  // Give the controller some time to bounce
+  yield delay(AddEditDebounceWait);
+  while (true) {
+    try {
+      const state = yield select();
+      const { migMeta } = state.auth;
+      const { tokenName } = action;
+
+      const client: IClusterClient = ClientFactory.cluster(state);
+      const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+      const tokenPollResult = yield client.get(migTokenResource, tokenName);
+
+      const hasStatusAndConditions =
+        tokenPollResult.data.status && tokenPollResult.data.status.conditions;
+
+      if (hasStatusAndConditions) {
+        const criticalCond = tokenPollResult.data.status.conditions.find((cond) => {
+          return cond.category === AddEditConditionCritical;
+        });
+
+        if (criticalCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Critical,
+            AddEditMode.Edit,
+            criticalCond.message,
+            criticalCond.reason
+          );
+        }
+
+        const readyCond = tokenPollResult.data.status.conditions.find((cond) => {
+          return cond.type === AddEditConditionReady;
+        });
+
+        if (readyCond) {
+          return createAddEditStatusWithMeta(
+            AddEditState.Ready,
+            AddEditMode.Edit,
+            readyCond.message,
+            '' // Ready has no reason
+          );
+        }
+      }
+
+      // No conditions found, let's wait a bit and keep checking
+      yield delay(AddEditWatchTimeoutPollInterval);
+    } catch (err) {
+      // TODO: what happens when the poll fails? Back into that hard error state?
+      console.error('Hard error branch hit in poll cluster add edit', err);
+      return;
+    }
+  }
+}
+
+function* startWatchingTokenAddEditStatus(action) {
+  // Start a race, poll until the watch is cancelled (by closing the modal),
+  // polling times out, or the condition is added, in that order of precedence.
+  const raceResult = yield race({
+    addEditResult: call(pollTokenAddEditStatus, action),
+    timeout: delay(AddEditWatchTimeout),
+    cancel: take(TokenActionTypes.CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS),
+  });
+
+  if (raceResult.cancel) {
+    return;
+  }
+
+  const addEditResult: IAddEditStatus = raceResult.addEditResult;
+
+  const statusToDispatch =
+    addEditResult || createAddEditStatus(AddEditState.TimedOut, AddEditMode.Edit);
+
+  yield put(TokenActions.setTokenAddEditStatus(statusToDispatch));
+}
+
+function* updateTokenRequest(action) {
+  // TODO: Probably need rollback logic here too if any fail
+  const state = yield select();
+  const { migMeta } = state.auth;
+  const { tokenValues } = action;
+  const client: IClusterClient = ClientFactory.cluster(state);
+
+  const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+  const getTokenRes = yield client.get(migTokenResource, tokenValues.name);
+  const secretResource = new CoreNamespacedResource(
+    CoreNamespacedResourceKind.Secret,
+    migMeta.configNamespace
+  );
+  const updatedMigTokenSecretResult = yield client.get(
+    secretResource,
+    getTokenRes.data.spec.secretRef.name
+  );
+  const currentToken = {
+    MigToken: getTokenRes.data,
+    Secret: updatedMigTokenSecretResult.data,
+  };
+
+  try {
+    if (tokenValues.tokenType === TokenType.ServiceAccount) {
+      const rawCurrentToken = atob(currentToken.Secret.data.token);
+
+      const tokenUpdated = tokenValues.serviceAccountToken !== rawCurrentToken;
+
+      if (!tokenUpdated) {
+        console.warn('A token update was requested, but nothing was changed');
+        return;
+      }
+      if (tokenUpdated) {
+        const newTokenSecret = updateTokenSecret(tokenValues.serviceAccountToken, true);
+        const secretResource = new CoreNamespacedResource(
+          CoreNamespacedResourceKind.Secret,
+          migMeta.configNamespace
+        );
+
+        const patchRes = yield client.patch(
+          secretResource,
+          currentToken.MigToken.spec.secretRef.name,
+          newTokenSecret
+        );
+        const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
+        const updatedTokenRes = yield client.get(migTokenResource, tokenValues.name);
+        const updatedMigTokenSecretResult = yield client.get(
+          secretResource,
+          updatedTokenRes.data.spec.secretRef.name
+        );
+        yield put(TokenActions.updateTokenSuccess(updatedTokenRes.data));
+        const updatedMigToken = {
+          MigToken: updatedTokenRes.data,
+          Secret: updatedMigTokenSecretResult.data,
+        };
+
+        yield put(TokenActions.setCurrentToken(updatedMigToken));
+
+        yield put(
+          TokenActions.setTokenAddEditStatus(
+            createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+          )
+        );
+        yield put(TokenActions.watchTokenAddEditStatus(tokenValues.name));
+      }
+    } else {
+      yield put(AlertActions.alertWarnTimeout(`NATODO: Implement oauth regeneration "${name}"!`));
+    }
+
+    // Update the state tree with the updated cluster, and start to watch
+    // again to check for its condition after edits
+  } catch (err) {
+    yield put(TokenActions.updateTokenFailure(err));
+  }
+}
+
+function* watchUpdateTokenRequest() {
+  yield takeLatest(TokenActionTypes.UPDATE_TOKEN_REQUEST, updateTokenRequest);
 }
 
 function* watchAddTokenRequest() {
   yield takeLatest(TokenActionTypes.ADD_TOKEN_REQUEST, addTokenRequest);
 }
 
+function* watchTokenAddEditStatus() {
+  yield takeLatest(TokenActionTypes.WATCH_TOKEN_ADD_EDIT_STATUS, startWatchingTokenAddEditStatus);
+}
+
+function* watchRemoveTokenRequest() {
+  yield takeLatest(TokenActionTypes.REMOVE_TOKEN_REQUEST, removeTokenSaga);
+}
+
 export default {
   // NATODO: Implement and/or remove unecessary copies
-  // watchRemoveClusterRequest,
+  watchRemoveTokenRequest,
   watchAddTokenRequest,
-  // watchUpdateClusterRequest,
-  // watchClusterAddEditStatus,
+  watchUpdateTokenRequest,
+  watchTokenAddEditStatus,
   fetchTokensGenerator,
 };
