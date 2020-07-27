@@ -79,7 +79,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
     setFieldTouched,
     setFieldValue,
     handleBlur,
-    onClose,
+    handleClose,
   } = props;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
@@ -249,7 +249,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         >
           Check connection
         </Button>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
       </Flex>
@@ -268,7 +268,7 @@ export interface IFormValues {
 }
 interface IOtherProps {
   onAddEditSubmit: any;
-  onClose: any;
+  handleClose: any;
   addEditStatus: any;
   currentCluster: any;
   checkConnection: (name) => void;

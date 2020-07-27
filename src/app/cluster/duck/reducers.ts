@@ -14,11 +14,13 @@ export interface IClusterReducerState {
   clusterList: ICluster[];
   searchTerm: string;
   addEditStatus: IAddEditStatus;
+  currentCluster: ICluster;
 }
 
 type ClusterReducerFn = (state: IClusterReducerState, action: any) => IClusterReducerState;
 
 export const INITIAL_STATE: IClusterReducerState = {
+  currentCluster: null,
   isFetchingInitialClusters: true,
   isPolling: false,
   isError: false,

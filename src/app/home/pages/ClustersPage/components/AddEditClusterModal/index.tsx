@@ -28,6 +28,8 @@ interface IAddEditClusterModal {
   onHandleClose: () => void;
   resetAddEditState: () => void;
   updateCluster: (updatedCluster) => void;
+  currentCluster: ICluster;
+  setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
 const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
@@ -43,6 +45,8 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   onHandleClose,
   resetAddEditState,
   updateCluster,
+  currentCluster,
+  setCurrentCluster,
 }: IAddEditClusterModal) => {
   if (!isAdmin) return null;
 
@@ -71,9 +75,9 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
     }
   });
 
-  const onClose = () => {
-    cancelAddEditWatch();
+  const handleClose = () => {
     resetAddEditState();
+    cancelAddEditWatch();
     setCurrentCluster(null);
     onHandleClose();
     pollingContext.startAllDefaultPolling();
@@ -82,10 +86,16 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit cluster' : 'Add cluster';
 
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="always-scroll">
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={modalTitle}
+      className="always-scroll"
+    >
       <AddEditClusterForm
         onAddEditSubmit={onAddEditSubmit}
-        onClose={onClose}
+        handleClose={handleClose}
         addEditStatus={addEditStatus}
         initialClusterValues={initialClusterValues}
         currentCluster={currentCluster}
@@ -100,6 +110,7 @@ export default connect(
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,
+      currentCluster: state.cluster.currentCluster,
       clusterList: state.cluster.clusterList,
       isAdmin: state.auth.isAdmin,
     };
@@ -120,5 +131,7 @@ export default connect(
     resetAddEditState: () => {
       dispatch(ClusterActions.setClusterAddEditStatus(defaultAddEditStatus()));
     },
+    setCurrentCluster: (currentCluster: ICluster) =>
+      dispatch(ClusterActions.setCurrentCluster(currentCluster)),
   })
 )(AddEditClusterModal);
