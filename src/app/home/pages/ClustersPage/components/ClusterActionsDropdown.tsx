@@ -20,7 +20,6 @@ interface IClusterActionsDropdownProps {
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
-  cluster,
   clusterInfo,
   removeCluster,
   isAdmin,
@@ -112,7 +111,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
       <AddEditClusterModal
         isOpen={isAddEditOpen}
         onHandleClose={toggleIsAddEditOpen}
-        cluster={cluster}
         initialClusterValues={{
           clusterName,
           clusterUrl,

@@ -257,7 +257,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
     </Form>
   );
 };
-interface IFormValues {
+export interface IFormValues {
   name: string;
   url: string;
   token: string;
