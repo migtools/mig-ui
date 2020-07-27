@@ -1,10 +1,13 @@
 import { IToken, ITokenFormValues } from './types';
+import { IAddEditStatus } from '../../common/add_edit_state';
 
 export const TokenActionTypes = {
+  TOGGLE_ADD_EDIT_TOKEN_MODAL: 'TOGGLE_ADD_EDIT_TOKEN_MODAL',
+  SET_ASSOCIATED_CLUSTER: 'SET_ASSOCIATED_CLUSTER',
+  SET_CURRENT_TOKEN: 'SET_CURRENT_TOKEN',
   MIG_TOKEN_FETCH_REQUEST: 'MIG_TOKEN_FETCH_REQUEST',
   MIG_TOKEN_FETCH_SUCCESS: 'MIG_TOKEN_FETCH_SUCCESS',
   MIG_TOKEN_FETCH_FAILURE: 'MIG_TOKEN_FETCH_FAILURE',
-  // NATODO actions for add/edit status?
   UPDATE_TOKEN_REQUEST: 'UPDATE_TOKEN_REQUEST',
   UPDATE_TOKEN_SUCCESS: 'UPDATE_TOKEN_SUCCESS',
   UPDATE_TOKEN_FAILURE: 'UPDATE_TOKEN_FAILURE',
@@ -43,19 +46,6 @@ const updateTokens = (updatedTokens: IToken[]) => ({
   updatedTokens,
 });
 
-const migTokenFetchRequest = () => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_REQUEST,
-});
-
-const migTokenFetchSuccess = (tokenList: IToken[]) => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_SUCCESS,
-  tokenList,
-});
-
-const migTokenFetchFailure = () => ({
-  type: TokenActionTypes.MIG_TOKEN_FETCH_FAILURE,
-});
-
 const startTokenPolling = (params) => ({
   type: TokenActionTypes.TOKEN_POLL_START,
   params,
@@ -80,24 +70,66 @@ const removeTokenFailure = (err) => ({
   err,
 });
 
-// NATODO: Implement and/or remove unecessary copies
+const setTokenAddEditStatus = (status: IAddEditStatus) => ({
+  type: TokenActionTypes.SET_TOKEN_ADD_EDIT_STATUS,
+  status,
+});
+
+const watchTokenAddEditStatus = (tokenName: string) => ({
+  type: TokenActionTypes.WATCH_TOKEN_ADD_EDIT_STATUS,
+  tokenName,
+});
+
+const cancelWatchTokenAddEditStatus = () => ({
+  type: TokenActionTypes.CANCEL_WATCH_TOKEN_ADD_EDIT_STATUS,
+});
+
+const updateTokenRequest = (tokenValues: ITokenFormValues) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_REQUEST,
+  tokenValues,
+});
+
+const updateTokenFailure = (err) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_FAILURE,
+  err,
+});
+
+const updateTokenSuccess = (updatedToken: IToken) => ({
+  type: TokenActionTypes.UPDATE_TOKEN_SUCCESS,
+  updatedToken,
+});
+
+const toggleAddEditTokenModal = () => ({
+  type: TokenActionTypes.TOGGLE_ADD_EDIT_TOKEN_MODAL,
+});
+
+const setCurrentToken = (currentToken: IToken) => ({
+  type: TokenActionTypes.SET_CURRENT_TOKEN,
+  currentToken,
+});
+
+const setAssociatedCluster = (associatedCluster: string) => ({
+  type: TokenActionTypes.SET_ASSOCIATED_CLUSTER,
+  associatedCluster,
+});
+
 export const TokenActions = {
   removeTokenRequest,
   removeTokenSuccess,
   removeTokenFailure,
-  // updateClusterSuccess,
-  // updateSearchTerm,
-  // setClusterAddEditStatus,
-  // watchClusterAddEditStatus,
-  // cancelWatchClusterAddEditStatus,
-  // clusterFetchSuccess,
-  // clusterFetchRequest,
-  // clusterFetchFailure,
-  // updateClusterRequest,
+  updateTokenRequest,
+  updateTokenSuccess,
+  updateTokenFailure,
+  setTokenAddEditStatus,
+  watchTokenAddEditStatus,
+  cancelWatchTokenAddEditStatus,
   addTokenSuccess,
   addTokenFailure,
   addTokenRequest,
   updateTokens,
   startTokenPolling,
   stopTokenPolling,
+  toggleAddEditTokenModal,
+  setCurrentToken,
+  setAssociatedCluster,
 };

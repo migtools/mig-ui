@@ -11,8 +11,8 @@ export const getTokenInfo = (token: IToken) => {
     type: 'Loading...',
     expirationTimestamp: 'Loading...',
     formattedExpiration: 'Loading...',
+    tokenStatus: null,
     statusType: StatusType.OK,
-    statusText: 'Loading...',
   };
 
   if (token.MigToken.status) {
@@ -33,12 +33,16 @@ export const getTokenInfo = (token: IToken) => {
         statusText = 'Expiring soon';
       }
     }
-
+    const hasCriticalCondition = token.MigToken.status.conditions.some(
+      (c) => c.category === 'Critical'
+    );
     retTokenInfo.expirationTimestamp = expirationTimestamp;
     retTokenInfo.formattedExpiration = formattedExpiration;
     retTokenInfo.type = token.MigToken.status.type;
-    retTokenInfo.statusType = statusType;
-    retTokenInfo.statusText = statusText;
+    retTokenInfo.tokenStatus = !token.MigToken.status
+      ? null
+      : token.MigToken.status.conditions.filter((c) => c.type === 'Ready').length > 0;
+    retTokenInfo.statusType = hasCriticalCondition ? StatusType.ERROR : StatusType.OK;
   }
 
   return retTokenInfo;
