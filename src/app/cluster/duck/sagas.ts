@@ -286,9 +286,6 @@ function* updateClusterRequest(action) {
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
 
-  // const currentCluster = state.cluster.clusterList.find((c) => {
-  //   return c.MigCluster.metadata.name === clusterValues.name;
-  // });
   const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
   const getClusterRes = yield client.get(migClusterResource, clusterValues.name);
   const secretResource = new CoreNamespacedResource(
