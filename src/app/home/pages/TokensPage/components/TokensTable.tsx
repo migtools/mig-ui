@@ -4,7 +4,7 @@ import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
-import StatusIcon from '../../../../common/components/StatusIcon';
+import StatusIcon, { StatusType } from '../../../../common/components/StatusIcon';
 import IconWithText from '../../../../common/components/IconWithText';
 import { IToken } from '../../../../token/duck/types';
 import { getTokenInfo } from '../helpers';
@@ -12,14 +12,18 @@ import TokenActionsDropdown from './TokenActionsDropdown';
 
 interface ITokensTableProps {
   tokenList: IToken[];
-  toggleAddEditModal: () => void;
+  toggleAddEditTokenModal: () => void;
   removeToken: (tokenName: string) => void;
+  watchTokenAddEditStatus: (tokenName: string) => void;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
   tokenList,
-  toggleAddEditModal,
+  toggleAddEditTokenModal,
   removeToken,
+  watchTokenAddEditStatus,
+  setCurrentToken,
 }: ITokensTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -36,9 +40,9 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
       type,
       associatedClusterName,
       expirationTimestamp,
-      statusText,
+      tokenStatus,
     } = getTokenInfo(token);
-    return [tokenName, type, associatedClusterName, expirationTimestamp, statusText, ''];
+    return [tokenName, type, associatedClusterName, expirationTimestamp, tokenStatus, ''];
   };
 
   const { sortBy, onSort, sortedItems } = useSortState(tokenList, getSortValues);
@@ -51,8 +55,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
       type,
       associatedClusterName,
       formattedExpiration,
-      statusType,
-      statusText,
+      tokenStatus,
     } = getTokenInfo(token);
     return {
       cells: [
@@ -61,7 +64,12 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
         associatedClusterName,
         formattedExpiration,
         {
-          title: <IconWithText icon={<StatusIcon status={statusType} />} text={statusText} />,
+          title: (
+            <IconWithText
+              icon={<StatusIcon status={tokenStatus ? StatusType.OK : StatusType.ERROR} />}
+              text={tokenStatus ? 'Connected' : 'ConnectionFailed'}
+            />
+          ),
         },
         {
           title: (
@@ -69,6 +77,9 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
               associatedClusterName={associatedClusterName}
               token={token}
               removeToken={removeToken}
+              toggleAddEditTokenModal={toggleAddEditTokenModal}
+              watchTokenAddEditStatus={watchTokenAddEditStatus}
+              setCurrentToken={setCurrentToken}
             />
           ),
         },
@@ -80,7 +91,7 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <Button id="add-token-btn" onClick={toggleAddEditModal} variant="secondary">
+          <Button id="add-token-btn" onClick={toggleAddEditTokenModal} variant="secondary">
             Add token
           </Button>
         </LevelItem>

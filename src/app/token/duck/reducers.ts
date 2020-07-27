@@ -8,7 +8,10 @@ export interface ITokenReducerState {
   isFetching: boolean;
   tokenList: IToken[];
   isFetchingInitialTokens: boolean;
-  addEditStatus: IAddEditStatus;
+  tokenAddEditStatus: IAddEditStatus;
+  isAddEditTokenModalOpen: boolean;
+  currentToken: IToken;
+  associatedCluster: string;
   // NATODO searchTerm? other state?
 }
 
@@ -20,7 +23,10 @@ export const INITIAL_STATE: ITokenReducerState = {
   isFetching: false,
   tokenList: [],
   isFetchingInitialTokens: true,
-  addEditStatus: defaultAddEditStatus(),
+  tokenAddEditStatus: defaultAddEditStatus(),
+  currentToken: null,
+  isAddEditTokenModalOpen: false,
+  associatedCluster: null,
 };
 
 // NATODO what can we abstract out here? Take lessons from Migration Analytics?
@@ -55,6 +61,38 @@ const tokenActionHandlers: { [actionType: string]: TokenReducerFn } = {
       tokenList: action.updatedTokens,
     };
   },
+  [TokenActionTypes.UPDATE_TOKEN_SUCCESS]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      isFetchingInitialTokens: false,
+    };
+  },
+  [TokenActionTypes.SET_TOKEN_ADD_EDIT_STATUS]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      tokenAddEditStatus: action.status,
+    };
+  },
+  [TokenActionTypes.SET_CURRENT_TOKEN]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      currentToken: action.currentToken,
+    };
+  },
+  [TokenActionTypes.SET_ASSOCIATED_CLUSTER]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      associatedCluster: action.associatedCluster,
+    };
+  },
+
+  [TokenActionTypes.TOGGLE_ADD_EDIT_TOKEN_MODAL]: (state = INITIAL_STATE, action) => {
+    return {
+      ...state,
+      isAddEditTokenModalOpen: !state.isAddEditTokenModalOpen,
+    };
+  },
+
   // NATODO add handlers for the other actions
 };
 
