@@ -16,26 +16,56 @@ import shortid from 'shortid';
 import {
   IAddEditStatus,
   AddEditMode,
-  addEditButtonText,
   isAddEditButtonDisabled,
+  addEditStatusText,
+  addEditButtonText,
+  isCheckConnectionButtonDisabled,
 } from '../../add_edit_state';
 import SimpleSelect from '../SimpleSelect';
 import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
-import { ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
+import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
+import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+
+const currentStatusFn = addEditStatusText('token');
+const addEditButtonTextFn = addEditButtonText('token');
 
 interface IOtherProps {
-  addEditStatus: IAddEditStatus;
+  tokenAddEditStatus: IAddEditStatus;
   onAddEditSubmit: (values: ITokenFormValues) => void;
   clusterList: ICluster[];
-  onClose: () => void;
+  handleClose: () => void;
   preSelectedClusterName?: string;
+  currentToken?: IToken;
+  checkConnection: (tokenName: string) => void;
 }
+const valuesHaveUpdate = (values, currentToken: IToken) => {
+  if (!currentToken) {
+    return true;
+  }
+  const tokenName = currentToken.MigToken.metadata.name;
+  const rawToken = atob(currentToken.Secret.data.token);
+  //NATODO hardcode token type until we are adding Oauth
+  const tokenType = TokenType.ServiceAccount;
+  if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
+    //NATODO update when adding Oauth
+    // const currentTokenType = currentToken.MigToken.status.type;
+    // tokenType = currentToken.MigToken.status.type;
+  }
+  const associatedClusterName = currentToken.MigToken.spec.migClusterRef.name;
+
+  return (
+    values.name !== tokenName ||
+    values.serviceAccountToken !== rawToken ||
+    values.tokenType !== tokenType ||
+    values.associatedClusterName !== associatedClusterName
+  );
+};
 
 const InnerAddEditTokenForm: React.FunctionComponent<
   IOtherProps & FormikProps<ITokenFormValues>
 > = ({
-  addEditStatus,
+  tokenAddEditStatus: currentStatus,
   values,
   touched,
   errors,
@@ -44,9 +74,11 @@ const InnerAddEditTokenForm: React.FunctionComponent<
   handleBlur,
   setFieldTouched,
   setFieldValue,
-  onClose,
+  handleClose,
   clusterList,
   preSelectedClusterName,
+  currentToken,
+  checkConnection,
 }: IOtherProps & FormikProps<ITokenFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key: TokenFieldKey) => () => setFieldTouched(key, true, true);
@@ -106,7 +138,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           name={TokenFieldKey.Name}
           type="text"
           id={TokenFieldKey.Name}
-          isDisabled={addEditStatus.mode === AddEditMode.Edit}
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
           isValid={!(touched.name && errors.name)}
         />
       </FormGroup>
@@ -119,11 +151,14 @@ const InnerAddEditTokenForm: React.FunctionComponent<
       >
         <SimpleSelect
           id={TokenFieldKey.AssociatedClusterName}
-          onChange={(selection) => setFieldValue(TokenFieldKey.AssociatedClusterName, selection)}
+          onChange={(selection) => {
+            setFieldValue(TokenFieldKey.AssociatedClusterName, selection);
+            setFieldTouched(TokenFieldKey.AssociatedClusterName);
+          }}
           options={clusterNames}
           value={values.associatedClusterName}
           placeholderText="Select cluster..."
-          isDisabled={!!preSelectedClusterName}
+          isDisabled={!!preSelectedClusterName || currentStatus.mode === AddEditMode.Edit}
         />
       </FormGroup>
       <FormGroup
@@ -141,6 +176,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.OAuth);
           }}
           label="OAuth"
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
         />
         <div className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}>
           <TextContent>
@@ -170,6 +206,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             if (checked) setFieldValue(TokenFieldKey.TokenType, TokenType.ServiceAccount);
           }}
           label="Service account"
+          isDisabled={currentStatus.mode === AddEditMode.Edit}
         />
         <FormGroup
           className={`${spacing.mtMd} ${spacing.mbLg} ${spacing.mlLg}`}
@@ -196,26 +233,61 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         <Button
           variant="primary"
           type="submit"
-          isDisabled={isAddEditButtonDisabled(addEditStatus, errors, touched, true)}
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, currentToken)
+          )}
         >
-          {addEditButtonText('token')(addEditStatus)}
+          {addEditButtonText('token')(currentStatus)}
         </Button>
-        <Button variant="secondary" onClick={onClose}>
+        <Button
+          variant="secondary"
+          isDisabled={isCheckConnectionButtonDisabled(
+            currentStatus,
+            valuesHaveUpdate(values, currentToken)
+          )}
+          onClick={() => checkConnection(values.name)}
+        >
+          Check connection
+        </Button>
+
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
       </Flex>
+      <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
     </Form>
   );
 };
 
 const AddEditTokenForm = withFormik<IOtherProps, ITokenFormValues>({
-  mapPropsToValues: () => ({
+  mapPropsToValues: ({ currentToken }) => {
+    const values: ITokenFormValues = {
+      name: '',
+      associatedClusterName: '',
+      //NATODO hardcode serviceaccount token type until OAuth support is added
+      tokenType: TokenType.ServiceAccount,
+      serviceAccountToken: '',
+    };
     // NATODO initialize here from existing token for editing?
-    name: '',
-    associatedClusterName: '',
-    tokenType: TokenType.OAuth,
-    serviceAccountToken: '',
-  }),
+    if (currentToken) {
+      values.name = currentToken.MigToken.metadata.name || '';
+      values.associatedClusterName = currentToken.MigToken.spec.migClusterRef.name || '';
+      if (currentToken.MigToken.status && currentToken.MigToken.status.type) {
+        //NATODO hardcode serviceaccount token type until OAuth support is added
+        values.tokenType = TokenType.ServiceAccount;
+        // values.tokenType =
+        //   currentToken.MigToken.status.type === 'ServiceAccount'
+        //     ? TokenType.ServiceAccount
+        //     : TokenType.OAuth;
+      }
+      values.serviceAccountToken = atob(currentToken.Secret.data.token) || '';
+    }
+    return values;
+  },
+
   validate: (values: ITokenFormValues) => {
     const errors: { [key in TokenFieldKey]?: string } = {};
     if (!values.name) {

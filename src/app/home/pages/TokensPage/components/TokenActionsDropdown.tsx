@@ -9,25 +9,29 @@ import {
 import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
-// import { tokenContext } from '../../../duck/context';
 import { ITokenInfo } from '../helpers';
-import { IToken } from '../../../../token/duck/types';
+import { IToken, IMigToken } from '../../../../token/duck/types';
 
 interface ITokenActionsDropdownProps {
   token: IToken;
   removeToken: (tokenName: string) => void;
+  toggleAddEditTokenModal: () => void;
   associatedClusterName: string;
+  watchTokenAddEditStatus: (name: string) => void;
+  setCurrentToken: (currentToken: IToken) => void;
 }
 
 const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> = ({
   token,
   removeToken,
   associatedClusterName,
+  toggleAddEditTokenModal,
+  watchTokenAddEditStatus,
+  setCurrentToken,
 }: ITokenActionsDropdownProps) => {
   const { name } = token.MigToken.metadata;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
-  const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const handleRemoveToken = (isConfirmed) => {
@@ -39,12 +43,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
     }
   };
 
-  // const tokenContext = useContext(tokenContext);
-
-  // const edittoken = () => {
-  //   tokenContext.watchtokenAddEditStatus(tokenName);
-  //   toggleIsAddEditOpen();
-  // };
   const isRemoveDisabled = token.isAssociatedPlans;
   const removeItem = (
     <DropdownItem
@@ -59,8 +57,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
     </DropdownItem>
   );
 
-  console.log(token);
-
   return (
     <>
       <Dropdown
@@ -70,10 +66,11 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         isPlain
         dropdownItems={[
           <DropdownItem
-            isDisabled={true}
             onClick={() => {
               setKebabIsOpen(false);
-              // editToken();
+              toggleAddEditTokenModal();
+              setCurrentToken(token);
+              watchTokenAddEditStatus(name);
             }}
             key="editToken"
           >
@@ -93,14 +90,6 @@ const TokenActionsDropdown: React.FunctionComponent<ITokenActionsDropdownProps> 
         ]}
         position={DropdownPosition.right}
       />
-      {/* <AddEditTokenModal
-        isOpen={isAddEditOpen}
-        onHandleClose={toggleIsAddEditOpen}
-        token={token}
-        initialtokenValues={{
-          name,
-        }}
-      /> */}
       <ConfirmModal
         title="Remove this token?"
         message={`Removing "${name}" will make it unavailable for migration plans`}

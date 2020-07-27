@@ -343,7 +343,8 @@ function* updateClusterRequest(action) {
   }
 
   if (tokenUpdated) {
-    const newTokenSecret = updateTokenSecret(clusterValues.token);
+    const isMigTokenSecret = false;
+    const newTokenSecret = updateTokenSecret(clusterValues.token, isMigTokenSecret);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
       migMeta.configNamespace
