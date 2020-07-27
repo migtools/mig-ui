@@ -67,18 +67,6 @@ export const updateClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, ac
   };
 };
 
-export const updateClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    clusterList: [
-      ...state.clusterList.filter(
-        (s) => s.MigCluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
-      ),
-      { ...action.updatedCluster },
-    ],
-  };
-};
-
 export const updateClusters: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -124,8 +112,6 @@ export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) 
       return addClusterSuccess(state, action);
     case ClusterActionTypes.UPDATE_CLUSTERS:
       return updateClusters(state, action);
-    case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS:
-      return updateClusterSuccess(state, action);
     case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS:
       return removeClusterSuccess(state, action);
     case ClusterActionTypes.CLUSTER_POLL_START:

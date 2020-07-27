@@ -27,20 +27,6 @@ const AddEditClusterModal = ({
   if (!isAdmin) return null;
 
   const pollingContext = useContext(PollingContext);
-  const [currentClusterName, setCurrentClusterName] = useState(
-    initialClusterValues ? initialClusterValues.clusterName : null
-  );
-  useEffect(() => {
-    /* currentClusterName was not gettting set when exiting and re-entering the modal. 
-    Fixed by passing in cluster to modal component to trigger rerender when it changes & set 
-    cluster name inside this useEffect. 
-    
-   */
-    if (initialClusterValues) {
-      setCurrentClusterName(initialClusterValues.clusterName);
-    }
-  });
-
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -49,7 +35,7 @@ const AddEditClusterModal = ({
       }
       case AddEditMode.Add: {
         props.addCluster(clusterValues);
-        setCurrentClusterName(clusterValues.name);
+        // setCurrentClusterName(clusterValues.name);
         break;
       }
       default: {

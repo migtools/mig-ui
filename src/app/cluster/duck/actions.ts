@@ -1,5 +1,6 @@
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigCluster } from '../../../client/resources/conversions';
+import { ICluster } from './types';
 
 export const ClusterActionTypes = {
   UPDATE_CLUSTERS: 'UPDATE_CLUSTERS',
@@ -20,6 +21,7 @@ export const ClusterActionTypes = {
   UPDATE_CLUSTER_REQUEST: 'UPDATE_CLUSTER_REQUEST',
   CLUSTER_POLL_START: 'CLUSTER_POLL_START',
   CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
+  SET_CURRENT_CLUSTER: 'SET_CURRENT_CLUSTER',
 };
 
 const updateClusters = (updatedClusters: IMigCluster[]) => ({
@@ -50,11 +52,6 @@ const removeClusterSuccess = (name) => ({
 const removeClusterFailure = (err) => ({
   type: ClusterActionTypes.REMOVE_CLUSTER_FAILURE,
   err,
-});
-
-const updateClusterSuccess = (updatedCluster: IMigCluster) => ({
-  type: ClusterActionTypes.UPDATE_CLUSTER_SUCCESS,
-  updatedCluster,
 });
 
 const updateSearchTerm = (searchTerm) => ({
@@ -108,6 +105,13 @@ const stopClusterPolling = () => ({
   type: ClusterActionTypes.CLUSTER_POLL_STOP,
 });
 
+const setCurrentCluster = (currentCluster: ICluster) => {
+  return {
+    type: ClusterActionTypes.SET_CURRENT_CLUSTER,
+    currentCluster,
+  };
+};
+
 export const ClusterActions = {
   updateClusters,
   addClusterSuccess,
@@ -115,7 +119,6 @@ export const ClusterActions = {
   removeClusterRequest,
   removeClusterSuccess,
   removeClusterFailure,
-  updateClusterSuccess,
   updateSearchTerm,
   setClusterAddEditStatus,
   watchClusterAddEditStatus,
@@ -127,4 +130,5 @@ export const ClusterActions = {
   updateClusterRequest,
   startClusterPolling,
   stopClusterPolling,
+  setCurrentCluster,
 };
