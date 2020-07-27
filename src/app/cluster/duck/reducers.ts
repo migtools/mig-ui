@@ -30,6 +30,13 @@ export const INITIAL_STATE: IClusterReducerState = {
   addEditStatus: defaultAddEditStatus(),
 };
 
+export const setCurrentCluster: ClusterReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentCluster: action.currentCluster,
+  };
+};
+
 export const clusterFetchSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return { ...state, clusterList: action.clusterList, isFetching: false };
 };
@@ -100,6 +107,8 @@ export const stopClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, acti
 
 export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case ClusterActionTypes.SET_CURRENT_CLUSTER:
+      return setCurrentCluster(state, action);
     case ClusterActionTypes.ADD_CLUSTER_REQUEST:
       return addClusterRequest(state, action);
     case ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS:
