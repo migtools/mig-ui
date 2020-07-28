@@ -121,9 +121,8 @@ const getPlansWithPlanStatus = createSelector(
       let conflictErrorMsg = null;
       let hasPVWarnCondition = null;
       let hasPODWarnCondition = null;
-      //check to see if plan is locked
+
       isPlanLocked = !!lockedPlans.some((lockedPlan) => lockedPlan === plan.MigPlan.metadata.name);
-      //
 
       if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
         const emptyStatusObject = {
