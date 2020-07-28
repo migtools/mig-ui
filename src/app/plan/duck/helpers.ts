@@ -9,14 +9,10 @@ interface IPlanConditionStatuses {
   hasPVWarnCondition: boolean;
 }
 
-interface IMigrationConditionStatuses {
+interface ILatestMigrationConditionStatuses {
   latestIsFailed: boolean;
   hasCancelingCondition: boolean;
   hasCanceledCondition: boolean;
-  hasSucceededStage: boolean;
-  hasSucceededMigration: boolean;
-  hasAttemptedMigration: boolean;
-  finalMigrationComplete: boolean;
 }
 
 export const filterPlanConditions = (conditions: ICondition[]): IPlanConditionStatuses => ({
@@ -29,15 +25,10 @@ export const filterPlanConditions = (conditions: ICondition[]): IPlanConditionSt
   conflictErrorMsg: conditions.find((c) => c.type === 'PlanConflict')?.message,
 });
 
-export const filterMigrationConditions = (
-  conditions: ICondition[],
-  type: string
-): IMigrationConditionStatuses => ({
+export const filterLatestMigrationConditions = (
+  conditions: ICondition[]
+): ILatestMigrationConditionStatuses => ({
   latestIsFailed: conditions.some((c) => c.type === 'Failed'),
   hasCancelingCondition: conditions.some((c) => c.type === 'Canceling'),
   hasCanceledCondition: conditions.some((c) => c.type === 'Canceled'),
-  hasSucceededStage: type === 'Stage' && conditions.some((c) => c.type === 'Succeeded'),
-  hasSucceededMigration: type === 'Migration' && conditions.some((c) => c.type === 'Succeeded'),
-  hasAttemptedMigration: type === 'Migration',
-  finalMigrationComplete: type === 'Migration' && conditions.some((c) => c.type === 'Succeeded'),
 });

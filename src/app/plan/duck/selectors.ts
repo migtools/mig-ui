@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import moment from 'moment-timezone';
-import { filterPlanConditions, filterMigrationConditions } from './helpers';
+import { filterPlanConditions, filterLatestMigrationConditions } from './helpers';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -108,15 +108,49 @@ const getPlansWithPlanStatus = createSelector(
       );
       const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
-      const hasRunningMigrations = plan.Migrations.some((m) =>
-        m.status.conditions.some((c) => c.type === 'Running')
-      );
+
+      const hasSucceededStage = !!plan.Migrations.filter((m) => {
+        if (m.status && m.spec.stage) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !m.status.conditions.some((c) => c.type === 'Canceled')
+          );
+        }
+      }).length;
+
+      const hasSucceededMigration = !!plan.Migrations.filter((m) => {
+        if (m.status && !m.spec.stage) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !latestMigration.status.conditions.some((c) => c.type === 'Canceled')
+          );
+        }
+      }).length;
+
+      const hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
+
+      const finalMigrationComplete = !!plan.Migrations.filter((m) => {
+        if (m.status) {
+          return m.spec.stage === false && hasSucceededMigration;
+        }
+      }).length;
+
+      const hasRunningMigrations = !!plan.Migrations.filter((m) => {
+        if (m.status) {
+          return m.status.conditions.some((c) => c.type === 'Running');
+        }
+      }).length;
 
       const statusObject = {
-        isPlanLocked,
+        hasSucceededMigration,
+        hasSucceededStage,
+        hasAttemptedMigration,
+        finalMigrationComplete,
         hasRunningMigrations,
-        ...filterPlanConditions(plan.MigPlan?.status?.conditions),
-        ...filterMigrationConditions(latestMigration?.status?.conditions, latestType),
+        latestType,
+        isPlanLocked,
+        ...filterPlanConditions(plan.MigPlan?.status?.conditions || []),
+        ...filterLatestMigrationConditions(latestMigration?.status?.conditions || []),
       };
 
       return { ...plan, PlanStatus: statusObject };
