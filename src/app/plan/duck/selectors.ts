@@ -103,52 +103,18 @@ const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
     const plansWithStatus = plans.map((plan) => {
-      // const {
-      //   hasClosedCondition,
-      //   hasReadyCondition,
-      //   hasPlanError,
-      //   hasConflictCondition,
-      //   hasPODWarnCondition,
-      //   hasPVWarnCondition,
-      //   conflictErrorMsg,
-      // } = filterPlanConditions(plan.MigPlan.status.conditions);
-
-      // const {
-      //   hasClosedCondition,
-      //   hasReadyCondition,
-      //   hasPlanError,
-      //   hasConflictCondition,
-      //   hasPODWarnCondition,
-      //   hasPVWarnCondition,
-      //   conflictErrorMsg,
-      // } = filterMigrationConditions(plan.Migrations?.status?.conditions);
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
       const latestMigration = plan.Migrations.length ? plan.Migration[0] : null;
-
-      // hasPrevMigrations = !!plan.Migrations.length;
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
+      const hasRunningMigrations = plan.Migrations.some((m) =>
+        m.status.conditions.some((c) => c.type === 'Running')
+      );
 
       const statusObject = {
-        // hasSucceededStage,
-        // hasPrevMigrations,
-        // hasClosedCondition,
-        // hasReadyCondition,
-        // hasNotReadyCondition: hasPlanError,
-        // hasRunningMigrations,
-        // hasSucceededMigration,
-        // finalMigrationComplete,
-        // hasFailedCondition: hasMigrationError,
-        // hasCancelingCondition,
-        // hasCanceledCondition,
-        // latestType,
-        // hasConflictCondition,
-        // conflictErrorMsg,
-        // isPlanLocked,
-        // hasPODWarnCondition,
-        // hasPVWarnCondition,
         isPlanLocked,
+        hasRunningMigrations,
         ...filterPlanConditions(plan.MigPlan?.status?.conditions),
         ...filterMigrationConditions(latestMigration?.status?.conditions, latestType),
       };

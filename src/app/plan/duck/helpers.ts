@@ -2,7 +2,7 @@ import { IPlan, IMigPlan, IMigration, ICondition, IStatus } from '../../plan/duc
 interface IPlanConditionStatuses {
   hasClosedCondition: boolean;
   hasReadyCondition: boolean;
-  hasPlanError: boolean;
+  hasNotReadyCondition: boolean;
   hasConflictCondition: boolean;
   conflictErrorMsg: string;
   hasPODWarnCondition: boolean;
@@ -10,17 +10,19 @@ interface IPlanConditionStatuses {
 }
 
 interface IMigrationConditionStatuses {
-    latestIsFailed: boolean;
-    hasCancelingCondition: boolean;
-    hasCanceledCondition: boolean;
-    hasSucceededStage: boolean;
-    hasSucceededMigration: boolean;
+  latestIsFailed: boolean;
+  hasCancelingCondition: boolean;
+  hasCanceledCondition: boolean;
+  hasSucceededStage: boolean;
+  hasSucceededMigration: boolean;
+  hasAttemptedMigration: boolean;
+  finalMigrationComplete: boolean;
 }
 
 export const filterPlanConditions = (conditions: ICondition[]): IPlanConditionStatuses => ({
   hasClosedCondition: conditions.some((c) => c.type === 'Closed'),
   hasReadyCondition: conditions.some((c) => c.type === 'Ready'),
-  hasPlanError: conditions.some((c) => c.category === 'Critical'),
+  hasNotReadyCondition: conditions.some((c) => c.category === 'Critical'),
   hasConflictCondition: conditions.some((c) => c.type === 'PlanConflict'),
   hasPODWarnCondition: conditions.some((c) => c.type === 'PodLimitExceeded'),
   hasPVWarnCondition: conditions.some((c) => c.type === 'PVLimitExceeded'),
@@ -35,40 +37,10 @@ export const filterMigrationConditions = (
   hasCancelingCondition: conditions.some((c) => c.type === 'Canceling'),
   hasCanceledCondition: conditions.some((c) => c.type === 'Canceled'),
   hasSucceededStage:
-    type === 'Stage' && conditions.some((c) => (c.type === 'Succeeded' || c.type !== 'Canceled')),
+    type === 'Stage' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
   hasSucceededMigration:
-    type === 'Migration' && conditions.some((c) => (c.type === 'Succeeded' || c.type !== 'Canceled'),
-  hasClosedCondition: conditions.someLogicHere(),
-  hasReadyCondition: conditions.someLogicHere(),
-  hasPlanError: conditions.someLogicHere(),
-  hasConflictCondition: conditions.someLogicHere(),
-  hasPODWarnCondition: conditions.someLogicHere(),
-  hasPVWarnCondition: conditions.someLogicHere(),
-  conflictErrorMsg: conditions.someLogicHere(),
+    type === 'Migration' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
+  hasAttemptedMigration: type === 'Migration',
+  finalMigrationComplete:
+    type === 'Migration' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
 });
-
-//     }
-
-//     hasSucceededMigration = !!plan.Migrations.filter((m) => {
-//       if (m.status && !m.spec.stage) {
-//         return (
-//           m.status.conditions.some((c) => c.type === 'Succeeded') &&
-//           !latest.status.conditions.some((c) => c.type === 'Canceled')
-//         );
-//       }
-//     }).length;
-
-//     hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
-
-//     finalMigrationComplete = !!plan.Migrations.filter((m) => {
-//       if (m.status) {
-//         return m.spec.stage === false && hasSucceededMigration;
-//       }
-//     }).length;
-
-//     hasRunningMigrations = !!plan.Migrations.filter((m) => {
-//       if (m.status) {
-//         return m.status.conditions.some((c) => c.type === 'Running');
-//       }
-//     }).length;
-//   }

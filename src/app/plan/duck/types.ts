@@ -95,11 +95,9 @@ export interface IPlan {
     hasCancelingCondition: boolean;
     hasClosedCondition: boolean;
     hasConflictCondition: boolean;
-    hasFailedCondition: boolean;
     hasNotReadyCondition: boolean;
     hasPODWarnCondition: boolean;
     hasPVWarnCondition: boolean;
-    hasPrevMigrations: boolean;
     hasReadyCondition: boolean;
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;

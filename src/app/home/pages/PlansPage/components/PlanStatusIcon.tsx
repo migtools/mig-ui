@@ -16,16 +16,16 @@ interface IProps {
 
 const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   const {
-    hasFailedCondition,
     hasRunningMigrations,
     hasNotReadyCondition,
     hasSucceededStage,
     hasSucceededMigration,
     isPlanLocked,
     hasConflictCondition,
+    latestIsFailed,
   } = plan.PlanStatus;
 
-  if (hasFailedCondition || hasNotReadyCondition) {
+  if (latestIsFailed || hasNotReadyCondition) {
     return (
       <span className="pf-c-icon pf-m-danger">
         <ResourcesFullIcon />
