@@ -23,6 +23,7 @@ interface IClustersTableProps {
   isAddEditTokenModalOpen: boolean;
   isAdmin: boolean;
   setAssociatedCluster: (clusterName: string) => void;
+  setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
 const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
@@ -35,6 +36,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   isAddEditTokenModalOpen,
   isAdmin,
   setAssociatedCluster,
+  setCurrentCluster,
 }: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -91,6 +93,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               toggleAddEditTokenModal={toggleAddEditTokenModal}
               isAddEditTokenModalOpen={isAddEditTokenModalOpen}
               setAssociatedCluster={setAssociatedCluster}
+              setCurrentCluster={setCurrentCluster}
             />
           ),
         },

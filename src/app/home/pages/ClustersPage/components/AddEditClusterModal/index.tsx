@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
-import AddEditClusterForm from './AddEditClusterForm';
+import AddEditClusterForm, { IFormValues } from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
 import { ClusterActions } from '../../../../../cluster/duck/actions';
 import {
@@ -8,48 +8,57 @@ import {
   AddEditMode,
   createAddEditStatus,
   AddEditState,
+  IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { PollingContext } from '../../../../duck/context';
 import { IReduxState } from '../../../../../../reducers';
+import { ICluster } from '../../../../../cluster/duck/types';
+import { IClusterInfo } from '../../helpers';
 
-// TODO add types here
-const AddEditClusterModal = ({
+interface IAddEditClusterModal {
+  addEditStatus: IAddEditStatus;
+  initialClusterValues: IClusterInfo;
+  isOpen: boolean;
+  isPolling: boolean;
+  checkConnection: (name) => void;
+  clusterList: ICluster[];
+  isAdmin: boolean;
+  addCluster: (cluster) => void;
+  cancelAddEditWatch: () => void;
+  onHandleClose: () => void;
+  resetAddEditState: () => void;
+  updateCluster: (updatedCluster) => void;
+  currentCluster: ICluster;
+  setCurrentCluster: (currentCluster: ICluster) => void;
+}
+
+const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   addEditStatus,
   initialClusterValues,
   isOpen,
   isPolling,
   checkConnection,
   clusterList,
-  cluster,
   isAdmin,
-  ...props
-}) => {
+  addCluster,
+  cancelAddEditWatch,
+  onHandleClose,
+  resetAddEditState,
+  updateCluster,
+  currentCluster,
+  setCurrentCluster,
+}: IAddEditClusterModal) => {
   if (!isAdmin) return null;
 
   const pollingContext = useContext(PollingContext);
-  const [currentClusterName, setCurrentClusterName] = useState(
-    initialClusterValues ? initialClusterValues.clusterName : null
-  );
-  useEffect(() => {
-    /* currentClusterName was not gettting set when exiting and re-entering the modal. 
-    Fixed by passing in cluster to modal component to trigger rerender when it changes & set 
-    cluster name inside this useEffect. 
-    
-   */
-    if (initialClusterValues) {
-      setCurrentClusterName(initialClusterValues.clusterName);
-    }
-  });
-
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
-        props.updateCluster(clusterValues);
+        updateCluster(clusterValues);
         break;
       }
       case AddEditMode.Add: {
-        props.addCluster(clusterValues);
-        setCurrentClusterName(clusterValues.name);
+        addCluster(clusterValues);
         break;
       }
       default: {
@@ -66,25 +75,27 @@ const AddEditClusterModal = ({
     }
   });
 
-  const onClose = () => {
-    props.cancelAddEditWatch();
-    props.resetAddEditState();
-    setCurrentClusterName(null);
-    props.onHandleClose();
+  const handleClose = () => {
+    resetAddEditState();
+    cancelAddEditWatch();
+    setCurrentCluster(null);
+    onHandleClose();
     pollingContext.startAllDefaultPolling();
   };
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit cluster' : 'Add cluster';
 
-  const currentCluster = clusterList.find((c) => {
-    return c.MigCluster.metadata.name === currentClusterName;
-  });
-
   return (
-    <Modal isSmall isOpen={isOpen} onClose={onClose} title={modalTitle} className="always-scroll">
+    <Modal
+      isSmall
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={modalTitle}
+      className="always-scroll"
+    >
       <AddEditClusterForm
         onAddEditSubmit={onAddEditSubmit}
-        onClose={onClose}
+        handleClose={handleClose}
         addEditStatus={addEditStatus}
         initialClusterValues={initialClusterValues}
         currentCluster={currentCluster}
@@ -99,6 +110,7 @@ export default connect(
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,
+      currentCluster: state.cluster.currentCluster,
       clusterList: state.cluster.clusterList,
       isAdmin: state.auth.isAdmin,
     };
@@ -119,5 +131,7 @@ export default connect(
     resetAddEditState: () => {
       dispatch(ClusterActions.setClusterAddEditStatus(defaultAddEditStatus()));
     },
+    setCurrentCluster: (currentCluster: ICluster) =>
+      dispatch(ClusterActions.setCurrentCluster(currentCluster)),
   })
 )(AddEditClusterModal);

@@ -40,6 +40,7 @@ interface IClustersPageBaseProps {
   isAddEditTokenModalOpen: boolean;
   toggleAddEditTokenModal: () => void;
   setAssociatedCluster: (clusterName: string) => void;
+  setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -53,6 +54,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   toggleAddEditTokenModal,
   isAddEditTokenModalOpen,
   setAssociatedCluster,
+  setCurrentCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -119,6 +121,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     toggleAddEditTokenModal={toggleAddEditTokenModal}
                     isAddEditTokenModalOpen={isAddEditTokenModalOpen}
                     setAssociatedCluster={setAssociatedCluster}
+                    setCurrentCluster={setCurrentCluster}
                   />
                 )}
                 <AddEditClusterModal
@@ -158,6 +161,8 @@ const mapDispatchToProps = (dispatch) => ({
   toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
   setAssociatedCluster: (associatedCluster: string) =>
     dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
+  setCurrentCluster: (currentCluster: ICluster) =>
+    dispatch(ClusterActions.setCurrentCluster(currentCluster)),
 });
 
 export const ClustersPage = connect(mapStateToProps, mapDispatchToProps)(ClustersPageBase);
