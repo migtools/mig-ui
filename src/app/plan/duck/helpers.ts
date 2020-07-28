@@ -36,11 +36,8 @@ export const filterMigrationConditions = (
   latestIsFailed: conditions.some((c) => c.type === 'Failed'),
   hasCancelingCondition: conditions.some((c) => c.type === 'Canceling'),
   hasCanceledCondition: conditions.some((c) => c.type === 'Canceled'),
-  hasSucceededStage:
-    type === 'Stage' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
-  hasSucceededMigration:
-    type === 'Migration' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
+  hasSucceededStage: type === 'Stage' && conditions.some((c) => c.type === 'Succeeded'),
+  hasSucceededMigration: type === 'Migration' && conditions.some((c) => c.type === 'Succeeded'),
   hasAttemptedMigration: type === 'Migration',
-  finalMigrationComplete:
-    type === 'Migration' && conditions.some((c) => c.type === 'Succeeded' || c.type !== 'Canceled'),
+  finalMigrationComplete: type === 'Migration' && conditions.some((c) => c.type === 'Succeeded'),
 });

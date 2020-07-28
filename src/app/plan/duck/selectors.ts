@@ -106,7 +106,7 @@ const getPlansWithPlanStatus = createSelector(
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
-      const latestMigration = plan.Migrations.length ? plan.Migration[0] : null;
+      const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
       const hasRunningMigrations = plan.Migrations.some((m) =>
         m.status.conditions.some((c) => c.type === 'Running')
