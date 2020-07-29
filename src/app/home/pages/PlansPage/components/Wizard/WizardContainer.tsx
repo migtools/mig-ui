@@ -82,6 +82,7 @@ export interface IOtherProps {
   ) => void;
   fetchHooksRequest: (currentPlanHooks) => void;
   addPlanRequest: (migPlan) => void;
+  addAnalyticRequest: (planName: string) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
   pvResourceList: IPersistentVolumeResource[];
   onHandleWizardModalClose: () => void;
@@ -166,6 +167,7 @@ const mapStateToProps = (state: IReduxState) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addPlanRequest: (migPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
+    addAnalyticRequest: (planName) => dispatch(PlanActions.addAnalyticRequest(planName)),
     fetchNamespacesRequest: (clusterName) =>
       dispatch(PlanActions.namespaceFetchRequest(clusterName)),
     getPVResourcesRequest: (pvList, clusterName) =>

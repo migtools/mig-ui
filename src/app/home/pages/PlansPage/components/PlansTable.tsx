@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import {
+  TextContent,
+  Text,
+  Level,
+  LevelItem,
+  Button,
+  Pagination,
+  Flex,
+  FlexItem,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
@@ -10,9 +19,11 @@ import { MigrationIcon } from '@patternfly/react-icons';
 import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';
+import AnalyticsTable from './AnalyticsTable';
 import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 
 interface IPlansTableProps {
   planList: IPlan[];
@@ -40,8 +51,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     },
     { title: 'Source', transforms: [sortable] },
     { title: 'Target', transforms: [sortable] },
-    { title: 'Replication repository', transforms: [sortable] },
-    { title: 'PVs', transforms: [sortable] },
+    { title: 'Repository', transforms: [sortable] },
+    {
+      title: 'Namespaces',
+      transforms: [sortable],
+      cellTransforms: [compoundExpand],
+    },
     { title: 'Last state', transforms: [sortable] },
     '',
   ];
@@ -53,7 +68,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       sourceClusterName,
       targetClusterName,
       storageName,
-      pvCount,
+      namespaceCount,
       statusText,
     } = getPlanInfo(plan);
     return [
@@ -62,7 +77,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       sourceClusterName,
       targetClusterName,
       storageName,
-      pvCount,
+      namespaceCount,
       statusText,
       '',
     ];
@@ -73,15 +88,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   useEffect(() => setPageNumber(1), [sortBy]);
 
   const rows = flatten(
-    currentPageItems.map((plan, planIndex) => {
+    currentPageItems.map((plan: IPlan, planIndex) => {
       const {
         planName,
         migrationCount,
         sourceClusterName,
         targetClusterName,
         storageName,
-        pvCount,
+        namespaceCount,
       } = getPlanInfo(plan);
+      // const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
+
       return [
         {
           meta: { planName },
@@ -105,7 +122,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             sourceClusterName,
             targetClusterName,
             storageName,
-            pvCount,
+            {
+              title: (
+                <span className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}>
+                  <MigrationIcon key="migration-count-icon" /> {namespaceCount}
+                </span>
+              ),
+              props: {
+                isOpen: expandedCells[planName] === 5,
+                ariaControls: 'namespace-report-expansion-table',
+              },
+            },
             {
               title: <PlanStatus plan={plan} />,
             },
@@ -118,17 +145,64 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           ],
         },
         {
-          parent: planIndex * 2, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
+          parent: planIndex * 3, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
           compoundParent: 1,
           cells: [
             {
               title: (
-                <MigrationsTable
-                  type="Migrations"
-                  migrations={plan.Migrations}
-                  isPlanLocked={plan.PlanStatus.isPlanLocked}
-                  id="migrations-history-expansion-table"
-                />
+                <>
+                  <span className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}>
+                    <MigrationIcon key="migration-count-icon" /> {namespaceCount}
+                  </span>
+
+                  <MigrationsTable
+                    type="Migrations"
+                    migrations={plan.Migrations}
+                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    id="migrations-history-expansion-table"
+                  />
+                </>
+              ),
+              props: { colSpan: 9, className: 'pf-m-no-padding' },
+            },
+          ],
+        },
+        {
+          parent: planIndex * 3, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
+          compoundParent: 5,
+          cells: [
+            {
+              title: (
+                <>
+                  {/* <div className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}> */}
+                  <Flex className={flex.justifyContentCenter}>
+                    <FlexItem>
+                      <Button
+                        id="add-plan-btn"
+                        onClick={toggleAddWizardOpen}
+                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                        variant="secondary"
+                      >
+                        Refresh
+                      </Button>
+                    </FlexItem>
+                    <FlexItem>
+                      <TextContent>
+                        <Text component="p">
+                          Last updated: 2020-08-07T01:54:39Z
+                          {latestMigAnalytic.status.condition}
+                        </Text>
+                      </TextContent>
+                    </FlexItem>
+                  </Flex>
+
+                  <AnalyticsTable
+                    type="Migrations"
+                    migAnalytics={plan.Analytics}
+                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    id="migrations-history-expansion-table"
+                  />
+                </>
               ),
               props: { colSpan: 9, className: 'pf-m-no-padding' },
             },

@@ -67,6 +67,7 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
   };
+<<<<<<< HEAD
   status?: IStatus;
 }
 
@@ -83,11 +84,27 @@ export interface ICondition {
   status?: string;
   type?: string;
   reason?: string;
+=======
+  tableStatus?: {
+    copied: number;
+    end: string;
+    isFailed: boolean;
+    isSucceeded: boolean;
+    isCanceled: boolean;
+    isCanceling: boolean;
+    migrationState: string;
+    moved: number;
+    progress: number;
+    start: string;
+    stepName: string;
+  };
+>>>>>>> wire up expandable cells for namespace resources
 }
 
 export interface IPlan {
   MigPlan: IMigPlan;
   Migrations: IMigration[];
+  Analytics: any[];
   PlanStatus: {
     conflictErrorMsg: string;
     finalMigrationComplete: boolean;
@@ -105,6 +122,7 @@ export interface IPlan {
     isPlanLocked: boolean;
     latestType: string;
     latestIsFailed: boolean;
+    namespaces: any[];
   };
 }
 
@@ -117,4 +135,30 @@ export interface ISourceClusterNamespace {
   podCount: number;
   pvcCount: number;
   serviceCount: number;
+}
+
+export interface IAnalytic {
+  apiVersion: string;
+  kind: string;
+  metadata: {
+    name: string;
+    namespace: string;
+    creationTimestamp: string;
+  };
+  spec: {
+    analyzeImageCount: boolean;
+    analyzeK8sResources: boolean;
+    analyzePVCapacity: boolean;
+    plan: {
+      name: string;
+      namespace: string;
+    };
+    quiescePods: boolean;
+    stage: boolean;
+  };
+  status?: {
+    analytics?: any;
+    conditions?: any;
+    observedGeneration?: any;
+  };
 }

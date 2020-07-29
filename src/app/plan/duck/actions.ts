@@ -7,6 +7,12 @@ export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
+  DELETE_ANALYTIC_REQUEST: 'DELETE_ANALYTIC_REQUEST',
+  DELETE_ANALYTIC_SUCCESS: 'DELETE_ANALYTIC_SUCCESS',
+  DELETE_ANALYTIC_FAILURE: 'DELETE_ANALYTIC_FAILURE',
+  ADD_ANALYTIC_REQUEST: 'ADD_ANALYTIC_REQUEST',
+  ADD_ANALYTIC_SUCCESS: 'ADD_ANALYTIC_SUCCESS',
+  ADD_ANALYTIC_FAILURE: 'ADD_ANALYTIC_FAILURE',
   ADD_PLAN_REQUEST: 'ADD_PLAN_REQUEST',
   ADD_PLAN_SUCCESS: 'ADD_PLAN_SUCCESS',
   ADD_PLAN_FAILURE: 'ADD_PLAN_FAILURE',
@@ -230,6 +236,33 @@ const addPlanFailure = (error) => ({
   error,
 });
 
+const addAnalyticRequest = (planName: string) => ({
+  type: PlanActionTypes.ADD_ANALYTIC_REQUEST,
+  planName,
+});
+
+const addAnalyticSuccess = () => ({
+  type: PlanActionTypes.ADD_ANALYTIC_SUCCESS,
+});
+
+const addAnalyticFailure = (error) => ({
+  type: PlanActionTypes.ADD_ANALYTIC_FAILURE,
+  error,
+});
+const deleteAnalyticRequest = (analytic: string) => ({
+  type: PlanActionTypes.DELETE_ANALYTIC_REQUEST,
+  analytic,
+});
+
+const deleteAnalyticSuccess = () => ({
+  type: PlanActionTypes.DELETE_ANALYTIC_SUCCESS,
+});
+
+const deleteAnalyticFailure = (error) => ({
+  type: PlanActionTypes.DELETE_ANALYTIC_FAILURE,
+  error,
+});
+
 const initStage = (planName: string) => ({
   type: PlanActionTypes.INIT_STAGE,
   planName,
@@ -436,6 +469,13 @@ export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
   updatePlans,
+  deleteAnalyticRequest,
+  deleteAnalyticSuccess,
+  deleteAnalyticFailure,
+  addAnalyticRequest,
+  addAnalyticSuccess,
+  addAnalyticFailure,
+  addPlanRequest,
   addPlanSuccess,
   addPlanFailure,
   removePlanSuccess,
@@ -464,7 +504,6 @@ export const PlanActions = {
   validatePlanFailure,
   validatePlanPollStart,
   validatePlanPollStop,
-  addPlanRequest,
   initStage,
   initMigration,
   migrationCancelRequest,

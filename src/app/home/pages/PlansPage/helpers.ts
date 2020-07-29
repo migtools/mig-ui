@@ -30,14 +30,21 @@ export const getPlanStatusText = (plan: IPlan) => {
   return 'Waiting for status...';
 };
 
-export const getPlanInfo = (plan: IPlan) => ({
-  planName: plan.MigPlan.metadata.name,
-  migrationCount: plan.Migrations.length || 0,
-  sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name,
-  targetClusterName: plan.MigPlan.spec.destMigClusterRef.name,
-  storageName: plan.MigPlan.spec.migStorageRef ? plan.MigPlan.spec.migStorageRef.name : 'N/A',
-  pvCount: plan.MigPlan.spec.persistentVolumes ? plan.MigPlan.spec.persistentVolumes.length : 0,
-  statusText: getPlanStatusText(plan),
-});
+export const getPlanInfo = (plan: IPlan) => {
+  const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
+  const namespaces = latestMigAnalytic?.status?.analytics?.namespaces
+    ? latestMigAnalytic?.status?.analytics?.namespaces
+    : [];
+
+  return {
+    planName: plan.MigPlan.metadata.name,
+    migrationCount: plan.Migrations.length || 0,
+    sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name,
+    targetClusterName: plan.MigPlan.spec.destMigClusterRef.name,
+    storageName: plan.MigPlan.spec.migStorageRef ? plan.MigPlan.spec.migStorageRef.name : 'N/A',
+    namespaceCount: namespaces ? namespaces.length : 0,
+    statusText: getPlanStatusText(plan),
+  };
+};
 
 export type IPlanInfo = ReturnType<typeof getPlanInfo>;

@@ -1,0 +1,12 @@
+@import 'src/colors';
+.totalRowClass {
+  font-style: bold !important;
+  font-weight: 600 !important;
+}
+.customTableStyle {
+  // color: red !important;
+  // background-color: green !important;
+  ::before .pf-c-table tbody.pf-m-expanded > tr > :not(th):first-child::before {
+    background-color: green !important;
+  }
+}

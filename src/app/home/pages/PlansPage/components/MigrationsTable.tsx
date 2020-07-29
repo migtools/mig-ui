@@ -8,14 +8,14 @@ import {
   Progress,
   ProgressSize,
   ProgressVariant,
+  Spinner,
 } from '@patternfly/react-core';
-import { Spinner } from '@patternfly/react-core';
 const styles = require('./MigrationsTable.module');
 
-import { IMigrationWithStatus } from '../types';
+import { IMigration } from '../../../../plan/duck/types';
 
 interface IProps {
-  migrations: IMigrationWithStatus[];
+  migrations: IMigration[];
   id: string;
   type: string;
   isPlanLocked: boolean;

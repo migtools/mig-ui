@@ -16,6 +16,7 @@ import { PersistentVolumeDiscovery } from '../../../client/resources/discovery';
 import {
   updateMigPlanFromValues,
   createInitialMigPlan,
+  createInitialMigAnalytic,
   createMigMigration,
   createMigHook,
   updateMigHook,
@@ -45,6 +46,43 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /******************************************************************** */
 /* Plan sagas */
 /******************************************************************** */
+function* deleteAnalyticSaga(action) {
+  try {
+    const { analytic } = action;
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    yield client.delete(new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace), analytic);
+
+    // yield put(PlanActions.setCurrentPlan(createPlanRes.data));
+    yield put(PlanActions.deleteAnalyticSuccess());
+  } catch (err) {
+    yield put(PlanActions.deleteAnalyticFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
+  }
+}
+
+function* addAnalyticSaga(action) {
+  const { planName } = action;
+  try {
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migAnalyticObj = createInitialMigAnalytic(planName, migMeta.namespace);
+
+    yield client.create(
+      new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace),
+      migAnalyticObj
+    );
+
+    // yield put(PlanActions.setCurrentPlan(createPlanRes.data));
+    yield put(PlanActions.addAnalyticSuccess());
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
+  }
+}
 function* addPlanSaga(action) {
   const { migPlan } = action;
   try {
@@ -325,6 +363,10 @@ function* pvUpdatePoll(action) {
               yield put(PlanActions.updatePlanList(updatedPlan));
               yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
               yield put(PlanActions.pvUpdatePollStop());
+              yield put(PlanActions.deleteAnalyticRequest(updatedPlan.metadata.name));
+              yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
+              yield delay(5000);
+              yield put(PlanActions.addAnalyticRequest(updatedPlan.metadata.name));
             }
           } else {
             // no values updated
@@ -527,6 +569,7 @@ function* planCloseAndDelete(action) {
     yield call(planCloseSaga, action);
     yield call(checkClosedStatus, action);
     yield call(planDeleteAfterClose, action.planName);
+    yield put(PlanActions.deleteAnalyticRequest(action.planName));
     yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
@@ -575,6 +618,17 @@ function* getPVResourcesRequest(action) {
 }
 
 function* fetchPlansGenerator() {
+  function fetchMigAnalyticRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+    const refs: Array<Promise<any>> = [];
+
+    migPlans.forEach((plan) => {
+      const migAnalyticResource = new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace);
+      refs.push(client.list(migAnalyticResource));
+    });
+
+    return refs;
+  }
+
   function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
     const refs: Array<Promise<any>> = [];
 
@@ -592,8 +646,16 @@ function* fetchPlansGenerator() {
   try {
     let planList = yield client.list(resource);
     planList = yield planList.data.items;
-    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.auth.migMeta, planList));
-    const groupedPlans = yield planUtils.groupPlans(planList, refs);
+
+    const migMigrationRefs = yield Promise.all(
+      fetchMigMigrationsRefs(client, state.auth.migMeta, planList)
+    );
+
+    const migAnalyticRefs = yield Promise.all(
+      fetchMigAnalyticRefs(client, state.auth.migMeta, planList)
+    );
+
+    const groupedPlans = yield planUtils.groupPlans(planList, migMigrationRefs, migAnalyticRefs);
     return { updatedPlans: groupedPlans };
   } catch (e) {
     throw e;
@@ -1174,6 +1236,14 @@ function* watchNamespaceFetchRequest() {
   yield takeLatest(PlanActionTypes.NAMESPACE_FETCH_REQUEST, namespaceFetchRequest);
 }
 
+function* watchAddAnalyticRequest() {
+  yield takeLatest(PlanActionTypes.ADD_ANALYTIC_REQUEST, addAnalyticSaga);
+}
+
+function* watchDeleteAnalyticRequest() {
+  yield takeLatest(PlanActionTypes.DELETE_ANALYTIC_REQUEST, deleteAnalyticSaga);
+}
+
 function* watchAddPlanRequest() {
   yield takeLatest(PlanActionTypes.ADD_PLAN_REQUEST, addPlanSaga);
 }
@@ -1204,6 +1274,8 @@ export default {
   watchRunStageRequest,
   watchRunMigrationRequest,
   watchAddPlanRequest,
+  watchAddAnalyticRequest,
+  watchDeleteAnalyticRequest,
   watchPvDiscoveryRequest,
   watchPlanCloseAndDelete,
   watchPlanStatus,
