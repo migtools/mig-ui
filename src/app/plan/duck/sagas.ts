@@ -74,14 +74,14 @@ function* addPlanSaga(action) {
   }
 }
 
-function* namespaceFetchRequest(action) {
+export function* namespaceFetchRequest(action) {
   const state = yield select();
   const discoveryClient: IDiscoveryClient = NON_ADMIN_ENABLED
     ? ClientFactory.discovery(state, action.clusterName)
     : ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
-    const res = yield discoveryClient.get(namespaces);
+    const res = yield call(discoveryClient.get, namespaces);
     const namespaceResourceList = res.data.resources;
     yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
   } catch (err) {
