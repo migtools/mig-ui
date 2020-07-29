@@ -4,6 +4,7 @@ import {
   ResourcesAlmostEmptyIcon,
   ResourcesFullIcon,
   WarningTriangleIcon,
+  ExclamationCircleIcon,
 } from '@patternfly/react-icons';
 import { Popover, PopoverPosition } from '@patternfly/react-core';
 
@@ -25,10 +26,10 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     latestIsFailed,
   } = plan.PlanStatus;
 
-  if (latestIsFailed || hasNotReadyCondition) {
+  if (latestIsFailed) {
     return (
       <span className="pf-c-icon pf-m-danger">
-        <ResourcesFullIcon />
+        <ExclamationCircleIcon />
       </span>
     );
   } else if (hasConflictCondition) {
@@ -44,6 +45,12 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
           <WarningTriangleIcon />
         </span>
       </Popover>
+    );
+  } else if (hasNotReadyCondition) {
+    return (
+      <span className="pf-c-icon pf-m-warning">
+        <WarningTriangleIcon />
+      </span>
     );
   } else if (hasRunningMigrations || isPlanLocked) {
     return <Spinner size="md" />;

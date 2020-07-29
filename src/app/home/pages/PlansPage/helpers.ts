@@ -17,6 +17,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     isPlanLocked,
   } = plan.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
+  if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasClosedCondition) return 'Closed';
   if (hasConflictCondition) return conflictErrorMsg;
   if (hasCancelingCondition) return `Canceling ${latestType}`;
@@ -24,7 +25,6 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasSucceededMigration) return 'Migration Succeeded';
   if (hasSucceededStage) return 'Stage Succeeded';
-  if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasReadyCondition) return 'Ready';
   if (isPlanLocked) return 'Pending';
   return 'Waiting for status...';
