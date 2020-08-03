@@ -1,3 +1,4 @@
+// import { mocked } from 'ts-jest/utils';
 import { takeLatest } from 'redux-saga/effects';
 import { runSaga } from 'redux-saga';
 import { PlanActions, PlanActionTypes } from '../actions';
@@ -33,6 +34,8 @@ const response = {
   headers: {},
 };
 
+// const MockedDiscoveryClient = mock(DiscoveryClient);
+
 jest.mock('../../../../client/discoveryClient', () => {
   return {
     DiscoveryClient: jest.fn().mockImplementation(() => {
@@ -42,6 +45,8 @@ jest.mock('../../../../client/discoveryClient', () => {
     }),
   };
 });
+
+const MockedDiscoveryClient = DiscoveryClient as jest.Mock<DiscoveryClient>;
 
 describe('watchNamespaceFetchRequest', () => {
   const genObject = planSagas.watchNamespaceFetchRequest();
@@ -58,8 +63,6 @@ describe('watchNamespaceFetchRequest', () => {
 });
 
 describe('namespaceFetchRequest', () => {
-  const MockedDiscoveryClient = DiscoveryClient as jest.Mock<DiscoveryClient>;
-
   beforeEach(() => {
     MockedDiscoveryClient.mockClear();
   });
