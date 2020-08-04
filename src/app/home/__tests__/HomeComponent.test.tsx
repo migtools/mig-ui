@@ -9,7 +9,18 @@ import { Provider } from 'react-redux';
 import { history } from '../../../helpers';
 import HomeComponent from '../HomeComponent';
 import { ConnectedRouter } from 'connected-react-router';
-import { PersistGate } from 'redux-persist/es/integration/react';
+// import { PersistGate } from 'redux-persist/es/integration/react';
+
+// import openshiftLogo from '../../common/components/CAM_LOGO.svg';
+// import logoMA from '../../common/components/logoMA.svg';
+
+jest.mock('../../common/components/CAM_LOGO.svg', () => {
+  return '';
+});
+
+jest.mock('../../common/components/logoMA.svg', () => {
+  return '';
+});
 
 import configureStore from 'redux-mock-store';
 // const { persistor } = configureStore();
@@ -23,9 +34,10 @@ describe('<HomeComponent />', () => {
   it('loads home page', () => {
     const mockStore = configureStore([]);
     const store = mockStore(initialStore);
-    console.log(store.getState());
+    // store.dispatch = jest.fn();
+
     render(
-      <Provider store={store.getState()}>
+      <Provider store={store}>
         {/* <PersistGate loading={<Spinner size="xl" />} persistor={persistor}> */}
         <ConnectedRouter history={history}>
           <HomeComponent />
