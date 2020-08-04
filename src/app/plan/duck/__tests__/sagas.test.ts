@@ -25,7 +25,9 @@ export async function recordSaga(saga, initialAction) {
   return dispatched;
 }
 
-const payload = '[{"resources":[{"name":"test","podCount":4,"pvcCount":0,"serviceCount":4}]}]';
+// const MockedDiscoveryClient = mocked(DiscoveryClient);
+const MockedDiscoveryClient = DiscoveryClient as jest.Mock<DiscoveryClient>;
+const payload = '';
 const response = {
   data: payload,
   status: 200,
@@ -33,8 +35,6 @@ const response = {
   config: {},
   headers: {},
 };
-
-// const MockedDiscoveryClient = mock(DiscoveryClient);
 
 jest.mock('../../../../client/discoveryClient', () => {
   return {
@@ -45,8 +45,6 @@ jest.mock('../../../../client/discoveryClient', () => {
     }),
   };
 });
-
-const MockedDiscoveryClient = DiscoveryClient as jest.Mock<DiscoveryClient>;
 
 describe('watchNamespaceFetchRequest', () => {
   const genObject = planSagas.watchNamespaceFetchRequest();
@@ -64,10 +62,29 @@ describe('watchNamespaceFetchRequest', () => {
 
 describe('namespaceFetchRequest', () => {
   beforeEach(() => {
-    MockedDiscoveryClient.mockClear();
+    // MockedDiscoveryClient.mockClear();
   });
 
   it('should call API and dispatch success Fetch action', async () => {
+    const payload = '[{"resources":[{"name":"test","podCount":4,"pvcCount":0,"serviceCount":4}]}]';
+    const response = {
+      data: payload,
+      status: 200,
+      statusText: 'OK',
+      config: {},
+      headers: {},
+    };
+
+    jest.mock('../../../../client/discoveryClient', () => {
+      return {
+        DiscoveryClient: jest.fn().mockImplementationOnce(() => {
+          return {
+            get: () => Promise.resolve(response),
+          };
+        }),
+      };
+    });
+
     const namespaces = JSON.parse(payload);
 
     const dispatched = await recordSaga(namespaceFetchRequest, {
@@ -75,6 +92,26 @@ describe('namespaceFetchRequest', () => {
       type: 'NAMESPACE_FETCH_REQUEST',
     });
     expect(dispatched).toContainEqual(PlanActions.namespaceFetchSuccess(namespaces.resources));
+    expect(MockedDiscoveryClient).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call API and dispatch fail Fetch action', async () => {
+    jest.mock('../../../../client/discoveryClient', () => {
+      return {
+        DiscoveryClient: jest.fn().mockImplementationOnce(() => {
+          return {
+            get: () => Promise.reject(new Error('not found')),
+          };
+        }),
+      };
+    });
+
+    const dispatched = await recordSaga(namespaceFetchRequest, {
+      clusterName: 'ocp311',
+      type: 'NAMESPACE_FETCH_REQUEST',
+    });
+
+    expect(dispatched).toContainEqual(PlanActions.namespaceFetchFailure('not found'));
     expect(MockedDiscoveryClient).toHaveBeenCalledTimes(1);
   });
 });
