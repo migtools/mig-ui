@@ -78,7 +78,9 @@ Therefore there is no need to test each *leaf* component, unless it brings any s
 UI *Component Unit Tests* cover *non connected* components.
 While *Integration Tests* cover "connected" components.
 
-*Note*: Testing UI components this way is not considered *pure unit testing* and we're fine with that, again it's all about the confidence tests provide instead of a *false sense* of code coverage.
+*Note 1*: Testing UI components this way is not considered *pure unit testing* and we're fine with that, again it's all about the confidence tests provide instead of a *false sense* of code coverage.
+
+*Note 2*: When implementing tests, it's common to get output from React Testing Library (when using `screen.debug()` or `screen.getByRole('')` instructions). Meanwhile to avoid the output to be truncated, use env `DEBUG_PRINT_LIMIT` variable, i.e. `export DEBUG_PRINT_LIMIT="100000"`.
 
 To stay close to simulating end-user interaction with the application it's important to query DOM elements being visible on a page instead of pulling internal components or nodes. Please get familiar with the queries priority order from [Using queries](https://testing-library.com/docs/guide-which-query).
 
