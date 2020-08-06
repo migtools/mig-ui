@@ -35,7 +35,9 @@ export const TreeViewListItem: React.FunctionComponent<ITreeViewListItemProps> =
         >
           {children ? (
             <span className={styles['pf-c-tree-view__node-toggle-icon']}>
-              <AngleRightIcon aria-hidden="true" />
+              <i>
+                <AngleRightIcon aria-hidden="true" />
+              </i>
             </span>
           ) : null}
           <span className={styles['pf-c-tree-view__node-text']}>{name}</span>
