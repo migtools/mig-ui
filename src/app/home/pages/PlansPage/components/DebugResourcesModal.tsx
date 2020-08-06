@@ -7,6 +7,7 @@ import { TreeView, ITreeDataItem } from '../../../../common/components/TreeView'
 const DUMMY_DEBUG_DATA: ITreeDataItem[] = [
   {
     name: 'MigPlan: openshift-migration/myplan',
+    defaultExpanded: true,
     children: [
       { name: 'MigCluster: openshift-migration/mycluster' },
       { name: 'MigStorage: openshift-migration/mystorage' },
@@ -82,7 +83,7 @@ const DebugResourcesModal: React.FunctionComponent<IDebugResourcesModalProps> = 
       </Button>,
     ]}
   >
-    <TreeView data={DUMMY_DEBUG_DATA} defaultAllExpanded />
+    <TreeView data={DUMMY_DEBUG_DATA} />
   </Modal>
 );
 
