@@ -73,7 +73,7 @@ const DebugResourcesModal: React.FunctionComponent<IDebugResourcesModalProps> = 
   <Modal
     id="debug-resources-modal"
     isSmall
-    title="Migration Plan Resources (DEBUG)"
+    title="Migration plan resources (DEBUG)"
     isOpen
     isFooterLeftAligned
     onClose={onClose}
