@@ -14,7 +14,6 @@ import MigrateModal from './MigrateModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-import TreeView from '../../../../common/components/TreeView/TreeView';
 import DebugResourcesModal from './DebugResourcesModal';
 
 const PlanActions = ({ plan, history }) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from '@patternfly/react-core';
-import TreeView, { ITreeDataItem } from '../../../../common/components/TreeView/TreeView';
+import { TreeView, ITreeDataItem } from '../../../../common/components/TreeView';
 
 // TODO replace this dummy data with real data from redux
 // This example came from https://github.com/konveyor/enhancements/pull/2/files
