@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import {
+  Button,
   Bullseye,
   EmptyState,
   Title,
@@ -8,9 +9,16 @@ import {
   TextContent,
   TextVariants,
   Spinner,
+  Popover,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateVariant,
+  PopoverPosition,
 } from '@patternfly/react-core';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAnalytic } from '../../../../plan/duck/types';
+import ReactJson from 'react-json-view';
 const styles = require('./AnalyticsTable.module');
 
 interface IProps {
@@ -25,11 +33,12 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanL
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState<boolean>(false);
   const columns = [
     { title: 'Namespace' },
-    { title: 'Total Kubernetes resources' },
-    { title: 'Total PVCs' },
-    { title: 'Total PVC capacity' },
-    { title: 'Total images' },
-    { title: 'Total image size' },
+    { title: 'Kubernetes resources' },
+    { title: 'PVCs' },
+    { title: 'PVC capacity' },
+    { title: 'Images' },
+    { title: 'Image size' },
+    { title: '' },
   ];
 
   useEffect(() => {
@@ -51,12 +60,38 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanL
         { title: namespace.pvCapacity || 0 },
         { title: namespace.imageCount || 0 },
         { title: namespace.imageSizeTotal || 0 },
-        // {
-        //   title: <MigrationActions migration={migration} />,
-        //   props: {
-        //     className: 'pf-c-table__action',
-        //   },
-        // },
+        {
+          title: (
+            <Popover
+              className={styles.jsonPopover}
+              position={PopoverPosition.top}
+              bodyContent={
+                namespace ? (
+                  <ReactJson src={namespace} enableClipboard={false} />
+                ) : (
+                  <EmptyState variant={EmptyStateVariant.small}>
+                    <EmptyStateIcon icon={ExclamationTriangleIcon} />
+                    <Title headingLevel="h5" size="sm">
+                      No namespace data found
+                    </Title>
+                    <EmptyStateBody>Unable to retrieve namespace data</EmptyStateBody>
+                  </EmptyState>
+                )
+              }
+              aria-label="pv-details"
+              closeBtnAriaLabel="close-pv-details"
+              maxWidth="200rem"
+            >
+              <Button isDisabled={isLoadingAnalytics} variant="link">
+                View JSON
+              </Button>
+            </Popover>
+          ),
+
+          props: {
+            className: 'pf-c-table__action',
+          },
+        },
       ];
       return {
         cells: rowCells,
