@@ -43,6 +43,7 @@ export default function* rootSaga() {
     planSagas.watchAddPlanRequest(),
     planSagas.watchAddAnalyticRequest(),
     planSagas.watchDeleteAnalyticRequest(),
+    planSagas.watchRefreshAnalyticRequest(),
     planSagas.watchRunMigrationRequest(),
     planSagas.watchRunStageRequest(),
     planSagas.watchPvDiscoveryRequest(),

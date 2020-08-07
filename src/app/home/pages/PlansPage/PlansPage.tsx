@@ -38,6 +38,7 @@ interface IPlansPageBaseProps {
   runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
+  refreshAnalyticRequest: (analyticName: string) => void;
   isFetchingInitialPlans: boolean;
 }
 
@@ -49,6 +50,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   runMigrationRequest,
   planCloseAndDeleteRequest,
   migrationCancelRequest,
+  refreshAnalyticRequest,
   isFetchingInitialPlans,
 }: IPlansPageBaseProps) => {
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
@@ -139,6 +141,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                     planList={planList}
                     addPlanDisabledObj={addPlanDisabledObj}
                     toggleAddWizardOpen={toggleAddWizardOpen}
+                    refreshAnalyticRequest={refreshAnalyticRequest}
                   />
                 )}
                 <WizardContainer
@@ -173,6 +176,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
   migrationCancelRequest: (migrationName: string) =>
     dispatch(PlanActions.migrationCancelRequest(migrationName)),
+  refreshAnalyticRequest: (analyticName: string) =>
+    dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
 });
 
 export const PlansPage = connect(mapStateToProps, mapDispatchToProps)(PlansPageBase);

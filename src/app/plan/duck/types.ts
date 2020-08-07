@@ -67,8 +67,20 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
   };
-<<<<<<< HEAD
   status?: IStatus;
+  tableStatus?: {
+    copied: number;
+    end: string;
+    isFailed: boolean;
+    isSucceeded: boolean;
+    isCanceled: boolean;
+    isCanceling: boolean;
+    migrationState: string;
+    moved: number;
+    progress: number;
+    start: string;
+    stepName: string;
+  };
 }
 
 export interface IStatus {
@@ -84,21 +96,6 @@ export interface ICondition {
   status?: string;
   type?: string;
   reason?: string;
-=======
-  tableStatus?: {
-    copied: number;
-    end: string;
-    isFailed: boolean;
-    isSucceeded: boolean;
-    isCanceled: boolean;
-    isCanceling: boolean;
-    migrationState: string;
-    moved: number;
-    progress: number;
-    start: string;
-    stepName: string;
-  };
->>>>>>> wire up expandable cells for namespace resources
 }
 
 export interface IPlan {
@@ -123,6 +120,7 @@ export interface IPlan {
     latestType: string;
     latestIsFailed: boolean;
     namespaces: any[];
+    latestAnalyticTransitionTime: string;
   };
 }
 

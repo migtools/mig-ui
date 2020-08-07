@@ -7,6 +7,9 @@ export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
+  REFRESH_ANALYTIC_REQUEST: 'REFRESH_ANALYTIC_REQUEST',
+  REFRESH_ANALYTIC_SUCCESS: 'REFRESH_ANALYTIC_SUCCESS',
+  REFRESH_ANALYTIC_FAILURE: 'REFRESH_ANALYTIC_FAILURE',
   DELETE_ANALYTIC_REQUEST: 'DELETE_ANALYTIC_REQUEST',
   DELETE_ANALYTIC_SUCCESS: 'DELETE_ANALYTIC_SUCCESS',
   DELETE_ANALYTIC_FAILURE: 'DELETE_ANALYTIC_FAILURE',
@@ -249,6 +252,21 @@ const addAnalyticFailure = (error) => ({
   type: PlanActionTypes.ADD_ANALYTIC_FAILURE,
   error,
 });
+
+const refreshAnalyticRequest = (analyticName: string) => ({
+  type: PlanActionTypes.REFRESH_ANALYTIC_REQUEST,
+  analyticName,
+});
+
+const refreshAnalyticSuccess = () => ({
+  type: PlanActionTypes.REFRESH_ANALYTIC_SUCCESS,
+});
+
+const refreshAnalyticFailure = (error) => ({
+  type: PlanActionTypes.REFRESH_ANALYTIC_FAILURE,
+  error,
+});
+
 const deleteAnalyticRequest = (analytic: string) => ({
   type: PlanActionTypes.DELETE_ANALYTIC_REQUEST,
   analytic,
@@ -469,6 +487,9 @@ export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
   updatePlans,
+  refreshAnalyticRequest,
+  refreshAnalyticSuccess,
+  refreshAnalyticFailure,
   deleteAnalyticRequest,
   deleteAnalyticSuccess,
   deleteAnalyticFailure,

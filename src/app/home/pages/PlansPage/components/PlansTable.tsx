@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
+import moment from 'moment';
 import {
   TextContent,
   Text,
@@ -10,6 +11,7 @@ import {
   Pagination,
   Flex,
   FlexItem,
+  TextVariants,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
@@ -29,6 +31,7 @@ interface IPlansTableProps {
   planList: IPlan[];
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
+  refreshAnalyticRequest: (analyticName: string) => void;
 }
 
 interface IExpandedCells {
@@ -39,6 +42,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
   addPlanDisabledObj,
   toggleAddWizardOpen,
+  refreshAnalyticRequest,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
@@ -97,7 +101,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         storageName,
         namespaceCount,
       } = getPlanInfo(plan);
-      // const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
 
       return [
         {
@@ -175,12 +178,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               title: (
                 <>
                   {/* <div className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}> */}
-                  <Flex className={flex.justifyContentCenter}>
+                  <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
                     <FlexItem>
                       <Button
                         id="add-plan-btn"
-                        onClick={toggleAddWizardOpen}
-                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+                        onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
+                        isDisabled={plan.PlanStatus.isPlanLocked}
                         variant="secondary"
                       >
                         Refresh
@@ -188,9 +191,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     </FlexItem>
                     <FlexItem>
                       <TextContent>
-                        <Text component="p">
-                          Last updated: 2020-08-07T01:54:39Z
-                          {latestMigAnalytic.status.condition}
+                        <Text component={TextVariants.small}>
+                          Last updated:{` `}
+                          {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                            .local()
+                            .format('YYYY-MM-DD HH:mm:ss')}
                         </Text>
                       </TextContent>
                     </FlexItem>

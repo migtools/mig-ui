@@ -46,6 +46,22 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /******************************************************************** */
 /* Plan sagas */
 /******************************************************************** */
+function* refreshAnalyticSaga(action) {
+  try {
+    const { analyticName } = action;
+
+    yield put(PlanActions.deleteAnalyticRequest(analyticName));
+    yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
+    yield delay(5000);
+    yield put(PlanActions.addAnalyticRequest(analyticName));
+    yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
+    yield put(PlanActions.refreshAnalyticSuccess());
+  } catch (err) {
+    yield put(PlanActions.deleteAnalyticFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
+  }
+}
+
 function* deleteAnalyticSaga(action) {
   try {
     const { analytic } = action;
@@ -363,10 +379,7 @@ function* pvUpdatePoll(action) {
               yield put(PlanActions.updatePlanList(updatedPlan));
               yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
               yield put(PlanActions.pvUpdatePollStop());
-              yield put(PlanActions.deleteAnalyticRequest(updatedPlan.metadata.name));
-              yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
-              yield delay(5000);
-              yield put(PlanActions.addAnalyticRequest(updatedPlan.metadata.name));
+              yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
             }
           } else {
             // no values updated
@@ -1240,6 +1253,9 @@ function* watchAddAnalyticRequest() {
   yield takeLatest(PlanActionTypes.ADD_ANALYTIC_REQUEST, addAnalyticSaga);
 }
 
+function* watchRefreshAnalyticRequest() {
+  yield takeLatest(PlanActionTypes.REFRESH_ANALYTIC_REQUEST, refreshAnalyticSaga);
+}
 function* watchDeleteAnalyticRequest() {
   yield takeLatest(PlanActionTypes.DELETE_ANALYTIC_REQUEST, deleteAnalyticSaga);
 }
@@ -1276,6 +1292,7 @@ export default {
   watchAddPlanRequest,
   watchAddAnalyticRequest,
   watchDeleteAnalyticRequest,
+  watchRefreshAnalyticRequest,
   watchPvDiscoveryRequest,
   watchPlanCloseAndDelete,
   watchPlanStatus,
