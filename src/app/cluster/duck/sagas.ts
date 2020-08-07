@@ -294,7 +294,7 @@ function* updateClusterRequest(action) {
   );
   const updatedMigClusterSecretResult = yield client.get(
     secretResource,
-    getClusterRes.data.spec.secretRef.name
+    getClusterRes.data.spec.serviceAccountSecretRef.name
   );
   const currentCluster = {
     MigCluster: getClusterRes.data,
