@@ -52,7 +52,6 @@ function* refreshAnalyticSaga(action) {
 
     yield put(PlanActions.deleteAnalyticRequest(analyticName));
     yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
-    yield delay(5000);
     yield put(PlanActions.addAnalyticRequest(analyticName));
     yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
     yield put(PlanActions.refreshAnalyticSuccess());

@@ -111,7 +111,7 @@ const getPlansWithPlanStatus = createSelector(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
       const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
-      const latestAnalytic = plan.Analytics.length ? plan.Analytics[0] : null;
+      const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
 
       const hasSucceededStage = !!plan.Migrations.filter((m) => {

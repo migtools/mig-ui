@@ -177,30 +177,30 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  {/* <div className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}> */}
-                  <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
-                    <FlexItem>
-                      <Button
-                        id="add-plan-btn"
-                        onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                        isDisabled={plan.PlanStatus.isPlanLocked}
-                        variant="secondary"
-                      >
-                        Refresh
-                      </Button>
-                    </FlexItem>
-                    <FlexItem>
-                      <TextContent>
-                        <Text component={TextVariants.small}>
-                          Last updated:{` `}
-                          {moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                            .local()
-                            .format('YYYY-MM-DD HH:mm:ss')}
-                        </Text>
-                      </TextContent>
-                    </FlexItem>
-                  </Flex>
-
+                  {plan.PlanStatus?.latestAnalyticTransitionTime && (
+                    <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
+                      <FlexItem>
+                        <Button
+                          id="add-plan-btn"
+                          onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
+                          isDisabled={plan.PlanStatus.isPlanLocked}
+                          variant="secondary"
+                        >
+                          Refresh
+                        </Button>
+                      </FlexItem>
+                      <FlexItem>
+                        <TextContent>
+                          <Text component={TextVariants.small}>
+                            Last updated:{` `}
+                            {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                              .local()
+                              .format('YYYY-MM-DD HH:mm:ss')}
+                          </Text>
+                        </TextContent>
+                      </FlexItem>
+                    </Flex>
+                  )}
                   <AnalyticsTable
                     type="Migrations"
                     migAnalytics={plan.Analytics}
