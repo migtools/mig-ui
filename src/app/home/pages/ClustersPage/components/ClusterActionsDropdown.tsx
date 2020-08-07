@@ -14,13 +14,21 @@ interface IClusterActionsDropdownProps {
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
   isAdmin: boolean;
+  toggleAddEditTokenModal: () => void;
+  isAddEditTokenModalOpen: boolean;
+  setAssociatedCluster: (clusterName: string) => void;
+  setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
-  cluster,
   clusterInfo,
   removeCluster,
   isAdmin,
+  toggleAddEditTokenModal,
+  isAddEditTokenModalOpen,
+  setAssociatedCluster,
+  cluster,
+  setCurrentCluster,
 }: IClusterActionsDropdownProps) => {
   const {
     clusterName,
@@ -36,7 +44,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
-  const [isAddEditTokenModalOpen, toggleAddEditTokenModal] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
   const handleRemoveCluster = (isConfirmed) => {
@@ -49,11 +56,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
   };
 
   const clusterContext = useContext(ClusterContext);
-
-  const editCluster = () => {
-    clusterContext.watchClusterAddEditStatus(clusterName);
-    toggleIsAddEditOpen();
-  };
 
   return (
     <>
@@ -69,6 +71,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
                   onClick={() => {
                     setKebabIsOpen(false);
                     toggleAddEditTokenModal();
+                    setAssociatedCluster(clusterName);
                   }}
                   key="addToken"
                 >
@@ -81,7 +84,9 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
                 <DropdownItem
                   onClick={() => {
                     setKebabIsOpen(false);
-                    editCluster();
+                    clusterContext.watchClusterAddEditStatus(clusterName);
+                    setCurrentCluster(cluster);
+                    toggleIsAddEditOpen();
                   }}
                   isDisabled={isHostCluster}
                   key="editCluster"
@@ -106,7 +111,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
       <AddEditClusterModal
         isOpen={isAddEditOpen}
         onHandleClose={toggleIsAddEditOpen}
-        cluster={cluster}
         initialClusterValues={{
           clusterName,
           clusterUrl,
@@ -124,9 +128,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         onHandleClose={handleRemoveCluster}
         id="confirm-cluster-removal"
       />
-      {isAddEditTokenModalOpen && (
-        <AddEditTokenModal onClose={toggleAddEditTokenModal} preSelectedClusterName={clusterName} />
-      )}
+      {isAddEditTokenModalOpen && <AddEditTokenModal />}
     </>
   );
 };

@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 import moment from 'moment-timezone';
+import { filterPlanConditions, filterLatestMigrationConditions } from './helpers';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -102,134 +103,54 @@ const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
     const plansWithStatus = plans.map((plan) => {
-      let isPlanLocked = null;
-      let hasReadyCondition = null;
-      let hasPlanError = null;
-      let hasPrevMigrations = null;
-      let hasRunningMigrations = null;
-      let finalMigrationComplete = null;
-      let hasAttemptedMigration = null;
-      let hasSucceededMigration = null;
-      let hasSucceededStage = null;
-      let hasClosedCondition = null;
-      let hasCancelingCondition = null;
-      let hasCanceledCondition = null;
-      const hasMigrationError = null;
-      let latestType = null;
-      let latestIsFailed = false;
-      let hasConflictCondition = null;
-      let conflictErrorMsg = null;
-      let hasPVWarnCondition = null;
-      let hasPODWarnCondition = null;
-      //check to see if plan is locked
-      isPlanLocked = !!lockedPlans.some((lockedPlan) => lockedPlan === plan.MigPlan.metadata.name);
-      //
-
-      if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
-        const emptyStatusObject = {
-          hasSucceededStage,
-          hasPrevMigrations,
-          hasPVWarnCondition,
-          hasPODWarnCondition,
-          hasClosedCondition,
-          hasReadyCondition,
-          hasNotReadyCondition: hasPlanError,
-          hasRunningMigrations,
-          hasSucceededMigration,
-          hasCancelingCondition,
-          hasCanceledCondition,
-          finalMigrationComplete,
-          hasFailedCondition: hasMigrationError,
-          latestType,
-          isPlanLocked,
-        };
-        return { ...plan, PlanStatus: emptyStatusObject };
-      }
-
-      hasClosedCondition = !!plan.MigPlan.status.conditions.filter((c) => c.type === 'Closed')
-        .length;
-      hasReadyCondition = !!plan.MigPlan.status.conditions.filter((c) => c.type === 'Ready').length;
-      hasPlanError = plan.MigPlan.status.conditions.filter((c) => c.category === 'Critical') > 0;
-      hasConflictCondition = !!plan.MigPlan.status.conditions.some(
-        (c) => c.type === 'PlanConflict'
+      const isPlanLocked = !!lockedPlans.some(
+        (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
-      hasPODWarnCondition = !!plan.MigPlan.status.conditions.some(
-        (c) => c.type === 'PodLimitExceeded'
-      );
-      hasPVWarnCondition = !!plan.MigPlan.status.conditions.some(
-        (c) => c.type === 'PVLimitExceeded'
-      );
+      const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
+      const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
 
-      const planConflictCond = plan.MigPlan.status.conditions.find(
-        (c) => c.type === 'PlanConflict'
-      );
-      if (planConflictCond) {
-        conflictErrorMsg = planConflictCond.message;
-      }
-
-      if (plan.Migrations.length) {
-        const latest = plan.Migrations[0];
-
-        hasPrevMigrations = !!plan.Migrations.length;
-        latestType = latest.spec.stage ? 'Stage' : 'Migration';
-
-        if (latest.status && latest.status.conditions) {
-          latestIsFailed = !!latest.status.conditions.some((c) => c.type === 'Failed');
-          hasCancelingCondition = !!latest.status.conditions.some((c) => c.type === 'Canceling');
-          hasCanceledCondition = !!latest.status.conditions.some((c) => c.type === 'Canceled');
+      const hasSucceededStage = !!plan.Migrations.filter((m) => {
+        if (m.status && m.spec.stage) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !m.status.conditions.some((c) => c.type === 'Canceled')
+          );
         }
+      }).length;
 
-        hasSucceededStage = !!plan.Migrations.filter((m) => {
-          if (m.status && m.spec.stage) {
-            return (
-              m.status.conditions.some((c) => c.type === 'Succeeded') &&
-              !m.status.conditions.some((c) => c.type === 'Canceled')
-            );
-          }
-        }).length;
+      const hasSucceededMigration = !!plan.Migrations.filter((m) => {
+        if (m.status && !m.spec.stage) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !latestMigration.status.conditions.some((c) => c.type === 'Canceled')
+          );
+        }
+      }).length;
 
-        hasSucceededMigration = !!plan.Migrations.filter((m) => {
-          if (m.status && !m.spec.stage) {
-            return (
-              m.status.conditions.some((c) => c.type === 'Succeeded') &&
-              !latest.status.conditions.some((c) => c.type === 'Canceled')
-            );
-          }
-        }).length;
+      const hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
 
-        hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
+      const finalMigrationComplete = !!plan.Migrations.filter((m) => {
+        if (m.status) {
+          return m.spec.stage === false && hasSucceededMigration;
+        }
+      }).length;
 
-        finalMigrationComplete = !!plan.Migrations.filter((m) => {
-          if (m.status) {
-            return m.spec.stage === false && hasSucceededMigration;
-          }
-        }).length;
-
-        hasRunningMigrations = !!plan.Migrations.filter((m) => {
-          if (m.status) {
-            return m.status.conditions.some((c) => c.type === 'Running');
-          }
-        }).length;
-      }
+      const hasRunningMigrations = !!plan.Migrations.filter((m) => {
+        if (m.status) {
+          return m.status.conditions.some((c) => c.type === 'Running');
+        }
+      }).length;
 
       const statusObject = {
-        hasSucceededStage,
-        hasPrevMigrations,
-        hasClosedCondition,
-        hasReadyCondition,
-        hasNotReadyCondition: hasPlanError,
-        hasRunningMigrations,
         hasSucceededMigration,
+        hasSucceededStage,
+        hasAttemptedMigration,
         finalMigrationComplete,
-        hasFailedCondition: hasMigrationError,
-        hasCancelingCondition,
-        hasCanceledCondition,
+        hasRunningMigrations,
         latestType,
-        hasConflictCondition,
-        conflictErrorMsg,
         isPlanLocked,
-        hasPODWarnCondition,
-        hasPVWarnCondition,
+        ...filterPlanConditions(plan.MigPlan?.status?.conditions || []),
+        ...filterLatestMigrationConditions(latestMigration?.status?.conditions || []),
       };
 
       return { ...plan, PlanStatus: statusObject };

@@ -14,11 +14,13 @@ export interface IClusterReducerState {
   clusterList: ICluster[];
   searchTerm: string;
   addEditStatus: IAddEditStatus;
+  currentCluster: ICluster;
 }
 
 type ClusterReducerFn = (state: IClusterReducerState, action: any) => IClusterReducerState;
 
 export const INITIAL_STATE: IClusterReducerState = {
+  currentCluster: null,
   isFetchingInitialClusters: true,
   isPolling: false,
   isError: false,
@@ -26,6 +28,13 @@ export const INITIAL_STATE: IClusterReducerState = {
   clusterList: [],
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
+};
+
+export const setCurrentCluster: ClusterReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentCluster: action.currentCluster,
+  };
 };
 
 export const clusterFetchSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
@@ -67,18 +76,6 @@ export const updateClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, ac
   };
 };
 
-export const updateClusterSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return {
-    ...state,
-    clusterList: [
-      ...state.clusterList.filter(
-        (s) => s.MigCluster.metadata.name !== action.updatedCluster.MigCluster.metadata.name
-      ),
-      { ...action.updatedCluster },
-    ],
-  };
-};
-
 export const updateClusters: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
@@ -110,6 +107,8 @@ export const stopClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, acti
 
 export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case ClusterActionTypes.SET_CURRENT_CLUSTER:
+      return setCurrentCluster(state, action);
     case ClusterActionTypes.ADD_CLUSTER_REQUEST:
       return addClusterRequest(state, action);
     case ClusterActionTypes.SET_CLUSTER_ADD_EDIT_STATUS:
@@ -124,8 +123,6 @@ export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) 
       return addClusterSuccess(state, action);
     case ClusterActionTypes.UPDATE_CLUSTERS:
       return updateClusters(state, action);
-    case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS:
-      return updateClusterSuccess(state, action);
     case ClusterActionTypes.REMOVE_CLUSTER_SUCCESS:
       return removeClusterSuccess(state, action);
     case ClusterActionTypes.CLUSTER_POLL_START:

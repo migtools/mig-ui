@@ -153,7 +153,6 @@ const HooksStep = (props) => {
             setInitialHookValues={setInitialHookValues}
             setIsAddHooksOpen={setIsAddHooksOpen}
             isAddHooksOpen={isAddHooksOpen}
-            isEditHook={false}
             {...props}
           />
         </GridItem>
