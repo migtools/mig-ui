@@ -4,4 +4,15 @@
 
 .logoPointer {
   cursor: default !important;
+  pointer-events: none !important;
 }
+
+.logoStyle {
+  margin-left: auto;
+  cursor: default !important;
+  vertical-align: middle;
+  height: 5em;
+  width: 13em !important;
+}
+// .headerBrandLogo svg {
+// }

@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { CogIcon, UserIcon } from '@patternfly/react-icons';
-import openshiftLogo from './CAM_LOGO.svg';
+import logoKonveyor from './logoKonveyor.svg';
+import logoRedHat from './logoRedHat.svg';
 import IconWithText from './IconWithText';
 import { IReduxState } from '../../../reducers';
 import {
@@ -16,9 +17,10 @@ import {
   ButtonVariant,
 } from '@patternfly/react-core';
 import accessibleStyles from '@patternfly/react-styles/css/utilities/Accessibility/accessibility';
-
 import { css } from '@patternfly/react-styles';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
+import { APP_TITLE } from '../../../app/common/constants';
+import { APP_BRAND, BrandType } from '../../global-flags';
 const styles = require('./PageHeaderComponent.module');
 
 interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
@@ -35,6 +37,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
+    logoComponent="span"
     toolbar={
       <Toolbar>
         <ToolbarGroup>
@@ -59,11 +62,23 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
             </ToolbarItem>
           )}
         </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Brand
+              className={styles.logoStyle}
+              src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor}
+              alt="Logo"
+            />
+          </ToolbarItem>
+        </ToolbarGroup>
       </Toolbar>
     }
     logo={
       <>
-        <Brand className={styles.logoPointer} src={openshiftLogo} alt="OpenShift Logo" />
+        <Title className={styles.logoPointer} size="2xl">
+          {APP_TITLE}
+        </Title>
+
         {NON_ADMIN_ENABLED && (
           <Title
             size="2xl"
