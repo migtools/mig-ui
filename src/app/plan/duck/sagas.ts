@@ -377,8 +377,8 @@ function* pvUpdatePoll(action) {
               yield put(PlanActions.setCurrentPlan(updatedPlan));
               yield put(PlanActions.updatePlanList(updatedPlan));
               yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-              yield put(PlanActions.pvUpdatePollStop());
               yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
+              yield put(PlanActions.pvUpdatePollStop());
             }
           } else {
             // no values updated
