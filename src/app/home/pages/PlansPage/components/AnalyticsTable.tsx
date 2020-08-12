@@ -174,6 +174,10 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     setCurrentRows(mappedRows);
   }, [migAnalytics, isRefreshingAnalytic]);
 
+  if (isRefreshingAnalytic && analyticPercentComplete === 100) {
+    return null;
+  }
+
   if (isPlanLocked) {
     return (
       <Bullseye>
