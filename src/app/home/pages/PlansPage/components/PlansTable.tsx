@@ -32,6 +32,7 @@ interface IPlansTableProps {
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
   refreshAnalyticRequest: (analyticName: string) => void;
+  isRefreshingAnalytic: boolean;
 }
 
 interface IExpandedCells {
@@ -43,6 +44,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   addPlanDisabledObj,
   toggleAddWizardOpen,
   refreshAnalyticRequest,
+  isRefreshingAnalytic,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
@@ -154,10 +156,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  <span className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}>
-                    <MigrationIcon key="migration-count-icon" /> {namespaceCount}
-                  </span>
-
                   <MigrationsTable
                     type="Migrations"
                     migrations={plan.Migrations}
@@ -203,8 +201,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                   )}
                   <AnalyticsTable
                     type="Migrations"
+                    analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
+                    latestAnalytic={plan.PlanStatus.latestAnalytic}
                     migAnalytics={plan.Analytics}
                     isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    isRefreshingAnalytic={isRefreshingAnalytic}
                     id="migrations-history-expansion-table"
                   />
                 </>

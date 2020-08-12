@@ -157,6 +157,8 @@ const getPlansWithPlanStatus = createSelector(
         ...filterPlanConditions(plan.MigPlan?.status?.conditions || []),
         ...filterLatestMigrationConditions(latestMigration?.status?.conditions || []),
         ...filterLatestAnalyticConditions(latestAnalytic?.status?.conditions || []),
+        analyticPercentComplete: latestAnalytic?.status?.analytics?.percentComplete || null,
+        latestAnalytic: latestAnalytic || null,
       };
 
       return { ...plan, PlanStatus: statusObject };

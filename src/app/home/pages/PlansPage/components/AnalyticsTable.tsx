@@ -14,6 +14,9 @@ import {
   EmptyStateBody,
   EmptyStateVariant,
   PopoverPosition,
+  Progress,
+  ProgressSize,
+  ProgressVariant,
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -25,12 +28,22 @@ interface IProps {
   migAnalytics?: IAnalytic[];
   id?: string;
   type?: string;
-  isPlanLocked?: boolean;
+  isPlanLocked: boolean;
+  isRefreshingAnalytic: boolean;
+  latestAnalytic: IAnalytic;
+  analyticPercentComplete: number;
 }
 
-const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanLocked }) => {
+const AnalyticsTable: React.FunctionComponent<IProps> = ({
+  migAnalytics,
+  isPlanLocked,
+  latestAnalytic,
+  analyticPercentComplete,
+  isRefreshingAnalytic,
+}) => {
   const [currentRows, setCurrentRows] = useState([]);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState<boolean>(false);
+
   const columns = [
     { title: 'Namespace' },
     { title: 'Kubernetes resources' },
@@ -41,18 +54,27 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanL
     { title: '' },
   ];
 
+  function ProgressWrapper() {
+    return (
+      <Progress
+        value={latestAnalytic?.status?.analytics?.percentComplete || 0}
+        title={'Retrieving namespace details'}
+        size={ProgressSize.sm}
+        variant={ProgressVariant.info}
+      />
+    );
+  }
+
   useEffect(() => {
-    const latestMigAnalytic = migAnalytics ? migAnalytics[0] : null;
-    const namespaces = latestMigAnalytic?.status?.analytics?.namespaces
-      ? latestMigAnalytic?.status?.analytics?.namespaces
+    const namespaces = latestAnalytic?.status?.analytics?.namespaces
+      ? latestAnalytic?.status?.analytics?.namespaces
       : [];
 
     setIsLoadingAnalytics(
-      latestMigAnalytic?.status?.analytics?.percentComplete !== 100 ? true : false
+      (analyticPercentComplete !== 100 && latestAnalytic) || isRefreshingAnalytic ? true : false
     );
 
     const mappedRows = namespaces.map((namespace) => {
-      console.log('analytic');
       const rowCells = [
         { title: namespace?.namespace || 0 },
         { title: namespace.k8sResourceTotal || 0 },
@@ -97,7 +119,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanL
         cells: rowCells,
       };
     });
-    const analytics = latestMigAnalytic?.status?.analytics || [];
+    const analytics = latestAnalytic?.status?.analytics || [];
     const totalsRowCells = analytics
       ? [
           {
@@ -150,21 +172,27 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({ migAnalytics, isPlanL
     };
     mappedRows.push(totalsRow);
     setCurrentRows(mappedRows);
-  }, [migAnalytics]);
+  }, [migAnalytics, isRefreshingAnalytic]);
 
-  if (isPlanLocked || isLoadingAnalytics) {
+  if (isPlanLocked) {
     return (
       <Bullseye>
         <EmptyState variant="small">
           <div className="pf-c-empty-state__icon">
             <Spinner size="xl" />
           </div>
+        </EmptyState>
+      </Bullseye>
+    );
+  }
 
-          {isLoadingAnalytics && (
-            <Title headingLevel="h2" size="xl">
-              Retrieving namespace details
-            </Title>
-          )}
+  if (isLoadingAnalytics) {
+    return (
+      <Bullseye>
+        <EmptyState variant="small">
+          <div className="pf-c-empty-state__icon">
+            <ProgressWrapper />
+          </div>
         </EmptyState>
       </Bullseye>
     );

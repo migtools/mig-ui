@@ -46,19 +46,11 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /******************************************************************** */
 /* Plan sagas */
 /******************************************************************** */
-function* refreshAnalyticSaga(action) {
-  try {
-    const { analyticName } = action;
-
-    yield put(PlanActions.deleteAnalyticRequest(analyticName));
-    yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
-    yield put(PlanActions.addAnalyticRequest(analyticName));
-    yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
-    yield put(PlanActions.refreshAnalyticSuccess());
-  } catch (err) {
-    yield put(PlanActions.deleteAnalyticFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
-  }
+function* getPlanSaga(planName) {
+  const state = yield select();
+  const migMeta = state.auth.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
 function* deleteAnalyticSaga(action) {
@@ -152,11 +144,45 @@ function* namespaceFetchRequest(action) {
   }
 }
 
-function* getPlanSaga(planName) {
-  const state: IReduxState = yield select();
-  const migMeta = state.auth.migMeta;
+function* refreshAnalyticSaga(action) {
+  const { analyticName } = action;
+  const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
+  const migMeta = state.auth.migMeta;
+  try {
+    yield put(PlanActions.deleteAnalyticRequest(analyticName));
+    yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
+    yield put(PlanActions.addAnalyticRequest(analyticName));
+    yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
+  } catch (err) {
+    yield put(PlanActions.deleteAnalyticFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
+  }
+
+  let tries = 0;
+  const TicksUntilTimeout = 240;
+
+  while (true) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      try {
+        const updatedAnalytic = yield client.get(
+          new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace),
+          analyticName
+        );
+        if (updatedAnalytic?.data?.status?.analytics.percentComplete === 100) {
+          yield put(PlanActions.refreshAnalyticSuccess());
+        }
+      } catch (err) {
+        yield put(PlanActions.refreshAnalyticFailure(err));
+      }
+      yield delay(1000);
+    } else {
+      //timeout case
+      yield put(AlertActions.alertErrorTimeout('Timed out during analytics fetch.'));
+      yield put(PlanActions.refreshAnalyticFailure('Timed out'));
+    }
+  }
 }
 
 function* planPatchClose(planValues) {
@@ -1252,9 +1278,6 @@ function* watchAddAnalyticRequest() {
   yield takeLatest(PlanActionTypes.ADD_ANALYTIC_REQUEST, addAnalyticSaga);
 }
 
-function* watchRefreshAnalyticRequest() {
-  yield takeLatest(PlanActionTypes.REFRESH_ANALYTIC_REQUEST, refreshAnalyticSaga);
-}
 function* watchDeleteAnalyticRequest() {
   yield takeLatest(PlanActionTypes.DELETE_ANALYTIC_REQUEST, deleteAnalyticSaga);
 }
@@ -1280,6 +1303,16 @@ function* watchValidatePlanPolling() {
 
 function* watchValidatePlanRequest() {
   yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
+}
+
+function* watchRefreshAnalyticRequest() {
+  while (true) {
+    const data = yield take(PlanActionTypes.REFRESH_ANALYTIC_REQUEST);
+    yield race([
+      call(refreshAnalyticSaga, data),
+      take([PlanActionTypes.REFRESH_ANALYTIC_SUCCESS, PlanActionTypes.REFRESH_ANALYTIC_FAILURE]),
+    ]);
+  }
 }
 
 export default {

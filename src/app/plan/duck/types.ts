@@ -121,6 +121,8 @@ export interface IPlan {
     latestIsFailed: boolean;
     namespaces: any[];
     latestAnalyticTransitionTime: string;
+    latestAnalytic: IAnalytic;
+    analyticPercentComplete: number;
   };
 }
 
