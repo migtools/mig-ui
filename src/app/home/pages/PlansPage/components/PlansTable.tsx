@@ -12,12 +12,14 @@ import {
   Flex,
   FlexItem,
   TextVariants,
+  PopoverPosition,
+  Popover,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
 import { compoundExpand, Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { MigrationIcon } from '@patternfly/react-icons';
+import { MigrationIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
 import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';
@@ -102,6 +104,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         targetClusterName,
         storageName,
         namespaceCount,
+        isMaxResourcesLimitReached,
       } = getPlanInfo(plan);
 
       return [
@@ -129,9 +132,19 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             storageName,
             {
               title: (
-                <span className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}>
-                  <MigrationIcon key="migration-count-icon" /> {namespaceCount}
-                </span>
+                <>
+                  <span
+                    key="ns-count-container"
+                    className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}
+                  >
+                    <MigrationIcon key="ns-count-icon" /> {namespaceCount}
+                  </span>
+                  {isMaxResourcesLimitReached && (
+                    <span className="pf-c-icon pf-m-warning" key="icon-container">
+                      <ExclamationTriangleIcon key="warning-icon" />
+                    </span>
+                  )}
+                </>
               ),
               props: {
                 isOpen: expandedCells[planName] === 5,

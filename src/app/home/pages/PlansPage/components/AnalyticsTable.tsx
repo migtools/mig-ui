@@ -17,6 +17,8 @@ import {
   Progress,
   ProgressSize,
   ProgressVariant,
+  Tooltip,
+  TooltipPosition,
 } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -77,7 +79,32 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     const mappedRows = namespaces.map((namespace) => {
       const rowCells = [
         { title: namespace?.namespace || 0 },
-        { title: namespace.k8sResourceTotal || 0 },
+        {
+          title: (
+            <>
+              <span className={spacing.mrSm}>{namespace.k8sResourceTotal || 0}</span>
+              {namespace.k8sResourceTotal > 10000 && (
+                <Tooltip
+                  position={TooltipPosition.top}
+                  content={
+                    <div>
+                      The namespace contains a large number of Kubernetes resources. Migrating this
+                      many namespaces might take a very long time. We recommend removing unecessary
+                      resources before attempting a migration.
+                    </div>
+                  }
+                  aria-label="warning-details"
+                  isContentLeftAligned
+                  maxWidth="20rem"
+                >
+                  <span className="pf-c-icon pf-m-warning">
+                    <ExclamationTriangleIcon />
+                  </span>
+                </Tooltip>
+              )}
+            </>
+          ),
+        },
         { title: namespace.pvCount || 0 },
         { title: namespace.pvCapacity || 0 },
         { title: namespace.imageCount || 0 },

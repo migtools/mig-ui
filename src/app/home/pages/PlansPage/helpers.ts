@@ -35,6 +35,8 @@ export const getPlanInfo = (plan: IPlan) => {
   const namespaces = latestMigAnalytic?.status?.analytics?.namespaces
     ? latestMigAnalytic?.status?.analytics?.namespaces
     : [];
+  const isMaxResourcesLimitReached =
+    latestMigAnalytic?.status?.analytics?.k8sResourcesTotal > 10000 ? true : false;
 
   return {
     planName: plan.MigPlan.metadata.name,
@@ -43,6 +45,7 @@ export const getPlanInfo = (plan: IPlan) => {
     targetClusterName: plan.MigPlan.spec.destMigClusterRef.name,
     storageName: plan.MigPlan.spec.migStorageRef ? plan.MigPlan.spec.migStorageRef.name : 'N/A',
     namespaceCount: namespaces ? namespaces.length : 0,
+    isMaxResourcesLimitReached,
     statusText: getPlanStatusText(plan),
   };
 };
