@@ -67,7 +67,9 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
             <img
               src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor}
               alt="Logo"
-              className={styles.logoStyle}
+              className={
+                APP_BRAND === BrandType.RedHat ? styles.redhatLogoStyle : styles.konveyorLogoStyle
+              }
             />
           </ToolbarItem>
         </ToolbarGroup>
