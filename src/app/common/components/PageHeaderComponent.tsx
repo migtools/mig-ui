@@ -37,7 +37,6 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
-    logoComponent="span"
     toolbar={
       <Toolbar>
         <ToolbarGroup>
