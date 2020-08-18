@@ -62,7 +62,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
   };
 
   const clusterContext = useContext(ClusterContext);
-  // const tooltipText =  <div>Token is associated with a plan and cannot be removed.</div>}
   let tooltipText;
   if (isHostCluster) {
     tooltipText = <div>The host cluster cannot be removed.</div>;
