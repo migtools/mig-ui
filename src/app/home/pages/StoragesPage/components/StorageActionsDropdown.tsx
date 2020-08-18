@@ -1,5 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import {
+  Tooltip,
+  Dropdown,
+  KebabToggle,
+  DropdownItem,
+  DropdownPosition,
+} from '@patternfly/react-core';
 import { IStorageInfo } from '../helpers';
 import { useOpenModal } from '../../../duck';
 import { StorageContext } from '../../../duck/context';
@@ -38,6 +44,19 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
     toggleAddEditModal();
   };
 
+  const removeItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      isDisabled={associatedPlanCount > 0}
+      key="removeStorage"
+    >
+      Remove
+    </DropdownItem>
+  );
+
   return (
     <>
       <Dropdown
@@ -54,16 +73,17 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
           >
             Edit
           </DropdownItem>,
-          <DropdownItem
-            onClick={() => {
-              setKebabIsOpen(false);
-              toggleConfirmOpen();
-            }}
-            isDisabled={associatedPlanCount > 0}
-            key="removeStorage"
-          >
-            Remove
-          </DropdownItem>,
+          associatedPlanCount > 0 ? (
+            <Tooltip
+              position="top"
+              content={<div>Repo is associated with a plan and cannot be removed.</div>}
+              key="removeRepoTooltip"
+            >
+              {removeItem}
+            </Tooltip>
+          ) : (
+            removeItem
+          ),
         ]}
         position={DropdownPosition.right}
       />
