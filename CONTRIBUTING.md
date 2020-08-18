@@ -64,8 +64,31 @@ Instructions for adding style to a component:
 We have adopted the [ducks pattern](https://www.freecodecamp.org/news/scaling-your-redux-app-with-ducks-6115955638be/) for structuring our application.
 
 ### Testing
+We are using [Jest](https://jestjs.io/) as our testing framework foundation along with [Testing Library](https://testing-library.com/) for testing UI components.
 
-This area of our codebase needs work. Contributions wanted!
+#### Tests and UI Components
+We adhere to the principles of the [Testing Library](https://testing-library.com/docs/guiding-principles) framework
+because it gives us more confidence in validating the application as close as possible to the user.
+
+Which also means we're more focusing in testing complex UI components instead of *leaf* components.
+The latter are more likely to change, making tests more brittle and creating unncessary overhead.
+
+Therefore there is no need to test each *leaf* component, unless it brings any specific value.
+
+UI *Component Unit Tests* cover *non connected* components.
+While *Integration Tests* cover "connected" components.
+
+*Note 1*: Testing UI components this way is not considered *pure unit testing* and we're fine with that, again it's all about the confidence tests provide instead of a *false sense* of code coverage.
+
+*Note 2*: When implementing tests, it's common to get output from React Testing Library (when using `screen.debug()` or `screen.getByRole('')` instructions). Meanwhile to avoid the output to be truncated, use env `DEBUG_PRINT_LIMIT` variable, i.e. `export DEBUG_PRINT_LIMIT="100000"`.
+
+To stay close to simulating end-user interaction with the application it's important to query DOM elements being visible on a page instead of pulling internal components or nodes. Please get familiar with the queries priority order from [Using queries](https://testing-library.com/docs/guide-which-query).
+
+Besides Testing Library's documentation, here are few good sources to help acquire a practical knowledge:
+- https://www.robinwieruch.de/react-testing-library
+- https://kentcdodds.com/blog/common-mistakes-with-react-testing-library
+- https://www.polvara.me/posts/five-things-you-didnt-know-about-testing-library/c
+
 
 ### Quick tips for new maintainers
 - A good place to start contributing would be [here](https://github.com/konveyor/mig-ui/issues?q=is%3Aissue+is%3Aopen+label%3Alow-hanging-fruit). Low-hanging fruit tags indicate that these issues would be relatively straightforward to pick up.
