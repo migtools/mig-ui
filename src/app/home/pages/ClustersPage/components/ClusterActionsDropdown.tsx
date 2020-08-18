@@ -1,5 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { Dropdown, KebabToggle, DropdownItem, DropdownPosition } from '@patternfly/react-core';
+import {
+  Tooltip,
+  Dropdown,
+  KebabToggle,
+  DropdownItem,
+  DropdownPosition,
+} from '@patternfly/react-core';
 import AddEditClusterModal from './AddEditClusterModal';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { useOpenModal } from '../../../duck';
@@ -56,6 +62,25 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
   };
 
   const clusterContext = useContext(ClusterContext);
+  // const tooltipText =  <div>Token is associated with a plan and cannot be removed.</div>}
+  let tooltipText;
+  if (isHostCluster) {
+    tooltipText = <div>The host cluster cannot be removed.</div>;
+  } else if (associatedPlanCount > 0) {
+    tooltipText = <div>Cluster is associated with a plan and cannot be removed.</div>;
+  }
+  const removeItem = (
+    <DropdownItem
+      isDisabled={isHostCluster || associatedPlanCount > 0}
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleConfirmOpen();
+      }}
+      key="removeToken"
+    >
+      Remove
+    </DropdownItem>
+  );
 
   return (
     <>
@@ -93,16 +118,13 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
                 >
                   Edit
                 </DropdownItem>,
-                <DropdownItem
-                  onClick={() => {
-                    setKebabIsOpen(false);
-                    toggleConfirmOpen();
-                  }}
-                  isDisabled={isHostCluster || associatedPlanCount > 0}
-                  key="removeCluster"
-                >
-                  Remove
-                </DropdownItem>,
+                isHostCluster || associatedPlanCount > 0 ? (
+                  <Tooltip position="top" content={tooltipText} key="removeTokenTooltip">
+                    {removeItem}
+                  </Tooltip>
+                ) : (
+                  removeItem
+                ),
               ]
             : []),
         ]}
