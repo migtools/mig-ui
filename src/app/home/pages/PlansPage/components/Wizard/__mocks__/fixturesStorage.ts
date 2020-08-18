@@ -23,6 +23,10 @@ export const storageExample1: IStorage = {
     spec: {
       bucketUrl: '',
       backupStorageConfig: {
+        credsSecretRef: {
+          name: 'secret-name',
+          namespace: 'namespace-name',
+        },
         awsBucketName: 'bucket-name',
         awsRegion: 'eu-central-1',
         awsS3Url: 'http://minio-gpte-minio.apps.cluster.example.com',

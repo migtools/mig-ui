@@ -10,6 +10,7 @@ import moment from 'moment';
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { getActiveNamespaceFromStorage } from '../../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
+import { IReduxState } from '../../../reducers';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
@@ -50,7 +51,7 @@ export function* initFromStorage(): any {
 }
 
 export function* fetchTenantNamespaces(): any {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   try {
     const { access_token } = state.auth.user;
@@ -93,7 +94,7 @@ export function* checkHasLoggedIn() {
 }
 
 export function* fetchIsAdmin(): any {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   if (state.auth.user) {
     const { access_token } = state.auth.user;

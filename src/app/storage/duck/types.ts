@@ -1,4 +1,5 @@
 import { IStatusCondition } from '../../common/duck/types';
+import { IStorageSecret } from '../../../client/resources/conversions';
 
 export interface IMigStorage {
   apiVersion: string;
@@ -30,6 +31,10 @@ export interface IMigStorage {
       azureStorageAccount: string;
       insecure: boolean;
       s3CustomCABundle: string;
+      credsSecretRef: {
+        name: string;
+        namespace: string;
+      };
     };
     backupStorageProvider: string;
     backupStorageLocationRef: {
