@@ -1,4 +1,5 @@
 import { INameNamespaceRef } from '../../common/duck/types';
+import { ICurrentPlanStatus } from './reducers';
 
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
@@ -47,6 +48,7 @@ export interface IMigPlan {
     closed?: boolean;
     hooks?: IPlanSpecHook[];
   };
+  status?: IStatus;
 }
 
 export interface IMigration {
@@ -65,6 +67,22 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
   };
+  status?: IStatus;
+}
+
+export interface IStatus {
+  conditions?: ICondition[];
+  incompatibleNamespaces?: any;
+  observedDigest?: string;
+}
+
+export interface ICondition {
+  category?: string;
+  lastTransitionTime?: string;
+  message?: string;
+  status?: string;
+  type?: string;
+  reason?: string;
 }
 
 export interface IPlan {
@@ -77,11 +95,9 @@ export interface IPlan {
     hasCancelingCondition: boolean;
     hasClosedCondition: boolean;
     hasConflictCondition: boolean;
-    hasFailedCondition: boolean;
     hasNotReadyCondition: boolean;
     hasPODWarnCondition: boolean;
     hasPVWarnCondition: boolean;
-    hasPrevMigrations: boolean;
     hasReadyCondition: boolean;
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
