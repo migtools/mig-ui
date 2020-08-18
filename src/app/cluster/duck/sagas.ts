@@ -25,6 +25,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 import Q from 'q';
+import { IReduxState } from '../../../reducers';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -59,7 +60,7 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
 }
 
 function* fetchClustersGenerator() {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigCluster, state.auth.migMeta.namespace);
   try {
@@ -78,7 +79,7 @@ function* fetchClustersGenerator() {
 
 function* removeClusterSaga(action) {
   try {
-    const state = yield select();
+    const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -113,7 +114,7 @@ function* removeClusterSaga(action) {
 }
 
 function* addClusterRequest(action) {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -281,7 +282,7 @@ function* watchAddClusterRequest() {
 
 function* updateClusterRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -414,7 +415,7 @@ function* pollClusterAddEditStatus(action) {
   yield delay(AddEditDebounceWait);
   while (true) {
     try {
-      const state = yield select();
+      const state: IReduxState = yield select();
       const { migMeta } = state.auth;
       const { clusterName } = action;
 

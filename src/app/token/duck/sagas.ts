@@ -25,6 +25,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 import { AlertActions } from '../../common/duck/actions';
+import { IReduxState } from '../../../reducers';
 
 function fetchTokenSecrets(client: IClusterClient, migTokens): Array<Promise<any>> {
   const secretRefs: Array<Promise<any>> = [];
@@ -51,7 +52,7 @@ function groupTokens(migTokens: IMigToken[], secretRefs: any[]): IToken[] {
 }
 
 function* fetchTokensGenerator() {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigToken, state.auth.migMeta.namespace);
   try {
@@ -67,7 +68,7 @@ function* fetchTokensGenerator() {
 }
 
 function* addTokenRequest(action) {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const tokenValues: ITokenFormValues = action.tokenValues;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -183,7 +184,7 @@ function* addTokenRequest(action) {
 
 function* removeTokenSaga(action) {
   try {
-    const state = yield select();
+    const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -215,7 +216,7 @@ function* pollTokenAddEditStatus(action) {
   yield delay(AddEditDebounceWait);
   while (true) {
     try {
-      const state = yield select();
+      const state: IReduxState = yield select();
       const { migMeta } = state.auth;
       const { tokenName } = action;
 
@@ -287,7 +288,7 @@ function* startWatchingTokenAddEditStatus(action) {
 
 function* updateTokenRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const { tokenValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);

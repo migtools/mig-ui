@@ -674,6 +674,7 @@ export function createMigHook(migHook: any, namespace: string) {
       namespace,
     },
     spec: migHookSpec,
+    hookName: migHook.hookName,
   };
 }
 

@@ -24,6 +24,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 import Q from 'q';
+import { IReduxState } from '../../../reducers';
 
 function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -58,7 +59,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 }
 
 function* fetchStorageGenerator() {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigStorage, state.auth.migMeta.namespace);
   try {
@@ -74,7 +75,7 @@ function* fetchStorageGenerator() {
 
 function* removeStorageSaga(action) {
   try {
-    const state = yield select();
+    const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -109,7 +110,7 @@ function* removeStorageSaga(action) {
 }
 
 function* addStorageRequest(action) {
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -225,7 +226,7 @@ const secretAccessKeySecretField = 'aws-secret-access-key';
 
 function* updateStorageRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
-  const state = yield select();
+  const state: IReduxState = yield select();
   const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -408,7 +409,7 @@ function* pollStorageAddEditStatus(action) {
   yield delay(AddEditDebounceWait);
   while (true) {
     try {
-      const state = yield select();
+      const state: IReduxState = yield select();
       const { migMeta } = state.auth;
       const { storageName } = action;
 

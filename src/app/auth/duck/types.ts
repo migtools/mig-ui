@@ -11,6 +11,7 @@ export interface ILoginParams {
 
 export interface IMigMeta {
   clusterApi?: string;
+  discoveryApi?: string;
   namespace?: string;
   configNamespace?: string;
   oauth?: {
