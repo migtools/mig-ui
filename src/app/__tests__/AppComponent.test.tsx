@@ -7,17 +7,22 @@ import { Provider } from 'react-redux';
 import { history } from '../../helpers';
 import AppComponent from '../AppComponent';
 import { ConnectedRouter } from 'connected-react-router';
-// import { PersistGate } from 'redux-persist/es/integration/react';
 import configureStore from 'redux-mock-store';
-// const { persistor } = configureStore();
 import { initialStore } from '../../__mocks__/store';
-import { Spinner } from '@patternfly/react-core';
 
 jest.mock('../common/components/CAM_LOGO.svg', () => {
   return '';
 });
 
 jest.mock('../common/components/logoMA.svg', () => {
+  return '';
+});
+
+jest.mock('../common/components/logoKonveyor.svg', () => {
+  return '';
+});
+
+jest.mock('../common/components/logoRedHat.svg', () => {
   return '';
 });
 
