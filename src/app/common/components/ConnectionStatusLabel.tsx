@@ -5,8 +5,9 @@ import {
 } from '@patternfly/react-icons';
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
-import { Spinner } from '@patternfly/react-core';
+import { Spinner, Flex, FlexItem } from '@patternfly/react-core';
 const styles = require('./ConnectionStatusLabel.module');
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 
 interface IProps {
   status: any;
@@ -15,7 +16,7 @@ interface IProps {
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
   const getStatusIcon = (iconStatus) => {
-    const WrappedSpinner = () => <Spinner className={styles.spinner} size="md"></Spinner>;
+    const WrappedSpinner = () => <Spinner size="md"></Spinner>;
 
     switch (iconStatus.state) {
       case AddEditState.Pending: {
@@ -69,12 +70,13 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
 
   const StatusIcon: any = getStatusIcon(status);
   return (
-    <div className="pf-l-flex">
-      <div className="pf-l-flex__item">
+    // <Flex className={flex.justifyContentCenter}>
+    <Flex>
+      <FlexItem>
         <StatusIcon />
-      </div>
-      <div className="pf-l-flex__item">{statusText}</div>
-    </div>
+      </FlexItem>
+      <FlexItem>{statusText}</FlexItem>
+    </Flex>
   );
 };
 
