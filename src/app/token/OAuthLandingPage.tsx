@@ -49,7 +49,7 @@ const OAuthLandingPage: React.FunctionComponent = () => {
                   <Spinner size="xl" />
                 </div>
               )}
-              <Title size="lg">
+              <Title headingLevel="h2" size="lg">
                 {isCodeStored ? 'Authentication successful' : 'Completing authentication...'}
               </Title>
               {isCodeStored && (
