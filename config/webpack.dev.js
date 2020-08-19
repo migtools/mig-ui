@@ -28,7 +28,7 @@ const { localConfig, migMeta } = helpers.getLocalConfig();
 
 htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
 const PORT = process.env.PORT || localConfig.devServerPort;
-const EXPRESS_PORT = process.env.EXPRESS_PORT || 9009;
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001;
 
 const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
