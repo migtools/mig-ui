@@ -1,7 +1,5 @@
 import React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-// import '@patternfly/react-core/dist/styles/base.css';
-
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { history } from './helpers';
