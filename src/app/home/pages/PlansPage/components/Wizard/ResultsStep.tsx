@@ -102,27 +102,25 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   };
 
   return (
-    <Bullseye>
-      <Flex className={(spacing.mtXl, flex.alignItemsCenter)} direction={{ default: 'column' }}>
-        <Bullseye>
-          <HeaderIcon state={currentPlanStatus.state} />
-        </Bullseye>
-        <Bullseye>
-          <Title headingLevel="h3" size="2xl">
-            {getHeaderText(currentPlanStatus.state)}
-          </Title>
-        </Bullseye>
-        {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
-          <ConditionsGrid
-            conditions={currentPlan.PlanStatus.displayedConditions}
-            incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
-          />
-        )}
-        <Flex className={(spacing.mtMd, flex.justifyContentCenter)}>
-          <FooterButtons state={currentPlanStatus.state} />
-        </Flex>
+    <Flex className={(spacing.mtXl, flex.justifyContentCenter)} direction={{ default: 'column' }}>
+      <Bullseye className={spacing.mt_3xl}>
+        <HeaderIcon state={currentPlanStatus.state} />
+      </Bullseye>
+      <Bullseye>
+        <Title headingLevel="h3" size="2xl">
+          {getHeaderText(currentPlanStatus.state)}
+        </Title>
+      </Bullseye>
+      {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
+        <ConditionsGrid
+          conditions={currentPlan.PlanStatus.displayedConditions}
+          incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
+        />
+      )}
+      <Flex className={(spacing.mtMd, flex.justifyContentCenter)}>
+        <FooterButtons state={currentPlanStatus.state} />
       </Flex>
-    </Bullseye>
+    </Flex>
   );
 };
 

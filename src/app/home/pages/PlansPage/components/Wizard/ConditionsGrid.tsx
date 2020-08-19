@@ -30,7 +30,10 @@ const ConditionsGrid: React.FunctionComponent<IConditionsGridProps> = ({
   conditions,
   incompatibleNamespaces,
 }: IConditionsGridProps) => (
-  <Grid hasGutter className={`${styles.conditionsGrid} ${spacing.mtMd} ${spacing.mbLg}`}>
+  <Grid
+    hasGutter
+    className={`${styles.conditionsGrid} ${spacing.mtMd} ${spacing.mxAuto} ${spacing.mbLg}`}
+  >
     {conditions.map((condition, conditionIndex) => (
       <React.Fragment key={conditionIndex}>
         <GridItem span={1} className={alignment.textAlignRight}>
