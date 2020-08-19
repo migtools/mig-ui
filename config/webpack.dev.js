@@ -5,7 +5,6 @@ const HOST = process.env.HOST || 'localhost';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const helpers = require('./helpers');
 
-
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
 // json mock server as its host cluster. Intended for pure
@@ -29,7 +28,7 @@ const { localConfig, migMeta } = helpers.getLocalConfig();
 
 htmlWebpackPluginOpt.migMeta = Buffer.from(JSON.stringify(migMeta)).toString('base64');
 const PORT = process.env.PORT || localConfig.devServerPort;
-const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 9009;
 
 const plugins = [
   new webpack.NoEmitOnErrorsPlugin(),
@@ -38,8 +37,8 @@ const plugins = [
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
   new MiniCssExtractPlugin({
     filename: '[name].css',
-    chunkFilename: '[id].css'
-  })
+    chunkFilename: '[id].css',
+  }),
 ];
 
 // Replace the normal OAuth login component with a mocked out login for local dev
@@ -83,16 +82,16 @@ const webpackConfig = {
             loader: 'css-loader',
             options: {
               modules: true,
-              sourceMap: true
-            }
+              sourceMap: true,
+            },
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.s(a|c)ss$/,
@@ -103,26 +102,38 @@ const webpackConfig = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
-            }
-          }
-        ]
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.css$/,
         include: [
-          // path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, '../src'),
           path.resolve(__dirname, '../node_modules/'),
           path.resolve(__dirname, '../node_modules/patternfly'),
           path.resolve(__dirname, '../node_modules/@patternfly/patternfly'),
           path.resolve(__dirname, '../node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/styles/base.css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
-          path.resolve(__dirname, '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-core/dist/esm/@patternfly/patternfly'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-core/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'
+          ),
+          path.resolve(
+            __dirname,
+            '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
+          ),
         ],
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(svg|ttf|eot|woff|woff2|png|jpg)$/,
@@ -152,11 +163,13 @@ const webpackConfig = {
       // legitimate typescript exports to trigger warnings in webpack
       warningsFilter: /export .* was not found in/,
     },
-    proxy: [{
-      // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
-      context: ['/hello'], // NATODO remove this /hello example once we have some real routes here
-      target: `http://localhost:${EXPRESS_PORT}`
-    }]
+    proxy: [
+      {
+        // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
+        context: ['/hello'], // NATODO remove this /hello example once we have some real routes here
+        target: `http://localhost:${EXPRESS_PORT}`,
+      },
+    ],
   },
   plugins,
 };

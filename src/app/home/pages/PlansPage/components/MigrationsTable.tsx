@@ -32,7 +32,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     'PVs Copied',
     {
       title: 'Status',
-      transforms: [cellWidth('30')],
+      transforms: [cellWidth(30)],
     },
     '',
   ];
