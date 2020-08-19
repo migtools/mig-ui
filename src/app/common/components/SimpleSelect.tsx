@@ -4,7 +4,6 @@ import {
   SelectOption,
   SelectOptionObject,
   SelectProps,
-  Omit,
   SelectOptionProps,
 } from '@patternfly/react-core';
 
@@ -32,15 +31,15 @@ const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
   placeholderText = 'Select...',
   ...props
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Select
       placeholderText={placeholderText}
-      isExpanded={isExpanded}
-      onToggle={setIsExpanded}
+      isOpen={isOpen}
+      onToggle={setIsOpen}
       onSelect={(event, selection: OptionLike) => {
         onChange(selection);
-        setIsExpanded(false);
+        setIsOpen(false);
       }}
       selections={value}
       {...props}

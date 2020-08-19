@@ -108,7 +108,14 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
             />
           </LevelItem>
           <LevelItem>
-            <Pagination widgetId="namespace-table-pagination-top" {...paginationProps} />
+            <Pagination
+              widgetId="namespace-table-pagination-top"
+              itemCount={paginationProps.itemCount}
+              perPage={paginationProps.perPage}
+              page={paginationProps.page}
+              onSetPage={paginationProps.onSetPage}
+              onPerPageSelect={paginationProps.onPerPageSelect}
+            />
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
@@ -143,7 +150,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
               variant={PaginationVariant.bottom}
               className={spacing.mtMd}
               dropDirection={DropdownDirection.up}
-              {...paginationProps}
+              itemCount={paginationProps.itemCount}
+              perPage={paginationProps.perPage}
+              page={paginationProps.page}
+              onSetPage={paginationProps.onSetPage}
+              onPerPageSelect={paginationProps.onPerPageSelect}
             />
           </LevelItem>
         </Level>

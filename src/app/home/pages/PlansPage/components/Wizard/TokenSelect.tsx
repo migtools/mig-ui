@@ -25,7 +25,7 @@ import StatusIcon, { StatusType } from '../../../../../common/components/StatusI
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
-import { isSameResource } from '../../../../../common/helpers';
+import { isSameResource, validatedState } from '../../../../../common/helpers';
 import { IMigMeta } from '../../../../../auth/duck/types';
 import { TokenActions } from '../../../../../token/duck/actions';
 
@@ -184,10 +184,9 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         isRequired
         fieldId={fieldId}
         helperTextInvalid={touched && error}
-        isValid={!(touched && error)}
+        validated={validatedState(touched, error)}
       >
         <SimpleSelect
-          id={fieldId}
           onChange={(selection: OptionWithValue<IToken>) => {
             if (selection.value) {
               handleChange(selection.value);

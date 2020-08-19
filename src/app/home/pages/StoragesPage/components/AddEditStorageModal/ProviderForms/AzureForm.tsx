@@ -9,7 +9,6 @@ import {
   Grid,
   GridItem,
   Flex,
-  FlexModifiers,
 } from '@patternfly/react-core';
 import {
   AddEditMode,
@@ -21,6 +20,7 @@ import {
 import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
+import { validatedState } from '../../../../../../common/helpers';
 
 /*
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
@@ -109,7 +109,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
-        isValid={!(touched.name && errors.name)}
+        validated={validatedState(touched.name, errors.name)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -122,7 +122,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           type="text"
           id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
-          isValid={!(touched.name && errors.name)}
+          validated={validatedState(touched.name, errors.name)}
         />
       </FormGroup>
       <FormGroup
@@ -130,7 +130,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={azureResourceGroupKey}
         helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
-        isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+        validated={validatedState(touched.azureResourceGroup, errors.azureResourceGroup)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -142,7 +142,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           name={azureResourceGroupKey}
           type="text"
           id={azureResourceGroupKey}
-          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+          validated={validatedState(touched.azureResourceGroup, errors.azureResourceGroup)}
         />
       </FormGroup>
       <FormGroup
@@ -150,7 +150,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={azureStorageAccountKey}
         helperTextInvalid={touched.azureStorageAccount && errors.azureStorageAccount}
-        isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
+        validated={validatedState(touched.azureStorageAccount, errors.azureStorageAccount)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -162,7 +162,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           name={azureStorageAccountKey}
           type="text"
           id={azureStorageAccountKey}
-          isValid={!(touched.azureStorageAccount && errors.azureStorageAccount)}
+          validated={validatedState(touched.azureStorageAccount, errors.azureStorageAccount)}
         />
       </FormGroup>
       <FormGroup
@@ -170,7 +170,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={azureBlobKey}
         helperTextInvalid={touched.azureBlob && errors.azureBlob}
-        isValid={!(touched.azureBlob && errors.azureBlob)}
+        validated={validatedState(touched.azureBlob, errors.azureBlob)}
       >
         <TextArea
           onChange={formikHandleChange}
@@ -180,10 +180,10 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           name={azureBlobKey}
           type="text"
           id={azureBlobKey}
-          isValid={!(touched.azureBlob && errors.azureBlob)}
+          validated={validatedState(touched.azureBlob, errors.azureBlob)}
         />
       </FormGroup>
-      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+      <Flex>
         <Button
           aria-label="Azure Storage Submit Form"
           variant="primary"
@@ -214,7 +214,7 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
       <ConnectionStatusLabel status={currentStatus} statusText={currentStatusFn(currentStatus)} />
       {isPopUpModalOpen && (
         <Modal
-          isSmall
+          variant="small"
           title="Repository information required"
           isOpen={isPopUpModalOpen}
           onClose={handleModalToggle}
@@ -228,9 +228,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
               Close
             </Button>,
           ]}
-          isFooterLeftAligned
         >
-          <Grid gutter="md">
+          <Grid hasGutter>
             <GridItem>
               <p>To add an Azure repository, you will need the following information:</p>
             </GridItem>

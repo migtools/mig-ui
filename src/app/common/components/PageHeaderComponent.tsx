@@ -37,6 +37,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
+    avatar={}
     toolbar={
       <Toolbar>
         <ToolbarGroup>
