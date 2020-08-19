@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  TextInput,
-  Form,
-  FormGroup,
-  Checkbox,
-  Flex,
-  FlexModifiers,
-} from '@patternfly/react-core';
+import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayIcon from '../../../../../common/components/KeyDisplayIcon';
 import HideWrapper from '../../../../../common/components/HideWrapper';
@@ -21,6 +13,7 @@ import {
 } from '../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../../common/components/CertificateUpload';
+import { validatedState } from '../../../../../common/helpers';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -98,7 +91,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
-        isValid={!(touched.name && errors.name)}
+        validated={validatedState(touched.name, errors.name)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -111,7 +104,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           type="text"
           id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
-          isValid={!(touched.name && errors.name)}
+          validated={validatedState(touched.name, errors.name)}
         />
       </FormGroup>
       <FormGroup label="Is this an azure cluster?" fieldId={tokenKey}>
@@ -131,7 +124,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           isRequired
           fieldId={azureResourceGroupKey}
           helperTextInvalid={touched.azureResourceGroup && errors.azureResourceGroup}
-          isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+          validated={validatedState(touched.azureResourceGroup, errors.azureResourceGroup)}
         >
           {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -143,7 +136,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             name={azureResourceGroupKey}
             id={azureResourceGroupKey}
             type="text"
-            isValid={!(touched.azureResourceGroup && errors.azureResourceGroup)}
+            validated={validatedState(touched.azureResourceGroup, errors.azureResourceGroup)}
           />
         </FormGroup>
       )}
@@ -153,7 +146,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         fieldId={urlKey}
         helperText="URL of the cluster's API server"
         helperTextInvalid={touched.url && errors.url}
-        isValid={!(touched.url && errors.url)}
+        validated={validatedState(touched.url, errors.url)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -165,7 +158,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           name={urlKey}
           type="text"
           id={urlKey}
-          isValid={!(touched.url && errors.url)}
+          validated={validatedState(touched.url, errors.url)}
         />
       </FormGroup>
       <FormGroup
@@ -174,7 +167,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         fieldId={tokenKey}
         helperText="Copy and paste the cluster's service account token."
         helperTextInvalid={touched.token && errors.token}
-        isValid={!(touched.token && errors.token)}
+        validated={validatedState(touched.token, errors.token)}
       >
         <HideWrapper onClick={toggleHideToken}>
           <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
@@ -189,7 +182,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           name={tokenKey}
           id={tokenKey}
           type={isTokenHidden ? 'password' : 'text'}
-          isValid={!(touched.token && errors.token)}
+          validated={validatedState(touched.token, errors.token)}
         />
       </FormGroup>
       <FormGroup
@@ -226,7 +219,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           />
         </FormGroup>
       )}
-      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+      <Flex>
         <Button
           variant="primary"
           type="submit"

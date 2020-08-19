@@ -19,10 +19,9 @@ const ConfirmModal: React.FunctionComponent<IProps> = ({
   return (
     <Modal
       id={id}
-      isSmall
+      variant="small"
       title={title}
       isOpen={isOpen}
-      isFooterLeftAligned
       onClose={() => onHandleClose(false)}
       actions={[
         <Button key="confirm" variant="primary" onClick={() => onHandleClose(true)}>

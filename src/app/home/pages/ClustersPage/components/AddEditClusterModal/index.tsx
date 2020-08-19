@@ -87,7 +87,7 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
 
   return (
     <Modal
-      isSmall
+      variant="small"
       isOpen={isOpen}
       onClose={handleClose}
       title={modalTitle}

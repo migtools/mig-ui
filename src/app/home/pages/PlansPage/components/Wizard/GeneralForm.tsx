@@ -8,6 +8,7 @@ import TokenSelect from './TokenSelect';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
 import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
+import { validatedState } from '../../../../../common/helpers';
 const styles = require('./GeneralForm.module');
 
 export type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
@@ -94,18 +95,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   return (
     <Form>
-      <Title size="md" className={styles.fieldGridTitle}>
+      <Title headingLevel="h1" size="md" className={styles.fieldGridTitle}>
         Give your plan a name
       </Title>
 
-      <Grid md={6} gutter="md" className={spacing.mbMd}>
+      <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
             label="Plan name"
             isRequired
             fieldId="planName"
             helperTextInvalid={touched.planName && errors.planName}
-            isValid={!(touched.planName && errors.planName)}
+            validated={validatedState(touched.planName, errors.planName)}
           >
             <TextInput
               ref={planNameInputRef}
@@ -115,7 +116,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               value={values.planName}
               name="planName"
               type="text"
-              isValid={!errors.planName && touched.planName}
+              validated={validatedState(touched?.planName, errors?.planName)}
               id="planName"
               isDisabled={isEdit}
             />
@@ -123,18 +124,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </GridItem>
       </Grid>
 
-      <Title size="md" className={styles.fieldGridTitle}>
+      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
         Select source and target clusters
       </Title>
 
-      <Grid md={6} gutter="md" className={spacing.mbMd}>
+      <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
             label="Source cluster"
             isRequired
             fieldId="sourceCluster"
             helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
-            isValid={!(touched.sourceCluster && errors.sourceCluster)}
+            validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
           >
             <SimpleSelect
               id="sourceCluster"
@@ -167,7 +168,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             isRequired
             fieldId="targetCluster"
             helperTextInvalid={touched.targetCluster && errors.targetCluster}
-            isValid={!(touched.targetCluster && errors.targetCluster)}
+            validated={validatedState(touched.targetCluster, errors.targetCluster)}
           >
             <SimpleSelect
               id="targetCluster"
@@ -195,18 +196,18 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </GridItem>
       </Grid>
 
-      <Title size="md" className={styles.fieldGridTitle}>
+      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
         Select a replication repository
       </Title>
 
-      <Grid md={6} gutter="md">
+      <Grid md={6} hasGutter>
         <GridItem>
           <FormGroup
             label="Repository"
             isRequired
             fieldId="selectedStorage"
             helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
-            isValid={!(touched.selectedStorage && errors.selectedStorage)}
+            validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
           >
             <SimpleSelect
               id="selectedStorage"

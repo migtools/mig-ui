@@ -4,7 +4,6 @@ import {
   EmptyState,
   EmptyStateVariant,
   Title,
-  TitleLevel,
   Grid,
   GridItem,
   TextContent,
@@ -272,7 +271,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     );
 
   return (
-    <Grid gutter="md">
+    <Grid hasGutter>
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
@@ -326,10 +325,10 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
         <Modal
-          isSmall
+          variant="small"
           title="Copy performance warning"
           header={
-            <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+            <Title headingLevel="h1" size={BaseSizes['2xl']}>
               <ExclamationTriangleIcon
                 color="var(--pf-global--warning-color--100)"
                 className={spacing.mrMd}
@@ -348,7 +347,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               Close
             </Button>,
           ]}
-          isFooterLeftAligned
         >
           Selecting checksum verification for a PV that will be copied using a filesystem copy
           method will severely impact the copy performance. Enabling verification will essentially

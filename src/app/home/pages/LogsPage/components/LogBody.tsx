@@ -43,7 +43,7 @@ const LogBody: FunctionComponent<IProps> = ({
         ) : log.length > 0 ? (
           <LogItem log={log} />
         ) : (
-          <Grid gutter="md">
+          <Grid hasGutter>
             <GridItem>Select pod to display logs</GridItem>
             <GridItem>or</GridItem>
             <Button

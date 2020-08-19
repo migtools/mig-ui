@@ -37,8 +37,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
-    avatar={}
-    toolbar={
+    headerTools={
       <Toolbar>
         <ToolbarGroup>
           {NON_ADMIN_ENABLED && isAdmin !== null && (
@@ -83,6 +82,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
 
         {NON_ADMIN_ENABLED && (
           <Title
+            headingLevel="h5"
             size="2xl"
             style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
           >

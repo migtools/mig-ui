@@ -21,7 +21,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
     fetchNamespacesRequest(values.sourceCluster);
   }, []);
   return (
-    <Grid gutter="md">
+    <Grid hasGutter>
       {isFetchingNamespaceList ? (
         <GridItem>
           <Bullseye>

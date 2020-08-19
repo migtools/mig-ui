@@ -119,7 +119,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                 {!planList ? null : planList.length === 0 ? (
                   <EmptyState variant="full">
                     <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg" className={spacing.mbLg}>
+                    <Title headingLevel="h3" size="lg" className={spacing.mbLg}>
                       No migration plans exist
                     </Title>
                     <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>

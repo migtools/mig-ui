@@ -276,8 +276,6 @@ const WizardComponent = (props: IOtherProps) => {
           title="Create a migration plan"
           onClose={handleClose}
           steps={steps}
-          isFullWidth
-          isCompactNav
           className={styles.wizardModifier}
           onSubmit={(event) => event.preventDefault()}
         />

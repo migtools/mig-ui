@@ -64,7 +64,7 @@ const AddEditStorageModal = ({
 
   return (
     <Modal
-      isSmall
+      variant="small"
       isOpen={isOpen}
       onClose={onClose}
       title={modalTitle}

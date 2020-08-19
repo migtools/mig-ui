@@ -184,7 +184,7 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
         isRequired
         fieldId={fieldId}
         helperTextInvalid={touched && error}
-        validated={validatedState(touched, error)}
+        // validated={validatedState(touched, error)}
       >
         <SimpleSelect
           onChange={(selection: OptionWithValue<IToken>) => {

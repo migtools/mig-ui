@@ -34,7 +34,7 @@ const LogFooter: FunctionComponent<IProps> = ({
   return (
     <CardFooter style={{ height: '5%' }}>
       {isFetchingLogs ? null : (
-        <Grid gutter="md">
+        <Grid hasGutter>
           <GridItem>
             <Button
               onClick={requestDownload}

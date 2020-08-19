@@ -1,6 +1,6 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Bullseye, Title, Button, Flex, FlexModifiers } from '@patternfly/react-core';
+import { Bullseye, Title, Button, Flex } from '@patternfly/react-core';
 import ConditionsGrid from './ConditionsGrid';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../../../../plan/duck/reducers';
 import { Spinner } from '@patternfly/react-core';
@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-icons';
 import { useFormikContext } from 'formik';
 import { IFormValues } from './WizardContainer';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 
 interface IProps {
   startPlanStatusPolling: (planName) => void;
@@ -102,14 +103,7 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
 
   return (
     <Bullseye>
-      <Flex
-        className={spacing.mtXl}
-        breakpointMods={[
-          { modifier: FlexModifiers['column'] },
-          { modifier: FlexModifiers['align-items-center'] },
-          { modifier: FlexModifiers['space-items-md'] },
-        ]}
-      >
+      <Flex className={(spacing.mtXl, flex.alignItemsCenter)} direction={{ default: 'column' }}>
         <Bullseye>
           <HeaderIcon state={currentPlanStatus.state} />
         </Bullseye>
@@ -124,13 +118,7 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
             incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
           />
         )}
-        <Flex
-          className={spacing.mtMd}
-          breakpointMods={[
-            { modifier: FlexModifiers['space-items-md'] },
-            { modifier: FlexModifiers['justify-content-center'] },
-          ]}
-        >
+        <Flex className={(spacing.mtMd, flex.justifyContentCenter)}>
           <FooterButtons state={currentPlanStatus.state} />
         </Flex>
       </Flex>

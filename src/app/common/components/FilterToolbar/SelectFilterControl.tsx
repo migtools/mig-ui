@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  DataToolbarFilter,
-  Select,
-  SelectOption,
-  SelectOptionObject,
-} from '@patternfly/react-core';
+import { ToolbarFilter, Select, SelectOption, SelectOptionObject } from '@patternfly/react-core';
 import { IFilterControlProps } from './FilterControl';
 import { ISelectFilterCategory } from './FilterToolbar';
 
@@ -48,7 +43,7 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
   const chips = selections ? selections.map(getChipFromOptionValue) : [];
 
   return (
-    <DataToolbarFilter
+    <ToolbarFilter
       chips={chips}
       deleteChip={(_, chip) => onFilterClear(chip as string)}
       categoryName={category.title}
@@ -58,15 +53,17 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
         aria-label={category.title}
         onToggle={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
         selections={selections}
-        onSelect={(_, value) => onFilterSelect(value)}
-        isExpanded={isFilterDropdownOpen}
+        onSelect={(_, value) => {
+          onFilterSelect(value);
+          setIsFilterDropdownOpen(false);
+        }}
         placeholderText="Any"
       >
         {category.selectOptions.map((optionProps) => (
           <SelectOption {...optionProps} />
         ))}
       </Select>
-    </DataToolbarFilter>
+    </ToolbarFilter>
   );
 };
 

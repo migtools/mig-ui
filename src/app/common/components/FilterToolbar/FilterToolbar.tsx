@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
   SelectOptionProps,
-  DataToolbar,
-  DataToolbarContent,
-  DataToolbarToggleGroup,
-  DataToolbarItem,
+  Toolbar,
+  ToolbarContent,
+  ToolbarToggleGroup,
+  ToolbarItem,
   Dropdown,
   DropdownToggle,
   DropdownItem,
@@ -72,10 +72,10 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
   );
 
   return (
-    <DataToolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
-      <DataToolbarContent>
-        <DataToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
-          <DataToolbarItem>
+    <Toolbar id="pv-table-filter-toolbar" clearAllFilters={() => setFilterValues({})}>
+      <ToolbarContent>
+        <ToolbarToggleGroup variant="filter-group" toggleIcon={<FilterIcon />} breakpoint="xl">
+          <ToolbarItem>
             <Dropdown
               toggle={
                 <DropdownToggle onToggle={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}>
@@ -89,7 +89,7 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
                 </DropdownItem>
               ))}
             />
-          </DataToolbarItem>
+          </ToolbarItem>
           {filterCategories.map((category) => (
             <FilterControl
               key={category.key}
@@ -99,8 +99,8 @@ export const FilterToolbar: React.FunctionComponent<IFilterToolbarProps> = ({
               showToolbarItem={currentFilterCategory.key === category.key}
             />
           ))}
-        </DataToolbarToggleGroup>
-      </DataToolbarContent>
-    </DataToolbar>
+        </ToolbarToggleGroup>
+      </ToolbarContent>
+    </Toolbar>
   );
 };

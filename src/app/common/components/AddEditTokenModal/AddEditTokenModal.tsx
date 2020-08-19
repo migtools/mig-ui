@@ -108,7 +108,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   return (
     <Modal
       appendTo={containerRef.current}
-      isSmall
+      variant="small"
       isOpen
       onClose={handleClose}
       title={modalTitle}

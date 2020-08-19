@@ -19,6 +19,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
+import { validatedState } from '../../../../../common/helpers';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -116,7 +117,7 @@ const HooksFormComponent: React.FunctionComponent<
             isRequired
             fieldId={hookNameKey}
             helperTextInvalid={touched.hookName && errors.hookName}
-            isValid={!(touched.hookName && errors.hookName)}
+            validated={validatedState(touched.hookName, errors.hookName)}
           >
             {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -129,7 +130,7 @@ const HooksFormComponent: React.FunctionComponent<
               id="hook-name"
               type="text"
               isDisabled={hookAddEditStatus.mode === AddEditMode.Edit}
-              isValid={!(touched.hookName && errors.hookName)}
+              validated={validatedState(touched.hookName, errors.hookName)}
             />
           </FormGroup>
         </GridItem>
@@ -169,7 +170,7 @@ const HooksFormComponent: React.FunctionComponent<
                       isRequired
                       fieldId={ansibleUploadKey}
                       helperTextInvalid={touched.ansibleFile && errors.ansibleFile}
-                      isValid={!(touched.ansibleFile && errors.ansibleFile)}
+                      validated={validatedState(touched.ansibleFile, errors.ansibleFile)}
                     >
                       <FileUpload
                         value={values.ansibleFile}
@@ -185,7 +186,10 @@ const HooksFormComponent: React.FunctionComponent<
                       label="Ansible runtime image"
                       isRequired
                       fieldId={ansibleRuntimeImageKey}
-                      isValid={!(touched.ansibleRuntimeImage && errors.ansibleRuntimeImage)}
+                      validated={validatedState(
+                        touched.ansibleRuntimeImage,
+                        errors.ansibleRuntimeImage
+                      )}
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -197,7 +201,10 @@ const HooksFormComponent: React.FunctionComponent<
                         name={ansibleRuntimeImageKey}
                         type="text"
                         id="ansible-runtime-image-name-input"
-                        isValid={!(touched.ansibleRuntimeImage && errors.ansibleRuntimeImage)}
+                        validated={validatedState(
+                          touched.ansibleRuntimeImage,
+                          errors.ansibleRuntimeImage
+                        )}
                       />
                       <TextContent>
                         <Text component={TextVariants.p}>
@@ -224,7 +231,10 @@ const HooksFormComponent: React.FunctionComponent<
                   <FormGroup
                     isRequired
                     fieldId={customImageKey}
-                    isValid={!(touched.customContainerImage && errors.customContainerImage)}
+                    validated={validatedState(
+                      touched.customContainerImage,
+                      errors.customContainerImage
+                    )}
                   >
                     {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -236,7 +246,10 @@ const HooksFormComponent: React.FunctionComponent<
                       name={customImageKey}
                       type="text"
                       id="container-image-name-input"
-                      isValid={!(touched.customContainerImage && errors.customContainerImage)}
+                      validated={validatedState(
+                        touched.customContainerImage,
+                        errors.customContainerImage
+                      )}
                     />
                   </FormGroup>
                 </GridItem>
@@ -267,7 +280,10 @@ const HooksFormComponent: React.FunctionComponent<
                       helperTextInvalid={
                         touched.srcServiceAccountName && errors.srcServiceAccountName
                       }
-                      isValid={!(touched.srcServiceAccountName && errors.srcServiceAccountName)}
+                      validated={validatedState(
+                        touched.srcServiceAccountName,
+                        errors.srcServiceAccountName
+                      )}
                     >
                       <Tooltip
                         position={TooltipPosition.right}
@@ -288,7 +304,10 @@ const HooksFormComponent: React.FunctionComponent<
                         name={srcServiceAccountNameKey}
                         type="text"
                         id="src-service-account-name-input"
-                        isValid={!(touched.srcServiceAccountName && errors.srcServiceAccountName)}
+                        validated={validatedState(
+                          touched.srcServiceAccountName,
+                          errors.srcServiceAccountName
+                        )}
                       />
                     </FormGroup>
                   </GridItem>
@@ -300,9 +319,10 @@ const HooksFormComponent: React.FunctionComponent<
                       helperTextInvalid={
                         touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace
                       }
-                      isValid={
-                        !(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)
-                      }
+                      validated={validatedState(
+                        touched.srcServiceAccountNamespace,
+                        errors.srcServiceAccountNamespace
+                      )}
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -314,9 +334,10 @@ const HooksFormComponent: React.FunctionComponent<
                         name={srcServiceAccountNamespaceKey}
                         type="text"
                         id="src-service-account-namespace-input"
-                        isValid={
-                          !(touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace)
-                        }
+                        validated={validatedState(
+                          touched.srcServiceAccountNamespace,
+                          errors.srcServiceAccountNamespace
+                        )}
                       />
                     </FormGroup>
                   </GridItem>
@@ -342,7 +363,10 @@ const HooksFormComponent: React.FunctionComponent<
                       helperTextInvalid={
                         touched.destServiceAccountName && errors.destServiceAccountName
                       }
-                      isValid={!(touched.destServiceAccountName && errors.destServiceAccountName)}
+                      validated={validatedState(
+                        touched.destServiceAccountName,
+                        errors.destServiceAccountName
+                      )}
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -354,7 +378,10 @@ const HooksFormComponent: React.FunctionComponent<
                         name={destServiceAccountNameKey}
                         type="text"
                         id="dest-service-account-name-input"
-                        isValid={!(touched.destServiceAccountName && errors.destServiceAccountName)}
+                        validated={validatedState(
+                          touched.destServiceAccountName,
+                          errors.destServiceAccountName
+                        )}
                       />
                     </FormGroup>
                   </GridItem>
@@ -366,9 +393,10 @@ const HooksFormComponent: React.FunctionComponent<
                       helperTextInvalid={
                         touched.destServiceAccountNamespace && errors.destServiceAccountNamespace
                       }
-                      isValid={
-                        !(touched.destServiceAccountNamespace && errors.destServiceAccountNamespace)
-                      }
+                      validated={validatedState(
+                        touched.destServiceAccountNamespace,
+                        errors.destServiceAccountNamespace
+                      )}
                     >
                       {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -380,12 +408,10 @@ const HooksFormComponent: React.FunctionComponent<
                         name={destServiceAccountNamespaceKey}
                         type="text"
                         id="dest-service-account-namespace-input"
-                        isValid={
-                          !(
-                            touched.destServiceAccountNamespace &&
-                            errors.destServiceAccountNamespace
-                          )
-                        }
+                        validated={validatedState(
+                          touched.destServiceAccountNamespace,
+                          errors.destServiceAccountNamespace
+                        )}
                       />
                     </FormGroup>
                   </GridItem>
@@ -400,7 +426,7 @@ const HooksFormComponent: React.FunctionComponent<
             isRequired
             fieldId={migrationStepKey}
             helperTextInvalid={touched.migrationStep && errors.migrationStep}
-            isValid={!(touched.migrationStep && errors.migrationStep)}
+            validated={validatedState(touched.migrationStep, errors.migrationStep)}
           >
             <SimpleSelect
               id="migrationStep"

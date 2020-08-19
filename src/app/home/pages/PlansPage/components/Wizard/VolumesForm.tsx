@@ -100,7 +100,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
 
   if (isPVError) {
     return (
-      <Grid gutter="md" className={styles.centerAlign}>
+      <Grid hasGutter className={styles.centerAlign}>
         <GridItem>
           <div className={styles.errorDiv}>
             <StatusIcon status={StatusType.ERROR} />
