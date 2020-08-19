@@ -342,7 +342,7 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('Azure'));
-    userEvent.click(screen.getByRole('dialog', { name: /Repository information/ }));
+    userEvent.click(screen.getByLabelText('Repository information'));
 
     const name = screen.getByLabelText(/Repository name/);
     const group = screen.getByLabelText(/Azure resource group/);
@@ -422,7 +422,7 @@ describe('<AddEditStorageModal />', () => {
 
     userEvent.click(screen.getByText('Select a type...'));
     userEvent.click(screen.getByText('Azure'));
-    userEvent.click(screen.getByRole('dialog', { name: /Repository information/ }));
+    userEvent.click(screen.getByLabelText('Repository information'));
 
     const repoName = screen.getByLabelText(/Repository name/);
     userEvent.type(repoName, 'AZURE-BAD-NAME');
