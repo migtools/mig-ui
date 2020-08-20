@@ -57,8 +57,6 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   ];
 
   function ProgressWrapper() {
-    // const staleCompleteValue =
-    //   isRefreshingAnalytic && latestAnalytic?.status?.analytics?.percentComplete === 100;
     return (
       <Progress
         value={
@@ -207,7 +205,10 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     setCurrentRows(mappedRows);
   }, [migAnalytics, isRefreshingAnalytic]);
 
-  if (isPlanLocked) {
+  const staleCompleteValue =
+    isRefreshingAnalytic && latestAnalytic?.status?.analytics?.percentComplete === 100;
+
+  if (isPlanLocked || staleCompleteValue) {
     return (
       <Bullseye>
         <EmptyState variant="small">
