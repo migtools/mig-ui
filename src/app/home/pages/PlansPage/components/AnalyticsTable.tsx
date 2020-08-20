@@ -57,9 +57,15 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   ];
 
   function ProgressWrapper() {
+    // const staleCompleteValue =
+    //   isRefreshingAnalytic && latestAnalytic?.status?.analytics?.percentComplete === 100;
     return (
       <Progress
-        value={latestAnalytic?.status?.analytics?.percentComplete || 0}
+        value={
+          !isRefreshingAnalytic || !isLoadingAnalytics
+            ? latestAnalytic?.status?.analytics?.percentComplete
+            : 0
+        }
         title={'Retrieving namespace details'}
         size={ProgressSize.sm}
         variant={ProgressVariant.info}
@@ -201,10 +207,6 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     setCurrentRows(mappedRows);
   }, [migAnalytics, isRefreshingAnalytic]);
 
-  if (isRefreshingAnalytic && analyticPercentComplete === 100) {
-    return null;
-  }
-
   if (isPlanLocked) {
     return (
       <Bullseye>
@@ -217,7 +219,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     );
   }
 
-  if (isLoadingAnalytics) {
+  if (isRefreshingAnalytic || isLoadingAnalytics || migAnalytics?.length === 0) {
     return (
       <Bullseye>
         <EmptyState variant="small">
@@ -231,7 +233,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
 
   return (
     <React.Fragment>
-      {migAnalytics?.length > 0 ? (
+      {migAnalytics?.length > 0 && (
         <Table
           aria-label="migrations-history-table"
           cells={columns}
@@ -241,14 +243,6 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
           <TableHeader />
           <TableBody />
         </Table>
-      ) : (
-        <Bullseye>
-          <EmptyState variant="small">
-            <Title headingLevel="h2" size="xl">
-              No analytics started
-            </Title>
-          </EmptyState>
-        </Bullseye>
       )}
     </React.Fragment>
   );

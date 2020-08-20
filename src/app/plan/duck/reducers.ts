@@ -52,6 +52,7 @@ export interface IPlanReducerState {
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
   isRefreshingAnalytic: boolean;
+  isDeletingAnalytic: boolean;
 }
 
 type PlanReducerFn = (state: IPlanReducerState, action: any) => IPlanReducerState;
@@ -82,6 +83,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
   isRefreshingAnalytic: false,
+  isDeletingAnalytic: false,
 };
 
 const sortPlans = (planList: IPlan[]) =>
@@ -576,6 +578,26 @@ export const updateHookFailure: PlanReducerFn = (
   };
 };
 
+export const deleteAnalyticRequest: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.deleteAnalyticRequest>
+) => {
+  return { ...state, isDeletingAnalytic: true };
+};
+export const deleteAnalyticSuccess: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.deleteAnalyticSuccess>
+) => {
+  return { ...state, isDeletingAnalytic: false };
+};
+
+export const deleteAnalyticFailure: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.deleteAnalyticFailure>
+) => {
+  return { ...state, isDeletingAnalytic: false };
+};
+
 export const refreshAnalyticRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.refreshAnalyticRequest>
@@ -694,6 +716,12 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return refreshAnalyticSuccess(state, action);
     case PlanActionTypes.REFRESH_ANALYTIC_FAILURE:
       return refreshAnalyticFailure(state, action);
+    case PlanActionTypes.DELETE_ANALYTIC_REQUEST:
+      return deleteAnalyticRequest(state, action);
+    case PlanActionTypes.DELETE_ANALYTIC_SUCCESS:
+      return deleteAnalyticSuccess(state, action);
+    case PlanActionTypes.DELETE_ANALYTIC_FAILURE:
+      return deleteAnalyticFailure(state, action);
 
     default:
       return state;

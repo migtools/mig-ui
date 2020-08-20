@@ -35,6 +35,7 @@ interface IPlansTableProps {
   toggleAddWizardOpen: () => void;
   refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
+  isDeletingAnalytic: boolean;
 }
 
 interface IExpandedCells {
@@ -47,6 +48,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   toggleAddWizardOpen,
   refreshAnalyticRequest,
   isRefreshingAnalytic,
+  isDeletingAnalytic,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
@@ -123,6 +125,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </span>
               ),
               props: {
+                isDisabled: true,
                 isOpen: expandedCells[planName] === 1,
                 ariaControls: 'migrations-history-expansion-table',
               },
@@ -188,7 +191,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  {plan.PlanStatus?.latestAnalyticTransitionTime && (
+                  {!isRefreshingAnalytic && (
                     <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
                       <FlexItem>
                         <Button
