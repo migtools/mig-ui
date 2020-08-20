@@ -197,22 +197,27 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                         <Button
                           id="add-plan-btn"
                           onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                          isDisabled={plan.PlanStatus.isPlanLocked}
+                          isDisabled={
+                            plan.PlanStatus.isPlanLocked ||
+                            !plan.PlanStatus?.latestAnalyticTransitionTime
+                          }
                           variant="secondary"
                         >
                           Refresh
                         </Button>
                       </FlexItem>
-                      <FlexItem>
-                        <TextContent>
-                          <Text component={TextVariants.small}>
-                            Last updated:{` `}
-                            {moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                              .local()
-                              .format('YYYY-MM-DD HH:mm:ss')}
-                          </Text>
-                        </TextContent>
-                      </FlexItem>
+                      {plan.PlanStatus?.latestAnalyticTransitionTime && (
+                        <FlexItem>
+                          <TextContent>
+                            <Text component={TextVariants.small}>
+                              Last updated:{` `}
+                              {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                                .local()
+                                .format('YYYY-MM-DD HH:mm:ss')}
+                            </Text>
+                          </TextContent>
+                        </FlexItem>
+                      )}
                     </Flex>
                   )}
                   <AnalyticsTable
