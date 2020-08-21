@@ -14,6 +14,7 @@ import {
   TextVariants,
   PopoverPosition,
   Popover,
+  Spinner,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
@@ -125,7 +126,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </span>
               ),
               props: {
-                isDisabled: true,
                 isOpen: expandedCells[planName] === 1,
                 ariaControls: 'migrations-history-expansion-table',
               },
@@ -136,17 +136,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  <span
-                    key="ns-count-container"
-                    className={classNames(
-                      'pf-c-icon',
-                      { 'pf-m-info': namespaceCount > 0 },
-                      spacing.mrSm
-                    )}
-                    //  className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}
-                  >
-                    <MigrationIcon key="ns-count-icon" /> {namespaceCount}
-                  </span>
+                  <MigrationIcon key="ns-count-icon" className={spacing.mrSm} />
+                  {(plan?.PlanStatus?.analyticPercentComplete !== 100 &&
+                    plan.PlanStatus.latestAnalytic) ||
+                  plan.PlanStatus.isPlanLocked ||
+                  isRefreshingAnalytic ? (
+                    <Spinner size="sm" className={spacing.mrSm}></Spinner>
+                  ) : (
+                    <span key="ns-count-container" className={spacing.mrSm}>
+                      {namespaceCount}
+                    </span>
+                  )}
                   {isMaxResourcesLimitReached && (
                     <span className="pf-c-icon pf-m-warning" key="icon-container">
                       <ExclamationTriangleIcon key="warning-icon" />

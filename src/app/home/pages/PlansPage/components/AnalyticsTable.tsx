@@ -59,11 +59,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   function ProgressWrapper() {
     return (
       <Progress
-        value={
-          latestAnalytic?.status?.analytics?.percentComplete
-            ? latestAnalytic?.status?.analytics?.percentComplete
-            : 0
-        }
+        value={analyticPercentComplete ? analyticPercentComplete : 0}
         title={'Retrieving namespace details'}
         size={ProgressSize.sm}
         variant={ProgressVariant.info}
@@ -205,8 +201,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     setCurrentRows(mappedRows);
   }, [migAnalytics, isRefreshingAnalytic]);
 
-  const staleCompleteValue =
-    isRefreshingAnalytic && latestAnalytic?.status?.analytics?.percentComplete === 100;
+  const staleCompleteValue = isRefreshingAnalytic && analyticPercentComplete === 100;
 
   if (isPlanLocked || staleCompleteValue) {
     return (
