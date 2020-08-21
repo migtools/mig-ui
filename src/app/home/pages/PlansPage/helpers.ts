@@ -36,8 +36,7 @@ export const getPlanInfo = (plan: IPlan) => {
     ? latestMigAnalytic?.status?.analytics?.namespaces
     : [];
   const isMaxResourcesLimitReached =
-    latestMigAnalytic?.status?.analytics?.k8sResourcesTotal > 10000 ? true : false;
-
+    latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
   return {
     planName: plan.MigPlan.metadata.name,
     migrationCount: plan.Migrations.length || 0,

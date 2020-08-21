@@ -217,8 +217,6 @@ function* refreshAnalyticSaga(action) {
           new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace),
           analyticName
         );
-        const updatedPlans = yield call(fetchPlansGenerator);
-        yield put(PlanActions.updatePlans(updatedPlans.updatedPlans));
         if (updatedAnalytic?.data?.status?.analytics.percentComplete === 100) {
           yield put(PlanActions.refreshAnalyticSuccess());
         }

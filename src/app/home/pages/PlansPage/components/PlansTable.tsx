@@ -138,7 +138,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 <>
                   <span
                     key="ns-count-container"
-                    className={classNames('pf-c-icon', { 'pf-m-info': namespaceCount > 0 })}
+                    className={classNames(
+                      'pf-c-icon',
+                      { 'pf-m-info': namespaceCount > 0 },
+                      spacing.mrSm
+                    )}
+                    //  className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}
                   >
                     <MigrationIcon key="ns-count-icon" /> {namespaceCount}
                   </span>
@@ -191,35 +196,36 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  {!isRefreshingAnalytic && (
-                    <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
-                      <FlexItem>
-                        <Button
-                          id="add-plan-btn"
-                          onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                          isDisabled={
-                            plan.PlanStatus.isPlanLocked ||
-                            !plan.PlanStatus?.latestAnalyticTransitionTime
-                          }
-                          variant="secondary"
-                        >
-                          Refresh
-                        </Button>
-                      </FlexItem>
-                      {plan.PlanStatus?.latestAnalyticTransitionTime && (
-                        <FlexItem>
-                          <TextContent>
-                            <Text component={TextVariants.small}>
-                              Last updated:{` `}
-                              {moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                                .local()
-                                .format('YYYY-MM-DD HH:mm:ss')}
-                            </Text>
-                          </TextContent>
-                        </FlexItem>
-                      )}
-                    </Flex>
-                  )}
+                  <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
+                    <FlexItem>
+                      <Button
+                        id="add-plan-btn"
+                        onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
+                        isDisabled={
+                          plan.PlanStatus.isPlanLocked ||
+                          !plan.PlanStatus?.latestAnalyticTransitionTime ||
+                          isRefreshingAnalytic
+                        }
+                        variant="secondary"
+                      >
+                        Refresh
+                      </Button>
+                    </FlexItem>
+                    <FlexItem>
+                      <TextContent>
+                        {plan.PlanStatus?.latestAnalyticTransitionTime ? (
+                          <Text component={TextVariants.small}>
+                            Last updated:{` `}
+                            {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                              .local()
+                              .format('YYYY-MM-DD HH:mm:ss')}
+                          </Text>
+                        ) : (
+                          <Text component={TextVariants.small}>Updating...</Text>
+                        )}
+                      </TextContent>
+                    </FlexItem>
+                  </Flex>
                   <AnalyticsTable
                     type="Migrations"
                     analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}

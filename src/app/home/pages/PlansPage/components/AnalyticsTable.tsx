@@ -60,7 +60,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     return (
       <Progress
         value={
-          !isRefreshingAnalytic || !isLoadingAnalytics
+          latestAnalytic?.status?.analytics?.percentComplete
             ? latestAnalytic?.status?.analytics?.percentComplete
             : 0
         }
