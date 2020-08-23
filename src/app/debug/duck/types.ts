@@ -1,4 +1,3 @@
-
 export interface IDebugTreeNode {
   kind: string;
   namespace: string;

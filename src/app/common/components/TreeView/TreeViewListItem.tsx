@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { AngleRightIcon } from '@patternfly/react-icons';
-import { ClipboardCopy, Button} from '@patternfly/react-core';
+import { ClipboardCopy, Button } from '@patternfly/react-core';
 import { connect } from 'react-redux';
 import { IDecompDebugObject } from '../../../debug/duck/types';
 
@@ -22,8 +22,8 @@ const decompCompositeName = (compName: string): IDecompDebugObject => {
     kind: decompMatch[1],
     namespace: decompMatch[2],
     name: decompMatch[3],
-  }
-}
+  };
+};
 
 export const TreeViewListItem: React.FunctionComponent<ITreeViewListItemProps> = ({
   name,
@@ -71,15 +71,14 @@ export const TreeViewListItem: React.FunctionComponent<ITreeViewListItemProps> =
           ) : null}
         </button>
         <ClipboardCopy
-          style={{width: "80%", marginRight: "10px"}}
+          style={{ width: '80%', marginRight: '10px' }}
           onCopy={onCopy}
-          hoverTip={"Copy `oc get` command"}
-          isReadOnly>
-            {name}
+          hoverTip={'Copy `oc get` command'}
+          isReadOnly
+        >
+          {name}
         </ClipboardCopy>
-        <Button onClick={() => viewRawDebugObject(decompCompositeName(name))}>
-          View Raw
-        </Button>
+        <Button onClick={() => viewRawDebugObject(decompCompositeName(name))}>View Raw</Button>
       </div>
       {isExpanded ? children : null}
     </li>

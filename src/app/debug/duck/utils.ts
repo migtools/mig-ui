@@ -4,18 +4,18 @@ import crawl from 'tree-crawl';
 
 const buildViewName = (rawNode: IDebugTreeNode): string => {
   return `${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`;
-}
+};
 
 const convertNode = (rawNode: IDebugTreeNode, ctx): void => {
   const outNode: ITreeDataItem = {
     name: buildViewName(rawNode),
-  }
+  };
 
-  if(rawNode.children) {
+  if (rawNode.children) {
     outNode.children = rawNode.children;
   }
 
-  if(ctx.parent) {
+  if (ctx.parent) {
     ctx.parent.children[ctx.index] = outNode;
   }
 
@@ -27,14 +27,16 @@ export const convertRawTreeToViewTree = (inTree: IDebugTreeNode): ITreeDataItem[
   // blazing performance here.
   const workingTree: IDebugTreeNode = JSON.parse(JSON.stringify(inTree));
 
-  crawl(workingTree, convertNode, {order: 'pre'});
+  crawl(workingTree, convertNode, { order: 'pre' });
 
   // Doesn't seem to be an easy way from within the crawler to replace
   // the root node, so doing that here and just bringing in the rest of it
   // TODO: Top level of this shouldn't be an array.
-  return [{
-    name: buildViewName(workingTree),
-    children: workingTree.children,
-    defaultExpanded: true,
-  }];
-}
+  return [
+    {
+      name: buildViewName(workingTree),
+      children: workingTree.children,
+      defaultExpanded: true,
+    },
+  ];
+};

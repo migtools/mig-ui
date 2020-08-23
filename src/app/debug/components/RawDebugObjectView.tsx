@@ -1,4 +1,4 @@
-import React, { useEffect} from 'react';
+import React, { useEffect } from 'react';
 import ReactJson from 'react-json-view';
 import { connect } from 'react-redux';
 import { DebugActions } from '../duck/actions';
@@ -22,9 +22,8 @@ const RawDebugObjectView: React.FunctionComponent<IRawDebugObjectViewProps> = ({
   }, []);
 
   return (
-    <div>{debug.isLoading ?
-      "Loading..." :
-      <ReactJson src={debug.objJson} enableClipboard={true} />}
+    <div>
+      {debug.isLoading ? 'Loading...' : <ReactJson src={debug.objJson} enableClipboard={true} />}
     </div>
   );
 };
@@ -34,5 +33,6 @@ export default connect(
     debug: state.debug,
   }),
   (dispatch) => ({
-  fetchRawDebugObject: (path) => dispatch(DebugActions.debugObjectFetchRequest(path)),
-}))(RawDebugObjectView);
+    fetchRawDebugObject: (path) => dispatch(DebugActions.debugObjectFetchRequest(path)),
+  })
+)(RawDebugObjectView);

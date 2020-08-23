@@ -19,7 +19,7 @@ function createReducer(initialState: IDebugReducerState, handlers) {
 }
 
 export default createReducer(
-  { isLoading: true, tree: null, objJson: null, errMsg: null},
+  { isLoading: true, tree: null, objJson: null, errMsg: null },
   {
     [DebugActionTypes.DEBUG_TREE_FETCH_REQUEST]: (state) => {
       return { ...state, isLoading: true };

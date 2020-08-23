@@ -16,12 +16,12 @@ const debugTreeFetchRequest = (plan: IPlan) => ({
   plan,
 });
 
-const debugTreeFetchSuccess= (tree: IDebugTreeNode) => ({
+const debugTreeFetchSuccess = (tree: IDebugTreeNode) => ({
   type: DebugActionTypes.DEBUG_TREE_FETCH_SUCCESS,
   tree,
 });
 
-const debugTreeFetchFailure= (errMsg: string) => ({
+const debugTreeFetchFailure = (errMsg: string) => ({
   type: DebugActionTypes.DEBUG_TREE_FETCH_FAILURE,
   errMsg,
 });
@@ -31,12 +31,12 @@ const debugObjectFetchRequest = (rawPath: string) => ({
   rawPath,
 });
 
-const debugObjectFetchSuccess= (objJson) => ({
+const debugObjectFetchSuccess = (objJson) => ({
   type: DebugActionTypes.DEBUG_OBJECT_FETCH_SUCCESS,
   objJson,
 });
 
-const debugObjectFetchFailure= (errMsg: string) => ({
+const debugObjectFetchFailure = (errMsg: string) => ({
   type: DebugActionTypes.DEBUG_OBJECT_FETCH_FAILURE,
   errMsg,
 });

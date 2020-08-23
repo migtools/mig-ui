@@ -10,27 +10,29 @@ import { IDiscoveryResource } from '../../../client/resources/common';
 
 function* fetchDebugObject(action) {
   const state: IReduxState = yield select();
-  const discoveryClient : IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
 
   try {
     const res = yield discoveryClient.getRaw(action.rawPath);
     yield put(DebugActions.debugObjectFetchSuccess(res.data));
-  } catch(err) {
+  } catch (err) {
     yield put(DebugActions.debugObjectFetchFailure(err.message));
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
 
 function* fetchDebugTree(action) {
-  const plan: IPlan = action.plan
+  const plan: IPlan = action.plan;
   const state: IReduxState = yield select();
-  const discoveryClient : IDiscoveryClient = ClientFactory.discovery(state);
-  const debugTreeResource : IDiscoveryResource = new DebugTreeDiscoveryResource(plan.MigPlan.metadata.name);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(
+    plan.MigPlan.metadata.name
+  );
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
     yield put(DebugActions.debugTreeFetchSuccess(res.data));
-  } catch(err) {
+  } catch (err) {
     yield put(DebugActions.debugTreeFetchFailure(err.message));
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
