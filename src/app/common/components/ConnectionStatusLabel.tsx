@@ -70,7 +70,6 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
 
   const StatusIcon: any = getStatusIcon(status);
   return (
-    // <Flex className={flex.justifyContentCenter}>
     <Flex>
       <FlexItem>
         <StatusIcon />
