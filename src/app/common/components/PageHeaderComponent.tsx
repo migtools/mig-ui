@@ -40,6 +40,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
+    logoComponent="span"
     headerTools={
       <PageHeaderTools>
         <PageHeaderToolsGroup>
