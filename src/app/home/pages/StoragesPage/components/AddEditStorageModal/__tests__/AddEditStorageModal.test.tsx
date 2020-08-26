@@ -37,8 +37,8 @@ describe('<AddEditStorageModal />', () => {
     const bucketName = screen.getByLabelText(/S3 bucket name/);
     const bucketRegion = screen.getByLabelText(/S3 bucket region/);
     const url = screen.getByLabelText(/S3 endpoint/);
-    const accessKey = screen.getByLabelText(/S3 provider access key/);
-    const secretKey = screen.getByLabelText(/S3 provider secret access key/);
+    const accessKey = screen.getAllByLabelText(/S3 provider access key/)[0];
+    const secretKey = screen.getAllByLabelText(/S3 provider secret access key/)[0];
     const addButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
 
     expect(screen.getByText(/Add replication repository/)).toBeInTheDocument;
@@ -95,8 +95,8 @@ describe('<AddEditStorageModal />', () => {
       const bucketName = screen.getByLabelText(/S3 bucket name/);
       const bucketRegion = screen.getByLabelText(/S3 bucket region/);
       const url = screen.getByLabelText(/S3 endpoint/);
-      const accessKey = screen.getByLabelText(/S3 provider access key/);
-      const secretKey = screen.getByLabelText(/S3 provider secret access key/);
+      const accessKey = screen.getAllByLabelText(/S3 provider access key/)[0];
+      const secretKey = screen.getAllByLabelText(/S3 provider secret access key/)[0];
       const editButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
 
       expect(editButton).toHaveAttribute('disabled');
@@ -168,8 +168,8 @@ describe('<AddEditStorageModal />', () => {
     const name = screen.getByLabelText(/Replication repository name/);
     const bucketName = screen.getByLabelText(/S3 bucket name/);
     const bucketRegion = screen.getByLabelText(/S3 bucket region/);
-    const accessKey = screen.getByLabelText(/S3 provider access key/);
-    const secretKey = screen.getByLabelText(/S3 provider secret access key/);
+    const accessKey = screen.getAllByLabelText(/S3 provider access key/)[0];
+    const secretKey = screen.getAllByLabelText(/S3 provider secret access key/)[0];
     const addButton = screen.getByRole('button', { name: /S3 Storage Submit Form/ });
 
     expect(screen.getByText(/Add replication repository/)).toBeInTheDocument;
@@ -236,7 +236,7 @@ describe('<AddEditStorageModal />', () => {
 
     const name = screen.getByLabelText(/Repository name/);
     const bucket = screen.getByLabelText(/GCP bucket name/);
-    const creds = screen.getByLabelText(/GCP credential JSON blob/);
+    const creds = screen.getAllByLabelText(/GCP credential JSON blob/)[0];
     const addButton = screen.getByRole('button', { name: /GCP Storage Submit Form/ });
 
     expect(screen.getByText(/Add replication repository/)).toBeInTheDocument;
@@ -280,7 +280,7 @@ describe('<AddEditStorageModal />', () => {
 
       const name = screen.getByLabelText(/Repository name/);
       const bucket = screen.getByLabelText(/GCP bucket name/);
-      const creds = screen.getByLabelText(/GCP credential JSON blob/);
+      const creds = screen.getAllByLabelText(/GCP credential JSON blob/)[0];
       const editButton = screen.getByRole('button', { name: /GCP Storage Submit Form/ });
 
       expect(editButton).toHaveAttribute('disabled');

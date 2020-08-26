@@ -86,7 +86,7 @@ describe('<AddEditClusterModal />', () => {
 
     const name = screen.getByLabelText(/Cluster name/);
     const url = screen.getByLabelText(/URL/);
-    const passwd = screen.getByLabelText(/Service account token/);
+    const passwd = screen.getAllByLabelText(/Service account token/)[0];
     const azure = screen.getByLabelText(/Azure cluster/);
     const azureGroup = screen.getByLabelText(/Azure resource group/);
     const ssl = screen.getByLabelText(/Require SSL verification/);
