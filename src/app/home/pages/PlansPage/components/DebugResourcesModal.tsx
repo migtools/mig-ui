@@ -71,11 +71,10 @@ const DebugResourcesModal: React.FunctionComponent<IDebugResourcesModalProps> = 
   onClose,
 }: IDebugResourcesModalProps) => (
   <Modal
+    variant="small"
     id="debug-resources-modal"
-    isSmall
     title="Migration plan resources (DEBUG)"
     isOpen
-    isFooterLeftAligned
     onClose={onClose}
     actions={[
       <Button key="close" variant="primary" onClick={onClose}>
