@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
 import { withFormik, FormikProps } from 'formik';
-import KeyDisplayIcon from '../../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../../common/components/HideWrapper';
+import KeyDisplayToggle from '../../../../../common/components/KeyDisplayToggle';
 import utils from '../../../../../common/duck/utils';
 import {
   AddEditMode,
@@ -163,15 +162,19 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
       </FormGroup>
       <FormGroup
         label="Service account token"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="service account token"
+            isKeyHidden={isTokenHidden}
+            onClick={toggleHideToken}
+          />
+        }
         isRequired
         fieldId={tokenKey}
         helperText="Copy and paste the cluster's service account token."
         helperTextInvalid={touched.token && errors.token}
         validated={validatedState(touched.token, errors.token)}
       >
-        <HideWrapper onClick={toggleHideToken}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isTokenHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput

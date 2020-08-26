@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
-import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../../../common/components/HideWrapper';
+import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
@@ -169,14 +168,18 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       )}
       <FormGroup
         label="S3 provider access key"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="S3 provider access key"
+            isKeyHidden={isAccessKeyHidden}
+            onClick={handleAccessKeyHiddenToggle}
+          />
+        }
         isRequired
         fieldId={accessKeyKey}
         helperTextInvalid={touched.accessKey && errors.accessKey}
         validated={validatedState(touched.accessKey, errors.accessKey)}
       >
-        <HideWrapper onClick={handleAccessKeyHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
@@ -193,14 +196,18 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
       </FormGroup>
       <FormGroup
         label="S3 provider secret access key"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="S3 provider secret access key"
+            isKeyHidden={isSecretHidden}
+            onClick={handleSecretHiddenToggle}
+          />
+        }
         isRequired
         fieldId={secretKey}
         helperTextInvalid={touched.secret && errors.secret}
         validated={validatedState(touched.secret, errors.secret)}
       >
-        <HideWrapper onClick={handleSecretHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput

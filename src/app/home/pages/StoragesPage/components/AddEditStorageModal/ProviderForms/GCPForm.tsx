@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Form, FormGroup, Grid, GridItem, Flex } from '@patternfly/react-core';
-import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../../../common/components/HideWrapper';
+import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
@@ -132,14 +131,18 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
       </FormGroup>
       <FormGroup
         label="GCP credential JSON blob"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="GCP credential JSON blob"
+            isKeyHidden={isBlobHidden}
+            onClick={handleBlobHiddenToggle}
+          />
+        }
         isRequired
         fieldId={gcpBlobKey}
         helperTextInvalid={touched.gcpBlob && errors.gcpBlob}
         validated={validatedState(touched.gcpBlob, errors.gcpBlob)}
       >
-        <HideWrapper onClick={handleBlobHiddenToggle}>
-          <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
