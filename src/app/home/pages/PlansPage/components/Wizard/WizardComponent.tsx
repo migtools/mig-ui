@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Wizard, WizardStepFunctionType } from '@patternfly/react-core';
+import { Modal, Wizard, WizardStepFunctionType } from '@patternfly/react-core';
 import GeneralForm from './GeneralForm';
 import NamespacesForm from './NamespacesForm';
 import VolumesForm from './VolumesForm';
@@ -16,8 +16,6 @@ import { getTokenInfo } from '../../../TokensPage/helpers';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { isSameResource } from '../../../../../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
-
-const styles = require('./WizardComponent.module');
 
 const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -269,16 +267,16 @@ const WizardComponent = (props: IOtherProps) => {
   return (
     <React.Fragment>
       {isOpen && (
-        <Wizard
-          isOpen={isOpen}
-          onNext={onMove}
-          onBack={onMove}
-          title="Create a migration plan"
-          onClose={handleClose}
-          steps={steps}
-          className={styles.wizardModifier}
-          onSubmit={(event) => event.preventDefault()}
-        />
+        <Modal isOpen={isOpen} width="95%" showClose={false} hasNoBodyWrapper>
+          <Wizard
+            onNext={onMove}
+            onBack={onMove}
+            title="Create a migration plan"
+            onClose={handleClose}
+            steps={steps}
+            onSubmit={(event) => event.preventDefault()}
+          />
+        </Modal>
       )}
     </React.Fragment>
   );
