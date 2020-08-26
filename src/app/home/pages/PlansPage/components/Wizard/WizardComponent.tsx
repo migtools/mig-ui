@@ -11,7 +11,7 @@ import { useFormikContext } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
-import { StatusType } from '../../../../../common/components/StatusIcon';
+import { StatusType } from '@konveyor/lib-ui';
 import { getTokenInfo } from '../../../TokensPage/helpers';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { isSameResource } from '../../../../../common/helpers';
@@ -99,7 +99,7 @@ const WizardComponent = (props: IOtherProps) => {
       const selectedToken =
         tokenRef && tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenRef));
       const tokenInfo = selectedToken && getTokenInfo(selectedToken);
-      return tokenInfo && tokenInfo.statusType !== StatusType.ERROR;
+      return tokenInfo && tokenInfo.statusType !== StatusType.Error;
     });
 
   const steps = [
