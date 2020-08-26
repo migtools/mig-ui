@@ -102,7 +102,14 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
           </Button>
         </LevelItem>
         <LevelItem>
-          <Pagination widgetId="storages-table-pagination-top" {...paginationProps} />
+          <Pagination
+            widgetId="storages-table-pagination-top"
+            itemCount={paginationProps.itemCount}
+            perPage={paginationProps.perPage}
+            page={paginationProps.page}
+            onSetPage={paginationProps.onSetPage}
+            onPerPageSelect={paginationProps.onPerPageSelect}
+          />
         </LevelItem>
       </Level>
       <Table
@@ -120,7 +127,11 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
         widgetId="storages-table-pagination-bottom"
         variant="bottom"
         className={spacing.mtMd}
-        {...paginationProps}
+        itemCount={paginationProps.itemCount}
+        perPage={paginationProps.perPage}
+        page={paginationProps.page}
+        onSetPage={paginationProps.onSetPage}
+        onPerPageSelect={paginationProps.onPerPageSelect}
       />
     </>
   );

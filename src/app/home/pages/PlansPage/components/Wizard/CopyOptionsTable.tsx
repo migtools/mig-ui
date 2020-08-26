@@ -4,7 +4,6 @@ import {
   EmptyState,
   EmptyStateVariant,
   Title,
-  TitleLevel,
   Grid,
   GridItem,
   TextContent,
@@ -272,7 +271,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     );
 
   return (
-    <Grid gutter="md">
+    <Grid hasGutter>
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
@@ -290,7 +289,14 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             />
           </LevelItem>
           <LevelItem>
-            <Pagination widgetId="storage-class-table-pagination-top" {...paginationProps} />
+            <Pagination
+              widgetId="storage-class-table-pagination-top"
+              itemCount={paginationProps.itemCount}
+              perPage={paginationProps.perPage}
+              page={paginationProps.page}
+              onSetPage={paginationProps.onSetPage}
+              onPerPageSelect={paginationProps.onPerPageSelect}
+            />
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
@@ -312,13 +318,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           widgetId="storage-class-table-pagination-bottom"
           variant={PaginationVariant.bottom}
           className={spacing.mtMd}
-          {...paginationProps}
+          itemCount={paginationProps.itemCount}
+          perPage={paginationProps.perPage}
+          page={paginationProps.page}
+          onSetPage={paginationProps.onSetPage}
+          onPerPageSelect={paginationProps.onPerPageSelect}
         />
         <Modal
-          isSmall
+          variant="small"
           title="Copy performance warning"
           header={
-            <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+            <Title headingLevel="h1" size={BaseSizes['2xl']}>
               <ExclamationTriangleIcon
                 color="var(--pf-global--warning-color--100)"
                 className={spacing.mrMd}
@@ -337,7 +347,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               Close
             </Button>,
           ]}
-          isFooterLeftAligned
         >
           Selecting checksum verification for a PV that will be copied using a filesystem copy
           method will severely impact the copy performance. Enabling verification will essentially

@@ -14,7 +14,7 @@ const LogItem = ({ log }) => {
   ];
 
   return (
-    <Grid gutter="md" className={styles.container}>
+    <Grid hasGutter className={styles.container}>
       <ReactTable
         filterable
         defaultFilterMethod={(filter, row) => {

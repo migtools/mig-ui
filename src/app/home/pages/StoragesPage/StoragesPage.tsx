@@ -73,7 +73,9 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
                 {!storageList ? null : storageList.length === 0 ? (
                   <EmptyState variant="full">
                     <EmptyStateIcon icon={AddCircleOIcon} />
-                    <Title size="lg">Add replication repositories for the migration</Title>
+                    <Title headingLevel="h3" size="lg">
+                      Add replication repositories for the migration
+                    </Title>
                     <Button onClick={toggleAddEditModal} variant="primary">
                       Add replication repository
                     </Button>

@@ -79,7 +79,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
     return (
       <EmptyState variant={EmptyStateVariant.small}>
         <EmptyStateIcon icon={ExclamationTriangleIcon} />
-        <Title headingLevel="h5" size="sm">
+        <Title headingLevel="h5" size="lg">
           Failed to fetch logs.
         </Title>
         <EmptyStateBody>Please try your request again.</EmptyStateBody>

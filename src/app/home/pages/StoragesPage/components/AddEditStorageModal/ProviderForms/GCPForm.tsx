@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  TextInput,
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  Flex,
-  FlexModifiers,
-} from '@patternfly/react-core';
-import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../../../common/components/HideWrapper';
+import { Button, TextInput, Form, FormGroup, Grid, GridItem, Flex } from '@patternfly/react-core';
+import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
@@ -22,6 +12,7 @@ import ConnectionStatusLabel from '../../../../../../common/components/Connectio
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 import storageUtils from '../../../../../../storage/duck/utils';
+import { validatedState } from '../../../../../../common/helpers';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -100,7 +91,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
-        isValid={!(touched.name && errors.name)}
+        validated={validatedState(touched.name, errors.name)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -114,7 +105,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           type="text"
           id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
-          isValid={!(touched.name && errors.name)}
+          validated={validatedState(touched.name, errors.name)}
         />
       </FormGroup>
       <FormGroup
@@ -122,7 +113,7 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
         isRequired
         fieldId={gcpBucketKey}
         helperTextInvalid={touched.gcpBucket && errors.gcpBucket}
-        isValid={!(touched.gcpBucket && errors.gcpBucket)}
+        validated={validatedState(touched.gcpBucket, errors.gcpBucket)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -135,19 +126,23 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           name={gcpBucketKey}
           type="text"
           id={gcpBucketKey}
-          isValid={!(touched.gcpBucket && errors.gcpBucket)}
+          validated={validatedState(touched.gcpBucket, errors.gcpBucket)}
         />
       </FormGroup>
       <FormGroup
         label="GCP credential JSON blob"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="GCP credential JSON blob"
+            isKeyHidden={isBlobHidden}
+            onClick={handleBlobHiddenToggle}
+          />
+        }
         isRequired
         fieldId={gcpBlobKey}
         helperTextInvalid={touched.gcpBlob && errors.gcpBlob}
-        isValid={!(touched.gcpBlob && errors.gcpBlob)}
+        validated={validatedState(touched.gcpBlob, errors.gcpBlob)}
       >
-        <HideWrapper onClick={handleBlobHiddenToggle}>
-          <KeyDisplayIcon id="gcpBlobIcon" isHidden={isBlobHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
@@ -158,10 +153,10 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           name={gcpBlobKey}
           type={isBlobHidden ? 'password' : 'text'}
           id={gcpBlobKey}
-          isValid={!(touched.gcpBlob && errors.gcpBlob)}
+          validated={validatedState(touched.gcpBlob, errors.gcpBlob)}
         />
       </FormGroup>
-      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+      <Flex>
         <Button
           aria-label="GCP Storage Submit Form"
           variant="primary"

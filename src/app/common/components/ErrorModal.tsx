@@ -1,13 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import {
-  Modal,
-  Button,
-  Grid,
-  GridItem,
-  Title,
-  TitleLevel,
-  BaseSizes,
-} from '@patternfly/react-core';
+import { Modal, Button, Grid, GridItem, Title, BaseSizes } from '@patternfly/react-core';
 import { ErrorCircleOIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
@@ -33,7 +25,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
 
   const header = (
     <React.Fragment>
-      <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+      <Title headingLevel={'h1'} size={BaseSizes['2xl']}>
         <ErrorCircleOIcon className={styles.errorIconStyles} />
         {`Error while fetching ${errorModalObj.name || 'data'}`}
       </Title>
@@ -43,19 +35,19 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   return (
     <Modal
       header={header}
-      isSmall
+      variant="small"
       isOpen={isOpen}
       onClose={() => clearErrors()}
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
-      <Grid gutter="md">
+      <Grid hasGutter>
         <form>
           <GridItem className={styles.modalHeader}>
             Unable to retrieve one or more resource objects (migcluster, migstorage, migplan).
           </GridItem>
           <GridItem className={styles.gridMargin}>Refresh your certificate and try again</GridItem>
           <GridItem className={styles.actionButtons}>
-            <Grid gutter="md">
+            <Grid hasGutter>
               <GridItem span={5}>
                 <Button
                   variant="primary"

@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  TextInput,
-  Form,
-  FormGroup,
-  Checkbox,
-  Flex,
-  FlexModifiers,
-} from '@patternfly/react-core';
-import KeyDisplayIcon from '../../../../../../common/components/KeyDisplayIcon';
-import HideWrapper from '../../../../../../common/components/HideWrapper';
+import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
+import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
+import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
@@ -23,6 +15,7 @@ import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 import storageUtils from '../../../../../../storage/duck/utils';
 import commonUtils from '../../../../../../common/duck/utils';
+import { validatedState } from '../../../../../../common/helpers';
 
 interface IFormValues {
   name: string;
@@ -96,7 +89,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         isRequired
         fieldId={nameKey}
         helperTextInvalid={touched.name && errors.name}
-        isValid={!(touched.name && errors.name)}
+        validated={validatedState(touched.name, errors.name)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -109,7 +102,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           type="text"
           id={nameKey}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
-          isValid={!(touched.name && errors.name)}
+          validated={validatedState(touched.name, errors.name)}
         />
       </FormGroup>
       <FormGroup
@@ -117,7 +110,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
         isRequired
         fieldId={awsBucketNameKey}
         helperTextInvalid={touched.awsBucketName && errors.awsBucketName}
-        isValid={!(touched.awsBucketName && errors.awsBucketName)}
+        validated={validatedState(touched.awsBucketName, errors.awsBucketName)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -129,14 +122,14 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           name={awsBucketNameKey}
           type="text"
           id={awsBucketNameKey}
-          isValid={!(touched.awsBucketName && errors.awsBucketName)}
+          validated={validatedState(touched.awsBucketName, errors.awsBucketName)}
         />
       </FormGroup>
       <FormGroup
         label="S3 bucket region"
         fieldId={awsBucketRegionKey}
         helperTextInvalid={touched.awsBucketRegion && errors.awsBucketRegion}
-        isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
+        validated={validatedState(touched.awsBucketRegion, errors.awsBucketRegion)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -148,7 +141,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           name={awsBucketRegionKey}
           type="text"
           id={awsBucketRegionKey}
-          isValid={!(touched.awsBucketRegion && errors.awsBucketRegion)}
+          validated={validatedState(touched.awsBucketRegion, errors.awsBucketRegion)}
         />
       </FormGroup>
       {!isAWS && (
@@ -157,7 +150,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           isRequired
           fieldId={s3UrlKey}
           helperTextInvalid={touched.s3Url && errors.s3Url}
-          isValid={!(touched.s3Url && errors.s3Url)}
+          validated={validatedState(touched.s3Url, errors.s3Url)}
         >
           {/*
             // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -169,20 +162,24 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
             name={s3UrlKey}
             type="text"
             id={s3UrlKey}
-            isValid={!(touched.s3Url && errors.s3Url)}
+            validated={validatedState(touched.s3Url, errors.s3Url)}
           />
         </FormGroup>
       )}
       <FormGroup
         label="S3 provider access key"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="S3 provider access key"
+            isKeyHidden={isAccessKeyHidden}
+            onClick={handleAccessKeyHiddenToggle}
+          />
+        }
         isRequired
         fieldId={accessKeyKey}
         helperTextInvalid={touched.accessKey && errors.accessKey}
-        isValid={!(touched.accessKey && errors.accessKey)}
+        validated={validatedState(touched.accessKey, errors.accessKey)}
       >
-        <HideWrapper onClick={handleAccessKeyHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isAccessKeyHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
 
@@ -194,19 +191,23 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           name={accessKeyKey}
           type={isAccessKeyHidden ? 'password' : 'text'}
           id={accessKeyKey}
-          isValid={!(touched.accessKey && errors.accessKey)}
+          validated={validatedState(touched.accessKey, errors.accessKey)}
         />
       </FormGroup>
       <FormGroup
         label="S3 provider secret access key"
+        labelIcon={
+          <KeyDisplayToggle
+            keyName="S3 provider secret access key"
+            isKeyHidden={isSecretHidden}
+            onClick={handleSecretHiddenToggle}
+          />
+        }
         isRequired
         fieldId={secretKey}
         helperTextInvalid={touched.secret && errors.secret}
-        isValid={!(touched.secret && errors.secret)}
+        validated={validatedState(touched.secret, errors.secret)}
       >
-        <HideWrapper onClick={handleSecretHiddenToggle}>
-          <KeyDisplayIcon id="accessKeyIcon" isHidden={isSecretHidden} />
-        </HideWrapper>
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
         <TextInput
@@ -217,20 +218,14 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           name={secretKey}
           type={isSecretHidden ? 'password' : 'text'}
           id={secretKey}
-          isValid={!(touched.secret && errors.secret)}
+          validated={validatedState(touched.secret, errors.secret)}
         />
       </FormGroup>
       {!isAWS && (
         <>
           <FormGroup
             fieldId={requireSSLKey}
-            helperText={
-              <>
-                Select 'Require SSL verification' to verify SSL connections to the object store. If
-                you are using a self-signed certificate, you may either disable SSL verification, or
-                upload your certificate bundle.
-              </>
-            }
+            helperText="Select 'Require SSL verification' to verify SSL connections to the object store. If you are using a self-signed certificate, you may either disable SSL verification, or upload your certificate bundle."
           >
             <Checkbox
               onChange={formikHandleChange}
@@ -258,7 +253,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           )}
         </>
       )}
-      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+      <Flex>
         <Button
           aria-label="S3 Storage Submit Form"
           variant="primary"

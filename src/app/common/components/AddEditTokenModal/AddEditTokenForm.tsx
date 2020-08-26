@@ -8,7 +8,6 @@ import {
   Text,
   Button,
   Flex,
-  FlexModifiers,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { FormikProps, withFormik, FormikBag } from 'formik';
@@ -26,6 +25,7 @@ import utils from '../../duck/utils';
 import { ICluster } from '../../../cluster/duck/types';
 import { IToken, ITokenFormValues, TokenFieldKey, TokenType } from '../../../token/duck/types';
 import ConnectionStatusLabel from '../../../common/components/ConnectionStatusLabel';
+import { validatedState } from '../../helpers';
 
 const currentStatusFn = addEditStatusText('token');
 const addEditButtonTextFn = addEditButtonText('token');
@@ -128,7 +128,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         isRequired
         fieldId={TokenFieldKey.Name}
         helperTextInvalid={touched.name && errors.name}
-        isValid={!(touched.name && errors.name)}
+        validated={validatedState(touched.name, errors.name)}
       >
         <TextInput
           onChange={formikHandleChange}
@@ -139,7 +139,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           type="text"
           id={TokenFieldKey.Name}
           isDisabled={currentStatus.mode === AddEditMode.Edit}
-          isValid={!(touched.name && errors.name)}
+          validated={validatedState(touched.name, errors.name)}
         />
       </FormGroup>
       <FormGroup
@@ -147,7 +147,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         isRequired
         fieldId={TokenFieldKey.AssociatedClusterName}
         helperTextInvalid={touched.associatedClusterName && errors.associatedClusterName}
-        isValid={!(touched.associatedClusterName && errors.associatedClusterName)}
+        validated={validatedState(touched.associatedClusterName, errors.associatedClusterName)}
       >
         <SimpleSelect
           id={TokenFieldKey.AssociatedClusterName}
@@ -166,7 +166,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
         isRequired
         fieldId={TokenFieldKey.TokenType}
         helperTextInvalid={touched.tokenType && errors.tokenType}
-        isValid={!(touched.tokenType && errors.tokenType)}
+        validated={validatedState(touched.tokenType, errors.tokenType)}
       >
         <Radio
           id={`${TokenFieldKey.TokenType}-${TokenType.OAuth}`}
@@ -214,7 +214,7 @@ const InnerAddEditTokenForm: React.FunctionComponent<
           isRequired={values.tokenType === TokenType.ServiceAccount}
           helperText="Enter the token string."
           helperTextInvalid={touched.serviceAccountToken && errors.serviceAccountToken}
-          isValid={!(touched.serviceAccountToken && errors.serviceAccountToken)}
+          validated={validatedState(touched.serviceAccountToken, errors.serviceAccountToken)}
         >
           <TextInput
             onChange={formikHandleChange}
@@ -225,11 +225,11 @@ const InnerAddEditTokenForm: React.FunctionComponent<
             type="text"
             id={TokenFieldKey.ServiceAccountToken}
             isDisabled={values.tokenType !== TokenType.ServiceAccount}
-            isValid={!(touched.serviceAccountToken && errors.serviceAccountToken)}
+            validated={validatedState(touched.serviceAccountToken, errors.serviceAccountToken)}
           />
         </FormGroup>
       </FormGroup>
-      <Flex breakpointMods={[{ modifier: FlexModifiers['space-items-md'] }]}>
+      <Flex>
         <Button
           variant="primary"
           type="submit"

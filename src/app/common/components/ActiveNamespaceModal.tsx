@@ -1,14 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import {
-  Modal,
-  Button,
-  Title,
-  TitleLevel,
-  BaseSizes,
-  TextContent,
-  Text,
-  Form,
-} from '@patternfly/react-core';
+import { Modal, Button, Title, BaseSizes, TextContent, Text, Form } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AuthActions } from '../../auth/duck/actions';
@@ -59,7 +50,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   const currentTitle = activeNamespace ? 'Update your active namespace' : 'Before you begin....';
   const header = (
     <React.Fragment>
-      <Title headingLevel={TitleLevel.h1} size={BaseSizes['2xl']}>
+      <Title headingLevel="h1" size={BaseSizes['2xl']}>
         {`${currentTitle}`}
       </Title>
     </React.Fragment>
@@ -67,7 +58,7 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
   return (
     <Modal
       header={header}
-      isSmall
+      variant="small"
       isOpen={isOpen}
       title={`${currentTitle}`}
       onClose={onClose}
@@ -87,7 +78,6 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
           Save
         </Button>,
       ]}
-      isFooterLeftAligned
     >
       <Form className={spacing.pb_2xl}>
         <TextContent>

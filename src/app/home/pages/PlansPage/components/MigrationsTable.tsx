@@ -32,7 +32,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     'PVs Copied',
     {
       title: 'Status',
-      transforms: [cellWidth('30')],
+      transforms: [cellWidth(30)],
     },
     '',
   ];
@@ -79,7 +79,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
                 value={migration.tableStatus.progress}
                 title={migration.tableStatus.stepName}
                 size={ProgressSize.sm}
-                variant={ProgressVariant.info}
               />
             );
           }

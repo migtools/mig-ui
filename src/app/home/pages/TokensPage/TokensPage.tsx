@@ -57,7 +57,9 @@ ITokensPageBaseProps) => {
       return (
         <EmptyState variant="full">
           <EmptyStateIcon icon={WrenchIcon} />
-          <Title size="lg">No clusters have been added</Title>
+          <Title headingLevel="h3" size="lg">
+            No clusters have been added
+          </Title>
           <TextContent className={spacing.mtMd}>
             <Text component="p">
               An administrator must add clusters for migration before you can add tokens. Contact
@@ -70,7 +72,9 @@ ITokensPageBaseProps) => {
       return (
         <EmptyState variant="full">
           <EmptyStateIcon icon={AddCircleOIcon} />
-          <Title size="lg">Add token</Title>
+          <Title headingLevel="h3" size="lg">
+            Add token
+          </Title>
           <Button onClick={toggleAddEditTokenModal} variant="primary">
             Add token
           </Button>

@@ -3,7 +3,17 @@ import { history } from '../../helpers';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { IReduxState } from '../../reducers';
-import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
+import {
+  Nav,
+  NavList,
+  NavItem,
+  Page,
+  PageSidebar,
+  PageHeader,
+  PageHeaderTools,
+  SkipToContent,
+  Title,
+} from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
 import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage, WelcomePage } from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
@@ -11,7 +21,6 @@ import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 import { getActiveNamespaceFromStorage } from '../common/helpers';
-
 import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 
 const mainContainerId = 'mig-ui-page-main-container';
@@ -54,15 +63,17 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   const activeNamespace = getActiveNamespaceFromStorage();
   const [namespaceSelectIsOpen, setNamespaceSelectIsOpen] = useState(false);
 
+  const Header = (
+    <PageHeaderComponent
+      showNavToggle={!isWelcomeScreen}
+      openNamespaceSelect={() => setNamespaceSelectIsOpen(true)}
+      isWelcomeScreen={isWelcomeScreen}
+    />
+  );
+
   return (
     <Page
-      header={
-        <PageHeaderComponent
-          showNavToggle={!isWelcomeScreen}
-          openNamespaceSelect={() => setNamespaceSelectIsOpen(true)}
-          isWelcomeScreen={isWelcomeScreen}
-        />
-      }
+      header={Header}
       sidebar={<PageSidebar nav={nav} isNavOpen={!isWelcomeScreen} theme="dark" />}
       isManagedSidebar={!isWelcomeScreen}
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}

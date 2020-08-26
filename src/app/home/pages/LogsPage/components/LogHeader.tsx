@@ -68,7 +68,7 @@ const LogHeader: FunctionComponent<IProps> = ({
     <span>
       {isFetchingLogs ? null : (
         <CardHeader>
-          <Grid gutter="sm">
+          <Grid hasGutter>
             <GridItem span={2}>
               <TextContent>
                 <Text component={TextVariants.p}>Select cluster:</Text>

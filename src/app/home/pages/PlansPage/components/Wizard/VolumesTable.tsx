@@ -137,7 +137,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                 ) : (
                   <EmptyState variant={EmptyStateVariant.small}>
                     <EmptyStateIcon icon={ExclamationTriangleIcon} />
-                    <Title headingLevel="h5" size="sm">
+                    <Title headingLevel="h5" size="md">
                       No PV data found
                     </Title>
                     <EmptyStateBody>Unable to retrieve PV data</EmptyStateBody>
@@ -159,7 +159,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   });
 
   return (
-    <Grid gutter="md">
+    <Grid hasGutter>
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
@@ -177,7 +177,14 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             />
           </LevelItem>
           <LevelItem>
-            <Pagination widgetId="pv-table-pagination-top" {...paginationProps} />
+            <Pagination
+              widgetId="pv-table-pagination-top"
+              itemCount={paginationProps.itemCount}
+              perPage={paginationProps.perPage}
+              page={paginationProps.page}
+              onSetPage={paginationProps.onSetPage}
+              onPerPageSelect={paginationProps.onPerPageSelect}
+            />
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
@@ -207,7 +214,11 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           widgetId="pv-table-pagination-bottom"
           variant={PaginationVariant.bottom}
           className={spacing.mtMd}
-          {...paginationProps}
+          itemCount={paginationProps.itemCount}
+          perPage={paginationProps.perPage}
+          page={paginationProps.page}
+          onSetPage={paginationProps.onSetPage}
+          onPerPageSelect={paginationProps.onPerPageSelect}
         />
       </GridItem>
     </Grid>

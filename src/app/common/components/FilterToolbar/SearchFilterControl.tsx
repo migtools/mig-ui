@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  DataToolbarFilter,
+  ToolbarFilter,
   InputGroup,
   TextInput,
   Button,
@@ -31,7 +31,7 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
 
   const id = `${category.key}-input`;
   return (
-    <DataToolbarFilter
+    <ToolbarFilter
       chips={filterValue || []}
       deleteChip={() => setFilterValue([])}
       categoryName={category.title}
@@ -61,7 +61,7 @@ const SearchFilterControl: React.FunctionComponent<ISearchFilterControlProps> = 
           <SearchIcon />
         </Button>
       </InputGroup>
-    </DataToolbarFilter>
+    </ToolbarFilter>
   );
 };
 

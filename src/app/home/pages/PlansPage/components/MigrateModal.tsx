@@ -20,12 +20,12 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
 
   return (
     <Modal
-      isSmall
+      variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
       title={`Migrate ${plan.MigPlan.metadata.name}`}
     >
-      <Grid gutter="md">
+      <Grid hasGutter>
         <form>
           <GridItem>
             Migrating a migration plan means that all transactions on the source cluster will be
@@ -43,7 +43,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
             />
           </GridItem>
           <GridItem>
-            <Grid gutter="md">
+            <Grid hasGutter>
               <GridItem>
                 <Button
                   variant="primary"

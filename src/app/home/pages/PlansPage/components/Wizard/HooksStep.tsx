@@ -172,7 +172,7 @@ const HooksStep = (props) => {
             </Bullseye>
           ) : (
             <GridItem className={hooksFormContainerStyles}>
-              <Grid gutter="md">
+              <Grid hasGutter>
                 <GridItem span={4}>
                   <Button
                     key="add-hook"

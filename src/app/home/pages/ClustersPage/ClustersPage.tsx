@@ -62,7 +62,9 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
     isAdmin ? (
       <EmptyState variant="full" className={spacing.my_2xl}>
         <EmptyStateIcon icon={AddCircleOIcon} />
-        <Title size="lg">Add source and target clusters for the migration</Title>
+        <Title headingLevel="h3" size="lg">
+          Add source and target clusters for the migration
+        </Title>
         <Button onClick={toggleAddEditModal} variant="primary">
           Add cluster
         </Button>
@@ -70,7 +72,9 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
     ) : (
       <EmptyState variant="full" className={spacing.my_2xl}>
         <EmptyStateIcon icon={SearchIcon} />
-        <Title size="lg">No clusters</Title>
+        <Title headingLevel="h3" size="lg">
+          No clusters
+        </Title>
         <EmptyStateBody>
           <TextContent>
             <Text component="p">

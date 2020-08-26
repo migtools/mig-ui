@@ -170,7 +170,14 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           </AddPlanDisabledTooltip>
         </LevelItem>
         <LevelItem>
-          <Pagination widgetId="clusters-table-pagination-top" {...paginationProps} />
+          <Pagination
+            widgetId="clusters-table-pagination-top"
+            itemCount={paginationProps.itemCount}
+            perPage={paginationProps.perPage}
+            page={paginationProps.page}
+            onSetPage={paginationProps.onSetPage}
+            onPerPageSelect={paginationProps.onPerPageSelect}
+          />
         </LevelItem>
       </Level>
       <Table
@@ -189,7 +196,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         widgetId="plans-table-pagination-bottom"
         variant="bottom"
         className={spacing.mtMd}
-        {...paginationProps}
+        itemCount={paginationProps.itemCount}
+        perPage={paginationProps.perPage}
+        page={paginationProps.page}
+        onSetPage={paginationProps.onSetPage}
+        onPerPageSelect={paginationProps.onPerPageSelect}
       />
     </>
   );

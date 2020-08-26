@@ -15,6 +15,9 @@ import {
   ToolbarItem,
   Button,
   ButtonVariant,
+  PageHeaderToolsGroup,
+  PageHeaderToolsItem,
+  PageHeaderTools,
 } from '@patternfly/react-core';
 import accessibleStyles from '@patternfly/react-styles/css/utilities/Accessibility/accessibility';
 import { css } from '@patternfly/react-styles';
@@ -37,19 +40,21 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
   ...props
 }) => (
   <PageHeader
-    toolbar={
-      <Toolbar>
-        <ToolbarGroup>
+    logoComponent="span"
+    headerTools={
+      <PageHeaderTools>
+        <PageHeaderToolsGroup>
           {NON_ADMIN_ENABLED && isAdmin !== null && (
-            <ToolbarItem>
+            <PageHeaderToolsItem>
               <IconWithText icon={<UserIcon />} text={isAdmin ? 'Admin' : 'Non-admin'} />
-            </ToolbarItem>
+            </PageHeaderToolsItem>
           )}
-        </ToolbarGroup>
-
-        <ToolbarGroup className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}>
+        </PageHeaderToolsGroup>
+        <PageHeaderToolsGroup
+          className={css(accessibleStyles.screenReader, accessibleStyles.visibleOnLg)}
+        >
           {NON_ADMIN_ENABLED && !isWelcomeScreen && (
-            <ToolbarItem>
+            <PageHeaderToolsItem>
               <Button
                 id="default-example-uid-02"
                 aria-label="Settings actions"
@@ -58,11 +63,11 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
               >
                 <CogIcon />
               </Button>
-            </ToolbarItem>
+            </PageHeaderToolsItem>
           )}
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
+        </PageHeaderToolsGroup>
+        <PageHeaderToolsGroup>
+          <PageHeaderToolsItem>
             <img
               src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor}
               alt="Logo"
@@ -70,9 +75,9 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
                 APP_BRAND === BrandType.RedHat ? styles.redhatLogoStyle : styles.konveyorLogoStyle
               }
             />
-          </ToolbarItem>
-        </ToolbarGroup>
-      </Toolbar>
+          </PageHeaderToolsItem>
+        </PageHeaderToolsGroup>
+      </PageHeaderTools>
     }
     logo={
       <>
@@ -82,6 +87,7 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
 
         {NON_ADMIN_ENABLED && (
           <Title
+            headingLevel="h5"
             size="2xl"
             style={{ marginLeft: 40, backgroundColor: 'red', color: 'white', padding: 10 }}
           >

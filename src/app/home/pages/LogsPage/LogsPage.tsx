@@ -12,7 +12,7 @@ export const LogsPage: React.FunctionComponent<IProps> = ({ match }) => {
   return (
     <>
       <PageSection>
-        <Grid gutter="md">
+        <Grid hasGutter>
           <GridItem>
             <Breadcrumb>
               <BreadcrumbItem>
