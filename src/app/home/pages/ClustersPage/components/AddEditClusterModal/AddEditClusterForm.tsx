@@ -190,13 +190,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
       </FormGroup>
       <FormGroup
         fieldId={requireSSLKey}
-        helperText={
-          <>
-            Select 'Require SSL verification' to verify SSL connections to the cluster. If you are
-            using a self-signed certificate, you may either disable SSL verification, or upload your
-            certificate bundle.
-          </>
-        }
+        helperText="Select 'Require SSL verification' to verify SSL connections to the cluster. If you are using a self-signed certificate, you may either disable SSL verification, or upload your certificate bundle."
       >
         <Checkbox
           onChange={formikHandleChange}
