@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 import { IToken } from '../../../token/duck/types';
-import { StatusType } from '../../../common/components/StatusIcon';
+import { StatusType } from '@konveyor/lib-ui';
 
 const EXPIRATION_WARNING_THRESHOLD_HOURS = 1;
 
@@ -12,7 +12,7 @@ export const getTokenInfo = (token: IToken) => {
     expirationTimestamp: 'Loading...',
     formattedExpiration: 'Loading...',
     tokenStatus: null,
-    statusType: StatusType.OK,
+    statusType: StatusType.Ok,
   };
 
   if (token.MigToken.status) {
@@ -21,15 +21,15 @@ export const getTokenInfo = (token: IToken) => {
     const formattedExpiration = expirationMoment
       ? expirationMoment.tz(moment.tz.guess()).format('DD MMM YYYY, hh:mm:ss A z')
       : 'Never';
-    let statusType = StatusType.OK;
+    let statusType = StatusType.Ok;
     let statusText = 'OK';
     if (expirationMoment) {
       const hoursUntilExpiration = expirationMoment.diff(moment(), 'hours', true);
       if (hoursUntilExpiration < 0) {
-        statusType = StatusType.ERROR;
+        statusType = StatusType.Error;
         statusText = 'Expired';
       } else if (hoursUntilExpiration < EXPIRATION_WARNING_THRESHOLD_HOURS) {
-        statusType = StatusType.WARNING;
+        statusType = StatusType.Warning;
         statusText = 'Expiring soon';
       }
     }
@@ -42,7 +42,7 @@ export const getTokenInfo = (token: IToken) => {
     retTokenInfo.tokenStatus = !token.MigToken.status
       ? null
       : token.MigToken.status.conditions.filter((c) => c.type === 'Ready').length > 0;
-    retTokenInfo.statusType = hasCriticalCondition ? StatusType.ERROR : StatusType.OK;
+    retTokenInfo.statusType = hasCriticalCondition ? StatusType.Error : StatusType.Ok;
   }
 
   return retTokenInfo;

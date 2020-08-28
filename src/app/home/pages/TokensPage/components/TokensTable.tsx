@@ -4,8 +4,7 @@ import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
-import StatusIcon, { StatusType } from '../../../../common/components/StatusIcon';
-import IconWithText from '../../../../common/components/IconWithText';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IToken } from '../../../../token/duck/types';
 import { getTokenInfo } from '../helpers';
 import TokenActionsDropdown from './TokenActionsDropdown';
@@ -65,9 +64,9 @@ const TokensTable: React.FunctionComponent<ITokensTableProps> = ({
         formattedExpiration,
         {
           title: (
-            <IconWithText
-              icon={<StatusIcon status={tokenStatus ? StatusType.OK : StatusType.ERROR} />}
-              text={tokenStatus ? 'Connected' : 'ConnectionFailed'}
+            <StatusIcon
+              status={tokenStatus ? StatusType.Ok : StatusType.Error}
+              label={tokenStatus ? 'Connected' : 'Connection Failed'}
             />
           ),
         },

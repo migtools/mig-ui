@@ -11,7 +11,7 @@ import {
   Title,
   Alert,
 } from '@patternfly/react-core';
-import StatusIcon, { StatusType } from '../../../../../common/components/StatusIcon';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 const styles = require('./VolumesTable.module');
@@ -103,8 +103,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       <Grid hasGutter className={styles.centerAlign}>
         <GridItem>
           <div className={styles.errorDiv}>
-            <StatusIcon status={StatusType.ERROR} />
-            PV Discovery Error
+            <StatusIcon status={StatusType.Error} label="PV Discovery Error" />
           </div>
         </GridItem>
       </Grid>
