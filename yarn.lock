@@ -742,6 +742,11 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@konveyor/lib-ui@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@konveyor/lib-ui/-/lib-ui-1.4.5.tgz#3be1b8b2d23c219f308999a57dd81bc545863013"
+  integrity sha512-SPS7Wl0YKtG9I9I8ZB5N4MtcmsggBlwlmNeM4umODzlTWJ5XkB+S1Q26dvy93WsGCny4dQu73azRAaROrqzFQg==
+
 "@patternfly/patternfly@4.31.6":
   version "4.31.6"
   resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-4.31.6.tgz#ef9919df610171760cd19920a904ca9b09a74593"
