@@ -160,11 +160,6 @@ const getPlansWithPlanStatus = createSelector(
         analyticPercentComplete: latestAnalytic?.status?.analytics?.percentComplete || null,
         latestAnalytic: latestAnalytic || null,
       };
-      console.log(
-        'statusObject',
-        statusObject.latestAnalytic,
-        statusObject.analyticPercentComplete
-      );
       return { ...plan, PlanStatus: statusObject };
     });
 

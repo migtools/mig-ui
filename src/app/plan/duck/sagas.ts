@@ -107,7 +107,6 @@ function* deleteAnalyticSaga(action) {
 
     yield client.delete(new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace), analytic);
 
-    // yield put(PlanActions.setCurrentPlan(createPlanRes.data));
     yield put(PlanActions.deleteAnalyticSuccess());
   } catch (err) {
     yield put(PlanActions.deleteAnalyticFailure(err));
@@ -129,7 +128,6 @@ function* addAnalyticSaga(action) {
       migAnalyticObj
     );
 
-    // yield put(PlanActions.setCurrentPlan(createPlanRes.data));
     yield put(PlanActions.addAnalyticSuccess());
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));

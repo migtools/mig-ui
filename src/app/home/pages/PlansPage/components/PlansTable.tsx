@@ -36,7 +36,6 @@ interface IPlansTableProps {
   toggleAddWizardOpen: () => void;
   refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
-  isDeletingAnalytic: boolean;
 }
 
 interface IExpandedCells {
@@ -49,7 +48,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   toggleAddWizardOpen,
   refreshAnalyticRequest,
   isRefreshingAnalytic,
-  isDeletingAnalytic,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
