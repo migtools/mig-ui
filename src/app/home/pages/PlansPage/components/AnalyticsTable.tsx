@@ -61,8 +61,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
       <Progress
         value={analyticPercentComplete ? analyticPercentComplete : 0}
         title={'Retrieving namespace details'}
-        size={ProgressSize.sm}
-        variant={ProgressVariant.info}
+        size="sm"
       />
     );
   }
@@ -120,9 +119,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
                 ) : (
                   <EmptyState variant={EmptyStateVariant.small}>
                     <EmptyStateIcon icon={ExclamationTriangleIcon} />
-                    <Title headingLevel="h5" size="sm">
-                      No namespace data found
-                    </Title>
+                    <Title headingLevel="h5">No namespace data found</Title>
                     <EmptyStateBody>Unable to retrieve namespace data</EmptyStateBody>
                   </EmptyState>
                 )
