@@ -13,7 +13,7 @@ export const getClusterInfo = (
 
   return {
     clusterName,
-    clusterStatus: !cluster.MigCluster.status
+    clusterStatus: !cluster.MigCluster.status?.conditions
       ? null
       : cluster.MigCluster.status.conditions.filter((c) => c.type === 'Ready').length > 0,
     clusterUrl: isHostCluster ? migMeta.clusterApi : cluster.MigCluster.spec.url,

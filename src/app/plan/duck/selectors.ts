@@ -7,9 +7,9 @@ const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 const getCurrentPlan = (state) => state.plan.currentPlan;
 
 const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) => {
-  if (currentPlan && currentPlan.status && currentPlan.status.conditions) {
+  if (currentPlan && currentPlan.status?.conditions) {
     let statusObject = {};
-    let displayedConditions = currentPlan.status.conditions
+    let displayedConditions = currentPlan.status?.conditions
       .filter(
         (condition) =>
           condition.category === 'Warn' ||
@@ -110,7 +110,7 @@ const getPlansWithPlanStatus = createSelector(
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
 
       const hasSucceededStage = !!plan.Migrations.filter((m) => {
-        if (m.status && m.spec.stage) {
+        if (m.status?.conditions && m.spec.stage) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status.conditions.some((c) => c.type === 'Canceled')
@@ -119,7 +119,7 @@ const getPlansWithPlanStatus = createSelector(
       }).length;
 
       const hasSucceededMigration = !!plan.Migrations.filter((m) => {
-        if (m.status && !m.spec.stage) {
+        if (m.status?.conditions && !m.spec.stage) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !latestMigration.status.conditions.some((c) => c.type === 'Canceled')
@@ -130,13 +130,13 @@ const getPlansWithPlanStatus = createSelector(
       const hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
 
       const finalMigrationComplete = !!plan.Migrations.filter((m) => {
-        if (m.status) {
+        if (m.status?.conditions) {
           return m.spec.stage === false && hasSucceededMigration;
         }
       }).length;
 
       const hasRunningMigrations = !!plan.Migrations.filter((m) => {
-        if (m.status) {
+        if (m.status?.conditions) {
           return m.status.conditions.some((c) => c.type === 'Running');
         }
       }).length;
@@ -172,7 +172,7 @@ const getCounts = createSelector([planSelector], (plans: any[]) => {
     let hasRunningMigrations = null;
     let hasSucceededMigration = null;
     let hasCancelCondition = null;
-    if (!plan.MigPlan.status || !plan.MigPlan.status.conditions) {
+    if (!plan.MigPlan.status?.conditions) {
       counts.notStarted.push(plan);
       return;
     }
@@ -231,7 +231,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
     };
     const zone = moment.tz.guess();
 
-    if (migration.status && migration.status.conditions) {
+    if (migration.status?.conditions) {
       const succeededCondition = migration.status.conditions.find((c) => {
         return c.type === 'Succeeded';
       });
