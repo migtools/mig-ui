@@ -29,6 +29,8 @@ import { useSortState, usePaginationState } from '../../../../common/duck/hooks'
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
+import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
+const styles = require('./PlansTable.module');
 
 interface IPlansTableProps {
   planList: IPlan[];
@@ -107,6 +109,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         namespaceCount,
         isMaxResourcesLimitReached,
       } = getPlanInfo(plan);
+      const isLoadingAnalytic: boolean =
+        !!(plan?.PlanStatus?.analyticPercentComplete !== 100 && plan.PlanStatus.latestAnalytic) ||
+        plan.PlanStatus.isPlanLocked ||
+        !plan.PlanStatus?.latestAnalyticTransitionTime ||
+        isRefreshingAnalytic;
 
       return [
         {
@@ -134,14 +141,16 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  <MigrationIcon key="ns-count-icon" className={spacing.mrSm} />
-                  {(plan?.PlanStatus?.analyticPercentComplete !== 100 &&
-                    plan.PlanStatus.latestAnalytic) ||
-                  plan.PlanStatus.isPlanLocked ||
-                  isRefreshingAnalytic ? (
+                  {/* <span className={classNames('pf-c-icon', { 'pf-m-info': isLoadingAnalytic })}> */}
+                  <img
+                    key="namespace-icon"
+                    src={namespacesIcon}
+                    className={styles.namespacesIcon}
+                  />
+                  {isLoadingAnalytic ? (
                     <Spinner size="sm" className={spacing.mrSm}></Spinner>
                   ) : (
-                    <span key="ns-count-container" className={spacing.mrSm}>
+                    <span key="ns-count-container" className={styles.namespaceCount}>
                       {namespaceCount}
                     </span>
                   )}
@@ -199,11 +208,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                       <Button
                         id="add-plan-btn"
                         onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                        isDisabled={
-                          plan.PlanStatus.isPlanLocked ||
-                          !plan.PlanStatus?.latestAnalyticTransitionTime ||
-                          isRefreshingAnalytic
-                        }
+                        isDisabled={isLoadingAnalytic}
                         variant="secondary"
                       >
                         Refresh

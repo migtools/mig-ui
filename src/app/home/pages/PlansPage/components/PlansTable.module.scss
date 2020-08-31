@@ -1,0 +1,19 @@
+@import 'src/colors';
+// .warnProgressStyle {
+//   :global(.pf-c-progress__indicator) {
+//     background-color: $statusOrange;
+//   }
+//   :global(.pf-c-progress__status-icon) {
+//     color: orange;
+//   }
+// }
+.namespaceCount {
+  vertical-align: middle;
+}
+
+.namespacesIcon {
+  vertical-align: middle;
+  height: 20px;
+  fill: #06c;
+  margin: 0 5px 0 0;
+}

@@ -706,7 +706,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
       (s) => s.metadata.name === createMigRes.data.metadata.name
     );
 
-    if (matchingMigration && matchingMigration.status) {
+    if (matchingMigration && matchingMigration.status && matchingMigration.status?.conditions) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Succeeded'
       );
