@@ -267,7 +267,13 @@ const WizardComponent = (props: IOtherProps) => {
   return (
     <React.Fragment>
       {isOpen && (
-        <Modal isOpen={isOpen} width="95%" showClose={false} hasNoBodyWrapper>
+        <Modal
+          isOpen={isOpen}
+          width="95%"
+          showClose={false}
+          hasNoBodyWrapper
+          aria-label="wizard-modal-wrapper-id"
+        >
           <Wizard
             onNext={onMove}
             onBack={onMove}
