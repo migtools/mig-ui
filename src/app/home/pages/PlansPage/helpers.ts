@@ -43,7 +43,7 @@ export const getPlanInfo = (plan: IPlan) => {
     sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name,
     targetClusterName: plan.MigPlan.spec.destMigClusterRef.name,
     storageName: plan.MigPlan.spec.migStorageRef ? plan.MigPlan.spec.migStorageRef.name : 'N/A',
-    namespaceCount: namespaces ? namespaces.length : 0,
+    namespaceCount: plan.MigPlan.spec.namespaces.length,
     isMaxResourcesLimitReached,
     statusText: getPlanStatusText(plan),
   };

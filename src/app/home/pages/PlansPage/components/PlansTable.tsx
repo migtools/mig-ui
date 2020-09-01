@@ -146,13 +146,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     src={namespacesIcon}
                     className={styles.namespacesIcon}
                   />
-                  {isLoadingAnalytic ? (
-                    <Spinner size="sm" className={spacing.mrSm}></Spinner>
-                  ) : (
-                    <span key="ns-count-container" className={styles.namespaceCount}>
-                      {namespaceCount}
-                    </span>
-                  )}
+                  <span key="ns-count-container" className={styles.namespaceCount}>
+                    {namespaceCount}
+                  </span>
                   {isMaxResourcesLimitReached && (
                     <span className="pf-c-icon pf-m-warning" key="icon-container">
                       <ExclamationTriangleIcon key="warning-icon" />
