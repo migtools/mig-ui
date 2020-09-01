@@ -15,7 +15,7 @@ export const getTokenInfo = (token: IToken) => {
     statusType: StatusType.Ok,
   };
 
-  if (token.MigToken.status) {
+  if (token.MigToken.status?.conditions) {
     const expirationTimestamp = token.MigToken.status.expiresAt;
     const expirationMoment = expirationTimestamp && moment(expirationTimestamp);
     const formattedExpiration = expirationMoment
