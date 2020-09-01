@@ -141,7 +141,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  {/* <span className={classNames('pf-c-icon', { 'pf-m-info': isLoadingAnalytic })}> */}
                   <img
                     key="namespace-icon"
                     src={namespacesIcon}
