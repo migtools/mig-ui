@@ -325,6 +325,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
         <Modal
+          aria-label="copy-options-modal"
           variant="small"
           title="Copy performance warning"
           header={

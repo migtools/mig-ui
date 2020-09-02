@@ -488,7 +488,7 @@ function* checkClosedStatus(action) {
     const getPlanResponse = yield call(getPlanSaga, action.planName);
     const MigPlan = getPlanResponse.data;
 
-    if (MigPlan.status && MigPlan.status.conditions) {
+    if (MigPlan.status?.conditions) {
       const hasClosedCondition = !!MigPlan.status.conditions.some((c) => c.type === 'Closed');
       if (hasClosedCondition) {
         yield put(PlanActions.planCloseSuccess(action.planName));
@@ -706,7 +706,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
       (s) => s.metadata.name === createMigRes.data.metadata.name
     );
 
-    if (matchingMigration && matchingMigration.status) {
+    if (matchingMigration && matchingMigration.status?.conditions) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Succeeded'
       );
@@ -828,7 +828,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       (s) => s.metadata.name === createMigRes.data.metadata.name
     );
 
-    if (matchingMigration && matchingMigration.status) {
+    if (matchingMigration && matchingMigration.status?.conditions) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Succeeded'
       );

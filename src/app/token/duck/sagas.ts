@@ -224,8 +224,7 @@ function* pollTokenAddEditStatus(action) {
       const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
       const tokenPollResult = yield client.get(migTokenResource, tokenName);
 
-      const hasStatusAndConditions =
-        tokenPollResult.data.status && tokenPollResult.data.status.conditions;
+      const hasStatusAndConditions = tokenPollResult.data.status?.conditions;
 
       if (hasStatusAndConditions) {
         const criticalCond = tokenPollResult.data.status.conditions.find((cond) => {
