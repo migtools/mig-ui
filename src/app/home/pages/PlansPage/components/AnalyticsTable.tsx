@@ -212,13 +212,25 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
     );
   }
 
-  if (isRefreshingAnalytic || isLoadingAnalytics || migAnalytics?.length === 0) {
+  if (isRefreshingAnalytic || isLoadingAnalytics) {
     return (
       <Bullseye>
         <EmptyState variant="small">
           <div className="pf-c-empty-state__icon">
             <ProgressWrapper />
           </div>
+        </EmptyState>
+      </Bullseye>
+    );
+  }
+
+  if (migAnalytics?.length === 0) {
+    return (
+      <Bullseye>
+        <EmptyState variant="small">
+          <Title headingLevel="h2" size="xl">
+            No analytics started
+          </Title>
         </EmptyState>
       </Bullseye>
     );

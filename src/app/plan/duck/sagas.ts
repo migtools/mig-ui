@@ -110,7 +110,6 @@ function* deleteAnalyticSaga(action) {
     yield put(PlanActions.deleteAnalyticSuccess());
   } catch (err) {
     yield put(PlanActions.deleteAnalyticFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
   }
 }
 
@@ -129,9 +128,7 @@ function* addAnalyticSaga(action) {
     );
 
     yield put(PlanActions.addAnalyticSuccess());
-  } catch (err) {
-    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
-  }
+  } catch (err) {}
 }
 function* addPlanSaga(action) {
   const { migPlan } = action;
@@ -194,14 +191,12 @@ function* refreshAnalyticSaga(action) {
   const migMeta = state.auth.migMeta;
   try {
     yield put(PlanActions.deleteAnalyticRequest(analyticName));
-    yield take(PlanActionTypes.DELETE_ANALYTIC_SUCCESS);
     const updatedPlans = yield call(fetchPlansGenerator);
     yield put(PlanActions.updatePlans(updatedPlans.updatedPlans));
     yield put(PlanActions.addAnalyticRequest(analyticName));
     yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
   } catch (err) {
     yield put(PlanActions.deleteAnalyticFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to add analytic'));
   }
 
   let tries = 0;
@@ -216,6 +211,8 @@ function* refreshAnalyticSaga(action) {
           analyticName
         );
         if (updatedAnalytic?.data?.status?.analytics.percentComplete === 100) {
+          const updatedPlans = yield call(fetchPlansGenerator);
+          yield put(PlanActions.updatePlans(updatedPlans.updatedPlans));
           yield put(PlanActions.refreshAnalyticSuccess());
         }
       } catch (err) {

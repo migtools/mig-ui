@@ -115,6 +115,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         !plan.PlanStatus?.latestAnalyticTransitionTime ||
         isRefreshingAnalytic;
 
+      const noMigAnlyticFound: boolean = plan?.Analytics?.length === 0;
+
       return [
         {
           meta: { planName },
@@ -219,7 +221,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                               .format('YYYY-MM-DD HH:mm:ss')}
                           </Text>
                         ) : (
-                          <Text component={TextVariants.small}>Updating...</Text>
+                          <Text component={TextVariants.small}>
+                            {!noMigAnlyticFound && 'Updating...'}
+                          </Text>
                         )}
                       </TextContent>
                     </FlexItem>
