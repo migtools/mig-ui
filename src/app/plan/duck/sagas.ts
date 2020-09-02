@@ -128,7 +128,9 @@ function* addAnalyticSaga(action) {
     );
 
     yield put(PlanActions.addAnalyticSuccess());
-  } catch (err) {}
+  } catch (err) {
+    console.error('Failed to add migAnalytic.');
+  }
 }
 function* addPlanSaga(action) {
   const { migPlan } = action;
