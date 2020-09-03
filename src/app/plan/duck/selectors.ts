@@ -1,6 +1,10 @@
 import { createSelector } from 'reselect';
 import moment from 'moment-timezone';
-import { filterPlanConditions, filterLatestMigrationConditions } from './helpers';
+import {
+  filterPlanConditions,
+  filterLatestMigrationConditions,
+  filterLatestAnalyticConditions,
+} from './helpers';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -107,6 +111,7 @@ const getPlansWithPlanStatus = createSelector(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
       const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
+      const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
       const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
 
       const hasSucceededStage = !!plan.Migrations.filter((m) => {
@@ -151,8 +156,10 @@ const getPlansWithPlanStatus = createSelector(
         isPlanLocked,
         ...filterPlanConditions(plan.MigPlan?.status?.conditions || []),
         ...filterLatestMigrationConditions(latestMigration?.status?.conditions || []),
+        ...filterLatestAnalyticConditions(latestAnalytic?.status?.conditions || []),
+        analyticPercentComplete: latestAnalytic?.status?.analytics?.percentComplete || null,
+        latestAnalytic: latestAnalytic || null,
       };
-
       return { ...plan, PlanStatus: statusObject };
     });
 

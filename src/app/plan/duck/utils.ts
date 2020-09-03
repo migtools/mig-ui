@@ -1,17 +1,25 @@
 import moment from 'moment';
 
-function groupPlans(migPlans: any[], refs: any[]): any[] {
+function groupPlans(migPlans: any[], migMigrationRefs: any[], migAnalyticRefs: any[]): any[] {
   return migPlans.map((mp) => {
     const fullPlan = {
       MigPlan: mp,
     };
-    if (refs[0].data.items.length > 0) {
-      const matchingMigrations = refs[0].data.items.filter(
+    if (migMigrationRefs[0].data.items.length > 0) {
+      const matchingMigrations = migMigrationRefs[0].data.items.filter(
         (i) => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
       fullPlan['Migrations'] = matchingMigrations;
     } else {
       fullPlan['Migrations'] = [];
+    }
+    if (migAnalyticRefs[0].data.items.length > 0) {
+      const matchingMigAnalytics = migAnalyticRefs[0].data.items.filter(
+        (i) => i.kind === 'MigAnalytic' && i.spec.migPlanRef.name === mp.metadata.name
+      );
+      fullPlan['Analytics'] = matchingMigAnalytics;
+    } else {
+      fullPlan['Analytics'] = [];
     }
     return fullPlan;
   });

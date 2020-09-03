@@ -1,5 +1,6 @@
 import { PlanActions, PlanActionTypes } from './actions';
 import moment from 'moment';
+
 import {
   defaultAddEditStatus,
   fetchingAddEditStatus,
@@ -50,6 +51,7 @@ export interface IPlanReducerState {
   migHookList: IMigHook[];
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
+  isRefreshingAnalytic: boolean;
 }
 
 type PlanReducerFn = (state: IPlanReducerState, action: any) => IPlanReducerState;
@@ -79,6 +81,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   migHookList: [],
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
+  isRefreshingAnalytic: false,
 };
 
 const sortPlans = (planList: IPlan[]) =>
@@ -573,6 +576,26 @@ export const updateHookFailure: PlanReducerFn = (
   };
 };
 
+export const refreshAnalyticRequest: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.refreshAnalyticRequest>
+) => {
+  return { ...state, isRefreshingAnalytic: true };
+};
+export const refreshAnalyticSuccess: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.refreshAnalyticSuccess>
+) => {
+  return { ...state, isRefreshingAnalytic: false };
+};
+
+export const refreshAnalyticFailure: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.refreshAnalyticFailure>
+) => {
+  return { ...state, isRefreshingAnalytic: false };
+};
+
 const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case PlanActionTypes.ADD_PLAN_REQUEST:
@@ -665,7 +688,12 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return addHookSuccess(state, action);
     case PlanActionTypes.ADD_HOOK_FAILURE:
       return addHookFailure(state, action);
-
+    case PlanActionTypes.REFRESH_ANALYTIC_REQUEST:
+      return refreshAnalyticRequest(state, action);
+    case PlanActionTypes.REFRESH_ANALYTIC_SUCCESS:
+      return refreshAnalyticSuccess(state, action);
+    case PlanActionTypes.REFRESH_ANALYTIC_FAILURE:
+      return refreshAnalyticFailure(state, action);
     default:
       return state;
   }

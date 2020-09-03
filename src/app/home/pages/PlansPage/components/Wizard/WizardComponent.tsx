@@ -47,6 +47,7 @@ const WizardComponent = (props: IOtherProps) => {
     validatePlanRequest,
     pvResourceList,
     addPlanRequest,
+    addAnalyticRequest,
     setCurrentPlan,
     resetCurrentPlan,
     onHandleWizardModalClose,
@@ -253,6 +254,7 @@ const WizardComponent = (props: IOtherProps) => {
           selectedStorage: values.selectedStorage,
           namespaces: values.selectedNamespaces,
         });
+        addAnalyticRequest(values.planName);
       }
     }
     if (newStep.id === stepId.Results) {

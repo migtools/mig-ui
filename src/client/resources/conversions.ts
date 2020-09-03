@@ -449,6 +449,25 @@ export function updateMigPlanFromValues(
   };
 }
 
+export function createInitialMigAnalytic(name: string, namespace: string) {
+  return {
+    apiVersion: 'migration.openshift.io/v1alpha1',
+    kind: 'MigAnalytic',
+    metadata: {
+      name,
+      namespace,
+    },
+    spec: {
+      migPlanRef: {
+        name: name,
+        namespace,
+      },
+      analyzeK8SResources: true,
+      analyzeImageCount: true,
+      analyzePVCapacity: true,
+    },
+  };
+}
 export function createInitialMigPlan(
   name: string,
   namespace: string,
