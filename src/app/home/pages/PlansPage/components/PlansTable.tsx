@@ -110,9 +110,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         isMaxResourcesLimitReached,
       } = getPlanInfo(plan);
       const isLoadingAnalytic: boolean =
+        // initial loading state to show when a miganalytic is first started or updated.
         !!(plan?.PlanStatus?.analyticPercentComplete !== 100 && plan.PlanStatus.latestAnalytic) ||
+        // Plan is currenlty being Closed/Deleted
         plan.PlanStatus.isPlanLocked ||
-        !plan.PlanStatus?.latestAnalyticTransitionTime ||
+        // Analytic is being manually refreshed
         isRefreshingAnalytic;
 
       const noMigAnlyticFound: boolean = plan?.Analytics?.length === 0;
@@ -213,16 +215,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     </FlexItem>
                     <FlexItem>
                       <TextContent>
-                        {plan.PlanStatus?.latestAnalyticTransitionTime ? (
+                        {!isLoadingAnalytic && (
                           <Text component={TextVariants.small}>
                             Last updated:{` `}
                             {moment(plan.PlanStatus.latestAnalyticTransitionTime)
                               .local()
                               .format('YYYY-MM-DD HH:mm:ss')}
-                          </Text>
-                        ) : (
-                          <Text component={TextVariants.small}>
-                            {!noMigAnlyticFound && 'Updating...'}
                           </Text>
                         )}
                       </TextContent>
