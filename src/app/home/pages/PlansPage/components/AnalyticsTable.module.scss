@@ -1,0 +1,11 @@
+@import 'src/colors';
+.totalRowClass {
+  font-style: bold !important;
+  font-weight: 600 !important;
+}
+
+.jsonPopover {
+  overflow-y: scroll;
+  max-height: 20rem;
+  width: 40rem;
+}

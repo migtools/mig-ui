@@ -6,7 +6,7 @@ export const getStorageInfo = (storage: IStorage, associatedPlans: IPlanCountByR
 
   return {
     storageName,
-    storageStatus: !storage.MigStorage.status
+    storageStatus: !storage.MigStorage.status?.conditions
       ? null
       : storage.MigStorage.status.conditions.filter((c) => c.type === 'Ready').length > 0,
     associatedPlanCount: associatedPlans[storageName],

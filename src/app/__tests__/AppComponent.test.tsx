@@ -22,6 +22,10 @@ jest.mock('../common/components/logoKonveyor.svg', () => {
   return '';
 });
 
+jest.mock('../common/components/namespaces_icon.svg', () => {
+  return '';
+});
+
 jest.mock('../common/components/logoRedHat.svg', () => {
   return '';
 });
@@ -34,11 +38,9 @@ describe('<AppComponent />', () => {
 
     render(
       <Provider store={store}>
-        {/* <PersistGate loading={<Spinner size="xl" />} persistor={persistor}> */}
         <ConnectedRouter history={history}>
           <AppComponent />
         </ConnectedRouter>
-        {/* </PersistGate> */}
       </Provider>
     );
 

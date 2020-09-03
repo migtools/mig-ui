@@ -21,7 +21,7 @@ import IconWithText from '../../../../../common/components/IconWithText';
 import { IToken } from '../../../../../token/duck/types';
 import { useOpenModal } from '../../../../duck/hooks';
 import { getTokenInfo } from '../../../TokensPage/helpers';
-import StatusIcon, { StatusType } from '../../../../../common/components/StatusIcon';
+import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { FormikTouched, FormikErrors } from 'formik';
 import { IReduxState } from '../../../../../../reducers';
@@ -88,7 +88,7 @@ const getTokenOptionsForCluster = (
           <Level>
             <LevelItem>{token.MigToken.metadata.name}</LevelItem>
             <LevelItem>
-              {statusType !== StatusType.OK && (
+              {statusType !== StatusType.Ok && (
                 <StatusIcon status={statusType} className={spacing.mlSm} />
               )}
             </LevelItem>
@@ -226,33 +226,33 @@ const TokenSelect: React.FunctionComponent<ITokenSelectProps> = ({
           />
         </div>
       )}
-      {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.WARNING && (
-        <Flex className={`${spacing.mSm} ${flexStyles.modifiers.alignItemsCenter}`}>
-          <FlexItem>
-            <StatusIcon status={StatusType.WARNING} />
-          </FlexItem>
-          <FlexItem>
-            {expiringSoonMessage}
-            <br />
-            <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
-              Regenerate
-            </Button>
-          </FlexItem>
-        </Flex>
+      {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.Warning && (
+        <StatusIcon
+          status={StatusType.Warning}
+          label={
+            <>
+              {expiringSoonMessage}
+              <br />
+              <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
+                Regenerate
+              </Button>
+            </>
+          }
+        />
       )}
-      {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.ERROR && (
-        <Flex className={`${spacing.mSm} ${flexStyles.modifiers.alignItemsCenter}`}>
-          <FlexItem>
-            <StatusIcon status={StatusType.ERROR} />
-          </FlexItem>
-          <FlexItem>
-            {expiredMessage}
-            <br />
-            <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
-              Regenerate
-            </Button>
-          </FlexItem>
-        </Flex>
+      {selectedTokenInfo && selectedTokenInfo.statusType === StatusType.Error && (
+        <StatusIcon
+          status={StatusType.Error}
+          label={
+            <>
+              {expiredMessage}
+              <br />
+              <Button variant="link" isInline onClick={() => alert('NATODO: not yet implemented')}>
+                Regenerate
+              </Button>
+            </>
+          }
+        />
       )}
     </>
   );

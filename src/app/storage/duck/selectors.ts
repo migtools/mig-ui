@@ -5,15 +5,15 @@ const storageSelectorWithStatus = (state) =>
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
 
-    if (!storage.MigStorage.status || !storage.MigStorage.status.conditions) {
+    if (!storage.MigStorage.status?.conditions) {
       const emptyStatusObject = {
         hasReadyCondition,
         hasCriticalCondition,
       };
       return { ...storage, StorageStatus: emptyStatusObject };
     }
-    hasReadyCondition = !!storage.MigStorage.status.conditions.some((c) => c.type === 'Ready');
-    hasCriticalCondition = !!storage.MigStorage.status.conditions.some(
+    hasReadyCondition = !!storage.MigStorage.status?.conditions.some((c) => c.type === 'Ready');
+    hasCriticalCondition = !!storage.MigStorage.status?.conditions.some(
       (c) => c.type === 'Critical'
     );
     const statusObject = {

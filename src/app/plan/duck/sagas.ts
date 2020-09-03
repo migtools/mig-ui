@@ -16,6 +16,7 @@ import { PersistentVolumeDiscovery } from '../../../client/resources/discovery';
 import {
   updateMigPlanFromValues,
   createInitialMigPlan,
+  createInitialMigAnalytic,
   createMigMigration,
   createMigHook,
   updateMigHook,
@@ -45,6 +46,92 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /******************************************************************** */
 /* Plan sagas */
 /******************************************************************** */
+function* fetchPlansGenerator() {
+  function fetchMigAnalyticRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+    const refs: Array<Promise<any>> = [];
+
+    migPlans.forEach((plan) => {
+      const migAnalyticResource = new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace);
+      refs.push(client.list(migAnalyticResource));
+    });
+
+    return refs;
+  }
+
+  function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+    const refs: Array<Promise<any>> = [];
+
+    migPlans.forEach((plan) => {
+      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+      refs.push(client.list(migMigrationResource));
+    });
+
+    return refs;
+  }
+
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
+  try {
+    let planList = yield client.list(resource);
+    planList = yield planList.data.items;
+
+    const migMigrationRefs = yield Promise.all(
+      fetchMigMigrationsRefs(client, state.auth.migMeta, planList)
+    );
+
+    const migAnalyticRefs = yield Promise.all(
+      fetchMigAnalyticRefs(client, state.auth.migMeta, planList)
+    );
+
+    const groupedPlans = yield planUtils.groupPlans(planList, migMigrationRefs, migAnalyticRefs);
+    return { updatedPlans: groupedPlans };
+  } catch (e) {
+    throw e;
+  }
+}
+
+function* getPlanSaga(planName) {
+  const state = yield select();
+  const migMeta = state.auth.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
+}
+
+function* deleteAnalyticSaga(action) {
+  try {
+    const { analytic } = action;
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    yield client.delete(new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace), analytic);
+
+    yield put(PlanActions.deleteAnalyticSuccess());
+  } catch (err) {
+    yield put(PlanActions.deleteAnalyticFailure(err));
+  }
+}
+
+function* addAnalyticSaga(action) {
+  const { planName } = action;
+  try {
+    const state = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migAnalyticObj = createInitialMigAnalytic(planName, migMeta.namespace);
+
+    yield client.create(
+      new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace),
+      migAnalyticObj
+    );
+
+    yield put(PlanActions.addAnalyticSuccess());
+  } catch (err) {
+    console.error('Failed to add migAnalytic.');
+  }
+}
 function* addPlanSaga(action) {
   const { migPlan } = action;
   try {
@@ -99,11 +186,47 @@ function* namespaceFetchRequest(action) {
   }
 }
 
-function* getPlanSaga(planName) {
-  const state: IReduxState = yield select();
-  const migMeta = state.auth.migMeta;
+function* refreshAnalyticSaga(action) {
+  const { analyticName } = action;
+  const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
+  const migMeta = state.auth.migMeta;
+  try {
+    yield put(PlanActions.deleteAnalyticRequest(analyticName));
+    const updatedPlans = yield call(fetchPlansGenerator);
+    yield put(PlanActions.updatePlans(updatedPlans.updatedPlans));
+    yield put(PlanActions.addAnalyticRequest(analyticName));
+    yield take(PlanActionTypes.ADD_ANALYTIC_SUCCESS);
+  } catch (err) {
+    yield put(PlanActions.deleteAnalyticFailure(err));
+  }
+
+  let tries = 0;
+  const TicksUntilTimeout = 240;
+
+  while (true) {
+    if (tries < TicksUntilTimeout) {
+      tries += 1;
+      try {
+        const updatedAnalytic = yield client.get(
+          new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace),
+          analyticName
+        );
+        if (updatedAnalytic?.data?.status?.analytics.percentComplete === 100) {
+          const updatedPlans = yield call(fetchPlansGenerator);
+          yield put(PlanActions.updatePlans(updatedPlans.updatedPlans));
+          yield put(PlanActions.refreshAnalyticSuccess());
+        }
+      } catch (err) {
+        yield put(PlanActions.refreshAnalyticFailure(err));
+      }
+      yield delay(1000);
+    } else {
+      //timeout case
+      yield put(AlertActions.alertErrorTimeout('Timed out during analytics fetch.'));
+      yield put(PlanActions.refreshAnalyticFailure('Timed out'));
+    }
+  }
 }
 
 function* planPatchClose(planValues) {
@@ -324,6 +447,7 @@ function* pvUpdatePoll(action) {
               yield put(PlanActions.setCurrentPlan(updatedPlan));
               yield put(PlanActions.updatePlanList(updatedPlan));
               yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+              yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
               yield put(PlanActions.pvUpdatePollStop());
             }
           } else {
@@ -363,7 +487,7 @@ function* checkClosedStatus(action) {
     const getPlanResponse = yield call(getPlanSaga, action.planName);
     const MigPlan = getPlanResponse.data;
 
-    if (MigPlan.status && MigPlan.status.conditions) {
+    if (MigPlan.status?.conditions) {
       const hasClosedCondition = !!MigPlan.status.conditions.some((c) => c.type === 'Closed');
       if (hasClosedCondition) {
         yield put(PlanActions.planCloseSuccess(action.planName));
@@ -527,6 +651,7 @@ function* planCloseAndDelete(action) {
     yield call(planCloseSaga, action);
     yield call(checkClosedStatus, action);
     yield call(planDeleteAfterClose, action.planName);
+    yield put(PlanActions.deleteAnalyticRequest(action.planName));
     yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
@@ -534,15 +659,6 @@ function* planCloseAndDelete(action) {
     yield put(
       AlertActions.alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`)
     );
-  }
-}
-
-function* planCloseAndCheck(action) {
-  try {
-    yield call(planCloseSaga, action);
-    yield call(checkClosedStatus, action);
-  } catch (err) {
-    yield put(PlanActions.planCloseFailure(err, action.planName));
   }
 }
 
@@ -574,32 +690,6 @@ function* getPVResourcesRequest(action) {
   }
 }
 
-function* fetchPlansGenerator() {
-  function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
-    const refs: Array<Promise<any>> = [];
-
-    migPlans.forEach((plan) => {
-      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
-      refs.push(client.list(migMigrationResource));
-    });
-
-    return refs;
-  }
-
-  const state: IReduxState = yield select();
-  const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
-  try {
-    let planList = yield client.list(resource);
-    planList = yield planList.data.items;
-    const refs = yield Promise.all(fetchMigMigrationsRefs(client, state.auth.migMeta, planList));
-    const groupedPlans = yield planUtils.groupPlans(planList, refs);
-    return { updatedPlans: groupedPlans };
-  } catch (e) {
-    throw e;
-  }
-}
-
 /******************************************************************** */
 /* Stage sagas */
 /******************************************************************** */
@@ -615,7 +705,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
       (s) => s.metadata.name === createMigRes.data.metadata.name
     );
 
-    if (matchingMigration && matchingMigration.status) {
+    if (matchingMigration && matchingMigration.status?.conditions) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Succeeded'
       );
@@ -737,7 +827,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
       (s) => s.metadata.name === createMigRes.data.metadata.name
     );
 
-    if (matchingMigration && matchingMigration.status) {
+    if (matchingMigration && matchingMigration.status?.conditions) {
       const hasSucceededCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Succeeded'
       );
@@ -1174,6 +1264,14 @@ function* watchNamespaceFetchRequest() {
   yield takeLatest(PlanActionTypes.NAMESPACE_FETCH_REQUEST, namespaceFetchRequest);
 }
 
+function* watchAddAnalyticRequest() {
+  yield takeLatest(PlanActionTypes.ADD_ANALYTIC_REQUEST, addAnalyticSaga);
+}
+
+function* watchDeleteAnalyticRequest() {
+  yield takeLatest(PlanActionTypes.DELETE_ANALYTIC_REQUEST, deleteAnalyticSaga);
+}
+
 function* watchAddPlanRequest() {
   yield takeLatest(PlanActionTypes.ADD_PLAN_REQUEST, addPlanSaga);
 }
@@ -1197,6 +1295,16 @@ function* watchValidatePlanRequest() {
   yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
 }
 
+function* watchRefreshAnalyticRequest() {
+  while (true) {
+    const data = yield take(PlanActionTypes.REFRESH_ANALYTIC_REQUEST);
+    yield race([
+      call(refreshAnalyticSaga, data),
+      take([PlanActionTypes.REFRESH_ANALYTIC_SUCCESS, PlanActionTypes.REFRESH_ANALYTIC_FAILURE]),
+    ]);
+  }
+}
+
 export default {
   watchStagePolling,
   watchMigrationPolling,
@@ -1204,6 +1312,9 @@ export default {
   watchRunStageRequest,
   watchRunMigrationRequest,
   watchAddPlanRequest,
+  watchAddAnalyticRequest,
+  watchDeleteAnalyticRequest,
+  watchRefreshAnalyticRequest,
   watchPvDiscoveryRequest,
   watchPlanCloseAndDelete,
   watchPlanStatus,

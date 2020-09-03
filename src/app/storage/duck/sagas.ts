@@ -417,8 +417,7 @@ function* pollStorageAddEditStatus(action) {
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);
       const storagePollResult = yield client.get(migStorageResource, storageName);
 
-      const hasStatusAndConditions =
-        storagePollResult.data.status && storagePollResult.data.status.conditions;
+      const hasStatusAndConditions = storagePollResult.data.status?.conditions;
 
       if (hasStatusAndConditions) {
         const criticalCond = storagePollResult.data.status.conditions.find((cond) => {
