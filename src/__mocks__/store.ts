@@ -109,6 +109,12 @@ export const initialStore = {
     log: [],
     archive: '',
   },
+  debug: {
+    isLoading: true,
+    tree: null,
+    objJson: null,
+    errMsg: null,
+  },
   _persist: {
     version: -1,
     rehydrated: true,

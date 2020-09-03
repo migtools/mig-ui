@@ -18,12 +18,14 @@ export interface ITreeViewProps {
   data: ITreeDataItem[];
   isNested?: boolean;
   defaultAllExpanded?: boolean;
+  viewRawDebugObject: (IDecompDebugObject) => void;
 }
 
 export const TreeView: React.FunctionComponent<ITreeViewProps> = ({
   data,
   isNested = false,
   defaultAllExpanded = false,
+  viewRawDebugObject,
 }: ITreeViewProps) => (
   <TreeViewList isNested={isNested}>
     {data.map((item) => (
@@ -31,9 +33,15 @@ export const TreeView: React.FunctionComponent<ITreeViewProps> = ({
         key={item.name}
         name={item.name}
         defaultExpanded={defaultAllExpanded || item.defaultExpanded || false}
+        viewRawDebugObject={viewRawDebugObject}
         {...(item.children && {
           children: (
-            <TreeView data={item.children} isNested defaultAllExpanded={defaultAllExpanded} />
+            <TreeView
+              data={item.children}
+              isNested
+              defaultAllExpanded={defaultAllExpanded}
+              viewRawDebugObject={viewRawDebugObject}
+            />
           ),
         })}
       />

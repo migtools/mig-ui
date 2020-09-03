@@ -22,6 +22,8 @@ import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
 import { ICluster } from './cluster/duck/types';
 import { NON_ADMIN_ENABLED } from '../TEMPORARY_GLOBAL_FLAGS';
+import { IDebugTreeNode, RAW_OBJECT_VIEW_ROUTE } from './debug/duck/types';
+import RawDebugObjectView from './debug/components/RawDebugObjectView';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -43,6 +45,7 @@ interface IProps {
   updatePlans: (updatedPlans) => void;
   updateTokens: (updatedTokens) => void;
   clusterList: ICluster[];
+  debugTree: IDebugTreeNode;
 }
 
 const AppComponent: React.SFC<IProps> = ({
@@ -65,6 +68,7 @@ const AppComponent: React.SFC<IProps> = ({
   updatePlans,
   updateTokens,
   clusterList,
+  debugTree,
 }) => {
   const handlePlanPoll = (response) => {
     if (response) {
@@ -190,6 +194,12 @@ const AppComponent: React.SFC<IProps> = ({
             <Route path="/cert-error" component={CertErrorComponent} />
             <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
+              path={RAW_OBJECT_VIEW_ROUTE}
+              isLoggedIn={isLoggedIn}
+              component={RawDebugObjectView}
+              componentProps={{ debugTree }}
+            />
+            <PrivateRoute
               path="/"
               isLoggedIn={isLoggedIn}
               component={HomeComponent}
@@ -211,6 +221,7 @@ export default connect(
     successMessage: state.common.successText,
     progressMessage: state.common.progressText,
     clusterList: state.cluster.clusterList,
+    debugTree: state.debug.tree,
   }),
   (dispatch) => ({
     startPlanPolling: (params) => dispatch(PlanActions.startPlanPolling(params)),

@@ -9213,6 +9213,11 @@ tr46@^2.0.2:
   dependencies:
     punycode "^2.1.1"
 
+tree-crawl@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/tree-crawl/-/tree-crawl-1.0.5.tgz#0a3e2e6808756f9770c1cfbda84bc039976640a7"
+  integrity sha512-iGxq6nMcZ2PCRQOHykbhM5nMBiErA9iVfWvfatKlfAZ4O4t/46BfrbZfTcoNM6H6o6TYHQvxHtPWEnvPqH7rDA==
+
 tree-kill@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"

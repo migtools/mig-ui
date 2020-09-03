@@ -153,7 +153,7 @@ const PlanActions = ({ plan, history }) => {
         />
 
         {isDebugResourcesModalOpen ? (
-          <DebugResourcesModal onClose={toggleDebugResourcesModal} />
+          <DebugResourcesModal onClose={toggleDebugResourcesModal} plan={plan} />
         ) : null}
       </FlexItem>
     </Flex>

@@ -70,3 +70,9 @@ export class PlanPodReportDiscovery extends DiscoveryResource {
     return report.data;
   }
 }
+
+export class DebugTreeDiscoveryResource extends DiscoveryResource {
+  constructor(planName: string, params: IDiscoveryParameters = {}) {
+    super(planName, 'tree', params, 'plans');
+  }
+}
