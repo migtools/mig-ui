@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
@@ -11,6 +11,7 @@ import {
   CardBody,
   Alert,
   TreeView,
+  TreeViewDataItem,
 } from '@patternfly/react-core';
 import { push } from 'connected-react-router';
 import {
@@ -48,6 +49,32 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
     routeRawDebugObject(node.objectLink);
   };
 
+  const [searchText, setSearchText] = useState('');
+
+  const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
+    items
+      .map((item) => {
+        const nameMatches = (item.name as string).toLowerCase().includes(searchText.toLowerCase());
+        if (!item.children) {
+          return nameMatches ? item : null;
+        }
+        const filteredChildren = filterSubtree(item.children);
+        if (filteredChildren.length > 0) {
+          return {
+            ...item,
+            children: filteredChildren,
+          };
+        }
+        return null;
+      })
+      .filter((item) => !!item) as TreeViewDataItem[];
+
+  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, viewRawDebugObject);
+  let filteredTreeData = treeData;
+  if (searchText && treeData) {
+    filteredTreeData = filterSubtree(treeData);
+  }
+
   return (
     <>
       <PageSection variant="light">
@@ -74,7 +101,16 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
         ) : (
           <Card>
             <CardBody>
-              <TreeView data={convertRawTreeToViewTree(debug.tree, viewRawDebugObject)} />
+              <TreeView
+                data={filteredTreeData}
+                onSearch={(event) => setSearchText(event.target.value)}
+                searchProps={{
+                  id: 'input-search',
+                  name: 'search-input',
+                  'aria-label': 'Search debug resources',
+                }}
+                defaultAllExpanded
+              />
             </CardBody>
           </Card>
         )}
