@@ -10,17 +10,17 @@ import {
   Card,
   CardBody,
   Alert,
+  TreeView,
 } from '@patternfly/react-core';
 import { push } from 'connected-react-router';
-import crawl from 'tree-crawl';
 import {
-  IDecompDebugObject,
   DEBUG_PATH_SEARCH_KEY,
   RAW_OBJECT_VIEW_ROUTE,
+  IDebugTreeNode,
 } from '../../../debug/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IDebugReducerState, DebugActions } from '../../../debug/duck';
-import { TreeView } from '../../../common/components/TreeView';
+
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 
 interface IBasePlanDebugPageProps {
@@ -44,17 +44,8 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
     refreshDebugTree();
   }, []);
 
-  const viewRawDebugObject = (decomp: IDecompDebugObject) => {
-    crawl(
-      debug.tree,
-      (node, ctx) => {
-        if (node.name === decomp.name) {
-          ctx.break();
-          routeRawDebugObject(node.objectLink);
-        }
-      },
-      { order: 'pre' }
-    );
+  const viewRawDebugObject = (node: IDebugTreeNode) => {
+    routeRawDebugObject(node.objectLink);
   };
 
   return (
@@ -83,10 +74,7 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
         ) : (
           <Card>
             <CardBody>
-              <TreeView
-                data={convertRawTreeToViewTree(debug.tree)}
-                viewRawDebugObject={viewRawDebugObject}
-              />
+              <TreeView data={convertRawTreeToViewTree(debug.tree, viewRawDebugObject)} />
             </CardBody>
           </Card>
         )}

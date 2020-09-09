@@ -1,6 +1,4 @@
 import { IDebugTreeNode } from './types';
-import { IPlan } from '../../plan/duck/types';
-import { IDecompDebugObject } from './types';
 
 export const DebugActionTypes = {
   DEBUG_TREE_FETCH_REQUEST: 'DEBUG_TREE_FETCH_REQUEST',
