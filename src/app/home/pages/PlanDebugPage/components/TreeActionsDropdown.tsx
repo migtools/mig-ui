@@ -62,7 +62,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
             viewRawDebugObject(rawNode);
           }}
         >
-          View raw JSON
+          View JSON
         </DropdownItem>,
       ]}
     />
