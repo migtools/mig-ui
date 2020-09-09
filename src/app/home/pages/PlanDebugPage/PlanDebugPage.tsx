@@ -12,6 +12,10 @@ import {
   Alert,
   TreeView,
   TreeViewDataItem,
+  Split,
+  SplitItem,
+  SearchInput,
+  Button,
 } from '@patternfly/react-core';
 import { push } from 'connected-react-router';
 import {
@@ -101,16 +105,22 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
         ) : (
           <Card>
             <CardBody>
-              <TreeView
-                data={filteredTreeData}
-                onSearch={(event) => setSearchText(event.target.value)}
-                searchProps={{
-                  id: 'input-search',
-                  name: 'search-input',
-                  'aria-label': 'Search debug resources',
-                }}
-                defaultAllExpanded
-              />
+              <Split hasGutter>
+                <SplitItem isFilled>
+                  <SearchInput
+                    placeholder="Type to search"
+                    value={searchText}
+                    onChange={setSearchText}
+                    onClear={() => setSearchText('')}
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <Button onClick={refreshDebugTree} variant="primary">
+                    Refresh
+                  </Button>
+                </SplitItem>
+              </Split>
+              <TreeView data={filteredTreeData} defaultAllExpanded />
             </CardBody>
           </Card>
         )}
