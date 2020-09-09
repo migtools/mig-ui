@@ -14,13 +14,11 @@ import MigrateModal from './MigrateModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-import DebugResourcesModal from './DebugResourcesModal';
 
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
-  const [isDebugResourcesModalOpen, toggleDebugResourcesModal] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
     hasClosedCondition,
@@ -107,9 +105,10 @@ const PlanActions = ({ plan, history }) => {
     </DropdownItem>,
     <DropdownItem
       key="debugResourcesModal"
+      href={`/plans/${plan.MigPlan.metadata.name}/debug`}
+      target="_blank"
       onClick={() => {
         setKebabIsOpen(false);
-        toggleDebugResourcesModal();
       }}
     >
       View migration plan resources (DEBUG)
@@ -151,10 +150,6 @@ const PlanActions = ({ plan, history }) => {
           }}
           id="confirm-plan-removal"
         />
-
-        {isDebugResourcesModalOpen ? (
-          <DebugResourcesModal onClose={toggleDebugResourcesModal} plan={plan} />
-        ) : null}
       </FlexItem>
     </Flex>
   );

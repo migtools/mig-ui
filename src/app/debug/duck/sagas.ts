@@ -22,12 +22,10 @@ function* fetchDebugObject(action) {
 }
 
 function* fetchDebugTree(action) {
-  const plan: IPlan = action.plan;
+  const planName: string = action.planName;
   const state: IReduxState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-  const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(
-    plan.MigPlan.metadata.name
-  );
+  const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(planName);
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
