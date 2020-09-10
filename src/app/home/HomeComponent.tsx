@@ -67,13 +67,17 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
       </NavList>
     </Nav>
   );
-  const isWelcomeScreen = history.location.pathname === '/welcome';
+
+  const isWelcomeScreen = !!useRouteMatch('/welcome');
+  const isDebugScreen = !!useRouteMatch('/plans/:planName/debug');
+  const isNavEnabled = !isWelcomeScreen && !isDebugScreen;
+
   const activeNamespace = getActiveNamespaceFromStorage();
   const [namespaceSelectIsOpen, setNamespaceSelectIsOpen] = useState(false);
 
   const Header = (
     <PageHeaderComponent
-      showNavToggle={!isWelcomeScreen}
+      showNavToggle={isNavEnabled}
       openNamespaceSelect={() => setNamespaceSelectIsOpen(true)}
       isWelcomeScreen={isWelcomeScreen}
     />
@@ -82,8 +86,8 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   return (
     <Page
       header={Header}
-      sidebar={<PageSidebar nav={nav} isNavOpen={!isWelcomeScreen} theme="dark" />}
-      isManagedSidebar={!isWelcomeScreen}
+      sidebar={<PageSidebar nav={nav} isNavOpen={isNavEnabled} theme="dark" />}
+      isManagedSidebar={isNavEnabled}
       skipToContent={<SkipToContent href={`#${mainContainerId}`}>Skip to content</SkipToContent>}
       mainContainerId={mainContainerId}
     >
