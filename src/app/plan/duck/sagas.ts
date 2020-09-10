@@ -438,10 +438,14 @@ function* pvUpdatePoll(action) {
             JSON.stringify(initialGetPlanRes.data.spec.srcMigClusterRef.name) !==
               JSON.stringify(planValues.sourceCluster);
 
-          if (updatedValues) {
+          const currentPlanRIP = !!currentPlan.status.conditions.some(
+            (c) => c.type === 'RefreshInProgress'
+          );
+          const currentPlanRefreshing = currentPlanRIP || currentPlan.spec.refresh === true;
+
+          if (updatedValues && !currentPlanRefreshing) {
             const updatedObservedDigest = updatedPlan.status.observedDigest;
             const oldObservedDigest = currentPlan.status.observedDigest;
-
             if (updatedObservedDigest !== oldObservedDigest) {
               // if plan values changed, hydrate redux store with updated controller data
               yield put(PlanActions.setCurrentPlan(updatedPlan));
@@ -460,10 +464,16 @@ function* pvUpdatePoll(action) {
         } else {
           //initial pv set. Poll until initial status is set.
           if (updatedPlan.status) {
-            yield put(PlanActions.setCurrentPlan(updatedPlan));
-            yield put(PlanActions.updatePlanList(updatedPlan));
-            yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-            yield put(PlanActions.pvUpdatePollStop());
+            const updatedPlanRIP = !!updatedPlan.status.conditions.some(
+              (c) => c.type === 'RefreshInProgress'
+            );
+            const updatedPlanRefreshing = updatedPlanRIP || updatedPlan.spec.refresh === true;
+            if (!updatedPlanRefreshing) {
+              yield put(PlanActions.setCurrentPlan(updatedPlan));
+              yield put(PlanActions.updatePlanList(updatedPlan));
+              yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+              yield put(PlanActions.pvUpdatePollStop());
+            }
           }
         }
       }

@@ -46,6 +46,7 @@ export interface IMigPlan {
     destMigTokenRef?: INameNamespaceRef;
     namespaces?: string[];
     closed?: boolean;
+    refresh?: boolean;
     hooks?: IPlanSpecHook[];
   };
   status?: IStatus;
