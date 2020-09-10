@@ -1,6 +1,4 @@
 import { IDebugTreeNode } from './types';
-import { IPlan } from '../../plan/duck/types';
-import { IDecompDebugObject } from './types';
 
 export const DebugActionTypes = {
   DEBUG_TREE_FETCH_REQUEST: 'DEBUG_TREE_FETCH_REQUEST',
@@ -11,9 +9,9 @@ export const DebugActionTypes = {
   DEBUG_OBJECT_FETCH_FAILURE: 'DEBUG_OBJECT_FETCH_FAILURE',
 };
 
-const debugTreeFetchRequest = (plan: IPlan) => ({
+const debugTreeFetchRequest = (planName: string) => ({
   type: DebugActionTypes.DEBUG_TREE_FETCH_REQUEST,
-  plan,
+  planName,
 });
 
 const debugTreeFetchSuccess = (tree: IDebugTreeNode) => ({

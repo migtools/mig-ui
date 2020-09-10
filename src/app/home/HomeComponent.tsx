@@ -15,7 +15,15 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { PollingContext } from '../home/duck/context';
-import { ClustersPage, StoragesPage, PlansPage, LogsPage, TokensPage, WelcomePage } from './pages';
+import {
+  ClustersPage,
+  StoragesPage,
+  PlansPage,
+  PlanDebugPage,
+  LogsPage,
+  TokensPage,
+  WelcomePage,
+} from './pages';
 import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
@@ -111,6 +119,9 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
               </Route>
               <Route exact path="/plans">
                 <PlansPage />
+              </Route>
+              <Route exact path="/plans/:planName/debug">
+                <PlanDebugPage />
               </Route>
               <RefreshRoute
                 exact

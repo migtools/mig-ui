@@ -6,11 +6,5 @@ export interface IDebugTreeNode {
   children: IDebugTreeNode[];
 }
 
-export interface IDecompDebugObject {
-  kind: string;
-  name: string;
-  namespace: string;
-}
-
 export const DEBUG_PATH_SEARCH_KEY = 'objPath';
 export const RAW_OBJECT_VIEW_ROUTE = '/raw-debug-obj-view';
