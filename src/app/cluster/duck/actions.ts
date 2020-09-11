@@ -22,7 +22,12 @@ export const ClusterActionTypes = {
   CLUSTER_POLL_START: 'CLUSTER_POLL_START',
   CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
   SET_CURRENT_CLUSTER: 'SET_CURRENT_CLUSTER',
+  INIT_DISCOVERY_CERT: 'INIT_DISCOVERY_CERT',
 };
+
+const initializeDiscoveryCert = () => ({
+  type: ClusterActionTypes.INIT_DISCOVERY_CERT,
+});
 
 const updateClusters = (updatedClusters: IMigCluster[]) => ({
   type: ClusterActionTypes.UPDATE_CLUSTERS,
@@ -33,7 +38,6 @@ const addClusterSuccess = (newCluster: IMigCluster) => ({
   type: ClusterActionTypes.ADD_CLUSTER_SUCCESS,
   newCluster,
 });
-
 const addClusterFailure = (error) => ({
   type: ClusterActionTypes.ADD_CLUSTER_FAILURE,
   error,
@@ -131,4 +135,5 @@ export const ClusterActions = {
   startClusterPolling,
   stopClusterPolling,
   setCurrentCluster,
+  initializeDiscoveryCert,
 };

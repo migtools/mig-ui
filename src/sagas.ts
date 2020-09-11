@@ -70,6 +70,7 @@ export default function* rootSaga() {
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),
+    clusterSagas.watchInitDiscoveryCert(),
     storageSagas.watchRemoveStorageRequest(),
     storageSagas.watchAddStorageRequest(),
     storageSagas.watchStorageAddEditStatus(),

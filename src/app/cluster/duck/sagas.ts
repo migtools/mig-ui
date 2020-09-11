@@ -1,7 +1,7 @@
 import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind } from '../../../client/resources';
+import { MigResource, MigResourceKind, DiscoveryResource } from '../../../client/resources';
 import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import {
   createMigClusterSecret,
@@ -26,6 +26,13 @@ import {
 } from '../../common/add_edit_state';
 import Q from 'q';
 import { IReduxState } from '../../../reducers';
+import { NamespaceDiscovery } from '../../../client/resources/discovery';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { PlanActions } from '../../plan/duck';
+import utils from '../../common/duck/utils';
+import { AuthActions } from '../../auth/duck/actions';
+import { push } from 'connected-react-router';
+import { ICluster } from './types';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -496,10 +503,62 @@ function* watchRemoveClusterRequest() {
   yield takeLatest(ClusterActionTypes.REMOVE_CLUSTER_REQUEST, removeClusterSaga);
 }
 
+function* initDiscoveryCert() {
+  // Purpose of this saga to be run early so the user is able to accept the disco
+  // svc cert if required before they hit the service as part of normal application
+  // usage. There's nothing to be done here with the response payload.
+
+  // There's a race condition here where the this initDiscoCert fn is called
+  // prior to the initial loading of the clusters. We need to make sure to retrieve
+  // the name of the host cluster off of the MigCluster object rather than hard code it,
+  // because although it defaults to "host", there are conditions where the user can change
+  // it. Pulling it off of the MigCluster itself ensures we have the authoratative value.
+  // If no clusters have been loaded when we try to get the value, we'll just sleep in
+  // the background and keep trying until they've been loaded; there is always at least one
+  // cluster that represents the cluster that the controller runs on (and this is the cluster we
+  // need).
+  const CLUSTER_RETRY_PERIOD = 3000;
+  while (true) {
+    const state: IReduxState = yield select();
+    if (state.cluster.clusterList.length == 0) {
+      yield delay(CLUSTER_RETRY_PERIOD);
+      continue;
+    }
+    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+    const hostCluster: ICluster = state.cluster.clusterList.find(
+      (c) => c.MigCluster.spec.isHostCluster
+    );
+    const hostClusterName = hostCluster.MigCluster.metadata.name;
+    const namespaces: DiscoveryResource = new NamespaceDiscovery(hostClusterName);
+    try {
+      yield discoveryClient.get(namespaces);
+      break;
+    } catch (err) {
+      if (utils.isTimeoutError(err)) {
+        yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+        break;
+      } else if (utils.isSelfSignedCertError(err)) {
+        const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
+        yield put(AuthActions.certErrorOccurred(failedUrl));
+        yield put(push('/cert-error'));
+        break;
+      }
+      yield put(PlanActions.namespaceFetchFailure(err));
+      yield put(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
+      break;
+    }
+  }
+}
+
+function* watchInitDiscoveryCert() {
+  yield takeLatest(ClusterActionTypes.INIT_DISCOVERY_CERT, initDiscoveryCert);
+}
+
 export default {
   watchRemoveClusterRequest,
   watchAddClusterRequest,
   watchUpdateClusterRequest,
+  watchInitDiscoveryCert,
   watchClusterAddEditStatus,
   fetchClustersGenerator,
 };
