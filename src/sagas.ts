@@ -11,6 +11,7 @@ import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
 import { history } from './helpers';
 import { NON_ADMIN_ENABLED } from './TEMPORARY_GLOBAL_FLAGS';
+import { ClusterActions } from './app/cluster/duck/actions';
 
 export default function* rootSaga() {
   function* appStarted() {
@@ -23,6 +24,8 @@ export default function* rootSaga() {
     if (migMeta) {
       yield put(AuthActions.initMigMeta(migMeta));
       yield put(AuthActions.initFromStorage());
+      // Early prompt for discovery service cert acceptance if it hasn't already been accepted
+      yield put(ClusterActions.initializeDiscoveryCert());
     }
 
     // Configure token expiry behavior
@@ -70,6 +73,7 @@ export default function* rootSaga() {
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
     clusterSagas.watchClusterAddEditStatus(),
+    clusterSagas.watchInitDiscoveryCert(),
     storageSagas.watchRemoveStorageRequest(),
     storageSagas.watchAddStorageRequest(),
     storageSagas.watchStorageAddEditStatus(),
