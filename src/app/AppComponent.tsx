@@ -46,7 +46,6 @@ interface IProps {
   updateTokens: (updatedTokens) => void;
   clusterList: ICluster[];
   debugTree: IDebugTreeNode;
-  initializeDiscoveryService: () => void;
 }
 
 const AppComponent: React.SFC<IProps> = ({
@@ -70,13 +69,7 @@ const AppComponent: React.SFC<IProps> = ({
   updateTokens,
   clusterList,
   debugTree,
-  initializeDiscoveryService,
 }) => {
-  // Early prompt for discovery service cert acceptace if it hasn't already been accepted
-  useEffect(() => {
-    initializeDiscoveryService();
-  }, []);
-
   const handlePlanPoll = (response) => {
     if (response) {
       updatePlans(response.updatedPlans);
@@ -231,7 +224,6 @@ export default connect(
     debugTree: state.debug.tree,
   }),
   (dispatch) => ({
-    initializeDiscoveryService: () => dispatch(ClusterActions.initializeDiscoveryCert()),
     startPlanPolling: (params) => dispatch(PlanActions.startPlanPolling(params)),
     stopPlanPolling: () => dispatch(PlanActions.stopPlanPolling()),
     startStoragePolling: (params) => dispatch(StorageActions.startStoragePolling(params)),
