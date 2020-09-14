@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dropdown, KebabToggle, DropdownItem, Tooltip } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IDebugTreeNode } from '../../../../debug/duck/types';
+import { getFullKindName } from '../helpers';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
@@ -18,7 +19,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    el.value = `oc get ${rawNode.kind} -n ${rawNode.namespace} ${rawNode.name}`;
+    el.value = `oc get ${getFullKindName(rawNode.kind)} -n ${rawNode.namespace} ${rawNode.name}`;
     clipboard.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -38,6 +39,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
             onCopy(event);
           }}
+          isDisabled={rawNode.kind !== ('Migration' || 'Plan')}
         >
           <Tooltip
             trigger="click"
