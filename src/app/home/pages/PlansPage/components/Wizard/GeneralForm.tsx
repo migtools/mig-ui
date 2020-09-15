@@ -44,19 +44,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   if (clusterList.length) {
     srcClusterOptions = clusterList
-      .filter(
-        (cluster) =>
-          cluster.MigCluster.metadata.name !== values.targetCluster &&
-          cluster.ClusterStatus.hasReadyCondition
-      )
+      .filter((cluster) => cluster.ClusterStatus.hasReadyCondition)
       .map((cluster) => cluster.MigCluster.metadata.name);
 
     targetClusterOptions = clusterList
-      .filter(
-        (cluster) =>
-          cluster.MigCluster.metadata.name !== values.sourceCluster &&
-          cluster.ClusterStatus.hasReadyCondition
-      )
+      .filter((cluster) => cluster.ClusterStatus.hasReadyCondition)
       .map((cluster) => cluster.MigCluster.metadata.name);
   }
 

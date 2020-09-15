@@ -36,12 +36,18 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       }
       if (!values.sourceCluster) {
         errors.sourceCluster = 'Required';
+      } else if (values.sourceCluster === values.targetCluster) {
+        errors.sourceCluster =
+          'The selected source cluster must be different than the target cluster.';
       }
       if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
         errors.selectedNamespaces = 'Required';
       }
       if (!values.targetCluster) {
         errors.targetCluster = 'Required';
+      } else if (values.sourceCluster === values.targetCluster) {
+        errors.targetCluster =
+          'The selected target cluster must be different than the source cluster.';
       }
       if (NON_ADMIN_ENABLED) {
         if (!values.sourceTokenRef) {
