@@ -127,7 +127,7 @@ const getPlansWithPlanStatus = createSelector(
         if (m.status?.conditions && !m.spec.stage) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
-            !latestMigration.status?.conditions?.some((c) => c.type === 'Canceled')
+            !m.status?.conditions?.some((c) => c.type === 'Canceled')
           );
         }
       }).length;
