@@ -26,6 +26,9 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     clipboard.removeChild(el);
   };
 
+  const regex = RegExp('^Plan|Migration', 'i');
+  const isCopyDisabled = !regex.test(rawNode.kind);
+
   return (
     <Dropdown
       aria-label="Actions"
@@ -39,7 +42,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
             onCopy(event);
           }}
-          isDisabled={rawNode.kind !== ('Migration' || 'Plan')}
+          isDisabled={isCopyDisabled}
         >
           <Tooltip
             trigger="click"
