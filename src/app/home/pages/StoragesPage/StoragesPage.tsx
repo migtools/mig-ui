@@ -13,7 +13,7 @@ import {
   Bullseye,
   Spinner,
 } from '@patternfly/react-core';
-import { AddCircleOIcon } from '@patternfly/react-icons';
+import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StorageContext } from '../../duck/context';
 import storageSelectors from '../../../storage/duck/selectors';

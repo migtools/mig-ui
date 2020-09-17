@@ -4,12 +4,9 @@ import { Bullseye, Title, Button, Flex } from '@patternfly/react-core';
 import ConditionsGrid from './ConditionsGrid';
 import { ICurrentPlanStatus, CurrentPlanState } from '../../../../../plan/duck/reducers';
 import { Spinner } from '@patternfly/react-core';
-import {
-  IconSize,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-} from '@patternfly/react-icons';
+import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
+import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { useFormikContext } from 'formik';
 import { IFormValues } from './WizardContainer';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
@@ -42,20 +39,20 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
       case CurrentPlanState.Ready:
         return (
           <span className="pf-c-icon pf-m-success">
-            <CheckCircleIcon size={IconSize.xl} />
+            <CheckCircleIcon size={'xl'} />
           </span>
         );
       case CurrentPlanState.Critical:
       case CurrentPlanState.TimedOut:
         return (
           <span className="pf-c-icon pf-m-danger">
-            <ExclamationCircleIcon size={IconSize.xl} />
+            <ExclamationCircleIcon size={'xl'} />
           </span>
         );
       case CurrentPlanState.Warn:
         return (
           <span className="pf-c-icon pf-m-warning">
-            <ExclamationTriangleIcon size={IconSize.xl} />
+            <ExclamationTriangleIcon size={'xl'} />
           </span>
         );
       default:

@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
+const compression = require('compression');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
@@ -19,6 +20,7 @@ console.log('staticDir: ', staticDir);
 console.log('migMeta: ', migMeta);
 
 const app = express();
+app.use(compression());
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));

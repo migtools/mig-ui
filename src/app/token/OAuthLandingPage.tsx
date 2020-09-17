@@ -12,7 +12,7 @@ import {
   Text,
   Spinner,
 } from '@patternfly/react-core';
-import { LockIcon } from '@patternfly/react-icons';
+import LockIcon from '@patternfly/react-icons/dist/js/icons/lock-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 
