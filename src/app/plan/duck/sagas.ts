@@ -25,7 +25,6 @@ import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import Q from 'q';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
@@ -674,10 +673,11 @@ function* getPVResourcesRequest(action) {
     });
 
     const pvList = [];
-    yield Q.allSettled(pvResourceRefs).then((results) => {
-      results.forEach((result) => {
-        if (result.state === 'fulfilled') {
-          pvList.push(result.value.data);
+    yield Promise.allSettled(pvResourceRefs).then((results) => {
+      Object.keys(results).forEach((result) => {
+        if (results[result].status === 'fulfilled') {
+          const promiseFulfilledResult = results[result] as PromiseFulfilledResult<any>;
+          pvList.push(promiseFulfilledResult.value.data);
         }
       });
     });

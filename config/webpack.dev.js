@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const HOST = process.env.HOST || 'localhost';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const helpers = require('./helpers');
+const Dotenv = require('dotenv-webpack');
 
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
@@ -31,8 +32,7 @@ const PORT = process.env.PORT || localConfig.devServerPort;
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001;
 
 const plugins = [
-  new webpack.NoEmitOnErrorsPlugin(),
-  new webpack.NamedModulesPlugin(),
+  new Dotenv(),
   new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
   new MiniCssExtractPlugin({

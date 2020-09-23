@@ -24,7 +24,6 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import Q from 'q';
 import { IReduxState } from '../../../reducers';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
@@ -153,7 +152,7 @@ function* addClusterRequest(action) {
 
   // Ensure that none of objects that make up a cluster already exist
   try {
-    const getResults = yield Q.allSettled([
+    const getResults = yield Promise.allSettled([
       client.list(
         secretResource,
         getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)
@@ -236,7 +235,7 @@ function* addClusterRequest(action) {
           : rollbackAccum;
       }, []);
 
-      const rollbackResults = yield Q.allSettled(
+      const rollbackResults = yield Promise.allSettled(
         rollbackObjs.map((r) => {
           return client.delete(kindToResourceMap[r.kind], r.name);
         })

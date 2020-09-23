@@ -2,10 +2,11 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = (env) => {
   const plugins = [
-    new webpack.NoEmitOnErrorsPlugin(),
+    new Dotenv(),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].css',
