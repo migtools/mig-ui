@@ -2,12 +2,13 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
 
 module.exports = (env) => {
   const plugins = [
-    new Dotenv(),
     new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.BRAND_TYPE': JSON.stringify(process.env.BRAND_TYPE),
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
