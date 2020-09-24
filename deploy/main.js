@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
+// const cors = require('cors');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
@@ -30,7 +31,9 @@ app.use(express.static(staticDir));
 app.get('/login', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
+    console.log('clusterAuth', clusterAuth);
     const uri = clusterAuth.code.getUri();
+    console.log('uri', uri);
     res.redirect(uri);
   } catch (error) {
     console.error(error);
@@ -42,7 +45,10 @@ app.get('/login', async (req, res, next) => {
 app.get('/login/callback', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
+    console.log('clusterAuth in callback', clusterAuth);
+    console.log(' req.originalUrl', req.originalUrl, req);
     const token = await clusterAuth.code.getToken(req.originalUrl);
+    console.log('token', token);
     const currentUnixTime = moment().unix();
     const user = {
       ...token,
