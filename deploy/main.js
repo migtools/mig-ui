@@ -2,12 +2,17 @@ const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
-// const cors = require('cors');
+const cors = require('cors');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
 const staticDir = process.env['STATIC_DIR'] || '/srv/static';
 const port = process.env['EXPRESS_PORT'] || 9000;
+
+var corsOptions = {
+  origin: `http://localhost:${port}`,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 const migMetaStr = fs.readFileSync(migMetaFile, 'utf8');
 const migMeta = JSON.parse(migMetaStr);
@@ -23,12 +28,13 @@ const app = express();
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
-
+app.use(cors());
+1;
 // NOTE: Any future backend-only routes here need to also be proxied by webpack-dev-server.
 //       Add them to config/webpack.dev.js in the array under devServer.proxy.context.
 
 // TODO do we need to handle action=refresh ? does token expiration and logout work correctly?
-app.get('/login', async (req, res, next) => {
+app.get('/login', cors(corsOptions), async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
     console.log('clusterAuth', clusterAuth);
