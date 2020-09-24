@@ -12,3 +12,4 @@ cypress/fixtures
 cypress/screenshots
 config/migmeta.yaml
 tmp/
+.env

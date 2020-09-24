@@ -23,7 +23,6 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import Q from 'q';
 import { IReduxState } from '../../../reducers';
 
 function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
