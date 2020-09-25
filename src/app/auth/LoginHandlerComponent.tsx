@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { AuthActions } from './duck/actions';
 
 interface ILoginHandlerComponentProps {
-  saveLoginToken: (user: object) => void; // TODO give user a real type
+  saveLoginToken: (user: object) => void;
 }
 
 const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = ({
@@ -25,7 +25,7 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
 
   useEffect(() => {
     if (loginError) {
-      /////// TODO handle errors?
+      console.log('Authentication error: ', loginError);
     } else if (user) {
       saveLoginToken(user); // Will cause a redirect to "/"
     }

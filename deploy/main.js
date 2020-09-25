@@ -26,8 +26,6 @@ app.use(express.static(staticDir));
 // NOTE: Any future backend-only routes here need to also be proxied by webpack-dev-server.
 //       Add them to config/webpack.dev.js in the array under devServer.proxy.context.
 
-// TODO do we need to handle action=refresh ? does token expiration and logout work correctly?
-
 app.get('/login', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
@@ -39,8 +37,10 @@ app.get('/login', async (req, res, next) => {
     res.redirect(authorizationUri);
   } catch (error) {
     console.error(error);
+    const params = new URLSearchParams({ error: JSON.stringify(error) });
+    const uri = `/handle-login?${params.toString()}`;
+    res.redirect(uri);
     next(error);
-    // TODO redirect to /handle-login?error=... instead (move to helper function)
   }
 });
 app.get('/login/callback', async (req, res, next) => {
@@ -58,12 +58,12 @@ app.get('/login/callback', async (req, res, next) => {
       login_time: currentUnixTime,
       expiry_time: currentUnixTime + accessToken.token.expires_in,
     };
-    console.log('Login callback: ', user);
     const params = new URLSearchParams({ user: JSON.stringify(user) });
     const uri = `/handle-login?${params.toString()}`;
     res.redirect(uri);
   } catch (error) {
-    next(error);
+    console.error('Access Token Error', error.message);
+    return res.status(500).json('Authentication failed');
   }
 });
 
