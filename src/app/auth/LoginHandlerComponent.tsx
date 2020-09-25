@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { AuthActions } from './duck/actions';
 
 interface ILoginHandlerComponentProps {
-  storeLoginToken: (user: object) => void; // TODO give user a real type
+  saveLoginToken: (user: object) => void; // TODO give user a real type
 }
 
 const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = ({
-  storeLoginToken,
+  saveLoginToken,
 }) => {
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
@@ -27,7 +27,7 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
     if (loginError) {
       /////// TODO handle errors?
     } else if (user) {
-      storeLoginToken(user); // Will cause a redirect to "/"
+      saveLoginToken(user); // Will cause a redirect to "/"
     }
   }, []);
 
