@@ -22,14 +22,12 @@ const app = express();
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
+
 // NOTE: Any future backend-only routes here need to also be proxied by webpack-dev-server.
 //       Add them to config/webpack.dev.js in the array under devServer.proxy.context.
 
 // TODO do we need to handle action=refresh ? does token expiration and logout work correctly?
 
-//////////////////
-
-////////////////////
 app.get('/login', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
@@ -39,11 +37,6 @@ app.get('/login', async (req, res, next) => {
     });
 
     res.redirect(authorizationUri);
-    // const clusterAuth = await getClusterAuth(migMeta);
-    // console.log('clusterAuth', clusterAuth);
-    // const uri = clusterAuth.code.getUri();
-    // console.log('uri', uri);
-    // res.redirect(uri);
   } catch (error) {
     console.error(error);
     next(error);
@@ -59,13 +52,6 @@ app.get('/login/callback', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
     const accessToken = await clusterAuth.getToken(options);
-    console.log('The resulting token: ', accessToken.token);
-
-    //   const clusterAuth = await getClusterAuth(migMeta);
-    //   console.log('clusterAuth in callback', clusterAuth);
-    //   console.log(' req.originalUrl', req.originalUrl, req);
-    //   const token = await clusterAuth.code.getToken(req.originalUrl);
-    //   console.log('token', token);
     const currentUnixTime = moment().unix();
     const user = {
       ...accessToken.token,
@@ -80,42 +66,6 @@ app.get('/login/callback', async (req, res, next) => {
     next(error);
   }
 });
-
-// app.get('/login', cors(corsOptions), async (req, res, next) => {
-//   try {
-//     const clusterAuth = await getClusterAuth(migMeta);
-//     console.log('clusterAuth', clusterAuth);
-//     const uri = clusterAuth.code.getUri();
-//     console.log('uri', uri);
-//     res.redirect(uri);
-//   } catch (error) {
-//     console.error(error);
-//     next(error);
-//     // TODO redirect to /handle-login?error=... instead (move to helper function)
-//   }
-// });
-
-// app.get('/login/callback', async (req, res, next) => {
-//   try {
-//     const clusterAuth = await getClusterAuth(migMeta);
-//     console.log('clusterAuth in callback', clusterAuth);
-//     console.log(' req.originalUrl', req.originalUrl, req);
-//     const token = await clusterAuth.code.getToken(req.originalUrl);
-//     console.log('token', token);
-//     const currentUnixTime = moment().unix();
-//     const user = {
-//       ...token,
-//       login_time: currentUnixTime,
-//       expiry_time: currentUnixTime + token.expires_in,
-//     };
-//     console.log('Login callback: ', user);
-//     const params = new URLSearchParams({ user: JSON.stringify(user) });
-//     const uri = `/handle-login?${params.toString()}`;
-//     res.redirect(uri);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
 
 app.get('*', (req, res) => {
   res.render('index.ejs', { migMeta: encodedMigMeta });

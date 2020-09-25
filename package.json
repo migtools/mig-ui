@@ -61,7 +61,6 @@
     "redux-persist": "^5.10.0",
     "rimraf": "^2.6.3",
     "sass-loader": "^7.3.1",
-    "simple-oauth2": "^4.1.0",
     "source-map-loader": "^0.2.4",
     "start-server-and-test": "^1.9.1",
     "style-loader": "^0.23.1",
@@ -83,7 +82,6 @@
     "@testing-library/user-event": "^12.0.11",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
-    "client-oauth2": "^4.2.3",
     "connected-react-router": "^6.3.2",
     "ejs": "^2.6.1",
     "express": "^4.17.1",
@@ -108,6 +106,7 @@
     "reselect": "^4.0.0",
     "sass": "^1.22.10",
     "shortid": "^2.2.15",
+    "simple-oauth2": "^4.1.0",
     "tree-crawl": "^1.0.5",
     "uuid": "^3.3.2"
   }

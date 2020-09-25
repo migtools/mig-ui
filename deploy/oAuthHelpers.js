@@ -1,5 +1,4 @@
-const { ClientCredentials, ResourceOwnerPassword, AuthorizationCode } = require('simple-oauth2');
-const ClientOAuth2 = require('client-oauth2');
+const { AuthorizationCode } = require('simple-oauth2');
 const axios = require('axios');
 
 let cachedOAuthMeta = null;
@@ -20,18 +19,6 @@ const getOAuthMeta = async (migMeta) => {
   return cachedOAuthMeta;
 };
 
-// const getClusterAuth = async (migMeta) => {
-//   const oAuthMeta = await getOAuthMeta(migMeta);
-//   return new ClientOAuth2({
-//     clientId: migMeta.oauth.clientId,
-//     clientSecret: migMeta.oauth.clientSecret,
-//     accessTokenUri: oAuthMeta.token_endpoint,
-//     authorizationUri: oAuthMeta.authorization_endpoint,
-//     redirectUri: migMeta.oauth.redirectUri,
-//     scopes: [migMeta.oauth.userScope],
-//   });
-// };
-
 const getClusterAuth = async (migMeta) => {
   const oAuthMeta = await getOAuthMeta(migMeta);
   return new AuthorizationCode({
@@ -41,12 +28,8 @@ const getClusterAuth = async (migMeta) => {
     },
     auth: {
       tokenHost: oAuthMeta.token_endpoint,
-      // tokenPath: '/oauth20_token.srf',
       authorizePath: oAuthMeta.authorization_endpoint,
     },
-    // options: {
-    //   authorizationMethod: 'body',
-    // },
   });
 };
 
