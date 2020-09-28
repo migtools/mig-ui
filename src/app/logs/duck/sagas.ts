@@ -2,7 +2,6 @@ import { select, call, put, take, takeEvery, all } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
-import Q from 'q';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
   PlanPodReportDiscovery,

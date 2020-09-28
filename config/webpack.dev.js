@@ -31,10 +31,11 @@ const PORT = process.env.PORT || localConfig.devServerPort;
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001;
 
 const plugins = [
-  new webpack.NoEmitOnErrorsPlugin(),
-  new webpack.NamedModulesPlugin(),
   new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
+  new webpack.DefinePlugin({
+    'process.env.BRAND_TYPE': JSON.stringify(process.env.BRAND_TYPE),
+  }),
   new MiniCssExtractPlugin({
     filename: '[name].css',
     chunkFilename: '[id].css',
