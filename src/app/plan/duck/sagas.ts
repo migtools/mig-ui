@@ -35,6 +35,7 @@ import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add
 import _ from 'lodash';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 import { IReduxState } from '../../../reducers';
+import Q from 'q';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -673,11 +674,10 @@ function* getPVResourcesRequest(action) {
     });
 
     const pvList = [];
-    yield Promise.allSettled(pvResourceRefs).then((results) => {
-      Object.keys(results).forEach((result) => {
-        if (results[result].status === 'fulfilled') {
-          const promiseFulfilledResult = results[result] as PromiseFulfilledResult<any>;
-          pvList.push(promiseFulfilledResult.value.data);
+    yield Q.allSettled(pvResourceRefs).then((results) => {
+      results.forEach((result) => {
+        if (result.state === 'fulfilled') {
+          pvList.push(result.value.data);
         }
       });
     });
