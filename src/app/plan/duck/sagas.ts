@@ -25,7 +25,6 @@ import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import { MigResource, MigResourceKind } from '../../../client/resources';
-import Q from 'q';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
@@ -36,6 +35,7 @@ import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add
 import _ from 'lodash';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 import { IReduxState } from '../../../reducers';
+import Q from 'q';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
