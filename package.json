@@ -1,7 +1,7 @@
 {
   "name": "mig-ui",
   "version": "0.1.0",
-  "description": "Cluster Application Migration Tool",
+  "description": "Migration Toolkit for Containers",
   "main": "index.js",
   "license": "Apache-2.0",
   "private": true,
@@ -90,6 +90,7 @@
     "lodash": "^4.17.14",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
+    "q": "^1.5.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-json-view": "^1.19.1",

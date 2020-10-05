@@ -32,6 +32,7 @@ import utils from '../../common/duck/utils';
 import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import { ICluster } from './types';
+import Q from 'q';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -152,7 +153,7 @@ function* addClusterRequest(action) {
 
   // Ensure that none of objects that make up a cluster already exist
   try {
-    const getResults = yield Promise.allSettled([
+    const getResults = yield Q.allSettled([
       client.list(
         secretResource,
         getTokenSecretLabelSelector(MigResourceKind.MigCluster, migCluster.metadata.name)
@@ -235,7 +236,7 @@ function* addClusterRequest(action) {
           : rollbackAccum;
       }, []);
 
-      const rollbackResults = yield Promise.allSettled(
+      const rollbackResults = yield Q.allSettled(
         rollbackObjs.map((r) => {
           return client.delete(kindToResourceMap[r.kind], r.name);
         })
