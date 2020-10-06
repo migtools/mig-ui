@@ -60,7 +60,7 @@ const WelcomePageBase: React.FunctionComponent<IWelcomePageBaseProps> = ({
               size="4xl"
               className={`${alignment.textAlignCenter} ${spacing.myXl}`}
             >
-              Welcome to Cluster Application Migration
+              Welcome to the Migration Toolkit for Containers
             </Title>
           </FlexItem>
           <FlexItem>
