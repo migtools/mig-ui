@@ -24,6 +24,7 @@ import { ICluster } from './cluster/duck/types';
 import { NON_ADMIN_ENABLED } from '../TEMPORARY_GLOBAL_FLAGS';
 import { IDebugTreeNode, RAW_OBJECT_VIEW_ROUTE } from './debug/duck/types';
 import RawDebugObjectView from './debug/components/RawDebugObjectView';
+import AuthErrorComponent from './auth/AuthErrorComponent';
 
 interface IProps {
   isLoggedIn?: boolean;
@@ -192,6 +193,7 @@ const AppComponent: React.SFC<IProps> = ({
           <Switch>
             <Route path="/handle-login" component={LoginHandlerComponent} />
             <Route path="/cert-error" component={CertErrorComponent} />
+            <Route path="/auth-error" component={AuthErrorComponent} />
             <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
               path={RAW_OBJECT_VIEW_ROUTE}

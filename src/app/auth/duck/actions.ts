@@ -12,6 +12,7 @@ export const AuthActionTypes = {
   SET_IS_ADMIN: 'SET_IS_ADMIN',
   FETCH_IS_ADMIN: 'FETCH_IS_ADMIN',
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
+  AUTH_ERROR_OCCURRED: 'AUTH_ERROR_OCCURRED',
   SET_WELCOME_SCREEN_BOOL: 'SET_WELCOME_SCREEN_BOOL',
   CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
   CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
@@ -56,6 +57,11 @@ const certErrorOccurred = (failedUrl: string) => ({
   failedUrl,
 });
 
+const authErrorOccurred = (authError: string) => ({
+  type: AuthActionTypes.AUTH_ERROR_OCCURRED,
+  authError,
+});
+
 const storeLoginToken = (user: any) => ({
   type: AuthActionTypes.STORE_LOGIN_TOKEN,
   user,
@@ -95,6 +101,7 @@ export const AuthActions = {
   loginSuccess,
   loginFailure,
   storeLoginToken,
+  authErrorOccurred,
   certErrorOccurred,
   setIsAdmin,
   fetchTenantNamespaces,
