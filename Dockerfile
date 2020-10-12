@@ -1,17 +1,18 @@
-FROM registry.access.redhat.com/ubi8-minimal as builder
-RUN curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | tee /etc/yum.repos.d/yarn.repo
-RUN microdnf -y install yarn nodejs
+FROM registry.access.redhat.com/ubi8/nodejs-12:latest as builder
 COPY . /mig-ui
 WORKDIR /mig-ui
-RUN yarn
-RUN yarn build
+USER root
+RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
+    dnf -y install yarn && yarn && yarn build
 
-FROM registry.access.redhat.com/ubi8-minimal
-RUN microdnf -y install nodejs && microdnf clean all
-COPY --from=builder /mig-ui/dist /srv/staticroot
-COPY --from=builder /mig-ui/public/favicon.ico /srv/staticroot
-COPY --from=builder /mig-ui/public/index.ejs /srv/staticroot
-COPY --from=builder /mig-ui/deploy/main.js /srv
-COPY --from=builder /mig-ui/node_modules /srv/node_modules
-COPY --from=builder /mig-ui/scripts/entrypoint.sh /usr/bin/entrypoint.sh
-ENTRYPOINT entrypoint.sh
+FROM registry.access.redhat.com/ubi8/nodejs-12:latest
+COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
+COPY --from=builder /mig-ui/public/favicon.ico /opt/app-root/src/staticroot
+COPY --from=builder /mig-ui/public/index.ejs /opt/app-root/src/staticroot
+COPY --from=builder /mig-ui/deploy/main.js /opt/app-root/src
+COPY --from=builder /mig-ui/node_modules /opt/app-root/src/node_modules
+
+ENV MIGMETA_FILE="/etc/mig-ui/migmeta.json"
+ENV VIEWS_DIR=/opt/app-root/src/staticroot
+ENV STATIC_DIR=/opt/app-root/src/staticroot
+ENTRYPOINT ["node", "/opt/app-root/src/main.js"]
