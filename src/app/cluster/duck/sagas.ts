@@ -24,7 +24,6 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import Q from 'q';
 import { IReduxState } from '../../../reducers';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
@@ -33,6 +32,7 @@ import utils from '../../common/duck/utils';
 import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import { ICluster } from './types';
+import Q from 'q';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];

@@ -5,8 +5,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env) => {
   const plugins = [
-    new webpack.NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.BRAND_TYPE': JSON.stringify(process.env.BRAND_TYPE),
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
