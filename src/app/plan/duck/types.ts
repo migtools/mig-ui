@@ -23,6 +23,11 @@ export interface IPlanPersistentVolume {
   };
 }
 
+export interface IMigPlanStorageClass {
+  name: string;
+  provisioner: string;
+}
+
 export interface IPlanSpecHook {
   reference: {
     name: string;
@@ -88,6 +93,8 @@ export interface IStatus {
   conditions?: ICondition[];
   incompatibleNamespaces?: any;
   observedDigest?: string;
+  srcStorageClasses: IMigPlanStorageClass[];
+  destStorageClasses: IMigPlanStorageClass[];
 }
 
 export interface ICondition {
