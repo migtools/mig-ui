@@ -93,8 +93,8 @@ export interface IStatus {
   conditions?: ICondition[];
   incompatibleNamespaces?: any;
   observedDigest?: string;
-  srcStorageClasses: IMigPlanStorageClass[];
-  destStorageClasses: IMigPlanStorageClass[];
+  srcStorageClasses?: IMigPlanStorageClass[];
+  destStorageClasses?: IMigPlanStorageClass[];
 }
 
 export interface ICondition {
