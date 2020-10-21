@@ -429,11 +429,8 @@ function* pvUpdatePoll(action) {
         const updatedPlan = getPlanResponse.data;
 
         // Wait for refresh to complete before showing results
-        const hasRefreshingCondition = !!updatedPlan.status.conditions.some(
-          (c) => c.type === 'RefreshInProgress'
-        );
         const hasRefreshOnSpec = updatedPlan.spec.refresh === true;
-        const doneRefreshing = !hasRefreshingCondition && !hasRefreshOnSpec;
+        const doneRefreshing = !hasRefreshOnSpec;
 
         if (doneRefreshing) {
           // if plan done refreshing, hydrate redux store with updated controller data
