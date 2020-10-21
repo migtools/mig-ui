@@ -440,6 +440,11 @@ export function updateMigPlanFromValues(
   if (planValues.planClosed) {
     updatedSpec.closed = true;
   }
+  if (currentPlan.status) {
+    // if currentPlan has status, this is not 1st MigPlan reconcile.
+    // we should refresh corresponding MigStorage and MigClusters.
+    updatedSpec.refresh = true;
+  }
 
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',

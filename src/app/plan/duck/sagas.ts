@@ -427,34 +427,18 @@ function* pvUpdatePoll(action) {
       if (currentPlan) {
         const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
         const updatedPlan = getPlanResponse.data;
+
         if (currentPlan.status) {
-          // if currentPlan has status, this is not the initial run of pv discovery.
-          // check for updated values & poll until observed digest changes if so.
-          const updatedValues =
-            JSON.stringify(initialGetPlanRes.data.spec.namespaces) !==
-              JSON.stringify(planValues.selectedNamespaces) ||
-            JSON.stringify(initialGetPlanRes.data.spec.destMigClusterRef.name) !==
-              JSON.stringify(planValues.targetCluster) ||
-            JSON.stringify(initialGetPlanRes.data.spec.srcMigClusterRef.name) !==
-              JSON.stringify(planValues.sourceCluster);
+          // Wait for refresh to complete before showing results
+          const hasRefreshOnSpec = updatedPlan.spec.refresh === true;
+          const doneRefreshing = !hasRefreshOnSpec;
 
-          if (updatedValues) {
-            const updatedObservedDigest = updatedPlan.status.observedDigest;
-            const oldObservedDigest = currentPlan.status.observedDigest;
-
-            if (updatedObservedDigest !== oldObservedDigest) {
-              // if plan values changed, hydrate redux store with updated controller data
-              yield put(PlanActions.setCurrentPlan(updatedPlan));
-              yield put(PlanActions.updatePlanList(updatedPlan));
-              yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-              yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
-              yield put(PlanActions.pvUpdatePollStop());
-            }
-          } else {
-            // no values updated
+          if (doneRefreshing) {
+            // if plan done refreshing, hydrate redux store with updated controller data
             yield put(PlanActions.setCurrentPlan(updatedPlan));
             yield put(PlanActions.updatePlanList(updatedPlan));
             yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+            yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
             yield put(PlanActions.pvUpdatePollStop());
           }
         } else {
