@@ -437,7 +437,7 @@ function* pvUpdatePoll(action) {
             // if plan done refreshing, hydrate redux store with updated controller data
             yield put(PlanActions.setCurrentPlan(updatedPlan));
             yield put(PlanActions.updatePlanList(updatedPlan));
-            yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+            yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready }));
             yield put(PlanActions.refreshAnalyticRequest(updatedPlan.metadata.name));
             yield put(PlanActions.pvUpdatePollStop());
           }
@@ -446,7 +446,7 @@ function* pvUpdatePoll(action) {
           if (updatedPlan.status) {
             yield put(PlanActions.setCurrentPlan(updatedPlan));
             yield put(PlanActions.updatePlanList(updatedPlan));
-            yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
+            yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Ready }));
             yield put(PlanActions.pvUpdatePollStop());
           }
         }
