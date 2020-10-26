@@ -5,7 +5,6 @@ import { PlanActionTypes } from '../../..../../plan/duck/actions';
 import { AlertActions } from '../../common/duck/actions';
 
 import { push } from 'connected-react-router';
-import moment from 'moment';
 
 import { isSelfSignedCertError, handleSelfSignedCertError } from '../../common/duck/utils';
 import { getActiveNamespaceFromStorage } from '../../common/helpers';
@@ -14,30 +13,8 @@ import { IReduxState } from '../../../reducers';
 
 const LS_KEY_CURRENT_USER = 'currentUser';
 
-export function* fetchOauthMeta(action) {
-  const oauthMetaUrl = `${action.clusterApi}/.well-known/oauth-authorization-server`;
-  try {
-    const res = yield axios.get(oauthMetaUrl);
-    yield put(AuthActions.setOauthMeta(res.data));
-  } catch (err) {
-    if (isSelfSignedCertError(err)) {
-      yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
-      yield put(push('/cert-error'));
-      return;
-    }
-    yield put(AuthActions.loginFailure());
-    yield put(AlertActions.alertErrorTimeout(err));
-  }
-}
-
-export function* fetchToken(action) {
-  const { oauthClient, coreRedirect } = action;
-  const result = yield oauthClient.code.getToken(coreRedirect);
-  const user = result.data;
-  const currentUnixTime = moment().unix();
-  const expiryUnixTime = currentUnixTime + user.expires_in;
-  user.login_time = currentUnixTime;
-  user.expiry_time = expiryUnixTime;
+export function* storeLoginToken(action) {
+  const { user } = action;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(AuthActions.loginSuccess(user));
   yield put(push('/'));
@@ -135,8 +112,7 @@ export function* loginSuccess() {
 function* watchAuthEvents() {
   yield takeLatest(AuthActionTypes.LOGOUT_USER_REQUEST, logoutUser);
   yield takeLatest(AuthActionTypes.INIT_FROM_STORAGE, initFromStorage);
-  yield takeLatest(AuthActionTypes.FETCH_TOKEN, fetchToken);
-  yield takeLatest(AuthActionTypes.FETCH_OAUTH_META, fetchOauthMeta);
+  yield takeLatest(AuthActionTypes.STORE_LOGIN_TOKEN, storeLoginToken);
   yield takeLatest(AuthActionTypes.LOGIN_SUCCESS, loginSuccess);
   if (NON_ADMIN_ENABLED) {
     yield takeLatest(AuthActionTypes.CHECK_HAS_LOGGED_IN, checkHasLoggedIn);

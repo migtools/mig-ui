@@ -7,7 +7,7 @@ const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
 
 export interface IAuthReducerState {
   user: ILoginParams;
-  oauthMeta: string;
+  authError: string;
   certError: {
     failedUrl: string;
   };
@@ -23,8 +23,8 @@ type AuthReducerFn = (state: IAuthReducerState, action: any) => IAuthReducerStat
 
 const INITIAL_STATE: IAuthReducerState = {
   user: null,
-  oauthMeta: null,
   certError: null,
+  authError: null,
   isAdmin: NON_ADMIN_ENABLED ? null : true,
   isHideWelcomeScreen: hasLoggedIn ? hasLoggedIn.isHideWelcomeScreen : true,
   tenantNamespaceList: [],
@@ -37,12 +37,12 @@ export const authReducer: AuthReducerFn = (state = INITIAL_STATE, action) => {
       return { ...state, user: action.user };
     case AuthActionTypes.LOGIN_FAILURE:
       return { ...state, user: null };
-    case AuthActionTypes.SET_OAUTH_META:
-      return { ...state, oauthMeta: action.oauthMeta };
     case AuthActionTypes.SET_IS_ADMIN:
       return NON_ADMIN_ENABLED ? { ...state, isAdmin: action.hasAdmin } : state;
     case AuthActionTypes.CERT_ERROR_OCCURRED:
       return { ...state, certError: { failedUrl: action.failedUrl } };
+    case AuthActionTypes.AUTH_ERROR_OCCURRED:
+      return { ...state, authError: action.authError };
     case AuthActionTypes.SET_WELCOME_SCREEN_BOOL:
       return { ...state, isHideWelcomeScreen: action.isHideWelcomeScreen };
     case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:

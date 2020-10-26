@@ -56,25 +56,25 @@ Now given the coordinates of the cluster's OAuth server in addition to the
 `client_id` and `secret`, we're able to construct an OAuth client in the front-end
 and initiate an "Authorization Code Grant" flow. The gist of this is:
 
-* The browser navigates to the `authorization_endpoint` reported in the meta
-information along with our identifying client information and a requested token scope.
-* Upon successful login with the OAuth server, it redirects the browser back
-to the location that we registered above as the `redirectURI`, along with a
-code value that can then be used to request the final OAuth token.
-* When the UI loads at the requested callback location, we use the server provided
-code to construct a new oauth client so we can make our final token request. **This
-is an AJAX request against the OAuth server's token endpoint**
-* Once this token is retrieved, it is persisted in localStorage, and the user
-is redirected back to '/' with their login flow complete.
+- The browser navigates to the `authorization_endpoint` reported in the meta
+  information along with our identifying client information and a requested token scope.
+- Upon successful login with the OAuth server, it redirects the browser back
+  to the location that we registered above as the `redirectURI`, along with a
+  code value that can then be used to request the final OAuth token.
+- When the UI loads at the requested callback location, we use the server provided
+  code to construct a new oauth client so we can make our final token request. **This
+  is an AJAX request against the OAuth server's token endpoint**
+- Once this token is retrieved, it is persisted in localStorage, and the user
+  is redirected back to '/' with their login flow complete.
 
 ### CORS concerns
 
 Under a real deployment scenario where the UI is served out of the cluster
 behind its own route, there are 3 distinct origins at play:
 
-* The UI - (Ex: https://mig-ui-mig.apps.examplecluster.com)
-* The OAuth Server - (Ex: https://openshift-authentication-openshift-authentication.apps.examplecluster.com)
-* The API Server - (Ex: https://api.examplecluster.com:6443)
+- The UI - (Ex: https://mig-ui-mig.apps.examplecluster.com)
+- The OAuth Server - (Ex: https://openshift-authentication-openshift-authentication.apps.examplecluster.com)
+- The API Server - (Ex: https://api.examplecluster.com:6443)
 
 When the UI is served to the browser through it's route, the browser recognizes
 its origin, and **blocks AJAX requests to alternative origins**. This is called
