@@ -73,7 +73,7 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
   };
-  status?: IStatus;
+  status?: IMigrationStatus;
   tableStatus?: {
     copied: number;
     end: string;
@@ -87,6 +87,25 @@ export interface IMigration {
     start: string;
     stepName: string;
   };
+}
+
+export interface IMigrationStatus extends IStatus {
+  observedDigest: string;
+  startTimestamp: string;
+  phase: string;
+  pipeline: IStep[];
+  itenerary?: string;
+  errors?: string[];
+}
+
+export interface IStep {
+  message: string;
+  name: string;
+  phase?: string;
+  started?: string;
+  completed: string;
+  failed?: boolean;
+  progress?: string[];
 }
 
 export interface IStatus {
