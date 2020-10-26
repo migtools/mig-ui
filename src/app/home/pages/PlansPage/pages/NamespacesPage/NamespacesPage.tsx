@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import React from 'react';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
@@ -15,10 +15,13 @@ import {
   TextContent,
   TextVariants,
   Text,
+  Grid,
+  GridItem,
+  Breadcrumb,
+  BreadcrumbItem,
 } from '@patternfly/react-core';
 import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
-import { usePlansContext } from '../../context';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import moment from 'moment';
@@ -58,6 +61,21 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
           Namespaces page
         </Title>
       </PageSection>
+      <PageSection>
+        <Grid hasGutter>
+          <GridItem>
+            <Breadcrumb>
+              <BreadcrumbItem>
+                <Link to="/plans">Plans</Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem to="#" isActive>
+                {planName}
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </GridItem>
+        </Grid>
+      </PageSection>
+
       <PageSection>
         {error ? (
           <Alert variant="danger" title={`Error loading debug data for plan "${planName}"`}>
