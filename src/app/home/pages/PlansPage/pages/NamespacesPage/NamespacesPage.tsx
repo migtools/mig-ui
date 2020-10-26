@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
@@ -12,21 +12,35 @@ import {
   Button,
   Flex,
   FlexItem,
+  TextContent,
+  TextVariants,
+  Text,
 } from '@patternfly/react-core';
-import { push } from 'connected-react-router';
 import { IReduxState } from '../../../../../../reducers';
-import { IMigPlan } from '../../../../../plan/duck/types';
+import { IPlan } from '../../../../../plan/duck/types';
+import { usePlansContext } from '../../context';
+import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import AnalyticsTable from '../../components/AnalyticsTable';
+import moment from 'moment';
 
 interface INamespacesPageProps {
-  planList: IMigPlan[];
+  planList: IPlan[];
   refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
 }
 
-const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
+const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   planList,
-  addPlanDisabledObj,
+  isRefreshingAnalytic,
+  refreshAnalyticRequest,
 }: INamespacesPageProps) => {
+  const { planName } = useParams();
+  const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
+  const history = useHistory();
+  if (!plan) {
+    history.push('/');
+    return null;
+  }
   const isLoadingAnalytic: boolean =
     // initial loading state to show when a miganalytic is first started or updated.
     !!(plan?.PlanStatus?.analyticPercentComplete !== 100 && plan.PlanStatus.latestAnalytic) ||
@@ -36,60 +50,20 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
     isRefreshingAnalytic;
 
   const noMigAnlyticFound: boolean = plan?.Analytics?.length === 0;
-
-  const { planName } = useParams();
-
-  const refreshDebugTree = () => {
-    fetchDebugTree(planName);
-  };
-
-  useEffect(() => {
-    refreshDebugTree();
-  }, []);
-
-  const viewRawDebugObject = (node: IDebugTreeNode) => {
-    routeRawDebugObject(node.objectLink);
-  };
-
-  const [searchText, setSearchText] = useState('');
-
-  const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
-    items
-      .map((item) => {
-        const nameMatches = (item.name as string).toLowerCase().includes(searchText.toLowerCase());
-        if (!item.children) {
-          return nameMatches ? item : null;
-        }
-        const filteredChildren = filterSubtree(item.children);
-        if (filteredChildren.length > 0) {
-          return {
-            ...item,
-            children: filteredChildren,
-          };
-        }
-        return null;
-      })
-      .filter((item) => !!item) as TreeViewDataItem[];
-
-  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, viewRawDebugObject);
-  let filteredTreeData = treeData;
-  if (searchText && treeData) {
-    filteredTreeData = filterSubtree(treeData);
-  }
-
+  const error = null;
   return (
     <>
       <PageSection variant="light">
         <Title headingLevel="h1" size="2xl">
-          Migration plan resources (DEBUG)
+          Namespaces page
         </Title>
       </PageSection>
       <PageSection>
-        {debug.errMsg ? (
+        {error ? (
           <Alert variant="danger" title={`Error loading debug data for plan "${planName}"`}>
-            <p>{debug.errMsg}</p>
+            {/* <p>{errMsg}</p> */}
           </Alert>
-        ) : debug.isLoading ? (
+        ) : isLoadingAnalytic ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -102,7 +76,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
           </Bullseye>
         ) : (
           <>
-            <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
+            <Flex className={`${spacing.myMd}`}>
               <FlexItem>
                 <Button
                   id="add-plan-btn"
@@ -142,6 +116,13 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   );
 };
 
-export const PlanDebugPage = connect((state: IReduxState) => ({
-  planList: state.plan.migPlanList,
-}))(NamespacesPage);
+export const NamespacesPage = connect(
+  (state: IReduxState) => ({
+    isRefreshingAnalytic: state.plan.isRefreshingAnalytic,
+    planList: planSelectors.getPlansWithStatus(state),
+  }),
+  (dispatch) => ({
+    refreshAnalyticRequest: (analyticName: string) =>
+      dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
+  })
+)(BaseNamespacesPage);
