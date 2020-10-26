@@ -1,8 +1,7 @@
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  OutlinedCircleIcon,
-} from '@patternfly/react-icons';
+import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
+import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
+import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-circle-icon';
+
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
 import { Spinner, Flex, FlexItem } from '@patternfly/react-core';

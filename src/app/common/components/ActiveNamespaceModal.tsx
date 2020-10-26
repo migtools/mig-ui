@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Modal, Button, Title, BaseSizes, TextContent, Text, Form } from '@patternfly/react-core';
-import { CogIcon } from '@patternfly/react-icons';
+import CogIcon from '@patternfly/react-icons/dist/js/icons/cog-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AuthActions } from '../../auth/duck/actions';
 import { ClusterActions } from '../../cluster/duck/actions';

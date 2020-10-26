@@ -13,12 +13,10 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import alignment from '@patternfly/react-styles/css/utilities/Alignment/alignment';
-import {
-  IconSize,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-} from '@patternfly/react-icons';
+import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
+import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+
 const styles = require('./ResultsStep.module');
 
 interface IConditionsGridProps {
@@ -39,17 +37,17 @@ const ConditionsGrid: React.FunctionComponent<IConditionsGridProps> = ({
         <GridItem span={1} className={alignment.textAlignRight}>
           {condition.type === 'Ready' && (
             <span className="pf-c-icon pf-m-success">
-              <CheckCircleIcon size={IconSize.sm} />
+              <CheckCircleIcon size={'sm'} />
             </span>
           )}
           {condition.type === 'Warn' && (
             <span className="pf-c-icon pf-m-warning">
-              <ExclamationTriangleIcon size={IconSize.sm} />
+              <ExclamationTriangleIcon size={'sm'} />
             </span>
           )}
           {condition.type === 'Error' && (
             <span className="pf-c-icon pf-m-danger">
-              <ExclamationCircleIcon size={IconSize.sm} />
+              <ExclamationCircleIcon size={'sm'} />
             </span>
           )}
         </GridItem>
@@ -65,7 +63,7 @@ const ConditionsGrid: React.FunctionComponent<IConditionsGridProps> = ({
                     <Flex>
                       <FlexItem>
                         <span className="pf-c-icon pf-m-warning">
-                          <ExclamationTriangleIcon size={IconSize.sm} />
+                          <ExclamationTriangleIcon size={'sm'} />
                         </span>
                       </FlexItem>
                       <FlexItem>

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Modal, Button, Grid, GridItem, Title, BaseSizes } from '@patternfly/react-core';
-import { ErrorCircleOIcon } from '@patternfly/react-icons';
+import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';

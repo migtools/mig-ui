@@ -1,11 +1,11 @@
 import React from 'react';
-import {
-  OutlinedCircleIcon,
-  ResourcesAlmostEmptyIcon,
-  ResourcesFullIcon,
-  WarningTriangleIcon,
-  ExclamationCircleIcon,
-} from '@patternfly/react-icons';
+
+import WarningTriangleIcon from '@patternfly/react-icons/dist/js/icons/warning-triangle-icon';
+import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-circle-icon';
+import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
+import ResourcesAlmostEmptyIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-empty-icon';
+import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
+
 import { Popover, PopoverPosition } from '@patternfly/react-core';
 
 import { Spinner } from '@patternfly/react-core';

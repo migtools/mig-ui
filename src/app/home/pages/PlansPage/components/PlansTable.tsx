@@ -12,15 +12,14 @@ import {
   Flex,
   FlexItem,
   TextVariants,
-  PopoverPosition,
-  Popover,
-  Spinner,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
 import { compoundExpand, Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
-import { MigrationIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
+
 import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';

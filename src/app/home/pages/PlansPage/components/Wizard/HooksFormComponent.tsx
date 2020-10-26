@@ -17,7 +17,7 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
-import { QuestionCircleIcon } from '@patternfly/react-icons';
+import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import SimpleSelect from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
 const classNames = require('classnames');

@@ -9,7 +9,7 @@ import {
   FlexItem,
   Spinner,
 } from '@patternfly/react-core';
-import { CheckIcon } from '@patternfly/react-icons';
+import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flexStyles from '@patternfly/react-styles/css/layouts/Flex/flex';
 import SimpleSelect, {

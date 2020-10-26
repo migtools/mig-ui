@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { KubeResource } from '../resources';
 import { MigResource, MigResourceKind } from '../resources/mig';
 
