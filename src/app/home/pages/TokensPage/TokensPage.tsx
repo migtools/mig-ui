@@ -13,7 +13,8 @@ import {
   Title,
   Spinner,
 } from '@patternfly/react-core';
-import { WrenchIcon, AddCircleOIcon } from '@patternfly/react-icons';
+import WrenchIcon from '@patternfly/react-icons/dist/js/icons/wrench-icon';
+import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import TokensTable from './components/TokensTable';

@@ -28,7 +28,9 @@
     "test": "yarn test:unit",
     "ci": "yarn lint && yarn test && yarn build",
     "mocks": "node scripts/gather-mocked-data.js",
-    "mocks:prune": "node scripts/gather-mocked-data.js prune"
+    "mocks:prune": "node scripts/gather-mocked-data.js prune",
+    "build:bundle-profile": "webpack --config config/webpack.prod.js --profile --json > stats.json",
+    "bundle-profile:analyze": "yarn build:bundle-profile && webpack-bundle-analyzer ./stats.json"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.0",
@@ -40,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
     "clean-webpack-plugin": "^2.0.1",
+    "compression": "^1.7.4",
     "concurrently": "^5.2.0",
     "css-loader": "^2.1.1",
     "eslint": "^6.8.0",
@@ -67,7 +70,7 @@
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.5",
     "webpack": "^4.29.6",
-    "webpack-bundle-analyzer": "^3.3.2",
+    "webpack-bundle-analyzer": "^3.9.0",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1"
   },
@@ -87,7 +90,7 @@
     "formik": "^2.1.4",
     "history": "^4.9.0",
     "jszip": "^3.2.2",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
     "q": "^1.5.1",

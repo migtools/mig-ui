@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { CogIcon, UserIcon } from '@patternfly/react-icons';
+import CogIcon from '@patternfly/react-icons/dist/js/icons/cog-icon';
+import UserIcon from '@patternfly/react-icons/dist/js/icons/user-icon';
 import logoKonveyor from './logoKonveyor.svg';
 import logoRedHat from './logoRedHat.svg';
 import IconWithText from './IconWithText';

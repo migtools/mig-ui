@@ -32,7 +32,6 @@ import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import _ from 'lodash';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 import { IReduxState } from '../../../reducers';
 import Q from 'q';

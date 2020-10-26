@@ -12,7 +12,8 @@ import {
   Title,
   EmptyStateBody,
 } from '@patternfly/react-core';
-import { ExclamationTriangleIcon } from '@patternfly/react-icons';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+
 import { PollingContext } from '../../../duck/context';
 
 interface IProps {

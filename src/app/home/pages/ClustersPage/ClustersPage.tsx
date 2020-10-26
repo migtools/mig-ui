@@ -14,7 +14,8 @@ import {
   Spinner,
   EmptyStateBody,
 } from '@patternfly/react-core';
-import { AddCircleOIcon, SearchIcon } from '@patternfly/react-icons';
+import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
+import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';

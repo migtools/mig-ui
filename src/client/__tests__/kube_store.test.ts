@@ -1,6 +1,6 @@
-import _ from 'lodash';
 import { KubeStore, LocalStorageMockedDataKey } from '../kube_store';
 import { MigResource, MigResourceKind } from '../resources';
+import { isEqual } from 'lodash';
 
 const examplePlan = {
   apiVersion: 'migration.openshift.io/v1alpha1',
@@ -57,7 +57,7 @@ test('Test NamespacedResource setResource', () => {
     JSON.stringify({ clusters: { [hostCluster]: {} } })
   );
   store.setResource(migResource, planName, examplePlan);
-  expect(_.isEqual(JSON.stringify(expected), localStorage.getItem(LocalStorageMockedDataKey))).toBe(
+  expect(isEqual(JSON.stringify(expected), localStorage.getItem(LocalStorageMockedDataKey))).toBe(
     true
   );
   localStorage.clear();
