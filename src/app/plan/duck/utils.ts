@@ -26,7 +26,7 @@ function groupPlans(migPlans: any[], migMigrationRefs: any[], migAnalyticRefs: a
 }
 const groupPlan: any = (plan, response) => {
   const fullPlan = {
-    MigPlan: plan.MigPlan,
+    ...plan.MigPlan,
   };
   if (response.data.items.length > 0) {
     const sortMigrations = (migrationList) =>
