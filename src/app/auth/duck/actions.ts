@@ -2,18 +2,17 @@ import { ILoginParams, IMigMeta } from './types';
 import { IAuthReducerState } from './reducers';
 
 export const AuthActionTypes = {
-  FETCH_TOKEN: 'FETCH_TOKEN',
+  STORE_LOGIN_TOKEN: 'STORE_LOGIN_TOKEN',
   FETCH_TENANT_NAMESPACES: 'FETCH_TENANT_NAMESPACES',
   FETCH_TENANT_NAMESPACES_SUCCESS: 'FETCH_TENANT_NAMESPACES_SUCCESS',
   LOGOUT_USER_REQUEST: 'LOGOUT_USER_REQUEST',
   INIT_FROM_STORAGE: 'INIT_FROM_STORAGE',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
   LOGIN_FAILURE: 'LOGIN_FAILURE',
-  SET_OAUTH_META: 'SET_OAUTH_META',
   SET_IS_ADMIN: 'SET_IS_ADMIN',
-  FETCH_OAUTH_META: 'FETCH_OAUTH_META',
   FETCH_IS_ADMIN: 'FETCH_IS_ADMIN',
   CERT_ERROR_OCCURRED: 'CERT_ERROR_OCCURRED',
+  AUTH_ERROR_OCCURRED: 'AUTH_ERROR_OCCURRED',
   SET_WELCOME_SCREEN_BOOL: 'SET_WELCOME_SCREEN_BOOL',
   CHECK_ACTIVE_NAMESPACE: 'CHECK_ACTIVE_NAMESPACE',
   CHECK_HAS_LOGGED_IN: 'CHECK_HAS_LOGGED_IN',
@@ -34,11 +33,6 @@ const logoutUserRequest = () => ({
   type: AuthActionTypes.LOGOUT_USER_REQUEST,
 });
 
-const fetchOauthMeta = (clusterApi: string) => ({
-  type: AuthActionTypes.FETCH_OAUTH_META,
-  clusterApi,
-});
-
 const fetchIsAdmin = () => ({
   type: AuthActionTypes.FETCH_IS_ADMIN,
 });
@@ -54,11 +48,6 @@ const fetchTenantNamespacesSuccess = (
   tenantNamespaceList,
 });
 
-const setOauthMeta = (oauthMeta: string) => ({
-  type: AuthActionTypes.SET_OAUTH_META,
-  oauthMeta,
-});
-
 const initFromStorage = () => ({
   type: AuthActionTypes.INIT_FROM_STORAGE,
 });
@@ -68,10 +57,14 @@ const certErrorOccurred = (failedUrl: string) => ({
   failedUrl,
 });
 
-const fetchToken = (oauthClient: any, coreRedirect: any) => ({
-  type: AuthActionTypes.FETCH_TOKEN,
-  oauthClient,
-  coreRedirect,
+const authErrorOccurred = (authError: string) => ({
+  type: AuthActionTypes.AUTH_ERROR_OCCURRED,
+  authError,
+});
+
+const storeLoginToken = (user: any) => ({
+  type: AuthActionTypes.STORE_LOGIN_TOKEN,
+  user,
 });
 
 const setIsAdmin = (hasAdmin: boolean) => ({
@@ -107,9 +100,8 @@ export const AuthActions = {
   initFromStorage,
   loginSuccess,
   loginFailure,
-  setOauthMeta,
-  fetchOauthMeta,
-  fetchToken,
+  storeLoginToken,
+  authErrorOccurred,
   certErrorOccurred,
   setIsAdmin,
   fetchTenantNamespaces,
