@@ -40,7 +40,7 @@ import {
   FilterToolbar,
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import { IMigClusterStorageClass } from '../../../../../cluster/duck/types';
+import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
 import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
 
 interface ICopyOptionsTableProps
@@ -52,7 +52,7 @@ interface ICopyOptionsTableProps
       | 'pvVerifyFlagAssignment'
       | 'pvCopyMethodAssignment'
     > {
-  storageClasses: IMigClusterStorageClass[];
+  storageClasses: IMigPlanStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
   onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
@@ -64,7 +64,7 @@ enum VerifyWarningState {
   Dismissed = 'Dismissed',
 }
 
-const storageClassToString = (storageClass: IMigClusterStorageClass) =>
+const storageClassToString = (storageClass: IMigPlanStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
 const copyMethodToString = (copyMethod: PvCopyMethod) => {
