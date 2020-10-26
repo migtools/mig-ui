@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
@@ -65,7 +66,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     {
       title: 'Namespaces',
       transforms: [sortable],
-      cellTransforms: [compoundExpand],
     },
     { title: 'Last state', transforms: [sortable] },
     '',
@@ -144,25 +144,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  <img
-                    key="namespace-icon"
-                    src={namespacesIcon}
-                    className={styles.namespacesIcon}
-                  />
-                  <span key="ns-count-container" className={styles.namespaceCount}>
-                    {namespaceCount}
-                  </span>
-                  {isMaxResourcesLimitReached && (
-                    <span className="pf-c-icon pf-m-warning" key="icon-container">
-                      <ExclamationTriangleIcon key="warning-icon" />
+                  <Link to={`/plans/${plan.MigPlan.metadata.name}`}>
+                    <img
+                      key="namespace-icon"
+                      src={namespacesIcon}
+                      className={styles.namespacesIcon}
+                    />
+                    <span key="ns-count-container" className={styles.namespaceCount}>
+                      {namespaceCount}
                     </span>
-                  )}
+                    {isMaxResourcesLimitReached && (
+                      <span className="pf-c-icon pf-m-warning" key="icon-container">
+                        <ExclamationTriangleIcon key="warning-icon" />
+                      </span>
+                    )}
+                  </Link>
                 </>
               ),
-              props: {
-                isOpen: expandedCells[planName] === 5,
-                ariaControls: 'namespace-report-expansion-table',
-              },
             },
             {
               title: <PlanStatus plan={plan} />,
@@ -186,53 +184,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                     type="Migrations"
                     migrations={plan.Migrations}
                     isPlanLocked={plan.PlanStatus.isPlanLocked}
-                    id="migrations-history-expansion-table"
-                  />
-                </>
-              ),
-              props: { colSpan: 9, className: 'pf-m-no-padding' },
-            },
-          ],
-        },
-        {
-          parent: planIndex * 3, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
-          compoundParent: 5,
-          cells: [
-            {
-              title: (
-                <>
-                  <Flex className={`${spacing.mlXl} ${spacing.plXl} ${spacing.myMd}`}>
-                    <FlexItem>
-                      <Button
-                        id="add-plan-btn"
-                        onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                        isDisabled={isLoadingAnalytic}
-                        variant="secondary"
-                      >
-                        Refresh
-                      </Button>
-                    </FlexItem>
-                    <FlexItem>
-                      <TextContent>
-                        {!isLoadingAnalytic && (
-                          <Text component={TextVariants.small}>
-                            Last updated:{` `}
-                            {dayjs(plan.PlanStatus.latestAnalyticTransitionTime).isValid &&
-                              dayjs(plan.PlanStatus.latestAnalyticTransitionTime).format(
-                                'YYYY-MM-DD HH:mm:ss'
-                              )}
-                          </Text>
-                        )}
-                      </TextContent>
-                    </FlexItem>
-                  </Flex>
-                  <AnalyticsTable
-                    type="Migrations"
-                    analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
-                    latestAnalytic={plan.PlanStatus.latestAnalytic}
-                    migAnalytics={plan.Analytics}
-                    isPlanLocked={plan.PlanStatus.isPlanLocked}
-                    isRefreshingAnalytic={isRefreshingAnalytic}
                     id="migrations-history-expansion-table"
                   />
                 </>

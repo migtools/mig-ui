@@ -207,6 +207,11 @@ const AppComponent: React.SFC<IProps> = ({
               component={HomeComponent}
               componentProps={{ clusterList }}
             />
+            <PrivateRoute
+              path="/plans/:planId"
+              isLoggedIn={isLoggedIn}
+              // component={NamespacesPage}
+            />
           </Switch>
         </ConnectedRouter>
       </PollingContext.Provider>
