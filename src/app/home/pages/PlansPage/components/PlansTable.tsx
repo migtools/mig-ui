@@ -218,9 +218,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                         {!isLoadingAnalytic && (
                           <Text component={TextVariants.small}>
                             Last updated:{` `}
-                            {moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                              .local()
-                              .format('YYYY-MM-DD HH:mm:ss')}
+                            {moment(plan.PlanStatus.latestAnalyticTransitionTime).isValid &&
+                              moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                                .local()
+                                .format('YYYY-MM-DD HH:mm:ss')}
                           </Text>
                         )}
                       </TextContent>
