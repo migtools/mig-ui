@@ -264,9 +264,6 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem></LevelItem>
-      </Level>
       <Table
         aria-label="migrations-history-table"
         cells={columns}
