@@ -3,11 +3,12 @@ import { Button, Pagination, Level, LevelItem } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
+import { useSortState } from '../../../../common/duck/hooks';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IToken } from '../../../../token/duck/types';
 import { getTokenInfo } from '../helpers';
 import TokenActionsDropdown from './TokenActionsDropdown';
+import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 
 interface ITokensTableProps {
   tokenList: IToken[];

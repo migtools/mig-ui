@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -25,6 +25,7 @@ import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import moment from 'moment';
+import { PollingContext } from '../../../../duck/context';
 
 interface INamespacesPageProps {
   planList: IPlan[];
@@ -57,31 +58,20 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   return (
     <>
       <PageSection variant="light">
+        <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
+          <BreadcrumbItem>
+            <Link to="/plans">Plans</Link>
+          </BreadcrumbItem>
+          <BreadcrumbItem to="#" isActive>
+            {planName}
+          </BreadcrumbItem>
+        </Breadcrumb>
         <Title headingLevel="h1" size="2xl">
           Namespaces page
         </Title>
       </PageSection>
       <PageSection>
-        <Grid hasGutter>
-          <GridItem>
-            <Breadcrumb>
-              <BreadcrumbItem>
-                <Link to="/plans">Plans</Link>
-              </BreadcrumbItem>
-              <BreadcrumbItem to="#" isActive>
-                {planName}
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </GridItem>
-        </Grid>
-      </PageSection>
-
-      <PageSection>
-        {error ? (
-          <Alert variant="danger" title={`Error loading debug data for plan "${planName}"`}>
-            {/* <p>{errMsg}</p> */}
-          </Alert>
-        ) : isLoadingAnalytic ? (
+        {isLoadingAnalytic ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">

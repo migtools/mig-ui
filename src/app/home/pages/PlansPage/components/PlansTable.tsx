@@ -25,11 +25,12 @@ import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
 import MigrationsTable from './MigrationsTable';
 import AnalyticsTable from './AnalyticsTable';
-import { useSortState, usePaginationState } from '../../../../common/duck/hooks';
+import { useSortState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
+import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 const styles = require('./PlansTable.module');
 
 interface IPlansTableProps {
