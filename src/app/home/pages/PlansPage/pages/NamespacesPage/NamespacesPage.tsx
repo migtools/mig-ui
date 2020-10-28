@@ -19,6 +19,8 @@ import {
   GridItem,
   Breadcrumb,
   BreadcrumbItem,
+  Card,
+  CardBody,
 } from '@patternfly/react-core';
 import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
@@ -84,39 +86,43 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
           </Bullseye>
         ) : (
           <>
-            <Flex className={`${spacing.myMd}`}>
-              <FlexItem>
-                <Button
-                  id="add-plan-btn"
-                  onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                  isDisabled={isLoadingAnalytic}
-                  variant="secondary"
-                >
-                  Refresh
-                </Button>
-              </FlexItem>
-              <FlexItem>
-                <TextContent>
-                  {!isLoadingAnalytic && (
-                    <Text component={TextVariants.small}>
-                      Last updated:{` `}
-                      {moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm:ss')}
-                    </Text>
-                  )}
-                </TextContent>
-              </FlexItem>
-            </Flex>
-            <AnalyticsTable
-              type="Migrations"
-              analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
-              latestAnalytic={plan.PlanStatus.latestAnalytic}
-              migAnalytics={plan.Analytics}
-              isPlanLocked={plan.PlanStatus.isPlanLocked}
-              isRefreshingAnalytic={isRefreshingAnalytic}
-              id="migrations-history-expansion-table"
-            />
+            <Card>
+              <CardBody>
+                <Flex className={`${spacing.myMd}`}>
+                  <FlexItem>
+                    <Button
+                      id="add-plan-btn"
+                      onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
+                      isDisabled={isLoadingAnalytic}
+                      variant="secondary"
+                    >
+                      Refresh
+                    </Button>
+                  </FlexItem>
+                  <FlexItem>
+                    <TextContent>
+                      {!isLoadingAnalytic && (
+                        <Text component={TextVariants.small}>
+                          Last updated:{` `}
+                          {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                            .local()
+                            .format('YYYY-MM-DD HH:mm:ss')}
+                        </Text>
+                      )}
+                    </TextContent>
+                  </FlexItem>
+                </Flex>
+                <AnalyticsTable
+                  type="Migrations"
+                  analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
+                  latestAnalytic={plan.PlanStatus.latestAnalytic}
+                  migAnalytics={plan.Analytics}
+                  isPlanLocked={plan.PlanStatus.isPlanLocked}
+                  isRefreshingAnalytic={isRefreshingAnalytic}
+                  id="migrations-history-expansion-table"
+                />
+              </CardBody>
+            </Card>
           </>
         )}
       </PageSection>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IRow, Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { IRow, Table, TableBody, TableHeader, sortable } from '@patternfly/react-table';
 import {
   Button,
   Bullseye,
@@ -69,12 +69,12 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   }, [analyticPercentComplete, latestAnalytic, isRefreshingAnalytic]);
 
   const columns = [
-    { title: 'Namespace' },
-    { title: 'Kubernetes resources' },
-    { title: 'PVCs' },
-    { title: 'PVC capacity' },
-    { title: 'Images' },
-    { title: 'Image size' },
+    { title: 'Namespace', transforms: [sortable] },
+    { title: 'Kubernetes resources', transforms: [sortable] },
+    { title: 'PVCs', transforms: [sortable] },
+    { title: 'PVC capacity', transforms: [sortable] },
+    { title: 'Images', transforms: [sortable] },
+    { title: 'Image size', transforms: [sortable] },
     { title: '' },
   ];
 
@@ -264,16 +264,23 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
 
   return (
     <>
+      <Level>
+        <LevelItem />
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+        </LevelItem>
+      </Level>
       <Table
-        aria-label="migrations-history-table"
+        aria-label="migration-analytics-table"
         cells={columns}
         rows={rows}
-        className={styles.customTableStyle}
         onSort={onSort}
+        className={`${spacing.mtMd}`}
       >
         <TableHeader />
         <TableBody />
       </Table>
+
       <Pagination variant="bottom" {...paginationProps} widgetId="providers-table-pagination-top" />
     </>
   );
