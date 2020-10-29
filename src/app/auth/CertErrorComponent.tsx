@@ -18,8 +18,8 @@ class CertErrorComponent extends React.Component<any> {
             one of the clusters. Navigate to the following URL and accept the certificate:
             <a href={this.props.certError.failedUrl}> {this.props.certError.failedUrl}</a>
             <div />
-            If an "Unauthorized" message appears after you have accepted the certificate, refresh
-            the web page.
+            If an "Unauthorized" message appears after you have accepted the certificate, navigate
+            to the MTC console and refresh the page.
             <div />
             To fix this issue permanently, add the certificate to your web browser's trust store.
           </div>
