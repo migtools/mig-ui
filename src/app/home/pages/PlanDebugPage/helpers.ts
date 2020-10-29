@@ -6,6 +6,14 @@ export const getFullKindName = (kind: any) => {
       return 'migmigration';
     case 'Plan':
       return 'migplan';
+    case 'Backup':
+      return 'backup';
+    case 'PodVolumeBackup':
+      return 'podvolumebackup';
+    case 'PodVolumeRestore':
+      return 'podvolumerestore';
+    case 'Restore':
+      return 'restore';
     default:
       return kind;
   }
