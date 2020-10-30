@@ -15,7 +15,7 @@ interface ITreeActionsDropdownProps {
 const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = ({
   rawNode,
   viewRawDebugObject,
-  copiedToClipboard
+  copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
@@ -24,7 +24,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const {ocCommand, clusterType} = getOCCommandAndClusterType(rawNode)
+    const { ocCommand, clusterType } = getOCCommandAndClusterType(rawNode);
     setClusterType(clusterType);
     el.value = ocCommand;
     clipboard.appendChild(el);
@@ -34,9 +34,8 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     copiedToClipboard(
       `Copied to clipboard! Run the oc get command on 
       ${clusterType} cluster to view resource details.`
-    )
+    );
   };
-
 
   return (
     <Dropdown
@@ -52,13 +51,13 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
             onCopy(event);
           }}
         >
-            <span>
-              Copy
-              <pre className={spacing.mxSm} style={{ display: 'inline' }}>
-                oc get
-              </pre>
-              command
-            </span>
+          <span>
+            Copy
+            <pre className={spacing.mxSm} style={{ display: 'inline' }}>
+              oc get
+            </pre>
+            command
+          </span>
         </DropdownItem>,
         <DropdownItem
           key="view-raw"
@@ -75,12 +74,10 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
 };
 
 export default connect(
-  (state) => {
-    return {
-    };
-  },
+  // (state) => {
+  //   return {};
+  // },
   (dispatch) => ({
     copiedToClipboard: (text) => dispatch(AlertActions.alertSuccess(text)),
   })
 )(TreeActionsDropdown);
-

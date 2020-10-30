@@ -18,7 +18,7 @@ export const getFullKindName = (kind: any) => {
       return kind;
   }
 };
-interface ICommandAndTypeObj{
+interface ICommandAndTypeObj {
   ocCommand: string;
   clusterType: string;
 }
@@ -59,6 +59,6 @@ export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAnd
       return {
         ocCommand: `Failed to copy command!`,
         clusterType: '',
+      };
   }
 };
-}
