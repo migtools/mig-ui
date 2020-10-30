@@ -74,9 +74,9 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
 };
 
 export default connect(
-  // (state) => {
-  //   return {};
-  // },
+  () => {
+    return {};
+  },
   (dispatch) => ({
     copiedToClipboard: (text) => dispatch(AlertActions.alertSuccess(text)),
   })
