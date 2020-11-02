@@ -32,7 +32,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     document.execCommand('copy');
     clipboard.removeChild(el);
     copiedToClipboard(
-      `Copied to clipboard! Run the oc get command on 
+      `Command copied to clipboard. Run 'oc get' on 
       ${clusterType} cluster to view resource details.`
     );
   };
