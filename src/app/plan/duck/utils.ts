@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 function groupPlans(migPlans: any[], migMigrationRefs: any[], migAnalyticRefs: any[]): any[] {
   return migPlans.map((mp) => {
@@ -31,9 +31,9 @@ const groupPlan: any = (plan, response) => {
   if (response.data.items.length > 0) {
     const sortMigrations = (migrationList) =>
       migrationList.sort((left, right) => {
-        return moment
+        return dayjs
           .utc(right.metadata.creationTimestamp)
-          .diff(moment.utc(left.metadata.creationTimestamp));
+          .diff(dayjs.utc(left.metadata.creationTimestamp));
       });
 
     const matchingMigrations = response.data.items.filter(
