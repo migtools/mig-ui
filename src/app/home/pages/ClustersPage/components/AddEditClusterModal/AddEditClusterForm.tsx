@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
+import {
+  Button,
+  TextInput,
+  Form,
+  FormGroup,
+  Checkbox,
+  Flex,
+  Popover,
+  PopoverPosition,
+} from '@patternfly/react-core';
 import { withFormik, FormikProps } from 'formik';
 import KeyDisplayToggle from '../../../../../common/components/KeyDisplayToggle';
 import utils from '../../../../../common/duck/utils';
@@ -13,6 +22,7 @@ import {
 import ConnectionStatusLabel from '../../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../../common/components/CertificateUpload';
 import { validatedState } from '../../../../../common/helpers';
+import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -22,6 +32,7 @@ const isAzureKey = 'isAzure';
 const azureResourceGroupKey = 'azureResourceGroup';
 const requireSSLKey = 'requireSSL';
 const caBundleKey = 'caBundle';
+const exposedRegistryPath = 'exposedRegistryPath';
 const componentTypeStr = 'cluster';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
@@ -47,6 +58,9 @@ const valuesHaveUpdate = (values, currentCluster) => {
   const caBundle = currentCluster.MigCluster.spec.caBundle
     ? currentCluster.MigCluster.spec.caBundle
     : '';
+  const exposedRegistryPath = currentCluster.MigCluster.spec.exposedRegistryPath
+    ? currentCluster.MigCluster.spec.exposedRegistryPath
+    : '';
 
   return (
     values.name !== currentCluster.MigCluster.metadata.name ||
@@ -55,7 +69,8 @@ const valuesHaveUpdate = (values, currentCluster) => {
     values.requireSSL !== requireSSL ||
     values.isAzure !== isAzure ||
     values.azureResourceGroup !== azureResourceGroup ||
-    values.caBundle !== caBundle
+    values.caBundle !== caBundle ||
+    values.exposedRegistryPath !== exposedRegistryPath
   );
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
@@ -189,6 +204,36 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         />
       </FormGroup>
       <FormGroup
+        label="Exposed route to image registry"
+        labelIcon={
+          <Popover
+            position={PopoverPosition.top}
+            bodyContent="Include a route to the cluster's image registry if you want to allow direct image migration. 
+            Direct image migration is much faster than two-step image migration that goes through the replication repository. &nbsp;
+            See the product documentation for more information."
+            aria-label="registry-details"
+            closeBtnAriaLabel="close--details"
+            maxWidth="200rem"
+          >
+            <span className="pf-c-icon pf-m-info">
+              <QuestionCircleIcon />
+            </span>
+          </Popover>
+        }
+        fieldId={exposedRegistryPath}
+      >
+        {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+        <TextInput
+          value={values.exposedRegistryPath}
+          onChange={formikHandleChange}
+          onInput={formikSetFieldTouched(exposedRegistryPath)}
+          onBlur={handleBlur}
+          name={exposedRegistryPath}
+          id={exposedRegistryPath}
+        />
+      </FormGroup>
+      <FormGroup
         fieldId={requireSSLKey}
         helperText="Select 'Require SSL verification' to verify SSL connections to the cluster. If you are using a self-signed certificate, you may either disable SSL verification, or upload your certificate bundle."
       >
@@ -202,6 +247,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           id={requireSSLKey}
         />
       </FormGroup>
+
       {values.requireSSL && (
         <FormGroup label="CA bundle file" fieldId={caBundleKey}>
           <CertificateUpload
@@ -216,6 +262,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           />
         </FormGroup>
       )}
+
       <Flex>
         <Button
           variant="primary"
@@ -255,6 +302,7 @@ export interface IFormValues {
   azureResourceGroup?: string;
   requireSSL: boolean;
   caBundle: string;
+  exposedRegistryPath: string;
 }
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -267,7 +315,7 @@ interface IOtherProps {
 
 const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialClusterValues }) => {
-    const values = {
+    const values: IFormValues = {
       name: '',
       url: '',
       token: '',
@@ -275,6 +323,7 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
       azureResourceGroup: '',
       requireSSL: false,
       caBundle: '',
+      exposedRegistryPath: '',
     };
 
     if (initialClusterValues) {
@@ -285,12 +334,13 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
       values.azureResourceGroup = initialClusterValues.clusterAzureResourceGroup || '';
       values.requireSSL = initialClusterValues.clusterRequireSSL;
       values.caBundle = initialClusterValues.clusterCABundle || '';
+      values.exposedRegistryPath = initialClusterValues.exposedRegistryPath || '';
     }
 
     return values;
   },
 
-  validate: (values: any) => {
+  validate: (values: IFormValues) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -311,6 +361,12 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
 
     if (values.isAzure && !values.azureResourceGroup) {
       errors.azureResourceGroup = 'Required';
+    }
+
+    if (!values.exposedRegistryPath) {
+      errors.exposedRegistryPath = 'Required';
+    } else if (!utils.testURL(values.exposedRegistryPath)) {
+      errors.url = 'Not a valid URL';
     }
 
     return errors;

@@ -73,6 +73,7 @@ describe('<AddEditClusterModal />', () => {
         clusterAzureResourceGroup: 'Azure-resource-group',
         clusterRequireSSL: true,
         clusterCABundle: 'V2tWRk9WQlhWVDF6dA==',
+        clusterExposedRegistryPath: '',
       },
       addEditStatus: {
         state: 'ready',
