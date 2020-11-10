@@ -1,33 +1,41 @@
 import React, { useState } from 'react';
-import { Dropdown, KebabToggle, DropdownItem, Tooltip } from '@patternfly/react-core';
+import { connect } from 'react-redux';
+import { Dropdown, KebabToggle, DropdownItem, Tooltip, Alert } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IDebugTreeNode } from '../../../../debug/duck/types';
-import { getFullKindName } from '../helpers';
+import { getOCCommandAndClusterType } from '../helpers';
+import { AlertActions } from '../../../../common/duck/actions';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
   viewRawDebugObject: (node: IDebugTreeNode) => void;
+  copiedToClipboard: (text: string) => void;
 }
 
 const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = ({
   rawNode,
   viewRawDebugObject,
+  copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
+  const [clusterType, setClusterType] = useState('');
 
   const onCopy = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    el.value = `oc get ${getFullKindName(rawNode.kind)} -n ${rawNode.namespace} ${rawNode.name}`;
+    const { ocCommand, clusterType } = getOCCommandAndClusterType(rawNode);
+    setClusterType(clusterType);
+    el.value = ocCommand;
     clipboard.appendChild(el);
     el.select();
     document.execCommand('copy');
     clipboard.removeChild(el);
+    copiedToClipboard(
+      `Command copied to clipboard. Run 'oc get' on 
+      ${clusterType} cluster to view resource details.`
+    );
   };
-
-  const regex = RegExp('^Plan|Migration', 'i');
-  const isCopyDisabled = !regex.test(rawNode.kind);
 
   return (
     <Dropdown
@@ -42,23 +50,14 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
             onCopy(event);
           }}
-          isDisabled={isCopyDisabled}
         >
-          <Tooltip
-            trigger="click"
-            exitDelay={100}
-            entryDelay={100}
-            position="top"
-            content={<div>Copied to clipboard!</div>}
-          >
-            <span>
-              Copy
-              <pre className={spacing.mxSm} style={{ display: 'inline' }}>
-                oc get
-              </pre>
-              command
-            </span>
-          </Tooltip>
+          <span>
+            Copy
+            <pre className={spacing.mxSm} style={{ display: 'inline' }}>
+              oc get
+            </pre>
+            command
+          </span>
         </DropdownItem>,
         <DropdownItem
           key="view-raw"
@@ -74,4 +73,11 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   );
 };
 
-export default TreeActionsDropdown;
+export default connect(
+  () => {
+    return {};
+  },
+  (dispatch) => ({
+    copiedToClipboard: (text) => dispatch(AlertActions.alertSuccess(text)),
+  })
+)(TreeActionsDropdown);
