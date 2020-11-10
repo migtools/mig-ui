@@ -16,6 +16,7 @@ import { getTokenInfo } from '../../../TokensPage/helpers';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { isSameResource } from '../../../../../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
+import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 
 const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
@@ -70,7 +71,7 @@ const WizardComponent = (props: IOtherProps) => {
     Namespaces,
     PersistentVolumes,
     StorageClass,
-    MigrationTarget,
+    MigrationOptions,
     Hooks,
     Results,
   }
@@ -176,6 +177,16 @@ const WizardComponent = (props: IOtherProps) => {
             isFetchingPVList={isFetchingPVList}
             clusterList={clusterList}
           />
+        </WizardStepContainer>
+      ),
+      canJumpTo: stepIdReached >= stepId.StorageClass,
+    },
+    {
+      id: stepId.MigrationOptions,
+      name: 'Migration options',
+      component: (
+        <WizardStepContainer title="Migration options">
+          <MigrationOptionsForm currentPlan={currentPlan} clusterList={clusterList} />
         </WizardStepContainer>
       ),
       canJumpTo: stepIdReached >= stepId.StorageClass,

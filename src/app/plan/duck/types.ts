@@ -53,6 +53,8 @@ export interface IMigPlan {
     closed?: boolean;
     refresh?: boolean;
     hooks?: IPlanSpecHook[];
+    indirectImageMigration: boolean;
+    indirectVolumeMigration: boolean;
   };
   status?: IStatus;
 }
