@@ -213,7 +213,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
             See the product documentation for more information."
             aria-label="registry-details"
             closeBtnAriaLabel="close--details"
-            maxWidth="200rem"
+            maxWidth="30rem"
           >
             <span className="pf-c-icon pf-m-info">
               <QuestionCircleIcon />
@@ -221,6 +221,9 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           </Popover>
         }
         fieldId={exposedRegistryPath}
+        helperText="Optional route to the cluster's image registry"
+        helperTextInvalid={touched.exposedRegistryPath && errors.exposedRegistryPath}
+        validated={validatedState(touched.exposedRegistryPath, errors.exposedRegistryPath)}
       >
         {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
@@ -228,9 +231,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           value={values.exposedRegistryPath}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(exposedRegistryPath)}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           name={exposedRegistryPath}
           id={exposedRegistryPath}
+          validated={validatedState(touched.exposedRegistryPath, errors.exposedRegistryPath)}
         />
       </FormGroup>
       <FormGroup
@@ -364,9 +368,9 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
     }
 
     if (!values.exposedRegistryPath) {
-      errors.exposedRegistryPath = 'Required';
+      // errors.exposedRegistryPath = 'Required';
     } else if (!utils.testURL(values.exposedRegistryPath)) {
-      errors.url = 'Not a valid URL';
+      errors.exposedRegistryPath = 'Not a valid URL';
     }
 
     return errors;

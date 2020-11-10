@@ -21,6 +21,7 @@ export const getClusterInfo = (
       !isHostCluster && cluster.Secret.data.saToken ? atob(cluster.Secret.data.saToken) : null,
     clusterRequireSSL: !cluster.MigCluster.spec.insecure,
     clusterCABundle: cluster.MigCluster.spec.caBundle,
+    exposedRegistryPath: cluster.MigCluster.spec.exposedRegistryPath,
     associatedPlanCount: associatedPlans[clusterName],
     isHostCluster,
     clusterIsAzure: !!clusterAzureResourceGroup,

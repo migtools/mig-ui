@@ -73,9 +73,11 @@ export function createMigCluster(
   isAzure: boolean,
   azureResourceGroup: string,
   requireSSL: boolean,
-  caBundle: string
+  caBundle: string,
+  exposedRegistryPath: string
 ) {
   clusterUrl = clusterUrl.trim();
+  exposedRegistryPath = exposedRegistryPath.trim();
 
   let specObject;
   if (isAzure) {
@@ -102,6 +104,9 @@ export function createMigCluster(
   }
   if (caBundle) {
     specObject['caBundle'] = caBundle;
+  }
+  if (exposedRegistryPath) {
+    specObject['exposedRegistryPath'] = exposedRegistryPath;
   }
 
   return {
