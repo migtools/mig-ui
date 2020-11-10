@@ -1,6 +1,6 @@
 const express = require('express');
 const fs = require('fs');
-const moment = require('moment');
+const dayjs = require('dayjs');
 const compression = require('compression');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 
@@ -54,7 +54,7 @@ app.get('/login/callback', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
     const accessToken = await clusterAuth.getToken(options);
-    const currentUnixTime = moment().unix();
+    const currentUnixTime = dayjs().unix();
     const user = {
       ...accessToken.token,
       login_time: currentUnixTime,
