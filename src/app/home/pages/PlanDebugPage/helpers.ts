@@ -57,7 +57,7 @@ export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAnd
       };
     default:
       return {
-        ocCommand: `Failed to copy command!`,
+        ocCommand: `Command was not copied.`,
         clusterType: '',
       };
   }
