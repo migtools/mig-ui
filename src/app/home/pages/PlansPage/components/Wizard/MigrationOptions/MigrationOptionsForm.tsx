@@ -10,14 +10,14 @@ import {
   TextInput,
   Title,
   Text,
+  Label,
+  Popover,
+  PopoverPosition,
 } from '@patternfly/react-core';
 import { useFormikContext } from 'formik';
-import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from '../WizardContainer';
-import { IPlanPersistentVolume } from '../../../../../../plan/duck/types';
-import { AddEditMode } from '../../../../../../common/add_edit_state';
-import { validatedState } from '../../../../../../common/helpers';
-import { TokenFieldKey } from '../../../../../../token/duck/types';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons';
 
 type IMigrationOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan'>;
 
@@ -49,21 +49,55 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   //   }
   // };
 
+  const srcClusterHasRegistryPath = clusterList.find(
+    (cluster) => cluster.MigCluster.metadata.name === values.sourceCluster
+  ).MigCluster?.status?.registryPath;
+  const destClusterHasRegistryPath = clusterList.find(
+    (cluster) => cluster.MigCluster.metadata.name === values.targetCluster
+  ).MigCluster?.status?.registryPath;
+  const isDirectMigrationAvailable = srcClusterHasRegistryPath && destClusterHasRegistryPath;
+  if (isDirectMigrationAvailable && values.indirectImageMigration === null) {
+    setFieldValue('indirectImageMigration', false);
+  }
   return (
     <Form>
       <Flex direction={{ default: 'column' }}>
         <FlexItem>
-          <Title headingLevel="h2" size="md">
+          <Title size="lg" headingLevel="h2" className={spacing.pbSm}>
             Images
           </Title>
+          <Text component="p">
+            Direct image migration
+            {isDirectMigrationAvailable ? (
+              <Label variant="outline" color="green" className={spacing.mxSm}>
+                Available
+              </Label>
+            ) : (
+              <Label variant="outline" className={spacing.mxSm}>
+                Unavailable
+              </Label>
+            )}
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent="Direct image migration bypasses the replication repository and copies images
+              directly from the source cluster to the target cluster. It is much faster than image migration that goes through
+              the replication repository. &nbsp;
+              For direct image migration to be available, exposed routes to the image registry for both clusters must be specified. &nbsp;
+              See the product documentation for more information."
+              aria-label="registry-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className="pf-c-icon pf-m-info">
+                <QuestionCircleIcon />
+              </span>
+            </Popover>
+          </Text>
         </FlexItem>
-        <FlexItem>
-          <Text>Direct image migration</Text>
-        </FlexItem>
+        <FlexItem></FlexItem>
         <FlexItem>
           <FormGroup
             label="Source cluster exposed route to image registry"
-            isRequired
             fieldId={srcExposedRegistryPathKey}
           >
             <TextInput
@@ -76,7 +110,6 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
           </FormGroup>
           <FormGroup
             label="Target cluster exposed route to image registry"
-            isRequired
             fieldId={destExposedRegistryPathKey}
           >
             <TextInput
@@ -87,15 +120,24 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
               isDisabled={true}
             />
           </FormGroup>
-          <FormGroup fieldId={indirectImageMigrationKey}>
+          <FormGroup fieldId={indirectImageMigrationKey} className={spacing.ptSm}>
             <Checkbox
               label="Use direct image migration"
               aria-label="direct image migration checkbox"
               id={indirectImageMigrationKey}
               name={indirectImageMigrationKey}
               isChecked={values.indirectImageMigration}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              isDisabled={!isDirectMigrationAvailable}
+              // isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
+              // isDisabled={!isVerifyCopyAllowed}
+              onChange={(checked) => {
+                setFieldValue('indirectImageMigration', !checked);
+                // onVerifyFlagChange(currentPV, checked);
+                // if (checked && verifyWarningState === VerifyWarningState.Unread) {
+                //   setVerifyWarningState(VerifyWarningState.Open);
+                // }
+              }}
+              // onChange={handleChange}
             />
           </FormGroup>
         </FlexItem>
