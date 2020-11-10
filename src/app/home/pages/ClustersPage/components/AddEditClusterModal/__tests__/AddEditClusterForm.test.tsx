@@ -13,6 +13,16 @@ describe('<AddEditClusterModal />', () => {
         state: 'pending',
         mode: 'add',
       },
+      onAddEditSubmit: () => {
+        return;
+      },
+      handleClose: () => {
+        return;
+      },
+      checkConnection: () => {
+        return;
+      },
+      currentCluster: '',
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -41,6 +51,16 @@ describe('<AddEditClusterModal />', () => {
         state: 'pending',
         mode: 'add',
       },
+      onAddEditSubmit: () => {
+        return;
+      },
+      handleClose: () => {
+        return;
+      },
+      checkConnection: () => {
+        return;
+      },
+      currentCluster: '',
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -81,6 +101,16 @@ describe('<AddEditClusterModal />', () => {
         message: 'The cluster is ready.',
         reason: '',
       },
+      onAddEditSubmit: () => {
+        return;
+      },
+      handleClose: () => {
+        return;
+      },
+      checkConnection: () => {
+        return;
+      },
+      currentCluster: '',
     };
 
     render(<AddEditClusterForm {...props} />);

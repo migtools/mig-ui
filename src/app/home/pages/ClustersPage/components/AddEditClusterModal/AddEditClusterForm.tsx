@@ -9,7 +9,7 @@ import {
   Popover,
   PopoverPosition,
 } from '@patternfly/react-core';
-import { withFormik, FormikProps } from 'formik';
+import { withFormik, FormikProps, FormikErrors } from 'formik';
 import KeyDisplayToggle from '../../../../../common/components/KeyDisplayToggle';
 import utils from '../../../../../common/duck/utils';
 import {
@@ -317,7 +317,7 @@ interface IOtherProps {
   initialClusterValues?: any;
 }
 
-const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
+const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialClusterValues }) => {
     const values: IFormValues = {
       name: '',
@@ -345,7 +345,7 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
   },
 
   validate: (values: IFormValues) => {
-    const errors: any = {};
+    const errors: FormikErrors<IFormValues> = {};
 
     if (!values.name) {
       errors.name = 'Required';
@@ -358,7 +358,6 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
     } else if (!utils.testURL(values.url)) {
       errors.url = 'Not a valid URL';
     }
-
     if (!values.token) {
       errors.token = 'Required';
     }
@@ -368,7 +367,7 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
     }
 
     if (!values.exposedRegistryPath) {
-      // errors.exposedRegistryPath = 'Required';
+      // not required; no validation.
     } else if (!utils.testURL(values.exposedRegistryPath)) {
       errors.exposedRegistryPath = 'Not a valid URL';
     }
@@ -376,7 +375,7 @@ const AddEditClusterForm: any = withFormik<IOtherProps, IFormValues>({
     return errors;
   },
 
-  handleSubmit: (values, formikBag: any) => {
+  handleSubmit: (values, formikBag) => {
     // Formik will set isSubmitting to true, so we need to flip this back off
     formikBag.setSubmitting(false);
     formikBag.props.onAddEditSubmit(values);
