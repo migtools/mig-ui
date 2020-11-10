@@ -4,14 +4,15 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import AddEditClusterForm from '../AddEditClusterForm';
+import { AddEditMode, AddEditState } from '../../../../../../common/add_edit_state';
 
 describe('<AddEditClusterModal />', () => {
   it('allows filling form with valid values', () => {
     const props = {
       isOpen: true,
       addEditStatus: {
-        state: 'pending',
-        mode: 'add',
+        state: AddEditState.Pending,
+        mode: AddEditMode.Add,
       },
       onAddEditSubmit: () => {
         return;
@@ -22,7 +23,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: '',
+      currentCluster: null,
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -48,8 +49,8 @@ describe('<AddEditClusterModal />', () => {
     const props = {
       isOpen: true,
       addEditStatus: {
-        state: 'pending',
-        mode: 'add',
+        state: AddEditState.Pending,
+        mode: AddEditMode.Add,
       },
       onAddEditSubmit: () => {
         return;
@@ -60,7 +61,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: '',
+      currentCluster: null,
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -93,11 +94,14 @@ describe('<AddEditClusterModal />', () => {
         clusterAzureResourceGroup: 'Azure-resource-group',
         clusterRequireSSL: true,
         clusterCABundle: 'V2tWRk9WQlhWVDF6dA==',
-        clusterExposedRegistryPath: '',
+        exposedRegistryPath: '',
+        clusterStatus: true,
+        associatedPlanCount: 0,
+        isHostCluster: false,
       },
       addEditStatus: {
-        state: 'ready',
-        mode: 'edit',
+        state: AddEditState.Ready,
+        mode: AddEditMode.Edit,
         message: 'The cluster is ready.',
         reason: '',
       },
@@ -110,7 +114,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: '',
+      currentCluster: null,
     };
 
     render(<AddEditClusterForm {...props} />);

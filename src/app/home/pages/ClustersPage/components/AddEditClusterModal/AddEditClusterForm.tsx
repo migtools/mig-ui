@@ -18,11 +18,15 @@ import {
   addEditButtonText,
   isAddEditButtonDisabled,
   isCheckConnectionButtonDisabled,
+  IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../../common/components/CertificateUpload';
 import { validatedState } from '../../../../../common/helpers';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
+import { IMigCluster } from '../../../../../../client/resources/conversions';
+import { IClusterInfo } from '../../helpers';
+import { ICluster } from '../../../../../cluster/duck/types';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -309,12 +313,12 @@ export interface IFormValues {
   exposedRegistryPath: string;
 }
 interface IOtherProps {
-  onAddEditSubmit: any;
-  handleClose: any;
-  addEditStatus: any;
-  currentCluster: any;
+  onAddEditSubmit: (values) => void;
+  handleClose: () => void;
+  addEditStatus: IAddEditStatus;
+  currentCluster: ICluster;
   checkConnection: (name) => void;
-  initialClusterValues?: any;
+  initialClusterValues?: IClusterInfo;
 }
 
 const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
