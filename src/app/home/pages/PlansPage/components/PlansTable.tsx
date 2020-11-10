@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {
   TextContent,
   Text,
@@ -217,10 +217,10 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                         {!isLoadingAnalytic && (
                           <Text component={TextVariants.small}>
                             Last updated:{` `}
-                            {moment(plan.PlanStatus.latestAnalyticTransitionTime).isValid &&
-                              moment(plan.PlanStatus.latestAnalyticTransitionTime)
-                                .local()
-                                .format('YYYY-MM-DD HH:mm:ss')}
+                            {dayjs(plan.PlanStatus.latestAnalyticTransitionTime).isValid &&
+                              dayjs(plan.PlanStatus.latestAnalyticTransitionTime).format(
+                                'YYYY-MM-DD HH:mm:ss'
+                              )}
                           </Text>
                         )}
                       </TextContent>

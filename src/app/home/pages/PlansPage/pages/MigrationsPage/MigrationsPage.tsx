@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import dayjs from 'dayjs';
 import {
   PageSection,
   Bullseye,
@@ -26,7 +27,6 @@ import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
-import moment from 'moment';
 import { PollingContext } from '../../../../duck/context';
 
 interface IMigrationsPageProps {
@@ -104,7 +104,7 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
                       {!isLoadingAnalytic && (
                         <Text component={TextVariants.small}>
                           Last updated:{` `}
-                          {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                          {dayjs(plan.PlanStatus.latestAnalyticTransitionTime)
                             .local()
                             .format('YYYY-MM-DD HH:mm:ss')}
                         </Text>

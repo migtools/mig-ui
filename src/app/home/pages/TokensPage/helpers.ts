@@ -1,4 +1,8 @@
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone'; // import plugin
+import utc from 'dayjs/plugin/utc'; // import plugin
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import { IToken } from '../../../token/duck/types';
 import { StatusType } from '@konveyor/lib-ui';
 
@@ -14,17 +18,17 @@ export const getTokenInfo = (token: IToken) => {
     tokenStatus: null,
     statusType: StatusType.Ok,
   };
-
   if (token.MigToken.status?.conditions) {
     const expirationTimestamp = token.MigToken.status.expiresAt;
-    const expirationMoment = expirationTimestamp && moment(expirationTimestamp);
+    dayjs(expirationTimestamp);
+    const expirationMoment = expirationTimestamp && dayjs(expirationTimestamp);
     const formattedExpiration = expirationMoment
-      ? expirationMoment.tz(moment.tz.guess()).format('DD MMM YYYY, hh:mm:ss A z')
+      ? expirationMoment.tz(dayjs.tz.guess()).format('DD MMM YYYY, hh:mm:ss A z')
       : 'Never';
     let statusType = StatusType.Ok;
     let statusText = 'OK';
     if (expirationMoment) {
-      const hoursUntilExpiration = expirationMoment.diff(moment(), 'hours', true);
+      const hoursUntilExpiration = expirationMoment.diff(dayjs(), 'h', true);
       if (hoursUntilExpiration < 0) {
         statusType = StatusType.Error;
         statusText = 'Expired';
