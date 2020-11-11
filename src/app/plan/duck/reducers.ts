@@ -1,5 +1,5 @@
 import { PlanActions, PlanActionTypes } from './actions';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
   defaultAddEditStatus,
@@ -86,15 +86,15 @@ export const INITIAL_STATE: IPlanReducerState = {
 
 const sortPlans = (planList: IPlan[]) =>
   planList.sort((left, right) => {
-    return moment
+    return dayjs
       .utc(right.MigPlan.metadata.creationTimestamp)
-      .diff(moment.utc(left.MigPlan.metadata.creationTimestamp));
+      .diff(dayjs.utc(left.MigPlan.metadata.creationTimestamp));
   });
 const sortMigrations = (migList: IMigration[]) =>
   migList.sort((left, right) => {
-    return moment
+    return dayjs
       .utc(right.metadata.creationTimestamp)
-      .diff(moment.utc(left.metadata.creationTimestamp));
+      .diff(dayjs.utc(left.metadata.creationTimestamp));
   });
 
 export const migPlanFetchRequest: PlanReducerFn = (

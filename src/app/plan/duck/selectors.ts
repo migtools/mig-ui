@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 import {
   filterPlanConditions,
   filterLatestMigrationConditions,
@@ -236,7 +236,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       isCanceling: false,
       migrationState: null,
     };
-    const zone = moment.tz.guess();
+    const zone = dayjs.tz.guess();
 
     if (migration.status?.conditions) {
       const succeededCondition = migration.status.conditions.find((c) => {
@@ -257,7 +257,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       }
 
       if (migration.status.startTimestamp) {
-        status.start = moment
+        status.start = dayjs
           .tz(migration.status.startTimestamp, zone)
           .format(`DD MMM YYYY, h:mm:ss z`);
       }
@@ -266,7 +266,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         .map((c) => c.lastTransitionTime)
         .toString();
       status.end = endTime
-        ? moment.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`)
+        ? dayjs.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`)
         : 'In progress';
 
       if (migration.status.conditions.length) {
