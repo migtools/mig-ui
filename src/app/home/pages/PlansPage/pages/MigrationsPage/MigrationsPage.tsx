@@ -1,13 +1,10 @@
-import React, { useContext, useEffect } from 'react';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import dayjs from 'dayjs';
 import {
   PageSection,
-  Bullseye,
-  EmptyState,
-  Spinner,
   Title,
   Breadcrumb,
   BreadcrumbItem,
@@ -29,9 +26,8 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
 }: IMigrationsPageProps) => {
   const { planName } = useParams();
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
-  const history = useHistory();
+
   if (!plan) {
-    history.push('/');
     return null;
   }
 

@@ -27,7 +27,7 @@ export enum MigrationStepsType {
   StageBackup = 'StageBackup',
   StageRestore = 'StageRestore',
   Restore = 'Restore',
-  Final = 'Final',
+  Cleanup = 'Cleanup',
   //Fake steps to show UI status
   NotStarted = 'NotStarted',
   Error = 'Error',

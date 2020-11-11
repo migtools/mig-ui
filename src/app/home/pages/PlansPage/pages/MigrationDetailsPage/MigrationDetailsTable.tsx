@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableHeader, cellWidth, sortable, IRow } from '@patternfly/react-table';
+import React, { useEffect } from 'react';
+import { Table, TableBody, TableHeader, cellWidth, IRow } from '@patternfly/react-table';
 import {
   Bullseye,
   EmptyState,
   Title,
   Progress,
   ProgressSize,
-  ProgressVariant,
-  Spinner,
   Level,
   LevelItem,
   Pagination,
 } from '@patternfly/react-core';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import dayjs from 'dayjs';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import { useSortState } from '../../../../../common/duck/hooks';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import { getElapsedTime, getProgressValues, IProgressInfoObj } from '../../helpers';
+import {
+  getElapsedTime,
+  getProgressValues,
+  IProgressInfoObj,
+  showConsolidatedProgressBar,
+} from '../../helpers';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
 const styles = require('./MigrationDetailsTable.module');
 
@@ -27,6 +29,7 @@ interface IProps {
 }
 
 const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) => {
+  const { planName } = useParams();
   const columns = [
     { title: 'Step' },
     { title: 'Elapsed time', transforms: [cellWidth(10)] },
@@ -60,39 +63,47 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
         {
           title: step.name,
         },
-
         { title: getElapsedTime(step, migration) },
         {
           title: (
             <>
               <MigrationStepStatusIcon migration={migration} step={step} />
-              {/* {step.phase} */}
               &nbsp;
               {progressInfo.title}
             </>
           ),
         },
         {
-          title: (
-            <>
-              {/* <MigrationStepStatusIcon migration={migration} step={step} /> */}
-              {
-                // progressInfo.title
-                //TODO: Add progress bar when percentage values can be calculated
-                // <Progress
-                //   value={progressInfo.percentComplete}
-                //   title={progressInfo.title}
-                //   size={ProgressSize.sm}
-                //   variant={progressInfo.variant}
-                //   className={progressInfo.isWarning && styles.warnProgressStyle}
-                // />
-              }
-            </>
-          ),
+          title:
+            showConsolidatedProgressBar(step) &&
+            progressInfo.progressBarApplicable &&
+            step.started &&
+            step.progress?.length > 0 ? (
+              <>
+                {
+                  <Progress
+                    value={progressInfo.percentComplete}
+                    title={progressInfo.progressBarMessage}
+                    size={ProgressSize.sm}
+                    variant={progressInfo.variant}
+                    className={progressInfo.isWarning && styles.warnProgressStyle}
+                  />
+                }
+              </>
+            ) : step.progress?.length > 0 ? (
+              <>
+                <Link to={`/plans/${planName}/migrations/${migration.metadata.name}/${step.name}`}>
+                  View Details
+                </Link>
+              </>
+            ) : (
+              ''
+            ),
         },
       ],
     });
   });
+
   if (!migration.status.pipeline) {
     return null;
   }

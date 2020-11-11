@@ -1,46 +1,49 @@
 import React, { useContext, useEffect } from 'react';
-
 import { useParams, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   PageSection,
   Title,
-  Breadcrumb,
   EmptyState,
+  Breadcrumb,
   BreadcrumbItem,
   Card,
   Bullseye,
   Spinner,
   CardBody,
 } from '@patternfly/react-core';
-import { IReduxState } from '../../../../../../reducers';
-import { PollingContext } from '../../../../duck/context';
-import { IMigration, IPlan } from '../../../../../plan/duck/types';
-import { planSelectors } from '../../../../../plan/duck';
-import MigrationDetailsTable from './MigrationDetailsTable';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-interface IMigrationDetailsPageProps {
+import { PollingContext } from '../../../../duck/context';
+import { IReduxState } from '../../../../../../reducers';
+import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
+import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import MigrationStepDetailsTable from './MigrationStepDetailsTable';
+
+interface IMigrationStepDetailsPageProps {
   planList: IPlan[];
   isFetchingInitialPlans: boolean;
 }
 
-const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPageProps> = ({
+const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetailsPageProps> = ({
   planList,
   isFetchingInitialPlans,
-}: IMigrationDetailsPageProps) => {
+}: IMigrationStepDetailsPageProps) => {
   const pollingContext = useContext(PollingContext);
   useEffect(() => {
     pollingContext.startAllDefaultPolling();
   }, []);
 
-  const { planName, migrationID } = useParams();
+  const { planName, migrationID, stepName } = useParams();
 
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
 
-  const type = migration?.spec?.stage ? 'Stage' : 'Migration';
+  const step = migration?.status?.pipeline.find((step: IStep) => step.name === stepName);
+
+  const migrationType = migration?.spec?.stage ? 'Stage' : 'Final';
+
   return (
     <>
       <PageSection variant="light">
@@ -52,24 +55,34 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
             {planName} Migrations
           </BreadcrumbItem>
           {!isFetchingInitialPlans && migration && (
+            <BreadcrumbItem to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
+              {migrationType} Steps
+            </BreadcrumbItem>
+          )}
+          {!isFetchingInitialPlans && step && (
             <BreadcrumbItem to="#" isActive>
-              {type} - {migration.status.startTimestamp}
+              {step.name} - {step.started}
             </BreadcrumbItem>
           )}
         </Breadcrumb>
         <Title headingLevel="h1" size="2xl">
-          Migration Details Page
+          Step Details page
         </Title>
       </PageSection>
-      {!isFetchingInitialPlans && migration && migration.status?.pipeline ? (
+      {!isFetchingInitialPlans && step && migration && (
         <PageSection>
           <Card>
             <CardBody>
-              <MigrationDetailsTable migration={migration} id="migration-details-table" />
+              <MigrationStepDetailsTable
+                step={step}
+                migration={migration}
+                id="migration-details-table"
+              />
             </CardBody>
           </Card>
         </PageSection>
-      ) : (
+      )}
+      {isFetchingInitialPlans && (
         <PageSection>
           <Bullseye>
             <EmptyState variant="large">
@@ -87,7 +100,13 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
   );
 };
 
-export const MigrationDetailsPage = connect((state: IReduxState) => ({
-  planList: planSelectors.getPlansWithStatus(state),
-  isFetchingInitialPlans: state.plan.isFetchingInitialPlans,
-}))(BaseMigrationDetailsPage);
+export const MigrationStepDetailsPage = connect(
+  (state: IReduxState) => ({
+    planList: planSelectors.getPlansWithStatus(state),
+    isFetchingInitialPlans: state.plan.isFetchingInitialPlans,
+  }),
+  (dispatch) => ({
+    refreshAnalyticRequest: (analyticName: string) =>
+      dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
+  })
+)(BaseMigrationStepDetailsPage);
