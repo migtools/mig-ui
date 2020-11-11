@@ -240,7 +240,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           value={values.exposedRegistryPath}
           onChange={formikHandleChange}
           onInput={formikSetFieldTouched(exposedRegistryPath)}
-          // onBlur={handleBlur}
           name={exposedRegistryPath}
           id={exposedRegistryPath}
           validated={validatedState(touched.exposedRegistryPath, errors.exposedRegistryPath)}

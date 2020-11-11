@@ -107,6 +107,7 @@ const WizardComponent = (props: IOtherProps) => {
   const steps = [
     {
       id: stepId.General,
+
       name: 'General',
       component: (
         <WizardStepContainer title="General">
@@ -189,7 +190,7 @@ const WizardComponent = (props: IOtherProps) => {
           <MigrationOptionsForm currentPlan={currentPlan} clusterList={clusterList} />
         </WizardStepContainer>
       ),
-      canJumpTo: stepIdReached >= stepId.StorageClass,
+      canJumpTo: stepIdReached >= stepId.MigrationOptions,
     },
     {
       id: stepId.Hooks,

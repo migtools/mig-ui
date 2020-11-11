@@ -115,8 +115,8 @@ export const defaultInitialValues: IFormValues = {
   pvStorageClassAssignment: {},
   pvVerifyFlagAssignment: {},
   pvCopyMethodAssignment: {},
-  indirectImageMigration: null,
-  indirectVolumeMigration: null,
+  indirectImageMigration: true,
+  indirectVolumeMigration: true,
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
