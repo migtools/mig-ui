@@ -212,9 +212,14 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         labelIcon={
           <Popover
             position={PopoverPosition.top}
-            bodyContent="Include a route to the cluster's image registry if you want to allow direct image migration. 
-            Direct image migration is much faster than two-step image migration that goes through the replication repository. &nbsp;
-            See the product documentation for more information."
+            bodyContent={
+              <>
+                Include a route to the cluster's image registry if you want to allow direct image
+                migration. Direct image migration is much faster than two-step image migration that
+                goes through the replication repository. <br /> <br />
+                See the product documentation for more information.
+              </>
+            }
             aria-label="registry-details"
             closeBtnAriaLabel="close--details"
             maxWidth="30rem"

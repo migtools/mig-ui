@@ -41,24 +41,22 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
     validateForm,
   } = useFormikContext<IFormValues>();
 
-  // const handleStorageChange = (value) => {
-  //   const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
-  //   if (matchingStorage) {
-  //     setFieldValue('selectedStorage', value);
-  //     setFieldTouched('selectedStorage', true, true);
-  //   }
-  // };
-
-  const srcClusterHasRegistryPath = clusterList.find(
+  const srcClusterRegistryPath = clusterList.find(
     (cluster) => cluster.MigCluster.metadata.name === values.sourceCluster
   ).MigCluster?.status?.registryPath;
-  const destClusterHasRegistryPath = clusterList.find(
+  const destClusterRegistryPath = clusterList.find(
     (cluster) => cluster.MigCluster.metadata.name === values.targetCluster
   ).MigCluster?.status?.registryPath;
-  const isDirectMigrationAvailable = srcClusterHasRegistryPath && destClusterHasRegistryPath;
-  if (isDirectMigrationAvailable && values.indirectImageMigration === null) {
+
+  const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
+  if (isDirectImageMigrationAvailable) {
     setFieldValue('indirectImageMigration', false);
   }
+
+  const isDirectVolumeMigrationAvailable = !!currentPlan.spec.persistentVolumes.filter((pv) =>
+    pv.supported.copyMethods.includes('filesystem')
+  ).length;
+
   return (
     <Form>
       <Flex direction={{ default: 'column' }}>
@@ -68,7 +66,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
           </Title>
           <Text component="p">
             Direct image migration
-            {isDirectMigrationAvailable ? (
+            {isDirectImageMigrationAvailable ? (
               <Label variant="outline" color="green" className={spacing.mxSm}>
                 Available
               </Label>
@@ -79,11 +77,19 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
             )}
             <Popover
               position={PopoverPosition.top}
-              bodyContent="Direct image migration bypasses the replication repository and copies images
-              directly from the source cluster to the target cluster. It is much faster than image migration that goes through
-              the replication repository. &nbsp;
-              For direct image migration to be available, exposed routes to the image registry for both clusters must be specified. &nbsp;
-              See the product documentation for more information."
+              bodyContent={
+                <>
+                  Direct image migration bypasses the replication repository and copies images
+                  directly from the source cluster to the target cluster. It is much faster than
+                  image migration that goes through the replication repository.
+                  <br /> <br />
+                  For direct image migration to be available, exposed routes to the image registry
+                  for both clusters must be specified. See the product documentation for more
+                  information.
+                  <br /> <br />
+                  See the product documentation for more information.
+                </>
+              }
               aria-label="registry-details"
               closeBtnAriaLabel="close--details"
               maxWidth="30rem"
@@ -94,50 +100,72 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
             </Popover>
           </Text>
         </FlexItem>
-        <FlexItem></FlexItem>
         <FlexItem>
-          <FormGroup
-            label="Source cluster exposed route to image registry"
-            fieldId={srcExposedRegistryPathKey}
-          >
-            <TextInput
-              // value={clusterList.status.registryPath}
-              name={srcExposedRegistryPathKey}
-              type="text"
-              id={srcExposedRegistryPathKey}
-              isDisabled={true}
-            />
-          </FormGroup>
-          <FormGroup
-            label="Target cluster exposed route to image registry"
-            fieldId={destExposedRegistryPathKey}
-          >
-            <TextInput
-              // value={clusterList.status.registryPath}
-              name={destExposedRegistryPathKey}
-              type="text"
-              id={destExposedRegistryPathKey}
-              isDisabled={true}
-            />
-          </FormGroup>
           <FormGroup fieldId={indirectImageMigrationKey} className={spacing.ptSm}>
             <Checkbox
               label="Use direct image migration"
               aria-label="direct image migration checkbox"
               id={indirectImageMigrationKey}
               name={indirectImageMigrationKey}
-              isChecked={values.indirectImageMigration}
-              isDisabled={!isDirectMigrationAvailable}
-              // isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
-              // isDisabled={!isVerifyCopyAllowed}
+              isChecked={!values.indirectImageMigration}
+              isDisabled={!isDirectImageMigrationAvailable}
               onChange={(checked) => {
-                setFieldValue('indirectImageMigration', !checked);
-                // onVerifyFlagChange(currentPV, checked);
-                // if (checked && verifyWarningState === VerifyWarningState.Unread) {
-                //   setVerifyWarningState(VerifyWarningState.Open);
-                // }
+                setFieldValue('indirectVolumeMigration', !checked);
               }}
-              // onChange={handleChange}
+            />
+          </FormGroup>
+        </FlexItem>
+        <FlexItem>
+          <Title size="lg" headingLevel="h2" className={spacing.pbSm}>
+            Persistent volumes
+          </Title>
+          <Text component="p">
+            Direct image migration
+            {isDirectVolumeMigrationAvailable ? (
+              <Label variant="outline" color="green" className={spacing.mxSm}>
+                Available
+              </Label>
+            ) : (
+              <Label variant="outline" className={spacing.mxSm}>
+                Unavailable
+              </Label>
+            )}
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={
+                <>
+                  Direct volume migration allows filesystem copies to be performed without going
+                  through the replication repository. It is much faster than two-step volume
+                  migration, but it is only available for filesystem copies - not moves or snapshot
+                  copies. <br /> <br />
+                  For direct volume migration to work, your source cluster must be able to
+                  communicate with your target cluster over port 443.
+                  <br /> <br />
+                  See the product documentation for more information.
+                </>
+              }
+              aria-label="direct-volume-mig-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className="pf-c-icon pf-m-info">
+                <QuestionCircleIcon />
+              </span>
+            </Popover>
+          </Text>
+        </FlexItem>
+        <FlexItem>
+          <FormGroup fieldId={indirectVolumeMigrationKey} className={spacing.ptSm}>
+            <Checkbox
+              label="Use direct PV migration for filesystem copies"
+              aria-label="direct volume migration checkbox"
+              id={indirectVolumeMigrationKey}
+              name={indirectVolumeMigrationKey}
+              isChecked={!values.indirectVolumeMigration}
+              isDisabled={!isDirectVolumeMigrationAvailable}
+              onChange={(checked) => {
+                setFieldValue('indirectVolumeMigration', !checked);
+              }}
             />
           </FormGroup>
         </FlexItem>
