@@ -24,12 +24,14 @@ import {
   TokensPage,
   WelcomePage,
 } from './pages';
+import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 import { getActiveNamespaceFromStorage } from '../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
+import { PlansContextProvider } from './pages/PlansPage/context';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -121,12 +123,17 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
               <Route exact path="/storages">
                 <StoragesPage />
               </Route>
-              <Route exact path="/plans">
-                <PlansPage />
-              </Route>
-              <Route exact path="/plans/:planName/debug">
-                <PlanDebugPage />
-              </Route>
+              <PlansContextProvider>
+                <Route exact path="/plans">
+                  <PlansPage />
+                </Route>
+                <Route exact path="/plans/:planName">
+                  <NamespacesPage />
+                </Route>
+                <Route exact path="/plans/:planName/debug">
+                  <PlanDebugPage />
+                </Route>
+              </PlansContextProvider>
               <RefreshRoute
                 exact
                 path="/logs/:planId"

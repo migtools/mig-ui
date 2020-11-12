@@ -50,24 +50,6 @@ export const useSortState = (
   return { sortBy, onSort, sortedItems };
 };
 
-export const usePaginationState = (items: any[], initialItemsPerPage: number) => {
-  const [pageNumber, setPageNumber] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
-
-  const pageStartIndex = (pageNumber - 1) * itemsPerPage;
-  const currentPageItems = items.slice(pageStartIndex, pageStartIndex + itemsPerPage);
-
-  const paginationProps: PaginationProps = {
-    itemCount: items.length,
-    perPage: itemsPerPage,
-    page: pageNumber,
-    onSetPage: (event, pageNumber) => setPageNumber(pageNumber),
-    onPerPageSelect: (event, perPage) => setItemsPerPage(perPage),
-  };
-
-  return { currentPageItems, setPageNumber, paginationProps };
-};
-
 export const useForcedValidationOnChange = <T>(
   values: T,
   isEdit: boolean,

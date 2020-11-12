@@ -4,7 +4,7 @@ import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly
 import LinkIcon from '@patternfly/react-icons/dist/js/icons/link-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
-import { usePaginationState, useSortState } from '../../../../common/duck/hooks';
+import { useSortState } from '../../../../common/duck/hooks';
 import { getClusterInfo } from '../helpers';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
@@ -12,6 +12,7 @@ import IconWithText from '../../../../common/components/IconWithText';
 import { ICluster } from '../../../../cluster/duck/types';
 import { IMigMeta } from '../../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
+import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 
 interface IClustersTableProps {
   clusterList: ICluster[];
