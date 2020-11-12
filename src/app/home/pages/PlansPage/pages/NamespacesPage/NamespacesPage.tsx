@@ -26,7 +26,7 @@ import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { PollingContext } from '../../../../duck/context';
 
 interface INamespacesPageProps {
@@ -104,7 +104,7 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
                       {!isLoadingAnalytic && (
                         <Text component={TextVariants.small}>
                           Last updated:{` `}
-                          {moment(plan.PlanStatus.latestAnalyticTransitionTime)
+                          {dayjs(plan.PlanStatus.latestAnalyticTransitionTime)
                             .local()
                             .format('YYYY-MM-DD HH:mm:ss')}
                         </Text>
