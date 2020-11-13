@@ -19,6 +19,7 @@ import { PollingContext } from '../../../../duck/context';
 import { IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';
+import { formatGolangTimestamp } from '../../helpers';
 
 interface IMigrationDetailsPageProps {
   planList: IPlan[];
@@ -40,7 +41,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
 
-  const type = migration?.spec?.stage ? 'Stage' : 'Migration';
+  const type = migration?.spec?.stage ? 'Stage' : 'Final';
   return (
     <>
       <PageSection variant="light">
@@ -48,17 +49,15 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem to={`/plans/${planName}/migrations`}>
-            {planName} Migrations
-          </BreadcrumbItem>
+          <BreadcrumbItem to={`/plans/${planName}/migrations`}>{planName}</BreadcrumbItem>
           {!isFetchingInitialPlans && migration && (
             <BreadcrumbItem to="#" isActive>
-              {type} - {migration.status.startTimestamp}
+              {type} - {formatGolangTimestamp(migration.status.startTimestamp)}
             </BreadcrumbItem>
           )}
         </Breadcrumb>
         <Title headingLevel="h1" size="2xl">
-          Migration Details Page
+          Migration details
         </Title>
       </PageSection>
       {!isFetchingInitialPlans && migration && migration.status?.pipeline ? (

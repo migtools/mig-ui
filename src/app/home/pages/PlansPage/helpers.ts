@@ -95,6 +95,43 @@ export interface IProgressInfoObj {
   isWarning: boolean;
 }
 
+// returns step details page title text based on step
+export const getStepPageTitle = (step: IStep): string => {
+  switch (step.name) {
+    case MigrationStepsType.Prepare:
+      return 'Preparing for migration';
+    case MigrationStepsType.Backup:
+      return 'Creating initial backup';
+    case MigrationStepsType.StageBackup:
+      return 'Creating stage backup';
+    case MigrationStepsType.StageRestore:
+      return 'Creating stage restore';
+    case MigrationStepsType.Restore:
+      return 'Creating final restore';
+    case MigrationStepsType.Cleanup:
+      return 'Cleaning up';
+    default:
+      return `${step.name} details`;
+  }
+};
+
+// parses golang timestamps
+export const formatGolangTimestamp = (timestamp: string): string => {
+  const formats = [
+    'YYYY-M-D[T]H:m:s[Z]',
+    'YYYY-MM-DD[T]HH:mm:ss[Z]',
+    'YYYY-M-D[T]HH:mm:ss[Z]',
+    'YYYY-MM-DD[T]H:m:s[Z]',
+  ];
+  let formattedTime;
+  try {
+    formattedTime = dayjs(timestamp, formats).format('D MMM YYYY, HH:mm:ss');
+  } catch (e) {
+    formattedTime = timestamp;
+  }
+  return formattedTime;
+};
+
 export const showConsolidatedProgressBar = (step: IStep): boolean => {
   return step.name == MigrationStepsType.Backup;
 };

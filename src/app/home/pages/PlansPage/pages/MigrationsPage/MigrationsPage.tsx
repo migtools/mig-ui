@@ -43,7 +43,7 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
           </BreadcrumbItem>
         </Breadcrumb>
         <Title headingLevel="h1" size="2xl">
-          Migrations page
+          Migrations
         </Title>
       </PageSection>
       <PageSection>

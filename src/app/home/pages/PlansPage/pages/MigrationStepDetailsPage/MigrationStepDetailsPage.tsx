@@ -19,6 +19,7 @@ import { IReduxState } from '../../../../../../reducers';
 import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import MigrationStepDetailsTable from './MigrationStepDetailsTable';
+import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
 
 interface IMigrationStepDetailsPageProps {
   planList: IPlan[];
@@ -51,22 +52,20 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem to={`/plans/${planName}/migrations`}>
-            {planName} Migrations
-          </BreadcrumbItem>
+          <BreadcrumbItem to={`/plans/${planName}/migrations`}>{planName}</BreadcrumbItem>
           {!isFetchingInitialPlans && migration && (
             <BreadcrumbItem to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
-              {migrationType} Steps
+              {migrationType} - {formatGolangTimestamp(migration.status.startTimestamp)}
             </BreadcrumbItem>
           )}
           {!isFetchingInitialPlans && step && (
             <BreadcrumbItem to="#" isActive>
-              {step.name} - {step.started}
+              {step.name}
             </BreadcrumbItem>
           )}
         </Breadcrumb>
         <Title headingLevel="h1" size="2xl">
-          Step Details page
+          {getStepPageTitle(step)}
         </Title>
       </PageSection>
       {!isFetchingInitialPlans && step && migration && (
