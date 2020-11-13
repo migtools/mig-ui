@@ -374,12 +374,6 @@ const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
       errors.azureResourceGroup = 'Required';
     }
 
-    if (!values.exposedRegistryPath) {
-      // not required; no validation.
-    } else if (!utils.testURL(values.exposedRegistryPath)) {
-      errors.exposedRegistryPath = 'Not a valid URL';
-    }
-
     return errors;
   },
 
