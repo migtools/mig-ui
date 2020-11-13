@@ -34,6 +34,7 @@ import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 import { PlansContextProvider } from './pages/PlansPage/context';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage/MigrationDetailsPage';
+import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -137,6 +138,9 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
                 </Route>
                 <Route exact path="/plans/:planName/migrations/:migrationID">
                   <MigrationDetailsPage />
+                </Route>
+                <Route exact path="/plans/:planName/migrations/:migrationID/:stepName">
+                  <MigrationStepDetailsPage />
                 </Route>
                 <Route exact path="/plans/:planName/debug">
                   <PlanDebugPage />

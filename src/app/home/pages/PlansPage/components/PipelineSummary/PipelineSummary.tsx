@@ -4,7 +4,7 @@ import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-f
 import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
 import ResourcesAlmostEmptyIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-empty-icon';
 
-import { findCurrentStep, getPipelineSummaryTitle } from '../../helpers';
+import { getPipelineSummaryTitle } from '../../helpers';
 import { IMigrationStatus } from '../../../../../plan/duck/types';
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
@@ -82,44 +82,26 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     return null;
   }
   const title = getPipelineSummaryTitle(status);
-  const { currentStep, currentStepIndex } = findCurrentStep(status?.pipeline || []);
-  if (status?.phase === 'Completed') {
-    return (
-      <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={status.pipeline.length} color={successColor} />
-      </Summary>
-    );
-  } else if (currentStep?.started && !currentStep?.completed) {
-    return (
-      <Summary title={title}>
-        <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
-        {currentStepIndex > 0 ? <Dash isReached={true} /> : null}
-        <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <ResourcesAlmostFullIcon color={status?.errors?.length ? dangerColor : infoColor} />
-        </FlexItem>
-        {currentStepIndex < status?.pipeline?.length - 1 ? (
+  return (
+    <Summary title={title}>
+      {status?.pipeline.map((step, index) => {
+        return (
           <>
-            <Dash isReached={false} />
-            <Chain
-              Face={ResourcesAlmostEmptyIcon}
-              times={status?.pipeline?.length - currentStepIndex - 1}
-              color={disabledColor}
-            />
+            {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
+            {!step?.started ? (
+              <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+            ) : step?.failed ? (
+              <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+            ) : step?.started && !step?.completed ? (
+              <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />
+            ) : (
+              <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+            )}
           </>
-        ) : null}
-      </Summary>
-    );
-  } else {
-    return (
-      <Summary title={title}>
-        <Chain
-          Face={ResourcesAlmostEmptyIcon}
-          times={status?.pipeline?.length}
-          color={disabledColor}
-        />
-      </Summary>
-    );
-  }
+        );
+      })}
+    </Summary>
+  );
 };
 
 export default PipelineSummary;
