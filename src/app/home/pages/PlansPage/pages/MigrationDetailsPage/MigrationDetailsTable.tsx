@@ -35,6 +35,7 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     { title: 'Elapsed time', transforms: [cellWidth(10)] },
     {
       title: 'Status',
+      transforms: [cellWidth(30)],
     },
     '',
   ];
