@@ -1,16 +1,8 @@
 import * as React from 'react';
 import { Flex, FlexItem, Text } from '@patternfly/react-core';
-import {
-  ResourcesAlmostEmptyIcon,
-  ResourcesAlmostFullIcon,
-  ResourcesFullIcon,
-} from '@patternfly/react-icons';
-import {
-  global_danger_color_100 as dangerColor,
-  global_disabled_color_200 as disabledColor,
-  global_info_color_100 as infoColor,
-  global_success_color_100 as successColor,
-} from '@patternfly/react-tokens';
+import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
+import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
+import ResourcesAlmostEmptyIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-empty-icon';
 
 import { findCurrentStep, getPipelineSummaryTitle } from '../../helpers';
 import { IMigrationStatus } from '../../../../../plan/duck/types';
@@ -20,6 +12,11 @@ const styles = require('./PipelineSummary.module');
 interface IDashProps {
   isReached: boolean;
 }
+const dangerColor = '#c9190b';
+const disabledColor = '#d2d2d2';
+const infoColor = '#2b9af3';
+const successColor = '#3e8635';
+
 const dashReachedStyles = classNames(styles.dash, styles.dashReached);
 const dashNotReachedStyles = classNames(styles.dash, styles.dashNotReached);
 
@@ -35,18 +32,14 @@ interface IChainProps {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   Face: React.ComponentClass<any>;
   times: number;
-  color: {
-    name: string;
-    value: string;
-    var: string;
-  };
+  color: string;
 }
 
 const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: IChainProps) => {
   return times < 1 ? null : (
     <>
       <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-        <Face color={color.value} />
+        <Face color={color} />
       </FlexItem>
       {times > 1 ? (
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
@@ -102,9 +95,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
         <Chain Face={ResourcesFullIcon} times={currentStepIndex} color={successColor} />
         {currentStepIndex > 0 ? <Dash isReached={true} /> : null}
         <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-          <ResourcesAlmostFullIcon
-            color={status?.errors?.length ? dangerColor.value : infoColor.value}
-          />
+          <ResourcesAlmostFullIcon color={status?.errors?.length ? dangerColor : infoColor} />
         </FlexItem>
         {currentStepIndex < status?.pipeline?.length - 1 ? (
           <>
