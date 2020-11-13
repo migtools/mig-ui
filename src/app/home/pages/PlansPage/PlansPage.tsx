@@ -15,7 +15,6 @@ import {
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IAddPlanDisabledObjModel } from './types';
 import { PlanContext } from '../../duck/context';
 import planSelectors from '../../../plan/duck/selectors';
 import clusterSelectors from '../../../cluster/duck/selectors';
@@ -29,6 +28,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IPlan } from '../../../plan/duck/types';
 import { IStorage } from '../../../storage/duck/types';
 import { IReduxState } from '../../../../reducers';
+import { usePlansContext } from './context';
 
 interface IPlansPageBaseProps {
   planList: IPlan[];
@@ -56,11 +56,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   isRefreshingAnalytic,
 }: IPlansPageBaseProps) => {
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
-
-  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
-    isAddPlanDisabled: true,
-    disabledText: '',
-  });
+  const { setAddPlanDisabledObj, addPlanDisabledObj } = usePlansContext();
 
   useEffect(() => {
     if (clusterList.length < 2) {

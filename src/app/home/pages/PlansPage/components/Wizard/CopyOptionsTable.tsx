@@ -29,7 +29,7 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
-import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
+import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { capitalize } from '../../../../../common/duck/utils';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
@@ -41,6 +41,7 @@ import {
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
 import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,

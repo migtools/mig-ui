@@ -24,12 +24,16 @@ import {
   TokensPage,
   WelcomePage,
 } from './pages';
+import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { ICluster } from '../cluster/duck/types';
 import PageHeaderComponent from '../common/components/PageHeaderComponent';
 import ActiveNamespaceModal from '../common/components/ActiveNamespaceModal';
 import { getActiveNamespaceFromStorage } from '../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
+import { PlansContextProvider } from './pages/PlansPage/context';
+import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
+import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage/MigrationDetailsPage';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -121,12 +125,23 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
               <Route exact path="/storages">
                 <StoragesPage />
               </Route>
-              <Route exact path="/plans">
-                <PlansPage />
-              </Route>
-              <Route exact path="/plans/:planName/debug">
-                <PlanDebugPage />
-              </Route>
+              <PlansContextProvider>
+                <Route exact path="/plans">
+                  <PlansPage />
+                </Route>
+                <Route exact path="/plans/:planName/namespaces">
+                  <NamespacesPage />
+                </Route>
+                <Route exact path="/plans/:planName/migrations">
+                  <MigrationsPage />
+                </Route>
+                <Route exact path="/plans/:planName/migrations/:migrationID">
+                  <MigrationDetailsPage />
+                </Route>
+                <Route exact path="/plans/:planName/debug">
+                  <PlanDebugPage />
+                </Route>
+              </PlansContextProvider>
               <RefreshRoute
                 exact
                 path="/logs/:planId"

@@ -23,7 +23,7 @@ import ReactJson from 'react-json-view';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import { useFilterState, useSortState, usePaginationState } from '../../../../../common/duck/hooks';
+import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   FilterToolbar,
@@ -33,6 +33,7 @@ import {
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 
 const styles = require('./VolumesTable.module');
 

@@ -1,5 +1,9 @@
 import { createSelector } from 'reselect';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone'; // import plugin
+import utc from 'dayjs/plugin/utc'; // import plugin
+dayjs.extend(timezone);
+dayjs.extend(utc);
 import {
   filterPlanConditions,
   filterLatestMigrationConditions,
@@ -286,7 +290,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.progress = 100;
           status.isFailed = true;
           status.stepName = criticalCondition.message;
-          status.end = '--';
+          status.end = criticalCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
         }
@@ -299,7 +303,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.progress = 100;
           status.isFailed = true;
           status.stepName = failedCondition.reason;
-          status.end = '--';
+          status.end = failedCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
         }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableHeader, cellWidth } from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, cellWidth, sortable, IRow } from '@patternfly/react-table';
+import { Link } from 'react-router-dom';
 import MigrationActions from './MigrationActions';
 import {
   Bullseye,
@@ -9,27 +10,41 @@ import {
   ProgressSize,
   ProgressVariant,
   Spinner,
+  Level,
+  LevelItem,
+  Pagination,
 } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 const styles = require('./MigrationsTable.module');
 
 import { IMigration } from '../../../../plan/duck/types';
+import { useSortState } from '../../../../common/duck/hooks';
+import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
+import PipelineSummary from './PipelineSummary/PipelineSummary';
 
 interface IProps {
   migrations: IMigration[];
   id: string;
   type: string;
   isPlanLocked: boolean;
+  planName: string;
 }
 
-const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked }) => {
-  const [currentRows, setCurrentRows] = useState([]);
+const MigrationsTable: React.FunctionComponent<IProps> = ({
+  migrations,
+  isPlanLocked,
+  planName,
+}) => {
+  const getSortValues = (migration: any) => {
+    const type = migration.spec.stage ? 'Stage' : 'Migration';
+    const { tableStatus } = migration;
+    return [type, tableStatus.start, tableStatus.end, ''];
+  };
 
   const columns = [
-    { title: 'Type' },
-    { title: 'Start Time' },
-    { title: 'End Time' },
-    'PVs Moved',
-    'PVs Copied',
+    { title: 'Type', transforms: [sortable] },
+    { title: 'Start Time', transforms: [sortable] },
+    { title: 'End Time', transforms: [sortable] },
     {
       title: 'Status',
       transforms: [cellWidth(30)],
@@ -37,72 +52,32 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
     '',
   ];
 
-  useEffect(() => {
-    const mappedRows = migrations.map((migration, migrationIndex) => {
-      const type = migration.spec.stage ? 'Stage' : 'Migration';
-      function ProgressWrapper() {
-        switch (migration.tableStatus.migrationState) {
-          case 'success': {
-            return (
-              <Progress
-                value={migration.tableStatus.progress}
-                title={migration.tableStatus.stepName}
-                size={ProgressSize.sm}
-                variant={ProgressVariant.success}
-              />
-            );
-          }
-          case 'error': {
-            return (
-              <Progress
-                value={migration.tableStatus.progress}
-                title={migration.tableStatus.stepName}
-                size={ProgressSize.sm}
-                variant={ProgressVariant.danger}
-              />
-            );
-          }
-          case 'warn': {
-            return (
-              <Progress
-                value={migration.tableStatus.progress}
-                title={migration.tableStatus.stepName}
-                size={ProgressSize.sm}
-                variant={ProgressVariant.success}
-                className={styles.warnProgressStyle}
-              />
-            );
-          }
-          default: {
-            return (
-              <Progress
-                value={migration.tableStatus.progress}
-                title={migration.tableStatus.stepName}
-                size={ProgressSize.sm}
-              />
-            );
-          }
-        }
-      }
+  const { sortBy, onSort, sortedItems } = useSortState(migrations, getSortValues);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
 
-      const rowCells = [
-        { title: type },
-        { title: migration.tableStatus.start },
-        { title: migration.tableStatus.end },
-        { title: migration.tableStatus.moved },
-        { title: migration.tableStatus.copied },
+  const rows: IRow[] = [];
+  currentPageItems.forEach((migration) => {
+    const { tableStatus } = migration;
+    const type = migration.spec.stage ? 'Stage' : 'Migration';
+    const getMigrationPipelineStatus = (migrationStatus) => {
+      return migrationStatus;
+    };
+
+    rows.push({
+      cells: [
         {
           title: (
-            <div>
-              <div>
-                {migration.tableStatus.progress === 0 ? (
-                  migration.tableStatus.stepName
-                ) : (
-                  <ProgressWrapper />
-                )}
-              </div>
-            </div>
+            <>
+              <Link to={`/plans/${planName}/migrations/${migration.metadata.name}`}>{type}</Link>
+            </>
           ),
+        },
+
+        { title: migration.tableStatus.start },
+        { title: migration.tableStatus.end },
+        {
+          title: <PipelineSummary status={getMigrationPipelineStatus(migration?.status)} />,
         },
         {
           title: <MigrationActions migration={migration} />,
@@ -110,13 +85,9 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
             className: 'pf-c-table__action',
           },
         },
-      ];
-      return {
-        cells: rowCells,
-      };
+      ],
     });
-    setCurrentRows(mappedRows);
-  }, [migrations]);
+  });
 
   if (isPlanLocked) {
     return (
@@ -133,19 +104,33 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
       </Bullseye>
     );
   }
-
   return (
-    <React.Fragment>
+    <>
       {migrations.length > 0 ? (
-        <Table
-          aria-label="migrations-history-table"
-          cells={columns}
-          rows={currentRows}
-          className="pf-m-vertical-align-content-center"
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <>
+          <Level>
+            <LevelItem />
+            <LevelItem>
+              <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+            </LevelItem>
+          </Level>
+          <Table
+            aria-label="migration-analytics-table"
+            cells={columns}
+            rows={rows}
+            onSort={onSort}
+            className={`${spacing.mtMd}`}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+
+          <Pagination
+            variant="bottom"
+            {...paginationProps}
+            widgetId="providers-table-pagination-top"
+          />
+        </>
       ) : (
         <Bullseye>
           <EmptyState variant="small">
@@ -155,7 +140,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           </EmptyState>
         </Bullseye>
       )}
-    </React.Fragment>
+    </>
   );
 };
 
