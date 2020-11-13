@@ -1,0 +1,13 @@
+.dash {
+  height: 2px;
+  width: 10px;
+  white-space: nowrap;
+}
+
+.dashReached {
+  background-color: var(--pf-global--success-color--100);
+}
+
+.dashNotReached {
+  background-color: var(--pf-global--disabled-color--200);
+}

@@ -59,7 +59,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     {
       title: 'Migrations',
       transforms: [sortable],
-      cellTransforms: [compoundExpand],
     },
     { title: 'Source', transforms: [sortable] },
     { title: 'Target', transforms: [sortable] },
@@ -130,22 +129,23 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             },
             {
               title: (
-                <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
-                  <MigrationIcon key="migration-count-icon" /> {migrationCount}
-                </span>
+                <>
+                  <Link to={`/plans/${plan.MigPlan.metadata.name}/migrations`}>
+                    <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
+                      <MigrationIcon key="migration-count-icon" /> {migrationCount}
+                    </span>
+                  </Link>
+                </>
               ),
-              props: {
-                isOpen: expandedCells[planName] === 1,
-                ariaControls: 'migrations-history-expansion-table',
-              },
             },
+
             sourceClusterName,
             targetClusterName,
             storageName,
             {
               title: (
                 <>
-                  <Link to={`/plans/${plan.MigPlan.metadata.name}`}>
+                  <Link to={`/plans/${plan.MigPlan.metadata.name}/namespaces`}>
                     <img
                       key="namespace-icon"
                       src={namespacesIcon}
@@ -171,25 +171,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               props: {
                 className: 'pf-c-table__action',
               },
-            },
-          ],
-        },
-        {
-          parent: planIndex * 3, // Plan 0 => rows 0 and 1, Plan 1 => rows 2 and 3, Plan 2 => rows 4 and 5, etc.
-          compoundParent: 1,
-          cells: [
-            {
-              title: (
-                <>
-                  <MigrationsTable
-                    type="Migrations"
-                    migrations={plan.Migrations}
-                    isPlanLocked={plan.PlanStatus.isPlanLocked}
-                    id="migrations-history-expansion-table"
-                  />
-                </>
-              ),
-              props: { colSpan: 9, className: 'pf-m-no-padding' },
             },
           ],
         },

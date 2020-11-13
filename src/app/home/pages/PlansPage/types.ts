@@ -20,3 +20,16 @@ export interface IAddPlanDisabledObjModel {
   isAddPlanDisabled: boolean;
   disabledText: string;
 }
+
+export enum MigrationStepsType {
+  Prepare = 'Prepare',
+  Backup = 'Backup',
+  StageBackup = 'StageBackup',
+  StageRestore = 'StageRestore',
+  Restore = 'Restore',
+  Final = 'Final',
+  //Fake steps to show UI status
+  NotStarted = 'NotStarted',
+  Error = 'Error',
+  Completed = 'Completed',
+}
