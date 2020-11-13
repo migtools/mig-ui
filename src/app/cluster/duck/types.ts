@@ -27,10 +27,12 @@ export interface IMigCluster {
     azureResourceGroup: string;
     insecure: boolean;
     caBundle: string;
+    exposedRegistryPath?: string;
   };
   status: {
     conditions: IStatusCondition[];
     observedDigest: string;
+    registryPath?: string;
   };
   id: string;
 }

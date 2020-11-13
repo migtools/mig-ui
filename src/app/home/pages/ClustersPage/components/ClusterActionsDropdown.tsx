@@ -46,6 +46,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
     isHostCluster,
     clusterIsAzure,
     clusterAzureResourceGroup,
+    exposedRegistryPath,
   } = clusterInfo;
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -140,6 +141,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
           clusterAzureResourceGroup,
           clusterRequireSSL,
           clusterCABundle,
+          exposedRegistryPath,
         }}
       />
       <ConfirmModal

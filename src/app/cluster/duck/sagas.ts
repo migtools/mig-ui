@@ -142,7 +142,8 @@ function* addClusterRequest(action) {
     clusterValues.isAzure,
     clusterValues.azureResourceGroup,
     clusterValues.requireSSL,
-    clusterValues.caBundle
+    clusterValues.caBundle,
+    clusterValues.exposedRegistryPath
   );
 
   const secretResource = new CoreNamespacedResource(
@@ -327,7 +328,18 @@ function* updateClusterRequest(action) {
   const currentCABundle = currentCluster.MigCluster.spec.caBundle;
   const caBundleUpdated = clusterValues.caBundle !== currentCABundle;
 
-  if (!urlUpdated && !tokenUpdated && !azureUpdated && !requireSSLUpdated && !caBundleUpdated) {
+  const currentExposedRegistryPath = currentCluster.MigCluster.spec.exposedRegistryPath;
+  const exposedRegistryPathUpdated =
+    clusterValues.exposedRegistryPath !== currentExposedRegistryPath;
+
+  if (
+    !urlUpdated &&
+    !tokenUpdated &&
+    !azureUpdated &&
+    !requireSSLUpdated &&
+    !caBundleUpdated &&
+    !exposedRegistryPathUpdated
+  ) {
     console.warn('A cluster update was requested, but nothing was changed');
     return;
   }
@@ -354,7 +366,17 @@ function* updateClusterRequest(action) {
     aggregatedPatch.spec['caBundle'] = clusterValues.caBundle || null;
   }
 
-  if (urlUpdated || azureUpdated || requireSSLUpdated || caBundleUpdated) {
+  if (exposedRegistryPathUpdated) {
+    aggregatedPatch.spec['exposedRegistryPath'] = clusterValues.exposedRegistryPath.trim() || null;
+  }
+
+  if (
+    urlUpdated ||
+    azureUpdated ||
+    requireSSLUpdated ||
+    caBundleUpdated ||
+    exposedRegistryPathUpdated
+  ) {
     const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
     // Pushing a request fn to delay the call until its yielded in a batch at same time
     updatePromises.push(() =>
