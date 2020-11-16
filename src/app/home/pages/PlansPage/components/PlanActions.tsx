@@ -18,6 +18,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
+  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -87,6 +88,16 @@ const PlanActions = ({ plan, history }) => {
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
+        toggleRollbackModalOpen();
+      }}
+      key="rollbackPlan"
+      isDisabled={hasRunningMigrations || isPlanLocked}
+    >
+      Rollback
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
         toggleDeleteModalOpen();
       }}
       key="deletePlan"
@@ -94,6 +105,7 @@ const PlanActions = ({ plan, history }) => {
     >
       Delete
     </DropdownItem>,
+
     <DropdownItem
       key="showLogs"
       onClick={() => {
@@ -149,6 +161,17 @@ const PlanActions = ({ plan, history }) => {
             toggleDeleteModalOpen();
           }}
           id="confirm-plan-removal"
+        />
+
+        <ConfirmModal
+          title="Confirmation"
+          message={`Do you really want to rollback migration plan "${plan.MigPlan.metadata.name}"?`}
+          isOpen={isRollbackModalOpen}
+          onHandleClose={(isConfirmed) => {
+            if (isConfirmed) planContext.handleDeletePlan(plan);
+            toggleRollbackModalOpen();
+          }}
+          id="confirm-plan-rollback"
         />
       </FlexItem>
     </Flex>

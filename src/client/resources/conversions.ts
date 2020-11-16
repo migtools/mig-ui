@@ -530,7 +530,8 @@ export function createMigMigration(
   planName: string,
   namespace: string,
   isStage: boolean,
-  disableQuiesce: boolean
+  disableQuiesce: boolean,
+  rollback: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -546,6 +547,7 @@ export function createMigMigration(
       },
       quiescePods: !isStage && !disableQuiesce,
       stage: isStage,
+      rollback: rollback,
     },
   };
 }

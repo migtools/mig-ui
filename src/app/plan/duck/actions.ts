@@ -55,6 +55,9 @@ export const PlanActionTypes = {
   PLAN_CLOSE_AND_DELETE_REQUEST: 'PLAN_CLOSE_AND_DELETE_REQUEST',
   PLAN_CLOSE_AND_DELETE_SUCCESS: 'PLAN_CLOSE_AND_DELETE_SUCCESS',
   PLAN_CLOSE_AND_DELETE_FAILURE: 'PLAN_CLOSE_AND_DELETE_FAILURE',
+  PLAN_ROLLBACK_REQUEST: 'PLAN_ROLLBACK_REQUEST',
+  PLAN_ROLLBACK_SUCCESS: 'PLAN_ROLLBACK_SUCCESS',
+  PLAN_ROLLBACK_FAILURE: 'PLAN_ROLLBACK_FAILURE',
   PLAN_CLOSE_REQUEST: 'PLAN_CLOSE_REQUEST',
   PLAN_CLOSE_SUCCESS: 'PLAN_CLOSE_SUCCESS',
   PLAN_CLOSE_FAILURE: 'PLAN_CLOSE_FAILURE',
@@ -296,6 +299,21 @@ const planCloseAndDeleteRequest = (planName: string) => ({
   planName,
 });
 
+const planRollbackRequest = (planName: string) => ({
+  type: PlanActionTypes.PLAN_ROLLBACK_REQUEST,
+  planName,
+});
+
+const planRollbackSuccess = (planName: string) => ({
+  type: PlanActionTypes.PLAN_ROLLBACK_SUCCESS,
+  planName,
+});
+
+const planRollbackFailure = (planName: string) => ({
+  type: PlanActionTypes.PLAN_ROLLBACK_FAILURE,
+  planName,
+});
+
 const migrationCancelRequest = (migrationName: string) => ({
   type: PlanActionTypes.MIGRATION_CANCEL_REQUEST,
   migrationName,
@@ -533,6 +551,9 @@ export const PlanActions = {
   planCloseAndDeleteRequest,
   planCloseAndDeleteSuccess,
   planCloseAndDeleteFailure,
+  planRollbackRequest,
+  planRollbackSuccess,
+  planRollbackFailure,
   planCloseSuccess,
   planCloseFailure,
   startPlanStatusPolling,
