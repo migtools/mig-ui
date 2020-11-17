@@ -736,7 +736,8 @@ function* runStageSaga(action) {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       true,
-      true
+      true,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -864,7 +865,8 @@ function* runMigrationSaga(action) {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       false,
-      disableQuiesce
+      disableQuiesce,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -925,6 +927,94 @@ function* migrationPoll(action) {
         break;
     }
     yield delay(params.delay);
+  }
+}
+
+/******************************************************************** */
+//Rollback sagas
+/******************************************************************** */
+function getRollbackStatusCondition(updatedPlans, createMigRes) {
+  const matchingPlan = updatedPlans.updatedPlans.find(
+    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+  );
+  const statusObj = { status: null, planName: null, errorMessage: null };
+
+  if (matchingPlan && matchingPlan.Migrations) {
+    const matchingMigration = matchingPlan.Migrations.find(
+      (s) => s.metadata.name === createMigRes.data.metadata.name
+    );
+
+    if (matchingMigration && matchingMigration.status?.conditions) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Succeeded'
+      );
+      if (hasSucceededCondition) {
+        statusObj.status = 'SUCCESS';
+      }
+
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      const errorCondition = matchingMigration.status.conditions.find(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      if (hasErrorCondition) {
+        statusObj.status = 'FAILURE';
+        statusObj.errorMessage = errorCondition.message;
+      }
+
+      const hasWarnCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.category === 'Warn'
+      );
+      const warnCondition = matchingMigration.status.conditions.find((c) => c.category === 'Warn');
+
+      if (hasWarnCondition) {
+        statusObj.status = 'WARN';
+        statusObj.errorMessage = warnCondition.message;
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
+    }
+  }
+  return statusObj;
+}
+
+function* runRollbackSaga(action) {
+  try {
+    const state: IReduxState = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+    const { plan } = action;
+
+    yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
+    yield put(AlertActions.alertProgressTimeout('Rollback Started'));
+
+    const migMigrationObj = createMigMigration(
+      uuidv1(),
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      false,
+      false,
+      true
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    const params = {
+      fetchPlansGenerator: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      getRollbackStatusCondition: getRollbackStatusCondition,
+      createMigRes: createMigRes,
+    };
+
+    yield put(PlanActions.startRollbackPolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.stagingFailure(err));
   }
 }
 
@@ -1267,6 +1357,10 @@ function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
 
+function* watchRunRollbackRequest() {
+  yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
+}
+
 function* watchValidatePlanPolling() {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
@@ -1294,6 +1388,7 @@ export default {
   fetchPlansGenerator,
   watchRunStageRequest,
   watchRunMigrationRequest,
+  watchRunRollbackRequest,
   watchAddPlanRequest,
   watchAddAnalyticRequest,
   watchDeleteAnalyticRequest,
