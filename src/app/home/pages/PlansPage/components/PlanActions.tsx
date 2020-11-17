@@ -11,6 +11,7 @@ import {
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck';
 import MigrateModal from './MigrateModal';
+import RollbackModal from './RollbackModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
@@ -157,6 +158,12 @@ const PlanActions = ({ plan, history }) => {
           onHandleClose={toggleMigrateModalOpen}
         />
 
+        <RollbackModal
+          plan={plan}
+          isOpen={isRollbackModalOpen}
+          onHandleClose={toggleRollbackModalOpen}
+        />
+
         <ConfirmModal
           title="Confirmation"
           message={`Do you really want to delete migration plan "${plan.MigPlan.metadata.name}"?`}
@@ -168,16 +175,23 @@ const PlanActions = ({ plan, history }) => {
           id="confirm-plan-removal"
         />
 
-        <ConfirmModal
+        {/* <ConfirmModal
           title="Confirmation"
-          message={`Do you really want to rollback migration plan "${plan.MigPlan.metadata.name}"?`}
+          message={`Rolling back the migration plan will revert all resources, images, and volumes to their original states and locations, including:
+
+          - Deleting Velero Backups and Restores created during the migration
+          - Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and namespaces
+          - Deleting migrated resources from the target cluster
+          - Un-quiescing (scaling to N replicas) Deployments, DeploymentConfigs, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
+
+          Do you really want to rollback migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isRollbackModalOpen}
           onHandleClose={(isConfirmed) => {
             if (isConfirmed) planContext.handleRollbackTriggered(plan);
             toggleRollbackModalOpen();
           }}
           id="confirm-plan-rollback"
-        />
+        /> */}
       </FlexItem>
     </Flex>
   );

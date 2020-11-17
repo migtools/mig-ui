@@ -531,7 +531,7 @@ export function createMigMigration(
   namespace: string,
   isStage: boolean,
   disableQuiesce: boolean,
-  isRollback: boolean,
+  isRollback: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
