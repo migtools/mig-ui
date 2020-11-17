@@ -28,18 +28,20 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
             original states and locations, including:
             <GridItem>
               <br />
-              <li>Deleting migrated resources on the target cluster</li>
+              Source Cluster:
               <li>
                 Restoring original replica counts (Un-Quiescing) on Deployments, DeploymentConfigs,
-                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs on the
+                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
               </li>
-              <li>
-                Deleting Velero Backups and Restores created during the migration on the source and
-                target cluster
-              </li>
+              <br />
+              Target Cluster:
+              <li>Deleting migrated resources</li>
+              <br />
+              Source and Target Cluster:
+              <li>Deleting Velero Backups and Restores created during the migration</li>
               <li>
                 Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
-                namespaces on the source and target cluster
+                namespaces
               </li>
               <br />
             </GridItem>
