@@ -88,6 +88,7 @@ export interface IMigration {
     progress: number;
     start: string;
     stepName: string;
+    warnings: string[];
   };
 }
 

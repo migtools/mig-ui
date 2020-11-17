@@ -40,17 +40,8 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     '',
   ];
 
-  const filteredPipelineSteps = migration.status.pipeline.filter((step: IStep) => {
-    const regex = RegExp('((?:^|W)Restore(?:$|W))|((?:^|W)Backup(?:$|W))', 'i');
-    const isStageRelatedStep = regex.test(step.name);
-    if (!isStageRelatedStep) {
-      return step.name;
-    }
-  });
-  const type = migration.spec.stage ? 'Stage' : 'Migration';
-
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(
-    migration.spec.stage ? filteredPipelineSteps : migration.status.pipeline,
+    migration.status.pipeline,
     10
   );
   useEffect(() => setPageNumber(1), [setPageNumber]);

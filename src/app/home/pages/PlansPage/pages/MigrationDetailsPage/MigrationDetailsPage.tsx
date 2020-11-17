@@ -14,6 +14,8 @@ import {
   Spinner,
   CardBody,
 } from '@patternfly/react-core';
+import { Alert } from '@patternfly/react-core';
+
 import { IReduxState } from '../../../../../../reducers';
 import { PollingContext } from '../../../../duck/context';
 import { IMigration, IPlan } from '../../../../../plan/duck/types';
@@ -41,6 +43,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
 
+  const isWarningCondition = migration?.tableStatus?.migrationState === 'warn';
   const type = migration?.spec?.stage ? 'Stage' : 'Final';
   return (
     <>
@@ -60,6 +63,20 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           Migration details
         </Title>
       </PageSection>
+      {isWarningCondition && (
+        <PageSection>
+          <Alert variant="warning" isInline title="This migration has following warning conditions">
+            {migration?.tableStatus?.warnings?.map((warning, idx) => {
+              return (
+                <>
+                  {warning}
+                  <br />
+                </>
+              );
+            })}
+          </Alert>
+        </PageSection>
+      )}
       {!isFetchingInitialPlans && migration && migration.status?.pipeline ? (
         <PageSection>
           <Card>

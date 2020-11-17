@@ -1,26 +1,26 @@
 import * as React from 'react';
+
 import { Flex, FlexItem, Text } from '@patternfly/react-core';
 import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
 import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
-import ResourcesAlmostEmptyIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-empty-icon';
 
 import { getPipelineSummaryTitle } from '../../helpers';
-import { IMigrationStatus } from '../../../../../plan/duck/types';
+import { IMigration } from '../../../../../plan/duck/types';
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
 
 interface IDashProps {
   isReached: boolean;
+  isWarning?: boolean;
 }
 const dangerColor = '#c9190b';
 const disabledColor = '#d2d2d2';
-const infoColor = '#2b9af3';
 const successColor = '#3e8635';
 
 const dashReachedStyles = classNames(styles.dash, styles.dashReached);
 const dashNotReachedStyles = classNames(styles.dash, styles.dashNotReached);
 
-const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) => {
+const Dash: React.FunctionComponent<IDashProps> = ({ isReached, isWarning }: IDashProps) => {
   return (
     <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
       {isReached ? <div className={dashReachedStyles} /> : <div className={dashNotReachedStyles} />}
@@ -72,35 +72,38 @@ const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: IS
 );
 
 interface IPipelineSummaryProps {
-  status: IMigrationStatus;
+  migration: IMigration;
 }
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
-  status,
+  migration,
 }: IPipelineSummaryProps) => {
+  const { status, tableStatus } = migration;
   if (!status || !status?.pipeline) {
     return null;
   }
-  const title = getPipelineSummaryTitle(status);
+  const title = getPipelineSummaryTitle(migration);
   return (
-    <Summary title={title}>
-      {status?.pipeline.map((step, index) => {
-        return (
-          <>
-            {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
-            {!step?.started ? (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-            ) : step?.failed ? (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-            ) : step?.started && !step?.completed ? (
-              <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />
-            ) : (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-            )}
-          </>
-        );
-      })}
-    </Summary>
+    <>
+      <Summary title={title}>
+        {status?.pipeline.map((step, index) => {
+          return (
+            <>
+              {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
+              {!step?.started ? (
+                <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+              ) : step?.failed ? (
+                <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+              ) : step?.started && !step?.completed ? (
+                <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />
+              ) : (
+                <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+              )}
+            </>
+          );
+        })}
+      </Summary>
+    </>
   );
 };
 
