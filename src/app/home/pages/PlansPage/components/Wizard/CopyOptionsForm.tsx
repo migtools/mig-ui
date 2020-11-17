@@ -15,7 +15,12 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   const migPlanPvs = currentPlan.spec.persistentVolumes;
-  const storageClasses = (currentPlan && currentPlan.status.destStorageClasses) || [];
+
+  const destCluster = clusterList.find(
+    (c) => c.MigCluster.metadata.name === currentPlan.spec.destMigClusterRef.name
+  );
+
+  const storageClasses = (destCluster && destCluster.MigCluster.spec.storageClasses) || [];
 
   useEffect(() => {
     // Build a pv => assignedStorageClass table, defaulting to the controller suggestion
