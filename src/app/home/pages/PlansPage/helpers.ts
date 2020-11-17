@@ -70,9 +70,13 @@ export const findCurrentStep = (
   return { currentStep, currentStepIndex };
 };
 
-export const getPipelineSummaryTitle = (status: IMigrationStatus): string => {
+export const getPipelineSummaryTitle = (migration: IMigration): string => {
+  const { status, tableStatus } = migration;
   const { currentStep } = findCurrentStep(status?.pipeline || []);
   if (status?.phase === 'Completed') {
+    if (tableStatus?.migrationState === 'warn') {
+      return MigrationStepsType.CompletedWithWarnings;
+    }
     return MigrationStepsType.Completed;
   }
   if (currentStep?.started && !currentStep?.completed) {

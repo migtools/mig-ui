@@ -6,15 +6,15 @@ import {
   Bullseye,
   EmptyState,
   Title,
-  Progress,
-  ProgressSize,
-  ProgressVariant,
   Spinner,
   Level,
   LevelItem,
   Pagination,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { Popover, PopoverPosition } from '@patternfly/react-core';
+import WarningTriangleIcon from '@patternfly/react-icons/dist/js/icons/warning-triangle-icon';
+
 const styles = require('./MigrationsTable.module');
 
 import { IMigration } from '../../../../plan/duck/types';
@@ -45,9 +45,10 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
     { title: 'Type', transforms: [sortable] },
     { title: 'Start Time', transforms: [sortable] },
     { title: 'End Time', transforms: [sortable] },
+    { title: '', transforms: [cellWidth(10)] },
     {
       title: 'Status',
-      transforms: [cellWidth(30)],
+      transforms: [cellWidth(40)],
     },
     '',
   ];
@@ -55,16 +56,12 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(migrations, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
-
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
-    const { tableStatus } = migration;
     const type = migration.spec.stage ? 'Stage' : 'Migration';
-    const getMigrationPipelineStatus = (migrationStatus) => {
-      return migrationStatus;
-    };
-
-    rows.push({
+    const { tableStatus } = migration;
+    const isWarningCondition = tableStatus?.migrationState === 'warn';
+    const warnings = rows.push({
       cells: [
         {
           title: (
@@ -77,7 +74,33 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
         {
-          title: <PipelineSummary status={getMigrationPipelineStatus(migration?.status)} />,
+          title: isWarningCondition && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={tableStatus?.warnings?.map((warning, idx) => {
+                return (
+                  <>
+                    {warning}
+                    <br />
+                  </>
+                );
+              })}
+              aria-label="warning-details"
+              closeBtnAriaLabel="close-warning-details"
+              maxWidth="200rem"
+            >
+              <span className="pf-c-icon pf-m-warning">
+                <WarningTriangleIcon />
+              </span>
+            </Popover>
+          ),
+        },
+        {
+          title: (
+            <>
+              <PipelineSummary migration={migration} />
+            </>
+          ),
         },
         {
           title: <MigrationActions migration={migration} />,

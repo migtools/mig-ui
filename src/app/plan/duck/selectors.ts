@@ -228,17 +228,17 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
   const getMigrationStatus = (plan, migration) => {
     const { MigPlan } = plan;
     const status = {
-      progress: null,
       start: 'In progress',
       end: 'In progress',
       moved: 0,
       copied: 0,
-      stepName: 'Not started',
       isFailed: false,
       isSucceeded: false,
       isCanceled: false,
       isCanceling: false,
+      stepName: 'Not started',
       migrationState: null,
+      warnings: [],
     };
     const zone = dayjs.tz.guess();
 
@@ -266,7 +266,9 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           .format(`DD MMM YYYY, h:mm:ss z`);
       }
       const endTime = migration.status.conditions
-        .filter((c) => c.type === 'Succeeded' || c.type === 'Failed')
+        .filter(
+          (c) => c.type === 'Succeeded' || c.type === 'SucceededWithWarnings' || c.type === 'Failed'
+        )
         .map((c) => c.lastTransitionTime)
         .toString();
       status.end = endTime
@@ -276,7 +278,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       if (migration.status.conditions.length) {
         // For canceled migrations, show 0% progress and `Canceled` step
         if (canceledCondition) {
-          status.progress = 0;
           status.isCanceled = true;
           status.stepName = 'Canceled';
           return status;
@@ -287,7 +288,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.category === 'Critical';
         });
         if (criticalCondition) {
-          status.progress = 100;
           status.isFailed = true;
           status.stepName = criticalCondition.message;
           status.end = criticalCondition.lastTransitionTime;
@@ -300,7 +300,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.type === 'Failed';
         });
         if (failedCondition) {
-          status.progress = 100;
           status.isFailed = true;
           status.stepName = failedCondition.reason;
           status.end = failedCondition.lastTransitionTime;
@@ -324,15 +323,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
             status.stepName = 'Canceling' + status.stepName;
             status.isCanceling = true;
           }
-          // Match string in format 'Step: 16/26'. Capture both numbers.
-          const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
-          if (matches && matches.length === 3) {
-            const currentStep = parseInt(matches[1], 10);
-            const totalSteps = parseInt(matches[2], 10);
-            if (!isNaN(currentStep) && !isNaN(totalSteps)) {
-              status.progress = (currentStep / totalSteps) * 100;
-            }
-          }
           return status;
         }
         // For running migrations, calculate percent progress
@@ -340,7 +330,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.type === 'PlanNotReady';
         });
         if (planNotReadyCondition) {
-          status.progress = 100;
           status.isFailed = true;
           status.stepName = planNotReadyCondition.message;
           status.end = '--';
@@ -354,16 +343,18 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         });
 
         if (warnCondition) {
-          status.progress = 100;
+          const warningMessages = migration?.status?.conditions
+            ?.filter((c) => c.category === 'Warn')
+            .map((c, idx) => c.message);
           status.isSucceeded = true;
           status.stepName = 'Completed with warnings';
           status.migrationState = 'warn';
+          status.warnings = status.warnings.concat(warningMessages);
           return status;
         }
 
         // For successful migrations, show green 100% progress
         if (succeededCondition) {
-          status.progress = 100;
           status.isSucceeded = true;
           status.stepName = 'Completed';
           status.migrationState = 'success';

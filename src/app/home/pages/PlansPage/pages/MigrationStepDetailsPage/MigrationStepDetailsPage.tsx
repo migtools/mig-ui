@@ -68,6 +68,7 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
           {getStepPageTitle(step)}
         </Title>
       </PageSection>
+
       {!isFetchingInitialPlans && step && migration && (
         <PageSection>
           <Card>
