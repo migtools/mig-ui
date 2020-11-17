@@ -37,7 +37,7 @@ interface IPlansPageBaseProps {
   runStageRequest: (plan: IPlan) => void;
   runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
-  planRollbackRequest: (planName: string) => void;
+  runRollbackRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
   refreshAnalyticRequest: (analyticName: string) => void;
   isFetchingInitialPlans: boolean;
@@ -51,7 +51,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   runStageRequest,
   runMigrationRequest,
   planCloseAndDeleteRequest,
-  planRollbackRequest,
+  runRollbackRequest,
   migrationCancelRequest,
   refreshAnalyticRequest,
   isFetchingInitialPlans,
@@ -113,7 +113,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                     planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
                   },
                   handleRollbackPlan: (plan: IPlan) => {
-                    planRollbackRequest(plan.MigPlan.metadata.name);
+                    runRollbackRequest(plan.MigPlan.metadata.name);
                   },
                   handleMigrationCancelRequest: migrationCancelRequest,
                   planList,
@@ -179,7 +179,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
   planCloseAndDeleteRequest: (planName: string) =>
     dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
-  planRollbackRequest: (planName: string) => dispatch(PlanActions.planRollbackRequest(planName)),
+  runRollbackRequest: (planName: string) => dispatch(PlanActions.runRollbackRequest(planName)),
   migrationCancelRequest: (migrationName: string) =>
     dispatch(PlanActions.migrationCancelRequest(migrationName)),
   refreshAnalyticRequest: (analyticName: string) =>

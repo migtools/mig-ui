@@ -892,7 +892,7 @@ function* runMigrationSaga(action) {
       migMeta.namespace,
       false,
       disableQuiesce,
-      false,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -1295,6 +1295,10 @@ function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
 
+function* watchRunRollbackRequest() {
+  yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
+}
+
 function* watchValidatePlanPolling() {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
@@ -1321,6 +1325,7 @@ export default {
   watchMigrationPolling,
   fetchPlansGenerator,
   watchRunStageRequest,
+  watchRunRollbackRequest,
   watchRunMigrationRequest,
   watchAddPlanRequest,
   watchAddAnalyticRequest,

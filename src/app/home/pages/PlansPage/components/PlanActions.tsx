@@ -168,7 +168,7 @@ const PlanActions = ({ plan, history }) => {
           message={`Do you really want to rollback migration plan "${plan.MigPlan.metadata.name}"?`}
           isOpen={isRollbackModalOpen}
           onHandleClose={(isConfirmed) => {
-            if (isConfirmed) planContext.handleDeletePlan(plan);
+            if (isConfirmed) planContext.handleRollbackPlan(plan);
             toggleRollbackModalOpen();
           }}
           id="confirm-plan-rollback"

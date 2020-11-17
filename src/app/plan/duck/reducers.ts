@@ -442,21 +442,21 @@ export const planCloseAndDeleteFailure: PlanReducerFn = (state = INITIAL_STATE, 
   return unlockPlan(state, action.planName);
 };
 
-export const planRollbackRequest: PlanReducerFn = (
+export const runRollbackRequest: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.planCloseAndDeleteRequest>
+  action: ReturnType<typeof PlanActions.runRollbackRequest>
 ) => {
   return lockPlan(state, action.planName);
 };
 
-export const planRollbackSuccess: PlanReducerFn = (state = INITIAL_STATE, action) => {
-  state = unlockPlan(state, action.planName);
+// export const planRollbackSuccess: PlanReducerFn = (state = INITIAL_STATE, action) => {
+//   state = unlockPlan(state, action.planName);
 
-  return {
-    ...state,
-    migPlanList: state.migPlanList.filter((p) => p.MigPlan.metadata.name !== action.planName),
-  };
-};
+//   return {
+//     ...state,
+//     migPlanList: state.migPlanList.filter((p) => p.MigPlan.metadata.name !== action.planName),
+//   };
+// };
 
 export const planRollbackFailure: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return unlockPlan(state, action.planName);

@@ -6,6 +6,7 @@ import { IMigPlan, IPlan } from './types';
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
+  RUN_ROLLBACK_REQUEST: 'RUN_ROLLBACK_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
   REFRESH_ANALYTIC_REQUEST: 'REFRESH_ANALYTIC_REQUEST',
   REFRESH_ANALYTIC_SUCCESS: 'REFRESH_ANALYTIC_SUCCESS',
@@ -299,15 +300,15 @@ const planCloseAndDeleteRequest = (planName: string) => ({
   planName,
 });
 
-const planRollbackRequest = (planName: string) => ({
-  type: PlanActionTypes.PLAN_ROLLBACK_REQUEST,
-  planName,
-});
+// const planRollbackRequest = (planName: string) => ({
+//   type: PlanActionTypes.PLAN_ROLLBACK_REQUEST,
+//   planName,
+// });
 
-const planRollbackSuccess = (planName: string) => ({
-  type: PlanActionTypes.PLAN_ROLLBACK_SUCCESS,
-  planName,
-});
+// const planRollbackSuccess = (planName: string) => ({
+//   type: PlanActionTypes.PLAN_ROLLBACK_SUCCESS,
+//   planName,
+// });
 
 const planRollbackFailure = (planName: string) => ({
   type: PlanActionTypes.PLAN_ROLLBACK_FAILURE,
@@ -420,6 +421,11 @@ const runMigrationRequest = (plan: IPlan, disableQuiesce: boolean) => ({
   disableQuiesce,
 });
 
+const runRollbackRequest = (planName: string) => ({
+  type: PlanActionTypes.RUN_ROLLBACK_REQUEST,
+  planName,
+});
+
 const runStageRequest = (plan: IPlan) => ({
   type: PlanActionTypes.RUN_STAGE_REQUEST,
   plan,
@@ -504,6 +510,7 @@ const updateHookSuccess = () => ({
 export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
+  runRollbackRequest,
   updatePlans,
   refreshAnalyticRequest,
   refreshAnalyticSuccess,
@@ -551,8 +558,8 @@ export const PlanActions = {
   planCloseAndDeleteRequest,
   planCloseAndDeleteSuccess,
   planCloseAndDeleteFailure,
-  planRollbackRequest,
-  planRollbackSuccess,
+  // planRollbackRequest,
+  // planRollbackSuccess,
   planRollbackFailure,
   planCloseSuccess,
   planCloseFailure,

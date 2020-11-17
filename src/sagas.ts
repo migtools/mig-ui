@@ -51,6 +51,7 @@ export default function* rootSaga() {
     planSagas.watchDeleteAnalyticRequest(),
     planSagas.watchRefreshAnalyticRequest(),
     planSagas.watchRunMigrationRequest(),
+    planSagas.watchRunRollbackRequest(),
     planSagas.watchRunStageRequest(),
     planSagas.watchPvDiscoveryRequest(),
     planSagas.watchPVUpdatePolling(),
