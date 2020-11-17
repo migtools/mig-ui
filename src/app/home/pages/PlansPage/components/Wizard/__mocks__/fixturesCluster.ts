@@ -30,6 +30,7 @@ export const clusterExample1: ICluster = {
       caBundle: '',
       insecure: true,
       isHostCluster: false,
+      storageClasses: [],
       url: '',
     },
     status: {
@@ -83,6 +84,12 @@ export const clusterExample2: ICluster = {
       caBundle: '',
       insecure: true,
       isHostCluster: true,
+      storageClasses: [
+        {
+          name: 'gp2',
+          provisioner: 'kubernetes.io/aws-ebs',
+        },
+      ],
       url: '',
     },
     status: {

@@ -1,5 +1,10 @@
 import { IStatusCondition } from '../../common/duck/types';
 
+export interface IMigClusterStorageClass {
+  name: string;
+  provisioner: string;
+}
+
 export interface IMigCluster {
   apiVersion: string;
   kind: string;
@@ -23,6 +28,7 @@ export interface IMigCluster {
       namespace: string;
     };
     clusterUrl: string;
+    storageClasses: IMigClusterStorageClass[];
     isHostCluster: boolean;
     azureResourceGroup: string;
     insecure: boolean;
