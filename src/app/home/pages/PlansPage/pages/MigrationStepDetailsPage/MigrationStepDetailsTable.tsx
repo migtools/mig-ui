@@ -50,7 +50,7 @@ const MigrationStepDetailsTable: React.FunctionComponent<IStepProps> = ({ step, 
           {
             title: stepProgressInfo.metadata,
           },
-          { title: duration },
+          { title: duration, transforms: [cellWidth(10)] },
           {
             title: stepProgressInfo.progressBarApplicable ? (
               <Progress
@@ -62,6 +62,7 @@ const MigrationStepDetailsTable: React.FunctionComponent<IStepProps> = ({ step, 
             ) : (
               stepProgressInfo.message
             ),
+            transforms: [cellWidth(30)],
           },
         ],
       });
