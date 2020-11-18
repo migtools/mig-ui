@@ -450,6 +450,12 @@ export function updateMigPlanFromValues(
     // we should refresh corresponding MigStorage and MigClusters.
     updatedSpec.refresh = true;
   }
+  if (planValues.hasOwnProperty('indirectImageMigration')) {
+    updatedSpec.indirectImageMigration = planValues.indirectImageMigration;
+  }
+  if (planValues.hasOwnProperty('indirectVolumeMigration')) {
+    updatedSpec.indirectVolumeMigration = planValues.indirectVolumeMigration;
+  }
 
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',

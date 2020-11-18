@@ -25,21 +25,10 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   clusterList,
   currentPlan,
 }: IMigrationOptionsFormProps) => {
-  const srcExposedRegistryPathKey = 'srcExposedRegistryPath';
-  const destExposedRegistryPathKey = 'destExposedRegistryPath';
   const indirectImageMigrationKey = 'indirectImageMigration';
   const indirectVolumeMigrationKey = 'indirectVolumeMigration';
 
-  const {
-    handleBlur,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    values,
-    touched,
-    errors,
-    validateForm,
-  } = useFormikContext<IFormValues>();
+  const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   const srcClusterRegistryPath = clusterList.find(
     (cluster) => cluster.MigCluster.metadata.name === values.sourceCluster
@@ -49,13 +38,21 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   ).MigCluster?.status?.registryPath;
 
   const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
-  if (isDirectImageMigrationAvailable) {
-    setFieldValue('indirectImageMigration', false);
-  }
 
   const isDirectVolumeMigrationAvailable = !!currentPlan.spec.persistentVolumes.filter((pv) =>
     pv.supported.copyMethods.includes('filesystem')
   ).length;
+
+  useEffect(() => {
+    //if available, set direct migration for image/volumes on initial render
+    if (isDirectImageMigrationAvailable) {
+      setFieldValue('indirectImageMigration', false);
+    }
+
+    if (isDirectVolumeMigrationAvailable) {
+      setFieldValue('indirectVolumeMigration', false);
+    }
+  }, []);
 
   return (
     <Form>
@@ -110,7 +107,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
               isChecked={!values.indirectImageMigration}
               isDisabled={!isDirectImageMigrationAvailable}
               onChange={(checked) => {
-                setFieldValue('indirectVolumeMigration', !checked);
+                setFieldValue('indirectImageMigration', !checked);
               }}
             />
           </FormGroup>
