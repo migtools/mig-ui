@@ -1,4 +1,4 @@
-import { IPlanLogSources } from '../../../client/resources/discovery';
+import { IPlanLogSources } from '@konveyor/lib-ui';
 
 export const LogActionTypes = {
   REPORT_FETCH_REQUEST: 'REPORT_FETCH_REQUEST',

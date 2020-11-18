@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { Spinner } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { LogActions } from '../../../../logs/duck';
-import { IPlanLogSources } from '../../../../../client/resources/discovery';
+import { IPlanLogSources } from '@konveyor/lib-ui';
 
 interface IProps {
   isFetchingLogs: boolean;

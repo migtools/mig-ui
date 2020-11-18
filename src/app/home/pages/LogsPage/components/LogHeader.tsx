@@ -11,12 +11,8 @@ import {
 import { connect } from 'react-redux';
 import { LogActions } from '../../../../logs/duck';
 import { flatten } from 'lodash';
-import {
-  IPlanLogSources,
-  IPodLogSource,
-  IPodContainer,
-} from '../../../../../client/resources/discovery';
 import { ILogSource, LogUnselected } from './LogsContainer';
+import { IPlanLogSources, IPodContainer, IPodLogSource } from '@konveyor/lib-ui';
 
 interface ISelectItem {
   label: any;

@@ -1,19 +1,19 @@
 import { select, call, put, take, takeEvery, all } from 'redux-saga/effects';
-import { ClientFactory } from '../../../client/client_factory';
 import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
-import {
-  PlanPodReportDiscovery,
-  ClusterKind,
-  IPlanLogSources,
-  IPlanReport,
-} from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
 import { AlertActions } from '../../common/duck/actions';
 import { IReduxState } from '../../../reducers';
+import {
+  ClientFactory,
+  ClusterKind,
+  IDiscoveryClient,
+  IPlanLogSources,
+  IPlanReport,
+  PlanPodReportDiscovery,
+} from '@konveyor/lib-ui';
 
 const clusterIndex = 4;
 const logIndex = 8;
@@ -21,7 +21,11 @@ const logIndex = 8;
 function* downloadLog(action) {
   const state: IReduxState = yield select();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const logPath: string = action.logPath;
   try {
     const archive = new JSZip();
@@ -43,7 +47,11 @@ function* downloadLog(action) {
 function* downloadLogs(action) {
   const state: IReduxState = yield select();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const report: IPlanLogSources = action.report;
   try {
     const archive = new JSZip();
@@ -75,7 +83,11 @@ function* downloadLogs(action) {
 function* extractLogs(action) {
   const state: IReduxState = yield select();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const { logPath } = action;
   try {
     const log = yield discoveryClient.getRaw(logPath);
@@ -95,7 +107,11 @@ function* collectReport(action) {
   const { planName } = action;
   const state: IReduxState = yield select();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const planPodReportDiscovery = new PlanPodReportDiscovery(planName);
   try {
     const planReport: IPlanReport = yield planPodReportDiscovery.get(discoveryClient);

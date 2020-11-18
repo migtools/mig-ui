@@ -78,8 +78,6 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) 
   return null;
 });
 
-const getMigMeta = (state) => state.auth.migMeta;
-
 const lockedPlansSelector = (state) => state.plan.lockedPlanList;
 
 const sourceClusterNamespacesSelector = (state) => state.plan.sourceClusterNamespaces;
@@ -419,7 +417,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
 export default {
   getCurrentPlanWithStatus,
   getPlansWithStatus,
-  getMigMeta,
   getCounts,
   getFilteredNamespaces,
   getHooks,

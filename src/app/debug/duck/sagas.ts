@@ -1,17 +1,22 @@
 import { select, put, takeEvery } from 'redux-saga/effects';
-import { ClientFactory } from '../../../client/client_factory';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IReduxState } from '../../../reducers';
 import { DebugActionTypes, DebugActions } from './actions';
-import { DebugTreeDiscoveryResource } from '../../../client/resources/discovery';
 import { IPlan } from '../../plan/duck/types';
 import { AlertActions } from '../../common/duck/actions';
-import { IDiscoveryResource } from '../../../client/resources/common';
+import {
+  ClientFactory,
+  IDiscoveryClient,
+  DebugTreeDiscoveryResource,
+  IDiscoveryResource,
+} from '@konveyor/lib-ui';
 
 function* fetchDebugObject(action) {
   const state: IReduxState = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.configNamespace,
+    state.auth.migMeta.discoveryApi
+  );
   try {
     const res = yield discoveryClient.getRaw(action.rawPath);
     yield put(DebugActions.debugObjectFetchSuccess(res.data));
@@ -24,7 +29,11 @@ function* fetchDebugObject(action) {
 function* fetchDebugTree(action) {
   const planName: string = action.planName;
   const state: IReduxState = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(planName);
 
   try {

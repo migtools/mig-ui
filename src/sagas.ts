@@ -8,7 +8,8 @@ import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
 import tokenSagas from './app/token/duck/sagas';
 import { AuthActions } from './app/auth/duck/actions';
-import { setTokenExpiryHandler } from './client/client_factory';
+import { setTokenExpiryHandler } from '@konveyor/lib-ui';
+
 import { history } from './helpers';
 import { NON_ADMIN_ENABLED } from './TEMPORARY_GLOBAL_FLAGS';
 import { ClusterActions } from './app/cluster/duck/actions';

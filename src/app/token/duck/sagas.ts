@@ -1,9 +1,5 @@
 // NATODO
 import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
-import { ClientFactory } from '../../../client/client_factory';
-import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind } from '../../../client/resources';
-import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
 import { IToken, IMigToken, ITokenFormValues, TokenType } from './types';
 import { TokenActionTypes, TokenActions } from './actions';
 import {
@@ -26,6 +22,13 @@ import {
 } from '../../common/add_edit_state';
 import { AlertActions } from '../../common/duck/actions';
 import { IReduxState } from '../../../reducers';
+import {
+  ClientFactory,
+  CoreNamespacedResource,
+  CoreNamespacedResourceKind,
+  IClusterClient,
+} from '@konveyor/lib-ui';
+import { MigResource, MigResourceKind } from '../../../client/helpers';
 
 function fetchTokenSecrets(client: IClusterClient, migTokens): Array<Promise<any>> {
   const secretRefs: Array<Promise<any>> = [];
@@ -53,8 +56,11 @@ function groupTokens(migTokens: IMigToken[], secretRefs: any[]): IToken[] {
 
 function* fetchTokensGenerator() {
   const state: IReduxState = yield select();
-  const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigToken, state.auth.migMeta.namespace);
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
   try {
     let tokenList = yield client.list(resource);
     tokenList = yield tokenList.data.items;
@@ -70,8 +76,11 @@ function* fetchTokensGenerator() {
 function* addTokenRequest(action) {
   const state: IReduxState = yield select();
   const { migMeta } = state.auth;
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
   const tokenValues: ITokenFormValues = action.tokenValues;
-  const client: IClusterClient = ClientFactory.cluster(state);
 
   let migTokenSecretData: string;
   switch (tokenValues.tokenType) {
@@ -186,8 +195,11 @@ function* removeTokenSaga(action) {
   try {
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(
+      state.auth.user,
+      state.auth.migMeta.clusterApi
+    );
     const { name } = action;
-    const client: IClusterClient = ClientFactory.cluster(state);
 
     //remove token
     const secretResource = new CoreNamespacedResource(
@@ -218,9 +230,12 @@ function* pollTokenAddEditStatus(action) {
     try {
       const state: IReduxState = yield select();
       const { migMeta } = state.auth;
+      const client: IClusterClient = ClientFactory.cluster(
+        state.auth.user,
+        state.auth.migMeta.clusterApi
+      );
       const { tokenName } = action;
 
-      const client: IClusterClient = ClientFactory.cluster(state);
       const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
       const tokenPollResult = yield client.get(migTokenResource, tokenName);
 
@@ -289,8 +304,11 @@ function* updateTokenRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
   const state: IReduxState = yield select();
   const { migMeta } = state.auth;
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
   const { tokenValues } = action;
-  const client: IClusterClient = ClientFactory.cluster(state);
 
   const migTokenResource = new MigResource(MigResourceKind.MigToken, migMeta.namespace);
   const getTokenRes = yield client.get(migTokenResource, tokenValues.name);

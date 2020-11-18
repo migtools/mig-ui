@@ -4,7 +4,7 @@ import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { LogActions } from '../../../../logs/duck';
 import { LogUnselected, ILogSource } from './LogsContainer';
-import { IPlanLogSources } from '../../../../../client/resources/discovery';
+import { IPlanLogSources } from '@konveyor/lib-ui';
 
 interface IProps {
   logSource: ILogSource;
