@@ -1,11 +1,4 @@
 import { select, put, takeEvery, delay, call, race, take, StrictEffect } from 'redux-saga/effects';
-import { ClientFactory } from '../../../client/client_factory';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
-import {
-  DebugTreeDiscoveryResource,
-  IDebugTreeResource,
-  IDiscoveryResource,
-} from '../../../client/resources/common';
 import {
   debugObjectFetchFailure,
   debugObjectFetchRequest,
@@ -22,6 +15,12 @@ import {
 import { alertErrorTimeout } from '../../common/duck/slice';
 import debugReducer from '.';
 import { DefaultRootState } from '../../../configureStore';
+import {
+  ClientFactory,
+  DebugTreeDiscoveryResource,
+  IDebugTreeResource,
+  IDiscoveryClient,
+} from '@konveyor/lib-ui';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -30,7 +29,11 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 
 function* fetchDebugRefs(action: any): Generator<any, any, any> {
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const linkRefs: Array<any> = [];
   const eachRecursive = (obj: any) => {
     for (const k in obj) {
@@ -88,7 +91,11 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
 
 function* fetchDebugObject(action: any): Generator<any, any, any> {
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
 
   try {
     const res = yield discoveryClient.getRaw(action.payload);
@@ -102,7 +109,11 @@ function* fetchDebugObject(action: any): Generator<any, any, any> {
 function* fetchDebugTree(action: any): Generator<any, any, any> {
   const { planName, migrationID } = action.payload;
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    state.auth.user,
+    state.auth.migMeta.namespace,
+    state.auth.migMeta.discoveryApi
+  );
   const debugTreeResource: IDebugTreeResource = new DebugTreeDiscoveryResource(
     planName,
     migrationID

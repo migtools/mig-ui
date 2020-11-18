@@ -16,6 +16,7 @@ COPY --from=builder /mig-ui/node_modules /opt/app-root/src/node_modules
 ENV MIGMETA_FILE="/etc/mig-ui/migmeta.json"
 ENV VIEWS_DIR=/opt/app-root/src/staticroot
 ENV STATIC_DIR=/opt/app-root/src/staticroot
+#TODO: Remove this line when moving to SSL with reverse proxy
 ENV NODE_TLS_REJECT_UNAUTHORIZED="0"
 
 ENTRYPOINT ["node", "/opt/app-root/src/main.js"]

@@ -1,8 +1,13 @@
 import { takeLatest, select, race, take, call, put, delay, StrictEffect } from 'redux-saga/effects';
-import { ClientFactory } from '../../../client/client_factory';
-import { IClusterClient } from '../../../client/client';
-import { MigResource, MigResourceKind, DiscoveryResource } from '../../../client/resources';
-import { CoreNamespacedResource, CoreNamespacedResourceKind } from '../../../client/resources';
+import {
+  ClientFactory,
+  CoreNamespacedResource,
+  CoreNamespacedResourceKind,
+  DiscoveryResource,
+  IClusterClient,
+  IDiscoveryClient,
+  NamespaceDiscovery,
+} from '@konveyor/lib-ui';
 import {
   createMigClusterSecret,
   createMigCluster,
@@ -23,8 +28,6 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import { NamespaceDiscovery } from '../../../client/resources/discovery';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { PlanActions } from '../../plan/duck';
 import utils from '../../common/duck/utils';
 import { ICluster, IMigCluster } from './types';
@@ -34,6 +37,7 @@ import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 import { IMigMeta } from '../../auth/duck/types';
 import { ICondition } from '../../plan/duck/types';
+import { MigResource, MigResourceKind } from '../../../client/helpers';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -79,7 +83,10 @@ function groupClusters(migClusters: IMigCluster[], refs: any[]): ICluster[] {
 
 function* fetchClustersGenerator(): Generator<any, any, any> {
   const state = yield* getState();
-  const client: IClusterClient = ClientFactory.cluster(state);
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
   const resource = new MigResource(MigResourceKind.MigCluster, state.auth.migMeta.namespace);
   try {
     let clusterList = yield client.list(resource);
@@ -100,7 +107,10 @@ function* removeClusterSaga(action: any): Generator<any, any, any> {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
-    const client: IClusterClient = ClientFactory.cluster(state);
+    const client: IClusterClient = ClientFactory.cluster(
+      state.auth.user,
+      state.auth.migMeta.clusterApi
+    );
 
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
@@ -135,7 +145,10 @@ function* addClusterRequest(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
-  const client: IClusterClient = ClientFactory.cluster(state);
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
 
   const tokenSecret = createMigClusterSecret(
     clusterValues.name,
@@ -304,7 +317,10 @@ function* updateClusterRequest(action: any): Generator<any, any, any> {
   const state = yield* getState();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
-  const client: IClusterClient = ClientFactory.cluster(state);
+  const client: IClusterClient = ClientFactory.cluster(
+    state.auth.user,
+    state.auth.migMeta.clusterApi
+  );
 
   const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
   const getClusterRes = yield client.get(migClusterResource, clusterValues.name);
@@ -463,7 +479,10 @@ function* pollClusterAddEditStatus(action: any): Generator<any, any, any> {
       const { migMeta } = state.auth;
       const { clusterName } = action;
 
-      const client: IClusterClient = ClientFactory.cluster(state);
+      const client: IClusterClient = ClientFactory.cluster(
+        state.auth.user,
+        state.auth.migMeta.clusterApi
+      );
       const migClusterResource = new MigResource(MigResourceKind.MigCluster, migMeta.namespace);
       const clusterPollResult = yield client.get(migClusterResource, clusterName);
 
@@ -561,7 +580,11 @@ function* initDiscoveryCert() {
       yield delay(CLUSTER_RETRY_PERIOD);
       continue;
     }
-    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+      state.auth.user,
+      state.auth.migMeta.namespace,
+      state.auth.migMeta.discoveryApi
+    );
     const hostCluster: ICluster = state.cluster.clusterList.find(
       (c) => c.MigCluster.spec.isHostCluster
     );
