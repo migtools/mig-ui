@@ -46,6 +46,7 @@ export default function* rootSaga() {
     commonSagas.watchAlerts(),
     planSagas.watchStagePolling(),
     planSagas.watchMigrationPolling(),
+    planSagas.watchRollbackPolling(),
     planSagas.watchAddPlanRequest(),
     planSagas.watchAddAnalyticRequest(),
     planSagas.watchDeleteAnalyticRequest(),

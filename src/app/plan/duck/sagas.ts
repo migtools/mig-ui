@@ -1018,6 +1018,46 @@ function* runRollbackSaga(action) {
   }
 }
 
+function* rollbackPoll(action) {
+  const params = { ...action.params };
+  while (true) {
+    const updatedPlans = yield call(params.fetchPlansGenerator);
+    const pollingStatusObj = params.getRollbackStatusCondition(updatedPlans, params.createMigRes);
+
+    switch (pollingStatusObj.status) {
+      case 'CANCELED':
+        yield put(AlertActions.alertSuccessTimeout('Rollback canceled'));
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'SUCCESS':
+        yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
+        yield put(AlertActions.alertSuccessTimeout('Rollback Successful'));
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'FAILURE':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Rollback Failed'}`)
+        );
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'WARN':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `Rollback succeeded with warnings. ${pollingStatusObj.errorMessage}`
+          )
+        );
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+
+      default:
+        break;
+    }
+    yield delay(params.delay);
+  }
+}
+
 /******************************************************************** */
 //Hooks sagas
 /******************************************************************** */
@@ -1303,6 +1343,13 @@ function* watchMigrationPolling() {
   }
 }
 
+function* watchRollbackPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.ROLLBACK_POLL_START);
+    yield race([call(rollbackPoll, data), take(PlanActionTypes.ROLLBACK_POLL_STOP)]);
+  }
+}
+
 function* watchMigrationCancel() {
   yield takeEvery(PlanActionTypes.MIGRATION_CANCEL_REQUEST, migrationCancel);
 }
@@ -1385,6 +1432,7 @@ function* watchRefreshAnalyticRequest() {
 export default {
   watchStagePolling,
   watchMigrationPolling,
+  watchRollbackPolling,
   fetchPlansGenerator,
   watchRunStageRequest,
   watchRunMigrationRequest,
