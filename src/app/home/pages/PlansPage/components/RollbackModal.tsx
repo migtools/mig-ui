@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import { PlanContext } from '../../../duck/context';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 const styles = require('./MigrateModal.module');
 
 interface IProps {
@@ -48,8 +49,9 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
           </GridItem>
           <GridItem>
             <Grid hasGutter>
-              <GridItem span={3}>
+              <GridItem>
                 <Button
+                  className={`${spacing.mrMd}`}
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
@@ -58,9 +60,12 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
                 >
                   Rollback
                 </Button>
-              </GridItem>
-              <GridItem span={3}>
-                <Button key="cancel" variant="secondary" onClick={() => onHandleClose()}>
+                <Button
+                  className={`${spacing.mrMd}`}
+                  key="cancel"
+                  variant="secondary"
+                  onClick={() => onHandleClose()}
+                >
                   Cancel
                 </Button>
               </GridItem>

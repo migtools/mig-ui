@@ -45,8 +45,9 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
           </GridItem>
           <GridItem>
             <Grid hasGutter>
-              <GridItem span={3}>
+              <GridItem>
                 <Button
+                  className={`${spacing.mrMd}`}
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
@@ -55,9 +56,12 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                 >
                   Migrate
                 </Button>
-              </GridItem>
-              <GridItem span={3}>
-                <Button key="cancel" variant="secondary" onClick={() => onHandleClose()}>
+                <Button
+                  className={`${spacing.mrMd}`}
+                  key="cancel"
+                  variant="secondary"
+                  onClick={() => onHandleClose()}
+                >
                   Cancel
                 </Button>
               </GridItem>
