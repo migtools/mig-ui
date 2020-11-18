@@ -530,7 +530,7 @@ export function createMigMigration(
   planName: string,
   namespace: string,
   isStage: boolean,
-  disableQuiesce: boolean,
+  enableQuiesce: boolean,
   isRollback: boolean
 ) {
   return {
@@ -545,7 +545,7 @@ export function createMigMigration(
         name: planName,
         namespace,
       },
-      quiescePods: !isStage && !disableQuiesce,
+      quiescePods: !isStage && enableQuiesce,
       stage: isStage,
       rollback: isRollback,
     },

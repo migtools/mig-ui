@@ -35,7 +35,7 @@ interface IPlansPageBaseProps {
   clusterList: ICluster[];
   storageList: IStorage[];
   runStageRequest: (plan: IPlan) => void;
-  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
+  runMigrationRequest: (plan: IPlan, enableQuiesce: boolean) => void;
   runRollbackRequest: (plan: IPlan) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
@@ -173,8 +173,8 @@ const mapStateToProps = (state: IReduxState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   runStageRequest: (plan: IPlan) => dispatch(PlanActions.runStageRequest(plan)),
-  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) =>
-    dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
+  runMigrationRequest: (plan: IPlan, enableQuiesce: boolean) =>
+    dispatch(PlanActions.runMigrationRequest(plan, enableQuiesce)),
   runRollbackRequest: (plan: IPlan) => dispatch(PlanActions.runRollbackRequest(plan)),
   planCloseAndDeleteRequest: (planName: string) =>
     dispatch(PlanActions.planCloseAndDeleteRequest(planName)),

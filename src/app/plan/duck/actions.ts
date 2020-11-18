@@ -414,10 +414,10 @@ const setCurrentPlan = (currentPlan: IMigPlan) => ({
   currentPlan,
 });
 
-const runMigrationRequest = (plan: IPlan, disableQuiesce: boolean) => ({
+const runMigrationRequest = (plan: IPlan, enableQuiesce: boolean) => ({
   type: PlanActionTypes.RUN_MIGRATION_REQUEST,
   plan,
-  disableQuiesce,
+  enableQuiesce,
 });
 
 const runStageRequest = (plan: IPlan) => ({

@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
-  const [disableQuiesce, toggleQuiesce] = useState(false);
+  const [enableQuiesce, toggleQuiesce] = useState(true);
   const handleChange = (checked, _event) => {
     toggleQuiesce(!!checked);
   };
@@ -36,10 +36,10 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
           </GridItem>
           <GridItem className={styles.gridMargin}>
             <Checkbox
-              label="Don't halt transactions on the source during migration."
+              label="Halt transactions on the source during migration."
               aria-label="halt-label"
               id="transaction-halt-checkbox"
-              isChecked={disableQuiesce}
+              isChecked={enableQuiesce}
               onChange={handleChange}
             />
           </GridItem>
@@ -51,7 +51,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    planContext.handleRunMigration(plan, disableQuiesce);
+                    planContext.handleRunMigration(plan, enableQuiesce);
                   }}
                 >
                   Migrate

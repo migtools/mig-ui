@@ -853,7 +853,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
 
 function* runMigrationSaga(action) {
   try {
-    const { plan, disableQuiesce } = action;
+    const { plan, enableQuiesce } = action;
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -865,7 +865,7 @@ function* runMigrationSaga(action) {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       false,
-      disableQuiesce,
+      enableQuiesce,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
