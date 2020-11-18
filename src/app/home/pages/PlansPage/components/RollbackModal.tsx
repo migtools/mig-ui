@@ -48,7 +48,7 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
           </GridItem>
           <GridItem>
             <Grid hasGutter>
-              <GridItem>
+              <GridItem span={3}>
                 <Button
                   variant="primary"
                   onClick={() => {
@@ -59,7 +59,7 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
                   Rollback
                 </Button>
               </GridItem>
-              <GridItem>
+              <GridItem span={3}>
                 <Button key="cancel" variant="secondary" onClick={() => onHandleClose()}>
                   Cancel
                 </Button>

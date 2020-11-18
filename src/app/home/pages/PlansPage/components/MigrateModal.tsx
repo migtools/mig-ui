@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import { PlanContext } from '../../../duck/context';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 const styles = require('./MigrateModal.module');
 
 interface IProps {
@@ -44,7 +45,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
           </GridItem>
           <GridItem>
             <Grid hasGutter>
-              <GridItem>
+              <GridItem span={3}>
                 <Button
                   variant="primary"
                   onClick={() => {
@@ -55,7 +56,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                   Migrate
                 </Button>
               </GridItem>
-              <GridItem>
+              <GridItem span={3}>
                 <Button key="cancel" variant="secondary" onClick={() => onHandleClose()}>
                   Cancel
                 </Button>
