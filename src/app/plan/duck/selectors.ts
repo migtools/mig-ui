@@ -241,6 +241,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       stepName: 'Not started',
       migrationState: null,
       warnings: [],
+      errors: [],
       currentStep: findCurrentStep(migration?.status?.pipeline || []).currentStep,
       errorCondition: null,
       warnCondition: null,
@@ -293,6 +294,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.category === 'Critical';
         });
         if (criticalCondition) {
+          const errorMessages = migration?.status?.conditions
+            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+            .map((c, idx) => c.message || c.reason);
+          status.errors = status.errors.concat(errorMessages);
           status.isFailed = true;
           status.stepName = criticalCondition.message;
           status.errorCondition = criticalCondition.message;
@@ -306,6 +311,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.type === 'Failed';
         });
         if (failedCondition) {
+          const errorMessages = migration?.status?.conditions
+            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+            .map((c, idx) => c.message || c.reason);
+          status.errors = status.errors.concat(errorMessages);
           status.isFailed = true;
           status.stepName = failedCondition.reason;
           status.errorCondition = failedCondition.reason;

@@ -89,6 +89,7 @@ export interface IMigration {
     start: string;
     stepName: string;
     warnings: string[];
+    errors: string[];
     currentStep: IStep;
     errorCondition: string;
     warnCondition: string;
