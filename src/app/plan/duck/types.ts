@@ -109,6 +109,8 @@ export interface IStep {
   completed: string;
   failed?: boolean;
   progress?: string[];
+  isError?: boolean;
+  isWarning?: boolean;
 }
 
 export interface IStatus {

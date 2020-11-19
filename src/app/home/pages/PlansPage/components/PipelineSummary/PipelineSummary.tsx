@@ -92,7 +92,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
               {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
               {!step?.started ? (
                 <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-              ) : step?.failed ? (
+              ) : step?.failed || step?.isError ? (
                 <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
               ) : step?.started && !step?.completed ? (
                 <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />

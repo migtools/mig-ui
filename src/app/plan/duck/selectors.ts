@@ -9,6 +9,8 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
+import { IStep } from './types';
+import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -239,6 +241,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       stepName: 'Not started',
       migrationState: null,
       warnings: [],
+      currentStep: findCurrentStep(migration?.status?.pipeline || []),
     };
     const zone = dayjs.tz.guess();
 
@@ -367,6 +370,21 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
   const plansWithMigrationStatus = plans.map((plan) => {
     const migrationsWithStatus = plan.Migrations.map((migration) => {
       const tableStatus = getMigrationStatus(plan, migration);
+      migration.status.pipeline = migration?.status?.pipeline?.map((step: IStep) => {
+        const currentStep = findCurrentStep(migration?.status?.pipeline || []);
+        if (step === currentStep.currentStep) {
+          const isError = tableStatus.isFailed || tableStatus.migrationState === 'error';
+          const isWarning = tableStatus.warnings.length || tableStatus.migrationState === 'warn';
+          const newStep = {
+            ...step,
+            isError: isError,
+            isWarning: isWarning,
+          };
+          return newStep;
+        } else {
+          return step;
+        }
+      });
       return { ...migration, tableStatus };
     });
     return { ...plan, Migrations: migrationsWithStatus };
