@@ -59,7 +59,9 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
     const { tableStatus } = migration;
-    const type = migration.spec.stage ? 'Stage' : 'Migration';
+    // Type should be rollback if spec.rollback=true, else use value in spec.stage
+    const nonRollbackMigrationType = migration.spec.stage ? 'Stage' : 'Migration';
+    const type = migration.spec.rollback ? 'Rollback' : nonRollbackMigrationType;
     const getMigrationPipelineStatus = (migrationStatus) => {
       return migrationStatus;
     };

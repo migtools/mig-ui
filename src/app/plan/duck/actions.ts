@@ -6,6 +6,7 @@ import { IMigPlan, IPlan } from './types';
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
+  RUN_ROLLBACK_REQUEST: 'RUN_ROLLBACK_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
   REFRESH_ANALYTIC_REQUEST: 'REFRESH_ANALYTIC_REQUEST',
   REFRESH_ANALYTIC_SUCCESS: 'REFRESH_ANALYTIC_SUCCESS',
@@ -49,6 +50,7 @@ export const PlanActionTypes = {
   PLAN_RESULTS_REQUEST: 'PLAN_RESULTS_REQUEST',
   INIT_STAGE: 'INIT_STAGE',
   INIT_MIGRATION: 'INIT_MIGRATION',
+  INIT_ROLLBACK: 'INIT_ROLLBACK',
   MIGRATION_CANCEL_REQUEST: 'MIGRATION_CANCEL_REQUEST',
   MIGRATION_CANCEL_SUCCESS: 'MIGRATION_CANCEL_SUCCESS',
   MIGRATION_CANCEL_FAILURE: 'MIGRATION_CANCEL_FAILURE',
@@ -66,6 +68,8 @@ export const PlanActionTypes = {
   MIGRATION_POLL_STOP: 'MIGRATION_POLL_STOP',
   STAGE_POLL_START: 'STAGE_POLL_START',
   STAGE_POLL_STOP: 'STAGE_POLL_STOP',
+  ROLLBACK_POLL_START: 'ROLLBACK_POLL_START',
+  ROLLBACK_POLL_STOP: 'ROLLBACK_POLL_STOP',
   GET_PV_RESOURCES_REQUEST: 'GET_PV_RESOURCES_REQUEST',
   GET_PV_RESOURCES_SUCCESS: 'GET_PV_RESOURCES_SUCCESS',
   GET_PV_RESOURCES_FAILURE: 'GET_PV_RESOURCES_FAILURE',
@@ -291,6 +295,11 @@ const initMigration = (planName: string) => ({
   planName,
 });
 
+const initRollback = (planName: string) => ({
+  type: PlanActionTypes.INIT_ROLLBACK,
+  planName,
+});
+
 const planCloseAndDeleteRequest = (planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST,
   planName,
@@ -378,6 +387,15 @@ const stopMigrationPolling = () => ({
   type: PlanActionTypes.MIGRATION_POLL_STOP,
 });
 
+const startRollbackPolling = (params?: any) => ({
+  type: PlanActionTypes.ROLLBACK_POLL_START,
+  params,
+});
+
+const stopRollbackPolling = () => ({
+  type: PlanActionTypes.ROLLBACK_POLL_STOP,
+});
+
 const startPlanPolling = (params?: any) => ({
   type: PlanActionTypes.PLAN_POLL_START,
   params,
@@ -396,14 +414,19 @@ const setCurrentPlan = (currentPlan: IMigPlan) => ({
   currentPlan,
 });
 
-const runMigrationRequest = (plan: IPlan, disableQuiesce: boolean) => ({
+const runMigrationRequest = (plan: IPlan, enableQuiesce: boolean) => ({
   type: PlanActionTypes.RUN_MIGRATION_REQUEST,
   plan,
-  disableQuiesce,
+  enableQuiesce,
 });
 
 const runStageRequest = (plan: IPlan) => ({
   type: PlanActionTypes.RUN_STAGE_REQUEST,
+  plan,
+});
+
+const runRollbackRequest = (plan: IPlan) => ({
+  type: PlanActionTypes.RUN_ROLLBACK_REQUEST,
   plan,
 });
 
@@ -486,6 +509,7 @@ const updateHookSuccess = () => ({
 export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
+  runRollbackRequest,
   updatePlans,
   refreshAnalyticRequest,
   refreshAnalyticSuccess,
@@ -527,6 +551,7 @@ export const PlanActions = {
   validatePlanPollStop,
   initStage,
   initMigration,
+  initRollback,
   migrationCancelRequest,
   migrationCancelSuccess,
   migrationCancelFailure,
@@ -548,6 +573,8 @@ export const PlanActions = {
   stopStagePolling,
   startMigrationPolling,
   stopMigrationPolling,
+  startRollbackPolling,
+  stopRollbackPolling,
   /*
   Hook exports
   */

@@ -282,6 +282,25 @@ export const initMigration: PlanReducerFn = (
     migPlanList: sortedPlans,
   };
 };
+
+export const initRollback: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.initRollback>
+) => {
+  const updatedPlan = state.migPlanList.find((p) => p.MigPlan.metadata.name === action.planName);
+  const filteredPlans = state.migPlanList.filter(
+    (p) => p.MigPlan.metadata.name !== action.planName
+  );
+
+  const updatedPlansList = [...filteredPlans, updatedPlan];
+  const sortedPlans = sortPlans(updatedPlansList);
+
+  return {
+    ...state,
+    migPlanList: sortedPlans,
+  };
+};
+
 export const stagingSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.stagingSuccess>
@@ -604,6 +623,8 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return initStage(state, action);
     case PlanActionTypes.INIT_MIGRATION:
       return initMigration(state, action);
+    case PlanActionTypes.INIT_ROLLBACK:
+      return initRollback(state, action);
     case PlanActionTypes.MIG_PLAN_FETCH_REQUEST:
       return migPlanFetchRequest(state, action);
     case PlanActionTypes.MIG_PLAN_FETCH_SUCCESS:

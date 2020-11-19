@@ -736,7 +736,8 @@ function* runStageSaga(action) {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       true,
-      true
+      true,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -852,7 +853,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
 
 function* runMigrationSaga(action) {
   try {
-    const { plan, disableQuiesce } = action;
+    const { plan, enableQuiesce } = action;
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -864,7 +865,8 @@ function* runMigrationSaga(action) {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       false,
-      disableQuiesce
+      enableQuiesce,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -919,6 +921,134 @@ function* migrationPoll(action) {
           )
         );
         yield put(PlanActions.stopMigrationPolling());
+        break;
+
+      default:
+        break;
+    }
+    yield delay(params.delay);
+  }
+}
+
+/******************************************************************** */
+//Rollback sagas
+/******************************************************************** */
+function getRollbackStatusCondition(updatedPlans, createMigRes) {
+  const matchingPlan = updatedPlans.updatedPlans.find(
+    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+  );
+  const statusObj = { status: null, planName: null, errorMessage: null };
+
+  if (matchingPlan && matchingPlan.Migrations) {
+    const matchingMigration = matchingPlan.Migrations.find(
+      (s) => s.metadata.name === createMigRes.data.metadata.name
+    );
+
+    if (matchingMigration && matchingMigration.status?.conditions) {
+      const hasSucceededCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Succeeded'
+      );
+      if (hasSucceededCondition) {
+        statusObj.status = 'SUCCESS';
+      }
+
+      const hasErrorCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      const errorCondition = matchingMigration.status.conditions.find(
+        (c) => c.type === 'Failed' || c.category === 'Critical'
+      );
+      if (hasErrorCondition) {
+        statusObj.status = 'FAILURE';
+        statusObj.errorMessage = errorCondition.message;
+      }
+
+      const hasWarnCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.category === 'Warn'
+      );
+      const warnCondition = matchingMigration.status.conditions.find((c) => c.category === 'Warn');
+
+      if (hasWarnCondition) {
+        statusObj.status = 'WARN';
+        statusObj.errorMessage = warnCondition.message;
+      }
+      statusObj.planName = matchingPlan.MigPlan.metadata.name;
+    }
+  }
+  return statusObj;
+}
+
+function* runRollbackSaga(action) {
+  try {
+    const state: IReduxState = yield select();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state);
+    const { plan } = action;
+
+    yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
+    yield put(AlertActions.alertProgressTimeout('Rollback Started'));
+
+    const migMigrationObj = createMigMigration(
+      uuidv1(),
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      false,
+      false,
+      true
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    const params = {
+      fetchPlansGenerator: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      getRollbackStatusCondition: getRollbackStatusCondition,
+      createMigRes: createMigRes,
+    };
+
+    yield put(PlanActions.startRollbackPolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.stagingFailure(err));
+  }
+}
+
+function* rollbackPoll(action) {
+  const params = { ...action.params };
+  while (true) {
+    const updatedPlans = yield call(params.fetchPlansGenerator);
+    const pollingStatusObj = params.getRollbackStatusCondition(updatedPlans, params.createMigRes);
+
+    switch (pollingStatusObj.status) {
+      case 'CANCELED':
+        yield put(AlertActions.alertSuccessTimeout('Rollback canceled'));
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'SUCCESS':
+        yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
+        yield put(AlertActions.alertSuccessTimeout('Rollback Successful'));
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'FAILURE':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Rollback Failed'}`)
+        );
+        yield put(PlanActions.stopRollbackPolling());
+        break;
+      case 'WARN':
+        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
+        yield put(
+          AlertActions.alertWarn(
+            `Rollback succeeded with warnings. ${pollingStatusObj.errorMessage}`
+          )
+        );
+        yield put(PlanActions.stopRollbackPolling());
         break;
 
       default:
@@ -1213,6 +1343,13 @@ function* watchMigrationPolling() {
   }
 }
 
+function* watchRollbackPolling() {
+  while (true) {
+    const data = yield take(PlanActionTypes.ROLLBACK_POLL_START);
+    yield race([call(rollbackPoll, data), take(PlanActionTypes.ROLLBACK_POLL_STOP)]);
+  }
+}
+
 function* watchMigrationCancel() {
   yield takeEvery(PlanActionTypes.MIGRATION_CANCEL_REQUEST, migrationCancel);
 }
@@ -1267,6 +1404,10 @@ function* watchRunStageRequest() {
   yield takeLatest(PlanActionTypes.RUN_STAGE_REQUEST, runStageSaga);
 }
 
+function* watchRunRollbackRequest() {
+  yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
+}
+
 function* watchValidatePlanPolling() {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
@@ -1291,9 +1432,11 @@ function* watchRefreshAnalyticRequest() {
 export default {
   watchStagePolling,
   watchMigrationPolling,
+  watchRollbackPolling,
   fetchPlansGenerator,
   watchRunStageRequest,
   watchRunMigrationRequest,
+  watchRunRollbackRequest,
   watchAddPlanRequest,
   watchAddAnalyticRequest,
   watchDeleteAnalyticRequest,
