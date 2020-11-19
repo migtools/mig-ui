@@ -31,23 +31,17 @@ interface IProps {
 const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) => {
   const { planName } = useParams();
   const columns = [
-    { title: 'Step' },
-    { title: 'Elapsed time', transforms: [cellWidth(10)] },
+    { title: 'Step', transforms: [cellWidth(20)] },
+    { title: 'Elapsed time', transforms: [cellWidth(20)] },
     {
       title: 'Status',
-      transforms: [cellWidth(30)],
+      transforms: [cellWidth(50)],
     },
     '',
   ];
 
-  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(
-    migration.status.pipeline,
-    10
-  );
-  useEffect(() => setPageNumber(1), [setPageNumber]);
-
   const rows: IRow[] = [];
-  currentPageItems.forEach((step: IStep) => {
+  migration?.status?.pipeline.forEach((step: IStep) => {
     const progressInfo: IProgressInfoObj = getProgressValues(step, migration);
 
     rows.push({
@@ -103,12 +97,6 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     <>
       {migration.status.pipeline.length > 0 ? (
         <>
-          <Level>
-            <LevelItem />
-            <LevelItem>
-              <Pagination {...paginationProps} widgetId="migration-details-pagination-top" />
-            </LevelItem>
-          </Level>
           <Table
             aria-label="migration-analytics-table"
             cells={columns}
@@ -118,12 +106,6 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
             <TableHeader />
             <TableBody />
           </Table>
-
-          <Pagination
-            variant="bottom"
-            {...paginationProps}
-            widgetId="migration-details-table-pagination-top"
-          />
         </>
       ) : (
         <Bullseye>
