@@ -35,7 +35,8 @@ interface IPlansPageBaseProps {
   clusterList: ICluster[];
   storageList: IStorage[];
   runStageRequest: (plan: IPlan) => void;
-  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) => void;
+  runMigrationRequest: (plan: IPlan, enableQuiesce: boolean) => void;
+  runRollbackRequest: (plan: IPlan) => void;
   planCloseAndDeleteRequest: (planName: string) => void;
   migrationCancelRequest: (migrationName: string) => void;
   refreshAnalyticRequest: (analyticName: string) => void;
@@ -49,6 +50,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   storageList,
   runStageRequest,
   runMigrationRequest,
+  runRollbackRequest,
   planCloseAndDeleteRequest,
   migrationCancelRequest,
   refreshAnalyticRequest,
@@ -107,6 +109,7 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
                 value={{
                   handleStageTriggered: runStageRequest,
                   handleRunMigration: runMigrationRequest,
+                  handleRollbackTriggered: runRollbackRequest,
                   handleDeletePlan: (plan: IPlan) => {
                     planCloseAndDeleteRequest(plan.MigPlan.metadata.name);
                   },
@@ -170,8 +173,9 @@ const mapStateToProps = (state: IReduxState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   runStageRequest: (plan: IPlan) => dispatch(PlanActions.runStageRequest(plan)),
-  runMigrationRequest: (plan: IPlan, disableQuiesce: boolean) =>
-    dispatch(PlanActions.runMigrationRequest(plan, disableQuiesce)),
+  runMigrationRequest: (plan: IPlan, enableQuiesce: boolean) =>
+    dispatch(PlanActions.runMigrationRequest(plan, enableQuiesce)),
+  runRollbackRequest: (plan: IPlan) => dispatch(PlanActions.runRollbackRequest(plan)),
   planCloseAndDeleteRequest: (planName: string) =>
     dispatch(PlanActions.planCloseAndDeleteRequest(planName)),
   migrationCancelRequest: (migrationName: string) =>

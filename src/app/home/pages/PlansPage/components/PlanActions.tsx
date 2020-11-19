@@ -11,6 +11,7 @@ import {
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck';
 import MigrateModal from './MigrateModal';
+import RollbackModal from './RollbackModal';
 import { withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
@@ -18,6 +19,7 @@ import ConfirmModal from '../../../../common/components/ConfirmModal';
 const PlanActions = ({ plan, history }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
+  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
   const {
@@ -87,6 +89,22 @@ const PlanActions = ({ plan, history }) => {
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
+        toggleRollbackModalOpen();
+      }}
+      key="rollbackPlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        isPlanLocked
+      }
+    >
+      Rollback
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
         toggleDeleteModalOpen();
       }}
       key="deletePlan"
@@ -138,6 +156,12 @@ const PlanActions = ({ plan, history }) => {
           plan={plan}
           isOpen={isMigrateModalOpen}
           onHandleClose={toggleMigrateModalOpen}
+        />
+
+        <RollbackModal
+          plan={plan}
+          isOpen={isRollbackModalOpen}
+          onHandleClose={toggleRollbackModalOpen}
         />
 
         <ConfirmModal

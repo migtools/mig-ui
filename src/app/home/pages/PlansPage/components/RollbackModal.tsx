@@ -12,11 +12,7 @@ interface IProps {
   plan: any;
 }
 
-const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
-  const [enableQuiesce, toggleQuiesce] = useState(true);
-  const handleChange = (checked, _event) => {
-    toggleQuiesce(!!checked);
-  };
+const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const planContext = useContext(PlanContext);
 
   return (
@@ -24,24 +20,32 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`Migrate ${plan.MigPlan.metadata.name}`}
+      title={`Rollback ${plan.MigPlan.metadata.name}`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
-            Migrating a migration plan means that all transactions on the source cluster will be
-            halted before the migration begins and will remain halted for the duration of the
-            migration. Persistent volumes associated with the projects being migrated will be moved
-            or copied to the target cluster as specified in the migration plan.
-          </GridItem>
-          <GridItem className={styles.gridMargin}>
-            <Checkbox
-              label="Halt transactions on the source during migration."
-              aria-label="halt-label"
-              id="transaction-halt-checkbox"
-              isChecked={enableQuiesce}
-              onChange={handleChange}
-            />
+            Rolling back the migration plan will revert migrated resources and volumes to their
+            original states and locations, including:
+            <GridItem>
+              <br />
+              Source Cluster:
+              <li>
+                Restoring original replica counts (Un-Quiescing) on Deployments, DeploymentConfigs,
+                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
+              </li>
+              <br />
+              Target Cluster:
+              <li>Deleting migrated resources</li>
+              <br />
+              Source and Target Cluster:
+              <li>Deleting Velero Backups and Restores created during the migration</li>
+              <li>
+                Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
+                namespaces
+              </li>
+              <br />
+            </GridItem>
           </GridItem>
           <GridItem>
             <Grid hasGutter>
@@ -51,10 +55,10 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    planContext.handleRunMigration(plan, enableQuiesce);
+                    planContext.handleRollbackTriggered(plan);
                   }}
                 >
-                  Migrate
+                  Rollback
                 </Button>
                 <Button
                   className={`${spacing.mrMd}`}
@@ -72,4 +76,4 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
     </Modal>
   );
 };
-export default MigrateModal;
+export default RollbackModal;
