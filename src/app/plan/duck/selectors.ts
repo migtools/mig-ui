@@ -136,6 +136,15 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
+      const hasSucceededRollback = !!plan.Migrations.filter((m) => {
+        if (m.status?.conditions && m.spec.rollback) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !m.status?.conditions?.some((c) => c.type === 'Canceled')
+          );
+        }
+      }).length;
+
       const hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
 
       const finalMigrationComplete = !!plan.Migrations.filter((m) => {
@@ -153,6 +162,7 @@ const getPlansWithPlanStatus = createSelector(
       const statusObject = {
         hasSucceededMigration,
         hasSucceededStage,
+        hasSucceededRollback,
         hasAttemptedMigration,
         finalMigrationComplete,
         hasRunningMigrations,

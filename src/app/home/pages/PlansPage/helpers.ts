@@ -18,6 +18,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasRunningMigrations,
     hasSucceededMigration,
     hasSucceededStage,
+    hasSucceededRollback,
     hasCanceledCondition,
     hasCancelingCondition,
     latestType,
@@ -33,6 +34,7 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasCancelingCondition) return `Canceling ${latestType}`;
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
+  if (hasSucceededRollback) return 'Rollback Succeeded';
   if (hasSucceededMigration) return 'Migration Succeeded';
   if (hasSucceededStage) return 'Stage Succeeded';
   if (hasReadyCondition) return 'Ready';
