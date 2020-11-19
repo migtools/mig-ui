@@ -81,10 +81,7 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
   }
   if (currentStep?.started && !currentStep?.completed) {
     let title: string;
-    const isError =
-      status?.errors?.length ||
-      migration.tableStatus.isFailed ||
-      migration.tableStatus.migrationState === 'error';
+    const isError = status?.errors?.length || migration.tableStatus.migrationState === 'error';
 
     title = isError ? `${MigrationStepsType.Error} - ` : '';
     if (currentStep) {

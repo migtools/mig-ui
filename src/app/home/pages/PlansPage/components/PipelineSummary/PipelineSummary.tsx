@@ -6,11 +6,9 @@ import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resou
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getPipelineSummaryTitle } from '../../helpers';
 import { IMigration } from '../../../../../plan/duck/types';
-import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 
-import { SpaIconConfig } from '@patternfly/react-icons/dist/js/icons';
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
 
