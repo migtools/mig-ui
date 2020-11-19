@@ -45,7 +45,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
     { title: 'Type', transforms: [sortable] },
     { title: 'Start Time', transforms: [sortable] },
     { title: 'End Time', transforms: [sortable] },
-    { title: '', transforms: [cellWidth(10)] },
     {
       title: 'Status',
       transforms: [cellWidth(40)],
@@ -62,10 +61,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
     // Type should be rollback if spec.rollback=true, else use value in spec.stage
     const nonRollbackMigrationType = migration.spec.stage ? 'Stage' : 'Migration';
     const type = migration.spec.rollback ? 'Rollback' : nonRollbackMigrationType;
-    const isWarningCondition = tableStatus?.migrationState === 'warn';
-    const getMigrationPipelineStatus = (migrationStatus) => {
-      return migrationStatus;
-    };
 
     rows.push({
       cells: [
@@ -79,28 +74,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
 
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
-        {
-          title: isWarningCondition && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={tableStatus?.warnings?.map((warning, idx) => {
-                return (
-                  <>
-                    {warning}
-                    <br />
-                  </>
-                );
-              })}
-              aria-label="warning-details"
-              closeBtnAriaLabel="close-warning-details"
-              maxWidth="200rem"
-            >
-              <span className="pf-c-icon pf-m-warning">
-                <WarningTriangleIcon />
-              </span>
-            </Popover>
-          ),
-        },
         {
           title: (
             <>
