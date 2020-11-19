@@ -1,11 +1,13 @@
 import * as React from 'react';
 
-import { Flex, FlexItem, Text } from '@patternfly/react-core';
+import { Flex, FlexItem, Popover, PopoverPosition, Text } from '@patternfly/react-core';
 import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
 import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
-
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getPipelineSummaryTitle } from '../../helpers';
 import { IMigration } from '../../../../../plan/duck/types';
+import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
+import { SpaIconConfig } from '@patternfly/react-icons/dist/js/icons';
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
 
@@ -85,24 +87,52 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   const title = getPipelineSummaryTitle(migration);
   return (
     <>
-      <Summary title={title}>
-        {status?.pipeline.map((step, index) => {
-          return (
-            <>
-              {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
-              {!step?.started ? (
-                <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-              ) : step?.failed || step?.isError ? (
-                <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-              ) : step?.started && !step?.completed ? (
-                <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />
-              ) : (
-                <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-              )}
-            </>
-          );
-        })}
-      </Summary>
+      <Flex>
+        <FlexItem>
+          <Summary title={title}>
+            {status?.pipeline.map((step, index) => {
+              return (
+                <>
+                  {index != 0 ? (
+                    <Dash key={step.name} isReached={step?.started ? true : false} />
+                  ) : (
+                    ''
+                  )}
+                  {!step?.started ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+                  ) : step?.failed || step?.isError ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+                  ) : step?.started && !step?.completed ? (
+                    <Chain
+                      key={index}
+                      Face={ResourcesAlmostFullIcon}
+                      times={1}
+                      color={successColor}
+                    />
+                  ) : (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+                  )}
+                </>
+              );
+            })}
+          </Summary>
+        </FlexItem>
+        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+          {migration.tableStatus.isFailed && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>error message</>}
+              aria-label="pipeline-error-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className="pf-c-icon pf-m-danger">
+                <QuestionCircleIcon />
+              </span>
+            </Popover>
+          )}
+        </FlexItem>
+      </Flex>
     </>
   );
 };
