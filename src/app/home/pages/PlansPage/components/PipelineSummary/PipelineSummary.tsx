@@ -7,6 +7,9 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getPipelineSummaryTitle } from '../../helpers';
 import { IMigration } from '../../../../../plan/duck/types';
 import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
+
 import { SpaIconConfig } from '@patternfly/react-icons/dist/js/icons';
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
@@ -121,13 +124,26 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
           {migration.tableStatus.isFailed && (
             <Popover
               position={PopoverPosition.top}
-              bodyContent={<>error message</>}
+              bodyContent={<>{migration.tableStatus.errorCondition}</>}
               aria-label="pipeline-error-details"
               closeBtnAriaLabel="close--details"
               maxWidth="30rem"
             >
               <span className="pf-c-icon pf-m-danger">
-                <QuestionCircleIcon />
+                <ErrorCircleOIcon />
+              </span>
+            </Popover>
+          )}
+          {migration.tableStatus.warnCondition && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.warnCondition}</>}
+              aria-label="pipeline-warning-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+                <ExclamationTriangleIcon />
               </span>
             </Popover>
           )}

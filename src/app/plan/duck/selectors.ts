@@ -241,7 +241,9 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       stepName: 'Not started',
       migrationState: null,
       warnings: [],
-      currentStep: findCurrentStep(migration?.status?.pipeline || []),
+      currentStep: findCurrentStep(migration?.status?.pipeline || []).currentStep,
+      errorCondition: null,
+      warnCondition: null,
     };
     const zone = dayjs.tz.guess();
 
@@ -293,6 +295,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         if (criticalCondition) {
           status.isFailed = true;
           status.stepName = criticalCondition.message;
+          status.errorCondition = criticalCondition.message;
           status.end = criticalCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
@@ -305,6 +308,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         if (failedCondition) {
           status.isFailed = true;
           status.stepName = failedCondition.reason;
+          status.errorCondition = failedCondition.reason;
           status.end = failedCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
@@ -353,6 +357,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.stepName = 'Completed with warnings';
           status.migrationState = 'warn';
           status.warnings = status.warnings.concat(warningMessages);
+          status.warnCondition = warningMessages[0];
           return status;
         }
 

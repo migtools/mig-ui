@@ -89,6 +89,9 @@ export interface IMigration {
     start: string;
     stepName: string;
     warnings: string[];
+    currentStep: IStep;
+    errorCondition: string;
+    warnCondition: string;
   };
 }
 
