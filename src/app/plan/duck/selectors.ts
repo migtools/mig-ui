@@ -313,10 +313,11 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           const errorMessages = migration?.status?.conditions
             ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
             .map((c, idx) => c.message || c.reason);
-          status.errors = status.errors.concat(errorMessages);
+          const migrationErrors = migration?.status?.errors;
+          status.errors = status.errors.concat(errorMessages, migrationErrors);
           status.isFailed = true;
           status.stepName = failedCondition.reason;
-          status.errorCondition = failedCondition.reason;
+          status.errorCondition = failedCondition.message;
           status.end = failedCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
