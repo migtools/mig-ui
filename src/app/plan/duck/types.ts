@@ -152,6 +152,7 @@ export interface IPlan {
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
     hasSucceededStage: boolean;
+    hasSucceededRollback: boolean;
     isPlanLocked: boolean;
     latestType: string;
     latestIsFailed: boolean;
