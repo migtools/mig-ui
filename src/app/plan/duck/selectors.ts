@@ -366,7 +366,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           status.stepName = 'Completed with warnings';
           status.migrationState = 'warn';
           status.warnings = status.warnings.concat(warningMessages);
-          status.warnCondition = warningMessages[0];
+          status.warnCondition = warnCondition?.message;
           return status;
         }
 
@@ -386,7 +386,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       const tableStatus = getMigrationStatus(plan, migration);
       migration.status.pipeline = migration?.status?.pipeline?.map((step: IStep) => {
         const currentStep = findCurrentStep(migration?.status?.pipeline || []);
-        if (step === currentStep.currentStep) {
+        if (step === currentStep) {
           const isError = tableStatus.isFailed || tableStatus.migrationState === 'error';
           const isWarning = tableStatus.warnings.length || tableStatus.migrationState === 'warn';
           const newStep = {

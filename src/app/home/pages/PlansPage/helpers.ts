@@ -7,7 +7,7 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
-import { IMigration, IMigrationStatus, IPlan, IStep } from '../../../plan/duck/types';
+import { IMigration, IPlan, IStep } from '../../../plan/duck/types';
 import { MigrationStepsType } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
@@ -42,9 +42,6 @@ export const getPlanStatusText = (plan: IPlan) => {
 
 export const getPlanInfo = (plan: IPlan) => {
   const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
-  const namespaces = latestMigAnalytic?.status?.analytics?.namespaces
-    ? latestMigAnalytic?.status?.analytics?.namespaces
-    : [];
   const isMaxResourcesLimitReached =
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
   return {
@@ -61,18 +58,17 @@ export const getPlanInfo = (plan: IPlan) => {
 
 export const findCurrentStep = (
   pipeline: IStep[]
-): { currentStep: IStep | undefined; currentStepIndex: number } => {
+): IStep  => {
   const currentStep = pipeline
     .slice(0)
     .reverse()
     .find((step) => !!step.started && !step.completed);
-  const currentStepIndex = currentStep ? pipeline.indexOf(currentStep) : 0;
-  return { currentStep, currentStepIndex };
+  return  currentStep;
 };
 
 export const getPipelineSummaryTitle = (migration: IMigration): string => {
   const { status, tableStatus } = migration;
-  const { currentStep } = findCurrentStep(status?.pipeline || []);
+  const  currentStep  = findCurrentStep(status?.pipeline || []);
   if (status?.phase === 'Completed') {
     if (tableStatus?.migrationState === 'warn') {
       return MigrationStepsType.CompletedWithWarnings;
@@ -81,7 +77,7 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
   }
   if (currentStep?.started && !currentStep?.completed) {
     let title: string;
-    const isError = status?.errors?.length || migration.tableStatus.migrationState === 'error';
+    const isError = status?.errors?.length || tableStatus.migrationState === 'error';
 
     title = isError ? `${MigrationStepsType.Error} - ` : '';
     if (currentStep) {

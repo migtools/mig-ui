@@ -14,7 +14,6 @@ const styles = require('./PipelineSummary.module');
 
 interface IDashProps {
   isReached: boolean;
-  isWarning?: boolean;
 }
 const dangerColor = '#c9190b';
 const disabledColor = '#d2d2d2';
@@ -23,7 +22,7 @@ const successColor = '#3e8635';
 const dashReachedStyles = classNames(styles.dash, styles.dashReached);
 const dashNotReachedStyles = classNames(styles.dash, styles.dashNotReached);
 
-const Dash: React.FunctionComponent<IDashProps> = ({ isReached, isWarning }: IDashProps) => {
+const Dash: React.FunctionComponent<IDashProps> = ({ isReached }: IDashProps) => {
   return (
     <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
       {isReached ? <div className={dashReachedStyles} /> : <div className={dashNotReachedStyles} />}

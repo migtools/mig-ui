@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Table, TableBody, TableHeader, cellWidth, IRow } from '@patternfly/react-table';
 import {
   Bullseye,
@@ -6,14 +6,10 @@ import {
   Title,
   Progress,
   ProgressSize,
-  Level,
-  LevelItem,
-  Pagination,
 } from '@patternfly/react-core';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 import {
   getElapsedTime,
   getProgressValues,
@@ -43,7 +39,6 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
   const rows: IRow[] = [];
   migration?.status?.pipeline.forEach((step: IStep) => {
     const progressInfo: IProgressInfoObj = getProgressValues(step, migration);
-
     rows.push({
       cells: [
         {

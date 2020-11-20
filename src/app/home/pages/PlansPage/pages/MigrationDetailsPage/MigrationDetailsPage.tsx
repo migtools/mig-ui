@@ -38,13 +38,12 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
   }, []);
 
   const { planName, migrationID } = useParams();
-
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
-
-  const isWarningCondition = migration?.tableStatus?.migrationState === 'warn';
-  const isErrorCondition = migration?.tableStatus?.migrationState === 'error';
+const {tableStatus} = migration;
+  const isWarningCondition = tableStatus.migrationState === 'warn';
+  const isErrorCondition = tableStatus.migrationState === 'error';
   const type = migration?.spec?.stage ? 'Stage' : 'Final';
   return (
     <>
@@ -71,7 +70,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
             isInline
             title="This migration has following warning conditions:"
           >
-            {migration?.tableStatus?.warnings?.map((warning, idx) => {
+            {tableStatus.warnings.map((warning, idx) => {
               return (
                 <>
                   {warning}
@@ -85,7 +84,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
       {isErrorCondition && (
         <PageSection>
           <Alert variant="danger" isInline title="This migration has following error conditions:">
-            {migration?.tableStatus?.errors?.map((error, idx) => {
+            {tableStatus.errors.map((error ) => {
               return (
                 <>
                   {error}
