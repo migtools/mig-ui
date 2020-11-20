@@ -28,6 +28,7 @@ const PlanActions = ({ plan, history }) => {
     hasErrorCondition,
     hasRunningMigrations,
     hasAttemptedMigration,
+    hasSucceededRollback,
     finalMigrationComplete,
     isPlanLocked,
   } = plan.PlanStatus;
@@ -97,6 +98,7 @@ const PlanActions = ({ plan, history }) => {
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
+        hasSucceededRollback ||
         isPlanLocked
       }
     >
