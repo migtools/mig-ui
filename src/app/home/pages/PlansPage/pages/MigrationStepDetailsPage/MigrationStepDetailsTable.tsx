@@ -13,7 +13,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import { getMigrationStepProgress, getElapsedTime } from '../../helpers';
+import { getProgressValues, getElapsedTime, IStepProgressInfo } from '../../helpers';
 
 interface IStepProps {
   step: IStep;
@@ -30,21 +30,22 @@ const MigrationStepDetailsTable: React.FunctionComponent<IStepProps> = ({ step, 
     },
   ];
 
+  const progressInfoObj = getProgressValues(step, migration);
+
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(
-    step.progress,
+    progressInfoObj.detailedProgress,
     10
   );
 
   useEffect(() => setPageNumber(1), [setPageNumber]);
 
   const rows: IRow[] = [];
-  currentPageItems.forEach((progress) => {
-    const stepProgressInfo = getMigrationStepProgress(progress);
+  currentPageItems.forEach((stepProgressInfo: IStepProgressInfo) => {
     const duration =
       stepProgressInfo.duration === ''
         ? getElapsedTime(step, migration)
         : stepProgressInfo.duration;
-    if (stepProgressInfo.message !== '') {
+    if (progressInfoObj.detailsAvailable) {
       rows.push({
         cells: [
           {
@@ -54,13 +55,13 @@ const MigrationStepDetailsTable: React.FunctionComponent<IStepProps> = ({ step, 
           {
             title: stepProgressInfo.progressBarApplicable ? (
               <Progress
-                value={stepProgressInfo.percentComplete}
-                title={stepProgressInfo.message}
+                value={stepProgressInfo.progressPercentage}
+                title={stepProgressInfo.progressMessage}
                 size={ProgressSize.sm}
                 variant={stepProgressInfo.progressVariant}
               />
             ) : (
-              stepProgressInfo.message
+              stepProgressInfo.progressMessage
             ),
             transforms: [cellWidth(30)],
           },

@@ -64,9 +64,11 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
             </BreadcrumbItem>
           )}
         </Breadcrumb>
-        <Title headingLevel="h1" size="2xl">
-          {getStepPageTitle(step)}
-        </Title>
+        {step && (
+          <Title headingLevel="h1" size="2xl">
+            {getStepPageTitle(step)}
+          </Title>
+        )}
       </PageSection>
 
       {!isFetchingInitialPlans && step && migration && (

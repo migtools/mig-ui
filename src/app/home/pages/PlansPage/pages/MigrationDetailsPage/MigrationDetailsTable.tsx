@@ -8,7 +8,6 @@ import {
   getElapsedTime,
   getProgressValues,
   IProgressInfoObj,
-  showConsolidatedProgressBar,
 } from '../../helpers';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
 const styles = require('./MigrationDetailsTable.module');
@@ -50,22 +49,19 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
         },
         {
           title:
-            showConsolidatedProgressBar(step) &&
-            progressInfo.progressBarApplicable &&
-            step.started &&
-            step.progress?.length > 0 ? (
+            progressInfo.consolidatedProgress.progressBarApplicable &&
+            !progressInfo.detailsAvailable ? (
               <>
                 {
                   <Progress
-                    value={progressInfo.percentComplete}
-                    title={progressInfo.progressBarMessage}
+                    value={progressInfo.consolidatedProgress.progressPercentage}
+                    title={progressInfo.consolidatedProgress.progressMessage}
                     size={ProgressSize.sm}
-                    variant={progressInfo.variant}
-                    className={progressInfo.isWarning && styles.warnProgressStyle}
+                    variant={progressInfo.consolidatedProgress.progressVariant}
                   />
                 }
               </>
-            ) : step.progress?.length > 0 ? (
+            ) : progressInfo.detailsAvailable ? (
               <>
                 <Link to={`/plans/${planName}/migrations/${migration.metadata.name}/${step.name}`}>
                   View Details

@@ -88,15 +88,6 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
   return MigrationStepsType.NotStarted;
 };
 
-export interface IProgressInfoObj {
-  percentComplete: number;
-  progressBarApplicable: boolean;
-  progressBarMessage: string;
-  title: string;
-  variant: ProgressVariant;
-  isWarning: boolean;
-}
-
 // returns step details page title text based on step
 export const getStepPageTitle = (step: IStep): string => {
   switch (step.name) {
@@ -134,19 +125,6 @@ export const formatGolangTimestamp = (timestamp: string): string => {
   return formattedTime;
 };
 
-export const showConsolidatedProgressBar = (step: IStep): boolean => {
-  return step.name == MigrationStepsType.Backup;
-};
-
-export interface IMigrationStepProgressObj {
-  metadata: string;
-  message: string;
-  duration: string;
-  progressVariant: ProgressVariant;
-  progressBarApplicable: boolean;
-  percentComplete: number;
-}
-
 // convertSItoBytes: converts SI units of storage into bytes
 // useful for percentage completion calculation
 const convertSItoBytes = (number: string, unit: string): number => {
@@ -156,6 +134,28 @@ const convertSItoBytes = (number: string, unit: string): number => {
   return exponent !== -1 ? Math.pow(baseUnit, exponent) * parseFloat(number) : 0;
 };
 
+export const showConsolidatedProgressBar = (step: IStep): boolean => {
+  return step.name == MigrationStepsType.Backup;
+};
+
+export interface IProgressInfoObj {
+  title: string;
+  detailsAvailable: boolean;
+  consolidatedProgress: IStepProgressInfo;
+  detailedProgress: IStepProgressInfo[];
+}
+
+export interface IStepProgressInfo {
+  progressBarApplicable: boolean;
+  progressPercentage: number;
+  progressMessage: string;
+  progressVariant: ProgressVariant;
+  isFailed: boolean;
+  isCompleted: boolean;
+  metadata: string;
+  duration: string;
+}
+
 // getMigrationStepProgress: parses each progress line and returns structured progress information
 // used for detailed drill down pages of migration steps
 // Progress messages from controller follow standard format of :
@@ -163,14 +163,16 @@ const convertSItoBytes = (number: string, unit: string): number => {
 // <message> above can contain volume transfer / backup progress in the form
 // "<number> <unit> out of <number> <unit> completed"
 // <unit> is a SI unit of size
-export const getMigrationStepProgress = (progressLine: string): IMigrationStepProgressObj => {
+export const getMigrationStepProgress = (progressLine: string): IStepProgressInfo => {
   let percentComplete = 0,
     progressBarApplicable = false;
   let duration = '';
 
+  // Parse first part of message progress line
   const metadataRegex = /(.*?):.*/;
   const metadata = metadataRegex.test(progressLine) ? progressLine.match(metadataRegex)[1] : '';
 
+  // Parse duration if it's available in the progress line
   const durationRegex = /\(([a-z0-9]+)\)$/;
   const parsedDuration = durationRegex.test(progressLine)
     ? progressLine.match(durationRegex)[1]
@@ -180,15 +182,13 @@ export const getMigrationStepProgress = (progressLine: string): IMigrationStepPr
     duration = dayjs.duration(elapsedTime.diff(dayjs('0h0m0s', 'H[h]m[m]s[s]'))).humanize();
   }
 
+  // Parse the <message> field in progress line
   const strippedMessage = progressLine.replace(durationRegex, '');
-
   const messageRegex = /.*?: (.*)/;
   const message = messageRegex.test(strippedMessage) ? strippedMessage.match(messageRegex)[1] : '';
 
+  // Progress parsing for Velero Backup / Restore
   const progressRegex = /.*?([\d\.]*) *(bytes|kB|MB|GB|TB|PB|EB)* out of (estimated total of| )*([\d\.]*) *(bytes|MB|kB|GB|TB|PB|EB)*/;
-
-  const failedRegex = /.*?[Ff]ailed/;
-
   if (progressRegex.test(progressLine)) {
     progressBarApplicable = true;
     const matched = progressLine.match(progressRegex);
@@ -196,71 +196,113 @@ export const getMigrationStepProgress = (progressLine: string): IMigrationStepPr
     const unitCompletedSoFar = matched[2] ? matched[2] : null;
     const totalResources = matched[4] ? matched[4] : '100';
     const unitTotalResources = matched[5] ? matched[5] : null;
-    if (unitTotalResources && unitCompletedSoFar) {
-      const completed = convertSItoBytes(completedSoFar, unitCompletedSoFar);
-      const total = convertSItoBytes(totalResources, unitTotalResources);
-      percentComplete = total !== 0 ? (completed / total) * 100 : 0;
-    } else {
-      const total = parseFloat(totalResources);
-      const completed = parseFloat(completedSoFar);
-      percentComplete = total !== 0 ? (completed / total) * 100 : 0;
+    try {
+      if (unitTotalResources && unitCompletedSoFar) {
+        const completed = convertSItoBytes(completedSoFar, unitCompletedSoFar);
+        const total = convertSItoBytes(totalResources, unitTotalResources);
+        percentComplete = total !== 0 ? (completed / total) * 100 : 0;
+      } else {
+        const total = parseFloat(totalResources);
+        const completed = parseFloat(completedSoFar);
+        percentComplete = total !== 0 ? (completed / total) * 100 : 0;
+      }
+    } catch (e) {
+      progressBarApplicable = false;
     }
   }
 
+  // Progress parsing for Direct Volume migration
+  const directMigrationProgressRegex = /.*?([\d\.]*)%/;
+  if (directMigrationProgressRegex.test(progressLine)) {
+    progressBarApplicable = true;
+    try {
+      percentComplete = parseFloat(progressLine.match(directMigrationProgressRegex)[1]);
+    } catch (e) {
+      progressBarApplicable = false;
+    }
+  }
+
+  // Determine if the progress line indicates success / failure
+  const failedRegex = /.*?[Ff]ail/;
+  const completedRegex = /.*?([Cc]omplete|[Ss]uccess)/;
   const progressVariant = failedRegex.test(progressLine)
     ? ProgressVariant.danger
     : ProgressVariant.success;
+  const isFailed = failedRegex.test(progressLine) ? true : false;
+  const isCompleted = completedRegex.test(progressLine) ? true : isFailed ? true : false;
 
   return {
     metadata: metadata,
-    message: message,
+    progressMessage: message,
     duration: duration,
     progressVariant: progressVariant,
     progressBarApplicable: progressBarApplicable,
-    percentComplete: percentComplete,
+    progressPercentage: percentComplete,
+    isCompleted: isCompleted,
+    isFailed: isFailed,
   };
 };
 
 export const getProgressValues = (step: IStep, migration?: IMigration): IProgressInfoObj => {
-  let titleText, progressVariant, duration;
-  let progressBarApplicable = false;
-  let progressBarMessage = '';
-  let percentComplete = 100;
+  const progressValues: IProgressInfoObj = {
+    title: '',
+    detailsAvailable: false,
+    consolidatedProgress: {
+      duration: '',
+      isCompleted: false,
+      isFailed: false,
+      metadata: '',
+      progressBarApplicable: false,
+      progressMessage: '',
+      progressPercentage: 0,
+      progressVariant: ProgressVariant.success,
+    },
+    detailedProgress: [],
+  };
   if (
     step.started &&
     !step.completed &&
     (migration.tableStatus.migrationState === 'error' || migration?.status?.errors?.length)
   ) {
-    titleText = 'Error';
-    progressVariant = ProgressVariant.danger;
+    progressValues.title = 'Error';
+    progressValues.consolidatedProgress.progressVariant = ProgressVariant.danger;
   } else if (step.started && !step.completed) {
-    titleText = step.message || step.phase || '';
+    progressValues.title = step.message || step.phase || '';
+  } else if (step.skipped) {
+    progressValues.title = 'Skipped';
   } else if (!step.started) {
-    titleText = 'Not Started';
+    progressValues.title = 'Not Started';
+    return progressValues;
   } else if (step.failed) {
-    titleText = 'Failed';
-    progressVariant = ProgressVariant.danger;
+    progressValues.title = 'Failed';
+    progressValues.consolidatedProgress.progressVariant = ProgressVariant.danger;
   } else if (step.completed) {
-    titleText = 'Complete';
-    progressVariant = ProgressVariant.success;
+    progressValues.title = 'Complete';
+    progressValues.consolidatedProgress.progressVariant = ProgressVariant.success;
+  } else {
+    progressValues.title = step.message;
   }
 
   if (showConsolidatedProgressBar(step) && step.progress) {
     const progress = getMigrationStepProgress(step.progress[0]);
-    duration = progress.duration;
-    percentComplete = progress.percentComplete;
-    progressBarMessage = step.completed ? progress.metadata : progress.message;
-    progressBarApplicable = progress.progressBarApplicable;
+    progressValues.consolidatedProgress.duration = progress.duration;
+    progressValues.consolidatedProgress.progressPercentage = progress.progressPercentage;
+    progressValues.consolidatedProgress.progressMessage = step.completed
+      ? progress.metadata
+      : progress.progressMessage;
+    progressValues.consolidatedProgress.progressBarApplicable = progress.progressBarApplicable;
+  } else {
+    step.progress?.forEach((progressMessage) => {
+      const parsedProgress = getMigrationStepProgress(progressMessage);
+      if (!progressValues.detailsAvailable) {
+        progressValues.detailsAvailable =
+          parsedProgress.metadata !== '' && parsedProgress.progressMessage !== '' ? true : false;
+      }
+      progressValues.detailedProgress.push(parsedProgress);
+    });
   }
 
-  return {
-    progressBarApplicable: progressBarApplicable,
-    progressBarMessage: progressBarMessage,
-    percentComplete: percentComplete,
-    title: titleText,
-    variant: progressVariant,
-    isWarning: false,
-  };
+  return progressValues;
 };
 
 export const getElapsedTime = (step: IStep, migration: IMigration): string => {
