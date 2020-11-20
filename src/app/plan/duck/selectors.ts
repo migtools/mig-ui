@@ -242,7 +242,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       migrationState: null,
       warnings: [],
       errors: [],
-      currentStep: findCurrentStep(migration?.status?.pipeline || []).currentStep,
       errorCondition: null,
       warnCondition: null,
     };
