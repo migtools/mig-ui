@@ -1,12 +1,6 @@
 import React from 'react';
 import { Table, TableBody, TableHeader, cellWidth, IRow } from '@patternfly/react-table';
-import {
-  Bullseye,
-  EmptyState,
-  Title,
-  Progress,
-  ProgressSize,
-} from '@patternfly/react-core';
+import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly/react-core';
 import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';

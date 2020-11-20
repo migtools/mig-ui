@@ -56,19 +56,17 @@ export const getPlanInfo = (plan: IPlan) => {
   };
 };
 
-export const findCurrentStep = (
-  pipeline: IStep[]
-): IStep  => {
+export const findCurrentStep = (pipeline: IStep[]): IStep => {
   const currentStep = pipeline
     .slice(0)
     .reverse()
     .find((step) => !!step.started && !step.completed);
-  return  currentStep;
+  return currentStep;
 };
 
 export const getPipelineSummaryTitle = (migration: IMigration): string => {
   const { status, tableStatus } = migration;
-  const  currentStep  = findCurrentStep(status?.pipeline || []);
+  const currentStep = findCurrentStep(status?.pipeline || []);
   if (status?.phase === 'Completed') {
     if (tableStatus?.migrationState === 'warn') {
       return MigrationStepsType.CompletedWithWarnings;
