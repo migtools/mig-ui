@@ -1,11 +1,14 @@
 import * as React from 'react';
-import { Flex, FlexItem, Text } from '@patternfly/react-core';
+
+import { Flex, FlexItem, Popover, PopoverPosition, Text } from '@patternfly/react-core';
 import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
 import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
-import ResourcesAlmostEmptyIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-empty-icon';
-
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getPipelineSummaryTitle } from '../../helpers';
-import { IMigrationStatus } from '../../../../../plan/duck/types';
+import { IMigration } from '../../../../../plan/duck/types';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
+
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module');
 
@@ -14,7 +17,6 @@ interface IDashProps {
 }
 const dangerColor = '#c9190b';
 const disabledColor = '#d2d2d2';
-const infoColor = '#2b9af3';
 const successColor = '#3e8635';
 
 const dashReachedStyles = classNames(styles.dash, styles.dashReached);
@@ -72,35 +74,79 @@ const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: IS
 );
 
 interface IPipelineSummaryProps {
-  status: IMigrationStatus;
+  migration: IMigration;
 }
 
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
-  status,
+  migration,
 }: IPipelineSummaryProps) => {
+  const { status, tableStatus } = migration;
   if (!status || !status?.pipeline) {
     return null;
   }
-  const title = getPipelineSummaryTitle(status);
+  const title = getPipelineSummaryTitle(migration);
   return (
-    <Summary title={title}>
-      {status?.pipeline.map((step, index) => {
-        return (
-          <>
-            {index != 0 ? <Dash key={step.name} isReached={step?.started ? true : false} /> : ''}
-            {!step?.started ? (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-            ) : step?.failed ? (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-            ) : step?.started && !step?.completed ? (
-              <Chain key={index} Face={ResourcesAlmostFullIcon} times={1} color={successColor} />
-            ) : (
-              <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-            )}
-          </>
-        );
-      })}
-    </Summary>
+    <>
+      <Flex>
+        <FlexItem className={`${spacing.mrSm} `}>
+          {migration.tableStatus.isFailed && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.errorCondition}</>}
+              aria-label="pipeline-error-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className="pf-c-icon pf-m-danger">
+                <ErrorCircleOIcon />
+              </span>
+            </Popover>
+          )}
+          {migration.tableStatus.warnCondition && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.warnCondition}</>}
+              aria-label="pipeline-warning-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+                <ExclamationTriangleIcon />
+              </span>
+            </Popover>
+          )}
+        </FlexItem>
+        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+          <Summary title={title}>
+            {status?.pipeline.map((step, index) => {
+              return (
+                <>
+                  {index != 0 ? (
+                    <Dash key={step.name} isReached={step?.started ? true : false} />
+                  ) : (
+                    ''
+                  )}
+                  {!step?.started ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+                  ) : step?.failed || step?.isError ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+                  ) : step?.started && !step?.completed ? (
+                    <Chain
+                      key={index}
+                      Face={ResourcesAlmostFullIcon}
+                      times={1}
+                      color={successColor}
+                    />
+                  ) : (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+                  )}
+                </>
+              );
+            })}
+          </Summary>
+        </FlexItem>
+      </Flex>
+    </>
   );
 };
 

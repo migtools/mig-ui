@@ -6,15 +6,15 @@ import {
   Bullseye,
   EmptyState,
   Title,
-  Progress,
-  ProgressSize,
-  ProgressVariant,
   Spinner,
   Level,
   LevelItem,
   Pagination,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { Popover, PopoverPosition } from '@patternfly/react-core';
+import WarningTriangleIcon from '@patternfly/react-icons/dist/js/icons/warning-triangle-icon';
+
 const styles = require('./MigrationsTable.module');
 
 import { IMigration } from '../../../../plan/duck/types';
@@ -47,7 +47,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
     { title: 'End Time', transforms: [sortable] },
     {
       title: 'Status',
-      transforms: [cellWidth(30)],
+      transforms: [cellWidth(40)],
     },
     '',
   ];
@@ -55,16 +55,12 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(migrations, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
-
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
     const { tableStatus } = migration;
     // Type should be rollback if spec.rollback=true, else use value in spec.stage
     const nonRollbackMigrationType = migration.spec.stage ? 'Stage' : 'Migration';
     const type = migration.spec.rollback ? 'Rollback' : nonRollbackMigrationType;
-    const getMigrationPipelineStatus = (migrationStatus) => {
-      return migrationStatus;
-    };
 
     rows.push({
       cells: [
@@ -79,7 +75,11 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
         { title: migration.tableStatus.start },
         { title: migration.tableStatus.end },
         {
-          title: <PipelineSummary status={getMigrationPipelineStatus(migration?.status)} />,
+          title: (
+            <>
+              <PipelineSummary migration={migration} />
+            </>
+          ),
         },
         {
           title: <MigrationActions migration={migration} />,

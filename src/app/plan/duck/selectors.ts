@@ -9,6 +9,8 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
+import { IStep } from './types';
+import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -238,17 +240,20 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
   const getMigrationStatus = (plan, migration) => {
     const { MigPlan } = plan;
     const status = {
-      progress: null,
       start: 'In progress',
       end: 'In progress',
       moved: 0,
       copied: 0,
-      stepName: 'Not started',
       isFailed: false,
       isSucceeded: false,
       isCanceled: false,
       isCanceling: false,
+      stepName: 'Not started',
       migrationState: null,
+      warnings: [],
+      errors: [],
+      errorCondition: null,
+      warnCondition: null,
     };
     const zone = dayjs.tz.guess();
 
@@ -276,7 +281,9 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           .format(`DD MMM YYYY, h:mm:ss z`);
       }
       const endTime = migration.status.conditions
-        .filter((c) => c.type === 'Succeeded' || c.type === 'Failed')
+        .filter(
+          (c) => c.type === 'Succeeded' || c.type === 'SucceededWithWarnings' || c.type === 'Failed'
+        )
         .map((c) => c.lastTransitionTime)
         .toString();
       status.end = endTime
@@ -286,7 +293,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       if (migration.status.conditions.length) {
         // For canceled migrations, show 0% progress and `Canceled` step
         if (canceledCondition) {
-          status.progress = 0;
           status.isCanceled = true;
           status.stepName = 'Canceled';
           return status;
@@ -297,9 +303,13 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.category === 'Critical';
         });
         if (criticalCondition) {
-          status.progress = 100;
+          const errorMessages = migration?.status?.conditions
+            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+            .map((c, idx) => c.message || c.reason);
+          status.errors = status.errors.concat(errorMessages);
           status.isFailed = true;
           status.stepName = criticalCondition.message;
+          status.errorCondition = criticalCondition.message;
           status.end = criticalCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
@@ -310,9 +320,14 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.type === 'Failed';
         });
         if (failedCondition) {
-          status.progress = 100;
+          const errorMessages = migration?.status?.conditions
+            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+            .map((c, idx) => c.message || c.reason);
+          const migrationErrors = migration?.status?.errors;
+          status.errors = status.errors.concat(errorMessages, migrationErrors);
           status.isFailed = true;
           status.stepName = failedCondition.reason;
+          status.errorCondition = failedCondition.message;
           status.end = failedCondition.lastTransitionTime;
           status.migrationState = 'error';
           return status;
@@ -334,15 +349,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
             status.stepName = 'Canceling' + status.stepName;
             status.isCanceling = true;
           }
-          // Match string in format 'Step: 16/26'. Capture both numbers.
-          const matches = runningCondition.message.match(/(\d+)\/(\d+)/);
-          if (matches && matches.length === 3) {
-            const currentStep = parseInt(matches[1], 10);
-            const totalSteps = parseInt(matches[2], 10);
-            if (!isNaN(currentStep) && !isNaN(totalSteps)) {
-              status.progress = (currentStep / totalSteps) * 100;
-            }
-          }
           return status;
         }
         // For running migrations, calculate percent progress
@@ -350,7 +356,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           return c.type === 'PlanNotReady';
         });
         if (planNotReadyCondition) {
-          status.progress = 100;
           status.isFailed = true;
           status.stepName = planNotReadyCondition.message;
           status.end = '--';
@@ -364,16 +369,19 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         });
 
         if (warnCondition) {
-          status.progress = 100;
+          const warningMessages = migration?.status?.conditions
+            ?.filter((c) => c.category === 'Warn')
+            .map((c, idx) => c.message);
           status.isSucceeded = true;
           status.stepName = 'Completed with warnings';
           status.migrationState = 'warn';
+          status.warnings = status.warnings.concat(warningMessages);
+          status.warnCondition = warnCondition?.message;
           return status;
         }
 
         // For successful migrations, show green 100% progress
         if (succeededCondition) {
-          status.progress = 100;
           status.isSucceeded = true;
           status.stepName = 'Completed';
           status.migrationState = 'success';
@@ -386,6 +394,21 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
   const plansWithMigrationStatus = plans.map((plan) => {
     const migrationsWithStatus = plan.Migrations.map((migration) => {
       const tableStatus = getMigrationStatus(plan, migration);
+      migration.status.pipeline = migration?.status?.pipeline?.map((step: IStep) => {
+        const currentStep = findCurrentStep(migration?.status?.pipeline || []);
+        if (step === currentStep) {
+          const isError = tableStatus.isFailed || tableStatus.migrationState === 'error';
+          const isWarning = tableStatus.warnings.length || tableStatus.migrationState === 'warn';
+          const newStep = {
+            ...step,
+            isError: isError,
+            isWarning: isWarning,
+          };
+          return newStep;
+        } else {
+          return step;
+        }
+      });
       return { ...migration, tableStatus };
     });
     return { ...plan, Migrations: migrationsWithStatus };
