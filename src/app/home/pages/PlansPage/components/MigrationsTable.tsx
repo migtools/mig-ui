@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Table, TableBody, TableHeader, cellWidth, sortable, IRow } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
 import MigrationActions from './MigrationActions';
@@ -12,10 +12,6 @@ import {
   Pagination,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Popover, PopoverPosition } from '@patternfly/react-core';
-import WarningTriangleIcon from '@patternfly/react-icons/dist/js/icons/warning-triangle-icon';
-
-const styles = require('./MigrationsTable.module');
 
 import { IMigration } from '../../../../plan/duck/types';
 import { useSortState } from '../../../../common/duck/hooks';

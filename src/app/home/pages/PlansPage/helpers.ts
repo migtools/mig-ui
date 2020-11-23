@@ -224,7 +224,7 @@ export const getMigrationStepProgress = (progressLine: string): IStepProgressInf
 
   // Determine if the progress line indicates success / failure
   const failedRegex = /.*?[Ff]ail/;
-  const completedRegex = /.*?([Cc]omplete|[Ss]uccess)/;
+  const completedRegex = /.*?([Cc]omplete|[Ss]ucc(ess|eed))/;
   const progressVariant = failedRegex.test(progressLine)
     ? ProgressVariant.danger
     : ProgressVariant.success;
@@ -291,6 +291,7 @@ export const getProgressValues = (step: IStep, migration?: IMigration): IProgres
       ? progress.metadata
       : progress.progressMessage;
     progressValues.consolidatedProgress.progressBarApplicable = progress.progressBarApplicable;
+    progressValues.consolidatedProgress.progressVariant = progress.progressVariant;
   } else {
     step.progress?.forEach((progressMessage) => {
       const parsedProgress = getMigrationStepProgress(progressMessage);

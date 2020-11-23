@@ -45,7 +45,7 @@ const MigrationStepDetailsTable: React.FunctionComponent<IStepProps> = ({ step, 
       stepProgressInfo.duration === ''
         ? getElapsedTime(step, migration)
         : stepProgressInfo.duration;
-    if (progressInfoObj.detailsAvailable) {
+    if (stepProgressInfo.metadata && stepProgressInfo.progressMessage) {
       rows.push({
         cells: [
           {

@@ -4,11 +4,7 @@ import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly
 import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import {
-  getElapsedTime,
-  getProgressValues,
-  IProgressInfoObj,
-} from '../../helpers';
+import { getElapsedTime, getProgressValues, IProgressInfoObj } from '../../helpers';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
 const styles = require('./MigrationDetailsTable.module');
 
@@ -24,7 +20,7 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
     {
       title: 'Status',
-      transforms: [cellWidth(50)],
+      transforms: [cellWidth(30)],
     },
     '',
   ];
