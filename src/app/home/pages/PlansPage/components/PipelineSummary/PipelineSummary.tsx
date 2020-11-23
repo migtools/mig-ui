@@ -116,7 +116,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
             </Popover>
           )}
         </FlexItem>
-        <FlexItem flex={{ default: 'flex_1'}}  className={spacing.mAuto}>
+        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
           <Summary title={title}>
             {status?.pipeline.map((step, index) => {
               return (
