@@ -40,29 +40,25 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
           Migrations
         </Title>
       </PageSection>
-      {
-        !plan ? null : (
-          <PageSection>
-            <Card>
-              <CardBody>
-                <MigrationsTable
-                  type="Migrations"
-                  planName={planName}
-                  migrations={plan.Migrations}
-                  isPlanLocked={plan.PlanStatus.isPlanLocked}
-                  id="migrations-history-expansion-table"
-                />
-              </CardBody>
-            </Card>
-          </PageSection>
-        )
-      }
+      {!plan ? null : (
+        <PageSection>
+          <Card>
+            <CardBody>
+              <MigrationsTable
+                type="Migrations"
+                planName={planName}
+                migrations={plan.Migrations}
+                isPlanLocked={plan.PlanStatus.isPlanLocked}
+                id="migrations-history-expansion-table"
+              />
+            </CardBody>
+          </Card>
+        </PageSection>
+      )}
     </>
   );
 };
 
-export const MigrationsPage = connect(
-  (state: IReduxState) => ({
-    planList: planSelectors.getPlansWithStatus(state),
-  })
-)(BaseMigrationsPage);
+export const MigrationsPage = connect((state: IReduxState) => ({
+  planList: planSelectors.getPlansWithStatus(state),
+}))(BaseMigrationsPage);

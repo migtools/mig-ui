@@ -33,8 +33,7 @@ const MigrationStepStatusIcon: React.FunctionComponent<IProps> = ({ migration, s
       <span className="pf-c-icon pf-m-info">
         <ResourcesFullIcon />
       </span>
-    )
-    
+    );
   } else if (step.failed) {
     return (
       <span className="pf-c-icon pf-m-danger">
