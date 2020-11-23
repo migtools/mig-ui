@@ -88,7 +88,35 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   return (
     <>
       <Flex>
-        <FlexItem>
+        <FlexItem className={`${spacing.mrSm} `}>
+          {migration.tableStatus.isFailed && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.errorCondition}</>}
+              aria-label="pipeline-error-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className="pf-c-icon pf-m-danger">
+                <ErrorCircleOIcon />
+              </span>
+            </Popover>
+          )}
+          {migration.tableStatus.warnCondition && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.warnCondition}</>}
+              aria-label="pipeline-warning-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+                <ExclamationTriangleIcon />
+              </span>
+            </Popover>
+          )}
+        </FlexItem>
+        <FlexItem flex={{ default: 'flex_1'}}  className={spacing.mAuto}>
           <Summary title={title}>
             {status?.pipeline.map((step, index) => {
               return (
@@ -116,34 +144,6 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
               );
             })}
           </Summary>
-        </FlexItem>
-        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-          {migration.tableStatus.isFailed && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={<>{migration.tableStatus.errorCondition}</>}
-              aria-label="pipeline-error-details"
-              closeBtnAriaLabel="close--details"
-              maxWidth="30rem"
-            >
-              <span className="pf-c-icon pf-m-danger">
-                <ErrorCircleOIcon />
-              </span>
-            </Popover>
-          )}
-          {migration.tableStatus.warnCondition && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={<>{migration.tableStatus.warnCondition}</>}
-              aria-label="pipeline-warning-details"
-              closeBtnAriaLabel="close--details"
-              maxWidth="30rem"
-            >
-              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
-                <ExclamationTriangleIcon />
-              </span>
-            </Popover>
-          )}
         </FlexItem>
       </Flex>
     </>
