@@ -1,7 +1,5 @@
 # mig-ui
 
-[![Build Status](https://travis-ci.org/konveyor/mig-ui.svg?branch=master)](https://travis-ci.org/konveyor/mig-ui)
-
 ## Quick-start
 
 Copy `config/config.dev.json.example` to `config/config.dev.json` where you can
@@ -21,10 +19,9 @@ Start the development server
 Run a full build
 `yarn build`
 
-Consistent styles are enforced by travis and will gate PR merges. To check your code prior
+Consistent styles are enforced by ci and will gate PR merges. To check your code prior
 to submission, run:
 `yarn lint`
-
 
 ### UI development server
 
