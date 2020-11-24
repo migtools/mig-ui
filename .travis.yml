@@ -1,9 +1,0 @@
-language: node_js
-node_js:
-  - "10"
-cache: yarn
-git:
-  depth: 3
-jobs:
-  include:
-    - script: yarn ci
