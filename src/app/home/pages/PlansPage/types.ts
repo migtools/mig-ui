@@ -32,4 +32,5 @@ export enum MigrationStepsType {
   NotStarted = 'NotStarted',
   Error = 'Error',
   Completed = 'Completed',
+  CompletedWithWarnings = 'Completed with warnings',
 }

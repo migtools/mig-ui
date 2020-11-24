@@ -32,7 +32,7 @@ export default function* rootSaga() {
     setTokenExpiryHandler(() => {
       const LS_KEY_CURRENT_USER = 'currentUser';
       localStorage.removeItem(LS_KEY_CURRENT_USER);
-      history.push('/login?action=refresh');
+      window.location.href = '/login';
     });
   }
 

@@ -88,6 +88,11 @@ export interface IMigration {
     progress: number;
     start: string;
     stepName: string;
+    warnings: string[];
+    errors: string[];
+    currentStep: IStep;
+    errorCondition: string;
+    warnCondition: string;
   };
 }
 
@@ -108,6 +113,8 @@ export interface IStep {
   completed: string;
   failed?: boolean;
   progress?: string[];
+  isError?: boolean;
+  isWarning?: boolean;
 }
 
 export interface IStatus {
@@ -145,6 +152,7 @@ export interface IPlan {
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
     hasSucceededStage: boolean;
+    hasSucceededRollback: boolean;
     isPlanLocked: boolean;
     latestType: string;
     latestIsFailed: boolean;

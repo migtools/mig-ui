@@ -1,19 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Table, TableBody, TableHeader, cellWidth, IRow } from '@patternfly/react-table';
-import {
-  Bullseye,
-  EmptyState,
-  Title,
-  Progress,
-  ProgressSize,
-  Level,
-  LevelItem,
-  Pagination,
-} from '@patternfly/react-core';
-import { useParams, useHistory, Link } from 'react-router-dom';
+import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly/react-core';
+import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 import {
   getElapsedTime,
   getProgressValues,
@@ -31,34 +21,18 @@ interface IProps {
 const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) => {
   const { planName } = useParams();
   const columns = [
-    { title: 'Step' },
-    { title: 'Elapsed time', transforms: [cellWidth(10)] },
+    { title: 'Step', transforms: [cellWidth(20)] },
+    { title: 'Elapsed time', transforms: [cellWidth(20)] },
     {
       title: 'Status',
-      transforms: [cellWidth(30)],
+      transforms: [cellWidth(50)],
     },
     '',
   ];
 
-  const filteredPipelineSteps = migration.status.pipeline.filter((step: IStep) => {
-    const regex = RegExp('((?:^|W)Restore(?:$|W))|((?:^|W)Backup(?:$|W))', 'i');
-    const isStageRelatedStep = regex.test(step.name);
-    if (!isStageRelatedStep) {
-      return step.name;
-    }
-  });
-  const type = migration.spec.stage ? 'Stage' : 'Migration';
-
-  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(
-    migration.spec.stage ? filteredPipelineSteps : migration.status.pipeline,
-    10
-  );
-  useEffect(() => setPageNumber(1), [setPageNumber]);
-
   const rows: IRow[] = [];
-  currentPageItems.forEach((step: IStep) => {
+  migration?.status?.pipeline.forEach((step: IStep) => {
     const progressInfo: IProgressInfoObj = getProgressValues(step, migration);
-
     rows.push({
       cells: [
         {
@@ -112,12 +86,6 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     <>
       {migration.status.pipeline.length > 0 ? (
         <>
-          <Level>
-            <LevelItem />
-            <LevelItem>
-              <Pagination {...paginationProps} widgetId="migration-details-pagination-top" />
-            </LevelItem>
-          </Level>
           <Table
             aria-label="migration-analytics-table"
             cells={columns}
@@ -127,12 +95,6 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
             <TableHeader />
             <TableBody />
           </Table>
-
-          <Pagination
-            variant="bottom"
-            {...paginationProps}
-            widgetId="migration-details-table-pagination-top"
-          />
         </>
       ) : (
         <Bullseye>
