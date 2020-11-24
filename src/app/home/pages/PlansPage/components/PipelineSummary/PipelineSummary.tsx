@@ -18,6 +18,7 @@ interface IDashProps {
 const dangerColor = '#c9190b';
 const disabledColor = '#d2d2d2';
 const successColor = '#3e8635';
+const infoColor = '#2B9AF3';
 
 const dashReachedStyles = classNames(styles.dash, styles.dashReached);
 const dashNotReachedStyles = classNames(styles.dash, styles.dashNotReached);
@@ -122,11 +123,16 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
               return (
                 <>
                   {index != 0 ? (
-                    <Dash key={step.name} isReached={step?.started ? true : false} />
+                    <Dash
+                      key={step.name}
+                      isReached={step?.started || step?.skipped ? true : false}
+                    />
                   ) : (
                     ''
                   )}
-                  {!step?.started ? (
+                  {step?.skipped ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
+                  ) : !step?.started ? (
                     <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
                   ) : step?.failed || step?.isError ? (
                     <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />

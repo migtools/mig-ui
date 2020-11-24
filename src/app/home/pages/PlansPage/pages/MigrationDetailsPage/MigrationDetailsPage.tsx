@@ -30,13 +30,7 @@ interface IMigrationDetailsPageProps {
 
 const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPageProps> = ({
   planList,
-  isFetchingInitialPlans,
 }: IMigrationDetailsPageProps) => {
-  const pollingContext = useContext(PollingContext);
-  useEffect(() => {
-    pollingContext.startAllDefaultPolling();
-  }, []);
-
   const { planName, migrationID } = useParams();
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
@@ -51,8 +45,10 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem to={`/plans/${planName}/migrations`}>{planName}</BreadcrumbItem>
-          {!isFetchingInitialPlans && migration && (
+          <BreadcrumbItem>
+            <Link to={`/plans/${planName}/migrations`}>{planName}</Link>
+          </BreadcrumbItem>
+          {migration && (
             <BreadcrumbItem to="#" isActive>
               {type} - {formatGolangTimestamp(migration.status.startTimestamp)}
             </BreadcrumbItem>
@@ -94,7 +90,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           </Alert>
         </PageSection>
       )}
-      {!isFetchingInitialPlans && migration && migration.status?.pipeline ? (
+      {migration && migration.status?.pipeline ? (
         <PageSection>
           <Card>
             <CardBody>
@@ -122,5 +118,4 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
 
 export const MigrationDetailsPage = connect((state: IReduxState) => ({
   planList: planSelectors.getPlansWithStatus(state),
-  isFetchingInitialPlans: state.plan.isFetchingInitialPlans,
 }))(BaseMigrationDetailsPage);

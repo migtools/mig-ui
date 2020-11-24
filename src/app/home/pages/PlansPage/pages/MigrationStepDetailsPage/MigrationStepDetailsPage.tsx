@@ -14,7 +14,6 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-import { PollingContext } from '../../../../duck/context';
 import { IReduxState } from '../../../../../../reducers';
 import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
@@ -23,18 +22,11 @@ import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
 
 interface IMigrationStepDetailsPageProps {
   planList: IPlan[];
-  isFetchingInitialPlans: boolean;
 }
 
 const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetailsPageProps> = ({
   planList,
-  isFetchingInitialPlans,
 }: IMigrationStepDetailsPageProps) => {
-  const pollingContext = useContext(PollingContext);
-  useEffect(() => {
-    pollingContext.startAllDefaultPolling();
-  }, []);
-
   const { planName, migrationID, stepName } = useParams();
 
   const migration = planList
@@ -52,24 +44,29 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
           </BreadcrumbItem>
-          <BreadcrumbItem to={`/plans/${planName}/migrations`}>{planName}</BreadcrumbItem>
-          {!isFetchingInitialPlans && migration && (
-            <BreadcrumbItem to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
-              {migrationType} - {formatGolangTimestamp(migration.status.startTimestamp)}
+          <BreadcrumbItem>
+            <Link to={`/plans/${planName}/migrations`}>{planName}</Link>
+          </BreadcrumbItem>
+          {migration && (
+            <BreadcrumbItem>
+              <Link to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
+                {migrationType} - {formatGolangTimestamp(migration.status.startTimestamp)}
+              </Link>
             </BreadcrumbItem>
           )}
-          {!isFetchingInitialPlans && step && (
+          {step && (
             <BreadcrumbItem to="#" isActive>
               {step.name}
             </BreadcrumbItem>
           )}
         </Breadcrumb>
-        <Title headingLevel="h1" size="2xl">
-          {getStepPageTitle(step)}
-        </Title>
+        {step && (
+          <Title headingLevel="h1" size="2xl">
+            {getStepPageTitle(step)}
+          </Title>
+        )}
       </PageSection>
-
-      {!isFetchingInitialPlans && step && migration && (
+      {step && migration && (
         <PageSection>
           <Card>
             <CardBody>
@@ -82,7 +79,7 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
           </Card>
         </PageSection>
       )}
-      {isFetchingInitialPlans && (
+      {!migration && (
         <PageSection>
           <Bullseye>
             <EmptyState variant="large">
@@ -103,7 +100,6 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
 export const MigrationStepDetailsPage = connect(
   (state: IReduxState) => ({
     planList: planSelectors.getPlansWithStatus(state),
-    isFetchingInitialPlans: state.plan.isFetchingInitialPlans,
   }),
   (dispatch) => ({
     refreshAnalyticRequest: (analyticName: string) =>

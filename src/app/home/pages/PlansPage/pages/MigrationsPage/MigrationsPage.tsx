@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import dayjs from 'dayjs';
 import {
   PageSection,
   Title,
@@ -13,8 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
-import { PlanActions, planSelectors } from '../../../../../plan/duck';
-import { PollingContext } from '../../../../duck/context';
+import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 
 interface IMigrationsPageProps {
@@ -26,10 +24,6 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
 }: IMigrationsPageProps) => {
   const { planName } = useParams();
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
-
-  if (!plan) {
-    return null;
-  }
 
   return (
     <>
@@ -46,30 +40,25 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
           Migrations
         </Title>
       </PageSection>
-      <PageSection>
-        <Card>
-          <CardBody>
-            <MigrationsTable
-              type="Migrations"
-              planName={planName}
-              migrations={plan.Migrations}
-              isPlanLocked={plan.PlanStatus.isPlanLocked}
-              id="migrations-history-expansion-table"
-            />
-          </CardBody>
-        </Card>
-      </PageSection>
+      {!plan ? null : (
+        <PageSection>
+          <Card>
+            <CardBody>
+              <MigrationsTable
+                type="Migrations"
+                planName={planName}
+                migrations={plan.Migrations}
+                isPlanLocked={plan.PlanStatus.isPlanLocked}
+                id="migrations-history-expansion-table"
+              />
+            </CardBody>
+          </Card>
+        </PageSection>
+      )}
     </>
   );
 };
 
-export const MigrationsPage = connect(
-  (state: IReduxState) => ({
-    isRefreshingAnalytic: state.plan.isRefreshingAnalytic,
-    planList: planSelectors.getPlansWithStatus(state),
-  }),
-  (dispatch) => ({
-    refreshAnalyticRequest: (analyticName: string) =>
-      dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
-  })
-)(BaseMigrationsPage);
+export const MigrationsPage = connect((state: IReduxState) => ({
+  planList: planSelectors.getPlansWithStatus(state),
+}))(BaseMigrationsPage);

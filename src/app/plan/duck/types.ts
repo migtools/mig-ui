@@ -112,6 +112,7 @@ export interface IStep {
   started?: string;
   completed: string;
   failed?: boolean;
+  skipped?: boolean;
   progress?: string[];
   isError?: boolean;
   isWarning?: boolean;

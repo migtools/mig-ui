@@ -4,12 +4,8 @@ import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly
 import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import {
-  getElapsedTime,
-  getProgressValues,
-  IProgressInfoObj,
-  showConsolidatedProgressBar,
-} from '../../helpers';
+import { getElapsedTime, getProgressValues } from '../../helpers';
+import { IProgressInfoObj } from '../../types';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
 const styles = require('./MigrationDetailsTable.module');
 
@@ -25,7 +21,7 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
     {
       title: 'Status',
-      transforms: [cellWidth(50)],
+      transforms: [cellWidth(30)],
     },
     '',
   ];
@@ -50,22 +46,19 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
         },
         {
           title:
-            showConsolidatedProgressBar(step) &&
-            progressInfo.progressBarApplicable &&
-            step.started &&
-            step.progress?.length > 0 ? (
+            progressInfo.consolidatedProgress.progressBarApplicable &&
+            !progressInfo.detailsAvailable ? (
               <>
                 {
                   <Progress
-                    value={progressInfo.percentComplete}
-                    title={progressInfo.progressBarMessage}
+                    value={progressInfo.consolidatedProgress.progressPercentage}
+                    title={progressInfo.consolidatedProgress.progressMessage}
                     size={ProgressSize.sm}
-                    variant={progressInfo.variant}
-                    className={progressInfo.isWarning && styles.warnProgressStyle}
+                    variant={progressInfo.consolidatedProgress.progressVariant}
                   />
                 }
               </>
-            ) : step.progress?.length > 0 ? (
+            ) : progressInfo.detailsAvailable ? (
               <>
                 <Link to={`/plans/${planName}/migrations/${migration.metadata.name}/${step.name}`}>
                   View Details
