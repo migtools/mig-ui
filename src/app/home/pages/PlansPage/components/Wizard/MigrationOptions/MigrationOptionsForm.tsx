@@ -117,7 +117,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
             Persistent volumes
           </Title>
           <Text component="p">
-            Direct image migration
+            Direct PV migration
             {isDirectVolumeMigrationAvailable ? (
               <Label variant="outline" color="green" className={spacing.mxSm}>
                 Available
