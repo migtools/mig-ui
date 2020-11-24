@@ -13,7 +13,8 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import { getProgressValues, getElapsedTime, IStepProgressInfo } from '../../helpers';
+import { getProgressValues, getElapsedTime } from '../../helpers';
+import { IStepProgressInfo } from '../../types';
 
 interface IStepProps {
   step: IStep;

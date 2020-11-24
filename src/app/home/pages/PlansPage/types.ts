@@ -1,4 +1,5 @@
 import { IMigMigration } from '../../../../client/resources/conversions';
+import { ProgressVariant } from '@patternfly/react-core';
 
 export interface IMigrationWithStatus extends IMigMigration {
   tableStatus: {
@@ -33,4 +34,22 @@ export enum MigrationStepsType {
   Error = 'Error',
   Completed = 'Completed',
   CompletedWithWarnings = 'Completed with warnings',
+}
+
+export interface IProgressInfoObj {
+  title: string;
+  detailsAvailable: boolean;
+  consolidatedProgress: IStepProgressInfo;
+  detailedProgress: IStepProgressInfo[];
+}
+
+export interface IStepProgressInfo {
+  progressBarApplicable: boolean;
+  progressPercentage: number;
+  progressMessage: string;
+  progressVariant: ProgressVariant;
+  isFailed: boolean;
+  isCompleted: boolean;
+  metadata: string;
+  duration: string;
 }

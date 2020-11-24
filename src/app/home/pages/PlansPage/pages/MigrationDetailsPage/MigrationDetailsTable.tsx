@@ -4,7 +4,8 @@ import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly
 import { useParams, Link } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
-import { getElapsedTime, getProgressValues, IProgressInfoObj } from '../../helpers';
+import { getElapsedTime, getProgressValues } from '../../helpers';
+import { IProgressInfoObj } from '../../types';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
 const styles = require('./MigrationDetailsTable.module');
 

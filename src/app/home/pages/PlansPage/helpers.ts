@@ -8,7 +8,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
 import { IMigration, IPlan, IStep } from '../../../plan/duck/types';
-import { MigrationStepsType } from './types';
+import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
   const {
@@ -137,24 +137,6 @@ const convertSItoBytes = (number: string, unit: string): number => {
 export const showConsolidatedProgressBar = (step: IStep): boolean => {
   return step.name == MigrationStepsType.Backup;
 };
-
-export interface IProgressInfoObj {
-  title: string;
-  detailsAvailable: boolean;
-  consolidatedProgress: IStepProgressInfo;
-  detailedProgress: IStepProgressInfo[];
-}
-
-export interface IStepProgressInfo {
-  progressBarApplicable: boolean;
-  progressPercentage: number;
-  progressMessage: string;
-  progressVariant: ProgressVariant;
-  isFailed: boolean;
-  isCompleted: boolean;
-  metadata: string;
-  duration: string;
-}
 
 // getMigrationStepProgress: parses each progress line and returns structured progress information
 // used for detailed drill down pages of migration steps
