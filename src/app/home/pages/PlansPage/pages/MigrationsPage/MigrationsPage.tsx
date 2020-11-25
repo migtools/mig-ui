@@ -72,6 +72,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export const MigrationsPage = connect(mapStateToProps, mapDispatchToProps)(BaseMigrationsPage);
-// export const MigrationsPage = connect((state: IReduxState) => ({
-//   planList: planSelectors.getPlansWithStatus(state),
-// }))(BaseMigrationsPage);
