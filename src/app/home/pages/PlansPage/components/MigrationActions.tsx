@@ -12,9 +12,13 @@ import { IMigration } from '../../../../plan/duck/types';
 
 interface IProps {
   migration: IMigration;
+  handleMigrationCancelRequest: (name: string) => void;
 }
 
-const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
+const MigrationActions: React.FunctionComponent<IProps> = ({
+  migration,
+  handleMigrationCancelRequest,
+}) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const planContext = useContext(PlanContext);
 
@@ -32,7 +36,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
                 <DropdownItem
                   onClick={() => {
                     setKebabIsOpen(false);
-                    planContext.handleMigrationCancelRequest(migration.metadata.name);
+                    handleMigrationCancelRequest(migration.metadata.name);
                   }}
                   key={`cancelMigration-${migration.metadata.name}`}
                   isDisabled={

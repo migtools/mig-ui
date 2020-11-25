@@ -24,12 +24,14 @@ interface IProps {
   type: string;
   isPlanLocked: boolean;
   planName: string;
+  handleMigrationCancelRequest: (name: string) => void;
 }
 
 const MigrationsTable: React.FunctionComponent<IProps> = ({
   migrations,
   isPlanLocked,
   planName,
+  handleMigrationCancelRequest,
 }) => {
   const getSortValues = (migration: any) => {
     const type = migration.spec.stage ? 'Stage' : 'Migration';
@@ -78,7 +80,12 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
           ),
         },
         {
-          title: <MigrationActions migration={migration} />,
+          title: (
+            <MigrationActions
+              handleMigrationCancelRequest={handleMigrationCancelRequest}
+              migration={migration}
+            />
+          ),
           props: {
             className: 'pf-c-table__action',
           },

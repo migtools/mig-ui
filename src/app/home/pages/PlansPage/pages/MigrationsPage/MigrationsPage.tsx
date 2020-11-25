@@ -12,15 +12,17 @@ import {
 } from '@patternfly/react-core';
 import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
-import { planSelectors } from '../../../../../plan/duck';
+import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 
 interface IMigrationsPageProps {
   planList: IPlan[];
+  migrationCancelRequest: (name: string) => void;
 }
 
 const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
   planList,
+  migrationCancelRequest,
 }: IMigrationsPageProps) => {
   const { planName } = useParams();
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
@@ -50,6 +52,7 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
                 migrations={plan.Migrations}
                 isPlanLocked={plan.PlanStatus.isPlanLocked}
                 id="migrations-history-expansion-table"
+                handleMigrationCancelRequest={migrationCancelRequest}
               />
             </CardBody>
           </Card>
@@ -59,6 +62,16 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
   );
 };
 
-export const MigrationsPage = connect((state: IReduxState) => ({
+const mapStateToProps = (state: IReduxState) => ({
   planList: planSelectors.getPlansWithStatus(state),
-}))(BaseMigrationsPage);
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  migrationCancelRequest: (migrationName: string) =>
+    dispatch(PlanActions.migrationCancelRequest(migrationName)),
+});
+
+export const MigrationsPage = connect(mapStateToProps, mapDispatchToProps)(BaseMigrationsPage);
+// export const MigrationsPage = connect((state: IReduxState) => ({
+//   planList: planSelectors.getPlansWithStatus(state),
+// }))(BaseMigrationsPage);
