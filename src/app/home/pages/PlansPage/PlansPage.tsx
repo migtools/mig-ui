@@ -28,7 +28,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IPlan } from '../../../plan/duck/types';
 import { IStorage } from '../../../storage/duck/types';
 import { IReduxState } from '../../../../reducers';
-import { usePlansContext } from './context';
+import { IAddPlanDisabledObjModel } from './types';
 
 interface IPlansPageBaseProps {
   planList: IPlan[];
@@ -58,7 +58,11 @@ const PlansPageBase: React.FunctionComponent<IPlansPageBaseProps> = ({
   isRefreshingAnalytic,
 }: IPlansPageBaseProps) => {
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
-  const { setAddPlanDisabledObj, addPlanDisabledObj } = usePlansContext();
+
+  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
+    isAddPlanDisabled: true,
+    disabledText: '',
+  });
 
   useEffect(() => {
     if (clusterList.length < 2) {
