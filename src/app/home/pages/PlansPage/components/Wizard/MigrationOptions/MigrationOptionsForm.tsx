@@ -39,7 +39,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
 
   const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
 
-  const isDirectVolumeMigrationAvailable = !!currentPlan.spec.persistentVolumes.filter((pv) =>
+  const isDirectVolumeMigrationAvailable = !!currentPlan?.spec?.persistentVolumes?.filter((pv) =>
     pv.supported.copyMethods.includes('filesystem')
   ).length;
 
