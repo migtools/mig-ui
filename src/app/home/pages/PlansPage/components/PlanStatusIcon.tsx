@@ -24,9 +24,10 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     isPlanLocked,
     hasConflictCondition,
     latestIsFailed,
+    hasCriticalCondition,
   } = plan.PlanStatus;
 
-  if (latestIsFailed) {
+  if (latestIsFailed || hasCriticalCondition) {
     return (
       <span className="pf-c-icon pf-m-danger">
         <ExclamationCircleIcon />
