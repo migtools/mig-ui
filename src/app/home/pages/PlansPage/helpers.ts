@@ -21,6 +21,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasSucceededRollback,
     hasCanceledCondition,
     hasCancelingCondition,
+    hasCriticalCondition,
     latestType,
     latestIsFailed,
     hasConflictCondition,
@@ -28,6 +29,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     isPlanLocked,
   } = plan.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
+  if (hasCriticalCondition) return `${latestType} Failed`;
   if (hasConflictCondition) return conflictErrorMsg;
   if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasClosedCondition) return 'Closed';
