@@ -143,6 +143,7 @@ export interface IPlan {
     conflictErrorMsg: string;
     finalMigrationComplete: boolean;
     hasCanceledCondition: boolean;
+    hasCriticalCondition: boolean;
     hasCancelingCondition: boolean;
     hasClosedCondition: boolean;
     hasConflictCondition: boolean;
