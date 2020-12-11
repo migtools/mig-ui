@@ -165,8 +165,6 @@ const webpackConfig = {
     proxy: [
       {
         // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
-        //TODO: add endpoints for cluter api & discovery api when we implement the reverse proxy to circumvent cors
-        // context: ['/login', '/login/callback', '/cluster-api', 'discovery-api'],
         context: ['/login', '/login/callback'],
         target: `http://localhost:${EXPRESS_PORT}`,
       },
