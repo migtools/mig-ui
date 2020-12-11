@@ -8,8 +8,6 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 let cachedOAuthMeta = null;
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
-//TODO: Add reverse proxy to solve CORS issues
-// const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
@@ -167,45 +165,6 @@ app.get('/login/callback', async (req, res, next) => {
     return res.status(500).json('Authentication failed');
   }
 });
-
-//TODO: Configure reverse proxy
-// let clusterApiProxyOptions = {
-//   target: 'https://api.openshift-apiserver.svc.cluster.local',
-//   changeOrigin: true,
-//   pathRewrite: {
-//     '^/cluster-api/': '/',
-//   },
-//   secure: false,
-// };
-
-// let discoveryApiProxyOptions = {
-//   target: 'http://discovery.openshift-migration.svc.cluster.local',
-//   changeOrigin: true,
-//   pathRewrite: {
-//     '^/discovery-api/': '/',
-//   },
-//   secure: false,
-// };
-
-// if (process.env['NODE_ENV'] === 'development') {
-//   clusterApiProxyOptions = {
-//     ...clusterApiProxyOptions,
-//     target: virtMeta.clusterApi,
-//     logLevel: 'debug',
-//   };
-
-//   discoveryApiProxyOptions = {
-//     ...discoveryApiProxyOptions,
-//     target: migMeta.discoveryApi,
-//     logLevel: 'debug',
-//   };
-// }
-
-// const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
-// const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
-
-// app.use('/cluster-api/', clusterApiProxy);
-// app.use('/discovery-api/', discoveryApiProxy);
 
 app.get('*', (req, res) => {
   res.render('index.ejs', { migMeta: encodedMigMeta, brandType });
