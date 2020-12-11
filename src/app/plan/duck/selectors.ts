@@ -116,11 +116,28 @@ const getPlansWithPlanStatus = createSelector(
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
-      const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
-      const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
-      const latestType = latestMigration?.spec?.stage ? 'Stage' : 'Migration';
 
-      const hasSucceededStage = !!plan.Migrations.filter((m) => {
+      // Rollback acts as a "reset", so we should only consider migrations after rollback
+      let planMigrations;
+      if (plan.Migrations.length) {
+        const latestRollbackIndex = plan.Migrations.findIndex((m) => {
+          return m.spec.rollback && m.status.conditions.some((c) => c.type === 'Succeeded');
+        });
+        planMigrations = plan.Migrations.slice(0, latestRollbackIndex + 1);
+      } else {
+        planMigrations = plan.Migrations;
+      }
+
+      const latestMigration = planMigrations.length ? planMigrations[0] : null;
+      const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
+      // latestType will be one of: 'Rollback', 'Stage', 'Migration'
+      const latestType = latestMigration?.spec?.rollback
+        ? 'Rollback'
+        : latestMigration?.spec?.stage
+        ? 'Stage'
+        : 'Migration';
+
+      const hasSucceededStage = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.stage) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
@@ -129,8 +146,8 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
-      const hasSucceededMigration = !!plan.Migrations.filter((m) => {
-        if (m.status?.conditions && !m.spec.stage) {
+      const hasSucceededMigration = !!planMigrations.filter((m) => {
+        if (m.status?.conditions && !m.spec.stage && !m.spec.rollback) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status?.conditions?.some((c) => c.type === 'Canceled')
@@ -138,24 +155,30 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
-      const hasSucceededRollback = !!plan.Migrations.filter((m) => {
+      const hasSucceededRollback = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.rollback) {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !m.status?.conditions?.some((c) => c.type === 'Canceled') &&
+            latestType === 'Rollback'
+          );
+        }
+      }).length;
+
+      const hasAttemptedMigration = !!planMigrations.some((m) => !m.spec.stage && !m.spec.rollback);
+
+      const finalMigrationComplete = !!planMigrations.filter((m) => {
+        if (m.status?.conditions) {
+          return (
+            m.spec.stage === false &&
+            !!m.spec.rollback === false &&
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status?.conditions?.some((c) => c.type === 'Canceled')
           );
         }
       }).length;
 
-      const hasAttemptedMigration = !!plan.Migrations.some((m) => !m.spec.stage);
-
-      const finalMigrationComplete = !!plan.Migrations.filter((m) => {
-        if (m.status?.conditions) {
-          return m.spec.stage === false && hasSucceededMigration;
-        }
-      }).length;
-
-      const hasRunningMigrations = !!plan.Migrations.filter((m) => {
+      const hasRunningMigrations = !!planMigrations.filter((m) => {
         if (m.status?.conditions) {
           return m.status.conditions.some((c) => c.type === 'Running');
         }
