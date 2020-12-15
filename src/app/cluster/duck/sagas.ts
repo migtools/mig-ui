@@ -299,7 +299,9 @@ function* updateClusterRequest(action) {
   const getClusterRes = yield client.get(migClusterResource, clusterValues.name);
   const secretResource = new CoreNamespacedResource(
     CoreNamespacedResourceKind.Secret,
-    migMeta.configNamespace
+    getClusterRes?.data?.spec.serviceAccountSecretRef.namespace
+      ? getClusterRes.data.spec.serviceAccountSecretRef.namespace
+      : migMeta.configNamespace
   );
   const updatedMigClusterSecretResult = yield client.get(
     secretResource,
