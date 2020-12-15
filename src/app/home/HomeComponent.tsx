@@ -67,6 +67,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <NavItemLink to="/clusters" label="Clusters" />
         <NavItemLink to="/storages" label="Replication repositories" />
         <NavItemLink to="/plans" label="Migration plans" />
+        <NavItemLink to="/hooks" label="Hooks" />
         {NON_ADMIN_ENABLED && <NavItemLink to="/tokens" label="Tokens" />}
       </NavList>
     </Nav>
@@ -142,6 +143,9 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
               </Route>
               <Route exact path="/plans/:planName/debug">
                 <PlanDebugPage />
+              </Route>
+              <Route exact path="/hooks">
+                <HooksPage />
               </Route>
               <RefreshRoute
                 exact
