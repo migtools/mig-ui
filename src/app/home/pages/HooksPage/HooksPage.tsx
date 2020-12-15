@@ -142,32 +142,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({
-  clusterList: Hookselectors.getAllHooks(state),
-  clusterAssociatedPlans: Hookselectors.getAssociatedPlans(state),
-  isFetchingInitialHooks: state.cluster.isFetchingInitialHooks,
-  isAddEditTokenModalOpen: state.token.isAddEditTokenModalOpen,
-  migMeta: state.auth.migMeta,
-  isAdmin: state.auth.isAdmin,
-});
+const mapStateToProps = (state: IReduxState) => ({});
 
-const mapDispatchToProps = (dispatch) => ({
-  watchClusterAddEditStatus: (clusterName: string) => {
-    // Push the add edit status into watching state, and start watching
-    dispatch(
-      ClusterActions.setClusterAddEditStatus(
-        createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-      )
-    );
-    dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
-  },
-  removeCluster: (clusterName: string) =>
-    dispatch(ClusterActions.removeClusterRequest(clusterName)),
-  toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
-  setAssociatedCluster: (associatedCluster: string) =>
-    dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
-  setCurrentCluster: (currentCluster: ICluster) =>
-    dispatch(ClusterActions.setCurrentCluster(currentCluster)),
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 export const HooksPage = connect(mapStateToProps, mapDispatchToProps)(HooksPageBase);
