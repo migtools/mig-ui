@@ -19,11 +19,12 @@ import { IFormValues, IOtherProps } from '../WizardContainer';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons';
 
-type IMigrationOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan'>;
+type IMigrationOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isEdit'>;
 
 const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> = ({
   clusterList,
   currentPlan,
+  isEdit,
 }: IMigrationOptionsFormProps) => {
   const indirectImageMigrationKey = 'indirectImageMigration';
   const indirectVolumeMigrationKey = 'indirectVolumeMigration';
@@ -36,7 +37,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   const destClusterRegistryPath = clusterList.find(
     (cluster) => cluster.MigCluster.metadata.name === values.targetCluster
   ).MigCluster?.status?.registryPath;
-
+  console.log('current plan spec', currentPlan.spec);
   const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
 
   const isDirectVolumeMigrationAvailable = !!currentPlan?.spec?.persistentVolumes?.filter((pv) =>
@@ -45,12 +46,16 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
 
   useEffect(() => {
     //if available, set direct migration for image/volumes on initial render
-    if (isDirectImageMigrationAvailable) {
+    if (isDirectImageMigrationAvailable && !isEdit) {
       setFieldValue('indirectImageMigration', false);
+    } else if (!isDirectImageMigrationAvailable && !isEdit) {
+      setFieldValue('indirectImageMigration', true);
     }
 
-    if (isDirectVolumeMigrationAvailable) {
+    if (isDirectVolumeMigrationAvailable && !isEdit) {
       setFieldValue('indirectVolumeMigration', false);
+    } else if (!isDirectVolumeMigrationAvailable && !isEdit) {
+      setFieldValue('indirectVolumeMigration', true);
     }
   }, []);
 
