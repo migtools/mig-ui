@@ -37,7 +37,6 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   const destClusterRegistryPath = clusterList.find(
     (cluster) => cluster.MigCluster.metadata.name === values.targetCluster
   ).MigCluster?.status?.registryPath;
-  console.log('current plan spec', currentPlan.spec);
   const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
 
   const isDirectVolumeMigrationAvailable = !!currentPlan?.spec?.persistentVolumes?.filter((pv) =>
