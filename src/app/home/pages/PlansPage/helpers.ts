@@ -209,11 +209,11 @@ export const getMigrationStepProgress = (progressLine: string): IStepProgressInf
   // Determine if the progress line indicates success / failure
   const failedRegex = /.*?[Ff]ail/;
   const completedRegex = /.*?([Cc]omplete|[Ss]ucc(ess|eed))/;
-  const progressVariant = failedRegex.test(progressLine)
+  const progressVariant = failedRegex.test(message)
     ? ProgressVariant.danger
     : ProgressVariant.success;
-  const isFailed = failedRegex.test(progressLine) ? true : false;
-  const isCompleted = completedRegex.test(progressLine) ? true : isFailed ? true : false;
+  const isFailed = failedRegex.test(message) ? true : false;
+  const isCompleted = completedRegex.test(message) ? true : isFailed ? true : false;
 
   return {
     metadata: metadata,
