@@ -19,8 +19,6 @@ import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import Hookselectors from '../../../cluster/duck/selectors';
-import { ClusterActions } from '../../../cluster/duck/actions';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import HooksTable from './components/HooksTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
@@ -28,7 +26,6 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
-import { TokenActions } from '../../../token/duck/actions';
 
 interface IHooksPageBaseProps {
   clusterList: ICluster[];
@@ -59,35 +56,17 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
 }: IHooksPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
-  const renderEmptyState = () =>
-    isAdmin ? (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={AddCircleOIcon} />
-        <Title headingLevel="h3" size="lg">
-          Add source and target Hooks for the migration
-        </Title>
-        <Button onClick={toggleAddEditModal} variant="primary">
-          Add cluster
-        </Button>
-      </EmptyState>
-    ) : (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel="h3" size="lg">
-          No Hooks
-        </Title>
-        <EmptyStateBody>
-          <TextContent>
-            <Text component="p">
-              You must have administrator rights to the cluster where the migration controller is
-              installed in order to add Hooks for migration. Contact the cluster administrator for
-              assistance.
-            </Text>
-          </TextContent>
-        </EmptyStateBody>
-      </EmptyState>
-    );
-
+  const renderEmptyState = () => (
+    <EmptyState variant="full" className={spacing.my_2xl}>
+      <EmptyStateIcon icon={AddCircleOIcon} />
+      <Title headingLevel="h3" size="lg">
+        Add source and target Hooks for the migration
+      </Title>
+      <Button onClick={toggleAddEditModal} variant="primary">
+        Add hook
+      </Button>
+    </EmptyState>
+  );
   return (
     <>
       <PageSection variant="light">
