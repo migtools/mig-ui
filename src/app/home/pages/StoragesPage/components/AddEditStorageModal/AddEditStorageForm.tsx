@@ -83,6 +83,10 @@ const AddEditStorageForm = (props: IOtherProps) => {
       if (awsS3Annotation === 'true' || (awsS3Annotation !== 'false' && !s3Url)) {
         provider = 'aws-s3';
       }
+    } else if (storage.MigStorage.spec.backupStorageProvider === 'azure') {
+      provider = 'azure';
+    } else if (storage.MigStorage.spec.backupStorageProvider === 'gcp') {
+      provider = 'gcp';
     }
   }
 
