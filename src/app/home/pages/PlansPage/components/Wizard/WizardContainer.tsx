@@ -48,8 +48,8 @@ export interface IFormValues {
   pvCopyMethodAssignment: {
     [pvName: string]: PvCopyMethod;
   };
-  indirectImageMigration: boolean;
-  indirectVolumeMigration: boolean;
+  indirectImageMigration?: boolean;
+  indirectVolumeMigration?: boolean;
 }
 
 export interface IOtherProps {
@@ -115,8 +115,6 @@ export const defaultInitialValues: IFormValues = {
   pvStorageClassAssignment: {},
   pvVerifyFlagAssignment: {},
   pvCopyMethodAssignment: {},
-  indirectImageMigration: true,
-  indirectVolumeMigration: true,
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
@@ -130,8 +128,15 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
     initialValues.sourceTokenRef = editPlanObj.spec.srcMigTokenRef || null;
-    initialValues.indirectImageMigration = editPlanObj.spec.indirectImageMigration || true;
-    initialValues.indirectVolumeMigration = editPlanObj.spec.indirectVolumeMigration || true;
+    // Only set initial plan values for DIM/DVM if property exists on the plan spec.
+    // If the value doesn't exist on the spec, this means it was set to false & has disappeared from the spec.
+    if (editPlanObj.spec.hasOwnProperty('indirectImageMigration')) {
+      initialValues.indirectImageMigration = editPlanObj.spec.indirectImageMigration;
+    }
+    if (editPlanObj.spec.hasOwnProperty('indirectVolumeMigration')) {
+      initialValues.indirectVolumeMigration = editPlanObj.spec.indirectVolumeMigration;
+    }
+
     // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
     // See https://github.com/konveyor/mig-ui/issues/797
     // initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];

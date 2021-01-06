@@ -187,7 +187,11 @@ const WizardComponent = (props: IOtherProps) => {
       name: 'Migration options',
       component: (
         <WizardStepContainer title="Migration options">
-          <MigrationOptionsForm currentPlan={currentPlan} clusterList={clusterList} />
+          <MigrationOptionsForm
+            isEdit={isEdit}
+            currentPlan={currentPlan}
+            clusterList={clusterList}
+          />
         </WizardStepContainer>
       ),
       canJumpTo: stepIdReached >= stepId.MigrationOptions,
