@@ -29,7 +29,7 @@ interface IHooksFormValues {
   hookName: string;
   hookImageType: string;
   ansibleFile: string;
-  ansibleFilename: string;
+  ansibleFilename?: string;
   ansibleRuntimeImage: string;
   customContainerImage: string;
   srcServiceAccountName: string;
@@ -43,8 +43,8 @@ interface IHooksFormOtherProps {
   setInitialHookValues: any;
   setIsAddHooksOpen: (isOpen: boolean) => void;
   hookAddEditStatus: any;
-  cancelAddEditWatch: () => void;
-  resetAddEditState: () => void;
+  cancelAddEditWatch?: () => void;
+  resetAddEditState?: () => void;
   currentPlan: any;
   defaultHookRunnerImage: string;
 }

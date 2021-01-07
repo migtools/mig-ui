@@ -19,6 +19,11 @@ interface IHooksFormContainerOtherProps {
   defaultHookRunnerImage: string;
   onAddEditHookSubmit: any;
   setInitialHookValues: any;
+  setIsAddHooksOpen: (isOpen: boolean) => void;
+  hookAddEditStatus: any;
+  cancelAddEditWatch?: () => void;
+  resetAddEditState?: () => void;
+  currentPlan: any;
 }
 
 const AddEditHooksFormContainer = withFormik<
