@@ -20,8 +20,14 @@ import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IMigHook } from '../../../../client/resources/conversions';
 import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
-import { IAddEditStatus } from '../../../common/add_edit_state';
+import {
+  AddEditMode,
+  AddEditState,
+  createAddEditStatus,
+  IAddEditStatus,
+} from '../../../common/add_edit_state';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { PlanActions, planSelectors } from '../../../plan/duck';
 interface IHooksPageBaseProps {
   migMeta: IMigMeta;
   isFetchingInitialHooks: boolean;
@@ -34,8 +40,8 @@ interface IHooksPageBaseProps {
   currentPlan: IMigPlan;
   removeHookRequest: (hookName: string, stepName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
-  isAddHooksOpen: boolean;
-  setIsAddHooksOpen: (val) => void;
+  // isAddHooksOpen: boolean;
+  // setIsAddHooksOpen: (val) => void;
 }
 
 const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
@@ -48,12 +54,11 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
   currentPlan,
   removeHookRequest,
   watchHookAddEditStatus,
-  isAddHooksOpen,
-  setIsAddHooksOpen,
   migMeta,
 }: IHooksPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
+  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
   const columns = [
     { title: 'Name' },
     { title: 'Definition' },
@@ -144,8 +149,34 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({});
+const mapStateToProps = (state: IReduxState) => {
+  return {
+    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
+    hookList: planSelectors.getHooks(state),
+    isFetchingHookList: state.plan.isFetchingHookList,
+    hookAddEditStatus: state.plan.hookAddEditStatus,
+    migHookList: state.plan.migHookList,
+  };
+};
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
+    fetchHooksRequest: (currentPlanHooks) =>
+      dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
+    watchHookAddEditStatus: (hookName) => {
+      // Push the add edit status into watching state, and start watching
+      dispatch(
+        PlanActions.setHookAddEditStatus(
+          createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
+        )
+      );
+      dispatch(PlanActions.watchHookAddEditStatus(hookName));
+    },
+    removeHookRequest: (name, migrationStep) =>
+      dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+  };
+};
 
 export const HooksPage = connect(mapStateToProps, mapDispatchToProps)(HooksPageBase);
