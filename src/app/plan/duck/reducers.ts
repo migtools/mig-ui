@@ -51,6 +51,7 @@ export interface IPlanReducerState {
   migHookList: IMigHook[];
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
+  isFetchingInitialHooks: boolean;
   isRefreshingAnalytic: boolean;
 }
 
@@ -81,6 +82,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   migHookList: [],
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
+  isFetchingInitialHooks: true,
   isRefreshingAnalytic: false,
 };
 
@@ -465,6 +467,20 @@ export const planCloseAndDeleteFailure: PlanReducerFn = (state = INITIAL_STATE, 
 Hook Reducers
 */
 
+export const startHookPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true,
+  };
+};
+
+export const stopHookPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false,
+  };
+};
+
 export const removeHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removeHookRequest>
@@ -595,6 +611,14 @@ export const updateHookFailure: PlanReducerFn = (
   };
 };
 
+export const updateHooks: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isFetchingInitialHooks: false,
+    migHookList: action.updatedHooks,
+  };
+};
+
 export const refreshAnalyticRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.refreshAnalyticRequest>
@@ -709,6 +733,12 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return addHookSuccess(state, action);
     case PlanActionTypes.ADD_HOOK_FAILURE:
       return addHookFailure(state, action);
+    case PlanActionTypes.UPDATE_HOOKS:
+      return updateHooks(state, action);
+    case PlanActionTypes.HOOK_POLL_START:
+      return startHookPolling(state, action);
+    case PlanActionTypes.HOOK_POLL_STOP:
+      return stopHookPolling(state, action);
     case PlanActionTypes.REFRESH_ANALYTIC_REQUEST:
       return refreshAnalyticRequest(state, action);
     case PlanActionTypes.REFRESH_ANALYTIC_SUCCESS:

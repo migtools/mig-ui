@@ -1130,20 +1130,12 @@ function* fetchHooksSaga(action) {
     yield put(AlertActions.alertErrorTimeout('Failed to fetch hooks'));
   }
 }
-
-function* addHookSaga(action) {
-  const { migHook } = action;
+function* associateHookToPlanSaga(action) {
   try {
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
-
-    // add hook
-    const migHookObj = createMigHook(migHook, migMeta.namespace);
-    const createHookRes = yield client.create(
-      new MigResource(MigResourceKind.MigHook, migMeta.namespace),
-      migHookObj
-    );
+    const { hookValues, migHook } = action;
 
     // associate  hook to plan
     const { currentPlan } = state.plan;
@@ -1155,37 +1147,37 @@ function* addHookSaga(action) {
 
       const getServiceAccountNamespace = (clusterType) => {
         if (clusterType === 'source') {
-          return migHook.srcServiceAccountNamespace;
+          return hookValues.srcServiceAccountNamespace;
         }
         if (clusterType === 'destination') {
-          return migHook.destServiceAccountNamespace;
+          return hookValues.destServiceAccountNamespace;
         }
       };
 
       const getServiceAccountName = (clusterType) => {
         if (clusterType === 'source') {
-          return migHook.srcServiceAccountName;
+          return hookValues.srcServiceAccountName;
         }
         if (clusterType === 'destination') {
-          return migHook.destServiceAccountName;
+          return hookValues.destServiceAccountName;
         }
       };
-      const executionNamespace = getServiceAccountNamespace(migHook.clusterType);
-      const { name, namespace } = createHookRes.data.metadata;
+      const executionNamespace = getServiceAccountNamespace(hookValues.clusterType);
+      const { name, namespace } = migHook.metadata;
 
       const newHook = {
         executionNamespace: executionNamespace,
-        phase: migHook.migrationStep,
+        phase: hookValues.migrationStep,
         reference: {
           name: name,
           namespace: namespace,
         },
-        serviceAccount: getServiceAccountName(migHook.clusterType),
+        serviceAccount: getServiceAccountName(hookValues.clusterType),
       };
 
       if (updatedSpec.hooks) {
         const isExistingPhase = updatedSpec.hooks.some((hook) => {
-          hook.phase === migHook.migrationStep;
+          hook.phase === hookValues.migrationStep;
         });
         if (!isExistingPhase) {
           updatedSpec.hooks.push(newHook);
@@ -1202,13 +1194,35 @@ function* addHookSaga(action) {
 
     const patchPlanRes = yield client.patch(
       new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      currentPlan.metadata.name,
+      currentPlan?.metadata.name,
       createHooksSpec()
     );
-
-    yield put(PlanActions.addHookSuccess(createHookRes.data));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
+  } catch (err) {
+    yield put(PlanActions.addHookFailure(err));
+    yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
+  }
+}
+
+function* addHookSaga(action) {
+  const { migHook } = action;
+  try {
+    const state: IReduxState = yield select();
+    const { migMeta } = state.auth;
+    const { currentPlan } = state.plan;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migHookObj = createMigHook(migHook, migMeta.namespace);
+    const createHookRes = yield client.create(
+      new MigResource(MigResourceKind.MigHook, migMeta.namespace),
+      migHookObj
+    );
+    yield put(PlanActions.addHookSuccess(createHookRes.data));
+    //If in HookStep, associate the hook to the currentPlan
+    if (currentPlan) {
+      yield put(PlanActions.associateHookToPlan(migHook, createHookRes.data));
+    }
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
@@ -1306,6 +1320,19 @@ function* updateHookRequest(action) {
     yield put(PlanActions.updateHookFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
     throw err;
+  }
+}
+function* fetchHooksGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
+  try {
+    let hookList = yield client.list(resource);
+    hookList = yield hookList.data.items;
+
+    return { updatedHooks: hookList };
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -1429,10 +1456,15 @@ function* watchRefreshAnalyticRequest() {
   }
 }
 
+function* watchAssociateHookToPlan() {
+  yield takeLatest(PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN, associateHookToPlanSaga);
+}
+
 export default {
   watchStagePolling,
   watchMigrationPolling,
   watchRollbackPolling,
+  fetchHooksGenerator,
   fetchPlansGenerator,
   watchRunStageRequest,
   watchRunMigrationRequest,
@@ -1454,4 +1486,5 @@ export default {
   watchUpdateHookRequest,
   watchValidatePlanRequest,
   watchValidatePlanPolling,
+  watchAssociateHookToPlan,
 };

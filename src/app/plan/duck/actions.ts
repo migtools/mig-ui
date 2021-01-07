@@ -82,6 +82,7 @@ export const PlanActionTypes = {
   Hook action types
   */
 
+  UPDATE_HOOKS: 'UPDATE_HOOKS',
   UPDATE_HOOK_REQUEST: 'UPDATE_HOOK_REQUEST',
   UPDATE_HOOK_FAILURE: 'UPDATE_HOOK_FAILURE',
   UPDATE_HOOK_SUCCESS: 'UPDATE_HOOK_SUCCESS',
@@ -97,6 +98,12 @@ export const PlanActionTypes = {
   REMOVE_HOOK_REQUEST: 'REMOVE_HOOK_REQUEST',
   REMOVE_HOOK_SUCCESS: 'REMOVE_HOOK_SUCCESS',
   REMOVE_HOOK_FAILURE: 'REMOVE_HOOK_FAILURE',
+  ASSOCIATE_HOOK_TO_PLAN: 'ASSOCIATE_HOOK_TO_PLAN',
+  FETCH_ALL_HOOKS_REQUEST: 'FETCH_ALL_HOOKS_REQUEST',
+  FETCH_ALL_HOOKS_SUCCESS: 'FETCH_ALL_HOOKS_SUCCESS',
+  FETCH_ALL_HOOKS_FAILURE: 'FETCH_ALL_HOOKS_FAILURE',
+  HOOK_POLL_START: 'HOOK_POLL_START',
+  HOOK_POLL_STOP: 'HOOK_POLL_STOP',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -433,6 +440,14 @@ const runRollbackRequest = (plan: IPlan) => ({
 /*
 Hook action definitions
 */
+const startHookPolling = (params?: any) => ({
+  type: PlanActionTypes.HOOK_POLL_START,
+  params,
+});
+
+const stopHookPolling = () => ({
+  type: PlanActionTypes.HOOK_POLL_STOP,
+});
 
 const addHookRequest = (migHook: any) => ({
   type: PlanActionTypes.ADD_HOOK_REQUEST,
@@ -461,6 +476,19 @@ const hookFetchSuccess = (migHookList: IMigHook[]) => ({
 
 const hookFetchFailure = () => ({
   type: PlanActionTypes.HOOK_FETCH_FAILURE,
+});
+
+const fetchAllHooksRequest = () => ({
+  type: PlanActionTypes.FETCH_ALL_HOOKS_REQUEST,
+});
+
+const fetchAllHooksSuccess = (migHookList: IMigHook[]) => ({
+  type: PlanActionTypes.FETCH_ALL_HOOKS_SUCCESS,
+  migHookList,
+});
+
+const fetchAllHooksFailure = () => ({
+  type: PlanActionTypes.FETCH_ALL_HOOKS_FAILURE,
 });
 
 const setHookAddEditStatus = (status: IAddEditStatus) => ({
@@ -504,6 +532,17 @@ const updateHookFailure = () => ({
 
 const updateHookSuccess = () => ({
   type: PlanActionTypes.UPDATE_HOOK_SUCCESS,
+});
+
+const associateHookToPlan = (hookValues: any, migHook: IMigHook) => ({
+  type: PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN,
+  hookValues,
+  migHook,
+});
+
+const updateHooks = (updatedHooks: IMigHook[]) => ({
+  type: PlanActionTypes.UPDATE_HOOKS,
+  updatedHooks,
 });
 
 export const PlanActions = {
@@ -593,4 +632,11 @@ export const PlanActions = {
   removeHookFailure,
   removeHookRequest,
   removeHookSuccess,
+  associateHookToPlan,
+  fetchAllHooksFailure,
+  fetchAllHooksRequest,
+  fetchAllHooksSuccess,
+  startHookPolling,
+  stopHookPolling,
+  updateHooks,
 };

@@ -64,6 +64,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
     removeHookRequest,
     watchHookAddEditStatus,
     migMeta,
+    isFetchingInitialHooks,
   } = props;
 
   const defaultHookRunnerImage = migMeta?.hookRunnerImage || fallbackHookRunnerImage;
@@ -165,7 +166,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       </PageSection>
       <PageSection>
         {/* TODO: isFetchingInitialHooks */}
-        {isFetchingHookList ? (
+        {isFetchingHookList || isFetchingInitialHooks ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -265,6 +266,7 @@ const mapStateToProps = (state: IReduxState) => {
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     migHookList: state.plan.migHookList,
+    isFetchingInitialHooks: state.plan.isFetchingInitialHooks,
     migMeta: state.auth.migMeta,
   };
 };
