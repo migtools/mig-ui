@@ -179,21 +179,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
         ) : (
           <Card>
             <CardBody>
-              {isAddHooksOpen && (
-                <GridItem className={hooksFormContainerStyles}>
-                  <HooksFormContainer
-                    defaultHookRunnerImage={defaultHookRunnerImage}
-                    onAddEditHookSubmit={onAddEditHookSubmit}
-                    initialHookValues={initialHookValues}
-                    setInitialHookValues={setInitialHookValues}
-                    setIsAddHooksOpen={setIsAddHooksOpen}
-                    // isAddHooksOpen={isAddHooksOpen}
-                    {...props}
-                  />
-                </GridItem>
-              )}
-
-              {!migHookList ? null : migHookList.length === 0 ? (
+              {!migHookList ? null : migHookList.length === 0 && !isAddHooksOpen ? (
                 renderEmptyState()
               ) : (
                 <Grid>
@@ -206,6 +192,19 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
                       </Text>
                     </TextContent>
                   </GridItem>
+                  {isAddHooksOpen && (
+                    <GridItem className={hooksFormContainerStyles}>
+                      <HooksFormContainer
+                        defaultHookRunnerImage={defaultHookRunnerImage}
+                        onAddEditHookSubmit={onAddEditHookSubmit}
+                        initialHookValues={initialHookValues}
+                        setInitialHookValues={setInitialHookValues}
+                        setIsAddHooksOpen={setIsAddHooksOpen}
+                        // isAddHooksOpen={isAddHooksOpen}
+                        {...props}
+                      />
+                    </GridItem>
+                  )}
                   {!isAddHooksOpen && (
                     <React.Fragment>
                       {isFetchingHookList ? (
