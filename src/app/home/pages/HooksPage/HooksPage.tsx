@@ -13,6 +13,9 @@ import {
   Bullseye,
   Spinner,
   EmptyStateBody,
+  Grid,
+  GridItem,
+  TextVariants,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -29,6 +32,10 @@ import {
 } from '../../../common/add_edit_state';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { PlanActions, planSelectors } from '../../../plan/duck';
+import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
+
+const classNames = require('classnames');
+const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksPageBaseProps {
   migMeta: IMigMeta;
   isFetchingInitialHooks: boolean;
@@ -43,27 +50,58 @@ interface IHooksPageBaseProps {
   watchHookAddEditStatus: (name: string) => void;
 }
 
-const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
-  updateHookRequest,
-  addHookRequest,
-  isFetchingHookList,
-  migHookList,
-  fetchHooksRequest,
-  hookAddEditStatus,
-  currentPlan,
-  removeHookRequest,
-  watchHookAddEditStatus,
-  migMeta,
-}: IHooksPageBaseProps) => {
-  const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
+  props: IHooksPageBaseProps
+) => {
+  const {
+    updateHookRequest,
+    addHookRequest,
+    isFetchingHookList,
+    migHookList,
+    fetchHooksRequest,
+    hookAddEditStatus,
+    currentPlan,
+    removeHookRequest,
+    watchHookAddEditStatus,
+    migMeta,
+  } = props;
+
+  const defaultHookRunnerImage = migMeta?.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
+
+  const onAddEditHookSubmit = (hookValues) => {
+    switch (hookAddEditStatus.mode) {
+      case AddEditMode.Edit: {
+        updateHookRequest(hookValues);
+        setIsAddHooksOpen(false);
+        break;
+      }
+      case AddEditMode.Add: {
+        addHookRequest(hookValues);
+        setIsAddHooksOpen(false);
+        break;
+      }
+      default: {
+        console.warn(
+          `onAddEditSubmit, but unknown mode was found: ${hookAddEditStatus.mode}. Ignoring.`
+        );
+      }
+    }
+  };
+
   const columns = [
     { title: 'Name' },
     { title: 'Definition' },
     { title: 'Run in' },
     { title: 'Migration step' },
   ];
+  const hooksFormContainerStyles = classNames(
+    spacing.mySm,
+    spacing.mx_0,
+    spacing.pxSm,
+    spacing.pySm
+  );
 
   let rows = [];
   let actions = [];
@@ -103,7 +141,15 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
         defined in a container image or within an Ansible playbook and can be run on either the
         source or target cluster. Hooks are added to a migration plan during plan creation.
       </EmptyStateBody>
-      <Button onClick={toggleAddEditModal} variant="primary">
+      <Button
+        key="add-hook"
+        variant="primary"
+        isDisabled={isAddHooksOpen}
+        onClick={() => {
+          setIsAddHooksOpen(true);
+          setInitialHookValues({});
+        }}
+      >
         Create hook
       </Button>
     </EmptyState>
@@ -133,18 +179,78 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
         ) : (
           <Card>
             <CardBody>
-              {
-                !migHookList ? null : migHookList.length === 0 ? (
-                  renderEmptyState()
-                ) : (
-                  <Table aria-label="hooks-table" cells={columns} rows={rows} actions={actions}>
-                    <TableHeader />
-                    <TableBody />
-                  </Table>
-                )
+              {isAddHooksOpen && (
+                <GridItem className={hooksFormContainerStyles}>
+                  <HooksFormContainer
+                    defaultHookRunnerImage={defaultHookRunnerImage}
+                    onAddEditHookSubmit={onAddEditHookSubmit}
+                    initialHookValues={initialHookValues}
+                    setInitialHookValues={setInitialHookValues}
+                    setIsAddHooksOpen={setIsAddHooksOpen}
+                    // isAddHooksOpen={isAddHooksOpen}
+                    {...props}
+                  />
+                </GridItem>
+              )}
 
-                // <HooksTable />
-              }
+              {!migHookList ? null : migHookList.length === 0 ? (
+                renderEmptyState()
+              ) : (
+                <Grid>
+                  <GridItem className={spacing.mtSm}>
+                    <TextContent>
+                      <Text component={TextVariants.p}>
+                        Hooks are commands that can be run at various steps in the migration
+                        process. They are defined in a container image or an Ansible playbook and
+                        can be run on either the source or target cluster.
+                      </Text>
+                    </TextContent>
+                  </GridItem>
+                  {!isAddHooksOpen && (
+                    <React.Fragment>
+                      {isFetchingHookList ? (
+                        <Bullseye>
+                          <EmptyState variant="large">
+                            <div className="pf-c-empty-state__icon">
+                              <Spinner size="xl" />
+                            </div>
+                            <Title headingLevel="h2" size="xl">
+                              Finding hooks for this migration plan...
+                            </Title>
+                          </EmptyState>
+                        </Bullseye>
+                      ) : (
+                        <GridItem className={hooksFormContainerStyles}>
+                          <Grid hasGutter>
+                            <GridItem span={4}>
+                              <Button
+                                key="add-hook"
+                                variant="secondary"
+                                isDisabled={isAddHooksOpen}
+                                onClick={() => {
+                                  setIsAddHooksOpen(true);
+                                  setInitialHookValues({});
+                                }}
+                              >
+                                Add hook
+                              </Button>
+                            </GridItem>
+                          </Grid>
+                          <Table
+                            aria-label="hooks-table"
+                            cells={columns}
+                            rows={rows}
+                            actions={actions}
+                          >
+                            <TableHeader />
+                            <TableBody />
+                          </Table>
+                        </GridItem>
+                      )}
+                    </React.Fragment>
+                  )}
+                </Grid>
+              )}
             </CardBody>
           </Card>
         )}
@@ -160,9 +266,9 @@ const mapStateToProps = (state: IReduxState) => {
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     migHookList: state.plan.migHookList,
+    migMeta: state.auth.migMeta,
   };
 };
-
 const mapDispatchToProps = (dispatch) => {
   return {
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),

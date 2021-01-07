@@ -93,7 +93,7 @@ const HooksFormComponent: React.FunctionComponent<
 
   let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
-  if (currentPlan.spec.hooks) {
+  if (currentPlan?.spec?.hooks) {
     const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
     const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
     initialPhaseOptions = filteredPhases;
