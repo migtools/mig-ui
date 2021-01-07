@@ -12,6 +12,7 @@ import {
   Button,
   Bullseye,
   Spinner,
+  EmptyStateBody,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -40,8 +41,6 @@ interface IHooksPageBaseProps {
   currentPlan: IMigPlan;
   removeHookRequest: (hookName: string, stepName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
-  // isAddHooksOpen: boolean;
-  // setIsAddHooksOpen: (val) => void;
 }
 
 const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
@@ -96,11 +95,16 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
   const renderEmptyState = () => (
     <EmptyState variant="full" className={spacing.my_2xl}>
       <EmptyStateIcon icon={AddCircleOIcon} />
-      <Title headingLevel="h3" size="lg">
-        Add source and target Hooks for the migration
+      <Title headingLevel="h4" size="lg">
+        No hooks
       </Title>
+      <EmptyStateBody>
+        Hooks are commands that can be run at various steps in the migration process. They are
+        defined in a container image or within an Ansible playbook and can be run on either the
+        source or target cluster. Hooks are added to a migration plan during plan creation.
+      </EmptyStateBody>
       <Button onClick={toggleAddEditModal} variant="primary">
-        Add hook
+        Create hook
       </Button>
     </EmptyState>
   );
