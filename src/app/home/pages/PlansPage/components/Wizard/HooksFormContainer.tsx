@@ -17,6 +17,8 @@ interface IHooksFormContainerValues {
 interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
   defaultHookRunnerImage: string;
+  onAddEditHookSubmit: any;
+  setInitialHookValues: any;
 }
 
 const AddEditHooksFormContainer = withFormik<

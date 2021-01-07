@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Card,
@@ -12,49 +12,81 @@ import {
   Button,
   Bullseye,
   Spinner,
-  EmptyStateBody,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
-import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { ClusterContext } from '../../duck/context';
-import Hookselectors from '../../../cluster/duck/selectors';
-import HooksTable from './components/HooksTable';
-import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
-import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
-import { IPlanCountByResourceName } from '../../../common/duck/types';
-
+import { IMigHook } from '../../../../client/resources/conversions';
+import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
+import { IAddEditStatus } from '../../../common/add_edit_state';
+import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 interface IHooksPageBaseProps {
-  clusterList: ICluster[];
-  clusterAssociatedPlans: IPlanCountByResourceName;
   migMeta: IMigMeta;
-  watchClusterAddEditStatus: (clusterName: string) => void;
-  removeCluster: (clusterName: string) => void;
   isFetchingInitialHooks: boolean;
-  isAdmin: boolean;
-  isAddEditTokenModalOpen: boolean;
-  toggleAddEditTokenModal: () => void;
-  setAssociatedCluster: (clusterName: string) => void;
-  setCurrentCluster: (currentCluster: ICluster) => void;
+  updateHookRequest: (values) => void;
+  addHookRequest: (hook: IMigHook) => void;
+  isFetchingHookList: boolean;
+  migHookList: any;
+  fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
+  hookAddEditStatus: IAddEditStatus;
+  currentPlan: IMigPlan;
+  removeHookRequest: (hookName: string, stepName: string) => void;
+  watchHookAddEditStatus: (name: string) => void;
+  isAddHooksOpen: boolean;
+  setIsAddHooksOpen: (val) => void;
 }
 
 const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
-  clusterList,
-  clusterAssociatedPlans,
+  updateHookRequest,
+  addHookRequest,
+  isFetchingHookList,
+  migHookList,
+  fetchHooksRequest,
+  hookAddEditStatus,
+  currentPlan,
+  removeHookRequest,
+  watchHookAddEditStatus,
+  isAddHooksOpen,
+  setIsAddHooksOpen,
   migMeta,
-  watchClusterAddEditStatus,
-  removeCluster,
-  isFetchingInitialHooks,
-  isAdmin,
-  toggleAddEditTokenModal,
-  isAddEditTokenModalOpen,
-  setAssociatedCluster,
-  setCurrentCluster,
 }: IHooksPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
+  const columns = [
+    { title: 'Name' },
+    { title: 'Definition' },
+    { title: 'Run in' },
+    { title: 'Migration step' },
+  ];
+
+  let rows = [];
+  let actions = [];
+  if (migHookList.length > 0) {
+    rows = migHookList.map((migHook, id) => {
+      return {
+        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
+      };
+    });
+    actions = [
+      {
+        title: 'Edit',
+        onClick: (event, rowId, rowData, extra) => {
+          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          setInitialHookValues(currentHook);
+          setIsAddHooksOpen(true);
+          watchHookAddEditStatus(rowData.name.title);
+        },
+      },
+      {
+        title: 'Delete',
+        onClick: (event, rowId, rowData, extra) => {
+          removeHookRequest(rowData.name.title, rowData['migration-step'].title);
+        },
+      },
+    ];
+  }
 
   const renderEmptyState = () => (
     <EmptyState variant="full" className={spacing.my_2xl}>
@@ -77,7 +109,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
         </TextContent>
       </PageSection>
       <PageSection>
-        {isFetchingInitialHooks ? (
+        {/* TODO: isFetchingInitialHooks */}
+        {isFetchingHookList ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -91,28 +124,18 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = ({
         ) : (
           <Card>
             <CardBody>
-              <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
-                {!clusterList ? null : clusterList.length === 0 ? (
+              {
+                !migHookList ? null : migHookList.length === 0 ? (
                   renderEmptyState()
                 ) : (
-                  <HooksTable
-                    clusterList={clusterList}
-                    associatedPlans={clusterAssociatedPlans}
-                    migMeta={migMeta}
-                    removeCluster={removeCluster}
-                    toggleAddEditModal={toggleAddEditModal}
-                    isAdmin={isAdmin}
-                    toggleAddEditTokenModal={toggleAddEditTokenModal}
-                    isAddEditTokenModalOpen={isAddEditTokenModalOpen}
-                    setAssociatedCluster={setAssociatedCluster}
-                    setCurrentCluster={setCurrentCluster}
-                  />
-                )}
-                <AddEditClusterModal
-                  isOpen={isAddEditModalOpen}
-                  onHandleClose={toggleAddEditModal}
-                />
-              </ClusterContext.Provider>
+                  <Table aria-label="hooks-table" cells={columns} rows={rows} actions={actions}>
+                    <TableHeader />
+                    <TableBody />
+                  </Table>
+                )
+
+                // <HooksTable />
+              }
             </CardBody>
           </Card>
         )}

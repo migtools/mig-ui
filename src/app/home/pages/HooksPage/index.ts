@@ -1,1 +1,1 @@
-export * from './PlansPage';
+export * from './HooksPage';

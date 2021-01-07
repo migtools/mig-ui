@@ -18,15 +18,32 @@ import {
   Button,
   EmptyStateIcon,
 } from '@patternfly/react-core';
-import { AddEditMode } from '../../../../../common/add_edit_state';
+import { AddEditMode, IAddEditStatus } from '../../../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
 import { IMigHook } from '../../../../../../client/resources/conversions';
+import { IMigMeta } from '../../../../../auth/duck/types';
+import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
 
 const classNames = require('classnames');
 
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
+interface IHooksStepBaseProps {
+  migMeta: IMigMeta;
+  isFetchingInitialHooks: boolean;
+  updateHookRequest: (values) => void;
+  addHookRequest: (hook: IMigHook) => void;
+  isFetchingHookList: boolean;
+  migHookList: any;
+  fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
+  hookAddEditStatus: IAddEditStatus;
+  currentPlan: IMigPlan;
+  removeHookRequest: (hookName: string, stepName: string) => void;
+  watchHookAddEditStatus: (name: string) => void;
+  isAddHooksOpen: boolean;
+  setIsAddHooksOpen: (val) => void;
+}
 
-const HooksStep = (props) => {
+const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const {
     updateHookRequest,
     addHookRequest,

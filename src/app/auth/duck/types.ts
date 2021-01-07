@@ -14,6 +14,7 @@ export interface IMigMeta {
   discoveryApi?: string;
   namespace?: string;
   configNamespace?: string;
+  hookRunnerImage?: string;
   oauth?: {
     clientId?: string;
     redirectUrl?: string;
