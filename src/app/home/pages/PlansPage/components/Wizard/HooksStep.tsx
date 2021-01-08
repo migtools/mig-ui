@@ -33,7 +33,7 @@ interface IHooksStepBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
-  planHookList: any;
+  migHookList: any;
   fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -48,7 +48,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
-    planHookList,
+    migHookList,
     fetchHooksRequest,
     hookAddEditStatus,
     currentPlan,
@@ -97,8 +97,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
 
   let rows = [];
   let actions = [];
-  if (planHookList.length > 0) {
-    rows = planHookList.map((migHook, id) => {
+  if (migHookList.length > 0) {
+    rows = migHookList.map((migHook, id) => {
       return {
         cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
       };
@@ -107,7 +107,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = planHookList.find((hook) => hook.hookName === rowData.name.title);
+          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);
