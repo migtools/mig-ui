@@ -213,7 +213,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
                         initialHookValues={initialHookValues}
                         setInitialHookValues={setInitialHookValues}
                         setIsAddHooksOpen={setIsAddHooksOpen}
-                        // isAddHooksOpen={isAddHooksOpen}
+                        currentPlan={currentPlan}
                         {...props}
                       />
                     </GridItem>
