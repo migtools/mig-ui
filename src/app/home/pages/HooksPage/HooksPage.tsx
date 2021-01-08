@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+
 import {
   Card,
   PageSection,
@@ -16,6 +18,8 @@ import {
   Grid,
   GridItem,
   TextVariants,
+  Popover,
+  PopoverPosition,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -34,6 +38,7 @@ import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
 import { IMigHook } from './types';
 
+const styles = require('./HooksPage.module');
 const classNames = require('classnames');
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksPageBaseProps {
@@ -110,12 +115,46 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
     rows = migHookList.map((migHook, id) => {
       const name = migHook.metadata.name;
       const { image, custom } = migHook.spec;
-      const associatedPlans = 0;
+      const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
-
+      const listItems = associatedPlans.map((planName) => (
+        // <Link to={`/plans/${plan.MigPlan.metadata.name}/migrations`}>
+        //   <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
+        //     <MigrationIcon key="migration-count-icon" /> {migrationCount}
+        //   </span>
+        <Link to={`/plans/`}>{planName}</Link>
+      ));
       return {
-        cells: [name, image, type, associatedPlans],
+        cells: [
+          name,
+          image,
+          type,
+          {
+            title: (
+              <>
+                <Popover
+                  position={PopoverPosition.top}
+                  bodyContent={
+                    <>
+                      <ul>{listItems}</ul>
+                    </>
+                  }
+                  aria-label="associated-plans"
+                  closeBtnAriaLabel="close--details"
+                  maxWidth="4rem"
+                  className={styles.planCountPopover}
+                >
+                  <Link
+                    className={classNames('pf-c-icon', { 'pf-m-info': associatedPlanCount > 0 })}
+                  >
+                    {associatedPlanCount}
+                  </Link>
+                </Popover>
+              </>
+            ),
+          },
+        ],
       };
     });
     actions = [
@@ -274,10 +313,9 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
 const mapStateToProps = (state: IReduxState) => {
   return {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
-    hookList: planSelectors.getHooksWithStatus(state),
+    migHookList: planSelectors.getHooksWithStatus(state),
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
-    migHookList: state.plan.migHookList,
     isFetchingInitialHooks: state.plan.isFetchingInitialHooks,
     migMeta: state.auth.migMeta,
   };
