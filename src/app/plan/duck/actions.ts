@@ -483,9 +483,9 @@ const fetchAllHooksRequest = () => ({
   type: PlanActionTypes.FETCH_ALL_HOOKS_REQUEST,
 });
 
-const fetchAllHooksSuccess = (migHookList: IMigHook[]) => ({
+const fetchAllHooksSuccess = (allHooks: IMigHook[]) => ({
   type: PlanActionTypes.FETCH_ALL_HOOKS_SUCCESS,
-  migHookList,
+  allHooks,
 });
 
 const fetchAllHooksFailure = () => ({

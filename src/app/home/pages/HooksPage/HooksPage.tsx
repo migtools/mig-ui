@@ -47,7 +47,7 @@ interface IHooksPageBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
-  migHookList: any;
+  allHooks: IMigHook[];
   fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -62,7 +62,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
-    migHookList,
+    allHooks,
     fetchHooksRequest,
     hookAddEditStatus,
     currentPlan,
@@ -111,8 +111,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
 
   let rows = [];
   let actions = [];
-  if (migHookList.length > 0) {
-    rows = migHookList.map((migHook, id) => {
+  if (allHooks.length > 0) {
+    rows = allHooks.map((migHook, id) => {
       const name = migHook.metadata.name;
       const { image, custom } = migHook.spec;
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
@@ -155,7 +155,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook: IMigHook = migHookList.find(
+          const currentHook: IMigHook = allHooks.find(
             (hook) => hook.metadata.name === rowData.name.title
           );
           const hookValues = {
@@ -225,7 +225,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
         ) : (
           <Card>
             <CardBody>
-              {!migHookList ? null : migHookList.length === 0 && !isAddHooksOpen ? (
+              {!allHooks ? null : allHooks.length === 0 && !isAddHooksOpen ? (
                 renderEmptyState()
               ) : (
                 <Grid>
@@ -307,7 +307,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
 const mapStateToProps = (state: IReduxState) => {
   return {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
-    migHookList: planSelectors.getHooksWithStatus(state),
+    allHooks: planSelectors.getHooksWithStatus(state),
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     isFetchingInitialHooks: state.plan.isFetchingInitialHooks,

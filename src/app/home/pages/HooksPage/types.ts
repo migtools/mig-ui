@@ -25,4 +25,5 @@ export interface IMigHook {
     registryPath?: string;
   };
   id: string;
+  HookStatus?: any;
 }

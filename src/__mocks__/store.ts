@@ -87,7 +87,7 @@ export const initialStore = {
     currentPlanStatus: '{errorMessage: "", state: "Pending"}',
     lockedPlanList: [],
     isFetchingHookList: false,
-    migHookList: [],
+    allHooks: [],
     currentPlanHooks: [],
     hookAddEditStatus: '{mode: "add", state: "pending"}',
     isFetchingInitialPlans: false,

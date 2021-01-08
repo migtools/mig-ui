@@ -85,7 +85,7 @@ const lockedPlansSelector = (state) => state.plan.lockedPlanList;
 
 const sourceClusterNamespacesSelector = (state) => state.plan.sourceClusterNamespaces;
 
-const hooksSelector = (state) => state.plan.migHookList.map((h) => h);
+const hooksSelector = (state) => state.plan.allHooks.map((h) => h);
 
 const getHooksWithStatus = createSelector(
   [hooksSelector, planSelector],

@@ -49,8 +49,8 @@ export interface IPlanReducerState {
   currentPlanStatus: ICurrentPlanStatus;
   lockedPlanList: string[]; // Plan names
   isFetchingHookList: boolean;
-  migHookList: IHook[];
-  allHookList: IMigHook[];
+  currentPlanHooks: IHook[];
+  allHooks: IMigHook[];
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
   isFetchingInitialHooks: boolean;
@@ -81,8 +81,8 @@ export const INITIAL_STATE: IPlanReducerState = {
   } as ICurrentPlanStatus,
   lockedPlanList: [],
   isFetchingHookList: false,
-  migHookList: [],
-  allHookList: [],
+  currentPlanHooks: [],
+  allHooks: [],
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
   isFetchingInitialHooks: true,
@@ -618,7 +618,7 @@ export const updateHooks: PlanReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
     isFetchingInitialHooks: false,
-    migHookList: action.updatedHooks,
+    allHooks: action.updatedHooks,
   };
 };
 

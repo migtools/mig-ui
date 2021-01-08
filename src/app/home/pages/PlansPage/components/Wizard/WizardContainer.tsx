@@ -95,7 +95,8 @@ export interface IOtherProps {
   addHookRequest: (migHook: IHook) => void;
   updateHookRequest: (migHook: IHook) => void;
   removeHookRequest: (hookName, migrationStep) => void;
-  migHookList: IMigHook[];
+  currentPlanHooks: IHook[];
+  allHooks: IMigHook[];
   isFetchingHookList: boolean;
   watchHookAddEditStatus: () => void;
   hookAddEditStatus: IAddEditStatus;
@@ -169,10 +170,10 @@ const mapStateToProps = (state: IReduxState) => {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
-    hookList: planSelectors.getHooksWithStatus(state),
+    allHooks: planSelectors.getHooksWithStatus(state),
+    currentPlanHooks: state.plan.currentPlanHooks,
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
-    migHookList: state.plan.migHookList,
     tokenList: state.token.tokenList, // NATODO do we also need to bring in fetch/polling stuff for tokens to the wizard?
   };
 };

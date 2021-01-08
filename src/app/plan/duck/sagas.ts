@@ -1296,7 +1296,7 @@ function* updateHookRequest(action) {
   const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
-  const currentHook = state.plan.migHookList.find((hook) => {
+  const currentHook = state.plan.currentPlanHooks.find((hook) => {
     return hook.hookName === migHook.hookName;
   });
 
