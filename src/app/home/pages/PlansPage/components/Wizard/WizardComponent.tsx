@@ -38,7 +38,7 @@ const WizardComponent = (props: IOtherProps) => {
     isPollingStatus,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
-    fetchHooksRequest,
+    fetchPlanHooksRequest,
     allHooks,
     currentPlanHooks,
     isFetchingHookList,
@@ -209,7 +209,7 @@ const WizardComponent = (props: IOtherProps) => {
             isFetchingHookList={isFetchingHookList}
             currentPlanHooks={currentPlanHooks}
             allHooks={allHooks}
-            fetchHooksRequest={fetchHooksRequest}
+            fetchPlanHooksRequest={fetchPlanHooksRequest}
             watchHookAddEditStatus={watchHookAddEditStatus}
             hookAddEditStatus={hookAddEditStatus}
             cancelAddEditWatch={cancelAddEditWatch}

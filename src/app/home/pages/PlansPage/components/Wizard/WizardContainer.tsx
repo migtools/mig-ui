@@ -83,7 +83,7 @@ export interface IOtherProps {
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
-  fetchHooksRequest: (currentPlanHooks) => void;
+  fetchPlanHooksRequest: (currentPlanHooks) => void;
   addPlanRequest: (migPlan) => void;
   addAnalyticRequest: (planName: string) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
