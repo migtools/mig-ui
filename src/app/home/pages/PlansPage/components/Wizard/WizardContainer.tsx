@@ -169,7 +169,7 @@ const mapStateToProps = (state: IReduxState) => {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
-    hookList: planSelectors.getHooks(state),
+    hookList: planSelectors.getHooksWithStatus(state),
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     migHookList: state.plan.migHookList,

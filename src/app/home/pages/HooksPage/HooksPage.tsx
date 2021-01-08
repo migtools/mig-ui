@@ -274,7 +274,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
 const mapStateToProps = (state: IReduxState) => {
   return {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
-    hookList: planSelectors.getHooks(state),
+    hookList: planSelectors.getHooksWithStatus(state),
     isFetchingHookList: state.plan.isFetchingHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     migHookList: state.plan.migHookList,
