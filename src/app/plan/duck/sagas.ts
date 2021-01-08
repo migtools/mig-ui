@@ -1076,7 +1076,7 @@ function* fetchHooksGenerator() {
   }
 }
 
-function* fetchHooksSaga(action) {
+function* fetchPlanHooksSaga(action) {
   const state: IReduxState = yield select();
   try {
     const { migMeta } = state.auth;
@@ -1138,9 +1138,9 @@ function* fetchHooksSaga(action) {
         })
       );
     }
-    yield put(PlanActions.hookFetchSuccess(associatedHooks));
+    yield put(PlanActions.fetchPlanHooksSuccess(associatedHooks));
   } catch (err) {
-    yield put(PlanActions.hookFetchFailure());
+    yield put(PlanActions.fetchPlanHooksFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to fetch hooks'));
   }
 }
@@ -1212,7 +1212,7 @@ function* associateHookToPlanSaga(action) {
       createHooksSpec()
     );
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
-    yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
+    yield put(PlanActions.fetchPlanHooksRequest(patchPlanRes.data.spec.hooks));
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
@@ -1284,7 +1284,7 @@ function* removeHookSaga(action) {
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
-    yield put(PlanActions.hookFetchRequest(patchPlanRes.data.spec.hooks));
+    yield put(PlanActions.fetchPlanHooksRequest(patchPlanRes.data.spec.hooks));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.removeHookFailure(err));
@@ -1331,7 +1331,7 @@ function* updateHookRequest(action) {
     yield put(
       PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
     );
-    yield put(PlanActions.hookFetchRequest(patchPlanResponse.data.spec.hooks));
+    yield put(PlanActions.fetchPlanHooksRequest(patchPlanResponse.data.spec.hooks));
     yield put(PlanActions.updateHookSuccess());
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
@@ -1352,8 +1352,8 @@ function* watchRemoveHookRequest() {
   yield takeLatest(PlanActionTypes.REMOVE_HOOK_REQUEST, removeHookSaga);
 }
 
-function* watchFetchHooksRequest() {
-  yield takeLatest(PlanActionTypes.HOOK_FETCH_REQUEST, fetchHooksSaga);
+function* watchFetchPlanHooksRequest() {
+  yield takeLatest(PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST, fetchPlanHooksSaga);
 }
 
 function* watchAddHookRequest() {
@@ -1485,7 +1485,7 @@ export default {
   watchNamespaceFetchRequest,
   watchPVUpdatePolling,
   watchAddHookRequest,
-  watchFetchHooksRequest,
+  watchFetchPlanHooksRequest,
   watchRemoveHookRequest,
   watchUpdateHookRequest,
   watchValidatePlanRequest,

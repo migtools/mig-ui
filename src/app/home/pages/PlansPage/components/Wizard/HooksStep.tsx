@@ -23,6 +23,7 @@ import HooksFormContainer from './HooksFormContainer';
 import { IMigMeta } from '../../../../../auth/duck/types';
 import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
+import { IHook } from '../../../../../../client/resources/conversions';
 
 const classNames = require('classnames');
 
@@ -33,14 +34,14 @@ interface IHooksStepBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
-  migHookList: any;
-  fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
+  fetchPlanHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
   removeHookRequest: (hookName: string, stepName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
   isAddHooksOpen: boolean;
   setIsAddHooksOpen: (val) => void;
+  currentPlanHooks: any[];
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
@@ -48,8 +49,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
-    migHookList,
-    fetchHooksRequest,
+    fetchPlanHooksRequest,
+    currentPlanHooks,
     hookAddEditStatus,
     currentPlan,
     removeHookRequest,
@@ -64,7 +65,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
 
   useEffect(() => {
     if (currentPlan) {
-      fetchHooksRequest(currentPlan.spec.hooks);
+      fetchPlanHooksRequest(currentPlan.spec.hooks);
     }
   }, []);
 
@@ -97,8 +98,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
 
   let rows = [];
   let actions = [];
-  if (migHookList.length > 0) {
-    rows = migHookList.map((migHook, id) => {
+  if (currentPlanHooks.length > 0) {
+    rows = currentPlanHooks.map((migHook, id) => {
       return {
         cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
       };
@@ -107,7 +108,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          const currentHook = currentPlanHooks.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);

@@ -546,33 +546,33 @@ export const addHookFailure: PlanReducerFn = (
   };
 };
 
-export const hookFetchRequest: PlanReducerFn = (
+export const fetchPlanHooksRequest: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchRequest>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksRequest>
 ) => {
   return {
     ...state,
-    planHookList: [],
+    currentPlanHooks: [],
     isFetchingHookList: true,
   };
 };
-export const hookFetchSuccess: PlanReducerFn = (
+export const fetchPlanHooksSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchSuccess>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksSuccess>
 ) => {
   return {
     ...state,
-    migHookList: action.migHookList,
+    currentPlanHooks: action.currentPlanHooks,
     isFetchingHookList: false,
   };
 };
-export const hookFetchFailure: PlanReducerFn = (
+export const fetchPlanHooksFailure: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchFailure>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksFailure>
 ) => {
   return {
     ...state,
-    migHookList: [],
+    currentPlanHooks: [],
     isFetchingHookList: false,
   };
 };
@@ -710,12 +710,12 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
-    case PlanActionTypes.HOOK_FETCH_REQUEST:
-      return hookFetchRequest(state, action);
-    case PlanActionTypes.HOOK_FETCH_SUCCESS:
-      return hookFetchSuccess(state, action);
-    case PlanActionTypes.HOOK_FETCH_FAILURE:
-      return hookFetchFailure(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST:
+      return fetchPlanHooksRequest(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS:
+      return fetchPlanHooksSuccess(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_FAILURE:
+      return fetchPlanHooksFailure(state, action);
     case PlanActionTypes.REMOVE_HOOK_REQUEST:
       return removeHookRequest(state, action);
     case PlanActionTypes.REMOVE_HOOK_FAILURE:

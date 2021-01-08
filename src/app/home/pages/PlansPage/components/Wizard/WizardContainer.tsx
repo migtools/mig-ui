@@ -189,8 +189,8 @@ const mapDispatchToProps = (dispatch) => {
     stopPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.stopPlanStatusPolling(planName)),
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchHooksRequest: (currentPlanHooks) =>
-      dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
+    fetchPlanHooksRequest: (currentPlanHooks) =>
+      dispatch(PlanActions.fetchPlanHooksRequest(currentPlanHooks)),
     validatePlanRequest: (values) => dispatch(PlanActions.validatePlanRequest(values)),
     pvDiscoveryRequest: (values) => dispatch(PlanActions.pvDiscoveryRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),

@@ -90,9 +90,9 @@ export const PlanActionTypes = {
   ADD_HOOK_REQUEST: 'ADD_HOOK_REQUEST',
   ADD_HOOK_FAILURE: 'ADD_HOOK_FAILURE',
   ADD_HOOK_SUCCESS: 'ADD_HOOK_SUCCESS',
-  HOOK_FETCH_REQUEST: 'HOOK_FETCH_REQUEST',
-  HOOK_FETCH_FAILURE: 'HOOK_FETCH_FAILURE',
-  HOOK_FETCH_SUCCESS: 'HOOK_FETCH_SUCCESS',
+  FETCH_PLAN_HOOKS_REQUEST: 'FETCH_PLAN_HOOKS_REQUEST',
+  FETCH_PLAN_HOOKS_SUCCESS: 'FETCH_PLAN_HOOKS_SUCCESS',
+  FETCH_PLAN_HOOKS_FAILURE: 'FETCH_PLAN_HOOKS_FAILURE',
   SET_HOOK_ADD_EDIT_STATUS: 'SET_HOOK_ADD_EDIT_STATUS',
   WATCH_HOOK_ADD_EDIT_STATUS: 'WATCH_HOOK_ADD_EDIT_STATUS',
   CANCEL_WATCH_HOOK_ADD_EDIT_STATUS: 'CANCEL_WATCH_HOOK_ADD_EDIT_STATUS',
@@ -465,18 +465,18 @@ const addHookFailure = (error) => ({
   error,
 });
 
-const hookFetchRequest = (currentPlanHooks) => ({
-  type: PlanActionTypes.HOOK_FETCH_REQUEST,
+const fetchPlanHooksRequest = (currentPlanHooks) => ({
+  type: PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST,
   currentPlanHooks,
 });
 
-const hookFetchSuccess = (migHookList: IHook[]) => ({
-  type: PlanActionTypes.HOOK_FETCH_SUCCESS,
-  migHookList,
+const fetchPlanHooksSuccess = (currentPlanHooks: IHook[]) => ({
+  type: PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS,
+  currentPlanHooks,
 });
 
-const hookFetchFailure = () => ({
-  type: PlanActionTypes.HOOK_FETCH_FAILURE,
+const fetchPlanHooksFailure = () => ({
+  type: PlanActionTypes.FETCH_PLAN_HOOKS_FAILURE,
 });
 
 const fetchAllHooksRequest = () => ({
@@ -624,9 +624,9 @@ export const PlanActions = {
   addHookFailure,
   addHookRequest,
   addHookSuccess,
-  hookFetchFailure,
-  hookFetchRequest,
-  hookFetchSuccess,
+  fetchPlanHooksFailure,
+  fetchPlanHooksRequest,
+  fetchPlanHooksSuccess,
   setHookAddEditStatus,
   watchHookAddEditStatus,
   cancelWatchHookAddEditStatus,

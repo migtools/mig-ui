@@ -118,13 +118,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
-      const listItems = associatedPlans.map((planName) => (
-        // <Link to={`/plans/${plan.MigPlan.metadata.name}/migrations`}>
-        //   <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
-        //     <MigrationIcon key="migration-count-icon" /> {migrationCount}
-        //   </span>
-        <Link to={`/plans/`}>{planName}</Link>
-      ));
+      const listItems = associatedPlans.map((planName) => <Link to={`/plans/`}>{planName}</Link>);
       return {
         cells: [
           name,
@@ -323,8 +317,8 @@ const mapStateToProps = (state: IReduxState) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchHooksRequest: (currentPlanHooks) =>
-      dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
+    fetchPlanHooksRequest: (currentPlanHooks) =>
+      dispatch(PlanActions.fetchPlanHooksRequest(currentPlanHooks)),
     watchHookAddEditStatus: (hookName) => {
       // Push the add edit status into watching state, and start watching
       dispatch(
