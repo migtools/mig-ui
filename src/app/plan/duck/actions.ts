@@ -1,7 +1,8 @@
-import { IMigHook } from '../../../client/resources/conversions';
 import { ICurrentPlanStatus } from './reducers';
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigPlan, IPlan } from './types';
+import { IMigHook } from '../../home/pages/HooksPage/types';
+import { IHook } from '../../../client/resources/conversions';
 
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
@@ -469,7 +470,7 @@ const hookFetchRequest = (currentPlanHooks) => ({
   currentPlanHooks,
 });
 
-const hookFetchSuccess = (migHookList: IMigHook[]) => ({
+const hookFetchSuccess = (migHookList: IHook[]) => ({
   type: PlanActionTypes.HOOK_FETCH_SUCCESS,
   migHookList,
 });

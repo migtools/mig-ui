@@ -88,6 +88,7 @@ export const initialStore = {
     lockedPlanList: [],
     isFetchingHookList: false,
     migHookList: [],
+    planHookList: [],
     hookAddEditStatus: '{mode: "add", state: "pending"}',
     isFetchingInitialPlans: false,
   },

@@ -13,7 +13,8 @@ import {
   IPersistentVolumeResource,
   IMigration,
 } from './types';
-import { IMigHook } from '../../../client/resources/conversions';
+import { IMigHook } from '../../home/pages/HooksPage/types';
+import { IHook } from '../../../client/resources/conversions';
 
 export enum CurrentPlanState {
   Pending = 'Pending',
@@ -48,7 +49,8 @@ export interface IPlanReducerState {
   currentPlanStatus: ICurrentPlanStatus;
   lockedPlanList: string[]; // Plan names
   isFetchingHookList: boolean;
-  migHookList: IMigHook[];
+  migHookList: IHook[];
+  allHookList: IMigHook[];
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
   isFetchingInitialHooks: boolean;
@@ -80,6 +82,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   lockedPlanList: [],
   isFetchingHookList: false,
   migHookList: [],
+  allHookList: [],
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
   isFetchingInitialHooks: true,
@@ -549,7 +552,7 @@ export const hookFetchRequest: PlanReducerFn = (
 ) => {
   return {
     ...state,
-    migHookList: [],
+    planHookList: [],
     isFetchingHookList: true,
   };
 };

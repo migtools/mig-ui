@@ -4,7 +4,6 @@ import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
 import { connect } from 'react-redux';
 import { ICurrentPlanStatus } from '../../../../../plan/duck/reducers';
-import { IMigHook } from '../../../../../../client/resources/conversions';
 import {
   defaultAddEditStatus,
   createAddEditStatus,
@@ -26,6 +25,8 @@ import { IReduxState } from '../../../../../../reducers';
 import { IToken } from '../../../../../token/duck/types';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
+import { IHook } from '../../../../../../client/resources/conversions';
+import { IMigHook } from '../../../HooksPage/types';
 
 export interface IFormValues {
   planName: string;
@@ -91,8 +92,8 @@ export interface IOtherProps {
   editPlanObj?: IMigPlan;
   isEdit: boolean;
   updateCurrentPlanStatus: (currentPlanStatus: ICurrentPlanStatus) => void;
-  addHookRequest: (migHook: IMigHook) => void;
-  updateHookRequest: (migHook: IMigHook) => void;
+  addHookRequest: (migHook: IHook) => void;
+  updateHookRequest: (migHook: IHook) => void;
   removeHookRequest: (hookName, migrationStep) => void;
   migHookList: IMigHook[];
   isFetchingHookList: boolean;

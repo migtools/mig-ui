@@ -1062,6 +1062,20 @@ function* rollbackPoll(action) {
 //Hooks sagas
 /******************************************************************** */
 
+function* fetchHooksGenerator() {
+  const state = yield select();
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const resource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
+  try {
+    let hookList = yield client.list(resource);
+    hookList = yield hookList.data.items;
+
+    return { updatedHooks: hookList };
+  } catch (e) {
+    throw e;
+  }
+}
+
 function* fetchHooksSaga(action) {
   const state: IReduxState = yield select();
   try {
@@ -1223,6 +1237,9 @@ function* addHookSaga(action) {
     if (currentPlan) {
       yield put(PlanActions.associateHookToPlan(migHook, createHookRes.data));
     }
+    const updatedHooks = yield call(fetchHooksGenerator);
+    console.log('updatedHooks', updatedHooks);
+    yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
@@ -1320,19 +1337,6 @@ function* updateHookRequest(action) {
     yield put(PlanActions.updateHookFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
     throw err;
-  }
-}
-function* fetchHooksGenerator() {
-  const state = yield select();
-  const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
-  try {
-    let hookList = yield client.list(resource);
-    hookList = yield hookList.data.items;
-
-    return { updatedHooks: hookList };
-  } catch (e) {
-    throw e;
   }
 }
 

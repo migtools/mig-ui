@@ -764,7 +764,7 @@ export function createMigToken(
   };
 }
 
-export type IMigHook = ReturnType<typeof createMigHook>;
+export type IHook = ReturnType<typeof createMigHook>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;

@@ -20,9 +20,9 @@ import {
 } from '@patternfly/react-core';
 import { AddEditMode, IAddEditStatus } from '../../../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
-import { IMigHook } from '../../../../../../client/resources/conversions';
 import { IMigMeta } from '../../../../../auth/duck/types';
 import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
+import { IMigHook } from '../../../HooksPage/types';
 
 const classNames = require('classnames');
 
@@ -33,7 +33,7 @@ interface IHooksStepBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
-  migHookList: any;
+  planHookList: any;
   fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -48,7 +48,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
-    migHookList,
+    planHookList,
     fetchHooksRequest,
     hookAddEditStatus,
     currentPlan,
@@ -97,8 +97,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
 
   let rows = [];
   let actions = [];
-  if (migHookList.length > 0) {
-    rows = migHookList.map((migHook, id) => {
+  if (planHookList.length > 0) {
+    rows = planHookList.map((migHook, id) => {
       return {
         cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
       };
@@ -107,7 +107,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          const currentHook = planHookList.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);

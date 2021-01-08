@@ -22,7 +22,6 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useOpenModal } from '../../duck';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
-import { IMigHook } from '../../../../client/resources/conversions';
 import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
 import {
   AddEditMode,
@@ -33,6 +32,7 @@ import {
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
+import { IMigHook } from './types';
 
 const classNames = require('classnames');
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
@@ -93,9 +93,9 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
 
   const columns = [
     { title: 'Name' },
+    { title: 'Type' },
     { title: 'Definition' },
-    { title: 'Run in' },
-    { title: 'Migration step' },
+    { title: 'Plans' },
   ];
   const hooksFormContainerStyles = classNames(
     spacing.mySm,
@@ -108,15 +108,27 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   let actions = [];
   if (migHookList.length > 0) {
     rows = migHookList.map((migHook, id) => {
+      const name = migHook.metadata.name;
+      const { image, custom } = migHook.spec;
+      const associatedPlans = 0;
+
+      const type = custom ? 'Custom container image' : 'Ansible playbook';
+
       return {
-        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
+        cells: [name, image, type, associatedPlans],
       };
     });
     actions = [
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          const currentHook: IMigHook = migHookList.find(
+            (hook) => hook.metadata.name === rowData.name.title
+          );
+          const hookValues = {
+            hookName: currentHook.metadata.name,
+            hookImageType: currentHook,
+          };
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);
