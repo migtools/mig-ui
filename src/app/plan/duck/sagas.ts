@@ -20,6 +20,7 @@ import {
   createMigMigration,
   createMigHook,
   updateMigHook,
+  updatePlanHookList,
 } from '../../../client/resources/conversions';
 import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
@@ -1122,6 +1123,22 @@ function* fetchPlanHooksSaga(action) {
     yield put(AlertActions.alertErrorTimeout('Failed to fetch hooks'));
   }
 }
+
+function* updatePlanHookListSaga(action) {
+  const state: IReduxState = yield select();
+  const { migMeta } = state.auth;
+  const { currentPlan } = state.plan;
+  const client: IClusterClient = ClientFactory.cluster(state);
+  const { currentPlanHookRefPatch } = action;
+  const patchPlanResponse = yield client.patch(
+    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    currentPlan.metadata.name,
+    currentPlanHookRefPatch
+  );
+  yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
+  yield put(PlanActions.fetchPlanHooksRequest(patchPlanResponse.data.spec.hooks));
+}
+
 function* associateHookToPlanSaga(action) {
   try {
     const state: IReduxState = yield select();
@@ -1216,7 +1233,6 @@ function* addHookSaga(action) {
       yield put(PlanActions.associateHookToPlan(migHook, createHookRes.data));
     }
     const updatedHooks = yield call(fetchHooksGenerator);
-    console.log('updatedHooks', updatedHooks);
     yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
   } catch (err) {
@@ -1274,42 +1290,40 @@ function* updateHookRequest(action) {
   const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
-  const currentHook = state.plan.currentPlanHooks.find((hook) => {
-    return hook.hookName === migHook.hookName;
+  const currentHook = state.plan?.allHooks.find((hook) => {
+    return hook.metadata.name === migHook.hookName;
   });
 
   const { currentPlan } = state.plan;
 
-  const currentPlanHookRef = currentPlan.spec.hooks.find((hook) => {
-    return hook.reference.name === migHook.hookName;
-  });
-  const migHookObj = updateMigHook(
-    currentHook,
-    migHook,
-    currentPlanHookRef,
-    migMeta.namespace,
-    currentPlan
-  );
-  //need to patch entire hooks array
   try {
-    const patchPlanResponse = yield client.patch(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      currentPlan.metadata.name,
-      migHookObj.currentPlanHookRefPatch
-    );
-
+    const migHookPatch = updateMigHook(currentHook, migHook);
     yield client.patch(
       new MigResource(MigResourceKind.MigHook, migMeta.namespace),
       migHook.hookName,
-      migHookObj.migHookPatch
+      migHookPatch
     );
+    const updatedHooks = yield call(fetchHooksGenerator);
+    yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
 
-    yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
+    if (currentPlan) {
+      const currentPlanHookRef = currentPlan?.spec?.hooks.find((hook) => {
+        return hook.reference.name === migHook.hookName;
+      });
+      const currentPlanHookRefPatch = updatePlanHookList(
+        currentHook,
+        migHook,
+        currentPlanHookRef,
+        migMeta.namespace,
+        currentPlan
+      );
+      yield put(PlanActions.updatePlanHookList(currentPlanHookRefPatch));
+    }
+
     yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
     yield put(
       PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
     );
-    yield put(PlanActions.fetchPlanHooksRequest(patchPlanResponse.data.spec.hooks));
     yield put(PlanActions.updateHookSuccess());
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
@@ -1440,6 +1454,10 @@ function* watchRefreshAnalyticRequest() {
 
 function* watchAssociateHookToPlan() {
   yield takeLatest(PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN, associateHookToPlanSaga);
+}
+
+function* watchUpdatePlanHookList() {
+  yield takeLatest(PlanActionTypes.UPDATE_PLAN_HOOK_LIST, updatePlanHookListSaga);
 }
 
 export default {

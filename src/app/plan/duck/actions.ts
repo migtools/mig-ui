@@ -105,6 +105,7 @@ export const PlanActionTypes = {
   FETCH_ALL_HOOKS_FAILURE: 'FETCH_ALL_HOOKS_FAILURE',
   HOOK_POLL_START: 'HOOK_POLL_START',
   HOOK_POLL_STOP: 'HOOK_POLL_STOP',
+  UPDATE_PLAN_HOOK_LIST: 'UPDATE_PLAN_HOOK_LIST',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -535,6 +536,10 @@ const updateHookSuccess = () => ({
   type: PlanActionTypes.UPDATE_HOOK_SUCCESS,
 });
 
+const updatePlanHookList = (currentPlanHookRefPatch: any) => ({
+  type: PlanActionTypes.UPDATE_HOOK_REQUEST,
+  currentPlanHookRefPatch,
+});
 const associateHookToPlan = (hookValues: any, migHook: IMigHook) => ({
   type: PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN,
   hookValues,
@@ -640,4 +645,5 @@ export const PlanActions = {
   startHookPolling,
   stopHookPolling,
   updateHooks,
+  updatePlanHookList,
 };

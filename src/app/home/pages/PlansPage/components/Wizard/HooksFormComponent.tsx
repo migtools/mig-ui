@@ -109,7 +109,14 @@ const HooksFormComponent: React.FunctionComponent<
   const hookImageStyles = classNames(spacing.mtSm, spacing.mlLg);
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={(e) => {
+        console.log('errors', errors);
+        console.log('touched', touched);
+        handleSubmit(e);
+        e.preventDefault();
+      }}
+    >
       <Grid span={8}>
         <GridItem>
           <FormGroup
