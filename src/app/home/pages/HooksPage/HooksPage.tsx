@@ -23,7 +23,7 @@ import {
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useOpenModal } from '../../duck';
+import planUtils from '../../../plan/duck/utils';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
@@ -73,7 +73,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   } = props;
 
   const defaultHookRunnerImage = migMeta?.hookRunnerImage || fallbackHookRunnerImage;
-  const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
+  const [initialHookValues, setInitialHookValues] = useState({});
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
   const onAddEditHookSubmit = (hookValues) => {
@@ -131,7 +131,11 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
                   position={PopoverPosition.top}
                   bodyContent={
                     <>
-                      <ul>{listItems}</ul>
+                      <ul>
+                        {associatedPlanCount
+                          ? listItems
+                          : 'No plans are associated with this hook.'}
+                      </ul>
                     </>
                   }
                   aria-label="associated-plans"
@@ -139,11 +143,9 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
                   maxWidth="4rem"
                   className={styles.planCountPopover}
                 >
-                  <Link
-                    className={classNames('pf-c-icon', { 'pf-m-info': associatedPlanCount > 0 })}
-                  >
+                  <a className={classNames('pf-c-icon', { 'pf-m-info': associatedPlanCount > 0 })}>
                     {associatedPlanCount}
-                  </Link>
+                  </a>
                 </Popover>
               </>
             ),
@@ -155,13 +157,10 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook: IMigHook = allHooks.find(
+          const matchingHook: IMigHook = allHooks.find(
             (hook) => hook.metadata.name === rowData.name.title
           );
-          const hookValues = {
-            hookName: currentHook.metadata.name,
-            hookImageType: currentHook,
-          };
+          const currentHook = planUtils.convertMigHookToUIObject(null, matchingHook);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);

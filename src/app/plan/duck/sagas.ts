@@ -46,6 +46,17 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /* Plan sagas */
 /******************************************************************** */
 function* fetchPlansGenerator() {
+  function fetchMigHookRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
+    const refs: Array<Promise<any>> = [];
+
+    migPlans.forEach((plan) => {
+      const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
+      refs.push(client.list(migHookResource));
+    });
+
+    return refs;
+  }
+
   function fetchMigAnalyticRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
     const refs: Array<Promise<any>> = [];
 
@@ -83,7 +94,14 @@ function* fetchPlansGenerator() {
       fetchMigAnalyticRefs(client, state.auth.migMeta, planList)
     );
 
-    const groupedPlans = yield planUtils.groupPlans(planList, migMigrationRefs, migAnalyticRefs);
+    const migHookRefs = yield Promise.all(fetchMigHookRefs(client, state.auth.migMeta, planList));
+
+    const groupedPlans = yield planUtils.groupPlans(
+      planList,
+      migMigrationRefs,
+      migAnalyticRefs,
+      migHookRefs
+    );
     return { updatedPlans: groupedPlans };
   } catch (e) {
     throw e;
@@ -1092,47 +1110,7 @@ function* fetchPlanHooksSaga(action) {
       currentPlanHooks.forEach((currentPlanHookRef) =>
         hookList.data.items.forEach((hookRef) => {
           if (currentPlanHookRef.reference.name === hookRef.metadata.name) {
-            const hookImageType = hookRef.spec.custom ? 'custom' : 'ansible';
-            const customContainerImage = hookRef.spec.custom ? hookRef.spec.image : null;
-            const ansibleRuntimeImage = !hookRef.spec.custom ? hookRef.spec.image : null;
-            const srcServiceAccountName =
-              hookRef.spec.targetCluster === 'source' ? currentPlanHookRef.serviceAccount : null;
-            const srcServiceAccountNamespace =
-              hookRef.spec.targetCluster === 'source'
-                ? currentPlanHookRef.executionNamespace
-                : null;
-            const destServiceAccountName =
-              hookRef.spec.targetCluster === 'destination'
-                ? currentPlanHookRef.serviceAccount
-                : null;
-            const destServiceAccountNamespace =
-              hookRef.spec.targetCluster === 'destination'
-                ? currentPlanHookRef.executionNamespace
-                : null;
-            const clusterTypeText =
-              hookRef.spec.targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
-
-            let ansibleFile;
-            if (!hookRef.spec.custom) {
-              ansibleFile = atob(hookRef.spec.playbook);
-            }
-
-            const uiHookObject = {
-              hookName: hookRef.metadata.name,
-              hookImageType,
-              customContainerImage,
-              ansibleRuntimeImage,
-              ansibleFile,
-              clusterType: hookRef.spec.targetCluster,
-              clusterTypeText: clusterTypeText,
-              srcServiceAccountName,
-              srcServiceAccountNamespace,
-              destServiceAccountName,
-              destServiceAccountNamespace,
-              phase: currentPlanHookRef.phase,
-              image: hookRef.spec.image,
-              custom: hookRef.spec.custom,
-            };
+            const uiHookObject = planUtils.convertMigHookToUIObject(currentPlanHookRef, hookRef);
             associatedHooks.push(uiHookObject);
           }
         })
