@@ -46,7 +46,7 @@ interface IHooksPageBaseProps {
   isFetchingInitialHooks: boolean;
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
-  isFetchingHookList: boolean;
+  isUpdatingGlobalHookList: boolean;
   allHooks: IMigHook[];
   fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
@@ -61,7 +61,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   const {
     updateHookRequest,
     addHookRequest,
-    isFetchingHookList,
+    isUpdatingGlobalHookList,
     allHooks,
     fetchHooksRequest,
     hookAddEditStatus,
@@ -210,7 +210,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       </PageSection>
       <PageSection>
         {/* TODO: isFetchingInitialHooks */}
-        {isFetchingHookList || isFetchingInitialHooks ? (
+        {isUpdatingGlobalHookList || isFetchingInitialHooks ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -252,7 +252,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
                   )}
                   {!isAddHooksOpen && (
                     <React.Fragment>
-                      {isFetchingHookList ? (
+                      {isUpdatingGlobalHookList ? (
                         <Bullseye>
                           <EmptyState variant="large">
                             <div className="pf-c-empty-state__icon">
@@ -307,7 +307,7 @@ const mapStateToProps = (state: IReduxState) => {
   return {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     allHooks: planSelectors.getHooksWithStatus(state),
-    isFetchingHookList: state.plan.isFetchingHookList,
+    isUpdatingGlobalHookList: state.plan.isUpdatingGlobalHookList,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     isFetchingInitialHooks: state.plan.isFetchingInitialHooks,
     migMeta: state.auth.migMeta,

@@ -51,6 +51,7 @@ export interface IPlanReducerState {
   isFetchingHookList: boolean;
   currentPlanHooks: IHook[];
   allHooks: IMigHook[];
+  isUpdatingGlobalHookList: boolean;
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
   isFetchingInitialHooks: boolean;
@@ -87,6 +88,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   isFetchingInitialPlans: true,
   isFetchingInitialHooks: true,
   isRefreshingAnalytic: false,
+  isUpdatingGlobalHookList: false,
 };
 
 const sortPlans = (planList: IPlan[]) =>
@@ -591,7 +593,7 @@ export const updateHookRequest: PlanReducerFn = (
   return {
     ...state,
     hookAddEditStatus: fetchingAddEditStatus(),
-    isFetchingHookList: true,
+    isUpdatingGlobalHookList: true,
   };
 };
 export const updateHookSuccess: PlanReducerFn = (
@@ -600,7 +602,7 @@ export const updateHookSuccess: PlanReducerFn = (
 ) => {
   return {
     ...state,
-    isFetchingHookList: false,
+    isUpdatingGlobalHookList: false,
   };
 };
 
