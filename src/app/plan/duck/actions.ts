@@ -466,9 +466,8 @@ const addHookFailure = (error) => ({
   error,
 });
 
-const fetchPlanHooksRequest = (currentPlanHooks) => ({
+const fetchPlanHooksRequest = () => ({
   type: PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST,
-  currentPlanHooks,
 });
 
 const fetchPlanHooksSuccess = (currentPlanHooks: IHook[]) => ({
@@ -537,9 +536,10 @@ const updateHookSuccess = () => ({
 });
 
 const updatePlanHookList = (currentPlanHookRefPatch: any) => ({
-  type: PlanActionTypes.UPDATE_HOOK_REQUEST,
+  type: PlanActionTypes.UPDATE_PLAN_HOOK_LIST,
   currentPlanHookRefPatch,
 });
+
 const associateHookToPlan = (hookValues: any, migHook: IMigHook) => ({
   type: PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN,
   hookValues,

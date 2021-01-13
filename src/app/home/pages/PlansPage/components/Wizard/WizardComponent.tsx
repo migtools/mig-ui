@@ -280,6 +280,10 @@ const WizardComponent = (props: IOtherProps) => {
       //update plan & start status polling on results page
       validatePlanRequest(values);
     }
+    if (newStep.id === stepId.Hooks) {
+      fetchPlanHooksRequest();
+    }
+
     if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
     }

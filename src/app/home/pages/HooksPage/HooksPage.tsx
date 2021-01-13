@@ -316,8 +316,7 @@ const mapStateToProps = (state: IReduxState) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchPlanHooksRequest: (currentPlanHooks) =>
-      dispatch(PlanActions.fetchPlanHooksRequest(currentPlanHooks)),
+    fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
     watchHookAddEditStatus: (hookName) => {
       // Push the add edit status into watching state, and start watching
       dispatch(

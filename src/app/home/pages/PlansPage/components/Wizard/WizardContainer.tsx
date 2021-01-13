@@ -83,7 +83,7 @@ export interface IOtherProps {
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
-  fetchPlanHooksRequest: (currentPlanHooks) => void;
+  fetchPlanHooksRequest: () => void;
   addPlanRequest: (migPlan) => void;
   addAnalyticRequest: (planName: string) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
@@ -190,8 +190,7 @@ const mapDispatchToProps = (dispatch) => {
     stopPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.stopPlanStatusPolling(planName)),
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchPlanHooksRequest: (currentPlanHooks) =>
-      dispatch(PlanActions.fetchPlanHooksRequest(currentPlanHooks)),
+    fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
     validatePlanRequest: (values) => dispatch(PlanActions.validatePlanRequest(values)),
     pvDiscoveryRequest: (values) => dispatch(PlanActions.pvDiscoveryRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),

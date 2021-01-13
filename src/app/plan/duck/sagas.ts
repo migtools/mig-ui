@@ -1095,7 +1095,7 @@ function* fetchHooksGenerator() {
   }
 }
 
-function* fetchPlanHooksSaga(action) {
+function* fetchPlanHooksSaga() {
   const state: IReduxState = yield select();
   try {
     const { migMeta } = state.auth;
@@ -1136,7 +1136,7 @@ function* updatePlanHookListSaga(action) {
     currentPlanHookRefPatch
   );
   yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
-  yield put(PlanActions.fetchPlanHooksRequest(patchPlanResponse.data.spec.hooks));
+  yield put(PlanActions.fetchPlanHooksRequest());
 }
 
 function* associateHookToPlanSaga(action) {
@@ -1207,7 +1207,7 @@ function* associateHookToPlanSaga(action) {
       createHooksSpec()
     );
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
-    yield put(PlanActions.fetchPlanHooksRequest(patchPlanRes.data.spec.hooks));
+    yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
@@ -1278,7 +1278,7 @@ function* removeHookSaga(action) {
     yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
-    yield put(PlanActions.fetchPlanHooksRequest(patchPlanRes.data.spec.hooks));
+    yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.removeHookFailure(err));
@@ -1290,11 +1290,18 @@ function* updateHookRequest(action) {
   const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
-  const currentHook = state.plan?.allHooks.find((hook) => {
-    return hook.metadata.name === migHook.hookName;
-  });
-
   const { currentPlan } = state.plan;
+
+  let currentHook;
+  if (currentPlan) {
+    currentHook = state.plan?.currentPlanHooks.find((hook) => {
+      return hook?.hookName === migHook?.hookName;
+    });
+  } else {
+    currentHook = state.plan?.allHooks.find((hook) => {
+      return hook.metadata.name === migHook?.hookName;
+    });
+  }
 
   try {
     const migHookPatch = updateMigHook(currentHook, migHook);
@@ -1318,6 +1325,7 @@ function* updateHookRequest(action) {
         currentPlan
       );
       yield put(PlanActions.updatePlanHookList(currentPlanHookRefPatch));
+      yield put(PlanActions.fetchPlanHooksRequest());
     }
 
     yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
@@ -1487,4 +1495,5 @@ export default {
   watchValidatePlanRequest,
   watchValidatePlanPolling,
   watchAssociateHookToPlan,
+  watchUpdatePlanHookList,
 };

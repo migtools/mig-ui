@@ -34,7 +34,7 @@ interface IHooksStepBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
-  fetchPlanHooksRequest: (hooks: IPlanSpecHook[]) => void;
+  fetchPlanHooksRequest: () => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
   removeHookRequest: (hookName: string, stepName: string) => void;
@@ -63,11 +63,11 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState({});
 
-  useEffect(() => {
-    if (currentPlan) {
-      fetchPlanHooksRequest(currentPlan.spec.hooks);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (currentPlan) {
+  //     fetchPlanHooksRequest();
+  //   }
+  // }, []);
 
   const onAddEditHookSubmit = (hookValues) => {
     switch (hookAddEditStatus.mode) {
@@ -162,20 +162,9 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
           </Text>
         </TextContent>
       </GridItem>
-      {isAddHooksOpen && (
-        <GridItem className={hooksFormContainerStyles}>
-          <HooksFormContainer
-            defaultHookRunnerImage={defaultHookRunnerImage}
-            onAddEditHookSubmit={onAddEditHookSubmit}
-            initialHookValues={initialHookValues}
-            setInitialHookValues={setInitialHookValues}
-            setIsAddHooksOpen={setIsAddHooksOpen}
-            isAddHooksOpen={isAddHooksOpen}
-            {...props}
-          />
-        </GridItem>
-      )}
-      {!isAddHooksOpen && (
+      {/* {isAddHooksOpen && (
+      )} */}
+      {!isAddHooksOpen ? (
         <React.Fragment>
           {isFetchingHookList ? (
             <Bullseye>
@@ -212,6 +201,18 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
             </GridItem>
           )}
         </React.Fragment>
+      ) : (
+        <GridItem className={hooksFormContainerStyles}>
+          <HooksFormContainer
+            defaultHookRunnerImage={defaultHookRunnerImage}
+            onAddEditHookSubmit={onAddEditHookSubmit}
+            initialHookValues={initialHookValues}
+            setInitialHookValues={setInitialHookValues}
+            setIsAddHooksOpen={setIsAddHooksOpen}
+            isAddHooksOpen={isAddHooksOpen}
+            {...props}
+          />
+        </GridItem>
       )}
     </Grid>
   );
