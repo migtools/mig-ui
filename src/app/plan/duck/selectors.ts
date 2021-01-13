@@ -371,7 +371,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         });
 
         if (runningCondition || cancelingCondition) {
-          status.stepName = runningCondition.reason;
+          status.stepName = runningCondition?.reason || '';
           if (cancelingCondition) {
             status.stepName = 'Canceling' + status.stepName;
             status.isCanceling = true;
