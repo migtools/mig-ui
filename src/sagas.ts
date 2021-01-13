@@ -69,6 +69,7 @@ export default function* rootSaga() {
     planSagas.watchValidatePlanRequest(),
     planSagas.watchValidatePlanPolling(),
     planSagas.watchAssociateHookToPlan(),
+    planSagas.watchUpdatePlanHookList(),
     logSagas.watchReportPolling(),
     logSagas.watchLogsPolling(),
     logSagas.watchLogDownload(),

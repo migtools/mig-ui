@@ -1325,14 +1325,12 @@ function* updateHookRequest(action) {
         currentPlan
       );
       yield put(PlanActions.updatePlanHookList(currentPlanHookRefPatch));
-      yield put(PlanActions.fetchPlanHooksRequest());
     }
 
     yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
     yield put(
       PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
     );
-    yield put(PlanActions.updateHookSuccess());
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));

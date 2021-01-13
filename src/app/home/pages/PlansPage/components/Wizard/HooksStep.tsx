@@ -63,12 +63,6 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState({});
 
-  // useEffect(() => {
-  //   if (currentPlan) {
-  //     fetchPlanHooksRequest();
-  //   }
-  // }, []);
-
   const onAddEditHookSubmit = (hookValues) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
