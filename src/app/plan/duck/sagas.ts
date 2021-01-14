@@ -1331,6 +1331,12 @@ function* updateHookRequest(action) {
     yield put(
       PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
     );
+    if (currentPlan) {
+      yield take(PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS);
+      yield put(PlanActions.updateHookSuccess());
+    } else {
+      yield put(PlanActions.updateHookSuccess());
+    }
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
     yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));

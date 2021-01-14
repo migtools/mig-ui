@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormikProps } from 'formik';
+import planUtils from './../../../../../plan/duck/utils';
 import {
   Grid,
   GridItem,
@@ -14,12 +15,18 @@ import {
   Tooltip,
   TooltipPosition,
   Form,
+  Select,
+  SelectOptionObject,
+  SelectOption,
+  SelectGroup,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import SimpleSelect from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
+import { IHook } from '../../../../../../client/resources/conversions';
+import { IMigHook } from '../../../HooksPage/types';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -47,6 +54,7 @@ interface IHooksFormOtherProps {
   resetAddEditState?: () => void;
   currentPlan: any;
   defaultHookRunnerImage: string;
+  allHooks: IMigHook[];
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -87,6 +95,7 @@ const HooksFormComponent: React.FunctionComponent<
   cancelAddEditWatch,
   resetAddEditState,
   currentPlan,
+  allHooks,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
@@ -100,6 +109,8 @@ const HooksFormComponent: React.FunctionComponent<
   }
 
   const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
+  const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
+  // const [hookOptions, setHookOptions] = useState(initialPhaseOptions);
 
   const handleFileChange = (value, filename, event) => {
     setFieldValue('ansibleFile', value);
@@ -107,7 +118,15 @@ const HooksFormComponent: React.FunctionComponent<
   };
 
   const hookImageStyles = classNames(spacing.mtSm, spacing.mlLg);
+  const newHookOption = {
+    toString: () => `Create a new hook`,
+    value: 'new',
+  };
 
+  const hookOptions = allHooks.map((hook) => ({
+    toString: () => hook.metadata.name,
+    value: hook,
+  })) as OptionWithValue<IMigHook>[];
   return (
     <Form
       onSubmit={(e) => {
@@ -118,6 +137,53 @@ const HooksFormComponent: React.FunctionComponent<
       }}
     >
       <Grid span={8}>
+        {AddEditMode.Add && currentPlan && (
+          <GridItem>
+            <FormGroup isRequired fieldId="mappingSelect">
+              <Select
+                id="existingHookSelect"
+                aria-label="Select an existing hook or create a new one"
+                placeholderText={`Select...`}
+                isGrouped
+                isOpen={isHookSelectOpen}
+                onToggle={setIsHookSelectOpen}
+                onSelect={(_event, selection: SelectOptionObject) => {
+                  const sel = selection as OptionWithValue<IHook | 'new'>;
+                  if (sel.value === 'new') {
+                    //   form.fields.isCreateMappingSelected.setValue(true);
+                    //   form.fields.selectedExistingMapping.setValue(null);
+                    //   populateMappingBuilder();
+                    setInitialHookValues({});
+                  } else {
+                    sel.value;
+                    const currentPlanHookRef = null;
+                    const hookRef = sel.value;
+                    const uiHookObject = planUtils.convertMigHookToUIObject(
+                      currentPlanHookRef,
+                      hookRef
+                    );
+
+                    setInitialHookValues(uiHookObject);
+                    //   form.fields.isCreateMappingSelected.setValue(false);
+                    //   form.fields.selectedExistingMapping.setValue(sel.value);
+                    //   populateMappingBuilder(sel.value);
+                  }
+
+                  setIsHookSelectOpen(false);
+                }}
+              >
+                <SelectOption key={newHookOption.toString()} value={newHookOption} />
+                <SelectGroup
+                  label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
+                >
+                  {hookOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} />
+                  ))}
+                </SelectGroup>
+              </Select>
+            </FormGroup>
+          </GridItem>
+        )}
         <GridItem>
           <FormGroup
             label="Hook name"

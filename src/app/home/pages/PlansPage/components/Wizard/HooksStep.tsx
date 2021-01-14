@@ -34,6 +34,7 @@ interface IHooksStepBaseProps {
   updateHookRequest: (values) => void;
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
+  isUpdatingGlobalHookList: boolean;
   fetchPlanHooksRequest: () => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -42,6 +43,7 @@ interface IHooksStepBaseProps {
   isAddHooksOpen: boolean;
   setIsAddHooksOpen: (val) => void;
   currentPlanHooks: any[];
+  allHooks: IMigHook[];
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
@@ -49,6 +51,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
+    isUpdatingGlobalHookList,
     fetchPlanHooksRequest,
     currentPlanHooks,
     hookAddEditStatus,
@@ -58,6 +61,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     isAddHooksOpen,
     setIsAddHooksOpen,
     migMeta,
+    allHooks,
   } = props;
 
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
@@ -156,11 +160,9 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
           </Text>
         </TextContent>
       </GridItem>
-      {/* {isAddHooksOpen && (
-      )} */}
       {!isAddHooksOpen ? (
         <React.Fragment>
-          {isFetchingHookList ? (
+          {isFetchingHookList || isUpdatingGlobalHookList ? (
             <Bullseye>
               <EmptyState variant="large">
                 <div className="pf-c-empty-state__icon">
@@ -204,6 +206,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
             setInitialHookValues={setInitialHookValues}
             setIsAddHooksOpen={setIsAddHooksOpen}
             isAddHooksOpen={isAddHooksOpen}
+            allHooks={allHooks}
             {...props}
           />
         </GridItem>

@@ -1,5 +1,6 @@
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../common/duck/utils';
+import { IMigHook } from '../../../HooksPage/types';
 import HooksFormComponent, { HooksImageType } from './HooksFormComponent';
 interface IHooksFormContainerValues {
   hookName: string;
@@ -24,7 +25,7 @@ interface IHooksFormContainerOtherProps {
   cancelAddEditWatch?: () => void;
   resetAddEditState?: () => void;
   currentPlan: any;
-  isReusable?: boolean;
+  allHooks: IMigHook[];
 }
 
 const AddEditHooksFormContainer = withFormik<
@@ -129,6 +130,7 @@ const AddEditHooksFormContainer = withFormik<
     setSubmitting(false);
     props.onAddEditHookSubmit(values);
   },
+  enableReinitialize: true,
 })(HooksFormComponent);
 
 export default AddEditHooksFormContainer;
