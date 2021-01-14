@@ -1,4 +1,5 @@
 import { withFormik, FormikProps } from 'formik';
+import { IHook } from '../../../../../../client/resources/conversions';
 import utils from '../../../../../common/duck/utils';
 import { IMigHook } from '../../../HooksPage/types';
 import HooksFormComponent, { HooksImageType } from './HooksFormComponent';
@@ -14,6 +15,8 @@ interface IHooksFormContainerValues {
   destServiceAccountNamespace: string;
   clusterType: string;
   migrationStep: string;
+  isCreateHookSelected?: boolean;
+  selectedExistingHook?: IMigHook | null;
 }
 interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
@@ -45,6 +48,8 @@ const AddEditHooksFormContainer = withFormik<
       destServiceAccountNamespace: '',
       migrationStep: '',
       ansibleFile: '',
+      isCreateHookSelected: false,
+      selectedExistingHook: null,
     };
 
     if (initialHookValues) {

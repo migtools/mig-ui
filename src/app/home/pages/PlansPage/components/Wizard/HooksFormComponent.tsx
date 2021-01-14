@@ -45,6 +45,8 @@ interface IHooksFormValues {
   destServiceAccountNamespace: string;
   clusterType: string;
   migrationStep: string;
+  isCreateHookSelected?: boolean;
+  selectedExistingHook?: IMigHook | null;
 }
 interface IHooksFormOtherProps {
   setInitialHookValues: any;
@@ -110,7 +112,8 @@ const HooksFormComponent: React.FunctionComponent<
 
   const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
   const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
-  // const [hookOptions, setHookOptions] = useState(initialPhaseOptions);
+  const [selectedHook, setSelectedHook] = useState(null);
+  const [isCreateHookSelected, setIsCreateHookSelected] = useState(false);
 
   const handleFileChange = (value, filename, event) => {
     setFieldValue('ansibleFile', value);
@@ -130,16 +133,18 @@ const HooksFormComponent: React.FunctionComponent<
   return (
     <Form
       onSubmit={(e) => {
-        console.log('errors', errors);
-        console.log('touched', touched);
         handleSubmit(e);
         e.preventDefault();
       }}
     >
       <Grid span={8}>
-        {AddEditMode.Add && currentPlan && (
+        {hookAddEditStatus.mode === AddEditMode.Add && currentPlan && (
           <GridItem>
-            <FormGroup isRequired fieldId="mappingSelect">
+            <FormGroup
+              isRequired
+              fieldId="mappingSelect"
+              label="Add an existing hook or create a new one"
+            >
               <Select
                 id="existingHookSelect"
                 aria-label="Select an existing hook or create a new one"
@@ -147,12 +152,22 @@ const HooksFormComponent: React.FunctionComponent<
                 isGrouped
                 isOpen={isHookSelectOpen}
                 onToggle={setIsHookSelectOpen}
+                selections={
+                  isCreateHookSelected
+                    ? [newHookOption.toString()]
+                    : selectedHook?.metadata.name
+                    ? [
+                        hookOptions.find(
+                          (option) => option.value.metadata.name === selectedHook?.metadata.name
+                        ).value?.metadata?.name,
+                      ]
+                    : []
+                }
                 onSelect={(_event, selection: SelectOptionObject) => {
                   const sel = selection as OptionWithValue<IHook | 'new'>;
                   if (sel.value === 'new') {
-                    //   form.fields.isCreateMappingSelected.setValue(true);
-                    //   form.fields.selectedExistingMapping.setValue(null);
-                    //   populateMappingBuilder();
+                    setIsCreateHookSelected(true);
+                    setSelectedHook(null);
                     setInitialHookValues({});
                   } else {
                     sel.value;
@@ -164,9 +179,8 @@ const HooksFormComponent: React.FunctionComponent<
                     );
 
                     setInitialHookValues(uiHookObject);
-                    //   form.fields.isCreateMappingSelected.setValue(false);
-                    //   form.fields.selectedExistingMapping.setValue(sel.value);
-                    //   populateMappingBuilder(sel.value);
+                    setIsCreateHookSelected(false);
+                    setSelectedHook(sel.value);
                   }
 
                   setIsHookSelectOpen(false);
@@ -184,7 +198,7 @@ const HooksFormComponent: React.FunctionComponent<
             </FormGroup>
           </GridItem>
         )}
-        <GridItem>
+        <GridItem className={spacing.mtMd}>
           <FormGroup
             label="Hook name"
             isRequired
@@ -525,6 +539,7 @@ const HooksFormComponent: React.FunctionComponent<
           <GridItem className={spacing.mtLg} span={2}>
             <Button type="submit">{addEditButtonTextFn(hookAddEditStatus)}</Button>
           </GridItem>
+          <GridItem span={1} />
           <GridItem className={spacing.mtLg} span={2}>
             <Button
               key="cancel-add-hook"
