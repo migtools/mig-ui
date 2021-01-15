@@ -60,6 +60,7 @@ const WizardComponent = (props: IOtherProps) => {
     pvUpdatePollStop,
     addHookRequest,
     updateHookRequest,
+    associateHookToPlan,
     watchHookAddEditStatus,
     hookAddEditStatus,
     cancelAddEditWatch,
@@ -219,6 +220,7 @@ const WizardComponent = (props: IOtherProps) => {
             currentPlan={currentPlan}
             isAddHooksOpen={isAddHooksOpen}
             setIsAddHooksOpen={setIsAddHooksOpen}
+            associateHookToPlan={associateHookToPlan}
           />
         </WizardStepContainer>
       ),

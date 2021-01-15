@@ -95,6 +95,7 @@ export interface IOtherProps {
   addHookRequest: (migHook: IHook) => void;
   updateHookRequest: (migHook: IHook) => void;
   removeHookFromPlanRequest: (hookName, migrationStep) => void;
+  associateHookToPlan: (hookvalues, migHook) => void;
   currentPlanHooks: IHook[];
   allHooks: IMigHook[];
   isFetchingHookList: boolean;
@@ -215,6 +216,8 @@ const mapDispatchToProps = (dispatch) => {
     removeHookFromPlanRequest: (name, migrationStep) =>
       dispatch(PlanActions.removeHookFromPlanRequest(name, migrationStep)),
     updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+    associateHookToPlan: (hookValues, migHook) =>
+      dispatch(PlanActions.associateHookToPlan(hookValues, migHook)),
     validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
   };
 };

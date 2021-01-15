@@ -15,8 +15,6 @@ interface IHooksFormContainerValues {
   destServiceAccountNamespace: string;
   clusterType: string;
   migrationStep: string;
-  isCreateHookSelected?: boolean;
-  selectedExistingHook?: IMigHook | null;
 }
 interface IHooksFormContainerOtherProps {
   initialHookValues?: any;
@@ -30,6 +28,10 @@ interface IHooksFormContainerOtherProps {
   currentPlan: any;
   allHooks: IMigHook[];
   currentPlanHooks?: IHook[];
+  selectedExistingHook?: any;
+  setSelectedExistingHook?: (val) => void;
+  isCreateHookSelected?: boolean;
+  setIsCreateHookSelected?: (isCreate: boolean) => void;
 }
 
 const AddEditHooksFormContainer = withFormik<
@@ -49,8 +51,6 @@ const AddEditHooksFormContainer = withFormik<
       destServiceAccountNamespace: '',
       migrationStep: '',
       ansibleFile: '',
-      isCreateHookSelected: false,
-      selectedExistingHook: null,
     };
 
     if (initialHookValues) {
@@ -132,9 +132,8 @@ const AddEditHooksFormContainer = withFormik<
 
   handleSubmit: (values, { setSubmitting, props }) => {
     // Formik will set isSubmitting to true, so we need to flip this back off
-    console.log('submit what handler', values, props);
     setSubmitting(false);
-    props.onAddEditHookSubmit(values);
+    props.onAddEditHookSubmit(values, props.selectedExistingHook);
   },
   enableReinitialize: true,
 })(HooksFormComponent);

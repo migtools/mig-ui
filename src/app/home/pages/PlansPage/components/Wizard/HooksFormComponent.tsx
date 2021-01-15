@@ -58,6 +58,10 @@ interface IHooksFormOtherProps {
   defaultHookRunnerImage: string;
   allHooks: IMigHook[];
   currentPlanHooks?: IHook[];
+  selectedExistingHook?: any;
+  setSelectedExistingHook?: (val) => void;
+  isCreateHookSelected?: boolean;
+  setIsCreateHookSelected?: (isCreate: boolean) => void;
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -100,6 +104,10 @@ const HooksFormComponent: React.FunctionComponent<
   currentPlan,
   allHooks,
   currentPlanHooks,
+  selectedExistingHook,
+  setSelectedExistingHook,
+  isCreateHookSelected,
+  setIsCreateHookSelected,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
@@ -114,8 +122,6 @@ const HooksFormComponent: React.FunctionComponent<
 
   const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
   const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
-  const [selectedHook, setSelectedHook] = useState(null);
-  const [isCreateHookSelected, setIsCreateHookSelected] = useState(false);
 
   const handleFileChange = (value, filename, event) => {
     setFieldValue('ansibleFile', value);
@@ -127,13 +133,11 @@ const HooksFormComponent: React.FunctionComponent<
     toString: () => `Create a new hook`,
     value: 'new',
   };
-  // const availableHooks =
-  console.log('currentPlanHook', currentPlanHooks, 'all', allHooks);
 
   const hookOptions = allHooks
     .filter((hook) => {
-      const existsOnPlan = currentPlanHooks.some(
-        (existingHook) => existingHook.hookName === hook.metadata.name
+      const existsOnPlan = currentPlanHooks?.some(
+        (existingHook) => existingHook?.hookName === hook?.metadata.name
       );
       if (!existsOnPlan) {
         return hook;
@@ -168,11 +172,12 @@ const HooksFormComponent: React.FunctionComponent<
                 selections={
                   isCreateHookSelected
                     ? [newHookOption.toString()]
-                    : selectedHook?.metadata.name
+                    : selectedExistingHook?.metadata.name
                     ? [
                         hookOptions.find(
-                          (option) => option.value.metadata.name === selectedHook?.metadata.name
-                        ).value?.metadata?.name,
+                          (option) =>
+                            option?.value?.metadata?.name === selectedExistingHook?.metadata.name
+                        )?.value?.metadata?.name,
                       ]
                     : []
                 }
@@ -180,7 +185,7 @@ const HooksFormComponent: React.FunctionComponent<
                   const sel = selection as OptionWithValue<IHook | 'new'>;
                   if (sel.value === 'new') {
                     setIsCreateHookSelected(true);
-                    setSelectedHook(null);
+                    setSelectedExistingHook(null);
                     setInitialHookValues({});
                   } else {
                     sel.value;
@@ -193,7 +198,7 @@ const HooksFormComponent: React.FunctionComponent<
 
                     setInitialHookValues(uiHookObject);
                     setIsCreateHookSelected(false);
-                    setSelectedHook(sel.value);
+                    setSelectedExistingHook(sel.value);
                   }
 
                   setIsHookSelectOpen(false);
@@ -229,7 +234,7 @@ const HooksFormComponent: React.FunctionComponent<
               name={hookNameKey}
               id="hook-name"
               type="text"
-              isDisabled={hookAddEditStatus.mode === AddEditMode.Edit}
+              isDisabled={hookAddEditStatus.mode === AddEditMode.Edit || selectedExistingHook}
               validated={validatedState(touched.hookName, errors.hookName)}
             />
           </FormGroup>
@@ -260,6 +265,7 @@ const HooksFormComponent: React.FunctionComponent<
                   label="Ansible playbook"
                   id="ansible-playbook-radio"
                   value={HooksImageType.Ansible}
+                  isDisabled={selectedExistingHook}
                 />
               </GridItem>
               {values.hookImageType === HooksImageType.Ansible && (
@@ -278,6 +284,7 @@ const HooksFormComponent: React.FunctionComponent<
                         onChange={handleFileChange}
                         id="ansible-file"
                         type="text"
+                        isDisabled={selectedExistingHook}
                       />
                     </FormGroup>
                   </GridItem>
@@ -305,6 +312,7 @@ const HooksFormComponent: React.FunctionComponent<
                           touched.ansibleRuntimeImage,
                           errors.ansibleRuntimeImage
                         )}
+                        isDisabled={selectedExistingHook}
                       />
                       <TextContent>
                         <Text component={TextVariants.p}>
@@ -324,6 +332,7 @@ const HooksFormComponent: React.FunctionComponent<
                   label="Custom container image"
                   id="custom-image-radio"
                   value={HooksImageType.Custom}
+                  isDisabled={selectedExistingHook}
                 />
               </GridItem>
               {values.hookImageType === HooksImageType.Custom && (
@@ -350,6 +359,7 @@ const HooksFormComponent: React.FunctionComponent<
                         touched.customContainerImage,
                         errors.customContainerImage
                       )}
+                      isDisabled={selectedExistingHook}
                     />
                   </FormGroup>
                 </GridItem>
@@ -562,6 +572,8 @@ const HooksFormComponent: React.FunctionComponent<
                 cancelAddEditWatch();
                 resetAddEditState();
                 setInitialHookValues({});
+                setSelectedExistingHook(null);
+                setIsCreateHookSelected(false);
               }}
             >
               Cancel

@@ -44,6 +44,7 @@ interface IHooksStepBaseProps {
   setIsAddHooksOpen: (val) => void;
   currentPlanHooks: any[];
   allHooks: IMigHook[];
+  associateHookToPlan: (hookValues, migHook) => void;
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
@@ -62,12 +63,15 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     setIsAddHooksOpen,
     migMeta,
     allHooks,
+    associateHookToPlan,
   } = props;
 
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState({});
+  const [selectedExistingHook, setSelectedExistingHook] = useState(null);
+  const [isCreateHookSelected, setIsCreateHookSelected] = useState(false);
 
-  const onAddEditHookSubmit = (hookValues) => {
+  const onAddEditHookSubmit = (hookValues, isExistingHook) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
@@ -75,9 +79,16 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
         break;
       }
       case AddEditMode.Add: {
-        addHookRequest(hookValues);
-        setIsAddHooksOpen(false);
-        break;
+        if (selectedExistingHook) {
+          associateHookToPlan(hookValues, selectedExistingHook);
+          setIsAddHooksOpen(false);
+          //only associate to plan, dont create new hook
+          break;
+        } else {
+          addHookRequest(hookValues);
+          setIsAddHooksOpen(false);
+          break;
+        }
       }
       default: {
         console.warn(
@@ -208,6 +219,10 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
             isAddHooksOpen={isAddHooksOpen}
             allHooks={allHooks}
             currentPlanHooks={currentPlanHooks}
+            selectedExistingHook={selectedExistingHook}
+            setSelectedExistingHook={setSelectedExistingHook}
+            isCreateHookSelected={isCreateHookSelected}
+            setIsCreateHookSelected={setIsCreateHookSelected}
             {...props}
           />
         </GridItem>
