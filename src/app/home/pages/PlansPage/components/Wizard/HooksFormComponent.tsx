@@ -57,6 +57,7 @@ interface IHooksFormOtherProps {
   currentPlan: any;
   defaultHookRunnerImage: string;
   allHooks: IMigHook[];
+  currentPlanHooks?: IHook[];
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -98,6 +99,7 @@ const HooksFormComponent: React.FunctionComponent<
   resetAddEditState,
   currentPlan,
   allHooks,
+  currentPlanHooks,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
@@ -125,11 +127,22 @@ const HooksFormComponent: React.FunctionComponent<
     toString: () => `Create a new hook`,
     value: 'new',
   };
+  // const availableHooks =
+  console.log('currentPlanHook', currentPlanHooks, 'all', allHooks);
 
-  const hookOptions = allHooks.map((hook) => ({
-    toString: () => hook.metadata.name,
-    value: hook,
-  })) as OptionWithValue<IMigHook>[];
+  const hookOptions = allHooks
+    .filter((hook) => {
+      const existsOnPlan = currentPlanHooks.some(
+        (existingHook) => existingHook.hookName === hook.metadata.name
+      );
+      if (!existsOnPlan) {
+        return hook;
+      }
+    })
+    .map((hook) => ({
+      toString: () => hook.metadata.name,
+      value: hook,
+    })) as OptionWithValue<IMigHook>[];
   return (
     <Form
       onSubmit={(e) => {

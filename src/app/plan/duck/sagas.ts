@@ -1241,16 +1241,16 @@ function* addHookSaga(action) {
   }
 }
 
-function* removeHookSaga(action) {
+function* removeHookFromPlanSaga(action) {
   try {
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
 
-    const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
+    // const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
 
-    yield client.delete(migHookResource, name);
+    // yield client.delete(migHookResource, name);
 
     const { currentPlan } = state.plan;
 
@@ -1275,10 +1275,57 @@ function* removeHookSaga(action) {
       createHooksSpec()
     );
 
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
-    yield put(PlanActions.removeHookSuccess(name));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook from plan"${name}"!`));
+    yield put(PlanActions.removeHookFromPlanSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
+  } catch (err) {
+    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(PlanActions.removeHookFromPlanFailure(err));
+  }
+}
+
+function* removeHookSaga(action) {
+  try {
+    const state: IReduxState = yield select();
+    const { migMeta } = state.auth;
+    const { name } = action;
+    const client: IClusterClient = ClientFactory.cluster(state);
+
+    const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
+
+    yield client.delete(migHookResource, name);
+
+    const updatedHooks = yield call(fetchHooksGenerator);
+    yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
+    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
+    yield put(PlanActions.removeHookSuccess(name));
+
+    // const { currentPlan } = state.plan;
+
+    // const createHooksSpec = () => {
+    //   const updatedSpec = Object.assign({}, currentPlan.spec);
+    //   if (updatedSpec.hooks) {
+    //     const deletedHookIndex = updatedSpec.hooks.findIndex(
+    //       (hook) => hook.reference.name === name
+    //     );
+    //     updatedSpec.hooks.splice(deletedHookIndex, 1);
+    //   }
+
+    //   const updatedHooksSpec = {
+    //     spec: updatedSpec,
+    //   };
+    //   return updatedHooksSpec;
+    // };
+
+    // const patchPlanRes = yield client.patch(
+    //   new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+    //   currentPlan.metadata.name,
+    //   createHooksSpec()
+    // );
+
+    // yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
+    // yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.removeHookFailure(err));
@@ -1354,6 +1401,10 @@ function* watchUpdateHookRequest() {
 
 function* watchRemoveHookRequest() {
   yield takeLatest(PlanActionTypes.REMOVE_HOOK_REQUEST, removeHookSaga);
+}
+
+function* watchRemoveHookFromPlanRequest() {
+  yield takeLatest(PlanActionTypes.REMOVE_HOOK_FROM_PLAN_REQUEST, removeHookFromPlanSaga);
 }
 
 function* watchFetchPlanHooksRequest() {
@@ -1495,6 +1546,7 @@ export default {
   watchAddHookRequest,
   watchFetchPlanHooksRequest,
   watchRemoveHookRequest,
+  watchRemoveHookFromPlanRequest,
   watchUpdateHookRequest,
   watchValidatePlanRequest,
   watchValidatePlanPolling,

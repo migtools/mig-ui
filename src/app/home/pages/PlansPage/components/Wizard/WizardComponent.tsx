@@ -64,7 +64,7 @@ const WizardComponent = (props: IOtherProps) => {
     hookAddEditStatus,
     cancelAddEditWatch,
     resetAddEditState,
-    removeHookRequest,
+    removeHookFromPlanRequest,
     validatePlanPollStop,
   } = props;
 
@@ -204,7 +204,7 @@ const WizardComponent = (props: IOtherProps) => {
       component: (
         <WizardStepContainer title="Hooks">
           <HooksStep
-            removeHookRequest={removeHookRequest}
+            removeHookFromPlanRequest={removeHookFromPlanRequest}
             addHookRequest={addHookRequest}
             updateHookRequest={updateHookRequest}
             isFetchingHookList={isFetchingHookList}

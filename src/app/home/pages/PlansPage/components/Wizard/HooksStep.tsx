@@ -38,7 +38,7 @@ interface IHooksStepBaseProps {
   fetchPlanHooksRequest: () => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
-  removeHookRequest: (hookName: string, stepName: string) => void;
+  removeHookFromPlanRequest: (hookName: string, stepName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
   isAddHooksOpen: boolean;
   setIsAddHooksOpen: (val) => void;
@@ -56,7 +56,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     currentPlanHooks,
     hookAddEditStatus,
     currentPlan,
-    removeHookRequest,
+    removeHookFromPlanRequest,
     watchHookAddEditStatus,
     isAddHooksOpen,
     setIsAddHooksOpen,
@@ -115,7 +115,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       {
         title: 'Delete',
         onClick: (event, rowId, rowData, extra) => {
-          removeHookRequest(rowData.name.title, rowData['migration-step'].title);
+          removeHookFromPlanRequest(rowData.name.title, rowData['migration-step'].title);
         },
       },
     ];
@@ -207,6 +207,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
             setIsAddHooksOpen={setIsAddHooksOpen}
             isAddHooksOpen={isAddHooksOpen}
             allHooks={allHooks}
+            currentPlanHooks={currentPlanHooks}
             {...props}
           />
         </GridItem>

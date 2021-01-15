@@ -96,6 +96,9 @@ export const PlanActionTypes = {
   SET_HOOK_ADD_EDIT_STATUS: 'SET_HOOK_ADD_EDIT_STATUS',
   WATCH_HOOK_ADD_EDIT_STATUS: 'WATCH_HOOK_ADD_EDIT_STATUS',
   CANCEL_WATCH_HOOK_ADD_EDIT_STATUS: 'CANCEL_WATCH_HOOK_ADD_EDIT_STATUS',
+  REMOVE_HOOK_FROM_PLAN_REQUEST: 'REMOVE_HOOK_FROM_PLAN_REQUEST',
+  REMOVE_HOOK_FROM_PLAN_SUCCESS: 'REMOVE_HOOK_FROM_PLAN_SUCCESS',
+  REMOVE_HOOK_FROM_PLAN_FAILURE: 'REMOVE_HOOK_FROM_PLAN_FAILURE',
   REMOVE_HOOK_REQUEST: 'REMOVE_HOOK_REQUEST',
   REMOVE_HOOK_SUCCESS: 'REMOVE_HOOK_SUCCESS',
   REMOVE_HOOK_FAILURE: 'REMOVE_HOOK_FAILURE',
@@ -506,10 +509,25 @@ const cancelWatchHookAddEditStatus = () => ({
   type: PlanActionTypes.CANCEL_WATCH_HOOK_ADD_EDIT_STATUS,
 });
 
-const removeHookRequest = (name, migrationStep) => ({
-  type: PlanActionTypes.REMOVE_HOOK_REQUEST,
+const removeHookFromPlanRequest = (name, migrationStep) => ({
+  type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_REQUEST,
   name,
   migrationStep,
+});
+
+const removeHookFromPlanSuccess = (name) => ({
+  type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_SUCCESS,
+  name,
+});
+
+const removeHookFromPlanFailure = (err) => ({
+  type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_FAILURE,
+  err,
+});
+
+const removeHookRequest = (name) => ({
+  type: PlanActionTypes.REMOVE_HOOK_REQUEST,
+  name,
 });
 
 const removeHookSuccess = (name) => ({
@@ -635,6 +653,9 @@ export const PlanActions = {
   setHookAddEditStatus,
   watchHookAddEditStatus,
   cancelWatchHookAddEditStatus,
+  removeHookFromPlanFailure,
+  removeHookFromPlanRequest,
+  removeHookFromPlanSuccess,
   removeHookFailure,
   removeHookRequest,
   removeHookSuccess,

@@ -51,7 +51,7 @@ interface IHooksPageBaseProps {
   fetchHooksRequest: (hooks: IPlanSpecHook[]) => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
-  removeHookRequest: (hookName: string, stepName: string) => void;
+  removeHookRequest: (hookName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
 }
 
@@ -169,7 +169,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       {
         title: 'Delete',
         onClick: (event, rowId, rowData, extra) => {
-          removeHookRequest(rowData.name.title, rowData['migration-step'].title);
+          removeHookRequest(rowData.name.title);
         },
       },
     ];
@@ -326,8 +326,7 @@ const mapDispatchToProps = (dispatch) => {
       );
       dispatch(PlanActions.watchHookAddEditStatus(hookName));
     },
-    removeHookRequest: (name, migrationStep) =>
-      dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    removeHookRequest: (name) => dispatch(PlanActions.removeHookRequest(name)),
     updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
   };
 };

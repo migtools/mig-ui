@@ -94,7 +94,7 @@ export interface IOtherProps {
   updateCurrentPlanStatus: (currentPlanStatus: ICurrentPlanStatus) => void;
   addHookRequest: (migHook: IHook) => void;
   updateHookRequest: (migHook: IHook) => void;
-  removeHookRequest: (hookName, migrationStep) => void;
+  removeHookFromPlanRequest: (hookName, migrationStep) => void;
   currentPlanHooks: IHook[];
   allHooks: IMigHook[];
   isFetchingHookList: boolean;
@@ -212,8 +212,8 @@ const mapDispatchToProps = (dispatch) => {
     resetAddEditState: () => {
       dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
     },
-    removeHookRequest: (name, migrationStep) =>
-      dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    removeHookFromPlanRequest: (name, migrationStep) =>
+      dispatch(PlanActions.removeHookFromPlanRequest(name, migrationStep)),
     updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
     validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
   };

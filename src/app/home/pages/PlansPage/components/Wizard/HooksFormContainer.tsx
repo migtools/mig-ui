@@ -29,6 +29,7 @@ interface IHooksFormContainerOtherProps {
   resetAddEditState?: () => void;
   currentPlan: any;
   allHooks: IMigHook[];
+  currentPlanHooks?: IHook[];
 }
 
 const AddEditHooksFormContainer = withFormik<
