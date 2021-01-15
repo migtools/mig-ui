@@ -118,7 +118,11 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
-      const listItems = associatedPlans.map((planName) => <Link to={`/plans/`}>{planName}</Link>);
+      const listItems = associatedPlans.map((planName) => (
+        <li>
+          <Link to={`/plans/`}>{planName}</Link>
+        </li>
+      ));
       return {
         cells: [
           name,

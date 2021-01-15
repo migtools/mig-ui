@@ -92,7 +92,7 @@ const getHooksWithStatus = createSelector(
   (hooks: IMigHook[], plans: IPlan[]) => {
     const hooksWithStatus = hooks.map((hook) => {
       const associatedPlans = plans
-        .filter((p) => p.MigPlan.spec.hooks?.every((h) => h.reference.name === hook.metadata.name))
+        .filter((p) => p.MigPlan.spec.hooks?.some((h) => h.reference.name === hook.metadata.name))
         .map((p) => p.MigPlan.metadata.name);
       const associatedPlanCount = associatedPlans.length;
       const statusObject = {
