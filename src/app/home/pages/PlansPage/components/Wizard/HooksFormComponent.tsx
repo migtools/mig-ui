@@ -284,7 +284,10 @@ const HooksFormComponent: React.FunctionComponent<
                         onChange={handleFileChange}
                         id="ansible-file"
                         type="text"
-                        isDisabled={selectedExistingHook}
+                        isDisabled={
+                          selectedExistingHook ||
+                          (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                        }
                       />
                     </FormGroup>
                   </GridItem>
@@ -312,7 +315,10 @@ const HooksFormComponent: React.FunctionComponent<
                           touched.ansibleRuntimeImage,
                           errors.ansibleRuntimeImage
                         )}
-                        isDisabled={selectedExistingHook}
+                        isDisabled={
+                          selectedExistingHook ||
+                          (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                        }
                       />
                       <TextContent>
                         <Text component={TextVariants.p}>
@@ -332,7 +338,10 @@ const HooksFormComponent: React.FunctionComponent<
                   label="Custom container image"
                   id="custom-image-radio"
                   value={HooksImageType.Custom}
-                  isDisabled={selectedExistingHook}
+                  isDisabled={
+                    selectedExistingHook ||
+                    (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                  }
                 />
               </GridItem>
               {values.hookImageType === HooksImageType.Custom && (
@@ -359,7 +368,10 @@ const HooksFormComponent: React.FunctionComponent<
                         touched.customContainerImage,
                         errors.customContainerImage
                       )}
-                      isDisabled={selectedExistingHook}
+                      isDisabled={
+                        selectedExistingHook ||
+                        (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                      }
                     />
                   </FormGroup>
                 </GridItem>

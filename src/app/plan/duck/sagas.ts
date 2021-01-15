@@ -1130,12 +1130,14 @@ function* updatePlanHookListSaga(action) {
   const { currentPlan } = state.plan;
   const client: IClusterClient = ClientFactory.cluster(state);
   const { currentPlanHookRefPatch } = action;
-  const patchPlanResponse = yield client.patch(
-    new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-    currentPlan.metadata.name,
-    currentPlanHookRefPatch
-  );
-  yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
+  if (currentPlanHookRefPatch) {
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      currentPlan.metadata.name,
+      currentPlanHookRefPatch
+    );
+    yield put(PlanActions.setCurrentPlan(patchPlanResponse.data));
+  }
   yield put(PlanActions.fetchPlanHooksRequest());
 }
 
