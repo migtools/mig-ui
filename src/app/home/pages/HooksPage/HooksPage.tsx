@@ -23,7 +23,6 @@ import {
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import planUtils from '../../../plan/duck/utils';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
@@ -37,6 +36,7 @@ import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
 import { IMigHook } from './types';
+import HookActions from './HookActions';
 
 const styles = require('./HooksPage.module');
 const classNames = require('classnames');
@@ -110,7 +110,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   );
 
   let rows = [];
-  let actions = [];
+  const actions = [];
   if (allHooks.length > 0) {
     rows = allHooks.map((migHook, id) => {
       const name = migHook.metadata.name;
@@ -154,29 +154,19 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
               </>
             ),
           },
+          {
+            title: (
+              <HookActions
+                migHook={migHook}
+                {...props}
+                setInitialHookValues={setInitialHookValues}
+                setIsAddHooksOpen={setIsAddHooksOpen}
+              />
+            ),
+          },
         ],
       };
     });
-    actions = [
-      {
-        title: 'Edit',
-        onClick: (event, rowId, rowData, extra) => {
-          const matchingHook: IMigHook = allHooks.find(
-            (hook) => hook.metadata.name === rowData.name.title
-          );
-          const currentHook = planUtils.convertMigHookToUIObject(null, matchingHook);
-          setInitialHookValues(currentHook);
-          setIsAddHooksOpen(true);
-          watchHookAddEditStatus(rowData.name.title);
-        },
-      },
-      {
-        title: 'Delete',
-        onClick: (event, rowId, rowData, extra) => {
-          removeHookRequest(rowData.name.title);
-        },
-      },
-    ];
   }
 
   const renderEmptyState = () => (
