@@ -103,6 +103,7 @@ export const PlanActionTypes = {
   REMOVE_HOOK_SUCCESS: 'REMOVE_HOOK_SUCCESS',
   REMOVE_HOOK_FAILURE: 'REMOVE_HOOK_FAILURE',
   ASSOCIATE_HOOK_TO_PLAN: 'ASSOCIATE_HOOK_TO_PLAN',
+  ASSOCIATE_HOOK_TO_PLAN_SUCCESS: 'ASSOCIATE_HOOK_TO_PLAN_SUCCESS',
   FETCH_ALL_HOOKS_REQUEST: 'FETCH_ALL_HOOKS_REQUEST',
   FETCH_ALL_HOOKS_SUCCESS: 'FETCH_ALL_HOOKS_SUCCESS',
   FETCH_ALL_HOOKS_FAILURE: 'FETCH_ALL_HOOKS_FAILURE',
@@ -564,6 +565,10 @@ const associateHookToPlan = (hookValues: any, migHook: IMigHook) => ({
   migHook,
 });
 
+const associateHookToPlanSuccess = () => ({
+  type: PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_SUCCESS,
+});
+
 const updateHooks = (updatedHooks: IMigHook[]) => ({
   type: PlanActionTypes.UPDATE_HOOKS,
   updatedHooks,
@@ -660,6 +665,7 @@ export const PlanActions = {
   removeHookRequest,
   removeHookSuccess,
   associateHookToPlan,
+  associateHookToPlanSuccess,
   fetchAllHooksFailure,
   fetchAllHooksRequest,
   fetchAllHooksSuccess,

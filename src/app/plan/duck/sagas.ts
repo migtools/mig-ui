@@ -1210,7 +1210,11 @@ function* associateHookToPlanSaga(action) {
     );
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
+
+    yield take(PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS);
+    yield put(PlanActions.associateHookToPlanSuccess());
   } catch (err) {
+    // yield put(PlanActions.associateHookToPlanFailure()));
     yield put(PlanActions.addHookFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
   }

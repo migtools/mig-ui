@@ -43,6 +43,7 @@ const WizardComponent = (props: IOtherProps) => {
     currentPlanHooks,
     isFetchingHookList,
     isUpdatingGlobalHookList,
+    isAssociatingHookToPlan,
     getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
@@ -210,6 +211,7 @@ const WizardComponent = (props: IOtherProps) => {
             updateHookRequest={updateHookRequest}
             isFetchingHookList={isFetchingHookList}
             isUpdatingGlobalHookList={isUpdatingGlobalHookList}
+            isAssociatingHookToPlan={isAssociatingHookToPlan}
             currentPlanHooks={currentPlanHooks}
             allHooks={allHooks}
             fetchPlanHooksRequest={fetchPlanHooksRequest}

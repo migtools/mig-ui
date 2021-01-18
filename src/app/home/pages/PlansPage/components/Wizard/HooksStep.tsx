@@ -35,6 +35,7 @@ interface IHooksStepBaseProps {
   addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
   isUpdatingGlobalHookList: boolean;
+  isAssociatingHookToPlan: boolean;
   fetchPlanHooksRequest: () => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -53,6 +54,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     addHookRequest,
     isFetchingHookList,
     isUpdatingGlobalHookList,
+    isAssociatingHookToPlan,
     fetchPlanHooksRequest,
     currentPlanHooks,
     hookAddEditStatus,
@@ -173,7 +175,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       </GridItem>
       {!isAddHooksOpen ? (
         <React.Fragment>
-          {isFetchingHookList || isUpdatingGlobalHookList ? (
+          {isFetchingHookList || isUpdatingGlobalHookList || isAssociatingHookToPlan ? (
             <Bullseye>
               <EmptyState variant="large">
                 <div className="pf-c-empty-state__icon">

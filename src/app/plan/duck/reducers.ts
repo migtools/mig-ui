@@ -49,6 +49,7 @@ export interface IPlanReducerState {
   currentPlanStatus: ICurrentPlanStatus;
   lockedPlanList: string[]; // Plan names
   isFetchingHookList: boolean;
+  isAssociatingHookToPlan: boolean;
   currentPlanHooks: IHook[];
   allHooks: IMigHook[];
   isUpdatingGlobalHookList: boolean;
@@ -89,6 +90,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   isFetchingInitialHooks: true,
   isRefreshingAnalytic: false,
   isUpdatingGlobalHookList: false,
+  isAssociatingHookToPlan: false,
 };
 
 const sortPlans = (planList: IPlan[]) =>
@@ -546,6 +548,25 @@ export const removeHookFailure: PlanReducerFn = (
     isFetchingHookList: false,
   };
 };
+export const associateHookToPlan: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlan>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: true,
+  };
+};
+
+export const associateHookToPlanSuccess: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlanSuccess>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: false,
+  };
+};
 
 export const addHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
@@ -776,6 +797,10 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return addHookFailure(state, action);
     case PlanActionTypes.UPDATE_HOOKS:
       return updateHooks(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN:
+      return associateHookToPlan(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_SUCCESS:
+      return associateHookToPlanSuccess(state, action);
     case PlanActionTypes.HOOK_POLL_START:
       return startHookPolling(state, action);
     case PlanActionTypes.HOOK_POLL_STOP:

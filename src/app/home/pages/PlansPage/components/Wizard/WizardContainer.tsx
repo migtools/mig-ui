@@ -100,6 +100,7 @@ export interface IOtherProps {
   allHooks: IMigHook[];
   isFetchingHookList: boolean;
   isUpdatingGlobalHookList: boolean;
+  isAssociatingHookToPlan: boolean;
   watchHookAddEditStatus: () => void;
   hookAddEditStatus: IAddEditStatus;
   cancelAddEditWatch: () => void;
@@ -176,6 +177,7 @@ const mapStateToProps = (state: IReduxState) => {
     currentPlanHooks: state.plan.currentPlanHooks,
     isFetchingHookList: state.plan.isFetchingHookList,
     isUpdatingGlobalHookList: state.plan.isUpdatingGlobalHookList,
+    isAssociatingHookToPlan: state.plan.isAssociatingHookToPlan,
     hookAddEditStatus: state.plan.hookAddEditStatus,
     tokenList: state.token.tokenList, // NATODO do we also need to bring in fetch/polling stuff for tokens to the wizard?
   };
