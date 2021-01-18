@@ -7,6 +7,7 @@ import {
   KebabToggle,
   Flex,
   FlexItem,
+  Tooltip,
 } from '@patternfly/react-core';
 import { IMigHook } from './types';
 import planUtils from '../../../plan/duck/utils';
@@ -29,6 +30,17 @@ const HookActions = (props: IHookActions) => {
     watchHookAddEditStatus,
     removeHookRequest,
   } = props;
+  const removeItem = (
+    <DropdownItem
+      isDisabled={migHook.HookStatus.associatedPlanCount > 0}
+      onClick={() => {
+        removeHookRequest(migHook.metadata.name);
+      }}
+      key="removeHook"
+    >
+      Delete
+    </DropdownItem>
+  );
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
@@ -47,15 +59,17 @@ const HookActions = (props: IHookActions) => {
     >
       Edit
     </DropdownItem>,
-    <DropdownItem
-      isDisabled={migHook.HookStatus.associatedPlanCount > 0}
-      onClick={() => {
-        removeHookRequest(migHook.metadata.name);
-      }}
-      key="removeHook"
-    >
-      Delete
-    </DropdownItem>,
+    migHook.HookStatus.associatedPlanCount > 0 ? (
+      <Tooltip
+        position="top"
+        content={<div>Hook is associated with a plan and cannot be removed.</div>}
+        key="removeHookTooltip"
+      >
+        {removeItem}
+      </Tooltip>
+    ) : (
+      removeItem
+    ),
   ];
   return (
     <Flex>

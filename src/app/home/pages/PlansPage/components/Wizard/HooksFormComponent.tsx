@@ -147,7 +147,6 @@ const HooksFormComponent: React.FunctionComponent<
       toString: () => hook.metadata.name,
       value: hook,
     })) as OptionWithValue<IMigHook>[];
-  console.log('errors', errors, 'touched', touched, 'values', values);
   return (
     <Form
       onSubmit={(e) => {

@@ -1229,7 +1229,6 @@ function* addHookSaga(action) {
       new MigResource(MigResourceKind.MigHook, migMeta.namespace),
       migHookObj
     );
-    yield put(PlanActions.addHookSuccess(createHookRes.data));
     //If in HookStep, associate the hook to the currentPlan
     if (currentPlan) {
       yield put(PlanActions.associateHookToPlan(migHook, createHookRes.data));
@@ -1237,6 +1236,7 @@ function* addHookSaga(action) {
     const updatedHooks = yield call(fetchHooksGenerator);
     yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
     yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
+    yield put(PlanActions.addHookSuccess(createHookRes.data));
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
     yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
