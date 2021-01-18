@@ -147,6 +147,7 @@ const HooksFormComponent: React.FunctionComponent<
       toString: () => hook.metadata.name,
       value: hook,
     })) as OptionWithValue<IMigHook>[];
+  console.log('errors', errors, 'touched', touched, 'values', values);
   return (
     <Form
       onSubmit={(e) => {
@@ -559,8 +560,10 @@ const HooksFormComponent: React.FunctionComponent<
                 <SimpleSelect
                   id="migrationStep"
                   onChange={(value) => {
-                    setFieldValue('migrationStep', value);
-                    setFieldTouched('migrationStep');
+                    setTimeout(() => {
+                      setFieldValue('migrationStep', value);
+                      setFieldTouched('migrationStep');
+                    });
                   }}
                   options={phaseOptions}
                   value={values.migrationStep}
