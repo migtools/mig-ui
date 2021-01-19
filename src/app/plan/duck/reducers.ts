@@ -568,6 +568,16 @@ export const associateHookToPlanSuccess: PlanReducerFn = (
   };
 };
 
+export const associateHookToPlanFailure: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlanFailure>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: false,
+  };
+};
+
 export const addHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.addHookRequest>
@@ -801,6 +811,8 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return associateHookToPlan(state, action);
     case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_SUCCESS:
       return associateHookToPlanSuccess(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_FAILURE:
+      return associateHookToPlanFailure(state, action);
     case PlanActionTypes.HOOK_POLL_START:
       return startHookPolling(state, action);
     case PlanActionTypes.HOOK_POLL_STOP:
