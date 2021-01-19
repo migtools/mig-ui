@@ -16,6 +16,5 @@ export const setActiveNamespaceInStorage = (namespace: string) =>
   localStorage.setItem(LS_KEY_ACTIVE_NAMESPACE, namespace);
 
 export const validatedState = (touchedFieldVal: any, errorsFieldVal: any) => {
-  debugger;
   return !(touchedFieldVal && errorsFieldVal) ? 'default' : 'error';
 };
