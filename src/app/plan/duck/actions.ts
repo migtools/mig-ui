@@ -383,33 +383,6 @@ const stopPlanStatusPolling = (planName: string) => ({
   planName,
 });
 
-const startStagePolling = (params?: any) => ({
-  type: PlanActionTypes.STAGE_POLL_START,
-  params,
-});
-
-const stopStagePolling = () => ({
-  type: PlanActionTypes.STAGE_POLL_STOP,
-});
-
-const startMigrationPolling = (params?: any) => ({
-  type: PlanActionTypes.MIGRATION_POLL_START,
-  params,
-});
-
-const stopMigrationPolling = () => ({
-  type: PlanActionTypes.MIGRATION_POLL_STOP,
-});
-
-const startRollbackPolling = (params?: any) => ({
-  type: PlanActionTypes.ROLLBACK_POLL_START,
-  params,
-});
-
-const stopRollbackPolling = () => ({
-  type: PlanActionTypes.ROLLBACK_POLL_STOP,
-});
-
 const startPlanPolling = (params?: any) => ({
   type: PlanActionTypes.PLAN_POLL_START,
   params,
@@ -642,12 +615,6 @@ export const PlanActions = {
   stopPlanPolling,
   resetCurrentPlan,
   setCurrentPlan,
-  startStagePolling,
-  stopStagePolling,
-  startMigrationPolling,
-  stopMigrationPolling,
-  startRollbackPolling,
-  stopRollbackPolling,
   /*
   Hook exports
   */

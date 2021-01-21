@@ -716,8 +716,7 @@ function* runStageSaga(action) {
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-    //created migration response object
-    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    yield client.create(migMigrationResource, migMigrationObj);
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
@@ -750,9 +749,7 @@ function* runMigrationSaga(action) {
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
-
-    //created migration response object
-    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    yield client.create(migMigrationResource, migMigrationObj);
 
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
@@ -761,45 +758,6 @@ function* runMigrationSaga(action) {
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.migrationFailure(err));
-  }
-}
-function* migrationPoll(action) {
-  const params = { ...action.params };
-  while (true) {
-    const updatedPlans = yield call(params.fetchPlansGenerator);
-    const pollingStatusObj = params.getMigrationStatusCondition(updatedPlans, params.createMigRes);
-
-    switch (pollingStatusObj.status) {
-      case 'CANCELED':
-        yield put(AlertActions.alertSuccessTimeout('Migration canceled'));
-        yield put(PlanActions.stopMigrationPolling());
-        break;
-      case 'SUCCESS':
-        yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
-        yield put(PlanActions.stopMigrationPolling());
-        break;
-      case 'FAILURE':
-        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`)
-        );
-        yield put(PlanActions.stopMigrationPolling());
-        break;
-      case 'WARN':
-        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `Migration succeeded with warnings. ${pollingStatusObj.errorMessage}`
-          )
-        );
-        yield put(PlanActions.stopMigrationPolling());
-        break;
-
-      default:
-        break;
-    }
-    yield delay(params.delay);
   }
 }
 
@@ -872,62 +830,14 @@ function* runRollbackSaga(action) {
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
     //created migration response object
-    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    yield client.create(migMigrationResource, migMigrationObj);
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
 
-    const params = {
-      fetchPlansGenerator: fetchPlansGenerator,
-      delay: PlanMigrationPollingInterval,
-      getRollbackStatusCondition: getRollbackStatusCondition,
-      createMigRes: createMigRes,
-    };
-
-    yield put(PlanActions.startRollbackPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
     yield put(AlertActions.alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
-  }
-}
-
-function* rollbackPoll(action) {
-  const params = { ...action.params };
-  while (true) {
-    const updatedPlans = yield call(params.fetchPlansGenerator);
-    const pollingStatusObj = params.getRollbackStatusCondition(updatedPlans, params.createMigRes);
-
-    switch (pollingStatusObj.status) {
-      case 'CANCELED':
-        yield put(AlertActions.alertSuccessTimeout('Rollback canceled'));
-        yield put(PlanActions.stopRollbackPolling());
-        break;
-      case 'SUCCESS':
-        yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Rollback Successful'));
-        yield put(PlanActions.stopRollbackPolling());
-        break;
-      case 'FAILURE':
-        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Rollback Failed'}`)
-        );
-        yield put(PlanActions.stopRollbackPolling());
-        break;
-      case 'WARN':
-        yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `Rollback succeeded with warnings. ${pollingStatusObj.errorMessage}`
-          )
-        );
-        yield put(PlanActions.stopRollbackPolling());
-        break;
-
-      default:
-        break;
-    }
-    yield delay(params.delay);
   }
 }
 
