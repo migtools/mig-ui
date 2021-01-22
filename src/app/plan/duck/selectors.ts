@@ -121,7 +121,7 @@ const getPlansWithPlanStatus = createSelector(
       let planMigrations;
       if (plan.Migrations.length ) {
         const latestRollbackIndex = plan.Migrations?.findIndex((m) => {
-          return m.spec.rollback && m.status.conditions?.some((c) => c.type === 'Succeeded');
+          return m.spec.rollback && m.status?.conditions?.some((c) => c.type === 'Succeeded');
         });
         if (latestRollbackIndex !== -1) {
           planMigrations = plan.Migrations.slice(0, latestRollbackIndex + 1);
