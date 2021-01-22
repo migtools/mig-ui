@@ -119,7 +119,7 @@ const getPlansWithPlanStatus = createSelector(
 
       // Rollback acts as a "reset", so we should only consider migrations after rollback
       let planMigrations;
-      if (plan.Migrations.length ) {
+      if (plan.Migrations.length) {
         const latestRollbackIndex = plan.Migrations?.findIndex((m) => {
           return m.spec.rollback && m.status?.conditions?.some((c) => c.type === 'Succeeded');
         });
