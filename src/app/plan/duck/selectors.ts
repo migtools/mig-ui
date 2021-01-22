@@ -376,8 +376,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
             status.stepName = 'Canceling' + status.stepName;
             status.isCanceling = true;
           }
-          return status;
         }
+
         // For running migrations, calculate percent progress
         const planNotReadyCondition = migration.status.conditions.find((c) => {
           return c.type === 'PlanNotReady';
