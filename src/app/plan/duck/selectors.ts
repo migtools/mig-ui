@@ -346,7 +346,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
         .map((c, idx) => c.message || c.reason);
       status.errors = status.errors.concat(errorMessages);
-      status.isFailed = true;
+      if (failedCondition) status.isFailed = true;
       status.errorCondition = criticalCondition.message;
       status.end = criticalCondition.lastTransitionTime;
       status.migrationState = 'error';
