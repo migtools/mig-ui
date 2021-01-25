@@ -14,6 +14,10 @@ export const getFullKindName = (kind: any) => {
       return 'podvolumerestore';
     case 'Restore':
       return 'restore';
+    case 'DirectVolume':
+      return 'directvolumemigration';
+    case 'DirectImage':
+      return 'directimagemigration';
     default:
       return kind;
   }
@@ -54,6 +58,16 @@ export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAnd
       return {
         ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
         clusterType: 'target',
+      };
+    case 'DirectVolume':
+      return {
+        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        clusterType: '',
+      };
+    case 'DirectImage':
+      return {
+        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        clusterType: '',
       };
     default:
       return {
