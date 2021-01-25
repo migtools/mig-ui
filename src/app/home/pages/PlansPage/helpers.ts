@@ -75,6 +75,12 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
     if (tableStatus?.migrationState === 'warn') {
       return MigrationStepsType.CompletedWithWarnings;
     }
+    if (tableStatus?.isCanceled) {
+      return MigrationStepsType.Canceled;
+    }
+    if (tableStatus?.isFailed) {
+      return MigrationStepsType.Failed;
+    }
     return MigrationStepsType.Completed;
   }
   if (currentStep?.started && !currentStep?.completed) {
