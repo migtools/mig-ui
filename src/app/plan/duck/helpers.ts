@@ -14,6 +14,7 @@ interface ILatestMigrationConditionStatuses {
   hasCancelingCondition: boolean;
   hasCanceledCondition: boolean;
   hasCriticalCondition: boolean;
+  hasWarnCondition: boolean;
 }
 interface ILatestAnalyticConditionStatuses {
   latestAnalyticTransitionTime: string;
@@ -36,6 +37,7 @@ export const filterLatestMigrationConditions = (
   hasCriticalCondition: conditions.some((c) => c.category === 'Critical'),
   hasCancelingCondition: conditions.some((c) => c.type === 'Canceling'),
   hasCanceledCondition: conditions.some((c) => c.type === 'Canceled'),
+  hasWarnCondition: conditions.some((c) => c.category === 'Warn'),
 });
 
 export const filterLatestAnalyticConditions = (

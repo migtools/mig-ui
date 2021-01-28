@@ -120,7 +120,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
             </LevelItem>
           </Level>
           <Table
-            aria-label="migration-analytics-table"
+            aria-label="migrations-table"
             cells={columns}
             rows={rows}
             onSort={onSort}

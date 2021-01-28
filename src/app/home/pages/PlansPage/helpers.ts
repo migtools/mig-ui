@@ -27,6 +27,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasConflictCondition,
     conflictErrorMsg,
     isPlanLocked,
+    hasWarnCondition,
   } = plan.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
   if (hasCriticalCondition) return `${latestType} Failed`;
@@ -37,6 +38,7 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasSucceededRollback) return 'Rollback succeeded';
+  if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
   if (hasSucceededMigration) return 'Migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
