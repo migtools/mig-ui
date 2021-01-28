@@ -395,7 +395,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       return status;
     }
 
-
     return status;
   };
   const plansWithMigrationStatus = plans.map((plan) => {
