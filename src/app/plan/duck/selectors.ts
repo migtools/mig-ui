@@ -378,12 +378,6 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       return status;
     }
 
-    if (succeededCondition) {
-      status.isSucceeded = true;
-      status.migrationState = 'success';
-      return status;
-    }
-
     if (warnCondition) {
       const warningMessages = migration?.status?.conditions
         ?.filter((c) => c.category === 'Warn')
@@ -394,6 +388,13 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       status.warnCondition = warnCondition?.message;
       return status;
     }
+
+    if (succeededCondition) {
+      status.isSucceeded = true;
+      status.migrationState = 'success';
+      return status;
+    }
+
 
     return status;
   };
