@@ -10,6 +10,8 @@ import { Popover, PopoverPosition } from '@patternfly/react-core';
 
 import { Spinner } from '@patternfly/react-core';
 import { IPlan } from '../../../../plan/duck/types';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 interface IProps {
   plan: IPlan;
@@ -25,6 +27,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasConflictCondition,
     latestIsFailed,
     hasCriticalCondition,
+    hasWarnCondition,
   } = plan.PlanStatus;
 
   if (latestIsFailed || hasCriticalCondition) {
@@ -42,19 +45,28 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
       >
-        <span className="pf-c-icon pf-m-warning">
-          <WarningTriangleIcon />
+        <span className={`pf-c-icon pf-m-warning`}>
+          <ExclamationTriangleIcon />
         </span>
       </Popover>
     );
   } else if (hasNotReadyCondition) {
     return (
-      <span className="pf-c-icon pf-m-warning">
-        <WarningTriangleIcon />
+      <span className={`pf-c-icon pf-m-warning`}>
+        <ExclamationTriangleIcon />
       </span>
     );
   } else if (hasRunningMigrations || isPlanLocked) {
     return <Spinner size="md" />;
+  } else if (
+    (hasSucceededMigration && hasWarnCondition) ||
+    (hasSucceededStage && hasWarnCondition)
+  ) {
+    return (
+      <span className={`pf-c-icon pf-m-warning`}>
+        <ExclamationTriangleIcon />
+      </span>
+    );
   } else if (hasSucceededMigration) {
     return (
       <span className="pf-c-icon pf-m-success">
