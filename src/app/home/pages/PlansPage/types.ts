@@ -36,6 +36,7 @@ export enum MigrationStepsType {
   CompletedWithWarnings = 'Completed with warnings',
   Canceled = 'Canceled',
   Failed = 'Failed',
+  Paused = 'Paused',
 }
 
 export interface IProgressInfoObj {

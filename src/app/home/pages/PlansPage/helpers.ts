@@ -89,6 +89,9 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
     if (tableStatus?.isFailed) {
       return MigrationStepsType.Failed;
     }
+    if (tableStatus?.isPaused) {
+      return MigrationStepsType.Paused;
+    }
     return MigrationStepsType.Completed;
   }
   if (currentStep?.started && !currentStep?.completed) {

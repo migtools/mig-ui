@@ -35,6 +35,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
+  const isPausedCondition = migration.tableStatus.migrationState === 'paused';
   const isWarningCondition = migration?.tableStatus.migrationState === 'warn';
   const isErrorCondition = migration?.tableStatus.migrationState === 'error';
   const type = migration?.spec?.stage ? 'Stage' : 'Final';
@@ -58,6 +59,20 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           Migration details
         </Title>
       </PageSection>
+      {isPausedCondition && (
+        <PageSection>
+          <Alert variant="warning" isInline title="Paused - waiting for route to be admitted">
+            {migration?.tableStatus.warnings.map((warning, idx) => {
+              return (
+                <>
+                  {warning}
+                  <br />
+                </>
+              );
+            })}
+          </Alert>
+        </PageSection>
+      )}
       {isWarningCondition && (
         <PageSection>
           <Alert
