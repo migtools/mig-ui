@@ -154,6 +154,7 @@ export interface IPlan {
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
     hasSucceededMigrationWithWarnings: boolean;
+    hasDVMBlockedCondition: boolean;
     hasSucceededStageWithWarnings: boolean;
     hasSucceededStage: boolean;
     hasSucceededRollback: boolean;

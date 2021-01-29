@@ -30,6 +30,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     conflictErrorMsg,
     isPlanLocked,
     hasWarnCondition,
+    hasDVMBlockedCondition,
   } = plan.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
   if (hasCriticalCondition) return `${latestType} Failed`;
@@ -40,6 +41,7 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasSucceededRollback) return 'Rollback succeeded';
+  if (hasDVMBlockedCondition) return 'Direct volume migration blocked. ';
   if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
   if (hasSucceededStageWithWarnings) return 'Stage completed with warnings';
   if (hasSucceededMigrationWithWarnings) return 'Migration completed with warnings';

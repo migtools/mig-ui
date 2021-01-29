@@ -30,6 +30,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     latestIsFailed,
     hasCriticalCondition,
     hasWarnCondition,
+    hasDVMBlockedCondition,
   } = plan.PlanStatus;
 
   if (latestIsFailed || hasCriticalCondition) {
@@ -43,6 +44,20 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
       <Popover
         position={PopoverPosition.top}
         bodyContent="Migration plan conflicts occur when multiple plans share the same namespace. You cannot stage or migrate a plan with a conflict. Delete one of the plans to resolve the conflict."
+        aria-label="warning-details"
+        closeBtnAriaLabel="close-warning-details"
+        maxWidth="200rem"
+      >
+        <span className={`pf-c-icon pf-m-warning`}>
+          <ExclamationTriangleIcon />
+        </span>
+      </Popover>
+    );
+  } else if (hasDVMBlockedCondition) {
+    return (
+      <Popover
+        position={PopoverPosition.top}
+        bodyContent="Some or all rsync transfer routes have failed to be admitted within 3 mins on destination cluster. Errors: [no status condition available for the route]"
         aria-label="warning-details"
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
