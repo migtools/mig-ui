@@ -23,6 +23,8 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasNotReadyCondition,
     hasSucceededStage,
     hasSucceededMigration,
+    hasSucceededMigrationWithWarnings,
+    hasSucceededStageWithWarnings,
     isPlanLocked,
     hasConflictCondition,
     latestIsFailed,
@@ -60,7 +62,9 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     return <Spinner size="md" />;
   } else if (
     (hasSucceededMigration && hasWarnCondition) ||
-    (hasSucceededStage && hasWarnCondition)
+    (hasSucceededStage && hasWarnCondition) ||
+    hasSucceededMigrationWithWarnings ||
+    hasSucceededStageWithWarnings
   ) {
     return (
       <span className={`pf-c-icon pf-m-warning`}>

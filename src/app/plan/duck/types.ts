@@ -153,6 +153,8 @@ export interface IPlan {
     hasReadyCondition: boolean;
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
+    hasSucceededMigrationWithWarnings: boolean;
+    hasSucceededStageWithWarnings: boolean;
     hasSucceededStage: boolean;
     hasSucceededRollback: boolean;
     hasWarnCondition: boolean;
