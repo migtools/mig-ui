@@ -53,26 +53,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
         </span>
       </Popover>
     );
-  } else if (hasDVMBlockedCondition) {
-    const DVMBCondition: ICondition = plan.Migrations.reduce(
-      (matchingMigrations, migration) =>
-        migration.status.conditions?.find((c) => c.type === 'DirectVolumeMigrationBlocked'),
-      {}
-    );
-    return (
-      <Popover
-        position={PopoverPosition.top}
-        bodyContent={<>{DVMBCondition ? DVMBCondition.message : ''}</>}
-        aria-label="warning-details"
-        closeBtnAriaLabel="close-warning-details"
-        maxWidth="200rem"
-      >
-        <span className={`pf-c-icon pf-m-warning`}>
-          <ExclamationTriangleIcon />
-        </span>
-      </Popover>
-    );
-  } else if (hasNotReadyCondition) {
+  } else if (hasNotReadyCondition || hasDVMBlockedCondition) {
     return (
       <span className={`pf-c-icon pf-m-warning`}>
         <ExclamationTriangleIcon />
