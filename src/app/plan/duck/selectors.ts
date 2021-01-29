@@ -159,6 +159,18 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
+      const hasSucceededMigrationWithWarnings = !!planMigrations.filter((m) => {
+        if (m.status?.conditions && !m.spec.stage && !m.spec.rollback) {
+          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
+        }
+      }).length;
+
+      const hasSucceededStageWithWarnings = !!planMigrations.filter((m) => {
+        if (m.status?.conditions && m.spec.stage && !m.spec.rollback) {
+          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
+        }
+      }).length;
+
       const hasSucceededRollback = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.rollback) {
           return (
@@ -190,6 +202,8 @@ const getPlansWithPlanStatus = createSelector(
 
       const statusObject = {
         hasSucceededMigration,
+        hasSucceededMigrationWithWarnings,
+        hasSucceededStageWithWarnings,
         hasSucceededStage,
         hasSucceededRollback,
         hasAttemptedMigration,
@@ -271,6 +285,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       end: 'In progress',
       moved: 0,
       copied: 0,
+      isPaused: false,
       isFailed: false,
       isSucceeded: false,
       isCanceled: false,
@@ -326,6 +341,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       return c.type === 'Failed';
     });
 
+    const dvmBlockedCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'DirectVolumeMigrationBlocked';
+    });
+
     // derive number of volumes copied / moved for migration table
     if (MigPlan?.spec?.persistentVolumes && !!succeededCondition) {
       status.copied = MigPlan.spec.persistentVolumes.filter(
@@ -375,6 +394,18 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       status.isFailed = true;
       status.end = '--';
       status.migrationState = 'error';
+      return status;
+    }
+
+    if (dvmBlockedCondition) {
+      const warningMessages = migration?.status?.conditions
+        ?.filter((c) => c.category === 'Warn')
+        .map((c, idx) => c.message);
+      if (succeededCondition) status.isSucceeded = true;
+      status.migrationState = 'paused';
+      status.warnings = status.warnings.concat(warningMessages);
+      status.warnCondition = warnCondition?.message;
+      status.isPaused = true;
       return status;
     }
 
