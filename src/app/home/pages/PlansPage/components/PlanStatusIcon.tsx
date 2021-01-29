@@ -9,7 +9,7 @@ import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-f
 import { Popover, PopoverPosition } from '@patternfly/react-core';
 
 import { Spinner } from '@patternfly/react-core';
-import { IPlan } from '../../../../plan/duck/types';
+import { ICondition, IPlan } from '../../../../plan/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
@@ -54,10 +54,15 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
       </Popover>
     );
   } else if (hasDVMBlockedCondition) {
+    const DVMBCondition: ICondition = plan.Migrations.reduce(
+      (matchingMigrations, migration) =>
+        migration.status.conditions?.find((c) => c.type === 'DirectVolumeMigrationBlocked'),
+      {}
+    );
     return (
       <Popover
         position={PopoverPosition.top}
-        bodyContent="Some or all rsync transfer routes have failed to be admitted within 3 mins on destination cluster. Errors: [no status condition available for the route]"
+        bodyContent={<>{DVMBCondition ? DVMBCondition.message : ''}</>}
         aria-label="warning-details"
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
