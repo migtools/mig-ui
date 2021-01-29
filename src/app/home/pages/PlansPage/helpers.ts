@@ -41,7 +41,7 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasSucceededRollback) return 'Rollback succeeded';
-  if (hasDVMBlockedCondition) return 'Direct volume migration blocked. ';
+  if (hasDVMBlockedCondition) return 'Running';
   if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
   if (hasSucceededStageWithWarnings) return 'Stage completed with warnings';
   if (hasSucceededMigrationWithWarnings) return 'Migration completed with warnings';
