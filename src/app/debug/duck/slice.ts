@@ -6,6 +6,7 @@ export interface IDebugReducerState {
   objJson: any;
   errMsg: string;
   isLoading: boolean;
+  debugRefs: any;
 }
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   tree: null,
   objJson: null,
   errMsg: null,
+  debugRefs: null,
 } as IDebugReducerState;
 
 const debugSlice = createSlice({
@@ -22,9 +24,20 @@ const debugSlice = createSlice({
     treeFetchRequest(state, action: PayloadAction<string>) {
       state.isLoading = true;
     },
-    treeFetchSuccess(state, action: PayloadAction<IDebugTreeNode>) {
-      state.isLoading = false;
-      state.tree = action.payload;
+    treeFetchSuccess: {
+      reducer: (state, action: PayloadAction<{ tree: IDebugTreeNode; debugRefs: any }>) => {
+        state.isLoading = false;
+        state.tree = action.payload.tree;
+        state.debugRefs = action.payload.debugRefs;
+      },
+      prepare: (tree: IDebugTreeNode, debugRefs: any) => {
+        return {
+          payload: {
+            tree,
+            debugRefs,
+          },
+        };
+      },
     },
     treeFetchFailure(state, action: PayloadAction<string>) {
       state.isLoading = false;

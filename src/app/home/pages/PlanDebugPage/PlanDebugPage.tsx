@@ -72,7 +72,8 @@ export const PlanDebugPage: React.FunctionComponent = () => {
       })
       .filter((item) => !!item) as TreeViewDataItem[];
 
-  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, viewRawDebugObject);
+  const treeData =
+    debug.tree && convertRawTreeToViewTree(debug.tree, debug.debugRefs, viewRawDebugObject);
   let filteredTreeData = treeData;
   if (searchText && treeData) {
     filteredTreeData = filterSubtree(treeData);

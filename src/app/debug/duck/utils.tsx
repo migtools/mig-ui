@@ -6,20 +6,25 @@ import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeA
 
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
-  viewRawDebugObject: (node: IDebugTreeNode) => void
+  viewRawDebugObject: (node: IDebugTreeNode) => void,
+  debugRefs?
 ): TreeViewDataItem => {
+  const matchingDebugRef = debugRefs?.find((ref) => ref?.data?.name === rawNode?.name);
+  console.log('matchingRef', matchingDebugRef);
   return {
     name: `${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`,
     action: <TreeActionsDropdown rawNode={rawNode} viewRawDebugObject={viewRawDebugObject} />,
+
   };
 };
 
 const convertNode = (
   rawNode: IDebugTreeNode,
   ctx,
-  viewRawDebugObject: (node: IDebugTreeNode) => void
+  viewRawDebugObject: (node: IDebugTreeNode) => void,
+  debugRefs
 ): void => {
-  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, viewRawDebugObject);
+  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, viewRawDebugObject, debugRefs);
 
   if (rawNode.children) {
     outNode.children = rawNode.children;
@@ -34,6 +39,7 @@ const convertNode = (
 
 export const convertRawTreeToViewTree = (
   inTree: IDebugTreeNode,
+  debugRefs: any,
   viewRawDebugObject: (node: IDebugTreeNode) => void
 ): TreeViewDataItem[] => {
   // Deep clone. Not the most efficient, but easy and we're not going for
@@ -42,7 +48,7 @@ export const convertRawTreeToViewTree = (
 
   crawl(
     workingTree,
-    (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, viewRawDebugObject),
+    (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, viewRawDebugObject, debugRefs),
     { order: 'pre' }
   );
 
