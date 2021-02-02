@@ -3,6 +3,8 @@ import { TreeViewDataItem } from '@patternfly/react-core';
 import { IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
+import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
@@ -10,11 +12,16 @@ const getShallowPropsForNode = (
   debugRefs?
 ): TreeViewDataItem => {
   const matchingDebugRef = debugRefs?.find((ref) => ref?.data?.name === rawNode?.name);
-  console.log('matchingRef', matchingDebugRef);
   return {
-    name: `${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`,
+    name: (
+      <>
+        <span className={`${spacing.mrMd}`}>
+          {`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}
+        </span>
+        <TreeViewStatusIcon debugRef={matchingDebugRef} />
+      </>
+    ),
     action: <TreeActionsDropdown rawNode={rawNode} viewRawDebugObject={viewRawDebugObject} />,
-
   };
 };
 
