@@ -139,8 +139,8 @@ const getPlansWithPlanStatus = createSelector(
       // Rollback acts as a "reset", so we should only consider migrations after rollback
       let planMigrations;
       if (plan.Migrations.length) {
-        const latestRollbackIndex = plan.Migrations.findIndex((m) => {
-          return m.spec.rollback && m.status.conditions.some((c) => c.type === 'Succeeded');
+        const latestRollbackIndex = plan.Migrations?.findIndex((m) => {
+          return m.spec.rollback && m.status?.conditions?.some((c) => c.type === 'Succeeded');
         });
         if (latestRollbackIndex !== -1) {
           planMigrations = plan.Migrations.slice(0, latestRollbackIndex + 1);
@@ -178,6 +178,18 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
+      const hasSucceededMigrationWithWarnings = !!planMigrations.filter((m) => {
+        if (m.status?.conditions && !m.spec.stage && !m.spec.rollback) {
+          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
+        }
+      }).length;
+
+      const hasSucceededStageWithWarnings = !!planMigrations.filter((m) => {
+        if (m.status?.conditions && m.spec.stage && !m.spec.rollback) {
+          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
+        }
+      }).length;
+
       const hasSucceededRollback = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.rollback) {
           return (
@@ -209,6 +221,8 @@ const getPlansWithPlanStatus = createSelector(
 
       const statusObject = {
         hasSucceededMigration,
+        hasSucceededMigrationWithWarnings,
+        hasSucceededStageWithWarnings,
         hasSucceededStage,
         hasSucceededRollback,
         hasAttemptedMigration,
@@ -290,11 +304,11 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       end: 'In progress',
       moved: 0,
       copied: 0,
+      isPaused: false,
       isFailed: false,
       isSucceeded: false,
       isCanceled: false,
       isCanceling: false,
-      stepName: 'Not started',
       migrationState: null,
       warnings: [],
       errors: [],
@@ -303,138 +317,134 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
     };
     const zone = dayjs.tz.guess();
 
-    if (migration.status?.conditions) {
-      const succeededCondition = migration.status.conditions.find((c) => {
-        return c.type === 'Succeeded';
-      });
+    // determine start and end time of migration
+    if (migration.status?.startTimestamp) {
+      status.start = dayjs
+        .tz(migration.status.startTimestamp, zone)
+        .format(`DD MMM YYYY, h:mm:ss z`);
+    }
+    const endTime = migration.status?.conditions
+      ?.filter(
+        (c) => c.type === 'Succeeded' || c.type === 'SucceededWithWarnings' || c.type === 'Failed'
+      )
+      .map((c) => c.lastTransitionTime)
+      .toString();
+    status.end = endTime ? dayjs.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`) : 'In progress';
 
-      const canceledCondition = migration.status.conditions.find((c) => {
-        return c.type === 'Canceled';
-      });
+    // check if migration is already succeeded
+    const succeededCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'Succeeded';
+    });
+    // check if migration is already canceled
+    const canceledCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'Canceled';
+    });
+    // check if migration has a critical condition
+    const criticalCondition = migration.status?.conditions?.find((c) => {
+      return c.category === 'Critical';
+    });
+    // check if migration has a warning condition
+    const warnCondition = migration.status?.conditions?.find((c) => {
+      return c.category === 'Warn';
+    });
+    // check if migration is being canceled
+    const cancelingCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'Canceling';
+    });
+    // check if plan goes unready during migration
+    const planNotReadyCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'PlanNotReady';
+    });
+    // check if migration is already failed
+    const failedCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'Failed';
+    });
 
-      if (MigPlan.spec.persistentVolumes && !!succeededCondition) {
-        status.copied = MigPlan.spec.persistentVolumes.filter(
-          (p) => p.selection.action === 'copy'
-        ).length;
-        if (!migration.spec.stage) {
-          status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
-        }
-      }
+    const dvmBlockedCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'DirectVolumeMigrationBlocked';
+    });
 
-      if (migration.status.startTimestamp) {
-        status.start = dayjs
-          .tz(migration.status.startTimestamp, zone)
-          .format(`DD MMM YYYY, h:mm:ss z`);
-      }
-      const endTime = migration.status.conditions
-        .filter(
-          (c) => c.type === 'Succeeded' || c.type === 'SucceededWithWarnings' || c.type === 'Failed'
-        )
-        .map((c) => c.lastTransitionTime)
-        .toString();
-      status.end = endTime
-        ? dayjs.tz(endTime, zone).format(`DD MMM YYYY, h:mm:ss z`)
-        : 'In progress';
-
-      if (migration.status.conditions.length) {
-        // For canceled migrations, show 0% progress and `Canceled` step
-        if (canceledCondition) {
-          status.isCanceled = true;
-          status.stepName = 'Canceled';
-          return status;
-        }
-
-        // For critical migrations, show red 100% progress
-        const criticalCondition = migration.status.conditions.find((c) => {
-          return c.category === 'Critical';
-        });
-        if (criticalCondition) {
-          const errorMessages = migration?.status?.conditions
-            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
-            .map((c, idx) => c.message || c.reason);
-          status.errors = status.errors.concat(errorMessages);
-          status.isFailed = true;
-          status.stepName = criticalCondition.message;
-          status.errorCondition = criticalCondition.message;
-          status.end = criticalCondition.lastTransitionTime;
-          status.migrationState = 'error';
-          return status;
-        }
-
-        // For failed migrations, show red 100% progress
-        const failedCondition = migration.status.conditions.find((c) => {
-          return c.type === 'Failed';
-        });
-        if (failedCondition) {
-          const errorMessages = migration?.status?.conditions
-            ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
-            .map((c, idx) => c.message || c.reason);
-          const migrationErrors = migration?.status?.errors;
-          status.errors = status.errors.concat(errorMessages, migrationErrors);
-          status.isFailed = true;
-          status.stepName = failedCondition.reason;
-          status.errorCondition = failedCondition.message;
-          status.end = failedCondition.lastTransitionTime;
-          status.migrationState = 'error';
-          return status;
-        }
-
-        // For cancel in progress migrations, show progress in red and a `Canceling - ` step with a running step name as a suffix
-        const cancelingCondition = migration.status.conditions.find((c) => {
-          return c.type === 'Canceling';
-        });
-
-        // For running migrations, calculate percent progress
-        const runningCondition = migration.status.conditions.find((c) => {
-          return c.type === 'Running';
-        });
-
-        if (runningCondition || cancelingCondition) {
-          status.stepName = runningCondition?.reason || '';
-          if (cancelingCondition) {
-            status.stepName = 'Canceling' + status.stepName;
-            status.isCanceling = true;
-          }
-          return status;
-        }
-        // For running migrations, calculate percent progress
-        const planNotReadyCondition = migration.status.conditions.find((c) => {
-          return c.type === 'PlanNotReady';
-        });
-        if (planNotReadyCondition) {
-          status.isFailed = true;
-          status.stepName = planNotReadyCondition.message;
-          status.end = '--';
-          status.migrationState = 'error';
-          return status;
-        }
-
-        // For successful migrations with active warning, show warning 100% progress
-        const warnCondition = migration.status.conditions.find((c) => {
-          return c.category === 'Warn';
-        });
-
-        if (warnCondition) {
-          const warningMessages = migration?.status?.conditions
-            ?.filter((c) => c.category === 'Warn')
-            .map((c, idx) => c.message);
-          status.isSucceeded = true;
-          status.stepName = 'Completed with warnings';
-          status.migrationState = 'warn';
-          status.warnings = status.warnings.concat(warningMessages);
-          status.warnCondition = warnCondition?.message;
-          return status;
-        }
-
-        // For successful migrations, show green 100% progress
-        if (succeededCondition) {
-          status.isSucceeded = true;
-          status.stepName = 'Completed';
-          status.migrationState = 'success';
-          return status;
-        }
+    // derive number of volumes copied / moved for migration table
+    if (MigPlan?.spec?.persistentVolumes && !!succeededCondition) {
+      status.copied = MigPlan.spec.persistentVolumes.filter(
+        (p) => p.selection.action === 'copy'
+      ).length;
+      if (!migration.spec.stage) {
+        status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
       }
     }
+
+    if (canceledCondition) {
+      status.isCanceled = true;
+    }
+
+    // critical condition implies that migration has failed
+    if (criticalCondition) {
+      const errorMessages = migration?.status?.conditions
+        ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+        .map((c, idx) => c.message || c.reason);
+      status.errors = status.errors.concat(errorMessages);
+      if (failedCondition) status.isFailed = true;
+      status.errorCondition = criticalCondition.message;
+      status.end = criticalCondition.lastTransitionTime;
+      status.migrationState = 'error';
+      return status;
+    }
+
+    if (failedCondition) {
+      const errorMessages = migration?.status?.conditions
+        ?.filter((c) => c.type === 'failed' || c.category === 'Critical')
+        .map((c, idx) => c.message || c.reason);
+      const migrationErrors = migration?.status?.errors;
+      status.errors = status.errors.concat(errorMessages, migrationErrors);
+      status.isFailed = true;
+      status.errorCondition = failedCondition.message;
+      status.end = failedCondition.lastTransitionTime;
+      status.migrationState = 'error';
+      return status;
+    }
+
+    if (cancelingCondition) {
+      status.isCanceling = true;
+    }
+
+    // plan goes unready during migration makes a migration fail
+    if (planNotReadyCondition) {
+      status.isFailed = true;
+      status.end = '--';
+      status.migrationState = 'error';
+      return status;
+    }
+
+    if (dvmBlockedCondition) {
+      const warningMessages = migration?.status?.conditions
+        ?.filter((c) => c.category === 'Warn')
+        .map((c, idx) => c.message);
+      if (succeededCondition) status.isSucceeded = true;
+      status.migrationState = 'paused';
+      status.warnings = status.warnings.concat(warningMessages);
+      status.warnCondition = warnCondition?.message;
+      status.isPaused = true;
+      return status;
+    }
+
+    if (warnCondition) {
+      const warningMessages = migration?.status?.conditions
+        ?.filter((c) => c.category === 'Warn')
+        .map((c, idx) => c.message);
+      if (succeededCondition) status.isSucceeded = true;
+      status.migrationState = 'warn';
+      status.warnings = status.warnings.concat(warningMessages);
+      status.warnCondition = warnCondition?.message;
+      return status;
+    }
+
+    if (succeededCondition) {
+      status.isSucceeded = true;
+      status.migrationState = 'success';
+      return status;
+    }
+
     return status;
   };
   const plansWithMigrationStatus = plans.map((plan) => {

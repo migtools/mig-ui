@@ -83,6 +83,7 @@ export interface IMigration {
     isSucceeded: boolean;
     isCanceled: boolean;
     isCanceling: boolean;
+    isPaused: boolean;
     migrationState: string;
     moved: number;
     progress: number;
@@ -153,8 +154,12 @@ export interface IPlan {
     hasReadyCondition: boolean;
     hasRunningMigrations: boolean;
     hasSucceededMigration: boolean;
+    hasSucceededMigrationWithWarnings: boolean;
+    hasDVMBlockedCondition: boolean;
+    hasSucceededStageWithWarnings: boolean;
     hasSucceededStage: boolean;
     hasSucceededRollback: boolean;
+    hasWarnCondition: boolean;
     isPlanLocked: boolean;
     latestType: string;
     latestIsFailed: boolean;

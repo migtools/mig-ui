@@ -17,6 +17,8 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasNotReadyCondition,
     hasRunningMigrations,
     hasSucceededMigration,
+    hasSucceededMigrationWithWarnings,
+    hasSucceededStageWithWarnings,
     hasSucceededStage,
     hasSucceededRollback,
     hasCanceledCondition,
@@ -27,6 +29,8 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasConflictCondition,
     conflictErrorMsg,
     isPlanLocked,
+    hasWarnCondition,
+    hasDVMBlockedCondition,
   } = plan.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
   if (hasCriticalCondition) return `${latestType} Failed`;
@@ -37,6 +41,10 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasSucceededRollback) return 'Rollback succeeded';
+  if (hasDVMBlockedCondition) return 'Running';
+  if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
+  if (hasSucceededStageWithWarnings) return 'Stage completed with warnings';
+  if (hasSucceededMigrationWithWarnings) return 'Migration completed with warnings';
   if (hasSucceededMigration) return 'Migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
@@ -74,6 +82,15 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
   if (status?.phase === 'Completed') {
     if (tableStatus?.migrationState === 'warn') {
       return MigrationStepsType.CompletedWithWarnings;
+    }
+    if (tableStatus?.isCanceled) {
+      return MigrationStepsType.Canceled;
+    }
+    if (tableStatus?.isFailed) {
+      return MigrationStepsType.Failed;
+    }
+    if (tableStatus?.isPaused) {
+      return MigrationStepsType.Paused;
     }
     return MigrationStepsType.Completed;
   }
