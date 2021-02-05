@@ -18,40 +18,62 @@ import {
   Button,
   EmptyStateIcon,
 } from '@patternfly/react-core';
-import { AddEditMode } from '../../../../../common/add_edit_state';
+import { AddEditMode, IAddEditStatus } from '../../../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
-import { IMigHook } from '../../../../../../client/resources/conversions';
+import { IMigMeta } from '../../../../../auth/duck/types';
+import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
+import { IMigHook } from '../../../HooksPage/types';
+import { IHook } from '../../../../../../client/resources/conversions';
 
 const classNames = require('classnames');
 
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
+interface IHooksStepBaseProps {
+  migMeta: IMigMeta;
+  isFetchingInitialHooks: boolean;
+  updateHookRequest: (values) => void;
+  addHookRequest: (hook: IMigHook) => void;
+  isFetchingHookList: boolean;
+  isUpdatingGlobalHookList: boolean;
+  isAssociatingHookToPlan: boolean;
+  fetchPlanHooksRequest: () => void;
+  hookAddEditStatus: IAddEditStatus;
+  currentPlan: IMigPlan;
+  removeHookFromPlanRequest: (hookName: string, stepName: string) => void;
+  watchHookAddEditStatus: (name: string) => void;
+  isAddHooksOpen: boolean;
+  setIsAddHooksOpen: (val) => void;
+  currentPlanHooks: any[];
+  allHooks: IMigHook[];
+  associateHookToPlan: (hookValues, migHook) => void;
+}
 
-const HooksStep = (props) => {
+const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const {
     updateHookRequest,
     addHookRequest,
     isFetchingHookList,
-    migHookList,
-    fetchHooksRequest,
+    isUpdatingGlobalHookList,
+    isAssociatingHookToPlan,
+    fetchPlanHooksRequest,
+    currentPlanHooks,
     hookAddEditStatus,
     currentPlan,
-    removeHookRequest,
+    removeHookFromPlanRequest,
     watchHookAddEditStatus,
     isAddHooksOpen,
     setIsAddHooksOpen,
     migMeta,
+    allHooks,
+    associateHookToPlan,
   } = props;
 
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
-  const [initialHookValues, setInitialHookValues] = useState<Partial<IMigHook>>({});
+  const [initialHookValues, setInitialHookValues] = useState({});
+  const [selectedExistingHook, setSelectedExistingHook] = useState(null);
+  const [isCreateHookSelected, setIsCreateHookSelected] = useState(false);
 
-  useEffect(() => {
-    if (currentPlan) {
-      fetchHooksRequest(currentPlan.spec.hooks);
-    }
-  }, []);
-
-  const onAddEditHookSubmit = (hookValues) => {
+  const onAddEditHookSubmit = (hookValues, isExistingHook) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
@@ -59,9 +81,16 @@ const HooksStep = (props) => {
         break;
       }
       case AddEditMode.Add: {
-        addHookRequest(hookValues);
-        setIsAddHooksOpen(false);
-        break;
+        if (selectedExistingHook) {
+          associateHookToPlan(hookValues, selectedExistingHook);
+          setIsAddHooksOpen(false);
+          //only associate to plan, dont create new hook
+          break;
+        } else {
+          addHookRequest(hookValues);
+          setIsAddHooksOpen(false);
+          break;
+        }
       }
       default: {
         console.warn(
@@ -80,8 +109,8 @@ const HooksStep = (props) => {
 
   let rows = [];
   let actions = [];
-  if (migHookList.length > 0) {
-    rows = migHookList.map((migHook, id) => {
+  if (currentPlanHooks.length > 0) {
+    rows = currentPlanHooks.map((migHook, id) => {
       return {
         cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
       };
@@ -90,7 +119,7 @@ const HooksStep = (props) => {
       {
         title: 'Edit',
         onClick: (event, rowId, rowData, extra) => {
-          const currentHook = migHookList.find((hook) => hook.hookName === rowData.name.title);
+          const currentHook = currentPlanHooks.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
           watchHookAddEditStatus(rowData.name.title);
@@ -99,7 +128,7 @@ const HooksStep = (props) => {
       {
         title: 'Delete',
         onClick: (event, rowId, rowData, extra) => {
-          removeHookRequest(rowData.name.title, rowData['migration-step'].title);
+          removeHookFromPlanRequest(rowData.name.title, rowData['migration-step'].title);
         },
       },
     ];
@@ -144,22 +173,9 @@ const HooksStep = (props) => {
           </Text>
         </TextContent>
       </GridItem>
-      {isAddHooksOpen && (
-        <GridItem className={hooksFormContainerStyles}>
-          <HooksFormContainer
-            defaultHookRunnerImage={defaultHookRunnerImage}
-            onAddEditHookSubmit={onAddEditHookSubmit}
-            initialHookValues={initialHookValues}
-            setInitialHookValues={setInitialHookValues}
-            setIsAddHooksOpen={setIsAddHooksOpen}
-            isAddHooksOpen={isAddHooksOpen}
-            {...props}
-          />
-        </GridItem>
-      )}
-      {!isAddHooksOpen && (
+      {!isAddHooksOpen ? (
         <React.Fragment>
-          {isFetchingHookList ? (
+          {isFetchingHookList || isUpdatingGlobalHookList || isAssociatingHookToPlan ? (
             <Bullseye>
               <EmptyState variant="large">
                 <div className="pf-c-empty-state__icon">
@@ -194,6 +210,24 @@ const HooksStep = (props) => {
             </GridItem>
           )}
         </React.Fragment>
+      ) : (
+        <GridItem className={hooksFormContainerStyles}>
+          <HooksFormContainer
+            defaultHookRunnerImage={defaultHookRunnerImage}
+            onAddEditHookSubmit={onAddEditHookSubmit}
+            initialHookValues={initialHookValues}
+            setInitialHookValues={setInitialHookValues}
+            setIsAddHooksOpen={setIsAddHooksOpen}
+            isAddHooksOpen={isAddHooksOpen}
+            allHooks={allHooks}
+            currentPlanHooks={currentPlanHooks}
+            selectedExistingHook={selectedExistingHook}
+            setSelectedExistingHook={setSelectedExistingHook}
+            isCreateHookSelected={isCreateHookSelected}
+            setIsCreateHookSelected={setIsCreateHookSelected}
+            {...props}
+          />
+        </GridItem>
       )}
     </Grid>
   );

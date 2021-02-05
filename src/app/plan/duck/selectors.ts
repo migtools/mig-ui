@@ -9,8 +9,9 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
-import { IStep } from './types';
+import { IPlan, IPlanSpecHook, IStep } from './types';
 import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
+import { IMigHook } from '../../home/pages/HooksPage/types';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -84,7 +85,25 @@ const lockedPlansSelector = (state) => state.plan.lockedPlanList;
 
 const sourceClusterNamespacesSelector = (state) => state.plan.sourceClusterNamespaces;
 
-const getHooks = (state) => state.plan.migHookList.map((h) => h);
+const hooksSelector = (state) => state.plan.allHooks.map((h) => h);
+
+const getHooksWithStatus = createSelector(
+  [hooksSelector, planSelector],
+  (hooks: IMigHook[], plans: IPlan[]) => {
+    const hooksWithStatus = hooks.map((hook) => {
+      const associatedPlans = plans
+        .filter((p) => p.MigPlan.spec.hooks?.some((h) => h.reference.name === hook.metadata.name))
+        .map((p) => p.MigPlan.metadata.name);
+      const associatedPlanCount = associatedPlans.length;
+      const statusObject = {
+        associatedPlanCount,
+        associatedPlans,
+      };
+      return { ...hook, HookStatus: statusObject };
+    });
+    return hooksWithStatus;
+  }
+);
 
 const getFilteredNamespaces = createSelector(
   [sourceClusterNamespacesSelector],
@@ -461,5 +480,5 @@ export default {
   getMigMeta,
   getCounts,
   getFilteredNamespaces,
-  getHooks,
+  getHooksWithStatus,
 };

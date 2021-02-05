@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormikProps } from 'formik';
+import planUtils from './../../../../../plan/duck/utils';
 import {
   Grid,
   GridItem,
@@ -14,12 +15,18 @@ import {
   Tooltip,
   TooltipPosition,
   Form,
+  Select,
+  SelectOptionObject,
+  SelectOption,
+  SelectGroup,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import SimpleSelect from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
+import { IHook } from '../../../../../../client/resources/conversions';
+import { IMigHook } from '../../../HooksPage/types';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -29,7 +36,7 @@ interface IHooksFormValues {
   hookName: string;
   hookImageType: string;
   ansibleFile: string;
-  ansibleFilename: string;
+  ansibleFilename?: string;
   ansibleRuntimeImage: string;
   customContainerImage: string;
   srcServiceAccountName: string;
@@ -38,15 +45,23 @@ interface IHooksFormValues {
   destServiceAccountNamespace: string;
   clusterType: string;
   migrationStep: string;
+  isCreateHookSelected?: boolean;
+  selectedExistingHook?: IMigHook | null;
 }
 interface IHooksFormOtherProps {
   setInitialHookValues: any;
   setIsAddHooksOpen: (isOpen: boolean) => void;
   hookAddEditStatus: any;
-  cancelAddEditWatch: () => void;
-  resetAddEditState: () => void;
+  cancelAddEditWatch?: () => void;
+  resetAddEditState?: () => void;
   currentPlan: any;
   defaultHookRunnerImage: string;
+  allHooks: IMigHook[];
+  currentPlanHooks?: IHook[];
+  selectedExistingHook?: any;
+  setSelectedExistingHook?: (val) => void;
+  isCreateHookSelected?: boolean;
+  setIsCreateHookSelected?: (isCreate: boolean) => void;
 }
 const hookNameKey = 'hookName';
 const hookImageTypeKey = 'hookImageType';
@@ -87,19 +102,26 @@ const HooksFormComponent: React.FunctionComponent<
   cancelAddEditWatch,
   resetAddEditState,
   currentPlan,
+  allHooks,
+  currentPlanHooks,
+  selectedExistingHook,
+  setSelectedExistingHook,
+  isCreateHookSelected,
+  setIsCreateHookSelected,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
   let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
-  if (currentPlan.spec.hooks) {
+  if (currentPlan?.spec?.hooks) {
     const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
     const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
     initialPhaseOptions = filteredPhases;
   }
 
   const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
+  const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
 
   const handleFileChange = (value, filename, event) => {
     setFieldValue('ansibleFile', value);
@@ -107,11 +129,94 @@ const HooksFormComponent: React.FunctionComponent<
   };
 
   const hookImageStyles = classNames(spacing.mtSm, spacing.mlLg);
+  const newHookOption = {
+    toString: () => `Create a new hook`,
+    value: 'new',
+  };
 
+  const hookOptions = allHooks
+    .filter((hook) => {
+      const existsOnPlan = currentPlanHooks?.some(
+        (existingHook) => existingHook?.hookName === hook?.metadata.name
+      );
+      if (!existsOnPlan) {
+        return hook;
+      }
+    })
+    .map((hook) => ({
+      toString: () => hook.metadata.name,
+      value: hook,
+    })) as OptionWithValue<IMigHook>[];
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={(e) => {
+        handleSubmit(e);
+        e.preventDefault();
+      }}
+    >
       <Grid span={8}>
-        <GridItem>
+        {hookAddEditStatus.mode === AddEditMode.Add && currentPlan && (
+          <GridItem>
+            <FormGroup
+              isRequired
+              fieldId="mappingSelect"
+              label="Add an existing hook or create a new one"
+            >
+              <Select
+                id="existingHookSelect"
+                aria-label="Select an existing hook or create a new one"
+                placeholderText={`Select...`}
+                isGrouped
+                isOpen={isHookSelectOpen}
+                onToggle={setIsHookSelectOpen}
+                selections={
+                  isCreateHookSelected
+                    ? [newHookOption.toString()]
+                    : selectedExistingHook?.metadata.name
+                    ? [
+                        hookOptions.find(
+                          (option) =>
+                            option?.value?.metadata?.name === selectedExistingHook?.metadata.name
+                        )?.value?.metadata?.name,
+                      ]
+                    : []
+                }
+                onSelect={(_event, selection: SelectOptionObject) => {
+                  const sel = selection as OptionWithValue<IHook | 'new'>;
+                  if (sel.value === 'new') {
+                    setIsCreateHookSelected(true);
+                    setSelectedExistingHook(null);
+                    setInitialHookValues({});
+                  } else {
+                    sel.value;
+                    const currentPlanHookRef = null;
+                    const hookRef = sel.value;
+                    const uiHookObject = planUtils.convertMigHookToUIObject(
+                      currentPlanHookRef,
+                      hookRef
+                    );
+
+                    setInitialHookValues(uiHookObject);
+                    setIsCreateHookSelected(false);
+                    setSelectedExistingHook(sel.value);
+                  }
+
+                  setIsHookSelectOpen(false);
+                }}
+              >
+                <SelectOption key={newHookOption.toString()} value={newHookOption} />
+                <SelectGroup
+                  label={hookOptions.length > 0 ? 'Existing hooks' : 'No existing hooks'}
+                >
+                  {hookOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} />
+                  ))}
+                </SelectGroup>
+              </Select>
+            </FormGroup>
+          </GridItem>
+        )}
+        <GridItem className={spacing.mtMd}>
           <FormGroup
             label="Hook name"
             isRequired
@@ -129,7 +234,7 @@ const HooksFormComponent: React.FunctionComponent<
               name={hookNameKey}
               id="hook-name"
               type="text"
-              isDisabled={hookAddEditStatus.mode === AddEditMode.Edit}
+              isDisabled={hookAddEditStatus.mode === AddEditMode.Edit || selectedExistingHook}
               validated={validatedState(touched.hookName, errors.hookName)}
             />
           </FormGroup>
@@ -160,6 +265,7 @@ const HooksFormComponent: React.FunctionComponent<
                   label="Ansible playbook"
                   id="ansible-playbook-radio"
                   value={HooksImageType.Ansible}
+                  isDisabled={selectedExistingHook}
                 />
               </GridItem>
               {values.hookImageType === HooksImageType.Ansible && (
@@ -178,6 +284,10 @@ const HooksFormComponent: React.FunctionComponent<
                         onChange={handleFileChange}
                         id="ansible-file"
                         type="text"
+                        isDisabled={
+                          selectedExistingHook ||
+                          (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                        }
                       />
                     </FormGroup>
                   </GridItem>
@@ -205,6 +315,10 @@ const HooksFormComponent: React.FunctionComponent<
                           touched.ansibleRuntimeImage,
                           errors.ansibleRuntimeImage
                         )}
+                        isDisabled={
+                          selectedExistingHook ||
+                          (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                        }
                       />
                       <TextContent>
                         <Text component={TextVariants.p}>
@@ -224,6 +338,10 @@ const HooksFormComponent: React.FunctionComponent<
                   label="Custom container image"
                   id="custom-image-radio"
                   value={HooksImageType.Custom}
+                  isDisabled={
+                    selectedExistingHook ||
+                    (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                  }
                 />
               </GridItem>
               {values.hookImageType === HooksImageType.Custom && (
@@ -250,6 +368,10 @@ const HooksFormComponent: React.FunctionComponent<
                         touched.customContainerImage,
                         errors.customContainerImage
                       )}
+                      isDisabled={
+                        selectedExistingHook ||
+                        (hookAddEditStatus.mode === AddEditMode.Edit && currentPlan)
+                      }
                     />
                   </FormGroup>
                 </GridItem>
@@ -257,193 +379,204 @@ const HooksFormComponent: React.FunctionComponent<
             </Grid>
           </FormGroup>
         </GridItem>
-        <GridItem className={spacing.mtMd}>
-          <FormGroup label="Run in" fieldId="run-in-group">
-            <Grid>
-              <GridItem className={spacing.mtSm}>
-                <Radio
-                  isChecked={values.clusterType === HooksClusterType.Source}
-                  name={clusterTypeKey}
-                  onChange={formikHandleChange}
-                  label="Source cluster"
-                  id="source-cluster-radio"
-                  value={HooksClusterType.Source}
-                />
-              </GridItem>
-              {values.clusterType === HooksClusterType.Source && (
-                <React.Fragment>
+        {currentPlan && (
+          <>
+            <GridItem className={spacing.mtMd}>
+              <FormGroup label="Run in" fieldId="run-in-group">
+                <Grid>
                   <GridItem className={spacing.mtSm}>
-                    <FormGroup
-                      label="Service account name"
-                      isRequired
-                      fieldId={srcServiceAccountNameKey}
-                      helperTextInvalid={
-                        touched.srcServiceAccountName && errors.srcServiceAccountName
-                      }
-                      validated={validatedState(
-                        touched.srcServiceAccountName,
-                        errors.srcServiceAccountName
-                      )}
-                    >
-                      <Tooltip
-                        position={TooltipPosition.right}
-                        content={<div>Service account name used to run the executable hook.</div>}
-                      >
-                        <span className={spacing.mlSm}>
-                          <QuestionCircleIcon />
-                        </span>
-                      </Tooltip>
+                    <Radio
+                      isChecked={values.clusterType === HooksClusterType.Source}
+                      name={clusterTypeKey}
+                      onChange={formikHandleChange}
+                      label="Source cluster"
+                      id="source-cluster-radio"
+                      value={HooksClusterType.Source}
+                    />
+                  </GridItem>
+                  {values.clusterType === HooksClusterType.Source && (
+                    <React.Fragment>
+                      <GridItem className={spacing.mtSm}>
+                        <FormGroup
+                          label="Service account name"
+                          isRequired
+                          fieldId={srcServiceAccountNameKey}
+                          helperTextInvalid={
+                            touched.srcServiceAccountName && errors.srcServiceAccountName
+                          }
+                          validated={validatedState(
+                            touched.srcServiceAccountName,
+                            errors.srcServiceAccountName
+                          )}
+                        >
+                          <Tooltip
+                            position={TooltipPosition.right}
+                            content={
+                              <div>Service account name used to run the executable hook.</div>
+                            }
+                          >
+                            <span className={spacing.mlSm}>
+                              <QuestionCircleIcon />
+                            </span>
+                          </Tooltip>
 
-                      {/*
+                          {/*
           // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-                      <TextInput
-                        onChange={formikHandleChange}
-                        onInput={formikSetFieldTouched(srcServiceAccountNameKey)}
-                        onBlur={handleBlur}
-                        value={values.srcServiceAccountName}
-                        name={srcServiceAccountNameKey}
-                        type="text"
-                        id="src-service-account-name-input"
-                        validated={validatedState(
-                          touched.srcServiceAccountName,
-                          errors.srcServiceAccountName
-                        )}
-                      />
-                    </FormGroup>
-                  </GridItem>
+                          <TextInput
+                            onChange={formikHandleChange}
+                            onInput={formikSetFieldTouched(srcServiceAccountNameKey)}
+                            onBlur={handleBlur}
+                            value={values.srcServiceAccountName}
+                            name={srcServiceAccountNameKey}
+                            type="text"
+                            id="src-service-account-name-input"
+                            validated={validatedState(
+                              touched.srcServiceAccountName,
+                              errors.srcServiceAccountName
+                            )}
+                          />
+                        </FormGroup>
+                      </GridItem>
+                      <GridItem className={spacing.mtSm}>
+                        <FormGroup
+                          label="Service account namespace"
+                          isRequired
+                          fieldId={srcServiceAccountNamespaceKey}
+                          helperTextInvalid={
+                            touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace
+                          }
+                          validated={validatedState(
+                            touched.srcServiceAccountNamespace,
+                            errors.srcServiceAccountNamespace
+                          )}
+                        >
+                          {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+                          <TextInput
+                            onChange={formikHandleChange}
+                            onInput={formikSetFieldTouched(srcServiceAccountNamespaceKey)}
+                            onBlur={handleBlur}
+                            value={values.srcServiceAccountNamespace}
+                            name={srcServiceAccountNamespaceKey}
+                            type="text"
+                            id="src-service-account-namespace-input"
+                            validated={validatedState(
+                              touched.srcServiceAccountNamespace,
+                              errors.srcServiceAccountNamespace
+                            )}
+                          />
+                        </FormGroup>
+                      </GridItem>
+                    </React.Fragment>
+                  )}
                   <GridItem className={spacing.mtSm}>
-                    <FormGroup
-                      label="Service account namespace"
-                      isRequired
-                      fieldId={srcServiceAccountNamespaceKey}
-                      helperTextInvalid={
-                        touched.srcServiceAccountNamespace && errors.srcServiceAccountNamespace
-                      }
-                      validated={validatedState(
-                        touched.srcServiceAccountNamespace,
-                        errors.srcServiceAccountNamespace
-                      )}
-                    >
-                      {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-                      <TextInput
-                        onChange={formikHandleChange}
-                        onInput={formikSetFieldTouched(srcServiceAccountNamespaceKey)}
-                        onBlur={handleBlur}
-                        value={values.srcServiceAccountNamespace}
-                        name={srcServiceAccountNamespaceKey}
-                        type="text"
-                        id="src-service-account-namespace-input"
-                        validated={validatedState(
-                          touched.srcServiceAccountNamespace,
-                          errors.srcServiceAccountNamespace
-                        )}
-                      />
-                    </FormGroup>
+                    <Radio
+                      isChecked={values.clusterType === HooksClusterType.Destination}
+                      name={clusterTypeKey}
+                      onChange={formikHandleChange}
+                      label="Target cluster"
+                      id="target-cluster-radio"
+                      value={HooksClusterType.Destination}
+                    />
                   </GridItem>
-                </React.Fragment>
-              )}
-              <GridItem className={spacing.mtSm}>
-                <Radio
-                  isChecked={values.clusterType === HooksClusterType.Destination}
-                  name={clusterTypeKey}
-                  onChange={formikHandleChange}
-                  label="Target cluster"
-                  id="target-cluster-radio"
-                  value={HooksClusterType.Destination}
+                  {values.clusterType === HooksClusterType.Destination && (
+                    <React.Fragment>
+                      <GridItem className={spacing.mtSm}>
+                        <FormGroup
+                          label="Service account name"
+                          isRequired
+                          fieldId={destServiceAccountNameKey}
+                          helperTextInvalid={
+                            touched.destServiceAccountName && errors.destServiceAccountName
+                          }
+                          validated={validatedState(
+                            touched.destServiceAccountName,
+                            errors.destServiceAccountName
+                          )}
+                        >
+                          {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+                          <TextInput
+                            onChange={formikHandleChange}
+                            onInput={formikSetFieldTouched(destServiceAccountNameKey)}
+                            onBlur={handleBlur}
+                            value={values.destServiceAccountName}
+                            name={destServiceAccountNameKey}
+                            type="text"
+                            id="dest-service-account-name-input"
+                            validated={validatedState(
+                              touched.destServiceAccountName,
+                              errors.destServiceAccountName
+                            )}
+                          />
+                        </FormGroup>
+                      </GridItem>
+                      <GridItem className={spacing.mtSm}>
+                        <FormGroup
+                          label="Service account namespace"
+                          isRequired
+                          fieldId="destServiceAccountNamespace"
+                          helperTextInvalid={
+                            touched.destServiceAccountNamespace &&
+                            errors.destServiceAccountNamespace
+                          }
+                          validated={validatedState(
+                            touched.destServiceAccountNamespace,
+                            errors.destServiceAccountNamespace
+                          )}
+                        >
+                          {/*
+          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
+                          <TextInput
+                            onChange={formikHandleChange}
+                            onInput={formikSetFieldTouched(destServiceAccountNamespaceKey)}
+                            onBlur={handleBlur}
+                            value={values.destServiceAccountNamespace}
+                            name={destServiceAccountNamespaceKey}
+                            type="text"
+                            id="dest-service-account-namespace-input"
+                            validated={validatedState(
+                              touched.destServiceAccountNamespace,
+                              errors.destServiceAccountNamespace
+                            )}
+                          />
+                        </FormGroup>
+                      </GridItem>
+                    </React.Fragment>
+                  )}
+                </Grid>
+              </FormGroup>
+            </GridItem>
+            )
+            <GridItem className={spacing.mtMd}>
+              <FormGroup
+                label="Migration step when the hook should be run"
+                isRequired
+                fieldId={migrationStepKey}
+                helperTextInvalid={touched.migrationStep && errors.migrationStep}
+                validated={validatedState(touched.migrationStep, errors.migrationStep)}
+              >
+                <SimpleSelect
+                  id="migrationStep"
+                  onChange={(value) => {
+                    setTimeout(() => {
+                      setFieldValue('migrationStep', value);
+                      setFieldTouched('migrationStep');
+                    });
+                  }}
+                  options={phaseOptions}
+                  value={values.migrationStep}
+                  placeholderText="Select phase..."
                 />
-              </GridItem>
-              {values.clusterType === HooksClusterType.Destination && (
-                <React.Fragment>
-                  <GridItem className={spacing.mtSm}>
-                    <FormGroup
-                      label="Service account name"
-                      isRequired
-                      fieldId={destServiceAccountNameKey}
-                      helperTextInvalid={
-                        touched.destServiceAccountName && errors.destServiceAccountName
-                      }
-                      validated={validatedState(
-                        touched.destServiceAccountName,
-                        errors.destServiceAccountName
-                      )}
-                    >
-                      {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-                      <TextInput
-                        onChange={formikHandleChange}
-                        onInput={formikSetFieldTouched(destServiceAccountNameKey)}
-                        onBlur={handleBlur}
-                        value={values.destServiceAccountName}
-                        name={destServiceAccountNameKey}
-                        type="text"
-                        id="dest-service-account-name-input"
-                        validated={validatedState(
-                          touched.destServiceAccountName,
-                          errors.destServiceAccountName
-                        )}
-                      />
-                    </FormGroup>
-                  </GridItem>
-                  <GridItem className={spacing.mtSm}>
-                    <FormGroup
-                      label="Service account namespace"
-                      isRequired
-                      fieldId="destServiceAccountNamespace"
-                      helperTextInvalid={
-                        touched.destServiceAccountNamespace && errors.destServiceAccountNamespace
-                      }
-                      validated={validatedState(
-                        touched.destServiceAccountNamespace,
-                        errors.destServiceAccountNamespace
-                      )}
-                    >
-                      {/*
-          // @ts-ignore issue: https://github.com/konveyor/mig-ui/issues/747 */}
-                      <TextInput
-                        onChange={formikHandleChange}
-                        onInput={formikSetFieldTouched(destServiceAccountNamespaceKey)}
-                        onBlur={handleBlur}
-                        value={values.destServiceAccountNamespace}
-                        name={destServiceAccountNamespaceKey}
-                        type="text"
-                        id="dest-service-account-namespace-input"
-                        validated={validatedState(
-                          touched.destServiceAccountNamespace,
-                          errors.destServiceAccountNamespace
-                        )}
-                      />
-                    </FormGroup>
-                  </GridItem>
-                </React.Fragment>
-              )}
-            </Grid>
-          </FormGroup>
-        </GridItem>
-        <GridItem className={spacing.mtMd}>
-          <FormGroup
-            label="Migration step when the hook should be run"
-            isRequired
-            fieldId={migrationStepKey}
-            helperTextInvalid={touched.migrationStep && errors.migrationStep}
-            validated={validatedState(touched.migrationStep, errors.migrationStep)}
-          >
-            <SimpleSelect
-              id="migrationStep"
-              onChange={(value) => {
-                setFieldValue('migrationStep', value);
-                setFieldTouched('migrationStep');
-              }}
-              options={phaseOptions}
-              value={values.migrationStep}
-              placeholderText="Select phase..."
-            />
-          </FormGroup>
-        </GridItem>
+              </FormGroup>
+            </GridItem>
+          </>
+        )}
         <Grid span={6}>
           <GridItem className={spacing.mtLg} span={2}>
             <Button type="submit">{addEditButtonTextFn(hookAddEditStatus)}</Button>
           </GridItem>
+          <GridItem span={1} />
           <GridItem className={spacing.mtLg} span={2}>
             <Button
               key="cancel-add-hook"
@@ -453,6 +586,8 @@ const HooksFormComponent: React.FunctionComponent<
                 cancelAddEditWatch();
                 resetAddEditState();
                 setInitialHookValues({});
+                setSelectedExistingHook(null);
+                setIsCreateHookSelected(false);
               }}
             >
               Cancel

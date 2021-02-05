@@ -183,11 +183,13 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map((pv) => {
-    const currentPV = currentPlan.spec.persistentVolumes.find((planPV) => planPV.name === pv.name);
+    const currentPV = currentPlan?.spec?.persistentVolumes?.find(
+      (planPV) => planPV.name === pv.name
+    );
     const currentCopyMethod = pvCopyMethodAssignment[pv.name];
     const currentStorageClass = pvStorageClassAssignment[pv.name];
 
-    const copyMethodOptions: OptionWithValue[] = currentPV.supported.copyMethods.map(
+    const copyMethodOptions: OptionWithValue[] = currentPV?.supported?.copyMethods.map(
       (copyMethod: PvCopyMethod) => ({
         value: copyMethod,
         toString: () => copyMethodToString(copyMethod),

@@ -557,56 +557,13 @@ export function createMigMigration(
   };
 }
 
-export function updateMigHook(
+export function updatePlanHookList(
   currentHook: any,
   migHook: any,
   currentPlanHookRef: any,
   namespace: string,
   currentPlan: IMigPlan
 ) {
-  const getImage = (imageType) => {
-    if (imageType === HooksImageType.Ansible) {
-      return migHook.ansibleRuntimeImage;
-    }
-    if (imageType === HooksImageType.Custom) {
-      return migHook.customContainerImage;
-    }
-  };
-
-  const getPlaybook = (imageType) => {
-    if (imageType === HooksImageType.Ansible) {
-      const encodedPlaybook = btoa(migHook.ansibleFile);
-
-      return encodedPlaybook;
-    }
-    if (imageType === HooksImageType.Custom) {
-      return '';
-    }
-  };
-
-  const currentImage = currentHook.image;
-  const image = getImage(migHook.hookImageType);
-  const imageUpdated = image !== currentImage;
-  const imageValue = imageUpdated ? image : currentImage;
-
-  const currentPlaybook = currentHook.ansibleFile;
-  const playbook = getPlaybook(migHook.hookImageType);
-  const playbookUpdated = playbook !== currentPlaybook;
-  const playbookValue = playbookUpdated ? playbook : currentPlaybook;
-
-  const currentTargetCluster = currentHook.clusterType;
-  const targetClusterUpdated = migHook.clusterType !== currentTargetCluster;
-  const targetClusterValue = targetClusterUpdated ? migHook.clusterType : currentTargetCluster;
-
-  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false;
-
-  const migHookSpec = {
-    image: imageValue,
-    playbook: playbookValue,
-    targetCluster: targetClusterValue,
-    custom: isCustom,
-  };
-
   const currentExecutionNamespace = currentPlanHookRef.executionNamespace;
   const currentServiceAccount = currentPlanHookRef.serviceAccount;
   let executionNamespaceUpdated;
@@ -652,27 +609,68 @@ export function updateMigHook(
   const foundIndex = updatedHooksSpec.findIndex((hook) => hook.reference.name == migHook.hookName);
   updatedHooksSpec[foundIndex] = currentPlanHookRefSpec;
 
-  if (
-    !imageUpdated &&
-    !playbookUpdated &&
-    !targetClusterUpdated &&
-    !executionNamespaceUpdated &&
-    !phaseUpdated &&
-    !serviceAccountUpdated
-  ) {
+  if (!executionNamespaceUpdated && !phaseUpdated && !serviceAccountUpdated) {
     console.warn('A hook update was requested, but nothing was changed');
     return;
   }
 
   return {
-    migHookPatch: {
-      spec: migHookSpec,
+    spec: {
+      hooks: updatedHooksSpec,
     },
-    currentPlanHookRefPatch: {
-      spec: {
-        hooks: updatedHooksSpec,
-      },
-    },
+  };
+}
+export function updateMigHook(currentHook: any, migHook: any) {
+  const getImage = (imageType) => {
+    if (imageType === HooksImageType.Ansible) {
+      return migHook.ansibleRuntimeImage;
+    }
+    if (imageType === HooksImageType.Custom) {
+      return migHook.customContainerImage;
+    }
+  };
+
+  const getPlaybook = (imageType) => {
+    if (imageType === HooksImageType.Ansible) {
+      const encodedPlaybook = btoa(migHook.ansibleFile);
+
+      return encodedPlaybook;
+    }
+    if (imageType === HooksImageType.Custom) {
+      return '';
+    }
+  };
+
+  const currentImage = currentHook.image;
+  const image = getImage(migHook.hookImageType);
+  const imageUpdated = image !== currentImage;
+  const imageValue = imageUpdated ? image : currentImage;
+
+  const currentPlaybook = currentHook.ansibleFile;
+  const playbook = getPlaybook(migHook.hookImageType);
+  const playbookUpdated = playbook !== currentPlaybook;
+  const playbookValue = playbookUpdated ? playbook : currentPlaybook;
+
+  const currentTargetCluster = currentHook.clusterType;
+  const targetClusterUpdated = migHook.clusterType !== currentTargetCluster;
+  const targetClusterValue = targetClusterUpdated ? migHook.clusterType : currentTargetCluster;
+
+  const isCustom = migHook.hookImageType === HooksImageType.Custom ? true : false;
+
+  const migHookSpec = {
+    image: imageValue,
+    playbook: playbookValue,
+    targetCluster: targetClusterValue,
+    custom: isCustom,
+  };
+
+  if (!imageUpdated && !playbookUpdated && !targetClusterUpdated) {
+    console.warn('A hook update was requested, but nothing was changed');
+    return;
+  }
+
+  return {
+    spec: migHookSpec,
   };
 }
 
@@ -764,7 +762,7 @@ export function createMigToken(
   };
 }
 
-export type IMigHook = ReturnType<typeof createMigHook>;
+export type IHook = ReturnType<typeof createMigHook>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;

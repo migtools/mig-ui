@@ -41,10 +41,13 @@ interface IProps {
   stopClusterPolling: () => void;
   startTokenPolling: (params) => void;
   stopTokenPolling: () => void;
+  startHookPolling: (params) => void;
+  stopHookPolling: () => void;
   updateClusters: (updatedClusters) => void;
   updateStorages: (updatedStorages) => void;
   updatePlans: (updatedPlans) => void;
   updateTokens: (updatedTokens) => void;
+  updateHooks: (updatedHooks) => void;
   clusterList: ICluster[];
   debugTree: IDebugTreeNode;
 }
@@ -64,10 +67,13 @@ const AppComponent: React.SFC<IProps> = ({
   stopClusterPolling,
   startTokenPolling,
   stopTokenPolling,
+  startHookPolling,
+  stopHookPolling,
   updateClusters,
   updateStorages,
   updatePlans,
   updateTokens,
+  updateHooks,
   clusterList,
   debugTree,
 }) => {
@@ -98,6 +104,14 @@ const AppComponent: React.SFC<IProps> = ({
   const handleTokenPoll = (response) => {
     if (response) {
       updateTokens(response.updatedTokens);
+      return true;
+    }
+    return false;
+  };
+
+  const handleHookPoll = (response) => {
+    if (response) {
+      updateHooks(response.updatedHooks);
       return true;
     }
     return false;
@@ -157,6 +171,19 @@ const AppComponent: React.SFC<IProps> = ({
     }
   };
 
+  const startDefaultHookPolling = () => {
+    const hookPollParams = {
+      asyncFetch: planSagas.fetchHooksGenerator,
+      callback: handleHookPoll,
+      delay: StatusPollingInterval,
+      retryOnFailure: true,
+      retryAfter: 5,
+      stopAfterRetries: 2,
+      pollName: 'hook',
+    };
+    startHookPolling(hookPollParams);
+  };
+
   return (
     <React.Fragment>
       <AlertModal alertMessage={progressMessage} alertType="info" />
@@ -169,6 +196,8 @@ const AppComponent: React.SFC<IProps> = ({
           startDefaultStoragePolling: () => startDefaultStoragePolling(),
           startDefaultPlanPolling: () => startDefaultPlanPolling(),
           startDefaultTokenPolling: () => startDefaultTokenPolling(),
+          startDefaultHookPolling: () => startDefaultHookPolling(),
+          stopHookPolling: () => stopHookPolling(),
           stopClusterPolling: () => stopClusterPolling(),
           stopStoragePolling: () => stopStoragePolling(),
           stopPlanPolling: () => stopPlanPolling(),
@@ -178,12 +207,14 @@ const AppComponent: React.SFC<IProps> = ({
             startDefaultStoragePolling();
             startDefaultPlanPolling();
             startDefaultTokenPolling();
+            startDefaultHookPolling();
           },
           stopAllPolling: () => {
             stopClusterPolling();
             stopStoragePolling();
             stopPlanPolling();
             stopTokenPolling();
+            stopHookPolling();
           },
         }}
       >
@@ -234,9 +265,12 @@ export default connect(
     stopClusterPolling: () => dispatch(ClusterActions.stopClusterPolling()),
     startTokenPolling: (params) => dispatch(TokenActions.startTokenPolling(params)),
     stopTokenPolling: () => dispatch(TokenActions.stopTokenPolling()),
+    startHookPolling: (params) => dispatch(PlanActions.startHookPolling(params)),
+    stopHookPolling: () => dispatch(PlanActions.stopHookPolling()),
     updateClusters: (updatedClusters) => dispatch(ClusterActions.updateClusters(updatedClusters)),
     updateStorages: (updatedStorages) => dispatch(StorageActions.updateStorages(updatedStorages)),
     updatePlans: (updatedPlans) => dispatch(PlanActions.updatePlans(updatedPlans)),
     updateTokens: (updatedTokens) => dispatch(TokenActions.updateTokens(updatedTokens)),
+    updateHooks: (updatedHooks) => dispatch(PlanActions.updateHooks(updatedHooks)),
   })
 )(AppComponent);

@@ -69,6 +69,13 @@ function* watchTokenPolling() {
   }
 }
 
+function* watchHookPolling() {
+  while (true) {
+    const action = yield take(PlanActionTypes.HOOK_POLL_START);
+    yield race([call(poll, action), take(PlanActionTypes.HOOK_POLL_STOP)]);
+  }
+}
+
 export function* progressTimeoutSaga(action) {
   try {
     yield put(AlertActions.alertProgress(action.params));
@@ -110,5 +117,6 @@ export default {
   watchClustersPolling,
   watchPlanPolling,
   watchTokenPolling,
+  watchHookPolling,
   watchAlerts,
 };

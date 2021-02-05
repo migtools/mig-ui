@@ -38,9 +38,12 @@ const WizardComponent = (props: IOtherProps) => {
     isPollingStatus,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
-    fetchHooksRequest,
-    migHookList,
+    fetchPlanHooksRequest,
+    allHooks,
+    currentPlanHooks,
     isFetchingHookList,
+    isUpdatingGlobalHookList,
+    isAssociatingHookToPlan,
     getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
@@ -58,11 +61,12 @@ const WizardComponent = (props: IOtherProps) => {
     pvUpdatePollStop,
     addHookRequest,
     updateHookRequest,
+    associateHookToPlan,
     watchHookAddEditStatus,
     hookAddEditStatus,
     cancelAddEditWatch,
     resetAddEditState,
-    removeHookRequest,
+    removeHookFromPlanRequest,
     validatePlanPollStop,
   } = props;
 
@@ -202,12 +206,15 @@ const WizardComponent = (props: IOtherProps) => {
       component: (
         <WizardStepContainer title="Hooks">
           <HooksStep
-            removeHookRequest={removeHookRequest}
+            removeHookFromPlanRequest={removeHookFromPlanRequest}
             addHookRequest={addHookRequest}
             updateHookRequest={updateHookRequest}
             isFetchingHookList={isFetchingHookList}
-            migHookList={migHookList}
-            fetchHooksRequest={fetchHooksRequest}
+            isUpdatingGlobalHookList={isUpdatingGlobalHookList}
+            isAssociatingHookToPlan={isAssociatingHookToPlan}
+            currentPlanHooks={currentPlanHooks}
+            allHooks={allHooks}
+            fetchPlanHooksRequest={fetchPlanHooksRequest}
             watchHookAddEditStatus={watchHookAddEditStatus}
             hookAddEditStatus={hookAddEditStatus}
             cancelAddEditWatch={cancelAddEditWatch}
@@ -215,6 +222,7 @@ const WizardComponent = (props: IOtherProps) => {
             currentPlan={currentPlan}
             isAddHooksOpen={isAddHooksOpen}
             setIsAddHooksOpen={setIsAddHooksOpen}
+            associateHookToPlan={associateHookToPlan}
           />
         </WizardStepContainer>
       ),
@@ -278,6 +286,10 @@ const WizardComponent = (props: IOtherProps) => {
       //update plan & start status polling on results page
       validatePlanRequest(values);
     }
+    if (newStep.id === stepId.Hooks) {
+      fetchPlanHooksRequest();
+    }
+
     if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
     }

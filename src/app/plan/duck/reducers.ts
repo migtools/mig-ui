@@ -13,7 +13,8 @@ import {
   IPersistentVolumeResource,
   IMigration,
 } from './types';
-import { IMigHook } from '../../../client/resources/conversions';
+import { IMigHook } from '../../home/pages/HooksPage/types';
+import { IHook } from '../../../client/resources/conversions';
 
 export enum CurrentPlanState {
   Pending = 'Pending',
@@ -48,9 +49,13 @@ export interface IPlanReducerState {
   currentPlanStatus: ICurrentPlanStatus;
   lockedPlanList: string[]; // Plan names
   isFetchingHookList: boolean;
-  migHookList: IMigHook[];
+  isAssociatingHookToPlan: boolean;
+  currentPlanHooks: IHook[];
+  allHooks: IMigHook[];
+  isUpdatingGlobalHookList: boolean;
   hookAddEditStatus: IAddEditStatus;
   isFetchingInitialPlans: boolean;
+  isFetchingInitialHooks: boolean;
   isRefreshingAnalytic: boolean;
 }
 
@@ -78,10 +83,14 @@ export const INITIAL_STATE: IPlanReducerState = {
   } as ICurrentPlanStatus,
   lockedPlanList: [],
   isFetchingHookList: false,
-  migHookList: [],
+  currentPlanHooks: [],
+  allHooks: [],
   hookAddEditStatus: defaultAddEditStatus(),
   isFetchingInitialPlans: true,
+  isFetchingInitialHooks: true,
   isRefreshingAnalytic: false,
+  isUpdatingGlobalHookList: false,
+  isAssociatingHookToPlan: false,
 };
 
 const sortPlans = (planList: IPlan[]) =>
@@ -465,6 +474,50 @@ export const planCloseAndDeleteFailure: PlanReducerFn = (state = INITIAL_STATE, 
 Hook Reducers
 */
 
+export const startHookPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: true,
+  };
+};
+
+export const stopHookPolling: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isPolling: false,
+  };
+};
+
+export const removeHookFromPlanRequest: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.removeHookFromPlanRequest>
+) => {
+  return {
+    ...state,
+    hookAddEditStatus: fetchingAddEditStatus(),
+    isFetchingHookList: true,
+  };
+};
+
+export const removeHookFromPlanSuccess: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.removeHookFromPlanSuccess>
+) => {
+  return {
+    ...state,
+    isFetchingHookList: false,
+  };
+};
+
+export const removeHookFromPlanFailure: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.removeHookFromPlanFailure>
+) => {
+  return {
+    ...state,
+    isFetchingHookList: false,
+  };
+};
 export const removeHookRequest: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.removeHookRequest>
@@ -493,6 +546,35 @@ export const removeHookFailure: PlanReducerFn = (
   return {
     ...state,
     isFetchingHookList: false,
+  };
+};
+export const associateHookToPlan: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlan>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: true,
+  };
+};
+
+export const associateHookToPlanSuccess: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlanSuccess>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: false,
+  };
+};
+
+export const associateHookToPlanFailure: PlanReducerFn = (
+  state = INITIAL_STATE,
+  action: ReturnType<typeof PlanActions.associateHookToPlanFailure>
+) => {
+  return {
+    ...state,
+    isAssociatingHookToPlan: false,
   };
 };
 
@@ -527,33 +609,33 @@ export const addHookFailure: PlanReducerFn = (
   };
 };
 
-export const hookFetchRequest: PlanReducerFn = (
+export const fetchPlanHooksRequest: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchRequest>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksRequest>
 ) => {
   return {
     ...state,
-    migHookList: [],
+    currentPlanHooks: [],
     isFetchingHookList: true,
   };
 };
-export const hookFetchSuccess: PlanReducerFn = (
+export const fetchPlanHooksSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchSuccess>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksSuccess>
 ) => {
   return {
     ...state,
-    migHookList: action.migHookList,
+    currentPlanHooks: action.currentPlanHooks,
     isFetchingHookList: false,
   };
 };
-export const hookFetchFailure: PlanReducerFn = (
+export const fetchPlanHooksFailure: PlanReducerFn = (
   state = INITIAL_STATE,
-  action: ReturnType<typeof PlanActions.hookFetchFailure>
+  action: ReturnType<typeof PlanActions.fetchPlanHooksFailure>
 ) => {
   return {
     ...state,
-    migHookList: [],
+    currentPlanHooks: [],
     isFetchingHookList: false,
   };
 };
@@ -572,7 +654,7 @@ export const updateHookRequest: PlanReducerFn = (
   return {
     ...state,
     hookAddEditStatus: fetchingAddEditStatus(),
-    isFetchingHookList: true,
+    isUpdatingGlobalHookList: true,
   };
 };
 export const updateHookSuccess: PlanReducerFn = (
@@ -581,7 +663,7 @@ export const updateHookSuccess: PlanReducerFn = (
 ) => {
   return {
     ...state,
-    isFetchingHookList: false,
+    isUpdatingGlobalHookList: false,
   };
 };
 
@@ -592,6 +674,14 @@ export const updateHookFailure: PlanReducerFn = (
   return {
     ...state,
     isFetchingHookList: false,
+  };
+};
+
+export const updateHooks: PlanReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isFetchingInitialHooks: false,
+    allHooks: action.updatedHooks,
   };
 };
 
@@ -683,12 +773,18 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return planCloseAndDeleteSuccess(state, action);
     case PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE:
       return planCloseAndDeleteFailure(state, action);
-    case PlanActionTypes.HOOK_FETCH_REQUEST:
-      return hookFetchRequest(state, action);
-    case PlanActionTypes.HOOK_FETCH_SUCCESS:
-      return hookFetchSuccess(state, action);
-    case PlanActionTypes.HOOK_FETCH_FAILURE:
-      return hookFetchFailure(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST:
+      return fetchPlanHooksRequest(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS:
+      return fetchPlanHooksSuccess(state, action);
+    case PlanActionTypes.FETCH_PLAN_HOOKS_FAILURE:
+      return fetchPlanHooksFailure(state, action);
+    case PlanActionTypes.REMOVE_HOOK_FROM_PLAN_REQUEST:
+      return removeHookFromPlanRequest(state, action);
+    case PlanActionTypes.REMOVE_HOOK_FROM_PLAN_FAILURE:
+      return removeHookFromPlanFailure(state, action);
+    case PlanActionTypes.REMOVE_HOOK_FROM_PLAN_SUCCESS:
+      return removeHookFromPlanSuccess(state, action);
     case PlanActionTypes.REMOVE_HOOK_REQUEST:
       return removeHookRequest(state, action);
     case PlanActionTypes.REMOVE_HOOK_FAILURE:
@@ -709,6 +805,18 @@ const planReducer: PlanReducerFn = (state = INITIAL_STATE, action) => {
       return addHookSuccess(state, action);
     case PlanActionTypes.ADD_HOOK_FAILURE:
       return addHookFailure(state, action);
+    case PlanActionTypes.UPDATE_HOOKS:
+      return updateHooks(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN:
+      return associateHookToPlan(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_SUCCESS:
+      return associateHookToPlanSuccess(state, action);
+    case PlanActionTypes.ASSOCIATE_HOOK_TO_PLAN_FAILURE:
+      return associateHookToPlanFailure(state, action);
+    case PlanActionTypes.HOOK_POLL_START:
+      return startHookPolling(state, action);
+    case PlanActionTypes.HOOK_POLL_STOP:
+      return stopHookPolling(state, action);
     case PlanActionTypes.REFRESH_ANALYTIC_REQUEST:
       return refreshAnalyticRequest(state, action);
     case PlanActionTypes.REFRESH_ANALYTIC_SUCCESS:

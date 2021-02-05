@@ -34,6 +34,7 @@ import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage/MigrationDetailsPage';
 import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
+import { HooksPage } from './pages/HooksPage/HooksPage';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -67,6 +68,7 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
         <NavItemLink to="/clusters" label="Clusters" />
         <NavItemLink to="/storages" label="Replication repositories" />
         <NavItemLink to="/plans" label="Migration plans" />
+        <NavItemLink to="/hooks" label="Hooks" />
         {NON_ADMIN_ENABLED && <NavItemLink to="/tokens" label="Tokens" />}
       </NavList>
     </Nav>
@@ -142,6 +144,9 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
               </Route>
               <Route exact path="/plans/:planName/debug">
                 <PlanDebugPage />
+              </Route>
+              <Route exact path="/hooks">
+                <HooksPage />
               </Route>
               <RefreshRoute
                 exact

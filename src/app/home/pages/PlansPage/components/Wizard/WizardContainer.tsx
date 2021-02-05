@@ -4,7 +4,6 @@ import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
 import { connect } from 'react-redux';
 import { ICurrentPlanStatus } from '../../../../../plan/duck/reducers';
-import { IMigHook } from '../../../../../../client/resources/conversions';
 import {
   defaultAddEditStatus,
   createAddEditStatus,
@@ -26,6 +25,8 @@ import { IReduxState } from '../../../../../../reducers';
 import { IToken } from '../../../../../token/duck/types';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
+import { IHook } from '../../../../../../client/resources/conversions';
+import { IMigHook } from '../../../HooksPage/types';
 
 export interface IFormValues {
   planName: string;
@@ -82,7 +83,7 @@ export interface IOtherProps {
     persistentVolumes: IPlanPersistentVolume[],
     sourceClusterName: IFormValues['sourceCluster']
   ) => void;
-  fetchHooksRequest: (currentPlanHooks) => void;
+  fetchPlanHooksRequest: () => void;
   addPlanRequest: (migPlan) => void;
   addAnalyticRequest: (planName: string) => void;
   sourceClusterNamespaces: ISourceClusterNamespace[];
@@ -91,11 +92,15 @@ export interface IOtherProps {
   editPlanObj?: IMigPlan;
   isEdit: boolean;
   updateCurrentPlanStatus: (currentPlanStatus: ICurrentPlanStatus) => void;
-  addHookRequest: (migHook: IMigHook) => void;
-  updateHookRequest: (migHook: IMigHook) => void;
-  removeHookRequest: (hookName, migrationStep) => void;
-  migHookList: IMigHook[];
+  addHookRequest: (migHook: IHook) => void;
+  updateHookRequest: (migHook: IHook) => void;
+  removeHookFromPlanRequest: (hookName, migrationStep) => void;
+  associateHookToPlan: (hookvalues, migHook) => void;
+  currentPlanHooks: IHook[];
+  allHooks: IMigHook[];
   isFetchingHookList: boolean;
+  isUpdatingGlobalHookList: boolean;
+  isAssociatingHookToPlan: boolean;
   watchHookAddEditStatus: () => void;
   hookAddEditStatus: IAddEditStatus;
   cancelAddEditWatch: () => void;
@@ -168,10 +173,12 @@ const mapStateToProps = (state: IReduxState) => {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     currentPlanStatus: state.plan.currentPlanStatus,
     pvResourceList: state.plan.pvResourceList,
-    hookList: planSelectors.getHooks(state),
+    allHooks: planSelectors.getHooksWithStatus(state),
+    currentPlanHooks: state.plan.currentPlanHooks,
     isFetchingHookList: state.plan.isFetchingHookList,
+    isUpdatingGlobalHookList: state.plan.isUpdatingGlobalHookList,
+    isAssociatingHookToPlan: state.plan.isAssociatingHookToPlan,
     hookAddEditStatus: state.plan.hookAddEditStatus,
-    migHookList: state.plan.migHookList,
     tokenList: state.token.tokenList, // NATODO do we also need to bring in fetch/polling stuff for tokens to the wizard?
   };
 };
@@ -188,8 +195,7 @@ const mapDispatchToProps = (dispatch) => {
     stopPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.stopPlanStatusPolling(planName)),
     addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchHooksRequest: (currentPlanHooks) =>
-      dispatch(PlanActions.hookFetchRequest(currentPlanHooks)),
+    fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
     validatePlanRequest: (values) => dispatch(PlanActions.validatePlanRequest(values)),
     pvDiscoveryRequest: (values) => dispatch(PlanActions.pvDiscoveryRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
@@ -209,9 +215,11 @@ const mapDispatchToProps = (dispatch) => {
     resetAddEditState: () => {
       dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
     },
-    removeHookRequest: (name, migrationStep) =>
-      dispatch(PlanActions.removeHookRequest(name, migrationStep)),
+    removeHookFromPlanRequest: (name, migrationStep) =>
+      dispatch(PlanActions.removeHookFromPlanRequest(name, migrationStep)),
     updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+    associateHookToPlan: (hookValues, migHook) =>
+      dispatch(PlanActions.associateHookToPlan(hookValues, migHook)),
     validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
   };
 };
