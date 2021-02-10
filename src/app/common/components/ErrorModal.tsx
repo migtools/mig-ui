@@ -36,7 +36,10 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       header={header}
       variant="small"
       isOpen={isOpen}
-      onClose={() => clearErrors()}
+      onClose={() => {
+        clearErrors();
+        pollingContext.startAllDefaultPolling();
+      }}
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
       <Grid hasGutter>
