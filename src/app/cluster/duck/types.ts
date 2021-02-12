@@ -33,6 +33,7 @@ export interface IMigCluster {
     conditions: IStatusCondition[];
     observedDigest: string;
     registryPath?: string;
+    operatorVersion?: string;
   };
   id: string;
 }

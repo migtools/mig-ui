@@ -10,6 +10,13 @@ export const getClusterInfo = (
   const clusterName = cluster.MigCluster.metadata.name;
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
   const clusterAzureResourceGroup = cluster.MigCluster.spec.azureResourceGroup;
+  const operatorVersion = cluster.MigCluster?.status?.operatorVersion || '';
+  const isOperatorVersionMismatch = cluster.MigCluster?.status?.conditions.some(
+    (c) => c.type === 'OperatorVersionMismatch'
+  );
+  const isOperatorVersionMismatchText = cluster.MigCluster?.status?.conditions.find(
+    (c) => c.type === 'OperatorVersionMismatch'
+  )?.message;
 
   return {
     clusterName,
@@ -26,6 +33,9 @@ export const getClusterInfo = (
     isHostCluster,
     clusterIsAzure: !!clusterAzureResourceGroup,
     clusterAzureResourceGroup,
+    operatorVersion,
+    isOperatorVersionMismatch,
+    isOperatorVersionMismatchText,
   };
 };
 

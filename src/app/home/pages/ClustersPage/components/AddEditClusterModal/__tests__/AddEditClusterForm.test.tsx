@@ -97,6 +97,9 @@ describe('<AddEditClusterModal />', () => {
         exposedRegistryPath: '',
         clusterStatus: true,
         associatedPlanCount: 0,
+        operatorVersion: '',
+        isOperatorVersionMismatch: false,
+        isOperatorVersionMismatchText: '',
         isHostCluster: false,
       },
       addEditStatus: {

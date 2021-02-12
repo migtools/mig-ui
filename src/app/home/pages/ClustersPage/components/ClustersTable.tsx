@@ -1,5 +1,13 @@
 import React, { useEffect } from 'react';
-import { Button, Pagination, Level, LevelItem } from '@patternfly/react-core';
+import {
+  Button,
+  Pagination,
+  Level,
+  LevelItem,
+  Popover,
+  PopoverPosition,
+  Title,
+} from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, sortable, classNames } from '@patternfly/react-table';
 import LinkIcon from '@patternfly/react-icons/dist/js/icons/link-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -13,6 +21,7 @@ import { ICluster } from '../../../../cluster/duck/types';
 import { IMigMeta } from '../../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 interface IClustersTableProps {
   clusterList: ICluster[];
@@ -42,6 +51,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   const columns = [
     { title: 'Name', transforms: [sortable] },
     { title: 'Location', transforms: [sortable] },
+    { title: 'MTC operator version', transforms: [sortable] },
     { title: 'Associated plans', transforms: [sortable] },
     { title: 'Status', transforms: [sortable] },
     { title: '', columnTransforms: [classNames(tableStyles.tableAction)] },
@@ -62,17 +72,49 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
 
   const rows = currentPageItems.map((cluster: ICluster) => {
     const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
-    const { clusterName, clusterStatus, clusterUrl, associatedPlanCount } = clusterInfo;
+    const {
+      clusterName,
+      clusterStatus,
+      clusterUrl,
+      associatedPlanCount,
+      operatorVersion,
+      isOperatorVersionMismatch,
+      isOperatorVersionMismatchText,
+    } = clusterInfo;
     return {
       cells: [
         clusterName,
+        clusterUrl,
         {
           title: (
-            <a target="_blank" href={clusterUrl}>
-              {clusterUrl}
-            </a>
+            <>
+              <span className={spacing.mrSm}>{operatorVersion}</span>
+              {isOperatorVersionMismatch && (
+                <Popover
+                  position={PopoverPosition.top}
+                  bodyContent={
+                    <>
+                      <Title headingLevel="h2" size="xl">
+                        Unmatched operator versions
+                      </Title>
+                      <p className={spacing.mtMd}>{isOperatorVersionMismatchText}</p>
+                    </>
+                  }
+                  aria-label="operator-mismatch-details"
+                  closeBtnAriaLabel="close--details"
+                  maxWidth="30rem"
+                >
+                  <span>
+                    <span className="pf-c-icon pf-m-warning">
+                      <ExclamationTriangleIcon />
+                    </span>
+                  </span>
+                </Popover>
+              )}
+            </>
           ),
         },
+
         {
           title: <IconWithText icon={<LinkIcon color="#737679" />} text={associatedPlanCount} />,
         },
