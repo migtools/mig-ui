@@ -3,6 +3,7 @@ const fs = require('fs');
 const dayjs = require('dayjs');
 const compression = require('compression');
 const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
+const HttpsProxyAgent = require('https-proxy-agent');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
@@ -32,7 +33,8 @@ app.get('/login', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
     const authorizationUri = clusterAuth.authorizeURL({
-      redirect_uri: migMeta.oauth.redirectUri,
+      redirect_uri: migMeta.oauth.redirectUrl,
+      // redirect_uri: migMeta.oauth.redirectUri,
       scope: migMeta.oauth.userScope,
     });
 
@@ -49,11 +51,16 @@ app.get('/login/callback', async (req, res, next) => {
   const { code } = req.query;
   const options = {
     code,
-    redirect_uri: migMeta.oauth.redirectUri,
+    redirect_uri: migMeta.oauth.redirectUrl,
   };
   try {
+    const httpOptions = {
+      agent: new HttpsProxyAgent(
+        'http://proxy-user1:JYgU8qRZV4DY4PXJbxJK@ec2-18-188-13-117.us-east-2.compute.amazonaws.com:3128'
+      ),
+    };
     const clusterAuth = await getClusterAuth(migMeta);
-    const accessToken = await clusterAuth.getToken(options);
+    const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
     const user = {
       ...accessToken.token,
