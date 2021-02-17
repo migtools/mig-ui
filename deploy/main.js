@@ -55,9 +55,7 @@ app.get('/login/callback', async (req, res, next) => {
   };
   try {
     const httpOptions = {
-      agent: new HttpsProxyAgent(
-        'http://proxy-user1:JYgU8qRZV4DY4PXJbxJK@ec2-18-188-13-117.us-east-2.compute.amazonaws.com:3128'
-      ),
+      agent: new HttpsProxyAgent(migMeta.proxyString),
     };
     const clusterAuth = await getClusterAuth(migMeta);
     const accessToken = await clusterAuth.getToken(options, httpOptions);
