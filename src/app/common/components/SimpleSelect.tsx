@@ -7,7 +7,7 @@ import {
   SelectOptionProps,
 } from '@patternfly/react-core';
 
-import './SimpleSelect.css';
+import './SimpleSelect.scss';
 
 export interface OptionWithValue<T = string> extends SelectOptionObject {
   value: T;
