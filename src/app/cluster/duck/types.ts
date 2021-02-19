@@ -41,7 +41,9 @@ export interface IMigCluster {
 export interface ICluster {
   MigCluster: IMigCluster;
   ClusterStatus?: {
-    hasReadyCondition: boolean;
+    hasReadyCondition?: boolean;
+    hasCriticalCondition?: boolean;
+    errorMessage?: string;
   };
   Secret?: {
     data: {

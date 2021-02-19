@@ -1,14 +1,26 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import { Form, FormGroup, Grid, GridItem, TextInput, Title } from '@patternfly/react-core';
+import {
+  Form,
+  FormGroup,
+  Grid,
+  GridItem,
+  Select,
+  SelectOption,
+  TextInput,
+  Title,
+  Tooltip,
+} from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect from '../../../../../common/components/SimpleSelect';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import TokenSelect from './TokenSelect';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
 import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 import { validatedState } from '../../../../../common/helpers';
+import { ICluster } from '../../../../../cluster/duck/types';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 const styles = require('./GeneralForm.module');
 
 export type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
@@ -38,19 +50,67 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   const onHandleChange = (val, e) => handleChange(e);
 
-  let srcClusterOptions: string[] = ['No valid clusters found'];
-  let targetClusterOptions: string[] = [];
   let storageOptions: string[] = ['No valid storage found'];
 
-  if (clusterList.length) {
-    srcClusterOptions = clusterList
-      .filter((cluster) => cluster.ClusterStatus.hasReadyCondition)
-      .map((cluster) => cluster.MigCluster.metadata.name);
+  const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
+    const clusterName = cluster.MigCluster.metadata.name;
+    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+    const errorMessage = cluster.ClusterStatus.errorMessage;
+    return {
+      value: cluster,
+      toString: () => clusterName,
+      props: {
+        isDisabled: hasCriticalCondition,
+        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+        children: (
+          <div>
+            {hasCriticalCondition ? (
+              <>
+                <span className={spacing.mrSm}>{clusterName}</span>
+                <Tooltip content={<div>{errorMessage}</div>}>
+                  <span className="pf-c-icon pf-m-warning">
+                    <ExclamationTriangleIcon />
+                  </span>
+                </Tooltip>
+              </>
+            ) : (
+              <div>{clusterName}</div>
+            )}
+          </div>
+        ),
+      },
+    };
+  });
 
-    targetClusterOptions = clusterList
-      .filter((cluster) => cluster.ClusterStatus.hasReadyCondition)
-      .map((cluster) => cluster.MigCluster.metadata.name);
-  }
+  const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
+    const clusterName = cluster.MigCluster.metadata.name;
+    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+    const errorMessage = cluster.ClusterStatus.errorMessage;
+    return {
+      value: cluster,
+      toString: () => clusterName,
+      props: {
+        isDisabled: hasCriticalCondition,
+        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+        children: (
+          <div>
+            {hasCriticalCondition ? (
+              <>
+                <span className={spacing.mrSm}>{clusterName}</span>
+                <Tooltip content={<div>{errorMessage}</div>}>
+                  <span className="pf-c-icon pf-m-warning">
+                    <ExclamationTriangleIcon />
+                  </span>
+                </Tooltip>
+              </>
+            ) : (
+              <div>{clusterName}</div>
+            )}
+          </div>
+        ),
+      },
+    };
+  });
 
   if (storageList.length) {
     storageOptions = storageList
@@ -66,20 +126,24 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     }
   };
 
-  const handleSourceChange = (value) => {
-    const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
+  const handleSourceChange = (clusterOption) => {
+    const matchingCluster = clusterList.find(
+      (c) => c.MigCluster.metadata.name === clusterOption.value.MigCluster.metadata.name
+    );
     if (matchingCluster) {
-      setFieldValue('sourceCluster', value);
+      setFieldValue('sourceCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
       if (NON_ADMIN_ENABLED) setFieldValue('sourceTokenRef', null);
     }
   };
 
-  const handleTargetChange = (value) => {
-    const matchingCluster = clusterList.find((c) => c.MigCluster.metadata.name === value);
+  const handleTargetChange = (clusterOption) => {
+    const matchingCluster = clusterList.find(
+      (c) => c.MigCluster.metadata.name === clusterOption.value.MigCluster.metadata.name
+    );
     if (matchingCluster) {
-      setFieldValue('targetCluster', value);
+      setFieldValue('targetCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('targetCluster', true, true);
       if (NON_ADMIN_ENABLED) setFieldValue('targetTokenRef', null);
     }
@@ -126,15 +190,14 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             label="Source cluster"
             isRequired
             fieldId="sourceCluster"
-            helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
-            validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
+            className={spacing.mbMd}
           >
             <SimpleSelect
               id="sourceCluster"
               onChange={handleSourceChange}
-              options={srcClusterOptions}
               value={values.sourceCluster}
               placeholderText="Select source..."
+              options={srcClusterOptions}
             />
           </FormGroup>
           {NON_ADMIN_ENABLED && (

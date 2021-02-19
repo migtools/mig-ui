@@ -5,21 +5,28 @@ const clusterSelectorWithStatus = (state) =>
   state.cluster.clusterList.map((cluster: ICluster) => {
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
+    let errorMessage = null;
 
     if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
       const emptyStatusObject = {
         hasReadyCondition,
         hasCriticalCondition,
+        errorMessage,
       };
       return { ...cluster, ClusterStatus: emptyStatusObject };
     }
-    hasReadyCondition = !!cluster.MigCluster.status.conditions.some((c) => c.type === 'Ready');
-    hasCriticalCondition = !!cluster.MigCluster.status.conditions.some(
-      (c) => c.type === 'Critical'
+    hasReadyCondition = cluster.MigCluster?.status?.conditions.some((c) => c.type === 'Ready');
+    hasCriticalCondition = cluster.MigCluster?.status?.conditions.some(
+      (c) => c.category === 'Critical'
     );
+    if (hasCriticalCondition) {
+      errorMessage = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Critical')
+        ?.message;
+    }
     const statusObject = {
       hasReadyCondition,
       hasCriticalCondition,
+      errorMessage,
     };
 
     return { ...cluster, ClusterStatus: statusObject };
