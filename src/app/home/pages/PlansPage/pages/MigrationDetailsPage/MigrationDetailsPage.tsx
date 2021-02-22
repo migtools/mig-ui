@@ -35,7 +35,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
-  const isPausedCondition = migration.tableStatus.migrationState === 'paused';
+  const isPausedCondition = migration?.tableStatus.migrationState === 'paused';
   const isWarningCondition = migration?.tableStatus.migrationState === 'warn';
   const isErrorCondition = migration?.tableStatus.migrationState === 'error';
   const type = migration?.spec?.stage ? 'Stage' : 'Final';
@@ -51,7 +51,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           </BreadcrumbItem>
           {migration && (
             <BreadcrumbItem to="#" isActive>
-              {type} - {formatGolangTimestamp(migration.status.startTimestamp)}
+              {type} - {formatGolangTimestamp(migration.status?.startTimestamp)}
             </BreadcrumbItem>
           )}
         </Breadcrumb>
@@ -110,6 +110,17 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
           <Card>
             <CardBody>
               <MigrationDetailsTable migration={migration} id="migration-details-table" />
+            </CardBody>
+          </Card>
+        </PageSection>
+      ) : migration?.tableStatus?.isCanceled ||
+        migration?.tableStatus?.isFailed ||
+        migration?.tableStatus?.isSucceeded ||
+        migration?.tableStatus?.isSuccededWithWarnings ? (
+        <PageSection>
+          <Card>
+            <CardBody>
+              This migration is completed but progress information is not available.
             </CardBody>
           </Card>
         </PageSection>

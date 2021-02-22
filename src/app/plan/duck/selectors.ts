@@ -307,6 +307,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       isPaused: false,
       isFailed: false,
       isSucceeded: false,
+      isSuccededWithWarnings: true,
       isCanceled: false,
       isCanceling: false,
       migrationState: null,
@@ -358,6 +359,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
     // check if migration is already failed
     const failedCondition = migration.status?.conditions?.find((c) => {
       return c.type === 'Failed';
+    });
+    // check if migration is already failed
+    const succededWithWarnings = migration.status?.conditions?.find((c) => {
+      return c.type === 'SucceededWithWarnings';
     });
 
     const dvmBlockedCondition = migration.status?.conditions?.find((c) => {
@@ -436,6 +441,12 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       status.migrationState = 'warn';
       status.warnings = status.warnings.concat(warningMessages);
       status.warnCondition = warnCondition?.message;
+      return status;
+    }
+
+    if (succededWithWarnings) {
+      status.isSuccededWithWarnings = true;
+      status.migrationState = 'success';
       return status;
     }
 
