@@ -98,8 +98,10 @@ describe('<AddEditClusterModal />', () => {
         clusterStatus: true,
         associatedPlanCount: 0,
         operatorVersion: '',
-        isOperatorVersionMismatch: false,
-        isOperatorVersionMismatchText: '',
+        hasCriticalCondition: false,
+        hasWarnCondition: false,
+        errorMessage: '',
+        conditionType: '',
         isHostCluster: false,
       },
       addEditStatus: {

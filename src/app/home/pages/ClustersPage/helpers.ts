@@ -11,12 +11,10 @@ export const getClusterInfo = (
   const isHostCluster = cluster.MigCluster.spec.isHostCluster;
   const clusterAzureResourceGroup = cluster.MigCluster.spec.azureResourceGroup;
   const operatorVersion = cluster.MigCluster?.status?.operatorVersion || '';
-  const isOperatorVersionMismatch = cluster.MigCluster?.status?.conditions.some(
-    (c) => c.type === 'OperatorVersionMismatch'
-  );
-  const isOperatorVersionMismatchText = cluster.MigCluster?.status?.conditions.find(
-    (c) => c.type === 'OperatorVersionMismatch'
-  )?.message;
+  const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+  const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
+  const errorMessage = cluster.ClusterStatus.errorMessage;
+  const conditionType = cluster.ClusterStatus.conditionType;
 
   return {
     clusterName,
@@ -34,8 +32,10 @@ export const getClusterInfo = (
     clusterIsAzure: !!clusterAzureResourceGroup,
     clusterAzureResourceGroup,
     operatorVersion,
-    isOperatorVersionMismatch,
-    isOperatorVersionMismatchText,
+    hasCriticalCondition,
+    hasWarnCondition,
+    errorMessage,
+    conditionType,
   };
 };
 

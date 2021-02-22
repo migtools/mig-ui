@@ -45,6 +45,7 @@ export interface ICluster {
     hasCriticalCondition?: boolean;
     hasWarnCondition?: boolean;
     errorMessage?: string;
+    conditionType?: string;
   };
   Secret?: {
     data: {

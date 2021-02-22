@@ -78,8 +78,10 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
       clusterUrl,
       associatedPlanCount,
       operatorVersion,
-      isOperatorVersionMismatch,
-      isOperatorVersionMismatchText,
+      hasCriticalCondition,
+      hasWarnCondition,
+      errorMessage,
+      conditionType,
     } = clusterInfo;
     return {
       cells: [
@@ -89,15 +91,20 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
           title: (
             <>
               <span className={spacing.mrSm}>{operatorVersion}</span>
-              {isOperatorVersionMismatch && (
+              {(hasCriticalCondition || hasWarnCondition) && (
                 <Popover
-                  position={PopoverPosition.top}
+                  position={PopoverPosition.bottom}
                   bodyContent={
                     <>
                       <Title headingLevel="h2" size="xl">
-                        Unmatched operator versions
+                        <>
+                          <span className="pf-c-icon pf-m-warning">
+                            <ExclamationTriangleIcon />
+                          </span>
+                          <span className={spacing.mlMd}>{conditionType}</span>
+                        </>
                       </Title>
-                      <p className={spacing.mtMd}>{isOperatorVersionMismatchText}</p>
+                      <p className={spacing.mtMd}>{errorMessage}</p>
                     </>
                   }
                   aria-label="operator-mismatch-details"
