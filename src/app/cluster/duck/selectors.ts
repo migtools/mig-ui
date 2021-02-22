@@ -5,12 +5,14 @@ const clusterSelectorWithStatus = (state) =>
   state.cluster.clusterList.map((cluster: ICluster) => {
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
+    let hasWarnCondition = null;
     let errorMessage = null;
 
     if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
       const emptyStatusObject = {
         hasReadyCondition,
         hasCriticalCondition,
+        hasWarnCondition,
         errorMessage,
       };
       return { ...cluster, ClusterStatus: emptyStatusObject };
@@ -19,13 +21,19 @@ const clusterSelectorWithStatus = (state) =>
     hasCriticalCondition = cluster.MigCluster?.status?.conditions.some(
       (c) => c.category === 'Critical'
     );
+    hasWarnCondition = cluster.MigCluster?.status?.conditions.some((c) => c.category === 'Warn');
     if (hasCriticalCondition) {
       errorMessage = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Critical')
+        ?.message;
+    }
+    if (hasWarnCondition) {
+      errorMessage = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Warn')
         ?.message;
     }
     const statusObject = {
       hasReadyCondition,
       hasCriticalCondition,
+      hasWarnCondition,
       errorMessage,
     };
 

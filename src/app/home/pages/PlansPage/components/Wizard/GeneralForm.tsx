@@ -55,6 +55,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
     const clusterName = cluster.MigCluster.metadata.name;
     const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
     const errorMessage = cluster.ClusterStatus.errorMessage;
     return {
       value: cluster,
@@ -64,7 +65,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
         children: (
           <div>
-            {hasCriticalCondition ? (
+            {hasCriticalCondition || hasWarnCondition ? (
               <>
                 <span className={spacing.mrSm}>{clusterName}</span>
                 <Tooltip content={<div>{errorMessage}</div>}>
@@ -85,6 +86,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
     const clusterName = cluster.MigCluster.metadata.name;
     const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
     const errorMessage = cluster.ClusterStatus.errorMessage;
     return {
       value: cluster,
@@ -94,7 +96,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
         children: (
           <div>
-            {hasCriticalCondition ? (
+            {hasCriticalCondition || hasWarnCondition ? (
               <>
                 <span className={spacing.mrSm}>{clusterName}</span>
                 <Tooltip content={<div>{errorMessage}</div>}>

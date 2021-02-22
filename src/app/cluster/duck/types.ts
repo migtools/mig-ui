@@ -43,6 +43,7 @@ export interface ICluster {
   ClusterStatus?: {
     hasReadyCondition?: boolean;
     hasCriticalCondition?: boolean;
+    hasWarnCondition?: boolean;
     errorMessage?: string;
   };
   Secret?: {
