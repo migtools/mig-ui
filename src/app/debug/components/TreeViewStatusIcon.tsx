@@ -11,16 +11,11 @@ interface IProps {
 }
 
 const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
-  if (debugRef?.data?.object?.status?.errors > 0) {
+  if (debugRef?.data?.object?.status?.errors > 0 && debugRef?.data?.object?.status?.phase) {
     return (
       <Popover
         position={PopoverPosition.top}
-        bodyContent={
-          <>
-            <span className={spacing.mrSm}>{debugRef?.data?.object?.status?.phase}</span>
-            <a className={classNames('pf-c-icon', 'pf-m-info')}> See details</a>
-          </>
-        }
+        bodyContent={<>Phase: {debugRef?.data?.object?.status?.phase}</>}
         aria-label="warning-details"
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
@@ -30,11 +25,14 @@ const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
         </span>
       </Popover>
     );
-  } else if (debugRef?.data?.object?.status?.warnings > 0) {
+  } else if (
+    debugRef?.data?.object?.status?.warnings > 0 &&
+    debugRef?.data?.object?.status?.phase
+  ) {
     return (
       <Popover
         position={PopoverPosition.top}
-        bodyContent={<>A warning occurred in {debugRef?.data?.object?.status?.phase} phase.</>}
+        bodyContent={<>Phase: {debugRef?.data?.object?.status?.phase}</>}
         aria-label="warning-details"
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
