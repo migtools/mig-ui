@@ -54,7 +54,7 @@ app.get('/login/callback', async (req, res, next) => {
     redirect_uri: migMeta.oauth.redirectUrl,
   };
   try {
-    const proxyString = process.env['HTTP_PROXY'] || '';
+    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'] || '';
     const httpOptions = {
       agent: new HttpsProxyAgent(proxyString),
     };
