@@ -25,7 +25,7 @@ const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
       >
-        <span className="pf-c-icon pf-m-danger">
+        <span onClick={(event) => event.stopPropagation()} className="pf-c-icon pf-m-danger">
           <ExclamationCircleIcon />
         </span>
       </Popover>
@@ -39,7 +39,7 @@ const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
       >
-        <span className={`pf-c-icon pf-m-warning`}>
+        <span onClick={(event) => event.stopPropagation()} className={`pf-c-icon pf-m-warning`}>
           <ExclamationTriangleIcon />
         </span>
       </Popover>
