@@ -81,6 +81,7 @@ export interface IMigration {
     end: string;
     isFailed: boolean;
     isSucceeded: boolean;
+    isSuccededWithWarnings: boolean;
     isCanceled: boolean;
     isCanceling: boolean;
     isPaused: boolean;
