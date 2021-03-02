@@ -188,8 +188,13 @@ function* namespaceFetchRequest(action) {
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
     const res = yield discoveryClient.get(namespaces);
-    const namespaceResourceList = res.data.resources;
-    yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
+    const namespaceResourceList = res?.data?.resources;
+    if (namespaceResourceList) {
+      yield put(PlanActions.namespaceFetchSuccess(namespaceResourceList));
+    } else {
+      const error = { type: 'new error', error: 'Unknown error.' };
+      throw error;
+    }
   } catch (err) {
     if (utils.isTimeoutError(err)) {
       yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
