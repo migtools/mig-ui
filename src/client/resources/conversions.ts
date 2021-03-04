@@ -77,7 +77,7 @@ export function createMigCluster(
   exposedRegistryPath: string
 ) {
   clusterUrl = clusterUrl.trim();
-  exposedRegistryPath = exposedRegistryPath.trim();
+  exposedRegistryPath = exposedRegistryPath.replace(/^https?\:\/\//i, '').trim();
 
   let specObject;
   if (isAzure) {

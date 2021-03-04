@@ -208,7 +208,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         />
       </FormGroup>
       <FormGroup
-        label="Exposed route to image registry"
+        label="Exposed route host to image registry"
         labelIcon={
           <Popover
             position={PopoverPosition.top}
@@ -217,6 +217,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
                 Include a route to the cluster's image registry if you want to allow direct image
                 migration. Direct image migration is much faster than two-step image migration that
                 goes through the replication repository. <br /> <br />
+                <b>Example route host:</b> <i>registry.mycorp.organization:5000</i>
+                <br /> <br />
+                <i>Note: Port number is optional. Otherwise port 5000 will be used </i>
+                <br /> <br />
                 See the product documentation for more information.
               </>
             }
@@ -239,6 +243,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         <TextInput
           value={values.exposedRegistryPath}
           onChange={formikHandleChange}
+          onBlur={handleBlur}
           onInput={formikSetFieldTouched(exposedRegistryPath)}
           name={exposedRegistryPath}
           id={exposedRegistryPath}
@@ -366,6 +371,13 @@ const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
     } else if (!utils.testURL(values.url)) {
       errors.url = 'Not a valid URL';
     }
+
+    if (!values.exposedRegistryPath) {
+      errors.exposedRegistryPath = 'Required';
+    } else if (!utils.testRouteHost(values.exposedRegistryPath)) {
+      errors.exposedRegistryPath = 'Not a valid route host.';
+    }
+
     if (!values.token) {
       errors.token = 'Required';
     }
