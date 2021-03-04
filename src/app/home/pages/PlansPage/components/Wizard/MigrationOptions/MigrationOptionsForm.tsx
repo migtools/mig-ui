@@ -39,9 +39,12 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   ).MigCluster?.status?.registryPath;
   const isDirectImageMigrationAvailable = srcClusterRegistryPath && destClusterRegistryPath;
 
-  const isDirectVolumeMigrationAvailable = !!currentPlan?.spec?.persistentVolumes?.filter((pv) =>
-    pv.supported.copyMethods.includes('filesystem')
-  ).length;
+  const isDirectVolumeMigrationAvailable = values.persistentVolumes.filter((pv) => {
+    const volumeKeys = Object.keys(values.pvCopyMethodAssignment);
+    const matchingVolume = volumeKeys.find((key) => pv.name === key);
+    if (values.pvCopyMethodAssignment[matchingVolume] === 'filesystem' && pv.type === 'copy')
+      return pv;
+  }).length;
 
   useEffect(() => {
     //if available, set direct migration for image/volumes on initial render
