@@ -12,6 +12,7 @@ export interface ILoginParams {
 export interface IMigMeta {
   clusterApi?: string;
   discoveryApi?: string;
+  proxyString?: string;
   namespace?: string;
   configNamespace?: string;
   hookRunnerImage?: string;
