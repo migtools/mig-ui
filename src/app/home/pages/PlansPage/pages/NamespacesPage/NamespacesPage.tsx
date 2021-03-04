@@ -28,6 +28,7 @@ import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import dayjs from 'dayjs';
 import { PollingContext } from '../../../../duck/context';
+import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 interface INamespacesPageProps {
   planList: IPlan[];
@@ -72,60 +73,75 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
           Namespaces page
         </Title>
       </PageSection>
-      <PageSection>
-        {isLoadingAnalytic ? (
+      {plan.PlanStatus.hasNotReadyCondition ? (
+        <PageSection>
           <Bullseye>
-            <EmptyState variant="large">
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
+            <EmptyState variant="small">
               <Title headingLevel="h2" size="xl">
-                Loading...
+                <span className="pf-c-icon pf-m-warning">
+                  <ExclamationTriangleIcon size={'xl'} />
+                </span>
+                <div className={spacing.mlSm}>The Migration plan is not in a ready state.</div>
               </Title>
             </EmptyState>
           </Bullseye>
-        ) : (
-          <>
-            <Card>
-              <CardBody>
-                <Flex className={`${spacing.myMd}`}>
-                  <FlexItem>
-                    <Button
-                      id="add-plan-btn"
-                      onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
-                      isDisabled={isLoadingAnalytic}
-                      variant="secondary"
-                    >
-                      Refresh
-                    </Button>
-                  </FlexItem>
-                  <FlexItem>
-                    <TextContent>
-                      {!isLoadingAnalytic && (
-                        <Text component={TextVariants.small}>
-                          Last updated:{` `}
-                          {dayjs(plan.PlanStatus.latestAnalyticTransitionTime)
-                            .local()
-                            .format('YYYY-MM-DD HH:mm:ss')}
-                        </Text>
-                      )}
-                    </TextContent>
-                  </FlexItem>
-                </Flex>
-                <AnalyticsTable
-                  type="Migrations"
-                  analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
-                  latestAnalytic={plan.PlanStatus.latestAnalytic}
-                  migAnalytics={plan.Analytics}
-                  isPlanLocked={plan.PlanStatus.isPlanLocked}
-                  isRefreshingAnalytic={isRefreshingAnalytic}
-                  id="migrations-history-expansion-table"
-                />
-              </CardBody>
-            </Card>
-          </>
-        )}
-      </PageSection>
+        </PageSection>
+      ) : (
+        <PageSection>
+          {isLoadingAnalytic ? (
+            <Bullseye>
+              <EmptyState variant="large">
+                <div className="pf-c-empty-state__icon">
+                  <Spinner size="xl" />
+                </div>
+                <Title headingLevel="h2" size="xl">
+                  Loading...
+                </Title>
+              </EmptyState>
+            </Bullseye>
+          ) : (
+            <>
+              <Card>
+                <CardBody>
+                  <Flex className={`${spacing.myMd}`}>
+                    <FlexItem>
+                      <Button
+                        id="add-plan-btn"
+                        onClick={() => refreshAnalyticRequest(plan.MigPlan.metadata.name)}
+                        isDisabled={isLoadingAnalytic}
+                        variant="secondary"
+                      >
+                        Refresh
+                      </Button>
+                    </FlexItem>
+                    <FlexItem>
+                      <TextContent>
+                        {!isLoadingAnalytic && (
+                          <Text component={TextVariants.small}>
+                            Last updated:{` `}
+                            {dayjs(plan.PlanStatus.latestAnalyticTransitionTime)
+                              .local()
+                              .format('YYYY-MM-DD HH:mm:ss')}
+                          </Text>
+                        )}
+                      </TextContent>
+                    </FlexItem>
+                  </Flex>
+                  <AnalyticsTable
+                    type="Migrations"
+                    analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
+                    latestAnalytic={plan.PlanStatus.latestAnalytic}
+                    migAnalytics={plan.Analytics}
+                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    isRefreshingAnalytic={isRefreshingAnalytic}
+                    id="migrations-history-expansion-table"
+                  />
+                </CardBody>
+              </Card>
+            </>
+          )}
+        </PageSection>
+      )}
     </>
   );
 };
