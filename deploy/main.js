@@ -54,10 +54,13 @@ app.get('/login/callback', async (req, res, next) => {
     redirect_uri: migMeta.oauth.redirectUrl,
   };
   try {
-    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'] || '';
-    const httpOptions = {
-      agent: new HttpsProxyAgent(proxyString),
-    };
+    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+    let httpOptions = {};
+    if (proxyString) {
+      httpOptions = {
+        agent: new HttpsProxyAgent(proxyString),
+      };
+    }
     const clusterAuth = await getClusterAuth(migMeta);
     const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
