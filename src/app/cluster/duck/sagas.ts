@@ -552,7 +552,7 @@ function* initDiscoveryCert() {
     const hostCluster: ICluster = state.cluster.clusterList.find(
       (c) => c.MigCluster.spec.isHostCluster
     );
-    const hostClusterName = hostCluster.MigCluster.metadata.name;
+    const hostClusterName = hostCluster?.MigCluster?.metadata.name;
     const namespaces: DiscoveryResource = new NamespaceDiscovery(hostClusterName);
     try {
       yield discoveryClient.get(namespaces);

@@ -1,0 +1,14 @@
+.pf-c-select__menu-item.pf-m-disabled.disabled-with-pointer-events {
+  pointer-events: auto;
+  padding: 0;
+}
+
+.pf-c-select__menu-item.pf-m-disabled.disabled-with-pointer-events > div {
+  padding: var(--pf-c-select__menu-item--PaddingTop) var(--pf-c-select__menu-item--PaddingRight)
+    var(--pf-c-select__menu-item--PaddingBottom) var(--pf-c-select__menu-item--PaddingLeft);
+}
+
+.inline-option-text {
+  display: inline-block;
+  vertical-align: middle;
+}
