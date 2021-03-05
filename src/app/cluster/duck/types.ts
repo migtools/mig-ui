@@ -33,6 +33,7 @@ export interface IMigCluster {
     conditions: IStatusCondition[];
     observedDigest: string;
     registryPath?: string;
+    operatorVersion?: string;
   };
   id: string;
 }
@@ -40,7 +41,11 @@ export interface IMigCluster {
 export interface ICluster {
   MigCluster: IMigCluster;
   ClusterStatus?: {
-    hasReadyCondition: boolean;
+    hasReadyCondition?: boolean;
+    hasCriticalCondition?: boolean;
+    hasWarnCondition?: boolean;
+    errorMessage?: string;
+    conditionType?: string;
   };
   Secret?: {
     data: {

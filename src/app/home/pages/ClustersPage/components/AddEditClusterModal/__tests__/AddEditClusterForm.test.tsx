@@ -97,6 +97,11 @@ describe('<AddEditClusterModal />', () => {
         exposedRegistryPath: '',
         clusterStatus: true,
         associatedPlanCount: 0,
+        operatorVersion: '',
+        hasCriticalCondition: false,
+        hasWarnCondition: false,
+        errorMessage: '',
+        conditionType: '',
         isHostCluster: false,
       },
       addEditStatus: {

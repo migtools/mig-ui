@@ -31,6 +31,7 @@ export const isSelfSignedCertError = (err) => {
 };
 
 export const isTimeoutError = (err) => {
+  //TODO: We should do some type checking here. Have seen the toJSON() conversion fail. Maybe use stringify.
   const e = err.toJSON();
   return e.code && e.code === 206;
 };

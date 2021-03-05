@@ -146,7 +146,7 @@ const WizardComponent = (props: IOtherProps) => {
           />
         </WizardStepContainer>
       ),
-      enableNext: !errors.selectedNamespaces,
+      enableNext: !errors.selectedNamespaces && !isFetchingNamespaceList,
       canJumpTo: stepIdReached >= stepId.Namespaces,
     },
     {
