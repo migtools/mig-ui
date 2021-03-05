@@ -3,6 +3,7 @@ import { AuthActions } from '../../auth/duck/actions';
 
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 const URLValidator = /(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+const RouteHostValidator = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
 
 const IPValidator = (value) => {
   const blocks = value.split('.');
@@ -50,6 +51,8 @@ const testDNS1123 = (value) => DNS1123Validator.test(value);
 
 const testURL = (value) => URLValidator.test(value) || IPValidator(value);
 
+const testRouteHost = (value) => RouteHostValidator.test(value);
+
 export const capitalize = (s: string) => {
   if (s.charAt(0)) {
     return `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
@@ -65,5 +68,6 @@ export default {
   isTimeoutError,
   handleSelfSignedCertError,
   testURL,
+  testRouteHost,
   capitalize,
 };

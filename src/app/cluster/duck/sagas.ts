@@ -369,7 +369,9 @@ function* updateClusterRequest(action) {
   }
 
   if (exposedRegistryPathUpdated) {
-    aggregatedPatch.spec['exposedRegistryPath'] = clusterValues.exposedRegistryPath.trim() || null;
+    aggregatedPatch.spec['exposedRegistryPath'] = clusterValues.exposedRegistryPath
+      .replace(/^https?\:\/\//i, '')
+      .trim();
   }
 
   if (
