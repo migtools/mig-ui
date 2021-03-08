@@ -372,9 +372,7 @@ const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
       errors.url = 'Not a valid URL';
     }
 
-    if (!values.exposedRegistryPath) {
-      errors.exposedRegistryPath = 'Required';
-    } else if (!utils.testRouteHost(values.exposedRegistryPath)) {
+    if (!utils.testRouteHost(values.exposedRegistryPath)) {
       errors.exposedRegistryPath = 'Not a valid route host.';
     }
 
