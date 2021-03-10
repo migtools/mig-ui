@@ -88,15 +88,13 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
                     removeStorage={removeStorage}
                   />
                 )}
-                {isAddEditModalOpen && (
-                  <AddEditStorageModal
-                    isOpen={isAddEditModalOpen}
-                    onHandleClose={() => {
-                      toggleAddEditModal();
-                      setCurrentStorage(null);
-                    }}
-                  />
-                )}
+                <AddEditStorageModal
+                  isOpen={isAddEditModalOpen}
+                  onHandleClose={() => {
+                    toggleAddEditModal();
+                    setCurrentStorage(null);
+                  }}
+                />
               </StorageContext.Provider>
             </CardBody>
           </Card>

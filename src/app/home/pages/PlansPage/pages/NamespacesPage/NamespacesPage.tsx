@@ -27,6 +27,7 @@ import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import dayjs from 'dayjs';
+import { PollingContext } from '../../../../duck/context';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 interface INamespacesPageProps {
