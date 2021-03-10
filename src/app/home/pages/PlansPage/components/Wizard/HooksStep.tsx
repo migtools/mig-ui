@@ -24,6 +24,7 @@ import { IMigMeta } from '../../../../../auth/duck/types';
 import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
 import { IHook } from '../../../../../../client/resources/conversions';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 const classNames = require('classnames');
 
@@ -49,6 +50,7 @@ interface IHooksStepBaseProps {
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
+  usePausedPollingEffect();
   const {
     updateHookRequest,
     addHookRequest,

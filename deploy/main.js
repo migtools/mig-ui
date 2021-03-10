@@ -33,18 +33,22 @@ app.get('/login', async (req, res, next) => {
   try {
     const clusterAuth = await getClusterAuth(migMeta);
     const authorizationUri = clusterAuth.authorizeURL({
-      redirect_uri: migMeta.oauth.redirectUrl,
-      // redirect_uri: migMeta.oauth.redirectUri,
+      // redirect_uri: migMeta.oauth.redirectUrl,
+      redirect_uri: migMeta.oauth.redirectUri,
       scope: migMeta.oauth.userScope,
     });
 
     res.redirect(authorizationUri);
   } catch (error) {
     console.error(error);
-    const params = new URLSearchParams({ error: JSON.stringify(error) });
-    const uri = `/handle-login?${params.toString()}`;
-    res.redirect(uri);
-    next(error);
+    if (error.response.statusText === 'Service Unavailable' || error.response.status === 503) {
+      res.status(503).send(error.response.data);
+    } else {
+      const params = new URLSearchParams({ error: JSON.stringify(error) });
+      const uri = `/handle-login?${params.toString()}`;
+      res.redirect(uri);
+      next(error);
+    }
   }
 });
 app.get('/login/callback', async (req, res, next) => {

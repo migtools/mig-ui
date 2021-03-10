@@ -10,6 +10,7 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 import { useFormikContext } from 'formik';
 import { IFormValues } from './WizardContainer';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 interface IProps {
   startPlanStatusPolling: (planName) => void;
@@ -26,6 +27,7 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   startPlanStatusPolling,
   onClose,
 }: IProps) => {
+  usePausedPollingEffect();
   const { values } = useFormikContext<IFormValues>();
 
   const handlePollRestart = () => {

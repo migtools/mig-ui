@@ -4,7 +4,8 @@ import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-import { PollingContext } from '../../home/duck';
+import { usePausedPollingEffect } from '../../common/context/PollingContext';
+
 const styles = require('./ErrorModal.module');
 
 interface IProps {
@@ -16,7 +17,6 @@ interface IProps {
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   const history = useHistory();
-  const pollingContext = useContext(PollingContext);
 
   const { isOpen, errorModalObj, clearErrors } = props;
   if (!errorModalObj) {
@@ -65,7 +65,6 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   variant="secondary"
                   onClick={() => {
                     clearErrors();
-                    pollingContext.startAllDefaultPolling();
                   }}
                 >
                   Cancel

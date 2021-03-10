@@ -18,6 +18,7 @@ import { useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from '../WizardContainer';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons';
+import { usePausedPollingEffect } from '../../../../../../common/context';
 
 type IMigrationOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isEdit'>;
 
@@ -26,6 +27,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   currentPlan,
   isEdit,
 }: IMigrationOptionsFormProps) => {
+  usePausedPollingEffect();
   const indirectImageMigrationKey = 'indirectImageMigration';
   const indirectVolumeMigrationKey = 'indirectVolumeMigration';
 

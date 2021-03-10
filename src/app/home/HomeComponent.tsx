@@ -14,7 +14,6 @@ import {
   SkipToContent,
   Title,
 } from '@patternfly/react-core';
-import { PollingContext } from '../home/duck/context';
 import {
   ClustersPage,
   StoragesPage,
@@ -35,6 +34,7 @@ import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage/MigrationDetailsPage';
 import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
+import { usePollingContext } from '../common/context/PollingContext';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
@@ -57,11 +57,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   clusterList,
   isHideWelcomeScreen,
 }: IHomeComponentProps) => {
-  const pollingContext = useContext(PollingContext);
-  useEffect(() => {
-    pollingContext.startAllDefaultPolling();
-  }, []);
-
   const nav = (
     <Nav aria-label="Page navigation" theme="dark">
       <NavList>
