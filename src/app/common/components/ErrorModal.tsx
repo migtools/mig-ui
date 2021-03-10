@@ -4,7 +4,6 @@ import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-import { usePausedPollingEffect } from '../../common/context/PollingContext';
 
 const styles = require('./ErrorModal.module');
 

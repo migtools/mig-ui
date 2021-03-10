@@ -51,6 +51,7 @@ interface IHooksStepBaseProps {
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   usePausedPollingEffect();
+
   const {
     updateHookRequest,
     addHookRequest,

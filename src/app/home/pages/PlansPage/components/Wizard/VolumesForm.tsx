@@ -40,6 +40,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   isPollingStatus,
 }: IVolumesFormProps) => {
   usePausedPollingEffect();
+
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   useEffect(() => {

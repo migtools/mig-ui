@@ -28,6 +28,7 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   isEdit,
 }: IMigrationOptionsFormProps) => {
   usePausedPollingEffect();
+
   const indirectImageMigrationKey = 'indirectImageMigration';
   const indirectVolumeMigrationKey = 'indirectVolumeMigration';
 

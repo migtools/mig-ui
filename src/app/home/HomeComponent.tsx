@@ -1,19 +1,8 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { history } from '../../helpers';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { IReduxState } from '../../reducers';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  Page,
-  PageSidebar,
-  PageHeader,
-  PageHeaderTools,
-  SkipToContent,
-  Title,
-} from '@patternfly/react-core';
+import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import {
   ClustersPage,
   StoragesPage,
@@ -34,7 +23,6 @@ import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage/MigrationDetailsPage';
 import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
-import { usePollingContext } from '../common/context/PollingContext';
 
 const mainContainerId = 'mig-ui-page-main-container';
 

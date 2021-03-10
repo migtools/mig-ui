@@ -28,6 +28,7 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   onClose,
 }: IProps) => {
   usePausedPollingEffect();
+
   const { values } = useFormikContext<IFormValues>();
 
   const handlePollRestart = () => {

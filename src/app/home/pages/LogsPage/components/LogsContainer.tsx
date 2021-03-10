@@ -34,6 +34,8 @@ const LogsContainer: FunctionComponent<IProps> = ({
   archive,
   logErrorMsg,
 }) => {
+  usePausedPollingEffect();
+
   const [cluster, setCluster] = useState({
     label: 'controller',
     value: 'controller',
@@ -73,8 +75,6 @@ const LogsContainer: FunctionComponent<IProps> = ({
       downloadArchive(downloadLink);
     }
   }, [downloadLink]);
-
-  usePausedPollingEffect();
 
   if (logErrorMsg) {
     return (

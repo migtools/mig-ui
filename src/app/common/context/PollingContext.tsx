@@ -1,10 +1,4 @@
-// import {
-//   AFTER_MUTATION_WINDOW,
-//   POLLING_INTERVAL,
-//   POLLING_INTERVAL_AFTER_MUTATION,
-// } from '@app/queries/constants';
 import * as React from 'react';
-import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { clusterSagas } from '../../cluster/duck';
 import { ClusterActions } from '../../cluster/duck/actions';

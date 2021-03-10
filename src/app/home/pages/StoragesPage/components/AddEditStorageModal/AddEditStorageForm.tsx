@@ -22,6 +22,7 @@ interface IProviderOption extends OptionWithValue {
 
 const AddEditStorageForm = (props: IOtherProps) => {
   usePausedPollingEffect();
+
   const { storageList } = props;
   const storageContext = useContext(StorageContext);
   const storage = storageList.find(
