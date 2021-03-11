@@ -4,7 +4,6 @@ import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-
 const styles = require('./ErrorModal.module');
 
 interface IProps {
@@ -38,7 +37,6 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       isOpen={isOpen}
       onClose={() => {
         clearErrors();
-        pollingContext.startAllDefaultPolling();
       }}
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
