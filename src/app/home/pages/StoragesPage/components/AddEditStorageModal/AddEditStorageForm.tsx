@@ -6,6 +6,7 @@ import AzureForm from './ProviderForms/AzureForm';
 import { StorageContext } from '../../../../duck/context';
 import { IStorage } from '../../../../../storage/duck/types';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { usePausedPollingEffect } from '../../../../../common/context/PollingContext';
 
 interface IOtherProps {
   onAddEditSubmit: any;
@@ -20,6 +21,8 @@ interface IProviderOption extends OptionWithValue {
 }
 
 const AddEditStorageForm = (props: IOtherProps) => {
+  usePausedPollingEffect();
+
   const { storageList } = props;
   const storageContext = useContext(StorageContext);
   const storage = storageList.find(
