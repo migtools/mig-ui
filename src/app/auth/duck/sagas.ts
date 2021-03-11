@@ -87,8 +87,12 @@ export function* fetchIsAdmin(): any {
       isAdminRes = yield axios.get(isAdminUrl, config);
     } catch (err) {
       if (isSelfSignedCertError(err)) {
+        const alertModalObj = {
+          name: 'Auth',
+          errorMessage: 'Failed to fetch admin priviledges.',
+        };
+        yield put(AlertActions.alertErrorModal(alertModalObj));
         yield put(AuthActions.certErrorOccurred(isAdminUrl));
-        yield put(push('/cert-error'));
         return;
       }
     }

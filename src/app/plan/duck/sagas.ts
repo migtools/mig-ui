@@ -200,8 +200,12 @@ function* namespaceFetchRequest(action) {
       yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
     } else if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
+      const alertModalObj = {
+        name: 'SSL cert error',
+        errorMessage: '',
+      };
+      yield put(AlertActions.alertErrorModal(alertModalObj));
       yield put(AuthActions.certErrorOccurred(failedUrl));
-      yield put(push('/cert-error'));
       return;
     }
     yield put(PlanActions.namespaceFetchFailure(err));

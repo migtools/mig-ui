@@ -565,8 +565,12 @@ function* initDiscoveryCert() {
         break;
       } else if (utils.isSelfSignedCertError(err)) {
         const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
+        const alertModalObj = {
+          name: 'Discovery service cert',
+          errorMessage: '',
+        };
+        yield put(AlertActions.alertErrorModal(alertModalObj));
         yield put(AuthActions.certErrorOccurred(failedUrl));
-        yield put(push('/cert-error'));
         break;
       }
       yield put(PlanActions.namespaceFetchFailure(err));
