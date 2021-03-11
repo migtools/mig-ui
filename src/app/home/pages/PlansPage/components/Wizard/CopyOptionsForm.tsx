@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 type ICopyOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>;
 
@@ -12,6 +13,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   currentPlan,
   isFetchingPVList,
 }: ICopyOptionsFormProps) => {
+  usePausedPollingEffect();
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   const migPlanPvs = currentPlan.spec.persistentVolumes;

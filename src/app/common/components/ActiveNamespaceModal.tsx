@@ -5,11 +5,11 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AuthActions } from '../../auth/duck/actions';
 import { ClusterActions } from '../../cluster/duck/actions';
 import { connect } from 'react-redux';
-import { PollingContext } from '../../home/duck/context';
 import SimpleSelect from './SimpleSelect';
 import authSelectors from '../../auth/duck/selectors';
 import { history } from '../../../helpers';
 import { getActiveNamespaceFromStorage, setActiveNamespaceInStorage } from '../helpers';
+import { usePausedPollingEffect } from '../context/PollingContext';
 
 interface IProps {
   onHandleClose: () => void;
@@ -23,7 +23,7 @@ interface IProps {
 }
 
 const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
-  const pollingContext = useContext(PollingContext);
+  usePausedPollingEffect();
   const [selectedActiveNamespace, setSelectedActiveNamespace] = useState<string>(null);
 
   const {
@@ -40,7 +40,6 @@ const ActiveNamespaceModal: React.FunctionComponent<IProps> = (props) => {
 
   useEffect(() => {
     fetchTenantNamespaces();
-    pollingContext.stopAllPolling();
     if (activeNamespace) {
       setSelectedActiveNamespace(activeNamespace);
     }

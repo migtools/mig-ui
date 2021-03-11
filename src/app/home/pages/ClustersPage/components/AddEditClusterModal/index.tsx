@@ -10,7 +10,6 @@ import {
   AddEditState,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
-import { PollingContext } from '../../../../duck/context';
 import { IReduxState } from '../../../../../../reducers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { IClusterInfo } from '../../helpers';
@@ -49,8 +48,6 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   setCurrentCluster,
 }: IAddEditClusterModal) => {
   if (!isAdmin) return null;
-
-  const pollingContext = useContext(PollingContext);
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -69,18 +66,11 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
     }
   };
 
-  useEffect(() => {
-    if (isOpen && isPolling) {
-      pollingContext.stopAllPolling();
-    }
-  });
-
   const handleClose = () => {
     resetAddEditState();
     cancelAddEditWatch();
     setCurrentCluster(null);
     onHandleClose();
-    pollingContext.startAllDefaultPolling();
   };
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit cluster' : 'Add cluster';

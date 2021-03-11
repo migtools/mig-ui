@@ -17,7 +17,6 @@ import {
 import { Alert } from '@patternfly/react-core';
 
 import { IReduxState } from '../../../../../../reducers';
-import { PollingContext } from '../../../../duck/context';
 import { IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';

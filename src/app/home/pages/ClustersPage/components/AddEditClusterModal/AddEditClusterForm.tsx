@@ -27,6 +27,7 @@ import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-c
 import { IMigCluster } from '../../../../../../client/resources/conversions';
 import { IClusterInfo } from '../../helpers';
 import { ICluster } from '../../../../../cluster/duck/types';
+import { usePausedPollingEffect } from '../../../../../common/context/PollingContext';
 
 const nameKey = 'name';
 const urlKey = 'url';
@@ -78,6 +79,7 @@ const valuesHaveUpdate = (values, currentCluster) => {
   );
 };
 const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) => {
+  usePausedPollingEffect();
   const {
     addEditStatus: currentStatus,
     currentCluster,
@@ -329,7 +331,6 @@ interface IOtherProps {
   checkConnection: (name) => void;
   initialClusterValues?: IClusterInfo;
 }
-
 const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
   mapPropsToValues: ({ initialClusterValues }) => {
     const values: IFormValues = {

@@ -13,6 +13,7 @@ import {
 } from '@patternfly/react-core';
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 const styles = require('./VolumesTable.module');
 
@@ -38,6 +39,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   pvDiscoveryRequest,
   isPollingStatus,
 }: IVolumesFormProps) => {
+  usePausedPollingEffect();
+
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   useEffect(() => {
