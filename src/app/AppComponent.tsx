@@ -6,12 +6,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import { connect } from 'react-redux';
 import { history } from '../helpers';
 import { ConnectedRouter } from 'connected-react-router';
-import CertErrorComponent from './auth/CertErrorComponent';
 import OAuthLandingPage from './token/OAuthLandingPage';
-import { ClusterActions } from './cluster/duck/actions';
-import { StorageActions } from './storage/duck/actions';
-import { PlanActions } from './plan/duck/actions';
-import { TokenActions } from './token/duck/actions';
 import AlertModal from './common/components/AlertModal';
 import ErrorModal from './common/components/ErrorModal';
 import { ICluster } from './cluster/duck/types';
@@ -30,7 +25,7 @@ interface IProps {
   debugTree: IDebugTreeNode;
 }
 
-const AppComponent: React.SFC<IProps> = ({
+const AppComponent: React.FunctionComponent<IProps> = ({
   errorMessage,
   errorModalObject,
   successMessage,
@@ -47,11 +42,10 @@ const AppComponent: React.SFC<IProps> = ({
         <AlertModal alertMessage={errorMessage} alertType="danger" />
         <AlertModal alertMessage={successMessage} alertType="success" />
         <AlertModal alertMessage={warnMessage} alertType="warning" />
-        <ErrorModal errorModalObj={errorModalObject} isOpen />
+        {errorModalObject && <ErrorModal errorModalObj={errorModalObject} isOpen />}
         <ConnectedRouter history={history}>
           <Switch>
             <Route path="/handle-login" component={LoginHandlerComponent} />
-            <Route path="/cert-error" component={CertErrorComponent} />
             <Route path="/auth-error" component={AuthErrorComponent} />
             <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
@@ -84,5 +78,5 @@ export default connect(
     clusterList: state.cluster.clusterList,
     debugTree: state.debug.tree,
   }),
-  (dispatch) => ({})
+  () => ({})
 )(AppComponent);
