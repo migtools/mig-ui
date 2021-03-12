@@ -32,7 +32,7 @@ import {
   createAddEditStatus,
   IAddEditStatus,
 } from '../../../common/add_edit_state';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/react-table';
 import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
 import { IMigHook } from './types';
@@ -96,7 +96,17 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
     }
   };
 
-  const columns = [{ title: 'Name' }, { title: 'Image' }, { title: 'Type' }, { title: 'Plans' }];
+  const columns = [
+    { title: 'Name', transforms: [cellWidth(15)], cellTransforms: [truncate] },
+    {
+      title: 'Image',
+      transforms: [cellWidth(20)],
+      cellTransforms: [truncate],
+    },
+    { title: 'Destination' },
+    { title: 'Type' },
+    { title: 'Plans' },
+  ];
   const hooksFormContainerStyles = classNames(
     spacing.mySm,
     spacing.mx_0,
@@ -109,7 +119,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   if (allHooks.length > 0) {
     rows = allHooks.map((migHook, id) => {
       const name = migHook.metadata.name;
-      const { image, custom } = migHook.spec;
+      const { image, custom, targetCluster } = migHook.spec;
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
@@ -121,20 +131,9 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       return {
         cells: [
           name,
-          {
-            title: (
-              <>
-                <div className={styles.truncatedText}>{image}</div>
-              </>
-            ),
-          },
-          {
-            title: (
-              <>
-                <div className={styles.truncatedText}>{type}</div>
-              </>
-            ),
-          },
+          image,
+          targetCluster,
+          type,
           {
             title: (
               <>

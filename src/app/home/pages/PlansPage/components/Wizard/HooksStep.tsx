@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PlusCircleIcon from '@patternfly/react-icons/dist/js/icons/plus-circle-icon';
@@ -104,9 +104,14 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   };
 
   const columns = [
-    { title: 'Name' },
-    { title: 'Definition' },
-    { title: 'Run in' },
+    { title: 'Name', transforms: [cellWidth(15)], cellTransforms: [truncate] },
+    {
+      title: 'Image',
+      transforms: [cellWidth(20)],
+      cellTransforms: [truncate],
+    },
+    { title: 'Destination' },
+    { title: 'Type' },
     { title: 'Migration step' },
   ];
 
@@ -115,7 +120,13 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   if (currentPlanHooks.length > 0) {
     rows = currentPlanHooks.map((migHook, id) => {
       return {
-        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
+        cells: [
+          migHook.hookName,
+          migHook.image,
+          migHook.targetCluster,
+          migHook.clusterTypeText,
+          migHook.phase,
+        ],
       };
     });
     actions = [
