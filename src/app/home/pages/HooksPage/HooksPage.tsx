@@ -124,14 +124,14 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
           {
             title: (
               <>
-                <div className={styles.truncatedImage}>{image}</div>
+                <div className={styles.truncatedText}>{image}</div>
               </>
             ),
           },
           {
             title: (
               <>
-                <div className={styles.truncatedImage}>{type}</div>
+                <div className={styles.truncatedText}>{type}</div>
               </>
             ),
           },
