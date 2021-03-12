@@ -96,12 +96,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
     }
   };
 
-  const columns = [
-    { title: 'Name' },
-    { title: 'Type' },
-    { title: 'Definition' },
-    { title: 'Plans' },
-  ];
+  const columns = [{ title: 'Name' }, { title: 'Image' }, { title: 'Type' }, { title: 'Plans' }];
   const hooksFormContainerStyles = classNames(
     spacing.mySm,
     spacing.mx_0,
@@ -126,8 +121,20 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       return {
         cells: [
           name,
-          image,
-          type,
+          {
+            title: (
+              <>
+                <div className={styles.truncatedImage}>{image}</div>
+              </>
+            ),
+          },
+          {
+            title: (
+              <>
+                <div className={styles.truncatedImage}>{type}</div>
+              </>
+            ),
+          },
           {
             title: (
               <>
