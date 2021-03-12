@@ -121,10 +121,11 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
       const name = migHook.metadata.name;
       const { image, custom, targetCluster } = migHook.spec;
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
+      const clusterTypeText = targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
       const listItems = associatedPlans.map((planName) => (
-        <li>
+        <li key={planName}>
           <Link to={`/plans/`}>{planName}</Link>
         </li>
       ));
@@ -132,7 +133,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
         cells: [
           name,
           image,
-          targetCluster,
+          clusterTypeText,
           type,
           {
             title: (

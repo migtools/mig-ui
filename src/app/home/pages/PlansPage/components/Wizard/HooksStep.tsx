@@ -119,14 +119,10 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   let actions = [];
   if (currentPlanHooks.length > 0) {
     rows = currentPlanHooks.map((migHook, id) => {
+      const type = migHook.custom ? 'Custom container image' : 'Ansible playbook';
+
       return {
-        cells: [
-          migHook.hookName,
-          migHook.image,
-          migHook.targetCluster,
-          migHook.clusterTypeText,
-          migHook.phase,
-        ],
+        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, type, migHook.phase],
       };
     });
     actions = [
