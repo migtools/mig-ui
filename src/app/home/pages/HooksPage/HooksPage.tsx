@@ -32,7 +32,7 @@ import {
   createAddEditStatus,
   IAddEditStatus,
 } from '../../../common/add_edit_state';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/react-table';
 import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
 import { IMigHook } from './types';
@@ -97,9 +97,14 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   };
 
   const columns = [
-    { title: 'Name' },
+    { title: 'Name', transforms: [cellWidth(15)], cellTransforms: [truncate] },
+    {
+      title: 'Image',
+      transforms: [cellWidth(20)],
+      cellTransforms: [truncate],
+    },
+    { title: 'Destination' },
     { title: 'Type' },
-    { title: 'Definition' },
     { title: 'Plans' },
   ];
   const hooksFormContainerStyles = classNames(
@@ -114,12 +119,13 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   if (allHooks.length > 0) {
     rows = allHooks.map((migHook, id) => {
       const name = migHook.metadata.name;
-      const { image, custom } = migHook.spec;
+      const { image, custom, targetCluster } = migHook.spec;
       const { associatedPlans, associatedPlanCount } = migHook.HookStatus;
+      const clusterTypeText = targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
       const listItems = associatedPlans.map((planName) => (
-        <li>
+        <li key={planName}>
           <Link to={`/plans/`}>{planName}</Link>
         </li>
       ));
@@ -127,6 +133,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
         cells: [
           name,
           image,
+          clusterTypeText,
           type,
           {
             title: (
