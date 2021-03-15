@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import CogIcon from '@patternfly/react-icons/dist/js/icons/cog-icon';
 import UserIcon from '@patternfly/react-icons/dist/js/icons/user-icon';
-import logoKonveyor from './logoKonveyor.svg';
+import logoCrane from './logoCrane.svg';
 import logoRedHat from './logoRedHat.svg';
 import IconWithText from './IconWithText';
 import { IReduxState } from '../../../reducers';
@@ -70,10 +70,10 @@ const PageHeaderComponent: React.FunctionComponent<PageHeaderComponentProps> = (
         <PageHeaderToolsGroup>
           <PageHeaderToolsItem>
             <img
-              src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoKonveyor}
+              src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoCrane}
               alt="Logo"
               className={
-                APP_BRAND === BrandType.RedHat ? styles.redhatLogoStyle : styles.konveyorLogoStyle
+                APP_BRAND === BrandType.RedHat ? styles.redhatLogoStyle : styles.craneLogoStyle
               }
             />
           </PageHeaderToolsItem>

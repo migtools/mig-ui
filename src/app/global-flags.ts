@@ -1,6 +1,6 @@
 export enum BrandType {
-  Konveyor = 'Konveyor',
+  Crane = 'Crane',
   RedHat = 'RedHat',
 }
 
-export const APP_BRAND: BrandType = (process.env.BRAND_TYPE as BrandType) || BrandType.Konveyor;
+export const APP_BRAND: BrandType = (process.env.BRAND_TYPE as BrandType) || BrandType.Crane;
