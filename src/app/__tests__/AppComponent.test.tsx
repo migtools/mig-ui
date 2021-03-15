@@ -18,7 +18,7 @@ jest.mock('../common/components/logoMA.svg', () => {
   return '';
 });
 
-jest.mock('../common/components/logoKonveyor.svg', () => {
+jest.mock('../common/components/logoCrane.svg', () => {
   return '';
 });
 
