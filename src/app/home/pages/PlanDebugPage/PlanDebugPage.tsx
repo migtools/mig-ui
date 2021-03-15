@@ -29,7 +29,7 @@ import { IDebugReducerState } from '../../../debug/duck';
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import { treeFetchRequest } from '../../../debug/duck/slice';
 
-const PlanDebugPage: React.FunctionComponent = () => {
+export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
   const dispatch = useDispatch();
   const debug = useSelector((state) => state.debug);
@@ -127,4 +127,3 @@ const PlanDebugPage: React.FunctionComponent = () => {
     </>
   );
 };
-export default PlanDebugPage;
