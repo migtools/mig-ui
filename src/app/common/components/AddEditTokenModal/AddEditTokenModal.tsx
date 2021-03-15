@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from '@patternfly/react-core';
-import { PollingContext } from '../../../home/duck/';
 import AddEditTokenForm from './AddEditTokenForm';
 import { ITokenFormValues, IToken } from '../../../token/duck/types';
 import { IReduxState } from '../../../../reducers';
@@ -16,6 +15,7 @@ import {
   IAddEditStatus,
   defaultAddEditStatus,
 } from '../../../common/add_edit_state';
+import { usePausedPollingEffect } from '../../context/PollingContext';
 
 interface IAddEditTokenModalProps {
   tokenAddEditStatus: IAddEditStatus;
@@ -56,6 +56,7 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
   associatedCluster,
   setAssociatedCluster,
 }: IAddEditTokenModalProps) => {
+  usePausedPollingEffect();
   const containerRef = useRef(document.createElement('div'));
   useEffect(() => {
     // Hack to make it possible to show this modal on top of the wizard...
@@ -64,15 +65,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     return () => {
       document.body.removeChild(containerRef.current);
     };
-  }, []);
-
-  const pollingContext = useContext(PollingContext);
-
-  useEffect(() => {
-    if (isPolling && preventPollingWhileOpen) {
-      pollingContext.stopAllPolling();
-      return () => pollingContext.startAllDefaultPolling();
-    }
   }, []);
 
   const modalTitle = tokenAddEditStatus.mode === AddEditMode.Edit ? 'Edit token' : 'Add token';
@@ -102,7 +94,6 @@ const AddEditTokenModal: React.FunctionComponent<IAddEditTokenModalProps> = ({
     setCurrentToken(null);
     setAssociatedCluster(null);
     toggleAddEditTokenModal();
-    pollingContext.startAllDefaultPolling();
   };
 
   return (

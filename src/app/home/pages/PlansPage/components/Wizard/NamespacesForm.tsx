@@ -4,6 +4,7 @@ import { IFormValues, IOtherProps } from './WizardContainer';
 import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-core';
 import NamespacesTable from './NamespacesTable';
 import { Spinner } from '@patternfly/react-core';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 type INamespacesFormProps = Pick<
   IOtherProps,
@@ -15,6 +16,8 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
   isFetchingNamespaceList,
   sourceClusterNamespaces,
 }: INamespacesFormProps) => {
+  usePausedPollingEffect();
+
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   useEffect(() => {

@@ -6,7 +6,6 @@ import VolumesForm from './VolumesForm';
 import CopyOptionsForm from './CopyOptionsForm';
 import HooksStep from './HooksStep';
 import ResultsStep from './ResultsStep';
-import { PollingContext } from '../../../../duck/context';
 import { useFormikContext } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
@@ -20,7 +19,6 @@ import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 
 const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
-  const pollingContext = useContext(PollingContext);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
   const { values, touched, errors, resetForm } = useFormikContext<IFormValues>();
@@ -82,19 +80,12 @@ const WizardComponent = (props: IOtherProps) => {
   const handleClose = () => {
     onHandleWizardModalClose();
     setStepIdReached(stepId.General);
-    pollingContext.startAllDefaultPolling();
     resetForm();
     resetCurrentPlan();
     stopPlanStatusPolling(values.planName);
     validatePlanPollStop();
     pvUpdatePollStop();
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      pollingContext.stopAllPolling();
-    }
-  }, [isOpen]);
 
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
     fieldKeys.every((fieldKey) => !errors[fieldKey] && (touched[fieldKey] || isEdit === true));

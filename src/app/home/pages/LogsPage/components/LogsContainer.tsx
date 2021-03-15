@@ -13,8 +13,7 @@ import {
   EmptyStateBody,
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-
-import { PollingContext } from '../../../duck/context';
+import { usePausedPollingEffect } from '../../../../common/context/PollingContext';
 
 interface IProps {
   planName: string;
@@ -35,6 +34,8 @@ const LogsContainer: FunctionComponent<IProps> = ({
   archive,
   logErrorMsg,
 }) => {
+  usePausedPollingEffect();
+
   const [cluster, setCluster] = useState({
     label: 'controller',
     value: 'controller',
@@ -46,12 +47,11 @@ const LogsContainer: FunctionComponent<IProps> = ({
       containerIndex: LogUnselected,
     },
   });
-  const pollingContext = useContext(PollingContext);
+
   const [downloadLink, setDownloadLink] = useState(null);
 
   useEffect(() => {
     requestReport(planName);
-    pollingContext.stopAllPolling();
   }, []);
 
   const downloadArchive = async (element) => {

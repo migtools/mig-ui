@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/react-table';
 import { Spinner } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PlusCircleIcon from '@patternfly/react-icons/dist/js/icons/plus-circle-icon';
@@ -24,6 +24,7 @@ import { IMigMeta } from '../../../../../auth/duck/types';
 import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
 import { IHook } from '../../../../../../client/resources/conversions';
+import { usePausedPollingEffect } from '../../../../../common/context';
 
 const classNames = require('classnames');
 
@@ -49,6 +50,8 @@ interface IHooksStepBaseProps {
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
+  usePausedPollingEffect();
+
   const {
     updateHookRequest,
     addHookRequest,
@@ -101,9 +104,14 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   };
 
   const columns = [
-    { title: 'Name' },
-    { title: 'Definition' },
-    { title: 'Run in' },
+    { title: 'Name', transforms: [cellWidth(15)], cellTransforms: [truncate] },
+    {
+      title: 'Image',
+      transforms: [cellWidth(20)],
+      cellTransforms: [truncate],
+    },
+    { title: 'Destination' },
+    { title: 'Type' },
     { title: 'Migration step' },
   ];
 
@@ -111,8 +119,10 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   let actions = [];
   if (currentPlanHooks.length > 0) {
     rows = currentPlanHooks.map((migHook, id) => {
+      const type = migHook.custom ? 'Custom container image' : 'Ansible playbook';
+
       return {
-        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, migHook.phase],
+        cells: [migHook.hookName, migHook.image, migHook.clusterTypeText, type, migHook.phase],
       };
     });
     actions = [

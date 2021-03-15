@@ -29,12 +29,10 @@ function* poll(action) {
           name: params.pollName,
           errorMessage: 'error',
         };
-        yield put(AlertActions.alertErrorModal(alertModalObj));
-        yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
-        yield put(PlanActions.stopPlanPolling());
-        yield put(ClusterActions.stopClusterPolling());
-        yield put(StorageActions.stopStoragePolling());
-        yield put(TokenActions.stopTokenPolling());
+        if (state.common.errorModalObject === null) {
+          yield put(AlertActions.alertErrorModal(alertModalObj));
+          yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+        }
       }
       //TODO: Handle "secrets not found error" & any other fetch errors here
     }

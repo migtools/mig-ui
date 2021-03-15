@@ -1,33 +1,32 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React from 'react';
 import { Modal, Button, Grid, GridItem, Title, BaseSizes } from '@patternfly/react-core';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 import { useHistory } from 'react-router-dom';
 import { AlertActions } from '../duck/actions';
-import { connect } from 'react-redux';
-import { PollingContext } from '../../home/duck';
+import { useDispatch, useSelector } from 'react-redux';
+import { usePausedPollingEffect } from '../context';
+
 const styles = require('./ErrorModal.module');
 
 interface IProps {
-  onHandleClose: () => null;
   isOpen: boolean;
-  clearErrors: () => null;
   errorModalObj: any;
 }
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
-  const history = useHistory();
-  const pollingContext = useContext(PollingContext);
+  const dispatch = useDispatch();
+  const certError = useSelector((state) => state.auth.certError);
 
-  const { isOpen, errorModalObj, clearErrors } = props;
-  if (!errorModalObj) {
-    return null;
-  }
+  usePausedPollingEffect();
+  const history = useHistory();
+
+  const { isOpen, errorModalObj } = props;
 
   const header = (
     <React.Fragment>
       <Title headingLevel={'h1'} size={BaseSizes['2xl']}>
         <ErrorCircleOIcon className={styles.errorIconStyles} />
-        {`Error while fetching ${errorModalObj.name || 'data'}`}
+        {`Error while fetching ${errorModalObj?.name || 'data'}`}
       </Title>
     </React.Fragment>
   );
@@ -35,40 +34,60 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   return (
     <Modal
       header={header}
-      variant="small"
+      variant="large"
       isOpen={isOpen}
-      onClose={() => clearErrors()}
+      onClose={() => {
+        dispatch(AlertActions.errorModalClear());
+      }}
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
       <Grid hasGutter>
         <form>
           <GridItem className={styles.modalHeader}>
-            Unable to retrieve one or more resource objects (migcluster, migstorage, migplan).
+            {errorModalObj.error ? (
+              <>{errorModalObj.error}</>
+            ) : (
+              <>
+                Unable to retrieve one or more resource objects (migcluster, migstorage, migplan,
+                mighook).
+              </>
+            )}
           </GridItem>
-          <GridItem className={styles.gridMargin}>Refresh your certificate and try again</GridItem>
+          {certError && (
+            <>
+              <br />
+              <div>
+                A certificate error has occurred, likely caused by using self-signed CA certificates
+                in one of the clusters. Navigate to the following URL and accept the certificate:
+                <br />
+                <br />
+                <a target="_blank" href={certError.failedUrl}>
+                  {certError.failedUrl}
+                </a>
+                <br />
+                <br />
+                <div />
+                If an "Unauthorized" message appears after you have accepted the certificate,
+                navigate to the MTC console and refresh the page.
+                <div />
+                To fix this issue permanently, add the certificate to your web browser's trust
+                store.
+              </div>
+            </>
+          )}
+          <GridItem className={styles.gridMargin}></GridItem>
           <GridItem className={styles.actionButtons}>
             <Grid hasGutter>
-              <GridItem span={5}>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    history.push('/cert-error');
-                    clearErrors();
-                  }}
-                >
-                  Refresh Certificate
-                </Button>
-              </GridItem>
+              <GridItem span={5}></GridItem>
               <GridItem span={4}>
                 <Button
                   key="cancel"
-                  variant="secondary"
+                  variant="primary"
                   onClick={() => {
-                    clearErrors();
-                    pollingContext.startAllDefaultPolling();
+                    dispatch(AlertActions.errorModalClear());
                   }}
                 >
-                  Cancel
+                  Close
                 </Button>
               </GridItem>
             </Grid>
@@ -79,11 +98,4 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   );
 };
 
-export default connect(
-  (state) => ({
-    migMeta: state.auth.migMeta,
-  }),
-  (dispatch) => ({
-    clearErrors: () => dispatch(AlertActions.errorModalClear()),
-  })
-)(ErrorModal);
+export default ErrorModal;

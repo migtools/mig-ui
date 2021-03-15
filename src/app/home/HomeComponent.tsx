@@ -1,20 +1,8 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { history } from '../../helpers';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import { IReduxState } from '../../reducers';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  Page,
-  PageSidebar,
-  PageHeader,
-  PageHeaderTools,
-  SkipToContent,
-  Title,
-} from '@patternfly/react-core';
-import { PollingContext } from '../home/duck/context';
+import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import {
   ClustersPage,
   StoragesPage,
@@ -57,11 +45,6 @@ const HomeComponent: React.FunctionComponent<IHomeComponentProps> = ({
   clusterList,
   isHideWelcomeScreen,
 }: IHomeComponentProps) => {
-  const pollingContext = useContext(PollingContext);
-  useEffect(() => {
-    pollingContext.startAllDefaultPolling();
-  }, []);
-
   const nav = (
     <Nav aria-label="Page navigation" theme="dark">
       <NavList>
