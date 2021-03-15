@@ -1,5 +1,4 @@
-import debugReducer from './reducers';
+import debugReducer from './slice';
 export { default as debugSagas } from './sagas';
-export { IDebugReducerState } from './reducers';
-export { DebugActions } from './actions';
+export { IDebugReducerState } from './slice';
 export default debugReducer;

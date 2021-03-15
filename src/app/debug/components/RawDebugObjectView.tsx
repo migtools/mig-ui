@@ -1,22 +1,16 @@
 import React, { useEffect } from 'react';
 import ReactJson from 'react-json-view';
-import { connect } from 'react-redux';
-import { DebugActions } from '../duck/actions';
-import { IDebugReducerState } from '../duck';
+import { useDispatch, useSelector } from 'react-redux';
+import { debugObjectFetchRequest } from '../duck/slice';
 import { DEBUG_PATH_SEARCH_KEY } from '../duck/types';
 
-interface IRawDebugObjectViewProps {
-  debug: IDebugReducerState;
-  fetchRawDebugObject: (string) => void;
-}
-
-const RawDebugObjectView: React.FunctionComponent<IRawDebugObjectViewProps> = ({
-  debug,
-  fetchRawDebugObject,
-}: IRawDebugObjectViewProps) => {
+const RawDebugObjectView: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
+  const debug = useSelector((state) => state.debug);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    fetchRawDebugObject(decodeURI(params.get(DEBUG_PATH_SEARCH_KEY)));
+    const decodedURI = decodeURI(params.get(DEBUG_PATH_SEARCH_KEY));
+    dispatch(debugObjectFetchRequest(decodedURI));
     // Value in the array really should be the path that's getting submitted
     // via a query param. Better way to do this via prop?
   }, []);
@@ -27,12 +21,4 @@ const RawDebugObjectView: React.FunctionComponent<IRawDebugObjectViewProps> = ({
     </div>
   );
 };
-
-export default connect(
-  (state) => ({
-    debug: state.debug,
-  }),
-  (dispatch) => ({
-    fetchRawDebugObject: (path) => dispatch(DebugActions.debugObjectFetchRequest(path)),
-  })
-)(RawDebugObjectView);
+export default RawDebugObjectView;

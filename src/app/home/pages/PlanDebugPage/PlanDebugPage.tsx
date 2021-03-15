@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   PageSection,
   Bullseye,
@@ -24,25 +24,18 @@ import {
   IDebugTreeNode,
 } from '../../../debug/duck/types';
 import { IReduxState } from '../../../../reducers';
-import { IDebugReducerState, DebugActions } from '../../../debug/duck';
+import { IDebugReducerState } from '../../../debug/duck';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
+import { treeFetchRequest } from '../../../debug/duck/slice';
 
-interface IBasePlanDebugPageProps {
-  debug: IDebugReducerState;
-  fetchDebugTree: (planName: string) => void;
-  routeRawDebugObject: (path: string) => void;
-}
-
-const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
-  debug,
-  fetchDebugTree,
-  routeRawDebugObject,
-}: IBasePlanDebugPageProps) => {
+const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
+  const dispatch = useDispatch();
+  const debug = useSelector((state) => state.debug);
 
   const refreshDebugTree = () => {
-    fetchDebugTree(planName);
+    dispatch(treeFetchRequest(planName));
   };
 
   useEffect(() => {
@@ -50,7 +43,13 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
   }, []);
 
   const viewRawDebugObject = (node: IDebugTreeNode) => {
-    routeRawDebugObject(node.objectLink);
+    const encodedPath = encodeURI(node.objectLink);
+    dispatch(
+      push({
+        pathname: RAW_OBJECT_VIEW_ROUTE,
+        search: `?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`,
+      })
+    );
   };
 
   const [searchText, setSearchText] = useState('');
@@ -128,21 +127,4 @@ const BasePlanDebugPage: React.FunctionComponent<IBasePlanDebugPageProps> = ({
     </>
   );
 };
-
-export const PlanDebugPage = connect(
-  (state: IReduxState) => ({
-    debug: state.debug,
-  }),
-  (dispatch) => ({
-    fetchDebugTree: (planName: string) => dispatch(DebugActions.debugTreeFetchRequest(planName)),
-    routeRawDebugObject: (path: string) => {
-      const encodedPath = encodeURI(path);
-      dispatch(
-        push({
-          pathname: RAW_OBJECT_VIEW_ROUTE,
-          search: `?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`,
-        })
-      );
-    },
-  })
-)(BasePlanDebugPage);
+export default PlanDebugPage;
