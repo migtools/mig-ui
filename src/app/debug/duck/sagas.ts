@@ -2,11 +2,17 @@ import { select, put, takeEvery } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IReduxState } from '../../../reducers';
-import { DebugActionTypes, DebugActions } from './actions';
 import { DebugTreeDiscoveryResource } from '../../../client/resources/discovery';
-import { IPlan } from '../../plan/duck/types';
 import { AlertActions } from '../../common/duck/actions';
 import { IDiscoveryResource } from '../../../client/resources/common';
+import {
+  debugObjectFetchFailure,
+  debugObjectFetchRequest,
+  debugObjectFetchSuccess,
+  treeFetchFailure,
+  treeFetchRequest,
+  treeFetchSuccess,
+} from './slice';
 
 function* fetchDebugObject(action) {
   const state: IReduxState = yield select();
@@ -14,34 +20,34 @@ function* fetchDebugObject(action) {
 
   try {
     const res = yield discoveryClient.getRaw(action.rawPath);
-    yield put(DebugActions.debugObjectFetchSuccess(res.data));
+    yield put(debugObjectFetchSuccess(res.data));
   } catch (err) {
-    yield put(DebugActions.debugObjectFetchFailure(err.message));
+    yield put(debugObjectFetchFailure(err.message));
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
 
 function* fetchDebugTree(action) {
-  const planName: string = action.planName;
+  const planName: string = action.payload;
   const state: IReduxState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(planName);
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
-    yield put(DebugActions.debugTreeFetchSuccess(res.data));
+    yield put(treeFetchSuccess(res.data));
   } catch (err) {
-    yield put(DebugActions.debugTreeFetchFailure(err.message));
+    yield put(treeFetchFailure(err.message));
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
 
 function* watchDebugTreeFetchRequest() {
-  yield takeEvery(DebugActionTypes.DEBUG_TREE_FETCH_REQUEST, fetchDebugTree);
+  yield takeEvery(treeFetchRequest.type, fetchDebugTree);
 }
 
 function* watchDebugObjectFetchRequest() {
-  yield takeEvery(DebugActionTypes.DEBUG_OBJECT_FETCH_REQUEST, fetchDebugObject);
+  yield takeEvery(debugObjectFetchRequest.type, fetchDebugObject);
 }
 
 export default {
