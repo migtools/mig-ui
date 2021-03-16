@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
@@ -23,6 +23,8 @@ import { formatGolangTimestamp } from '../../helpers';
 
 export const MigrationDetailsPage: React.FunctionComponent = () => {
   const { planName, migrationID } = useParams();
+  const { path, url } = useRouteMatch();
+
   const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)

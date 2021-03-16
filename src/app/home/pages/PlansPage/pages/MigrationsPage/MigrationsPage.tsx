@@ -55,10 +55,10 @@ export const MigrationsPage: React.FunctionComponent = () => {
             </PageSection>
           )}
         </Route>
-        <Route path={`${path}/:migrationID`}>
+        <Route exact path={`${path}/:migrationID`}>
           <MigrationDetailsPage />
         </Route>
-        <Route path={`${path}/:migrationID/:stepName`}>
+        <Route exact path={`${path}/:migrationID/:stepName`}>
           <MigrationStepDetailsPage />
         </Route>
       </Switch>
