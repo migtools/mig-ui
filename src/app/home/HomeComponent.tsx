@@ -37,13 +37,10 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/plans/:planName/migrations/:migrationID/:stepName">
             <MigrationStepDetailsPage />
           </Route>
-          <Route exact path="/plans/:planName/debug">
-            <PlanDebugPage />
-          </Route>
           <Route exact path="/hooks">
             <HooksPage />
           </Route>
-          <RefreshRoute exact path="/logs/:planId" component={LogsPage} />
+          <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
           <Route path="*">
             <Redirect to="/" />
           </Route>

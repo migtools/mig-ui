@@ -23,8 +23,6 @@ import {
   RAW_OBJECT_VIEW_ROUTE,
   IDebugTreeNode,
 } from '../../../debug/duck/types';
-import { IReduxState } from '../../../../reducers';
-import { IDebugReducerState } from '../../../debug/duck';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import { treeFetchRequest } from '../../../debug/duck/slice';

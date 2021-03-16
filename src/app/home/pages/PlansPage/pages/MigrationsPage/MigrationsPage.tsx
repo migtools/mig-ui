@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   PageSection,
@@ -10,21 +10,13 @@ import {
   Card,
   CardBody,
 } from '@patternfly/react-core';
-import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
-import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 
-interface IMigrationsPageProps {
-  planList: IPlan[];
-  migrationCancelRequest: (name: string) => void;
-}
-
-const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
-  planList,
-  migrationCancelRequest,
-}: IMigrationsPageProps) => {
+export const MigrationsPage: React.FunctionComponent = () => {
   const { planName } = useParams();
+  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
 
   return (
@@ -52,7 +44,6 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
                 migrations={plan.Migrations}
                 isPlanLocked={plan.PlanStatus.isPlanLocked}
                 id="migrations-history-expansion-table"
-                handleMigrationCancelRequest={migrationCancelRequest}
               />
             </CardBody>
           </Card>
@@ -61,14 +52,3 @@ const BaseMigrationsPage: React.FunctionComponent<IMigrationsPageProps> = ({
     </>
   );
 };
-
-const mapStateToProps = (state: IReduxState) => ({
-  planList: planSelectors.getPlansWithStatus(state),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  migrationCancelRequest: (migrationName: string) =>
-    dispatch(PlanActions.migrationCancelRequest(migrationName)),
-});
-
-export const MigrationsPage = connect(mapStateToProps, mapDispatchToProps)(BaseMigrationsPage);
