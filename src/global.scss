@@ -4,8 +4,10 @@
 @import './widget-description-list';
 @import './icon';
 
+html,
+body,
 #root {
-  height: 100vh;
+  height: 100%;
 }
 
 .storage-modal-modifier {

@@ -7,7 +7,7 @@ import { IMigration, IStep } from '../../../../../plan/duck/types';
 import { getElapsedTime, getProgressValues } from '../../helpers';
 import { IProgressInfoObj } from '../../types';
 import MigrationStepStatusIcon from './MigrationStepStatusIcon';
-const styles = require('./MigrationDetailsTable.module');
+const styles = require('./MigrationDetailsTable.module').default;
 
 interface IProps {
   migration: IMigration;

@@ -17,7 +17,7 @@ import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
-const styles = require('./ResultsStep.module');
+const styles = require('./ResultsStep.module').default;
 
 interface IConditionsGridProps {
   conditions: any[];
