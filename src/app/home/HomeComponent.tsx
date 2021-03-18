@@ -21,6 +21,8 @@ import { getActiveNamespaceFromStorage } from '../common/helpers';
 import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
+import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage';
+import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
 
 const mainContainerId = 'mig-ui-page-main-container';
 
