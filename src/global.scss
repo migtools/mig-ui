@@ -4,10 +4,11 @@
 @import './widget-description-list';
 @import './icon';
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
-
 
 .storage-modal-modifier {
   min-height: 24em;
