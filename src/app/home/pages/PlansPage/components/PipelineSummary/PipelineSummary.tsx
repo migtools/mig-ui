@@ -10,7 +10,7 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 
 const classNames = require('classnames');
-const styles = require('./PipelineSummary.module');
+const styles = require('./PipelineSummary.module').default;
 
 interface IDashProps {
   isReached: boolean;

@@ -25,7 +25,7 @@ import { css } from '@patternfly/react-styles';
 import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 import { APP_TITLE } from '../../../app/common/constants';
 import { APP_BRAND, BrandType } from '../../global-flags';
-const styles = require('./PageHeaderComponent.module');
+const styles = require('./PageHeaderComponent.module').default;
 
 interface PageHeaderComponentProps extends Omit<PageHeaderProps, 'logo'> {
   isAdmin: boolean;

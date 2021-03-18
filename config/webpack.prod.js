@@ -13,6 +13,9 @@ module.exports = (env) => {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
   ];
 
   return {
@@ -39,7 +42,7 @@ module.exports = (env) => {
         },
         {
           test: /\.module\.s(a|c)ss$/,
-          loader: [
+          use: [
             MiniCssExtractPlugin.loader,
             {
               loader: 'css-loader',
@@ -59,7 +62,7 @@ module.exports = (env) => {
         {
           test: /\.s(a|c)ss$/,
           exclude: /\.module.(s(a|c)ss)$/,
-          loader: [
+          use: [
             MiniCssExtractPlugin.loader,
             'css-loader',
             {
@@ -96,7 +99,7 @@ module.exports = (env) => {
               '../node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css'
             ),
           ],
-          use: ['style-loader', 'css-loader'],
+          use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
 
         {

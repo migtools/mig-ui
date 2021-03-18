@@ -29,7 +29,7 @@ import { isSameResource, validatedState } from '../../../../../common/helpers';
 import { IMigMeta } from '../../../../../auth/duck/types';
 import { TokenActions } from '../../../../../token/duck/actions';
 
-const styles = require('./TokenSelect.module');
+const styles = require('./TokenSelect.module').default;
 
 interface ITokenSelectProps extends ISimpleSelectProps {
   fieldId: string;

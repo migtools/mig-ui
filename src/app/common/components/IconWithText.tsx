@@ -1,6 +1,6 @@
 import React from 'react';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-const styles = require('./IconWithText.module');
+const styles = require('./IconWithText.module').default;
 
 interface IIconWithTextProps {
   icon: React.ReactNode;

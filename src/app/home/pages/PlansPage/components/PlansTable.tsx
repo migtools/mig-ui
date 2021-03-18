@@ -2,36 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import dayjs from 'dayjs';
-import {
-  TextContent,
-  Text,
-  Level,
-  LevelItem,
-  Button,
-  Pagination,
-  Flex,
-  FlexItem,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
-import { compoundExpand, Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
 
 import PlanStatus from './PlanStatus';
 import PlanActions from './PlanActions';
-import MigrationsTable from './MigrationsTable';
-import AnalyticsTable from './AnalyticsTable';
 import { useSortState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
-import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
-const styles = require('./PlansTable.module');
+const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {
   planList: IPlan[];

@@ -22,7 +22,7 @@ import { validatedState } from '../../../../../common/helpers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../../common/context';
-const styles = require('./GeneralForm.module');
+const styles = require('./GeneralForm.module').default;
 
 export type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
 

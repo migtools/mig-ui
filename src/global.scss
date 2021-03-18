@@ -4,9 +4,14 @@
 @import './widget-description-list';
 @import './icon';
 
-#root {
-  height: 100vh;
+// #root {
+//   height: 100vh;
+// }
+
+html, body, #root {
+  height: 100%;
 }
+
 
 .storage-modal-modifier {
   min-height: 24em;

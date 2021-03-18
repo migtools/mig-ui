@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
-const styles = require('./LogItem.module');
+const styles = require('./LogItem.module').default;
 import { Grid } from '@patternfly/react-core';
 
 const LogItem = ({ log }) => {

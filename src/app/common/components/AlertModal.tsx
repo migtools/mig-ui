@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, AlertActionCloseButton, AlertProps } from '@patternfly/react-core';
 import { AlertActions } from '../duck/actions';
 import { connect } from 'react-redux';
-const styles = require('./AlertModal.module');
+const styles = require('./AlertModal.module').default;
 
 interface IProps {
   alertMessage: string;
