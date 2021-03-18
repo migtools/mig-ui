@@ -825,6 +825,19 @@
   resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-4.35.2.tgz#a8d7cf49b5da714e175efd0faabef295697da8d0"
   integrity sha512-gOebIesqY28/ngVz0k/k0szca247002x+x+GBfCNgbnOXoiEfqYViI5C7YuHB8iNVuvf/YwBdfj65k/h6FMB3w==
 
+"@patternfly/react-core@^4.101.3":
+  version "4.101.3"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.101.3.tgz#aecf6c0e05f4e4811e5d1d55cae9725d51440026"
+  integrity sha512-xmBzwtpTHjykwahWVEc+xlqEJ7k+g90EYlLDSIFhNylnoq6iAka8cWbiRWuxOzAIwmk4UrKy2lOYP/Ff5A8ZCw==
+  dependencies:
+    "@patternfly/react-icons" "^4.9.5"
+    "@patternfly/react-styles" "^4.8.5"
+    "@patternfly/react-tokens" "^4.10.5"
+    focus-trap "6.2.2"
+    react-dropzone "9.0.0"
+    tippy.js "5.1.2"
+    tslib "1.13.0"
+
 "@patternfly/react-core@^4.47.0":
   version "4.47.0"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.47.0.tgz#310876ff2567b45319ba2f7de6ae189095fde9ad"
@@ -843,10 +856,20 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.7.4.tgz#f18d7ea8011b477fd1db80113572680c67204592"
   integrity sha512-j+N582TJ1MBZWePwP5wFc+qIlGSPkAtnv+pupiAewTWeJnd8TzogoUzlqUHnJNNn8x2Ktrsa561g23HYIIkRWg==
 
+"@patternfly/react-icons@^4.9.5":
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.9.5.tgz#4f727ed1c161ba6932abd3fa7bddb0e03bca5ec1"
+  integrity sha512-5M6yBW2v0d7WDuW7AyR//84iFxz7CBp5clGReYS/2SNwBGX+TwWoedS8EM06xtLSKCMrTQG1lqeyZASn6KyoMA==
+
 "@patternfly/react-styles@^4.7.3":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-4.7.3.tgz#b512d44e1654d952e1f8200ed94d14b91cbad3d0"
   integrity sha512-p59J4ceql/nUeS6CqwiceBDhFZ1UzBC0BlqxmaBpjSdcxZhRlYoOeCfFZJpJzFDmNTKCxFrvWihXBHgx82h2Hg==
+
+"@patternfly/react-styles@^4.8.5":
+  version "4.8.5"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-4.8.5.tgz#2e7579768d1b1e5d244ee9af6fd78524fc1e3e22"
+  integrity sha512-ANJoOJpcO0R7DY0CsTHMWaZfiLoMfMKu36ctnVnheJ3YfZievCo6O8mztNBB6QLhJvF/PrirJ8yffyVxOopT5w==
 
 "@patternfly/react-table@^4.16.7":
   version "4.16.7"
@@ -860,6 +883,11 @@
     "@patternfly/react-tokens" "^4.9.6"
     lodash "^4.17.19"
     tslib "^1.11.1"
+
+"@patternfly/react-tokens@^4.10.5":
+  version "4.10.5"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.10.5.tgz#be8cccc1d350e0583a28b65914aefcfddfc8197c"
+  integrity sha512-/lJRrC1asoaMSJVt1e5eZNn+y87x0q9WzeKx+aMi44RmJLwRLSNYGe8CxZiOUP1gw45jpzjRAbLihU+AGESckg==
 
 "@patternfly/react-tokens@^4.9.6":
   version "4.9.6"
@@ -3853,6 +3881,13 @@ focus-trap@4.0.2:
   dependencies:
     tabbable "^3.1.2"
     xtend "^4.0.1"
+
+focus-trap@6.2.2:
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-6.2.2.tgz#0e6f391415b0697c99da932702dedd13084fa131"
+  integrity sha512-qWovH9+LGoKqREvJaTCzJyO0hphQYGz+ap5Hc4NqXHNhZBdxCi5uBPPcaOUw66fHmzXLVwvETLvFgpwPILqKpg==
+  dependencies:
+    tabbable "^5.1.4"
 
 follow-redirects@^1.0.0, follow-redirects@^1.10.0:
   version "1.13.1"
@@ -8466,6 +8501,11 @@ tabbable@^3.1.2:
   resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-3.1.2.tgz#f2d16cccd01f400e38635c7181adfe0ad965a4a2"
   integrity sha512-wjB6puVXTYO0BSFtCmWQubA/KIn7Xvajw0x0l6eJUudMG/EAiJvIUnyNX6xO4NpGrJ16lbD0eUseB9WxW0vlpQ==
 
+tabbable@^5.1.4:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-5.1.6.tgz#dd495abe81d5e41e003fbfa70952e20d5e1e1e89"
+  integrity sha512-KSlGaSX9PbL7FHDTn2dB+zv61prkY8BeGioTsKfeN7dKhw5uz1S4U2iFaWMK4GR8oU+5OFBkFuxbMsaUxVVlrQ==
+
 table@^5.2.3:
   version "5.4.6"
   resolved "https://registry.yarnpkg.com/table/-/table-5.4.6.tgz#1292d19500ce3f86053b05f0e8e7e4a3bb21079e"
@@ -8735,15 +8775,15 @@ ts-loader@^8.0.14:
     micromatch "^4.0.0"
     semver "^7.3.4"
 
+tslib@1.13.0, tslib@^1.11.1, tslib@^1.9.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
+  integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
 tslib@^1.10.0:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
   integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
-
-tslib@^1.11.1, tslib@^1.9.0:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
-  integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
 
 tslib@^1.8.1:
   version "1.10.0"
