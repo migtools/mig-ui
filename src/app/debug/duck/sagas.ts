@@ -1,4 +1,4 @@
-import { select, put, takeEvery } from 'redux-saga/effects';
+import { select, put, takeEvery, delay, call, race, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IReduxState } from '../../../reducers';
@@ -9,11 +9,14 @@ import {
   debugObjectFetchFailure,
   debugObjectFetchRequest,
   debugObjectFetchSuccess,
+  startDebugPolling,
+  stopDebugPolling,
   treeFetchFailure,
   treeFetchRequest,
   treeFetchSuccess,
 } from './slice';
 import { IDebugTreeNode } from './types';
+import { PlanActionTypes } from '../../plan/duck';
 
 function* fetchDebugObject(action) {
   const state: IReduxState = yield select();
@@ -74,7 +77,24 @@ function* fetchDebugTree(action) {
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
+function* debugPoll(action) {
+  const planName = action.payload;
+  while (true) {
+    try {
+      yield put(treeFetchRequest(planName));
+      yield delay(5000);
+    } catch {
+      yield put(stopDebugPolling);
+    }
+  }
+}
 
+function* watchDebugPolling() {
+  while (true) {
+    const data = yield take(startDebugPolling.type);
+    yield race([call(debugPoll, data), take(stopDebugPolling.type)]);
+  }
+}
 function* watchDebugTreeFetchRequest() {
   yield takeEvery(treeFetchRequest.type, fetchDebugTree);
 }
@@ -86,4 +106,5 @@ function* watchDebugObjectFetchRequest() {
 export default {
   watchDebugTreeFetchRequest,
   watchDebugObjectFetchRequest,
+  watchDebugPolling,
 };

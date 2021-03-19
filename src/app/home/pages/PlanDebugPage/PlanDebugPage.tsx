@@ -31,27 +31,23 @@ import {
 } from '../../../debug/duck/types';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
-import { treeFetchRequest } from '../../../debug/duck/slice';
-import { ExclamationCircleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
 import {
-  ExclamationTriangleIcon,
-  QuestionCircleIcon,
-  SpaIconConfig,
-} from '@patternfly/react-icons/dist/js/icons';
+  IDebugReducerState,
+  startDebugPolling,
+  stopDebugPolling,
+  treeFetchRequest,
+} from '../../../debug/duck/slice';
+import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
   const dispatch = useDispatch();
-  const debug = useSelector((state) => state.debug);
+  const debug: IDebugReducerState = useSelector((state) => state.debug);
   const [isOpen, setIsOpen] = useState(false);
 
   const refreshDebugTree = () => {
     dispatch(treeFetchRequest(planName));
   };
-
-  useEffect(() => {
-    refreshDebugTree();
-  }, []);
 
   const viewRawDebugObject = (node: IDebugTreeNode) => {
     const encodedPath = encodeURI(node.objectLink);
@@ -97,21 +93,18 @@ export const PlanDebugPage: React.FunctionComponent = () => {
           <Alert variant="danger" title={`Error loading debug data for plan "${planName}"`}>
             <p>{debug.errMsg}</p>
           </Alert>
-        ) : debug.isLoading ? (
-          <Bullseye>
-            <EmptyState variant="large">
-              <div className="pf-c-empty-state__icon">
-                <Spinner size="xl" />
-              </div>
-              <Title headingLevel="h2" size="xl">
-                Loading...
-              </Title>
-            </EmptyState>
-          </Bullseye>
         ) : (
           <Card id="image-card" isExpanded={isOpen}>
             <CardHeader
-              onExpand={() => setIsOpen(!isOpen)}
+              onExpand={() => {
+                const { isPolling } = debug;
+                if (!isPolling) {
+                  dispatch(startDebugPolling(planName));
+                } else if (isPolling) {
+                  dispatch(stopDebugPolling(planName));
+                }
+                setIsOpen(!isOpen);
+              }}
               toggleButtonProps={{
                 id: 'toggle-button',
                 'aria-label': 'debug-details',
@@ -147,25 +140,37 @@ export const PlanDebugPage: React.FunctionComponent = () => {
               </Popover>
             </CardHeader>
             <CardExpandableContent>
-              <CardBody>
-                <Split hasGutter>
-                  <SplitItem isFilled>
-                    <SearchInput
-                      placeholder="Type to search"
-                      value={searchText}
-                      onChange={setSearchText}
-                      onClear={() => setSearchText('')}
-                    />
-                  </SplitItem>
-                  <SplitItem>
-                    <Button onClick={refreshDebugTree} variant="primary">
-                      Refresh
-                    </Button>
-                  </SplitItem>
-                </Split>
-                <TreeView data={filteredTreeData} defaultAllExpanded />
-              </CardBody>
-              {/* <CardFooter>Footer</CardFooter> */}
+              {debug.isFetchingInitialDebugTree ? (
+                <Bullseye>
+                  <EmptyState variant="large">
+                    <div className="pf-c-empty-state__icon">
+                      <Spinner size="xl" />
+                    </div>
+                    <Title headingLevel="h2" size="xl">
+                      Loading...
+                    </Title>
+                  </EmptyState>
+                </Bullseye>
+              ) : (
+                <CardBody>
+                  <Split hasGutter>
+                    <SplitItem isFilled>
+                      <SearchInput
+                        placeholder="Type to search"
+                        value={searchText}
+                        onChange={setSearchText}
+                        onClear={() => setSearchText('')}
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <Button onClick={refreshDebugTree} variant="primary">
+                        Refresh
+                      </Button>
+                    </SplitItem>
+                  </Split>
+                  <TreeView data={filteredTreeData ? filteredTreeData : []} defaultAllExpanded />
+                </CardBody>
+              )}
             </CardExpandableContent>
           </Card>
         )}

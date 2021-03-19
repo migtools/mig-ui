@@ -62,6 +62,7 @@ const webpackConfig = {
     filename: '[name].bundle.js',
     publicPath: '/',
   },
+  mode: 'development',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.scss'],
   },

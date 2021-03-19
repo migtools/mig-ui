@@ -6,11 +6,15 @@ export interface IDebugReducerState {
   objJson: any;
   errMsg: string;
   isLoading: boolean;
+  isPolling: boolean;
   debugRefs: any;
+  isFetchingInitialDebugTree: boolean;
 }
 
 const initialState = {
-  isLoading: true,
+  isFetchingInitialDebugTree: true,
+  isLoading: false,
+  isPolling: false,
   tree: null,
   objJson: null,
   errMsg: null,
@@ -27,6 +31,7 @@ const debugSlice = createSlice({
     treeFetchSuccess: {
       reducer: (state, action: PayloadAction<{ tree: IDebugTreeNode; debugRefs: any }>) => {
         state.isLoading = false;
+        state.isFetchingInitialDebugTree = false;
         state.tree = action.payload.tree;
         state.debugRefs = action.payload.debugRefs;
       },
@@ -40,6 +45,7 @@ const debugSlice = createSlice({
       },
     },
     treeFetchFailure(state, action: PayloadAction<string>) {
+      state.isFetchingInitialDebugTree = false;
       state.isLoading = false;
       state.errMsg = action.payload.trim();
     },
@@ -54,6 +60,12 @@ const debugSlice = createSlice({
       state.isLoading = false;
       state.errMsg = action.payload.trim();
     },
+    startDebugPolling(state, action: PayloadAction<string>) {
+      state.isPolling = true;
+    },
+    stopDebugPolling(state, action: PayloadAction<string>) {
+      state.isPolling = false;
+    },
   },
 });
 
@@ -64,5 +76,7 @@ export const {
   debugObjectFetchFailure,
   debugObjectFetchRequest,
   debugObjectFetchSuccess,
+  startDebugPolling,
+  stopDebugPolling,
 } = debugSlice.actions;
 export default debugSlice.reducer;
