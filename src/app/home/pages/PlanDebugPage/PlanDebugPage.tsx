@@ -45,10 +45,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const debug: IDebugReducerState = useSelector((state) => state.debug);
   const [isOpen, setIsOpen] = useState(false);
 
-  const refreshDebugTree = () => {
-    dispatch(treeFetchRequest(planName));
-  };
-
   const viewRawDebugObject = (node: IDebugTreeNode) => {
     const encodedPath = encodeURI(node.objectLink);
     dispatch(
@@ -161,11 +157,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                         onChange={setSearchText}
                         onClear={() => setSearchText('')}
                       />
-                    </SplitItem>
-                    <SplitItem>
-                      <Button onClick={refreshDebugTree} variant="primary">
-                        Refresh
-                      </Button>
                     </SplitItem>
                   </Split>
                   <TreeView data={filteredTreeData ? filteredTreeData : []} defaultAllExpanded />

@@ -61,18 +61,28 @@ const webpackConfig = {
     path: __dirname + '../dist',
     filename: '[name].bundle.js',
     publicPath: '/',
+    pathinfo: false,
   },
-  mode: 'development',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
+  optimization: {
+    removeAvailableModules: false,
+    removeEmptyChunks: false,
+    splitChunks: false,
+  },
+  mode: 'development',
   devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+          experimentalWatchApi: true,
+        },
       },
       {
         test: /\.module\.s(a|c)ss$/,

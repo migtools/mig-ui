@@ -49,26 +49,18 @@ function* fetchDebugTree(action) {
           if (k === 'objectLink') {
             links.push(obj[k]);
           }
-          console.log('not object then what is it', obj[k]);
         }
       }
     };
     eachRecursive(res.data);
-    console.log('what are links', links);
 
-    // const fetchDebugRefs = (links): Array<Promise<any>> => {
     const refs: Array<Promise<any>> = [];
 
     links.forEach((link) => {
-      // const res = yield discoveryClient.getRaw(action.rawPath);
       refs.push(discoveryClient.getRaw(link));
-      // return refs;
     });
 
-    // };
-
     const debugRefs = yield Promise.all(refs);
-    console.log('debugRefs', debugRefs);
 
     //loop through the tree and call all individual resources
     yield put(treeFetchSuccess(res.data, debugRefs));
