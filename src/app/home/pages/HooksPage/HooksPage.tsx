@@ -38,7 +38,7 @@ import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContaine
 import { IMigHook } from './types';
 import HookActions from './HookActions';
 
-const styles = require('./HooksPage.module');
+const styles = require('./HooksPage.module').default;
 const classNames = require('classnames');
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksPageBaseProps {

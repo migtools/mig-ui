@@ -35,7 +35,7 @@ import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 
-const styles = require('./VolumesTable.module');
+const styles = require('./VolumesTable.module').default;
 
 interface IVolumesTableProps
   extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,

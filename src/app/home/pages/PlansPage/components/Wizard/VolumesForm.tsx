@@ -15,7 +15,7 @@ import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
 
-const styles = require('./VolumesTable.module');
+const styles = require('./VolumesTable.module').default;
 
 type IVolumesFormProps = Pick<
   IOtherProps,

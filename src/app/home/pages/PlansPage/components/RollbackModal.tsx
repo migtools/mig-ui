@@ -3,7 +3,7 @@ import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import { PlanContext } from '../../../duck/context';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-const styles = require('./MigrateModal.module');
+const styles = require('./MigrateModal.module').default;
 
 interface IProps {
   onHandleClose: () => void;

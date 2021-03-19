@@ -29,7 +29,7 @@ import { IAnalytic } from '../../../../plan/duck/types';
 import ReactJson from 'react-json-view';
 import { useSortState } from '../../../../common/duck/hooks';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
-const styles = require('./AnalyticsTable.module');
+const styles = require('./AnalyticsTable.module').default;
 
 interface IProps {
   migAnalytics?: IAnalytic[];

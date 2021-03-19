@@ -6,7 +6,7 @@ import { AlertActions } from '../duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePausedPollingEffect } from '../context';
 
-const styles = require('./ErrorModal.module');
+const styles = require('./ErrorModal.module').default;
 
 interface IProps {
   isOpen: boolean;
