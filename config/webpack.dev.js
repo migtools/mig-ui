@@ -40,6 +40,9 @@ const plugins = [
     filename: '[name].css',
     chunkFilename: '[id].css',
   }),
+  new webpack.ProvidePlugin({
+    process: 'process/browser',
+  }),
 ];
 
 if (devMode === 'local') {
@@ -53,9 +56,6 @@ if (devMode === 'local') {
 const webpackConfig = {
   entry: {
     app: './src/index.tsx',
-  },
-  node: {
-    fs: 'empty',
   },
   output: {
     path: __dirname + '../dist',
@@ -75,7 +75,7 @@ const webpackConfig = {
       },
       {
         test: /\.module\.s(a|c)ss$/,
-        loader: [
+        use: [
           'style-loader',
           {
             loader: 'css-loader',
@@ -95,7 +95,7 @@ const webpackConfig = {
       {
         test: /\.s(a|c)ss$/,
         exclude: /\.module.(s(a|c)ss)$/,
-        loader: [
+        use: [
           'style-loader',
           'css-loader',
           {

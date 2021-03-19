@@ -48,7 +48,7 @@ To style the application, we are using [Patternfly](https://patternfly-react.sur
 <br>
 Instructions for adding style to a component:
 1) Inside the .jsx component file:
-`const styles = require('./AddEditStorageForm.module');`
+`const styles = require('./AddEditStorageForm.module').default;`
 
 2) Create a new file in the component directory called:
 `AddEditStorageForm.module.scss`

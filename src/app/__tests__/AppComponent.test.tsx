@@ -44,17 +44,17 @@ describe('<AppComponent />', () => {
       </Provider>
     );
 
-    expect(screen.getByRole('link', { name: 'Clusters' })).toBeInTheDocument;
-    expect(screen.getByRole('link', { name: 'Replication repositories' })).toBeInTheDocument;
-    expect(screen.getByRole('link', { name: 'Migration plans' })).toBeInTheDocument;
+    expect(screen.getByText('Clusters', { selector: 'a' })).toBeInTheDocument;
+    expect(screen.getByText('Replication repositories', { selector: 'a' })).toBeInTheDocument;
+    expect(screen.getByText('Migration plans', { selector: 'a' })).toBeInTheDocument;
 
-    userEvent.click(screen.getByRole('link', { name: 'Clusters' }));
+    userEvent.click(screen.getByText('Clusters', { selector: 'a' }));
     expect(screen.getByRole('button', { name: 'Add cluster' })).toBeInTheDocument;
 
-    userEvent.click(screen.getByRole('link', { name: 'Replication repositories' }));
+    userEvent.click(screen.getByText('Replication repositories', { selector: 'a' }));
     expect(screen.getByRole('button', { name: 'Add replication repository' })).toBeInTheDocument;
 
-    userEvent.click(screen.getByRole('link', { name: 'Migration plans' }));
+    userEvent.click(screen.getByText('Migration plans', { selector: 'a' }));
     expect(screen.getByRole('button', { name: 'Add migration plan' })).toBeInTheDocument;
   });
 });

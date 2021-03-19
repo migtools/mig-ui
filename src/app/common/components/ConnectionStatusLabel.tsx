@@ -5,8 +5,7 @@ import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-c
 import * as React from 'react';
 import { AddEditState } from '../../common/add_edit_state';
 import { Spinner, Flex, FlexItem } from '@patternfly/react-core';
-const styles = require('./ConnectionStatusLabel.module');
-import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
+const styles = require('./ConnectionStatusLabel.module').default;
 
 interface IProps {
   status: any;
