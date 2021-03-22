@@ -29,6 +29,7 @@ import {
   RAW_OBJECT_VIEW_ROUTE,
   IDebugTreeNode,
 } from '../../../debug/duck/types';
+const uuidv1 = require('uuid/v1');
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import {
@@ -159,7 +160,11 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       />
                     </SplitItem>
                   </Split>
-                  <TreeView data={filteredTreeData ? filteredTreeData : []} defaultAllExpanded />
+                  <TreeView
+                    id={uuidv1()}
+                    data={filteredTreeData ? filteredTreeData : []}
+                    defaultAllExpanded
+                  />
                 </CardBody>
               )}
             </CardExpandableContent>

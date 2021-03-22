@@ -71,7 +71,7 @@ const webpackConfig = {
     removeEmptyChunks: false,
     splitChunks: false,
   },
-  mode: 'development',
+  mode: 'none',
   devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [

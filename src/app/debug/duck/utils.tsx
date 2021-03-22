@@ -5,6 +5,7 @@ import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+const uuidv1 = require('uuid/v1');
 
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
@@ -13,6 +14,7 @@ const getShallowPropsForNode = (
 ): TreeViewDataItem => {
   const matchingDebugRef = debugRefs?.find((ref) => ref?.data?.name === rawNode?.name);
   return {
+    id: rawNode.name,
     name: (
       <>
         <span className={`${spacing.mrMd}`}>
@@ -63,6 +65,7 @@ export const convertRawTreeToViewTree = (
   // the root node, so doing that here and just bringing in the rest of it
   return [
     {
+      id: uuidv1(),
       ...getShallowPropsForNode(workingTree, viewRawDebugObject),
       children: workingTree.children,
       defaultExpanded: true,

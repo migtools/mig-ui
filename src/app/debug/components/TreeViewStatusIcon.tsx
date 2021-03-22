@@ -32,7 +32,7 @@ const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
     return (
       <Popover
         position={PopoverPosition.top}
-        bodyContent={<>Phase: {debugRef?.data?.object?.status?.phase}</>}
+        bodyContent={<>Warning</>}
         aria-label="warning-details"
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
