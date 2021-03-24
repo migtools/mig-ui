@@ -39,11 +39,14 @@ import {
   treeFetchRequest,
 } from '../../../debug/duck/slice';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
+import { debugSelectors } from '../../../debug/duck';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
+  const debugRefs = useSelector((state) => debugSelectors.getDebugRefsWithStatus(state));
+
   const [isOpen, setIsOpen] = useState(false);
 
   const viewRawDebugObject = (node: IDebugTreeNode) => {
@@ -77,7 +80,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
       .filter((item) => !!item) as TreeViewDataItem[];
 
   const treeData =
-    debug.tree && convertRawTreeToViewTree(debug.tree, debug.debugRefs, viewRawDebugObject);
+    debug.tree && convertRawTreeToViewTree(debug.tree, debugRefs, viewRawDebugObject);
   let filteredTreeData = treeData;
   if (searchText && treeData) {
     filteredTreeData = filterSubtree(treeData);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
-import { IDebugTreeNode } from './types';
+import { IDebugRef, IDebugTreeNode, IDerivedDebugStatusObject } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
@@ -71,4 +71,74 @@ export const convertRawTreeToViewTree = (
       defaultExpanded: true,
     },
   ];
+};
+
+export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObject => {
+  switch (debugRef?.kind) {
+    case 'Backup': {
+      const { errors, warnings, phase } = debugRef.status;
+      const hasWarning = warnings?.length > 0 || phase === 'PartiallyFailed';
+      const hasFailure = errors?.length > 0 || phase === 'Failed';
+      const hasCompleted = phase === 'Completed';
+      const hasRunning = phase === 'InProgress';
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'Restore': {
+      const { errors, warnings, phase } = debugRef.status;
+      const hasWarning = warnings?.length > 0 || phase === 'PartiallyFailed';
+      const hasFailure = errors?.length > 0 || phase === 'Failed';
+      const hasCompleted = phase === 'Completed';
+      const hasRunning = phase === 'InProgress';
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'PodVolumeBackup': {
+      const { phase } = debugRef.status;
+      const hasWarning = phase === 'PartiallyFailed';
+      const hasFailure = phase === 'Failed';
+      const hasCompleted = phase === 'Completed';
+      const hasRunning = phase === 'InProgress';
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'PodVolumeRestore': {
+      const { phase } = debugRef.status;
+      const hasWarning = phase === 'PartiallyFailed';
+      const hasFailure = phase === 'Failed';
+      const hasCompleted = phase === 'Completed';
+      const hasRunning = phase === 'InProgress';
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'DirectImageMigration': {
+      const { conditions } = debugRef.status;
+      const hasWarning = phase === 'PartiallyFailed';
+      const hasFailure = phase === 'Failed';
+      const hasCompleted = phase === 'Completed';
+      const hasRunning = phase === 'InProgress';
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+  }
 };
