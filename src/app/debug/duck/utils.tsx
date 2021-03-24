@@ -129,10 +129,49 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
     }
     case 'DirectImageMigration': {
       const { conditions } = debugRef.status;
-      const hasWarning = phase === 'PartiallyFailed';
-      const hasFailure = phase === 'Failed';
-      const hasCompleted = phase === 'Completed';
-      const hasRunning = phase === 'InProgress';
+      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
+      const hasFailure = conditions.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions.some((c) => c.type === 'Completed');
+      const hasRunning = conditions.some((c) => c.type === 'Running');
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'DirectImageStreamMigration': {
+      const { conditions } = debugRef.status;
+      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
+      const hasFailure = conditions.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions.some((c) => c.type === 'Completed');
+      const hasRunning = conditions.some((c) => c.type === 'Running');
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'DirectVolumeMigrationProgress': {
+      const { conditions } = debugRef.status;
+      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
+      const hasFailure = conditions.some((c) => c.type === ('InvalidPod' || 'InvalidPodRef'));
+      const hasCompleted = false;
+      const hasRunning = false;
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+      };
+    }
+    case 'MigMigration': {
+      const { conditions } = debugRef.status;
+      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
+      const hasFailure = conditions.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions.some((c) => c.type === 'Completed');
+      const hasRunning = conditions.some((c) => c.type === 'Running');
       return {
         hasWarning,
         hasFailure,

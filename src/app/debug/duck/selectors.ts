@@ -7,7 +7,6 @@ const getDebugRefsWithStatus = createSelector([debugRefsSelector], (debugRefs) =
   const refsWithStatus = debugRefs.map((ref) => {
     const statusObject = {
       ...getResourceStatus(ref?.data?.object),
-      // ...filterDebugConditions(ref.status.conditions || []),
     };
 
     return { ...ref?.data?.object, DebugStatus: statusObject };
