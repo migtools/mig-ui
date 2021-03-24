@@ -17,6 +17,8 @@ export interface IDebugRef {
   };
   spec: any;
   status?: any;
+  refName?: string;
+  debugResourceStatus?: IDerivedDebugStatusObject;
 }
 
 export interface IDerivedDebugStatusObject {
@@ -24,6 +26,13 @@ export interface IDerivedDebugStatusObject {
   hasFailure: boolean;
   hasCompleted: boolean;
   hasRunning: boolean;
+  currentStatus: DebugStatusType;
+}
+export enum DebugStatusType {
+  Warning = 'Warning',
+  Failure = 'Failure',
+  Running = 'Running',
+  Completed = 'Completed',
 }
 
 export const DEBUG_PATH_SEARCH_KEY = 'objPath';

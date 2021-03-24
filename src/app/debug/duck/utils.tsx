@@ -1,6 +1,6 @@
 import React from 'react';
 import { TreeViewDataItem } from '@patternfly/react-core';
-import { IDebugRef, IDebugTreeNode, IDerivedDebugStatusObject } from './types';
+import { DebugStatusType, IDebugRef, IDebugTreeNode, IDerivedDebugStatusObject } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
@@ -10,9 +10,9 @@ const uuidv1 = require('uuid/v1');
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
   viewRawDebugObject: (node: IDebugTreeNode) => void,
-  debugRefs?
+  debugRefs?: IDebugRef[]
 ): TreeViewDataItem => {
-  const matchingDebugRef = debugRefs?.find((ref) => ref?.data?.name === rawNode?.name);
+  const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
   return {
     id: rawNode.name,
     name: (
@@ -72,6 +72,19 @@ export const convertRawTreeToViewTree = (
     },
   ];
 };
+const calculateCurrentStatus = (hasWarning, hasFailure, hasCompleted, hasRunning) => {
+  let currentStatus;
+  if (hasRunning) {
+    currentStatus = DebugStatusType.Running;
+  } else if (hasFailure) {
+    currentStatus = DebugStatusType.Failure;
+  } else if (hasWarning) {
+    currentStatus = DebugStatusType.Warning;
+  } else if (hasCompleted) {
+    currentStatus = DebugStatusType.Completed;
+  }
+  return currentStatus;
+};
 
 export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObject => {
   switch (debugRef?.kind) {
@@ -86,6 +99,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'Restore': {
@@ -99,6 +113,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'PodVolumeBackup': {
@@ -112,6 +127,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'PodVolumeRestore': {
@@ -125,6 +141,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'DirectImageMigration': {
@@ -138,6 +155,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'DirectImageStreamMigration': {
@@ -151,6 +169,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'DirectVolumeMigrationProgress': {
@@ -164,6 +183,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
     case 'MigMigration': {
@@ -177,6 +197,7 @@ export const getResourceStatus = (debugRef: IDebugRef): IDerivedDebugStatusObjec
         hasFailure,
         hasCompleted,
         hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
       };
     }
   }
