@@ -65,6 +65,7 @@ const debugSlice = createSlice({
     },
     stopDebugPolling(state, action: PayloadAction<string>) {
       state.isPolling = false;
+      state.isFetchingInitialDebugTree = true;
     },
   },
 });

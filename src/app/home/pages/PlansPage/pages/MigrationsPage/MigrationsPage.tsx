@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useParams, useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import {
@@ -15,12 +15,20 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
+import { stopDebugPolling } from '../../../../../debug/duck/slice';
 
 export const MigrationsPage: React.FunctionComponent = () => {
   const { planName } = useParams();
   const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
   const { path, url } = useRouteMatch();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    return () => {
+      //cleanup on dismount
+      dispatch(stopDebugPolling(planName));
+    };
+  }, []);
 
   return (
     <>
