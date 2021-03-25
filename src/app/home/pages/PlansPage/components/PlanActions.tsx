@@ -63,7 +63,6 @@ const PlanActions = ({ plan, history }) => {
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
-        hasAttemptedMigration ||
         finalMigrationComplete ||
         isPlanLocked
       }
