@@ -362,7 +362,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       return c.type === 'Failed';
     });
     // check if migration is already failed
-    const succededWithWarnings = migration.status?.conditions?.find((c) => {
+    const succeededWithWarnings = migration.status?.conditions?.find((c) => {
       return c.type === 'SucceededWithWarnings';
     });
 
@@ -447,13 +447,18 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         ?.filter((c) => c.category === 'Warn')
         .map((c, idx) => c.message);
       if (succeededCondition) status.isSucceeded = true;
-      status.migrationState = 'warn';
       status.warnings = status.warnings.concat(warningMessages);
       status.warnCondition = warnCondition?.message;
+      if (succeededWithWarnings) {
+        status.isSucceededWithWarnings = true;
+        status.migrationState = 'success';
+      } else {
+        status.migrationState = 'warn';
+      }
       return status;
     }
 
-    if (succededWithWarnings) {
+    if (succeededWithWarnings) {
       status.isSucceededWithWarnings = true;
       status.migrationState = 'success';
       return status;
