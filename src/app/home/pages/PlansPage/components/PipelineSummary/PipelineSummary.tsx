@@ -81,10 +81,7 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   migration,
 }: IPipelineSummaryProps) => {
-  const { status, tableStatus } = migration;
-  if (!status || !status?.pipeline) {
-    return null;
-  }
+  const { status } = migration;
   const title = getPipelineSummaryTitle(migration);
   return (
     <>
@@ -116,41 +113,56 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
               </span>
             </Popover>
           )}
+          {migration.tableStatus.isPostponed && (
+            <Popover
+              position={PopoverPosition.top}
+              bodyContent={<>{migration.tableStatus.errorCondition}</>}
+              aria-label="pipeline-warning-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+                <ExclamationTriangleIcon />
+              </span>
+            </Popover>
+          )}
         </FlexItem>
-        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-          <Summary title={title}>
-            {status?.pipeline.map((step, index) => {
-              return (
-                <>
-                  {index != 0 ? (
-                    <Dash
-                      key={step.name}
-                      isReached={step?.started || step?.skipped ? true : false}
-                    />
-                  ) : (
-                    ''
-                  )}
-                  {step?.skipped ? (
-                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
-                  ) : !step?.started ? (
-                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-                  ) : step?.failed || step?.isError ? (
-                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-                  ) : step?.started && !step?.completed ? (
-                    <Chain
-                      key={index}
-                      Face={ResourcesAlmostFullIcon}
-                      times={1}
-                      color={successColor}
-                    />
-                  ) : (
-                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-                  )}
-                </>
-              );
-            })}
-          </Summary>
-        </FlexItem>
+        {status && status?.pipeline && (
+          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+            <Summary title={title}>
+              {status?.pipeline.map((step, index) => {
+                return (
+                  <>
+                    {index != 0 ? (
+                      <Dash
+                        key={step.name}
+                        isReached={step?.started || step?.skipped ? true : false}
+                      />
+                    ) : (
+                      ''
+                    )}
+                    {step?.skipped ? (
+                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
+                    ) : !step?.started ? (
+                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+                    ) : step?.failed || step?.isError ? (
+                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+                    ) : step?.started && !step?.completed ? (
+                      <Chain
+                        key={index}
+                        Face={ResourcesAlmostFullIcon}
+                        times={1}
+                        color={successColor}
+                      />
+                    ) : (
+                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+                    )}
+                  </>
+                );
+              })}
+            </Summary>
+          </FlexItem>
+        )}
       </Flex>
     </>
   );

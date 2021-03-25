@@ -812,7 +812,7 @@ function* stagePoll(action) {
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
         yield put(
           AlertActions.alertWarn(
-            `Staging succeeded with warnings. ${pollingStatusObj.errorMessage}`
+            `Warning(s) occurred during stage: ${pollingStatusObj.errorMessage}`
           )
         );
         yield put(PlanActions.stopStagePolling());

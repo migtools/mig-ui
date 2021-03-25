@@ -115,7 +115,7 @@ const BaseMigrationDetailsPage: React.FunctionComponent<IMigrationDetailsPagePro
       ) : migration?.tableStatus?.isCanceled ||
         migration?.tableStatus?.isFailed ||
         migration?.tableStatus?.isSucceeded ||
-        migration?.tableStatus?.isSuccededWithWarnings ? (
+        migration?.tableStatus?.isSucceededWithWarnings ? (
         <PageSection>
           <Card>
             <CardBody>

@@ -55,7 +55,6 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
-    const { tableStatus } = migration;
     // Type should be rollback if spec.rollback=true, else use value in spec.stage
     const nonRollbackMigrationType = migration.spec.stage ? 'Stage' : 'Migration';
     const type = migration.spec.rollback ? 'Rollback' : nonRollbackMigrationType;
