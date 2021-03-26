@@ -81,9 +81,10 @@ export interface IMigration {
     end: string;
     isFailed: boolean;
     isSucceeded: boolean;
-    isSuccededWithWarnings: boolean;
+    isSucceededWithWarnings: boolean;
     isCanceled: boolean;
     isCanceling: boolean;
+    isPostponed: boolean;
     isPaused: boolean;
     migrationState: string;
     moved: number;

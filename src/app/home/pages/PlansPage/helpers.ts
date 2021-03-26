@@ -80,7 +80,7 @@ export const getPipelineSummaryTitle = (migration: IMigration): string => {
   const { status, tableStatus } = migration;
   const currentStep = findCurrentStep(status?.pipeline || []);
   if (status?.phase === 'Completed') {
-    if (tableStatus?.migrationState === 'warn') {
+    if (tableStatus?.isSucceededWithWarnings) {
       return MigrationStepsType.CompletedWithWarnings;
     }
     if (tableStatus?.isCanceled) {

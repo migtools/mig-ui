@@ -307,9 +307,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       isPaused: false,
       isFailed: false,
       isSucceeded: false,
-      isSuccededWithWarnings: true,
+      isSucceededWithWarnings: false,
       isCanceled: false,
       isCanceling: false,
+      isPostponed: false,
       migrationState: null,
       warnings: [],
       errors: [],
@@ -361,12 +362,16 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       return c.type === 'Failed';
     });
     // check if migration is already failed
-    const succededWithWarnings = migration.status?.conditions?.find((c) => {
+    const succeededWithWarnings = migration.status?.conditions?.find((c) => {
       return c.type === 'SucceededWithWarnings';
     });
 
     const dvmBlockedCondition = migration.status?.conditions?.find((c) => {
       return c.type === 'DirectVolumeMigrationBlocked';
+    });
+
+    const postponedCondition = migration.status?.conditions?.find((c) => {
+      return c.type === 'Postponed';
     });
 
     // derive number of volumes copied / moved for migration table
@@ -390,6 +395,10 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         .map((c, idx) => c.message || c.reason);
       status.errors = status.errors.concat(errorMessages);
       if (failedCondition) status.isFailed = true;
+      if (postponedCondition) {
+        status.start = 'Postponed ';
+        status.isPostponed = true;
+      }
       status.errorCondition = criticalCondition.message;
       status.end = criticalCondition.lastTransitionTime;
       status.migrationState = 'error';
@@ -438,14 +447,19 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
         ?.filter((c) => c.category === 'Warn')
         .map((c, idx) => c.message);
       if (succeededCondition) status.isSucceeded = true;
-      status.migrationState = 'warn';
       status.warnings = status.warnings.concat(warningMessages);
       status.warnCondition = warnCondition?.message;
+      if (succeededWithWarnings) {
+        status.isSucceededWithWarnings = true;
+        status.migrationState = 'success';
+      } else {
+        status.migrationState = 'warn';
+      }
       return status;
     }
 
-    if (succededWithWarnings) {
-      status.isSuccededWithWarnings = true;
+    if (succeededWithWarnings) {
+      status.isSucceededWithWarnings = true;
       status.migrationState = 'success';
       return status;
     }
