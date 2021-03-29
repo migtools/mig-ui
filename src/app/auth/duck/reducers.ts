@@ -1,9 +1,5 @@
 import { AuthActionTypes } from './actions';
 import { IMigMeta, ILoginParams } from './types';
-import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
-
-const LS_KEY_HAS_LOGGED_IN = 'hasLoggedIn';
-const hasLoggedIn = JSON.parse(localStorage.getItem(LS_KEY_HAS_LOGGED_IN));
 
 export interface IAuthReducerState {
   user: ILoginParams;
@@ -11,11 +7,6 @@ export interface IAuthReducerState {
   certError: {
     failedUrl: string;
   };
-  isAdmin: boolean;
-  isHideWelcomeScreen: boolean;
-  tenantNamespaceList: {
-    name: string;
-  }[];
   migMeta: IMigMeta;
 }
 
@@ -25,9 +16,6 @@ const INITIAL_STATE: IAuthReducerState = {
   user: null,
   certError: null,
   authError: null,
-  isAdmin: NON_ADMIN_ENABLED ? null : true,
-  isHideWelcomeScreen: hasLoggedIn ? hasLoggedIn.isHideWelcomeScreen : true,
-  tenantNamespaceList: [],
   migMeta: {},
 };
 
@@ -37,23 +25,12 @@ export const authReducer: AuthReducerFn = (state = INITIAL_STATE, action) => {
       return { ...state, user: action.user };
     case AuthActionTypes.LOGIN_FAILURE:
       return { ...state, user: null };
-    case AuthActionTypes.SET_IS_ADMIN:
-      return NON_ADMIN_ENABLED ? { ...state, isAdmin: action.hasAdmin } : state;
     case AuthActionTypes.CERT_ERROR_OCCURRED:
       return { ...state, certError: { failedUrl: action.failedUrl } };
     case AuthActionTypes.AUTH_ERROR_OCCURRED:
       return { ...state, authError: action.authError };
-    case AuthActionTypes.SET_WELCOME_SCREEN_BOOL:
-      return { ...state, isHideWelcomeScreen: action.isHideWelcomeScreen };
-    case AuthActionTypes.FETCH_TENANT_NAMESPACES_SUCCESS:
-      return { ...state, tenantNamespaceList: action.tenantNamespaceList };
     case AuthActionTypes.INIT_MIG_META:
       return { ...state, migMeta: action.migMeta };
-    case AuthActionTypes.SET_ACTIVE_NAMESPACE:
-      return {
-        ...state,
-        migMeta: { ...state.migMeta, namespace: action.activeNamespace },
-      };
     default:
       return state;
   }

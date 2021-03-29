@@ -37,7 +37,6 @@ interface IClustersPageBaseProps {
   watchClusterAddEditStatus: (clusterName: string) => void;
   removeCluster: (clusterName: string) => void;
   isFetchingInitialClusters: boolean;
-  isAdmin: boolean;
   isAddEditTokenModalOpen: boolean;
   toggleAddEditTokenModal: () => void;
   setAssociatedCluster: (clusterName: string) => void;
@@ -51,7 +50,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   watchClusterAddEditStatus,
   removeCluster,
   isFetchingInitialClusters,
-  isAdmin,
   toggleAddEditTokenModal,
   isAddEditTokenModalOpen,
   setAssociatedCluster,
@@ -59,34 +57,23 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
-  const renderEmptyState = () =>
-    isAdmin ? (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={AddCircleOIcon} />
-        <Title headingLevel="h3" size="lg">
-          Add source and target clusters for the migration
-        </Title>
-        <Button onClick={toggleAddEditModal} variant="primary">
-          Add cluster
-        </Button>
-      </EmptyState>
-    ) : (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel="h3" size="lg">
-          No clusters
-        </Title>
-        <EmptyStateBody>
-          <TextContent>
-            <Text component="p">
-              You must have administrator rights to the cluster where the migration controller is
-              installed in order to add clusters for migration. Contact the cluster administrator
-              for assistance.
-            </Text>
-          </TextContent>
-        </EmptyStateBody>
-      </EmptyState>
-    );
+  const renderEmptyState = () => (
+    <EmptyState variant="full" className={spacing.my_2xl}>
+      <EmptyStateIcon icon={SearchIcon} />
+      <Title headingLevel="h3" size="lg">
+        No clusters
+      </Title>
+      <EmptyStateBody>
+        <TextContent>
+          <Text component="p">
+            You must have administrator rights to the cluster where the migration controller is
+            installed in order to add clusters for migration. Contact the cluster administrator for
+            assistance.
+          </Text>
+        </TextContent>
+      </EmptyStateBody>
+    </EmptyState>
+  );
 
   return (
     <>
@@ -122,7 +109,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     migMeta={migMeta}
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
-                    isAdmin={isAdmin}
                     toggleAddEditTokenModal={toggleAddEditTokenModal}
                     isAddEditTokenModalOpen={isAddEditTokenModalOpen}
                     setAssociatedCluster={setAssociatedCluster}
@@ -148,7 +134,6 @@ const mapStateToProps = (state: IReduxState) => ({
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   isAddEditTokenModalOpen: state.token.isAddEditTokenModalOpen,
   migMeta: state.auth.migMeta,
-  isAdmin: state.auth.isAdmin,
 });
 
 const mapDispatchToProps = (dispatch) => ({

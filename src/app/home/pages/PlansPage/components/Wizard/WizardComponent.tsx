@@ -11,10 +11,8 @@ import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
 import { StatusType } from '@konveyor/lib-ui';
-import { getTokenInfo } from '../../../TokensPage/helpers';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { isSameResource } from '../../../../../common/helpers';
-import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 
 const WizardComponent = (props: IOtherProps) => {
@@ -90,15 +88,6 @@ const WizardComponent = (props: IOtherProps) => {
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
     fieldKeys.every((fieldKey) => !errors[fieldKey] && (touched[fieldKey] || isEdit === true));
 
-  const areSelectedTokensValid = (fieldKeys: (keyof IFormValues)[]) =>
-    fieldKeys.every((fieldKey) => {
-      const tokenRef = values[fieldKey] as INameNamespaceRef;
-      const selectedToken =
-        tokenRef && tokenList.find((token) => isSameResource(token.MigToken.metadata, tokenRef));
-      const tokenInfo = selectedToken && getTokenInfo(selectedToken);
-      return tokenInfo && tokenInfo.statusType !== StatusType.Error;
-    });
-
   const steps = [
     {
       id: stepId.General,
@@ -109,21 +98,12 @@ const WizardComponent = (props: IOtherProps) => {
           <GeneralForm clusterList={clusterList} storageList={storageList} isEdit={isEdit} />
         </WizardStepContainer>
       ),
-      enableNext: NON_ADMIN_ENABLED
-        ? areFieldsTouchedAndValid([
-            'planName',
-            'sourceCluster',
-            'sourceTokenRef',
-            'targetCluster',
-            'targetTokenRef',
-            'selectedStorage',
-          ]) && areSelectedTokensValid(['sourceTokenRef', 'targetTokenRef'])
-        : areFieldsTouchedAndValid([
-            'planName',
-            'sourceCluster',
-            'targetCluster',
-            'selectedStorage',
-          ]),
+      enableNext: areFieldsTouchedAndValid([
+        'planName',
+        'sourceCluster',
+        'targetCluster',
+        'selectedStorage',
+      ]),
     },
     {
       id: stepId.Namespaces,
@@ -260,12 +240,6 @@ const WizardComponent = (props: IOtherProps) => {
           planName: values.planName,
           sourceCluster: values.sourceCluster,
           targetCluster: values.targetCluster,
-          ...(NON_ADMIN_ENABLED
-            ? {
-                sourceTokenRef: values.sourceTokenRef,
-                targetTokenRef: values.targetTokenRef,
-              }
-            : {}),
           selectedStorage: values.selectedStorage,
           namespaces: values.selectedNamespaces,
         });
