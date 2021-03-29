@@ -6,11 +6,8 @@ import planSagas from './app/plan/duck/sagas';
 import logSagas from './app/logs/duck/sagas';
 import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
-import tokenSagas from './app/token/duck/sagas';
 import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
-import { history } from './helpers';
-import { NON_ADMIN_ENABLED } from './TEMPORARY_GLOBAL_FLAGS';
 import { ClusterActions } from './app/cluster/duck/actions';
 
 export default function* rootSaga() {
@@ -85,14 +82,5 @@ export default function* rootSaga() {
     storageSagas.watchStorageAddEditStatus(),
     storageSagas.watchUpdateStorageRequest(),
     authSagas.watchAuthEvents(),
-    ...(NON_ADMIN_ENABLED
-      ? [
-          commonSagas.watchTokenPolling(),
-          tokenSagas.watchAddTokenRequest(),
-          tokenSagas.watchRemoveTokenRequest(),
-          tokenSagas.watchTokenAddEditStatus(),
-          tokenSagas.watchUpdateTokenRequest(),
-        ]
-      : []),
   ]);
 }

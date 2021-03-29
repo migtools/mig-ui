@@ -5,7 +5,6 @@ import { AuthActions } from '../../auth/duck/actions';
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
-import { TokenActionTypes, TokenActions } from '../../token/duck/actions';
 import utils from '../../common/duck/utils';
 import { IReduxState } from '../../../reducers';
 
@@ -60,13 +59,6 @@ function* watchClustersPolling() {
   }
 }
 
-function* watchTokenPolling() {
-  while (true) {
-    const action = yield take(TokenActionTypes.TOKEN_POLL_START);
-    yield race([call(poll, action), take(TokenActionTypes.TOKEN_POLL_STOP)]);
-  }
-}
-
 function* watchHookPolling() {
   while (true) {
     const action = yield take(PlanActionTypes.HOOK_POLL_START);
@@ -114,7 +106,6 @@ export default {
   watchStoragePolling,
   watchClustersPolling,
   watchPlanPolling,
-  watchTokenPolling,
   watchHookPolling,
   watchAlerts,
 };

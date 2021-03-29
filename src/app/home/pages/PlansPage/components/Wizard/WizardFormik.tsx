@@ -3,7 +3,6 @@ import { Formik } from 'formik';
 import { IPlan } from '../../../../../plan/duck/types';
 import { IFormValues } from './WizardContainer';
 import utils from '../../../../../common/duck/utils';
-import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 export interface IWizardFormikProps {
   initialValues: IFormValues;
@@ -48,14 +47,6 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       } else if (values.sourceCluster === values.targetCluster) {
         errors.targetCluster =
           'The selected target cluster must be different than the source cluster.';
-      }
-      if (NON_ADMIN_ENABLED) {
-        if (!values.sourceTokenRef) {
-          errors.sourceTokenRef = 'Required';
-        }
-        if (!values.targetTokenRef) {
-          errors.targetTokenRef = 'Required';
-        }
       }
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';

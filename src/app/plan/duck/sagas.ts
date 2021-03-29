@@ -33,7 +33,6 @@ import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import { NON_ADMIN_ENABLED } from '../../../TEMPORARY_GLOBAL_FLAGS';
 import { IReduxState } from '../../../reducers';
 import Q from 'q';
 
@@ -182,9 +181,7 @@ function* addPlanSaga(action) {
 
 function* namespaceFetchRequest(action) {
   const state: IReduxState = yield select();
-  const discoveryClient: IDiscoveryClient = NON_ADMIN_ENABLED
-    ? ClientFactory.discovery(state, action.clusterName)
-    : ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
     const res = yield discoveryClient.get(namespaces);
@@ -675,9 +672,7 @@ function* planCloseAndDelete(action) {
 
 function* getPVResourcesRequest(action) {
   const state: IReduxState = yield select();
-  const discoveryClient: IDiscoveryClient = NON_ADMIN_ENABLED
-    ? ClientFactory.discovery(state, action.clusterName)
-    : ClientFactory.discovery(state);
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
     const pvResourceRefs = action.pvList.map((pv) => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
