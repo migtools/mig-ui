@@ -12,27 +12,17 @@ import { useOpenModal } from '../../../duck';
 import { ClusterContext } from '../../../duck/context';
 import { IClusterInfo } from '../helpers';
 import { ICluster } from '../../../../cluster/duck/types';
-import AddEditTokenModal from '../../../../common/components/AddEditTokenModal';
-import { NON_ADMIN_ENABLED } from '../../../../../TEMPORARY_GLOBAL_FLAGS';
 
 interface IClusterActionsDropdownProps {
   cluster: ICluster;
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
-  isAdmin: boolean;
-  toggleAddEditTokenModal: () => void;
-  isAddEditTokenModalOpen: boolean;
-  setAssociatedCluster: (clusterName: string) => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
 const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownProps> = ({
   clusterInfo,
   removeCluster,
-  isAdmin,
-  toggleAddEditTokenModal,
-  isAddEditTokenModalOpen,
-  setAssociatedCluster,
   cluster,
   setCurrentCluster,
 }: IClusterActionsDropdownProps) => {
@@ -90,43 +80,25 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         isOpen={kebabIsOpen}
         isPlain
         dropdownItems={[
-          ...(NON_ADMIN_ENABLED
-            ? [
-                <DropdownItem
-                  onClick={() => {
-                    setKebabIsOpen(false);
-                    toggleAddEditTokenModal();
-                    setAssociatedCluster(clusterName);
-                  }}
-                  key="addToken"
-                >
-                  Add token
-                </DropdownItem>,
-              ]
-            : []),
-          ...(isAdmin
-            ? [
-                <DropdownItem
-                  onClick={() => {
-                    setKebabIsOpen(false);
-                    clusterContext.watchClusterAddEditStatus(clusterName);
-                    setCurrentCluster(cluster);
-                    toggleIsAddEditOpen();
-                  }}
-                  isDisabled={isHostCluster}
-                  key="editCluster"
-                >
-                  Edit
-                </DropdownItem>,
-                isHostCluster || associatedPlanCount > 0 ? (
-                  <Tooltip position="top" content={tooltipText} key="removeTokenTooltip">
-                    {removeItem}
-                  </Tooltip>
-                ) : (
-                  removeItem
-                ),
-              ]
-            : []),
+          <DropdownItem
+            onClick={() => {
+              setKebabIsOpen(false);
+              clusterContext.watchClusterAddEditStatus(clusterName);
+              setCurrentCluster(cluster);
+              toggleIsAddEditOpen();
+            }}
+            isDisabled={isHostCluster}
+            key="editCluster"
+          >
+            Edit
+          </DropdownItem>,
+          isHostCluster || associatedPlanCount > 0 ? (
+            <Tooltip position="top" content={tooltipText} key="removeTokenTooltip">
+              {removeItem}
+            </Tooltip>
+          ) : (
+            removeItem
+          ),
         ]}
         position={DropdownPosition.right}
       />
@@ -151,7 +123,6 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
         onHandleClose={handleRemoveCluster}
         id="confirm-cluster-removal"
       />
-      {isAddEditTokenModalOpen && <AddEditTokenModal />}
     </>
   );
 };

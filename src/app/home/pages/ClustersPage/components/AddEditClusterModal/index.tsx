@@ -21,7 +21,6 @@ interface IAddEditClusterModal {
   isPolling: boolean;
   checkConnection: (name) => void;
   clusterList: ICluster[];
-  isAdmin: boolean;
   addCluster: (cluster) => void;
   cancelAddEditWatch: () => void;
   onHandleClose: () => void;
@@ -38,7 +37,6 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   isPolling,
   checkConnection,
   clusterList,
-  isAdmin,
   addCluster,
   cancelAddEditWatch,
   onHandleClose,
@@ -47,7 +45,6 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   currentCluster,
   setCurrentCluster,
 }: IAddEditClusterModal) => {
-  if (!isAdmin) return null;
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -102,7 +99,6 @@ export default connect(
       isPolling: state.cluster.isPolling,
       currentCluster: state.cluster.currentCluster,
       clusterList: state.cluster.clusterList,
-      isAdmin: state.auth.isAdmin,
     };
   },
   (dispatch) => ({

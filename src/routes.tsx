@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react';
-import HomeComponent from './home/HomeComponent';
-import LoginHandlerComponent from './auth/LoginHandlerComponent';
+import HomeComponent from './app/home/HomeComponent';
+import LoginHandlerComponent from './app/auth/LoginHandlerComponent';
 import { Route, Switch } from 'react-router-dom';
-import PrivateRoute from './auth/PrivateRoute';
+import PrivateRoute from './app/auth/PrivateRoute';
 import { connect } from 'react-redux';
-import { history } from '../helpers';
+import { history } from './helpers';
 import { ConnectedRouter } from 'connected-react-router';
-import OAuthLandingPage from './token/OAuthLandingPage';
-import AlertModal from './common/components/AlertModal';
-import ErrorModal from './common/components/ErrorModal';
-import { ICluster } from './cluster/duck/types';
-import { IDebugTreeNode, RAW_OBJECT_VIEW_ROUTE } from './debug/duck/types';
-import RawDebugObjectView from './debug/components/RawDebugObjectView';
-import AuthErrorComponent from './auth/AuthErrorComponent';
-import { PollingContextProvider } from './common/context/PollingContext';
+import AlertModal from './app/common/components/AlertModal';
+import ErrorModal from './app/common/components/ErrorModal';
+import { ICluster } from './app/cluster/duck/types';
+import { IDebugTreeNode, RAW_OBJECT_VIEW_ROUTE } from './app/debug/duck/types';
+import RawDebugObjectView from './app/debug/components/RawDebugObjectView';
+import AuthErrorComponent from './app/auth/AuthErrorComponent';
+import { PollingContextProvider } from './app/common/context/PollingContext';
 interface IProps {
   isLoggedIn?: boolean;
   warnMessage: any;
@@ -25,7 +24,7 @@ interface IProps {
   debugTree: IDebugTreeNode;
 }
 
-const AppComponent: React.FunctionComponent<IProps> = ({
+const AppRoutes: React.FunctionComponent<IProps> = ({
   errorMessage,
   errorModalObject,
   successMessage,
@@ -47,7 +46,6 @@ const AppComponent: React.FunctionComponent<IProps> = ({
           <Switch>
             <Route path="/handle-login" component={LoginHandlerComponent} />
             <Route path="/auth-error" component={AuthErrorComponent} />
-            <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
               path={RAW_OBJECT_VIEW_ROUTE}
               isLoggedIn={isLoggedIn}
@@ -79,4 +77,4 @@ export default connect(
     debugTree: state.debug.tree,
   }),
   () => ({})
-)(AppComponent);
+)(AppRoutes);

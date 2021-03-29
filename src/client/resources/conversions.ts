@@ -5,7 +5,6 @@ import {
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
-import { NON_ADMIN_ENABLED } from '../../TEMPORARY_GLOBAL_FLAGS';
 
 export function createMigClusterSecret(
   name: string,
@@ -408,14 +407,6 @@ export function updateMigPlanFromValues(
       namespace: migPlan.metadata.namespace,
     };
   }
-  if (NON_ADMIN_ENABLED) {
-    if (planValues.sourceTokenRef) {
-      updatedSpec.srcMigTokenRef = { ...planValues.sourceTokenRef };
-    }
-    if (planValues.targetTokenRef) {
-      updatedSpec.destMigTokenRef = { ...planValues.targetTokenRef };
-    }
-  }
   if (updatedSpec.namespaces) {
     updatedSpec.namespaces = planValues.selectedNamespaces;
   }
@@ -510,12 +501,6 @@ export function createInitialMigPlan(
         name: destinationClusterObj,
         namespace,
       },
-      ...(NON_ADMIN_ENABLED
-        ? {
-            srcMigTokenRef: { ...sourceTokenRef },
-            destMigTokenRef: { ...destinationTokenRef },
-          }
-        : {}),
       migStorageRef: {
         name: storageObj,
         namespace,

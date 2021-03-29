@@ -9,12 +9,10 @@ import {
   EmptyState,
   EmptyStateIcon,
   Title,
-  Button,
   Bullseye,
   Spinner,
   EmptyStateBody,
 } from '@patternfly/react-core';
-import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
@@ -28,7 +26,6 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
-import { TokenActions } from '../../../token/duck/actions';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -37,10 +34,6 @@ interface IClustersPageBaseProps {
   watchClusterAddEditStatus: (clusterName: string) => void;
   removeCluster: (clusterName: string) => void;
   isFetchingInitialClusters: boolean;
-  isAdmin: boolean;
-  isAddEditTokenModalOpen: boolean;
-  toggleAddEditTokenModal: () => void;
-  setAssociatedCluster: (clusterName: string) => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
@@ -51,42 +44,27 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   watchClusterAddEditStatus,
   removeCluster,
   isFetchingInitialClusters,
-  isAdmin,
-  toggleAddEditTokenModal,
-  isAddEditTokenModalOpen,
-  setAssociatedCluster,
   setCurrentCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
-  const renderEmptyState = () =>
-    isAdmin ? (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={AddCircleOIcon} />
-        <Title headingLevel="h3" size="lg">
-          Add source and target clusters for the migration
-        </Title>
-        <Button onClick={toggleAddEditModal} variant="primary">
-          Add cluster
-        </Button>
-      </EmptyState>
-    ) : (
-      <EmptyState variant="full" className={spacing.my_2xl}>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel="h3" size="lg">
-          No clusters
-        </Title>
-        <EmptyStateBody>
-          <TextContent>
-            <Text component="p">
-              You must have administrator rights to the cluster where the migration controller is
-              installed in order to add clusters for migration. Contact the cluster administrator
-              for assistance.
-            </Text>
-          </TextContent>
-        </EmptyStateBody>
-      </EmptyState>
-    );
+  const renderEmptyState = () => (
+    <EmptyState variant="full" className={spacing.my_2xl}>
+      <EmptyStateIcon icon={SearchIcon} />
+      <Title headingLevel="h3" size="lg">
+        No clusters
+      </Title>
+      <EmptyStateBody>
+        <TextContent>
+          <Text component="p">
+            You must have administrator rights to the cluster where the migration controller is
+            installed in order to add clusters for migration. Contact the cluster administrator for
+            assistance.
+          </Text>
+        </TextContent>
+      </EmptyStateBody>
+    </EmptyState>
+  );
 
   return (
     <>
@@ -122,10 +100,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     migMeta={migMeta}
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
-                    isAdmin={isAdmin}
-                    toggleAddEditTokenModal={toggleAddEditTokenModal}
-                    isAddEditTokenModalOpen={isAddEditTokenModalOpen}
-                    setAssociatedCluster={setAssociatedCluster}
                     setCurrentCluster={setCurrentCluster}
                   />
                 )}
@@ -146,9 +120,7 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
-  isAddEditTokenModalOpen: state.token.isAddEditTokenModalOpen,
   migMeta: state.auth.migMeta,
-  isAdmin: state.auth.isAdmin,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -163,9 +135,6 @@ const mapDispatchToProps = (dispatch) => ({
   },
   removeCluster: (clusterName: string) =>
     dispatch(ClusterActions.removeClusterRequest(clusterName)),
-  toggleAddEditTokenModal: () => dispatch(TokenActions.toggleAddEditTokenModal()),
-  setAssociatedCluster: (associatedCluster: string) =>
-    dispatch(TokenActions.setAssociatedCluster(associatedCluster)),
   setCurrentCluster: (currentCluster: ICluster) =>
     dispatch(ClusterActions.setCurrentCluster(currentCluster)),
 });
