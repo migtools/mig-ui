@@ -6,7 +6,6 @@ import PrivateRoute from './app/auth/PrivateRoute';
 import { connect } from 'react-redux';
 import { history } from './helpers';
 import { ConnectedRouter } from 'connected-react-router';
-import OAuthLandingPage from './app/token/OAuthLandingPage';
 import AlertModal from './app/common/components/AlertModal';
 import ErrorModal from './app/common/components/ErrorModal';
 import { ICluster } from './app/cluster/duck/types';
@@ -47,7 +46,6 @@ const AppRoutes: React.FunctionComponent<IProps> = ({
           <Switch>
             <Route path="/handle-login" component={LoginHandlerComponent} />
             <Route path="/auth-error" component={AuthErrorComponent} />
-            <Route path="/oauth-landing" component={OAuthLandingPage} />
             <PrivateRoute
               path={RAW_OBJECT_VIEW_ROUTE}
               isLoggedIn={isLoggedIn}

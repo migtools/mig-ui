@@ -29,9 +29,6 @@ interface IClustersTableProps {
   migMeta: IMigMeta;
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;
-  toggleAddEditTokenModal: () => void;
-  isAddEditTokenModalOpen: boolean;
-  setAssociatedCluster: (clusterName: string) => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
@@ -41,7 +38,6 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   migMeta,
   removeCluster,
   toggleAddEditModal,
-  setAssociatedCluster,
   setCurrentCluster,
 }: IClustersTableProps) => {
   const columns = [
@@ -135,7 +131,6 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               cluster={cluster}
               clusterInfo={clusterInfo}
               removeCluster={removeCluster}
-              setAssociatedCluster={setAssociatedCluster}
               setCurrentCluster={setCurrentCluster}
             />
           ),

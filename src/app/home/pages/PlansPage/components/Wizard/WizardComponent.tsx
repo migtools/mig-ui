@@ -10,9 +10,6 @@ import { useFormikContext } from 'formik';
 import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
-import { StatusType } from '@konveyor/lib-ui';
-import { INameNamespaceRef } from '../../../../../common/duck/types';
-import { isSameResource } from '../../../../../common/helpers';
 import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 
 const WizardComponent = (props: IOtherProps) => {
@@ -26,7 +23,6 @@ const WizardComponent = (props: IOtherProps) => {
     currentPlan,
     currentPlanStatus,
     storageList,
-    tokenList,
     isOpen,
     isFetchingPVList,
     isFetchingNamespaceList,

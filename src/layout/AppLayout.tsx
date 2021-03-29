@@ -1,8 +1,24 @@
 import * as React from 'react';
 import { Link, NavLink, useRouteMatch, useLocation } from 'react-router-dom';
-import { Nav, NavList, NavItem, Page, PageSidebar, SkipToContent } from '@patternfly/react-core';
-import PageHeaderComponent from '../app/common/components/PageHeaderComponent';
+import {
+  Nav,
+  NavList,
+  NavItem,
+  Page,
+  PageSidebar,
+  SkipToContent,
+  PageHeader,
+  PageHeaderTools,
+  PageHeaderToolsGroup,
+  PageHeaderToolsItem,
+  Title,
+} from '@patternfly/react-core';
+const styles = require('./AppLayout.module').default;
+import logoCrane from './logoCrane.svg';
+import logoRedHat from './logoRedHat.svg';
 import './global.scss';
+import { APP_TITLE } from '../app/common/constants';
+import { APP_BRAND, BrandType } from '../app/global-flags';
 interface IAppLayout {
   children: React.ReactNode;
 }
@@ -20,17 +36,44 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
-  const onNavToggleMobile = () => {
-    setIsNavOpenMobile(!isNavOpenMobile);
-  };
-  const onNavToggle = () => {
-    setIsNavOpen(!isNavOpen);
-  };
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
     setIsMobileView(props.mobileView);
   };
 
-  const Header = <PageHeaderComponent />;
+  const onNavToggle = () => {
+    setIsNavOpen(!isNavOpen);
+  };
+
+  const Header = (
+    <PageHeader
+      logoComponent="span"
+      showNavToggle={true}
+      isNavOpen={isNavOpen}
+      onNavToggle={onNavToggle}
+      headerTools={
+        <PageHeaderTools>
+          <PageHeaderToolsGroup>
+            <PageHeaderToolsItem>
+              <img
+                src={APP_BRAND === BrandType.RedHat ? logoRedHat : logoCrane}
+                alt="Logo"
+                className={
+                  APP_BRAND === BrandType.RedHat ? styles.redhatLogoStyle : styles.craneLogoStyle
+                }
+              />
+            </PageHeaderToolsItem>
+          </PageHeaderToolsGroup>
+        </PageHeaderTools>
+      }
+      logo={
+        <>
+          <Title className={styles.logoPointer} headingLevel="h1" size="2xl">
+            {APP_TITLE}
+          </Title>
+        </>
+      }
+    />
+  );
 
   const nav = (
     <Nav aria-label="Page navigation" theme="dark">
@@ -45,12 +88,14 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const PageSkipToContent = (
     <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>
   );
-
+  const Sidebar = (
+    <PageSidebar theme="dark" nav={nav} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />
+  );
   return (
     <Page
       mainContainerId="primary-app-container"
       header={Header}
-      sidebar={<PageSidebar nav={nav} theme="dark" />}
+      sidebar={Sidebar}
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}
     >

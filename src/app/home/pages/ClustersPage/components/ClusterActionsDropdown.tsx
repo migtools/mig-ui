@@ -17,7 +17,6 @@ interface IClusterActionsDropdownProps {
   cluster: ICluster;
   clusterInfo: IClusterInfo;
   removeCluster: (clusterName: string) => void;
-  setAssociatedCluster: (clusterName: string) => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
 }
 
