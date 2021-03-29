@@ -17,8 +17,6 @@ export const initialStore = {
   },
   auth: {
     certError: null,
-    isAdmin: true,
-    isHideWelcomeScreen: true,
     migMeta: {
       clusterApi: 'https://api.cluster-v4312.com:6443',
       configNamespace: 'openshift-config',
@@ -32,7 +30,6 @@ export const initialStore = {
       userScope: 'user:full',
     },
     oauthMeta: null,
-    tenantNamespaceList: '[]',
     user: {
       access_token: 'GFfmNdlZaU_H2uzLm99hjiY-YxsXuD5MC5R',
       expires_in: 86400,
@@ -100,8 +97,7 @@ export const initialStore = {
     isFetchingInitialTokens: true,
     tokenAddEditStatus: '{mode: "add", state: "pending"}',
     currentToken: null,
-    isAddEditTokenModalOpen: false,
-    associatedCluster: null,
+    isModalOpen: false,
   },
   logs: {
     isFetchingLogs: true,

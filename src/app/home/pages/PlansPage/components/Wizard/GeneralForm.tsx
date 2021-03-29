@@ -1,23 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
-import {
-  Form,
-  FormGroup,
-  Grid,
-  GridItem,
-  Select,
-  SelectOption,
-  TextInput,
-  Title,
-  Tooltip,
-} from '@patternfly/react-core';
+import { Form, FormGroup, Grid, GridItem, TextInput, Title, Tooltip } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import TokenSelect from './TokenSelect';
-import { INameNamespaceRef } from '../../../../../common/duck/types';
 import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
-import { NON_ADMIN_ENABLED } from '../../../../../../TEMPORARY_GLOBAL_FLAGS';
 import { validatedState } from '../../../../../common/helpers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
@@ -138,7 +125,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
-      if (NON_ADMIN_ENABLED) setFieldValue('sourceTokenRef', null);
     }
   };
 
@@ -149,7 +135,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     if (matchingCluster) {
       setFieldValue('targetCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('targetCluster', true, true);
-      if (NON_ADMIN_ENABLED) setFieldValue('targetTokenRef', null);
     }
   };
 
@@ -204,21 +189,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               options={srcClusterOptions}
             />
           </FormGroup>
-          {NON_ADMIN_ENABLED && (
-            <TokenSelect
-              fieldId="sourceToken"
-              clusterName={values.sourceCluster}
-              value={values.sourceTokenRef}
-              onChange={(tokenRef: INameNamespaceRef) => {
-                setFieldValue('sourceTokenRef', tokenRef);
-                setFieldTouched('sourceTokenRef', true, true);
-              }}
-              touched={touched.sourceTokenRef}
-              error={errors.sourceTokenRef}
-              expiringSoonMessage="The users's selected token on cluster source will expire soon."
-              expiredMessage="The user's selected token on cluster source is expired."
-            />
-          )}
         </GridItem>
 
         <GridItem>
@@ -237,21 +207,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               placeholderText="Select target..."
             />
           </FormGroup>
-          {NON_ADMIN_ENABLED && (
-            <TokenSelect
-              fieldId="targetToken"
-              clusterName={values.targetCluster}
-              value={values.targetTokenRef}
-              onChange={(tokenRef) => {
-                setFieldValue('targetTokenRef', tokenRef);
-                setFieldTouched('targetTokenRef', true, true);
-              }}
-              touched={touched.targetTokenRef}
-              error={errors.targetTokenRef}
-              expiringSoonMessage="The users's selected token on cluster target will expire soon."
-              expiredMessage="The user's selected token on cluster target is expired."
-            />
-          )}
         </GridItem>
       </Grid>
 

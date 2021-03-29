@@ -22,7 +22,6 @@ import {
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
 import { IReduxState } from '../../../../../../reducers';
-import { IToken } from '../../../../../token/duck/types';
 import { INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IHook } from '../../../../../../client/resources/conversions';
@@ -57,7 +56,6 @@ export interface IOtherProps {
   clusterList: ICluster[];
   planList: IPlan[];
   storageList: IStorage[];
-  tokenList: IToken[];
   isFetchingPVList: boolean;
   isPVPolling: boolean;
   isPollingStatus: boolean;
@@ -179,7 +177,6 @@ const mapStateToProps = (state: IReduxState) => {
     isUpdatingGlobalHookList: state.plan.isUpdatingGlobalHookList,
     isAssociatingHookToPlan: state.plan.isAssociatingHookToPlan,
     hookAddEditStatus: state.plan.hookAddEditStatus,
-    tokenList: state.token.tokenList, // NATODO do we also need to bring in fetch/polling stuff for tokens to the wizard?
   };
 };
 const mapDispatchToProps = (dispatch) => {
