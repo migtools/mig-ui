@@ -97,8 +97,7 @@ export const initialStore = {
     isFetchingInitialTokens: true,
     tokenAddEditStatus: '{mode: "add", state: "pending"}',
     currentToken: null,
-    isAddEditTokenModalOpen: false,
-    associatedCluster: null,
+    isModalOpen: false,
   },
   logs: {
     isFetchingLogs: true,
