@@ -307,7 +307,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
       isPaused: false,
       isFailed: false,
       isSucceeded: false,
-      isSuccededWithWarnings: true,
+      isSuccededWithWarnings: false,
       isCanceled: false,
       isCanceling: false,
       migrationState: null,
