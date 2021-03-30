@@ -28,14 +28,9 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/plans/:planName/namespaces">
             <NamespacesPage />
           </Route>
-          <Route exact path="/plans/:planName/migrations">
+          <Route path="/plans/:planName/migrations">
             <MigrationsPage />
-          </Route>
-          <Route exact path="/plans/:planName/migrations/:migrationID">
-            <MigrationDetailsPage />
-          </Route>
-          <Route exact path="/plans/:planName/migrations/:migrationID/:stepName">
-            <MigrationStepDetailsPage />
+            <PlanDebugPage />
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
