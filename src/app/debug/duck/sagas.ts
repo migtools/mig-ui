@@ -40,25 +40,41 @@ function* fetchDebugTree(action) {
   try {
     const res = yield discoveryClient.get(debugTreeResource);
 
-    const links = [];
+    const linkRefs = [];
     const eachRecursive = (obj) => {
       for (const k in obj) {
         if (typeof obj[k] == 'object' && obj[k] !== null) {
           eachRecursive(obj[k]);
         } else {
           if (k === 'objectLink') {
-            links.push(obj[k]);
+            linkRefs.push({ link: obj[k], kind: obj['kind'] });
           }
         }
       }
     };
     eachRecursive(res.data);
 
-    const refs: Array<Promise<any>> = [];
-
-    links.forEach((link) => {
-      refs.push(discoveryClient.getRaw(link));
+    const refs: Array<Promise<any>> = linkRefs.map(function (linkRef) {
+      return discoveryClient.getRaw(linkRef.link).then(function (value) {
+        return {
+          kind: linkRef.kind,
+          value: value,
+        };
+      });
     });
+
+    // linkRefs.forEach((linkRef) => {
+    //   const myPromise = new Promise(
+    //     discoveryClient.getRaw(linkRef.link).then(function (value) {
+    //       return {
+    //         kind: linkRef.kind,
+    //         value: value,
+    //       };
+    //     })
+    //   );
+    //   // refs.push(discoveryClient.getRaw(link));
+    //   refs.push(myPromise);
+    // });
 
     const debugRefs = yield Promise.all(refs);
 

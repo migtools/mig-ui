@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IDebugTreeNode } from './types';
+import { IDebugRefRes, IDebugTreeNode } from './types';
 
 export interface IDebugReducerState {
   tree: IDebugTreeNode;
@@ -7,7 +7,7 @@ export interface IDebugReducerState {
   errMsg: string;
   isLoading: boolean;
   isPolling: boolean;
-  debugRefs: any;
+  debugRefs: IDebugRefRes[];
   isFetchingInitialDebugTree: boolean;
 }
 
@@ -29,13 +29,16 @@ const debugSlice = createSlice({
       state.isLoading = true;
     },
     treeFetchSuccess: {
-      reducer: (state, action: PayloadAction<{ tree: IDebugTreeNode; debugRefs: any }>) => {
+      reducer: (
+        state,
+        action: PayloadAction<{ tree: IDebugTreeNode; debugRefs: IDebugRefRes[] }>
+      ) => {
         state.isLoading = false;
         state.isFetchingInitialDebugTree = false;
         state.tree = action.payload.tree;
         state.debugRefs = action.payload.debugRefs;
       },
-      prepare: (tree: IDebugTreeNode, debugRefs: any) => {
+      prepare: (tree: IDebugTreeNode, debugRefs: IDebugRefRes[]) => {
         return {
           payload: {
             tree,

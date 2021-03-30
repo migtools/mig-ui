@@ -28,7 +28,7 @@ import {
   DEBUG_PATH_SEARCH_KEY,
   RAW_OBJECT_VIEW_ROUTE,
   IDebugTreeNode,
-  IDebugRef,
+  IDebugRefWithStatus,
 } from '../../../debug/duck/types';
 const uuidv1 = require('uuid/v1');
 
@@ -46,7 +46,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
-  const debugRefs: IDebugRef[] = useSelector((state) =>
+  const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
     debugSelectors.getDebugRefsWithStatus(state)
   );
 

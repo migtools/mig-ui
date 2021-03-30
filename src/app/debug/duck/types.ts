@@ -7,9 +7,13 @@ export interface IDebugTreeNode {
   objectLink: string;
   children: IDebugTreeNode[];
 }
-export interface IDebugRef {
-  apiVersion: string;
+export interface IDebugRefRes {
   kind: string;
+  value: any;
+}
+export interface IDebugRefWithStatus {
+  apiVersion: string;
+  kind?: string;
   metadata: {
     name: string;
     namespace: string;
@@ -19,6 +23,7 @@ export interface IDebugRef {
   status?: any;
   refName?: string;
   debugResourceStatus?: IDerivedDebugStatusObject;
+  resourceKind: string;
 }
 
 export interface IDerivedDebugStatusObject {
