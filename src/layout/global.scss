@@ -22,3 +22,7 @@ body,
 .modal-in-modal-container .pf-c-backdrop {
   z-index: 600;
 }
+
+.pf-c-tree-view__node-text {
+  width: 100% !important;
+}

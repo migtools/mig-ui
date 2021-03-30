@@ -26,6 +26,14 @@ const getDebugRefsWithStatus = createSelector([debugRefsSelector], (debugRefs: I
 });
 
 const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject => {
+  const warningConditionTypes = ['Critical', 'Error', 'Warn'];
+  const checkListContainsString = (val: string, stringList: Array<string>) => {
+    if (stringList.indexOf(val) > -1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   switch (debugRef.kind) {
     case 'Backup': {
       const { errors, warnings, phase } = debugRef.value.data.object.status;
@@ -85,10 +93,12 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
     case 'DirectImageMigration': {
       const { conditions } = debugRef.value.data.object.status;
-      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
-      const hasFailure = conditions.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions.some((c) => c.type === 'Completed');
-      const hasRunning = conditions.some((c) => c.type === 'Running');
+      const hasWarning = conditions?.some((c) =>
+        checkListContainsString(c.category, warningConditionTypes)
+      );
+      const hasFailure = conditions?.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c) => c.type === 'Completed');
+      const hasRunning = conditions?.some((c) => c.type === 'Running');
       return {
         hasWarning,
         hasFailure,
@@ -99,10 +109,12 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
     case 'DirectImageStreamMigration': {
       const { conditions } = debugRef.value.data.object.status;
-      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
-      const hasFailure = conditions.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions.some((c) => c.type === 'Completed');
-      const hasRunning = conditions.some((c) => c.type === 'Running');
+      const hasWarning = conditions?.some((c) =>
+        checkListContainsString(c.category, warningConditionTypes)
+      );
+      const hasFailure = conditions?.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c) => c.type === 'Completed');
+      const hasRunning = conditions?.some((c) => c.type === 'Running');
       return {
         hasWarning,
         hasFailure,
@@ -113,8 +125,12 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
     case 'DirectVolumeMigrationProgress': {
       const { conditions } = debugRef.value.data.object.status;
-      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
-      const hasFailure = conditions.some((c) => c.type === ('InvalidPod' || 'InvalidPodRef'));
+      const hasWarning = conditions?.some((c) =>
+        checkListContainsString(c.category, warningConditionTypes)
+      );
+      const hasFailure = conditions?.some((c) =>
+        checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef'])
+      );
       const hasCompleted = false;
       const hasRunning = false;
       return {
@@ -127,10 +143,32 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
     case 'Migration': {
       const { conditions } = debugRef.value.data.object.status;
-      const hasWarning = conditions.some((c) => c.category === ('Critical' || 'Error' || 'Warn'));
-      const hasFailure = conditions.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions.some((c) => c.type === 'Completed');
-      const hasRunning = conditions.some((c) => c.type === 'Running');
+      const hasWarning = conditions?.some((c) =>
+        checkListContainsString(c.category, warningConditionTypes)
+      );
+      const hasFailure = conditions?.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c) =>
+        checkListContainsString(c.type, ['Succeeded', 'Completed'])
+      );
+      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      return {
+        hasWarning,
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+      };
+    }
+    case 'Plan': {
+      const { conditions } = debugRef.value.data.object.status;
+      const hasWarning = conditions?.some((c) =>
+        checkListContainsString(c.category, warningConditionTypes)
+      );
+      const hasFailure = conditions?.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c) =>
+        checkListContainsString(c.type, ['Succeeded', 'Completed'])
+      );
+      const hasRunning = conditions?.some((c) => c.type === 'Running');
       return {
         hasWarning,
         hasFailure,

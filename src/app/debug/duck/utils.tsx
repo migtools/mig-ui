@@ -1,11 +1,12 @@
 import React from 'react';
-import { TreeViewDataItem } from '@patternfly/react-core';
+import { Flex, FlexItem, TreeViewDataItem } from '@patternfly/react-core';
 import { IDebugRefWithStatus, IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 const uuidv1 = require('uuid/v1');
+const styles = require('./utils.module').default;
 
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
@@ -16,12 +17,14 @@ const getShallowPropsForNode = (
   return {
     id: rawNode.name,
     name: (
-      <>
-        <span className={`${spacing.mrMd}`}>
-          {`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}
-        </span>
-        <TreeViewStatusIcon debugRef={matchingDebugRef} />
-      </>
+      <Flex className={styles.treeNameMod}>
+        <FlexItem
+          className={styles.treeID}
+        >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
+        <FlexItem className={styles.statusIcon}>
+          <TreeViewStatusIcon debugRef={matchingDebugRef} />
+        </FlexItem>
+      </Flex>
     ),
     action: <TreeActionsDropdown rawNode={rawNode} viewRawDebugObject={viewRawDebugObject} />,
   };
