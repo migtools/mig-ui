@@ -17,7 +17,7 @@ const styles = require('./AppLayout.module').default;
 import logoCrane from './logoCrane.svg';
 import logoRedHat from './logoRedHat.svg';
 import './global.scss';
-import { APP_TITLE } from '../app/common/constants';
+import { DOWNSTREAM_TITLE, UPSTREAM_TITLE } from '../app/common/constants';
 import { APP_BRAND, BrandType } from '../app/global-flags';
 interface IAppLayout {
   children: React.ReactNode;
@@ -68,7 +68,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       logo={
         <>
           <Title className={styles.logoPointer} headingLevel="h1" size="2xl">
-            {APP_TITLE}
+            {APP_BRAND === BrandType.RedHat ? DOWNSTREAM_TITLE : UPSTREAM_TITLE}
           </Title>
         </>
       }
