@@ -23,7 +23,7 @@ function* fetchDebugObject(action) {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
 
   try {
-    const res = yield discoveryClient.getRaw(action.rawPath);
+    const res = yield discoveryClient.getRaw(action.payload);
     yield put(debugObjectFetchSuccess(res.data));
   } catch (err) {
     yield put(debugObjectFetchFailure(err.message));
