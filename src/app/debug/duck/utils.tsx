@@ -17,12 +17,14 @@ const getShallowPropsForNode = (
   return {
     id: rawNode.name,
     name: (
-      <Flex className={styles.treeNameMod}>
+      <Flex>
         <FlexItem
           className={styles.treeID}
         >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
-          <TreeViewStatusIcon debugRef={matchingDebugRef} />
+          <div className={styles.alignStatus}>
+            <TreeViewStatusIcon debugRef={matchingDebugRef} />
+          </div>
         </FlexItem>
       </Flex>
     ),

@@ -1,12 +1,13 @@
-.treeNameMod {
-}
 .treeID {
   flex: 1 0 auto;
 }
 
 .statusIcon {
-  flex: 1 0 10em;
-  justify-content: flex-end;
-  justify-self: flex-end;
-  text-align: right;
+  flex: 1 0 auto;
+}
+
+.alignStatus {
+  width: 7em;
+  margin-left: auto;
+  text-align: left;
 }
