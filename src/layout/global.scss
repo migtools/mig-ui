@@ -8,7 +8,7 @@ html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .storage-modal-modifier {
@@ -25,4 +25,8 @@ body,
 
 .pf-c-tree-view__node-text {
   width: 100% !important;
+}
+
+.pf-c-page {
+  height: 102%;
 }
