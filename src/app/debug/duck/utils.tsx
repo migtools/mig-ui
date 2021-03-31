@@ -17,7 +17,7 @@ const getShallowPropsForNode = (
   return {
     id: rawNode.name,
     name: (
-      <Flex>
+      <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
         <FlexItem
           className={styles.treeID}
         >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
