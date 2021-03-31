@@ -38,6 +38,7 @@ import {
   startDebugPolling,
   stopDebugPolling,
   treeFetchRequest,
+  debugObjectFetchRequest,
 } from '../../../debug/duck/slice';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { debugSelectors } from '../../../debug/duck';
@@ -53,13 +54,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const viewRawDebugObject = (node: IDebugTreeNode) => {
-    const encodedPath = encodeURI(node.objectLink);
-    dispatch(
-      push({
-        pathname: RAW_OBJECT_VIEW_ROUTE,
-        search: `?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`,
-      })
-    );
+    dispatch(debugObjectFetchRequest(node.objectLink));
   };
 
   const [searchText, setSearchText] = useState('');

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link, Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { ClustersPage, StoragesPage, PlansPage, PlanDebugPage, LogsPage } from './pages';
 import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
-import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage';
-import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
+import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 
 const HomeComponent: React.FunctionComponent = () => {
+  const debug = useSelector((state) => state.debug);
   return (
     <Switch>
       <Route exact path="/">
@@ -31,6 +32,7 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route path="/plans/:planName/migrations">
             <MigrationsPage />
             <PlanDebugPage />
+            {debug.objJson && <RawDebugObjectView />}
           </Route>
           <Route exact path="/hooks">
             <HooksPage />

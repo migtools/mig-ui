@@ -9,6 +9,7 @@ export interface IDebugReducerState {
   isPolling: boolean;
   debugRefs: IDebugRefRes[];
   isFetchingInitialDebugTree: boolean;
+  isLoadingJSONObject: boolean;
 }
 
 const initialState = {
@@ -53,14 +54,14 @@ const debugSlice = createSlice({
       state.errMsg = action.payload.trim();
     },
     debugObjectFetchRequest(state, action: PayloadAction<string>) {
-      state.isLoading = true;
+      state.isLoadingJSONObject = true;
     },
     debugObjectFetchSuccess(state, action: PayloadAction<any>) {
-      state.isLoading = false;
+      state.isLoadingJSONObject = false;
       state.objJson = action.payload;
     },
     debugObjectFetchFailure(state, action: PayloadAction<string>) {
-      state.isLoading = false;
+      state.isLoadingJSONObject = false;
       state.errMsg = action.payload.trim();
     },
     startDebugPolling(state, action: PayloadAction<string>) {
@@ -69,6 +70,10 @@ const debugSlice = createSlice({
     stopDebugPolling(state, action: PayloadAction<string>) {
       state.isPolling = false;
       state.isFetchingInitialDebugTree = true;
+    },
+    clearJSONView(state, action: PayloadAction<string>) {
+      state.objJson = null;
+      state.isLoadingJSONObject = false;
     },
   },
 });
@@ -82,5 +87,6 @@ export const {
   debugObjectFetchSuccess,
   startDebugPolling,
   stopDebugPolling,
+  clearJSONView,
 } = debugSlice.actions;
 export default debugSlice.reducer;

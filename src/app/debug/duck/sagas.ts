@@ -63,22 +63,8 @@ function* fetchDebugTree(action) {
       });
     });
 
-    // linkRefs.forEach((linkRef) => {
-    //   const myPromise = new Promise(
-    //     discoveryClient.getRaw(linkRef.link).then(function (value) {
-    //       return {
-    //         kind: linkRef.kind,
-    //         value: value,
-    //       };
-    //     })
-    //   );
-    //   // refs.push(discoveryClient.getRaw(link));
-    //   refs.push(myPromise);
-    // });
-
     const debugRefs = yield Promise.all(refs);
 
-    //loop through the tree and call all individual resources
     yield put(treeFetchSuccess(res.data, debugRefs));
   } catch (err) {
     yield put(treeFetchFailure(err.message));
