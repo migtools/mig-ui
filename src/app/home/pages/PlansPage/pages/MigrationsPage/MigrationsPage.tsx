@@ -15,7 +15,7 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
-import { stopDebugPolling } from '../../../../../debug/duck/slice';
+import { clearJSONView, stopDebugPolling } from '../../../../../debug/duck/slice';
 
 export const MigrationsPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -27,6 +27,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
     return () => {
       //cleanup on dismount
       dispatch(stopDebugPolling(planName));
+      dispatch(clearJSONView());
     };
   }, []);
 
