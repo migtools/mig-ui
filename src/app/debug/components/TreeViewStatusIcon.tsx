@@ -78,8 +78,8 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
   }
 };
 
-const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef }) => {
-  return getIcon(debugRef);
+const TreeViewStatusIcon: React.FunctionComponent<IProps> = ({ debugRef, plans }) => {
+  return getIcon(debugRef, plans);
 };
 
 export default TreeViewStatusIcon;
