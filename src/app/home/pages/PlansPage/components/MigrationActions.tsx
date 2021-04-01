@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { PlanContext } from '../../../duck/context';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   KebabToggle,
   DropdownItem,
@@ -9,18 +9,15 @@ import {
   FlexItem,
 } from '@patternfly/react-core';
 import { IMigration } from '../../../../plan/duck/types';
+import { PlanActions } from '../../../../plan/duck';
 
 interface IProps {
   migration: IMigration;
-  handleMigrationCancelRequest: (name: string) => void;
 }
 
-const MigrationActions: React.FunctionComponent<IProps> = ({
-  migration,
-  handleMigrationCancelRequest,
-}) => {
+const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
-  const planContext = useContext(PlanContext);
+  const dispatch = useDispatch();
 
   return (
     <Flex>
@@ -36,7 +33,7 @@ const MigrationActions: React.FunctionComponent<IProps> = ({
                 <DropdownItem
                   onClick={() => {
                     setKebabIsOpen(false);
-                    handleMigrationCancelRequest(migration.metadata.name);
+                    dispatch(PlanActions.migrationCancelRequest(migration.metadata.name));
                   }}
                   key={`cancelMigration-${migration.metadata.name}`}
                   isDisabled={

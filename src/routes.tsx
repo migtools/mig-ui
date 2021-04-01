@@ -47,12 +47,6 @@ const AppRoutes: React.FunctionComponent<IProps> = ({
             <Route path="/handle-login" component={LoginHandlerComponent} />
             <Route path="/auth-error" component={AuthErrorComponent} />
             <PrivateRoute
-              path={RAW_OBJECT_VIEW_ROUTE}
-              isLoggedIn={isLoggedIn}
-              component={RawDebugObjectView}
-              componentProps={{ debugTree }}
-            />
-            <PrivateRoute
               path="/"
               isLoggedIn={isLoggedIn}
               component={HomeComponent}

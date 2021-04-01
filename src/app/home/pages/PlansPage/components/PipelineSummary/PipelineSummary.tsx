@@ -1,13 +1,12 @@
 import * as React from 'react';
 
-import { Flex, FlexItem, Popover, PopoverPosition, Text } from '@patternfly/react-core';
+import { Flex, FlexItem, Text } from '@patternfly/react-core';
 import ResourcesFullIcon from '@patternfly/react-icons/dist/js/icons/resources-full-icon';
 import ResourcesAlmostFullIcon from '@patternfly/react-icons/dist/js/icons/resources-almost-full-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { getPipelineSummaryTitle } from '../../helpers';
 import { IMigration } from '../../../../../plan/duck/types';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
+import MigrationStatusIcon from '../MigrationStatusIcon';
 
 const classNames = require('classnames');
 const styles = require('./PipelineSummary.module').default;
@@ -87,45 +86,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
     <>
       <Flex>
         <FlexItem className={`${spacing.mrSm} `}>
-          {migration.tableStatus.isFailed && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={<>{migration.tableStatus.errorCondition}</>}
-              aria-label="pipeline-error-details"
-              closeBtnAriaLabel="close--details"
-              maxWidth="30rem"
-            >
-              <span className="pf-c-icon pf-m-danger">
-                <ErrorCircleOIcon />
-              </span>
-            </Popover>
-          )}
-          {migration.tableStatus.warnCondition && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={<>{migration.tableStatus.warnCondition}</>}
-              aria-label="pipeline-warning-details"
-              closeBtnAriaLabel="close--details"
-              maxWidth="30rem"
-            >
-              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
-                <ExclamationTriangleIcon />
-              </span>
-            </Popover>
-          )}
-          {migration.tableStatus.isPostponed && (
-            <Popover
-              position={PopoverPosition.top}
-              bodyContent={<>{migration.tableStatus.errorCondition}</>}
-              aria-label="pipeline-warning-details"
-              closeBtnAriaLabel="close--details"
-              maxWidth="30rem"
-            >
-              <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
-                <ExclamationTriangleIcon />
-              </span>
-            </Popover>
-          )}
+          <MigrationStatusIcon migration={migration} />
         </FlexItem>
         {status && status?.pipeline && (
           <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>

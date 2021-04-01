@@ -8,7 +8,7 @@ html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 
 .storage-modal-modifier {
@@ -21,4 +21,12 @@ body,
 
 .modal-in-modal-container .pf-c-backdrop {
   z-index: 600;
+}
+
+.pf-c-tree-view__node-text {
+  width: 100% !important;
+}
+
+.pf-c-page {
+  height: 102%;
 }
