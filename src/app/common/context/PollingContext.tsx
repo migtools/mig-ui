@@ -6,7 +6,15 @@ import { PlanActions, planSagas } from '../../plan/duck';
 import { storageSagas } from '../../storage/duck';
 import { StorageActions } from '../../storage/duck/actions';
 import { StatusPollingInterval } from '../duck/sagas';
-
+interface IPollingParams {
+  asyncFetch: (action: any) => void;
+  callback: (response: any) => boolean;
+  delay: number;
+  retryOnFailure: boolean;
+  retryAfter: number;
+  stopAfterRetries: number;
+  pollName: string;
+}
 interface IPollingContext {
   isPollingEnabled: boolean;
   pausePolling: () => void;
@@ -78,7 +86,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
   };
 
   const startDefaultPlanPolling = () => {
-    const planPollParams = {
+    const planPollParams: IPollingParams = {
       asyncFetch: planSagas.fetchPlansGenerator,
       callback: handlePlanPoll,
       delay: StatusPollingInterval,
@@ -91,7 +99,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
   };
 
   const startDefaultClusterPolling = () => {
-    const clusterPollParams = {
+    const clusterPollParams: IPollingParams = {
       asyncFetch: clusterSagas.fetchClustersGenerator,
       callback: handleClusterPoll,
       delay: StatusPollingInterval,
@@ -104,7 +112,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
   };
 
   const startDefaultStoragePolling = () => {
-    const storagePollParams = {
+    const storagePollParams: IPollingParams = {
       asyncFetch: storageSagas.fetchStorageGenerator,
       callback: handleStoragePoll,
       delay: StatusPollingInterval,
@@ -117,7 +125,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
   };
 
   const startDefaultHookPolling = () => {
-    const hookPollParams = {
+    const hookPollParams: IPollingParams = {
       asyncFetch: planSagas.fetchHooksGenerator,
       callback: handleHookPoll,
       delay: StatusPollingInterval,

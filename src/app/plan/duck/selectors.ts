@@ -131,7 +131,7 @@ const getFilteredNamespaces = createSelector(
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
-    const plansWithStatus = plans.map((plan) => {
+    const plansWithStatus: IPlan[] = plans.map((plan) => {
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
@@ -480,7 +480,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
           const currentStep = findCurrentStep(migration?.status?.pipeline || []);
           if (step === currentStep) {
             const isError = tableStatus.isFailed || tableStatus.migrationState === 'error';
-            const isWarning = tableStatus.warnings.length || tableStatus.migrationState === 'warn';
+            const isWarning =
+              tableStatus.warnings.length > 0 || tableStatus.migrationState === 'warn';
             const newStep = {
               ...step,
               isError: isError,

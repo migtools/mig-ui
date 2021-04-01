@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link, Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { ClustersPage, StoragesPage, PlansPage, PlanDebugPage, LogsPage } from './pages';
 import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
-import { MigrationDetailsPage } from './pages/PlansPage/pages/MigrationDetailsPage';
-import { MigrationStepDetailsPage } from './pages/PlansPage/pages/MigrationStepDetailsPage/MigrationStepDetailsPage';
+import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 
 const HomeComponent: React.FunctionComponent = () => {
+  const debug = useSelector((state) => state.debug);
   return (
     <Switch>
       <Route exact path="/">
@@ -28,22 +29,15 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/plans/:planName/namespaces">
             <NamespacesPage />
           </Route>
-          <Route exact path="/plans/:planName/migrations">
+          <Route path="/plans/:planName/migrations">
             <MigrationsPage />
-          </Route>
-          <Route exact path="/plans/:planName/migrations/:migrationID">
-            <MigrationDetailsPage />
-          </Route>
-          <Route exact path="/plans/:planName/migrations/:migrationID/:stepName">
-            <MigrationStepDetailsPage />
-          </Route>
-          <Route exact path="/plans/:planName/debug">
             <PlanDebugPage />
+            {debug.objJson && <RawDebugObjectView />}
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
           </Route>
-          <RefreshRoute exact path="/logs/:planId" component={LogsPage} />
+          <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
           <Route path="*">
             <Redirect to="/" />
           </Route>

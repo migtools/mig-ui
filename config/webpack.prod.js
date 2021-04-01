@@ -20,6 +20,7 @@ module.exports = (env) => {
 
   return {
     entry: './src/index.tsx',
+    mode: 'production',
     output: {
       path: path.resolve(__dirname, '../dist'),
       filename: 'app.bundle.js',

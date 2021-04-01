@@ -112,25 +112,6 @@ const PlanActions = ({ plan, history }) => {
     >
       Delete
     </DropdownItem>,
-    <DropdownItem
-      key="showLogs"
-      onClick={() => {
-        setKebabIsOpen(false);
-        history.push('/logs/' + plan.MigPlan.metadata.name);
-      }}
-    >
-      Logs
-    </DropdownItem>,
-    <DropdownItem
-      key="debugResourcesModal"
-      href={`/plans/${plan.MigPlan.metadata.name}/debug`}
-      target="_blank"
-      onClick={() => {
-        setKebabIsOpen(false);
-      }}
-    >
-      View migration plan resources (DEBUG)
-    </DropdownItem>,
   ];
   return (
     <Flex>
