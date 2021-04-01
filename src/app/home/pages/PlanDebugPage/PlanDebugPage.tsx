@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -16,35 +16,24 @@ import {
   Split,
   SplitItem,
   SearchInput,
-  Button,
   CardHeader,
   CardExpandableContent,
-  CardFooter,
   Popover,
   PopoverPosition,
 } from '@patternfly/react-core';
-import { push } from 'connected-react-router';
-import {
-  DEBUG_PATH_SEARCH_KEY,
-  RAW_OBJECT_VIEW_ROUTE,
-  IDebugTreeNode,
-  IDebugRefWithStatus,
-} from '../../../debug/duck/types';
+import { IDebugRefWithStatus } from '../../../debug/duck/types';
 const uuidv1 = require('uuid/v1');
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
-import {
-  IDebugReducerState,
-  startDebugPolling,
-  stopDebugPolling,
-  treeFetchRequest,
-  debugObjectFetchRequest,
-} from '../../../debug/duck/slice';
+import { IDebugReducerState, startDebugPolling, stopDebugPolling } from '../../../debug/duck/slice';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { debugSelectors } from '../../../debug/duck';
+import { IPlan } from '../../../plan/duck/types';
+import { planSelectors } from '../../../plan/duck';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
+  const plans: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
   const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
@@ -52,10 +41,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const viewRawDebugObject = (node: IDebugTreeNode) => {
-    dispatch(debugObjectFetchRequest(node.objectLink));
-  };
 
   const [searchText, setSearchText] = useState('');
 
@@ -77,8 +62,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
       })
       .filter((item) => !!item) as TreeViewDataItem[];
 
-  const treeData =
-    debug.tree && convertRawTreeToViewTree(debug.tree, debugRefs, viewRawDebugObject);
+  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, debugRefs, plans);
   let filteredTreeData = treeData;
   if (searchText && treeData) {
     filteredTreeData = filterSubtree(treeData);

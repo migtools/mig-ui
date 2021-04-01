@@ -131,7 +131,7 @@ const getFilteredNamespaces = createSelector(
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
-    const plansWithStatus = plans.map((plan) => {
+    const plansWithStatus: IPlan[] = plans.map((plan) => {
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );

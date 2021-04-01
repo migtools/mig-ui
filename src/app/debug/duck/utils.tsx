@@ -1,18 +1,20 @@
 import React from 'react';
 import { Flex, FlexItem, TreeViewDataItem } from '@patternfly/react-core';
-import { IDebugRefWithStatus, IDebugTreeNode } from './types';
+import { IDebugRefRes, IDebugRefWithStatus, IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
+import { IPlan } from '../../plan/duck/types';
 const uuidv1 = require('uuid/v1');
 const styles = require('./utils.module').default;
 
 const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
-  viewRawDebugObject: (node: IDebugTreeNode) => void,
-  debugRefs?: IDebugRefWithStatus[]
+  debugRefs: IDebugRefWithStatus[],
+  plans: IPlan[]
 ): TreeViewDataItem => {
+  const matchingPlanRef = plans?.find((plan) => plan.MigPlan.metadata.name === rawNode?.name);
   const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
   return {
     id: rawNode.name,
@@ -21,24 +23,25 @@ const getShallowPropsForNode = (
         <FlexItem
           className={styles.treeID}
         >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
-        <FlexItem className={styles.statusIcon}>
-          <div className={styles.alignStatus}>
-            <TreeViewStatusIcon debugRef={matchingDebugRef} />
-          </div>
-        </FlexItem>
+        {matchingDebugRef?.resourceKind === 'Plan' ? (
+          <FlexItem>
+            <PlanStatus plan={matchingPlanRef} />
+          </FlexItem>
+        ) : (
+          <FlexItem className={styles.statusIcon}>
+            <div className={styles.alignStatus}>
+              <TreeViewStatusIcon debugRef={matchingDebugRef} />
+            </div>
+          </FlexItem>
+        )}
       </Flex>
     ),
-    action: <TreeActionsDropdown rawNode={rawNode} viewRawDebugObject={viewRawDebugObject} />,
+    action: <TreeActionsDropdown rawNode={rawNode} />,
   };
 };
 
-const convertNode = (
-  rawNode: IDebugTreeNode,
-  ctx,
-  viewRawDebugObject: (node: IDebugTreeNode) => void,
-  debugRefs
-): void => {
-  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, viewRawDebugObject, debugRefs);
+const convertNode = (rawNode: IDebugTreeNode, ctx, debugRefs, plans): void => {
+  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, debugRefs, plans);
 
   if (rawNode.children) {
     outNode.children = rawNode.children;
@@ -53,8 +56,8 @@ const convertNode = (
 
 export const convertRawTreeToViewTree = (
   inTree: IDebugTreeNode,
-  debugRefs: any,
-  viewRawDebugObject: (node: IDebugTreeNode) => void
+  debugRefs: IDebugRefWithStatus[],
+  plans: IPlan[]
 ): TreeViewDataItem[] => {
   // Deep clone. Not the most efficient, but easy and we're not going for
   // blazing performance here.
@@ -62,8 +65,10 @@ export const convertRawTreeToViewTree = (
 
   crawl(
     workingTree,
-    (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, viewRawDebugObject, debugRefs),
-    { order: 'pre' }
+    (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, debugRefs, plans),
+    {
+      order: 'pre',
+    }
   );
 
   // Doesn't seem to be an easy way from within the crawler to replace
@@ -71,7 +76,7 @@ export const convertRawTreeToViewTree = (
   return [
     {
       id: uuidv1(),
-      ...getShallowPropsForNode(workingTree, viewRawDebugObject),
+      ...getShallowPropsForNode(workingTree, debugRefs, plans),
       children: workingTree.children,
       defaultExpanded: true,
     },

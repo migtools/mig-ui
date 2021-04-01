@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearJSONView } from '../duck/slice';
 
 const RawDebugObjectView: React.FunctionComponent = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const debug = useSelector((state) => state.debug);
   const dispatch = useDispatch();
   const closeJSONView = () => {

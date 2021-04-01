@@ -5,6 +5,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IDebugTreeNode } from '../../../../debug/duck/types';
 import { getOCCommandAndClusterType } from '../helpers';
 import { AlertActions } from '../../../../common/duck/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { debugObjectFetchRequest } from '../../../../debug/duck/slice';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
@@ -14,9 +16,9 @@ interface ITreeActionsDropdownProps {
 
 const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = ({
   rawNode,
-  viewRawDebugObject,
   copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
+  const dispatch = useDispatch();
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
@@ -63,7 +65,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           key="view-raw"
           onClick={() => {
             setKebabIsOpen(false);
-            viewRawDebugObject(rawNode);
+            dispatch(debugObjectFetchRequest(rawNode.objectLink));
           }}
         >
           View JSON
