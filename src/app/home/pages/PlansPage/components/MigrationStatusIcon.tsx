@@ -11,49 +11,66 @@ interface IProps {
 }
 
 const MigrationStatusIcon: React.FunctionComponent<IProps> = ({ migration }) => {
-  return (
-    <>
-      {migration.tableStatus.isFailed && (
-        <Popover
-          position={PopoverPosition.top}
-          bodyContent={<>{migration.tableStatus.errorCondition}</>}
-          aria-label="pipeline-error-details"
-          closeBtnAriaLabel="close--details"
-          maxWidth="30rem"
-        >
-          <span className="pf-c-icon pf-m-danger">
-            <ErrorCircleOIcon />
-          </span>
-        </Popover>
-      )}
-      {migration.tableStatus.warnCondition && (
-        <Popover
-          position={PopoverPosition.top}
-          bodyContent={<>{migration.tableStatus.warnCondition}</>}
-          aria-label="pipeline-warning-details"
-          closeBtnAriaLabel="close--details"
-          maxWidth="30rem"
-        >
-          <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
-            <ExclamationTriangleIcon />
-          </span>
-        </Popover>
-      )}
-      {migration.tableStatus.isPostponed && (
-        <Popover
-          position={PopoverPosition.top}
-          bodyContent={<>{migration.tableStatus.errorCondition}</>}
-          aria-label="pipeline-warning-details"
-          closeBtnAriaLabel="close--details"
-          maxWidth="30rem"
-        >
-          <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
-            <ExclamationTriangleIcon />
-          </span>
-        </Popover>
-      )}
-    </>
-  );
+  if (!migration) {
+    return null;
+  } else {
+    return (
+      <>
+        {migration?.tableStatus.isFailed && (
+          <Popover
+            position={PopoverPosition.top}
+            bodyContent={<>{migration.tableStatus.errorCondition}</>}
+            aria-label="pipeline-error-details"
+            closeBtnAriaLabel="close--details"
+            maxWidth="30rem"
+          >
+            <span className="pf-c-icon pf-m-danger">
+              <ErrorCircleOIcon />
+            </span>
+          </Popover>
+        )}
+        {migration?.tableStatus.warnCondition && (
+          <Popover
+            position={PopoverPosition.top}
+            bodyContent={<>{migration.tableStatus.warnCondition}</>}
+            aria-label="pipeline-warning-details"
+            closeBtnAriaLabel="close--details"
+            maxWidth="30rem"
+          >
+            <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+              <ExclamationTriangleIcon />
+            </span>
+          </Popover>
+        )}
+        {migration?.tableStatus.isPostponed && (
+          <Popover
+            position={PopoverPosition.top}
+            bodyContent={<>{migration.tableStatus.errorCondition}</>}
+            aria-label="pipeline-warning-details"
+            closeBtnAriaLabel="close--details"
+            maxWidth="30rem"
+          >
+            <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+              <ExclamationTriangleIcon />
+            </span>
+          </Popover>
+        )}
+        {migration?.tableStatus.isPaused && (
+          <Popover
+            position={PopoverPosition.top}
+            bodyContent={<>{migration.tableStatus.warnCondition}</>}
+            aria-label="pipeline-warning-details"
+            closeBtnAriaLabel="close--details"
+            maxWidth="30rem"
+          >
+            <span className={`pf-c-icon pf-m-warning ${spacing.plSm} `}>
+              <ExclamationTriangleIcon />
+            </span>
+          </Popover>
+        )}
+      </>
+    );
+  }
 };
 
 export default MigrationStatusIcon;

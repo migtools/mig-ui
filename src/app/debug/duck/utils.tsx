@@ -5,7 +5,9 @@ import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
-import { IPlan } from '../../plan/duck/types';
+import { IMigration, IPlan } from '../../plan/duck/types';
+import MigrationStatusIcon from '../../home/pages/PlansPage/components/MigrationStatusIcon';
+import { IMigrationWithStatus } from '../../home/pages/PlansPage/types';
 const uuidv1 = require('uuid/v1');
 const styles = require('./utils.module').default;
 
@@ -30,7 +32,7 @@ const getShallowPropsForNode = (
         ) : (
           <FlexItem className={styles.statusIcon}>
             <div className={styles.alignStatus}>
-              <TreeViewStatusIcon debugRef={matchingDebugRef} />
+              <TreeViewStatusIcon plans={plans} debugRef={matchingDebugRef} />
             </div>
           </FlexItem>
         )}

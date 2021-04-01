@@ -7,12 +7,35 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { DebugStatusType, IDebugRefWithStatus } from '../duck/types';
 import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-circle-icon';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
+import { IMigration, IPlan } from '../../plan/duck/types';
+import MigrationStatusIcon from '../../home/pages/PlansPage/components/MigrationStatusIcon';
+import { getPipelineSummaryTitle } from '../../home/pages/PlansPage/helpers';
 const classNames = require('classnames');
 
 interface IProps {
-  debugRef: any;
+  debugRef: IDebugRefWithStatus;
+  plans: IPlan[];
 }
-const getIcon = (debugRef: IDebugRefWithStatus) => {
+
+const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
+  const matchingMigrationRef: IMigration[] = [];
+  plans?.forEach((plan) => {
+    const foundMigration: IMigration = plan.Migrations.find(
+      (m) => m.metadata.name === debugRef?.refName
+    );
+    if (foundMigration) {
+      matchingMigrationRef.push(foundMigration);
+    }
+  });
+  if (debugRef.resourceKind === 'Migration') {
+    const title = getPipelineSummaryTitle(matchingMigrationRef[0] || null);
+    return (
+      <>
+        <MigrationStatusIcon migration={matchingMigrationRef[0]} />
+        <span className={spacing.mlSm}>{title}</span>
+      </>
+    );
+  }
   switch (debugRef?.debugResourceStatus?.currentStatus) {
     case DebugStatusType.Running:
       return (
