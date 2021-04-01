@@ -77,6 +77,9 @@ export const findCurrentStep = (pipeline: IStep[]): IStep => {
 };
 
 export const getPipelineSummaryTitle = (migration: IMigration): string => {
+  if (migration === null || !migration) {
+    return MigrationStepsType.NotStarted;
+  }
   const { status, tableStatus } = migration;
   const currentStep = findCurrentStep(status?.pipeline || []);
   if (status?.phase === 'Completed') {

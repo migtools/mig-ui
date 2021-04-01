@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   PageSection,
   Title,
@@ -14,20 +14,14 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-import { IReduxState } from '../../../../../../reducers';
 import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
-import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import { planSelectors } from '../../../../../plan/duck';
 import MigrationStepDetailsTable from './MigrationStepDetailsTable';
 import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
 
-interface IMigrationStepDetailsPageProps {
-  planList: IPlan[];
-}
-
-const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetailsPageProps> = ({
-  planList,
-}: IMigrationStepDetailsPageProps) => {
+export const MigrationStepDetailsPage: React.FunctionComponent = () => {
   const { planName, migrationID, stepName } = useParams();
+  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
 
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
@@ -96,13 +90,3 @@ const BaseMigrationStepDetailsPage: React.FunctionComponent<IMigrationStepDetail
     </>
   );
 };
-
-export const MigrationStepDetailsPage = connect(
-  (state: IReduxState) => ({
-    planList: planSelectors.getPlansWithStatus(state),
-  }),
-  (dispatch) => ({
-    refreshAnalyticRequest: (analyticName: string) =>
-      dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
-  })
-)(BaseMigrationStepDetailsPage);

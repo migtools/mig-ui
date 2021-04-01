@@ -37,6 +37,7 @@ export default function* rootSaga() {
     appStarted(),
     debugSagas.watchDebugObjectFetchRequest(),
     debugSagas.watchDebugTreeFetchRequest(),
+    debugSagas.watchDebugPolling(),
     commonSagas.watchPlanPolling(),
     commonSagas.watchClustersPolling(),
     commonSagas.watchStoragePolling(),

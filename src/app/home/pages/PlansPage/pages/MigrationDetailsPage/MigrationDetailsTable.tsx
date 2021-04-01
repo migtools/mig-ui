@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, TableBody, TableHeader, cellWidth, IRow } from '@patternfly/react-table';
 import { Bullseye, EmptyState, Title, Progress, ProgressSize } from '@patternfly/react-core';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration, IStep } from '../../../../../plan/duck/types';
 import { getElapsedTime, getProgressValues } from '../../helpers';
@@ -16,6 +16,7 @@ interface IProps {
 
 const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) => {
   const { planName } = useParams();
+  const { path, url } = useRouteMatch();
   const columns = [
     { title: 'Step', transforms: [cellWidth(20)] },
     { title: 'Elapsed time', transforms: [cellWidth(20)] },
@@ -60,9 +61,7 @@ const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) =
               </>
             ) : progressInfo.detailsAvailable ? (
               <>
-                <Link to={`/plans/${planName}/migrations/${migration.metadata.name}/${step.name}`}>
-                  View Details
-                </Link>
+                <Link to={`${url}/${step.name}`}>View Details</Link>
               </>
             ) : (
               ''

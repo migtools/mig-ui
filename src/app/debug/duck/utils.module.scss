@@ -1,0 +1,22 @@
+.treeID {
+  flex: 1 0 auto;
+}
+
+.statusIcon {
+  flex: 1 0 auto;
+}
+
+.alignStatus {
+  width: 10em;
+  margin-left: auto;
+  text-align: left;
+}
+
+.activeHighlight {
+  background-color: #bee1f4;
+  padding: 10px;
+  border: #bee1f4 solid 1px;
+  border-radius: 7px;
+  margin: 5px;
+  font-weight: bold;
+}

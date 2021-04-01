@@ -89,7 +89,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>
   );
   const Sidebar = (
-    <PageSidebar theme="dark" nav={nav} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />
+    <PageSidebar
+      className={styles.sidebarModifier}
+      theme="dark"
+      nav={nav}
+      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+    />
   );
   return (
     <Page
