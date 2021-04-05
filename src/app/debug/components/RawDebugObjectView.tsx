@@ -20,7 +20,7 @@ import {
 } from '@patternfly/react-core';
 import { QuestionCircleIcon, TimesIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearJSONView } from '../duck/slice';
@@ -32,6 +32,10 @@ const RawDebugObjectView: React.FunctionComponent = () => {
   const closeJSONView = () => {
     dispatch(clearJSONView());
   };
+  useEffect(() => {
+    const anchor = document.querySelector('#view-json-id');
+    anchor.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+  }, []);
   return (
     <>
       <PageSection>
