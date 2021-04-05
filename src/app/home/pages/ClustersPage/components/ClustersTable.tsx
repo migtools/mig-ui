@@ -143,6 +143,11 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
     <>
       <Level>
         <LevelItem>
+          <Button id="add-cluster-btn" onClick={toggleAddEditModal} variant="secondary">
+            Add cluster
+          </Button>
+        </LevelItem>
+        <LevelItem>
           <Pagination
             widgetId="clusters-table-pagination-top"
             itemCount={paginationProps.itemCount}

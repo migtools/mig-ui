@@ -12,6 +12,7 @@ import {
   Bullseye,
   Spinner,
   EmptyStateBody,
+  Button,
 } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -26,6 +27,7 @@ import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
 import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
+import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -50,19 +52,13 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
 
   const renderEmptyState = () => (
     <EmptyState variant="full" className={spacing.my_2xl}>
-      <EmptyStateIcon icon={SearchIcon} />
+      <EmptyStateIcon icon={AddCircleOIcon} />
       <Title headingLevel="h3" size="lg">
-        No clusters
+        Add source and target clusters for the migration
       </Title>
-      <EmptyStateBody>
-        <TextContent>
-          <Text component="p">
-            You must have administrator rights to the cluster where the migration controller is
-            installed in order to add clusters for migration. Contact the cluster administrator for
-            assistance.
-          </Text>
-        </TextContent>
-      </EmptyStateBody>
+      <Button onClick={toggleAddEditModal} variant="primary">
+        Add cluster
+      </Button>
     </EmptyState>
   );
 
