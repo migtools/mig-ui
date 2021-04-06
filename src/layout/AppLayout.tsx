@@ -19,6 +19,7 @@ import logoRedHat from './logoRedHat.svg';
 import './global.scss';
 import { DOWNSTREAM_TITLE, UPSTREAM_TITLE } from '../app/common/constants';
 import { APP_BRAND, BrandType } from '../app/global-flags';
+import { RAW_OBJECT_VIEW_ROUTE } from '../app/debug/duck/types';
 interface IAppLayout {
   children: React.ReactNode;
 }
@@ -36,6 +37,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
+  const isJSONScreen = !!useRouteMatch(RAW_OBJECT_VIEW_ROUTE);
+
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
     setIsMobileView(props.mobileView);
   };
@@ -93,7 +96,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       className={styles.sidebarModifier}
       theme="dark"
       nav={nav}
-      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen}
+      isNavOpen={!isJSONScreen && isNavOpen}
     />
   );
   return (
@@ -101,6 +104,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       mainContainerId="primary-app-container"
       header={Header}
       sidebar={Sidebar}
+      isManagedSidebar={!isJSONScreen}
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}
     >

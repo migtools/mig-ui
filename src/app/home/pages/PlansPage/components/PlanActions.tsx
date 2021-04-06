@@ -103,6 +103,15 @@ const PlanActions = ({ plan, history }) => {
       Rollback
     </DropdownItem>,
     <DropdownItem
+      key="showLogs"
+      onClick={() => {
+        setKebabIsOpen(false);
+        history.push('/logs/' + plan.MigPlan.metadata.name);
+      }}
+    >
+      Logs
+    </DropdownItem>,
+    <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
         toggleDeleteModalOpen();

@@ -1,15 +1,14 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { ClustersPage, StoragesPage, PlansPage, PlanDebugPage, LogsPage } from './pages';
 import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
 import RawDebugObjectView from '../debug/components/RawDebugObjectView';
+import { RAW_OBJECT_VIEW_ROUTE } from '../debug/duck/types';
 
 const HomeComponent: React.FunctionComponent = () => {
-  const debug = useSelector((state) => state.debug);
   return (
     <Switch>
       <Route exact path="/">
@@ -32,12 +31,12 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route path="/plans/:planName/migrations">
             <MigrationsPage />
             <PlanDebugPage />
-            {debug.objJson && <RawDebugObjectView />}
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
           </Route>
           <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
+          <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
           <Route path="*">
             <Redirect to="/" />
           </Route>
