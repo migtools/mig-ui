@@ -31,7 +31,6 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route path="/plans/:planName/migrations">
             <MigrationsPage />
             <PlanDebugPage />
-            {/* {debug.objJson && <RawDebugObjectView />} */}
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
