@@ -42,18 +42,23 @@ const AppRoutes: React.FunctionComponent<IProps> = ({
         <AlertModal alertMessage={successMessage} alertType="success" />
         <AlertModal alertMessage={warnMessage} alertType="warning" />
         {errorModalObject && <ErrorModal errorModalObj={errorModalObject} isOpen />}
-        <ConnectedRouter history={history}>
-          <Switch>
-            <Route path="/handle-login" component={LoginHandlerComponent} />
-            <Route path="/auth-error" component={AuthErrorComponent} />
-            <PrivateRoute
-              path="/"
-              isLoggedIn={isLoggedIn}
-              component={HomeComponent}
-              componentProps={{ clusterList }}
-            />
-          </Switch>
-        </ConnectedRouter>
+        {/* <ConnectedRouter history={history}> */}
+        <Switch>
+          <Route path="/handle-login" component={LoginHandlerComponent} />
+          <Route path="/auth-error" component={AuthErrorComponent} />
+          <PrivateRoute
+            path="/"
+            isLoggedIn={isLoggedIn}
+            component={HomeComponent}
+            componentProps={{ clusterList }}
+          />
+          {/* <PrivateRoute
+            path={RAW_OBJECT_VIEW_ROUTE}
+            isLoggedIn={isLoggedIn}
+            component={RawDebugObjectView}
+          /> */}
+        </Switch>
+        {/* </ConnectedRouter> */}
       </PollingContextProvider>
     </React.Fragment>
   );
