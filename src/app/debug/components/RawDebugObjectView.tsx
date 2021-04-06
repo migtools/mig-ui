@@ -37,7 +37,7 @@ const RawDebugObjectView: React.FunctionComponent = () => {
             <p>{debug.errMsg}</p>
           </Alert>
         ) : (
-          <Card id="image-card">
+          <Card>
             <CardHeader>
               <Title headingLevel="h1" size="xl" className={spacing.mrLg}>
                 Resource JSON view
