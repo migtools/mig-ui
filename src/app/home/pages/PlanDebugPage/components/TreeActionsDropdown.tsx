@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { Dropdown, KebabToggle, DropdownItem, Tooltip, Alert } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IDebugTreeNode } from '../../../../debug/duck/types';
+import {
+  DEBUG_PATH_SEARCH_KEY,
+  IDebugTreeNode,
+  RAW_OBJECT_VIEW_ROUTE,
+} from '../../../../debug/duck/types';
 import { getOCCommandAndClusterType } from '../helpers';
 import { AlertActions } from '../../../../common/duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { debugObjectFetchRequest } from '../../../../debug/duck/slice';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
@@ -18,7 +22,6 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   rawNode,
   copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
-  const dispatch = useDispatch();
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
@@ -38,6 +41,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       ${clusterType} cluster to view resource details.`
     );
   };
+  const encodedPath = encodeURI(rawNode.objectLink);
 
   return (
     <Dropdown
@@ -61,15 +65,21 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
             command
           </span>
         </DropdownItem>,
-        <DropdownItem
-          key="view-raw"
-          onClick={() => {
-            setKebabIsOpen(false);
-            dispatch(debugObjectFetchRequest(rawNode.objectLink));
-          }}
+        <Link
+          to={`${RAW_OBJECT_VIEW_ROUTE}?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none' }}
         >
-          View JSON
-        </DropdownItem>,
+          <DropdownItem
+            key="view-raw"
+            onClick={() => {
+              setKebabIsOpen(false);
+            }}
+          >
+            View JSON
+          </DropdownItem>
+        </Link>,
       ]}
     />
   );
