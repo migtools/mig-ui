@@ -6,32 +6,29 @@ import {
   Title,
   Popover,
   PopoverPosition,
-  CardExpandableContent,
   Bullseye,
   EmptyState,
   Spinner,
   CardBody,
-  Split,
   CardActions,
-  Checkbox,
-  Dropdown,
-  KebabToggle,
   Button,
 } from '@patternfly/react-core';
 import { QuestionCircleIcon, TimesIcon } from '@patternfly/react-icons';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import ReactJson from 'react-json-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearJSONView } from '../duck/slice';
+import { debugObjectFetchRequest } from '../duck/slice';
+import { DEBUG_PATH_SEARCH_KEY } from '../duck/types';
 
 const RawDebugObjectView: React.FunctionComponent = () => {
-  const [isOpen, setIsOpen] = useState(true);
   const debug = useSelector((state) => state.debug);
   const dispatch = useDispatch();
-  const closeJSONView = () => {
-    dispatch(clearJSONView());
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    dispatch(debugObjectFetchRequest(decodeURI(params.get(DEBUG_PATH_SEARCH_KEY))));
+  }, []);
+
   return (
     <>
       <PageSection>
@@ -40,17 +37,8 @@ const RawDebugObjectView: React.FunctionComponent = () => {
             <p>{debug.errMsg}</p>
           </Alert>
         ) : (
-          <Card id="image-card" isExpanded={isOpen}>
-            <CardHeader
-              onExpand={() => {
-                setIsOpen(!isOpen);
-              }}
-              toggleButtonProps={{
-                id: 'toggle-button',
-                'aria-label': 'debug-details',
-                'aria-expanded': isOpen,
-              }}
-            >
+          <Card>
+            <CardHeader>
               <Title headingLevel="h1" size="xl" className={spacing.mrLg}>
                 Resource JSON view
               </Title>
@@ -74,13 +62,8 @@ const RawDebugObjectView: React.FunctionComponent = () => {
                   </span>
                 </span>
               </Popover>
-              <CardActions>
-                <Button variant="plain" aria-label="Action" onClick={() => closeJSONView()}>
-                  <TimesIcon />
-                </Button>
-              </CardActions>
             </CardHeader>
-            <CardExpandableContent>
+            <CardBody>
               <div>
                 {debug.isLoadingJSONObject ? (
                   <Bullseye>
@@ -94,13 +77,10 @@ const RawDebugObjectView: React.FunctionComponent = () => {
                     </EmptyState>
                   </Bullseye>
                 ) : (
-                  <CardBody>
-                    <Split hasGutter></Split>
-                    <ReactJson src={debug.objJson} enableClipboard={true} />
-                  </CardBody>
+                  <ReactJson src={debug.objJson} enableClipboard={true} />
                 )}
               </div>
-            </CardExpandableContent>
+            </CardBody>
           </Card>
         )}
       </PageSection>
