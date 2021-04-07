@@ -10,6 +10,8 @@
   width: 10em;
   margin-left: auto;
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .activeHighlight {
