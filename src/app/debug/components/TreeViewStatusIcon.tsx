@@ -10,6 +10,8 @@ import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-
 import { IMigration, IPlan } from '../../plan/duck/types';
 import MigrationStatusIcon from '../../home/pages/PlansPage/components/MigrationStatusIcon';
 import { getPipelineSummaryTitle } from '../../home/pages/PlansPage/helpers';
+import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
+import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
 const classNames = require('classnames');
 
 interface IProps {
@@ -18,6 +20,7 @@ interface IProps {
 }
 
 const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
+  const matchingPlanRef = plans?.find((plan) => plan.MigPlan.metadata.name === debugRef?.refName);
   const matchingMigrationRef: IMigration[] = [];
   plans?.forEach((plan) => {
     const foundMigration: IMigration = plan.Migrations.find(
@@ -27,12 +30,17 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
       matchingMigrationRef.push(foundMigration);
     }
   });
+  if (debugRef.resourceKind === 'Plan') {
+    return (
+      <FlexItem>
+        <PlanStatus plan={matchingPlanRef || null} />
+      </FlexItem>
+    );
+  }
   if (debugRef.resourceKind === 'Migration') {
-    const title = getPipelineSummaryTitle(matchingMigrationRef[0] || null);
     return (
       <>
-        <MigrationStatusIcon migration={matchingMigrationRef[0]} />
-        <span className={spacing.mlSm}>{title}</span>
+        <PipelineSummary migration={matchingMigrationRef[0] || null} />
       </>
     );
   }

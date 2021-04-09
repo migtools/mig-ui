@@ -83,49 +83,47 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   const { status } = migration;
   const title = getPipelineSummaryTitle(migration);
   return (
-    <>
-      <Flex>
-        <FlexItem className={`${spacing.mrSm} `}>
-          <MigrationStatusIcon migration={migration} />
+    <Flex className={`${spacing.mr_4xl} `}>
+      <FlexItem className={`${spacing.mrSm} `}>
+        <MigrationStatusIcon migration={migration} />
+      </FlexItem>
+      {status && status?.pipeline && (
+        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+          <Summary title={title}>
+            {status?.pipeline.map((step, index) => {
+              return (
+                <>
+                  {index != 0 ? (
+                    <Dash
+                      key={step.name}
+                      isReached={step?.started || step?.skipped ? true : false}
+                    />
+                  ) : (
+                    ''
+                  )}
+                  {step?.skipped ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
+                  ) : !step?.started ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+                  ) : step?.failed || step?.isError ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+                  ) : step?.started && !step?.completed ? (
+                    <Chain
+                      key={index}
+                      Face={ResourcesAlmostFullIcon}
+                      times={1}
+                      color={successColor}
+                    />
+                  ) : (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+                  )}
+                </>
+              );
+            })}
+          </Summary>
         </FlexItem>
-        {status && status?.pipeline && (
-          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-            <Summary title={title}>
-              {status?.pipeline.map((step, index) => {
-                return (
-                  <>
-                    {index != 0 ? (
-                      <Dash
-                        key={step.name}
-                        isReached={step?.started || step?.skipped ? true : false}
-                      />
-                    ) : (
-                      ''
-                    )}
-                    {step?.skipped ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
-                    ) : !step?.started ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-                    ) : step?.failed || step?.isError ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-                    ) : step?.started && !step?.completed ? (
-                      <Chain
-                        key={index}
-                        Face={ResourcesAlmostFullIcon}
-                        times={1}
-                        color={successColor}
-                      />
-                    ) : (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-                    )}
-                  </>
-                );
-              })}
-            </Summary>
-          </FlexItem>
-        )}
-      </Flex>
-    </>
+      )}
+    </Flex>
   );
 };
 
