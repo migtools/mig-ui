@@ -80,17 +80,16 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   migration,
 }: IPipelineSummaryProps) => {
-  const { status } = migration;
   const title = getPipelineSummaryTitle(migration);
   return (
     <Flex className={`${spacing.mr_4xl} `}>
       <FlexItem className={`${spacing.mrSm} `}>
         <MigrationStatusIcon migration={migration} />
       </FlexItem>
-      {status && status?.pipeline && (
+      {migration?.status?.pipeline && (
         <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
           <Summary title={title}>
-            {status?.pipeline.map((step, index) => {
+            {migration?.status?.pipeline.map((step, index) => {
               return (
                 <>
                   {index != 0 ? (
