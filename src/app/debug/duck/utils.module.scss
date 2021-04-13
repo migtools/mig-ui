@@ -21,7 +21,7 @@
   border: #bee1f4 solid 1px;
   border-radius: 7px;
   font-weight: bold;
-  &div {
-    margin: 15px 0 15px 0;
+  & > div {
+    padding: 15px 0 15px 0;
   }
 }
