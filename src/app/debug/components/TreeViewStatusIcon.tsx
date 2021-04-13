@@ -1,7 +1,15 @@
 import React from 'react';
 
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
-import { Flex, FlexItem, Popover, PopoverPosition, Spinner } from '@patternfly/react-core';
+import {
+  Flex,
+  FlexItem,
+  Popover,
+  PopoverPosition,
+  Progress,
+  ProgressSize,
+  Spinner,
+} from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { DebugStatusType, IDebugRefWithStatus } from '../duck/types';
@@ -41,6 +49,17 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
     return (
       <>
         <PipelineSummary migration={matchingMigrationRef[0] || null} />
+      </>
+    );
+  }
+  if (debugRef.resourceKind === 'DirectVolumeMigrationProgress') {
+    return (
+      <>
+        <Progress
+          value={parseInt(debugRef?.status?.totalProgressPercentage, 10) || 0}
+          title="Total progress percentage"
+          size={ProgressSize.sm}
+        />
       </>
     );
   }
