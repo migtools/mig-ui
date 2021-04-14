@@ -53,17 +53,25 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
     );
   }
   if (debugRef.resourceKind === 'DirectVolumeMigrationProgress') {
-    return (
-      <>
-        <Progress
-          value={parseInt(debugRef?.status?.totalProgressPercentage, 10) || 0}
-          title="Total progress percentage"
-          size={ProgressSize.sm}
-        />
-      </>
-    );
+    if (debugRef?.debugResourceStatus.hasRunning) {
+      return (
+        <>
+          <Progress
+            value={parseInt(debugRef?.status?.totalProgressPercentage, 10) || 0}
+            title="Total progress percentage"
+            size={ProgressSize.sm}
+          />
+        </>
+      );
+    } else {
+      return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+    }
   }
-  switch (debugRef?.debugResourceStatus?.currentStatus) {
+  return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+};
+
+const renderStatusIcon = (currentStatus) => {
+  switch (currentStatus) {
     case DebugStatusType.Running:
       return (
         <>
