@@ -5,7 +5,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigration } from '../../../../plan/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
-import { SpaIconConfig } from '@patternfly/react-icons';
+import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 
 interface IProps {
   migration: IMigration;
@@ -70,6 +70,11 @@ const MigrationStatusIcon: React.FunctionComponent<IProps> = ({ migration }) => 
               />
             </span>
           </Popover>
+        )}
+        {migration?.tableStatus.isSucceeded && (
+          <span className={`pf-c-icon pf-m-success ${spacing.mrSm}`}>
+            <CheckCircleIcon />
+          </span>
         )}
       </>
     );

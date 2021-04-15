@@ -1,26 +1,13 @@
 import React from 'react';
-
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
-import {
-  Flex,
-  FlexItem,
-  Popover,
-  PopoverPosition,
-  Progress,
-  ProgressSize,
-  Spinner,
-} from '@patternfly/react-core';
+import { FlexItem, Progress, ProgressSize, Spinner } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { DebugStatusType, IDebugRefWithStatus } from '../duck/types';
-import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-circle-icon';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import { IMigration, IPlan } from '../../plan/duck/types';
-import MigrationStatusIcon from '../../home/pages/PlansPage/components/MigrationStatusIcon';
-import { getPipelineSummaryTitle } from '../../home/pages/PlansPage/helpers';
 import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
 import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
-const classNames = require('classnames');
 
 interface IProps {
   debugRef: IDebugRefWithStatus;
