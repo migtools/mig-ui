@@ -1,9 +1,11 @@
 import React from 'react';
 import { Popover, PopoverPosition } from '@patternfly/react-core';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 import { IMigration } from '../../../../plan/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
+import { SpaIconConfig } from '@patternfly/react-icons';
 
 interface IProps {
   migration: IMigration;
@@ -23,7 +25,7 @@ const MigrationStatusIcon: React.FunctionComponent<IProps> = ({ migration }) => 
             closeBtnAriaLabel="close--details"
             maxWidth="30rem"
           >
-            <span className="pf-c-icon pf-m-danger">
+            <span className={`pf-c-icon pf-m-danger ${spacing.mrSm}`}>
               <ErrorCircleOIcon
                 onClick={(e) => {
                   e.preventDefault();
@@ -41,7 +43,7 @@ const MigrationStatusIcon: React.FunctionComponent<IProps> = ({ migration }) => 
             closeBtnAriaLabel="close--details"
             maxWidth="30rem"
           >
-            <span className={`pf-c-icon pf-m-warning `}>
+            <span className={`pf-c-icon pf-m-warning ${spacing.mrSm}`}>
               <ExclamationTriangleIcon
                 onClick={(e) => {
                   e.preventDefault();
@@ -59,7 +61,7 @@ const MigrationStatusIcon: React.FunctionComponent<IProps> = ({ migration }) => 
             closeBtnAriaLabel="close--details"
             maxWidth="30rem"
           >
-            <span className={`pf-c-icon pf-m-warning`}>
+            <span className={`pf-c-icon pf-m-warning ${spacing.mrSm}`}>
               <ExclamationTriangleIcon
                 onClick={(e) => {
                   e.preventDefault();

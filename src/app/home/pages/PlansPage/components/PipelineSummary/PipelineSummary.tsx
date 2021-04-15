@@ -55,13 +55,21 @@ const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: ICh
 
 interface ISummaryProps {
   title: string;
+  migration: IMigration;
   children: React.ReactNode;
 }
 
-const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: ISummaryProps) => (
+const Summary: React.FunctionComponent<ISummaryProps> = ({
+  title,
+  migration,
+  children,
+}: ISummaryProps) => (
   <Flex direction={{ default: 'column' }}>
     <FlexItem>
-      <Text component="small">{title}</Text>
+      <FlexItem className={`${spacing.mrSm} `}>
+        <MigrationStatusIcon migration={migration} />
+        <Text component="small">{title}</Text>
+      </FlexItem>
       <Flex
         spaceItems={{ default: 'spaceItemsNone' }}
         alignContent={{ default: 'alignContentCenter' }}
@@ -83,12 +91,9 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   const title = getPipelineSummaryTitle(migration);
   return (
     <Flex className={`${spacing.mr_4xl} `}>
-      <FlexItem className={`${spacing.mrSm} `}>
-        <MigrationStatusIcon migration={migration} />
-      </FlexItem>
       {migration?.status?.pipeline && (
         <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-          <Summary title={title}>
+          <Summary title={title} migration={migration}>
             {migration?.status?.pipeline.map((step, index) => {
               return (
                 <>
