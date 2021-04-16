@@ -31,7 +31,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     isPlanLocked,
     hasWarnCondition,
     hasDVMBlockedCondition,
-  } = plan.PlanStatus;
+  } = plan?.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
   if (hasCriticalCondition) return `${latestType} Failed`;
   if (hasConflictCondition) return conflictErrorMsg;

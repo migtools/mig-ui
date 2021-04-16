@@ -55,13 +55,21 @@ const Chain: React.FunctionComponent<IChainProps> = ({ Face, times, color }: ICh
 
 interface ISummaryProps {
   title: string;
+  migration: IMigration;
   children: React.ReactNode;
 }
 
-const Summary: React.FunctionComponent<ISummaryProps> = ({ title, children }: ISummaryProps) => (
+const Summary: React.FunctionComponent<ISummaryProps> = ({
+  title,
+  migration,
+  children,
+}: ISummaryProps) => (
   <Flex direction={{ default: 'column' }}>
     <FlexItem>
-      <Text component="small">{title}</Text>
+      <FlexItem className={`${spacing.mrSm} `}>
+        <MigrationStatusIcon migration={migration} />
+        <Text component="small">{title}</Text>
+      </FlexItem>
       <Flex
         spaceItems={{ default: 'spaceItemsNone' }}
         alignContent={{ default: 'alignContentCenter' }}
@@ -80,52 +88,46 @@ interface IPipelineSummaryProps {
 const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
   migration,
 }: IPipelineSummaryProps) => {
-  const { status } = migration;
   const title = getPipelineSummaryTitle(migration);
   return (
-    <>
-      <Flex>
-        <FlexItem className={`${spacing.mrSm} `}>
-          <MigrationStatusIcon migration={migration} />
+    <Flex className={`${spacing.mr_4xl} `}>
+      {migration?.status?.pipeline && (
+        <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+          <Summary title={title} migration={migration}>
+            {migration?.status?.pipeline.map((step, index) => {
+              return (
+                <>
+                  {index != 0 ? (
+                    <Dash
+                      key={step.name}
+                      isReached={step?.started || step?.skipped ? true : false}
+                    />
+                  ) : (
+                    ''
+                  )}
+                  {step?.skipped ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
+                  ) : !step?.started ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
+                  ) : step?.failed || step?.isError ? (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
+                  ) : step?.started && !step?.completed ? (
+                    <Chain
+                      key={index}
+                      Face={ResourcesAlmostFullIcon}
+                      times={1}
+                      color={successColor}
+                    />
+                  ) : (
+                    <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
+                  )}
+                </>
+              );
+            })}
+          </Summary>
         </FlexItem>
-        {status && status?.pipeline && (
-          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-            <Summary title={title}>
-              {status?.pipeline.map((step, index) => {
-                return (
-                  <>
-                    {index != 0 ? (
-                      <Dash
-                        key={step.name}
-                        isReached={step?.started || step?.skipped ? true : false}
-                      />
-                    ) : (
-                      ''
-                    )}
-                    {step?.skipped ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={infoColor} />
-                    ) : !step?.started ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={disabledColor} />
-                    ) : step?.failed || step?.isError ? (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={dangerColor} />
-                    ) : step?.started && !step?.completed ? (
-                      <Chain
-                        key={index}
-                        Face={ResourcesAlmostFullIcon}
-                        times={1}
-                        color={successColor}
-                      />
-                    ) : (
-                      <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
-                    )}
-                  </>
-                );
-              })}
-            </Summary>
-          </FlexItem>
-        )}
-      </Flex>
-    </>
+      )}
+    </Flex>
   );
 };
 
