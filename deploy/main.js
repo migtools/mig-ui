@@ -3,7 +3,6 @@ const fs = require('fs');
 const dayjs = require('dayjs');
 const compression = require('compression');
 const HttpsProxyAgent = require('https-proxy-agent');
-
 const { AuthorizationCode } = require('simple-oauth2');
 
 let cachedOAuthMeta = null;
