@@ -38,6 +38,23 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
   // currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, hasBound, hasAdmitted),
 
   switch (debugRef.kind) {
+    case 'Job': {
+      const { conditions, startTime, completionTime } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
+      const hasRunning = startTime != undefined && completionTime == undefined;
+      const hasTerminating = deletionTimestamp != undefined;
+      const hasFailure = conditions?.some((c) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c) => c.type === 'Complete');
+      const hasPending = startTime == undefined;
+      return {
+        hasFailure,
+        hasCompleted,
+        hasRunning,
+        hasTerminating,
+        hasPending,
+        currentStatus: calculateCurrentStatus(null, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, null, null, null),
+      };
+    }
     case 'Pod': {
       const { phase } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
@@ -52,35 +69,42 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasRunning,
         hasTerminating,
         hasPending,
-        currentStatus: calculateCurrentStatus(null, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, null, null),
+        currentStatus: calculateCurrentStatus(null, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, null, null, null),
       };
     }
     case 'PVC': {
       const { phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasFailure = phase === 'Lost';
       const hasPending = phase === 'Pending';
       const hasBound = phase === 'Bound';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasFailure,
         hasPending,
         hasBound,
-        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, hasBound, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, hasTerminating, hasPending, hasBound, null, null),
       };
     }
     case 'PV': {
       const { phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasFailure = phase === 'Failed';
       const hasPending = phase === 'Pending';
       const hasBound = phase === 'Bound';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasFailure,
         hasPending,
         hasBound,
-        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, hasBound, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, hasTerminating, hasPending, hasBound, null, null),
       };
     }
     case 'Route': {
       const { ingress } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
 
       let admitted = '';
       ingress.forEach((ing) => ing.conditions.forEach((cond) => (admitted = cond.status)));
@@ -88,71 +112,87 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasFailure = admitted === 'Unknown';
       const hasPending = admitted === 'False';
       const hasAdmitted = admitted === 'True';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasFailure,
         hasPending,
         hasAdmitted,
-        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, null, hasAdmitted),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, hasTerminating, hasPending, null, hasAdmitted, null),
       };
     }
     case 'Backup': {
       const { errors, warnings, phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = warnings?.length > 0 || phase === 'PartiallyFailed';
       const hasFailure = errors?.length > 0 || phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'Restore': {
       const { errors, warnings, phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = warnings?.length > 0 || phase === 'PartiallyFailed';
       const hasFailure = errors?.length > 0 || phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'PodVolumeBackup': {
       const { phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = phase === 'PartiallyFailed';
       const hasFailure = phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'PodVolumeRestore': {
       const { errors, warnings, phase } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = phase === 'PartiallyFailed';
       const hasFailure = phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'DirectImageMigration': {
-      const { conditions } = debugRef.value.data.object.status;
+      const { conditions, startTimestamp } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -161,16 +201,19 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
       const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'DirectVolumeMigration': {
-      const { conditions } = debugRef.value.data.object.status;
+      const { conditions, startTimestamp } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -179,17 +222,19 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
       const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        // hasWarning?: any, hasFailure?: any, hasCompleted?: any, hasRunning?: any, hasTerminating?: any, hasPending?: any, hasBound?: any, hasAdmitted?: any
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'DirectImageStreamMigration': {
-      const { conditions } = debugRef.value.data.object.status;
+      const { conditions, startTimestamp } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -198,13 +243,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
       const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        // hasWarning?: any, hasFailure?: any, hasCompleted?: any, hasRunning?: any, hasTerminating?: any, hasPending?: any, hasBound?: any, hasAdmitted?: any
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'DirectVolumeMigrationProgress': {
@@ -215,6 +261,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         conditions,
         totalProgressPercentage,
       } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
+
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -224,14 +272,17 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       );
       const hasCompleted = phase === 'Succeeded';
       const hasRunning = totalProgressPercentage !== '100%';
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'Migration': {
-      const { conditions } = debugRef.value.data.object.status;
+      const { conditions, startTimestamp } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -240,16 +291,19 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         checkListContainsString(c.type, ['Succeeded', 'Completed'])
       );
       const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
       };
     }
     case 'Plan': {
       const { conditions } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
@@ -258,12 +312,27 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         checkListContainsString(c.type, ['Succeeded', 'Completed'])
       );
       const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, null, null, null, null),
+      };
+    }
+    case 'Hook': {
+      const { conditions } = debugRef.value.data.object.status;
+      const { deletionTimestamp } = debugRef.value.data.object.metadata;
+      const hasWarning = conditions?.some((c) => c.type === 'Critical');
+      const hasReady = conditions?.some((c) => c.type === 'Ready');
+      const hasTerminating = deletionTimestamp != undefined;
+      return {
+        hasWarning,
+        hasReady,
+        hasTerminating,
+        currentStatus: calculateCurrentStatus(hasWarning, null, null, null, hasTerminating, null, null, null, hasReady),
       };
     }
   }
@@ -277,7 +346,8 @@ const calculateCurrentStatus = (
   hasTerminating?,
   hasPending?,
   hasBound?,
-  hasAdmitted?
+  hasAdmitted?,
+  hasReady?
 ) => {
   let currentStatus;
   if (hasTerminating) {
@@ -294,6 +364,8 @@ const calculateCurrentStatus = (
     currentStatus = DebugStatusType.Bound;
   } else if (hasAdmitted) {
     currentStatus = DebugStatusType.Admitted;
+  } else if (hasReady) {
+    currentStatus = DebugStatusType.Ready;
   } else if (hasCompleted) {
     currentStatus = DebugStatusType.Completed;
   }

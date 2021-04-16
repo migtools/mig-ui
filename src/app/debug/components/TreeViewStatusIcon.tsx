@@ -107,6 +107,15 @@ const renderStatusIcon = (currentStatus) => {
           <span className={spacing.mlSm}>Completed</span>
         </FlexItem>
       );
+    case DebugStatusType.Ready:
+      return (
+        <FlexItem>
+          <span id="debug-ref-successful-icon" className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+          <span className={spacing.mlSm}>Ready</span>
+        </FlexItem>
+      );
     case DebugStatusType.Bound:
       return (
         <FlexItem>
