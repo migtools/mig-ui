@@ -146,15 +146,22 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       };
     }
     case 'DirectVolumeMigrationProgress': {
-      const { conditions } = debugRef.value.data.object.status;
+      const {
+        errors,
+        warnings,
+        phase,
+        conditions,
+        totalProgressPercentage,
+      } = debugRef.value.data.object.status;
       const hasWarning = conditions?.some((c) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) =>
-        checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef'])
+      const hasFailure = conditions?.some(
+        (c) =>
+          checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef']) || phase === 'Failed'
       );
-      const hasCompleted = false;
-      const hasRunning = false;
+      const hasCompleted = phase === 'Succeeded';
+      const hasRunning = totalProgressPercentage !== '100%';
       return {
         hasWarning,
         hasFailure,

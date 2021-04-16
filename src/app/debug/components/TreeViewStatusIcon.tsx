@@ -1,16 +1,13 @@
 import React from 'react';
-
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
-import { Flex, FlexItem, Popover, PopoverPosition, Spinner } from '@patternfly/react-core';
+import { FlexItem, Progress, ProgressSize, Spinner } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { DebugStatusType, IDebugRefWithStatus } from '../duck/types';
-import OutlinedCircleIcon from '@patternfly/react-icons/dist/js/icons/outlined-circle-icon';
 import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-icon';
 import { IMigration, IPlan } from '../../plan/duck/types';
-import MigrationStatusIcon from '../../home/pages/PlansPage/components/MigrationStatusIcon';
-import { getPipelineSummaryTitle } from '../../home/pages/PlansPage/helpers';
-const classNames = require('classnames');
+import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
+import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
 
 interface IProps {
   debugRef: IDebugRefWithStatus;
@@ -18,6 +15,7 @@ interface IProps {
 }
 
 const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
+  const matchingPlanRef = plans?.find((plan) => plan.MigPlan.metadata.name === debugRef?.refName);
   const matchingMigrationRef: IMigration[] = [];
   plans?.forEach((plan) => {
     const foundMigration: IMigration = plan.Migrations.find(
@@ -27,16 +25,40 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
       matchingMigrationRef.push(foundMigration);
     }
   });
+  if (debugRef.resourceKind === 'Plan') {
+    return (
+      <FlexItem>
+        <PlanStatus plan={matchingPlanRef || null} />
+      </FlexItem>
+    );
+  }
   if (debugRef.resourceKind === 'Migration') {
-    const title = getPipelineSummaryTitle(matchingMigrationRef[0] || null);
     return (
       <>
-        <MigrationStatusIcon migration={matchingMigrationRef[0]} />
-        <span className={spacing.mlSm}>{title}</span>
+        <PipelineSummary migration={matchingMigrationRef[0] || null} />
       </>
     );
   }
-  switch (debugRef?.debugResourceStatus?.currentStatus) {
+  if (debugRef.resourceKind === 'DirectVolumeMigrationProgress') {
+    if (debugRef?.debugResourceStatus.hasRunning) {
+      return (
+        <>
+          <Progress
+            value={parseInt(debugRef?.status?.totalProgressPercentage, 10) || 0}
+            title="Total progress percentage"
+            size={ProgressSize.sm}
+          />
+        </>
+      );
+    } else {
+      return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+    }
+  }
+  return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+};
+
+const renderStatusIcon = (currentStatus) => {
+  switch (currentStatus) {
     case DebugStatusType.Running:
       return (
         <>

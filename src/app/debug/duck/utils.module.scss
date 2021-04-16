@@ -1,13 +1,16 @@
 .treeID {
   flex: 1 0 auto;
+  margin-left: 10px;
 }
 
 .statusIcon {
   flex: 1 0 auto;
+  margin-right: 10px;
 }
 
 .alignStatus {
-  width: 10em;
+  width: 17em;
+  min-width: 17em;
   margin-left: auto;
   text-align: left;
   overflow: hidden;
@@ -16,9 +19,10 @@
 
 .activeHighlight {
   background-color: #bee1f4;
-  padding: 10px;
   border: #bee1f4 solid 1px;
   border-radius: 7px;
-  margin: 5px;
   font-weight: bold;
+  & > div {
+    padding: 15px 0 15px 0;
+  }
 }
