@@ -64,7 +64,7 @@ app.use(express.static(staticDir));
 
 app.get('/login', async (req, res, next) => {
   try {
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth();
     const authorizationUri = clusterAuth.authorizeURL({
       redirect_uri: migMeta.oauth.redirectUrl,
       scope: migMeta.oauth.userScope,
@@ -90,7 +90,7 @@ app.get('/login/callback', async (req, res, next) => {
     redirect_uri: migMeta.oauth.redirectUrl,
   };
   try {
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth();
     const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
     const user = {
@@ -127,8 +127,8 @@ const getOAuthMeta = async () => {
   return cachedOAuthMeta;
 };
 
-const getClusterAuth = async (migMeta) => {
-  const oAuthMeta = await getOAuthMeta(migMeta);
+const getClusterAuth = async () => {
+  const oAuthMeta = await getOAuthMeta();
   return new AuthorizationCode({
     client: {
       id: migMeta.oauth.clientId,
