@@ -34,6 +34,9 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       return false;
     }
   };
+
+  // currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, hasBound, hasAdmitted),
+
   switch (debugRef.kind) {
     case 'Pod': {
       const { phase } = debugRef.value.data.object.status;
@@ -49,13 +52,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasRunning,
         hasTerminating,
         hasPending,
-        currentStatus: calculateCurrentStatus(
-          hasFailure,
-          hasCompleted,
-          hasRunning,
-          hasTerminating,
-          hasPending
-        ),
+        currentStatus: calculateCurrentStatus(null, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, null, null),
       };
     }
     case 'PVC': {
@@ -67,7 +64,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasPending,
         hasBound,
-        currentStatus: calculateCurrentStatus(hasFailure, hasPending, hasBound),
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, hasBound, null),
       };
     }
     case 'PV': {
@@ -79,7 +76,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasPending,
         hasBound,
-        currentStatus: calculateCurrentStatus(hasFailure, hasPending, hasBound),
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, hasBound, null),
       };
     }
     case 'Route': {
@@ -95,7 +92,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasPending,
         hasAdmitted,
-        currentStatus: calculateCurrentStatus(hasFailure, hasPending, hasAdmitted),
+        currentStatus: calculateCurrentStatus(null, hasFailure, null, null, null, hasPending, null, hasAdmitted),
       };
     }
     case 'Backup': {
@@ -109,7 +106,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'Restore': {
@@ -123,7 +120,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'PodVolumeBackup': {
@@ -137,7 +134,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'PodVolumeRestore': {
@@ -151,7 +148,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'DirectImageMigration': {
@@ -169,7 +166,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'DirectVolumeMigration': {
@@ -187,7 +184,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        // hasWarning?: any, hasFailure?: any, hasCompleted?: any, hasRunning?: any, hasTerminating?: any, hasPending?: any, hasBound?: any, hasAdmitted?: any
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'DirectImageStreamMigration': {
@@ -205,7 +203,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        // hasWarning?: any, hasFailure?: any, hasCompleted?: any, hasRunning?: any, hasTerminating?: any, hasPending?: any, hasBound?: any, hasAdmitted?: any
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'DirectVolumeMigrationProgress': {
@@ -228,7 +227,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       return {
         hasWarning,
         hasFailure,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'Migration': {
@@ -246,7 +245,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
     case 'Plan': {
@@ -264,7 +263,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasFailure,
         hasCompleted,
         hasRunning,
-        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning),
+        currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, null, null, null, null),
       };
     }
   }
