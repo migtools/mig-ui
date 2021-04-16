@@ -67,7 +67,6 @@ export const convertRawTreeToViewTree = (
   // the root node, so doing that here and just bringing in the rest of it
   return [
     {
-      id: uuidv1(),
       ...getShallowPropsForNode(workingTree, debugRefs, plans),
       children: workingTree.children,
       defaultExpanded: true,

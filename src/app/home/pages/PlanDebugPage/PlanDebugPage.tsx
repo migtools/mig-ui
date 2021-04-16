@@ -30,6 +30,10 @@ import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-c
 import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
+import { Table } from '@patternfly/react-table/dist/js/components/Table/Table';
+import { treeRow } from '@patternfly/react-table/dist/js/components/Table/utils/decorators/treeRow';
+import { TableHeader } from '@patternfly/react-table/dist/js/components/Table/Header';
+import { TableBody } from '@patternfly/react-table/dist/js/components/Table/Body';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -41,6 +45,8 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   );
 
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedRows, setExpandedRows] = useState([]);
+  const [tableTreeData, setTableTreeData] = useState([]);
 
   const [searchText, setSearchText] = useState('');
 
@@ -67,6 +73,14 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   if (searchText && treeData) {
     filteredTreeData = filterSubtree(treeData);
   }
+
+  const onCollapse = (event, rowIndex, title) => {
+    const openedIndex = expandedRows.indexOf(title);
+    const newExpandedRows =
+      openedIndex === -1 ? [...expandedRows, title] : expandedRows.filter((o) => o !== title);
+    setExpandedRows(newExpandedRows);
+  };
+  // const buildRows = (event, rowIndex, title) => {};
 
   return (
     <>
@@ -145,6 +159,21 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       />
                     </SplitItem>
                   </Split>
+                  <Table
+                    isTreeTable
+                    aria-label="Tree table"
+                    cells={[
+                      {
+                        title: 'UID',
+                        cellTransforms: [treeRow(onCollapse)],
+                      },
+                      { title: 'Status' },
+                    ]}
+                    rows={filteredTreeData}
+                  >
+                    <TableHeader />
+                    <TableBody />
+                  </Table>
                   <TreeView
                     id={uuidv1()}
                     data={filteredTreeData ? filteredTreeData : []}
