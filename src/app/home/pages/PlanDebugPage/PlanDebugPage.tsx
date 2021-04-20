@@ -43,7 +43,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
 
   const [searchText, setSearchText] = useState('');
 
-  const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
+  const filterSubtree = (items: any[]) =>
     items
       .map((item) => {
         const nameMatches = (item.name as string).toLowerCase().includes(searchText.toLowerCase());
