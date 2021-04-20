@@ -12,7 +12,7 @@ const getShallowPropsForNode = (
   rawNode: IDebugTreeNode,
   debugRefs: IDebugRefWithStatus[],
   plans: IPlan[]
-): TreeViewDataItem => {
+) => {
   const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
   return {
     id: rawNode.name,
@@ -28,7 +28,11 @@ const getShallowPropsForNode = (
         </FlexItem>
       </Flex>
     ),
-    action: <TreeActionsDropdown rawNode={rawNode} />,
+    dropdown: (
+      <>
+        <TreeActionsDropdown rawNode={rawNode} />
+      </>
+    ),
   };
 };
 

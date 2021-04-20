@@ -17,7 +17,7 @@ export const TreeTable: React.FunctionComponent<ITreeTableProps> = ({ filteredTr
       const isExpanded = expandedRows.includes(x.id);
       return [
         {
-          cells: [x.id, x.name],
+          cells: [x.id, x.name, x.dropdown],
           props: {
             isExpanded,
             isHidden,
@@ -50,7 +50,7 @@ export const TreeTable: React.FunctionComponent<ITreeTableProps> = ({ filteredTr
     <Table
       isTreeTable
       aria-label="Tree table"
-      cells={[{ title: 'ID', cellTransforms: [treeRow(onCollapse)] }, 'Name']}
+      cells={[{ title: 'ID', cellTransforms: [treeRow(onCollapse)] }, 'Name', 'Action']}
       rows={buildRows(filteredTreeData, 1, 1)}
     >
       <TableHeader />
