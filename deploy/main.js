@@ -2,8 +2,10 @@ const express = require('express');
 const fs = require('fs');
 const dayjs = require('dayjs');
 const compression = require('compression');
-const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 const HttpsProxyAgent = require('https-proxy-agent');
+const { AuthorizationCode } = require('simple-oauth2');
+
+let cachedOAuthMeta = null;
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
@@ -12,8 +14,38 @@ const port = process.env['EXPRESS_PORT'] || 9000;
 
 const migMetaStr = fs.readFileSync(migMetaFile, 'utf8');
 const migMeta = JSON.parse(migMetaStr);
+
+const sanitizeMigMeta = (migMeta) => {
+  const oauthCopy = { ...migMeta.oauth };
+  delete oauthCopy.clientSecret;
+  return { ...migMeta, oauth: oauthCopy };
+};
+
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
+
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+
+//Set proxy string if it exists
+const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
+let bypassProxy = false;
+if (noProxyArr && noProxyArr.length) {
+  bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
+}
+let httpOptions = {};
+let axios;
+if (proxyString && !bypassProxy) {
+  httpOptions = {
+    agent: new HttpsProxyAgent(proxyString),
+  };
+  const axiosProxyConfig = {
+    proxy: false,
+    httpsAgent: new HttpsProxyAgent(proxyString),
+  };
+  axios = require('axios').create(axiosProxyConfig);
+} else {
+  axios = require('axios');
+}
 
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
@@ -31,7 +63,7 @@ app.use(express.static(staticDir));
 
 app.get('/login', async (req, res, next) => {
   try {
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth();
     const authorizationUri = clusterAuth.authorizeURL({
       redirect_uri: migMeta.oauth.redirectUrl,
       // redirect_uri: migMeta.oauth.redirectUri,
@@ -54,19 +86,7 @@ app.get('/login/callback', async (req, res, next) => {
     redirect_uri: migMeta.oauth.redirectUrl,
   };
   try {
-    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-    const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',') ;
-    let bypassProxy = false;
-    if(noProxyArr && noProxyArr.length){
-      bypassProxy = noProxyArr.some(s=> migMeta.clusterApi.includes(s));
-    }
-    let httpOptions = {};
-    if (proxyString && !bypassProxy) {
-      httpOptions = {
-        agent: new HttpsProxyAgent(proxyString),
-      };
-    }
-    const clusterAuth = await getClusterAuth(migMeta);
+    const clusterAuth = await getClusterAuth();
     const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
     const user = {
@@ -90,3 +110,29 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+
+//Helpers
+
+const getOAuthMeta = async () => {
+  if (cachedOAuthMeta) {
+    return cachedOAuthMeta;
+  }
+  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const res = await axios.get(oAuthMetaUrl);
+  cachedOAuthMeta = res.data;
+  return cachedOAuthMeta;
+};
+
+const getClusterAuth = async () => {
+  const oAuthMeta = await getOAuthMeta();
+  return new AuthorizationCode({
+    client: {
+      id: migMeta.oauth.clientId,
+      secret: migMeta.oauth.clientSecret,
+    },
+    auth: {
+      tokenHost: oAuthMeta.token_endpoint,
+      authorizePath: oAuthMeta.authorization_endpoint,
+    },
+  });
+};
