@@ -5,7 +5,6 @@ import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
-const uuidv1 = require('uuid/v1');
 const styles = require('./utils.module').default;
 
 const getShallowPropsForNode = (
@@ -36,7 +35,7 @@ const getShallowPropsForNode = (
 };
 
 const convertNode = (rawNode: IDebugTreeNode, ctx, debugRefs, plans): void => {
-  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, debugRefs, plans);
+  const outNode: any = getShallowPropsForNode(rawNode, debugRefs, plans);
 
   if (rawNode.children) {
     outNode.children = rawNode.children;
@@ -53,7 +52,7 @@ export const convertRawTreeToViewTree = (
   inTree: IDebugTreeNode,
   debugRefs: IDebugRefWithStatus[],
   plans: IPlan[]
-): TreeViewDataItem[] => {
+) => {
   // Deep clone. Not the most efficient, but easy and we're not going for
   // blazing performance here.
   const workingTree: IDebugTreeNode = JSON.parse(JSON.stringify(inTree));
