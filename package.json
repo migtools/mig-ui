@@ -1,7 +1,7 @@
 {
   "name": "mig-ui",
   "version": "0.1.0",
-  "description": "Migration Toolkit for Containers",
+  "description": "Crane",
   "main": "index.js",
   "license": "Apache-2.0",
   "private": true,
