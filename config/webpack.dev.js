@@ -1,9 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const webpack = require('webpack');
 const HOST = process.env.HOST || 'localhost';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const helpers = require('./helpers');
+const smp = new SpeedMeasurePlugin();
 
 // Two dev modes: local | remote
 // local - auto authenticates as a fake user and uses a local
@@ -53,7 +55,7 @@ if (devMode === 'local') {
   );
 }
 
-const webpackConfig = {
+const webpackConfig = smp.wrap({
   entry: {
     app: './src/index.tsx',
   },
@@ -192,6 +194,6 @@ const webpackConfig = {
     ],
   },
   plugins,
-};
+});
 
 module.exports = webpackConfig;

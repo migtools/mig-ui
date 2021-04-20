@@ -5,7 +5,7 @@ interface ITreeTableProps {
   filteredTreeData: any;
 }
 
-export const TreeTable: React.FunctionComponent<ITreeTableProps> = ({ filteredTreeData }) => {
+export const DebugTree: React.FunctionComponent<ITreeTableProps> = ({ filteredTreeData }) => {
   //   buildRows: ([x, ...xs]: [any, ...any[]], level: any, posinset: any, isHidden?: boolean) => any[];
   //   onCollapse: (event: any, rowIndex: any, title: any) => void;
   //   onCheckChange: (event: any, checked: any, rowIndex: any, title: any) => void;
@@ -17,7 +17,7 @@ export const TreeTable: React.FunctionComponent<ITreeTableProps> = ({ filteredTr
       const isExpanded = expandedRows.includes(x.id);
       return [
         {
-          cells: [x.id, x.name, x.dropdown],
+          cells: [x.id, x.kind, x.namespace, x.status, x.dropdown],
           props: {
             isExpanded,
             isHidden,
@@ -50,7 +50,13 @@ export const TreeTable: React.FunctionComponent<ITreeTableProps> = ({ filteredTr
     <Table
       isTreeTable
       aria-label="Tree table"
-      cells={[{ title: 'ID', cellTransforms: [treeRow(onCollapse)] }, 'Name', 'Action']}
+      cells={[
+        { title: 'ID', cellTransforms: [treeRow(onCollapse)] },
+        'Kind',
+        'Namespace',
+        'Status',
+        'Action',
+      ]}
       rows={buildRows(filteredTreeData, 1, 1)}
     >
       <TableHeader />

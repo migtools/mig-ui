@@ -16,11 +16,10 @@ const getShallowPropsForNode = (
   const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
   return {
     id: rawNode.name,
-    name: (
+    kind: rawNode.kind,
+    namespace: rawNode.namespace,
+    status: (
       <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
-        <FlexItem
-          className={styles.treeID}
-        >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
           <div className={styles.alignStatus}>
             <TreeViewStatusIcon plans={plans} debugRef={matchingDebugRef} />
