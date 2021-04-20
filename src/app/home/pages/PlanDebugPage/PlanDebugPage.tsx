@@ -34,6 +34,7 @@ import { Table } from '@patternfly/react-table/dist/js/components/Table/Table';
 import { treeRow } from '@patternfly/react-table/dist/js/components/Table/utils/decorators/treeRow';
 import { TableHeader } from '@patternfly/react-table/dist/js/components/Table/Header';
 import { TableBody } from '@patternfly/react-table/dist/js/components/Table/Body';
+import { TreeTable } from './components/TestTree';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -159,26 +160,12 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       />
                     </SplitItem>
                   </Split>
-                  <Table
-                    isTreeTable
-                    aria-label="Tree table"
-                    cells={[
-                      {
-                        title: 'UID',
-                        cellTransforms: [treeRow(onCollapse)],
-                      },
-                      { title: 'Status' },
-                    ]}
-                    rows={filteredTreeData}
-                  >
-                    <TableHeader />
-                    <TableBody />
-                  </Table>
-                  <TreeView
+                  <TreeTable filteredTreeData={filteredTreeData} />
+                  {/* <TreeView
                     id={uuidv1()}
                     data={filteredTreeData ? filteredTreeData : []}
                     defaultAllExpanded
-                  />
+                  /> */}
                 </CardBody>
               )}
             </CardExpandableContent>

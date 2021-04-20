@@ -69,7 +69,16 @@ const webpackConfig = {
   optimization: {
     removeAvailableModules: false,
     removeEmptyChunks: false,
-    splitChunks: false,
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        commons: {
+          name: 'commons',
+          chunks: 'all',
+          minChunks: 3,
+        },
+      },
+    },
   },
   mode: 'development',
   devtool: 'eval-cheap-module-source-map',

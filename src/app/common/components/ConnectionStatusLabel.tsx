@@ -35,7 +35,7 @@ const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, status
       }
       case AddEditState.Ready: {
         const ReadyIcon = () => (
-          <span id="connection-successful-icon" className="pf-c-icon pf-m-success">
+          <span className={`pf-c-icon pf-m-success`}>
             <CheckCircleIcon />
           </span>
         );
