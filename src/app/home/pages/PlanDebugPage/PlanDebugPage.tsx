@@ -104,9 +104,9 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       <>Debug view</>
                     </Title>
                     <p className={spacing.mtMd}>
-                      View important Kubernetes resources involved in the migration process. Currently
-                      active resources are highlighted. This view is helpful for debugging migration
-                      issues.
+                      View important Kubernetes resources involved in the migration process.
+                      Currently active resources are highlighted. This view is helpful for debugging
+                      migration issues.
                     </p>
                   </>
                 }
