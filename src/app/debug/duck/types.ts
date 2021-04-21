@@ -27,10 +27,15 @@ export interface IDebugRefWithStatus {
 }
 
 export interface IDerivedDebugStatusObject {
-  hasWarning: boolean;
-  hasFailure: boolean;
-  hasCompleted: boolean;
-  hasRunning: boolean;
+  hasWarning?: boolean;
+  hasFailure?: boolean;
+  hasCompleted?: boolean;
+  hasRunning?: boolean;
+  hasPending?: boolean;
+  hasTerminating?: boolean;
+  hasBound?: boolean;
+  hasAdmitted?: boolean;
+  hasReady?: boolean;
   currentStatus: DebugStatusType;
 }
 export enum DebugStatusType {
@@ -38,6 +43,11 @@ export enum DebugStatusType {
   Failure = 'Failure',
   Running = 'Running',
   Completed = 'Completed',
+  Pending = 'Pending',
+  Terminating = 'Terminating',
+  Bound = 'Bound',
+  Admitted = 'Admitted',
+  Ready = 'Ready',
 }
 
 export const DEBUG_PATH_SEARCH_KEY = 'objPath';

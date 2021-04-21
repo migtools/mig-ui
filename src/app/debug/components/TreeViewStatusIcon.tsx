@@ -66,6 +66,20 @@ const renderStatusIcon = (currentStatus) => {
           <span className={spacing.mlSm}>Active</span>
         </>
       );
+    case DebugStatusType.Pending:
+      return (
+        <>
+          <Spinner size="sm"></Spinner>
+          <span className={spacing.mlSm}>Pending</span>
+        </>
+      );
+    case DebugStatusType.Terminating:
+      return (
+        <>
+          <Spinner size="sm"></Spinner>
+          <span className={spacing.mlSm}>Terminating</span>
+        </>
+      );
     case DebugStatusType.Failure:
       return (
         <>
@@ -84,7 +98,6 @@ const renderStatusIcon = (currentStatus) => {
           <span className={spacing.mlSm}>Warning</span>
         </>
       );
-
     case DebugStatusType.Completed:
       return (
         <FlexItem>
@@ -92,6 +105,33 @@ const renderStatusIcon = (currentStatus) => {
             <CheckCircleIcon />
           </span>
           <span className={spacing.mlSm}>Completed</span>
+        </FlexItem>
+      );
+    case DebugStatusType.Ready:
+      return (
+        <FlexItem>
+          <span id="debug-ref-successful-icon" className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+          <span className={spacing.mlSm}>Ready</span>
+        </FlexItem>
+      );
+    case DebugStatusType.Bound:
+      return (
+        <FlexItem>
+          <span id="debug-ref-successful-icon" className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+          <span className={spacing.mlSm}>Bound</span>
+        </FlexItem>
+      );
+    case DebugStatusType.Admitted:
+      return (
+        <FlexItem>
+          <span id="debug-ref-successful-icon" className="pf-c-icon pf-m-success">
+            <CheckCircleIcon />
+          </span>
+          <span className={spacing.mlSm}>Admitted</span>
         </FlexItem>
       );
     default: {
