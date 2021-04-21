@@ -12,6 +12,8 @@ const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
 const staticDir = process.env['STATIC_DIR'] || '/srv/static';
 const port = process.env['EXPRESS_PORT'] || 9000;
 
+const brandType = process.env['BRAND_TYPE'];
+
 const migMetaStr = fs.readFileSync(migMetaFile, 'utf8');
 const migMeta = JSON.parse(migMetaStr);
 
@@ -104,7 +106,7 @@ app.get('/login/callback', async (req, res, next) => {
 });
 
 app.get('*', (req, res) => {
-  res.render('index.ejs', { migMeta: encodedMigMeta });
+  res.render('index.ejs', { migMeta: encodedMigMeta, brandType });
 });
 
 app.listen(port, () => {
