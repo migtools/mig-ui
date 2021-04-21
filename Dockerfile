@@ -8,6 +8,7 @@ RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
 FROM registry.access.redhat.com/ubi8/nodejs-12:latest
 COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/public/favicon.ico /opt/app-root/src/staticroot
+COPY --from=builder /mig-ui/public/crane_favicon.ico /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/public/index.ejs /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/deploy/main.js /opt/app-root/src
 COPY --from=builder /mig-ui/node_modules /opt/app-root/src/node_modules
