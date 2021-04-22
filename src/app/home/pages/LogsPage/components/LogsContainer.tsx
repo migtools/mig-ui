@@ -36,10 +36,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
 }) => {
   usePausedPollingEffect();
 
-  const [cluster, setCluster] = useState({
-    label: 'controller',
-    value: 'controller',
-  });
+  const [cluster, setCluster] = useState('controller');
   const [logSource, setLogSource] = useState({
     label: null,
     value: {
@@ -96,7 +93,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
         setLogSource={setLogSource}
       />
       <LogBody />
-      <LogFooter cluster={cluster.value} logSource={logSource.value} planName={planName} />
+      <LogFooter cluster={cluster} logSource={logSource.value} planName={planName} />
     </Card>
   );
 };

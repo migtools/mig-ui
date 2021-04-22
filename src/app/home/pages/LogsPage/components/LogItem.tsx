@@ -1,31 +1,46 @@
-import React from 'react';
-import ReactTable from 'react-table';
-import 'react-table/react-table.css';
+import React, { useEffect } from 'react';
 const styles = require('./LogItem.module').default;
-import { Grid } from '@patternfly/react-core';
+import { Grid, Level, LevelItem, Pagination } from '@patternfly/react-core';
+import { Table } from '@patternfly/react-table/dist/js/components/Table/Table';
+import { TableHeader } from '@patternfly/react-table/dist/js/components/Table/Header';
+import { TableBody } from '@patternfly/react-table/dist/js/components/Table/Body';
+import { sortable } from '@patternfly/react-table/dist/js/components/Table/utils/decorators/sortable';
+import { useSortState } from '../../../../common/duck/hooks';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
+import { IRow } from '@patternfly/react-table/dist/js/components/Table/TableTypes';
 
 const LogItem = ({ log }) => {
-  const logConverted = log.map((item) => ({ value: item }));
-  const columns = [
-    {
-      Header: '',
-      accessor: 'value',
-    },
-  ];
+  const getSortValues = () => {
+    return [];
+  };
+
+  const columns = [{ title: 'Name', transforms: [sortable] }];
+  const { sortBy, onSort, sortedItems } = useSortState(log, getSortValues);
+  const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
+  useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
+  const rows: IRow[] = currentPageItems.map((item) => ({ cells: [item] }));
 
   return (
     <Grid hasGutter className={styles.container}>
-      <ReactTable
-        filterable
-        defaultFilterMethod={(filter, row) => {
-          return row[filter.id].includes(filter.value);
-        }}
-        defaultPageSize={200}
-        style={{ height: `${0.6 * window.innerHeight}px`, textAlign: 'left' }}
-        columns={columns}
-        data={logConverted}
-        className="-highlight"
-      />
+      <Level>
+        <LevelItem />
+        <LevelItem>
+          <Pagination {...paginationProps} widgetId="logs-table-pagination-top" />
+        </LevelItem>
+      </Level>
+
+      <Table
+        aria-label="Logs table"
+        cells={columns}
+        rows={rows}
+        onSort={onSort}
+        className={`${spacing.mtMd}`}
+      >
+        <TableHeader />
+        <TableBody />
+      </Table>
+      <Pagination variant="bottom" {...paginationProps} widgetId="logs-table-pagination-top" />
     </Grid>
   );
 };

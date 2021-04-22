@@ -267,7 +267,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
       <Level>
         <LevelItem />
         <LevelItem>
-          <Pagination {...paginationProps} widgetId="providers-table-pagination-top" />
+          <Pagination {...paginationProps} widgetId="analytics-table-pagination-top" />
         </LevelItem>
       </Level>
       <Table
@@ -281,7 +281,7 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
         <TableBody />
       </Table>
 
-      <Pagination variant="bottom" {...paginationProps} widgetId="providers-table-pagination-top" />
+      <Pagination variant="bottom" {...paginationProps} widgetId="analytics-table-pagination-top" />
     </>
   );
 };

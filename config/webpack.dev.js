@@ -71,9 +71,10 @@ const webpackConfig = {
     removeEmptyChunks: false,
     splitChunks: false,
   },
-  mode: 'none',
+  mode: 'development',
   devtool: 'eval-cheap-module-source-map',
   module: {
+    unsafeCache: true,
     rules: [
       {
         test: /\.tsx?$/,
