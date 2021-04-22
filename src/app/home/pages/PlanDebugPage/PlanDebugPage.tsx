@@ -29,6 +29,7 @@ import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
 import { DebugTree } from './components/DebugTree';
+import { usePausedPollingEffect } from '../../../common/context/PollingContext';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -42,37 +43,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [searchText, setSearchText] = useState('');
-  const [filteredTreeData, setFilteredTreeData] = useState([]);
-
-  useEffect(() => {
-    const filterSubtree = (items: any[]) =>
-      items
-        .map((item) => {
-          const nameMatches = (item.name as string)
-            .toLowerCase()
-            .includes(searchText.toLowerCase());
-          if (!item.children) {
-            return nameMatches ? item : null;
-          }
-          const filteredChildren = filterSubtree(item.children);
-          if (filteredChildren.length > 0) {
-            return {
-              ...item,
-              children: filteredChildren,
-            };
-          }
-          return null;
-        })
-        .filter((item) => !!item) as TreeViewDataItem[];
-    const treeData =
-      (debug.tree && debugRefs.length && convertRawTreeToViewTree(debug.tree, debugRefs, plans)) ||
-      [];
-    setFilteredTreeData(treeData);
-    if (searchText && treeData) {
-      setFilteredTreeData(filterSubtree(treeData));
-    }
-  }, [debug.tree]);
-  console.log('debug page rendering');
 
   return (
     <>
@@ -85,12 +55,12 @@ export const PlanDebugPage: React.FunctionComponent = () => {
           <Card id="image-card" isExpanded={isOpen}>
             <CardHeader
               onExpand={() => {
-                const { isPolling } = debug;
-                if (!isPolling) {
-                  dispatch(startDebugPolling(planName));
-                } else if (isPolling) {
-                  dispatch(stopDebugPolling(planName));
-                }
+                // const { isPolling } = debug;
+                // if (!isPolling) {
+                //   dispatch(startDebugPolling(planName));
+                // } else if (isPolling) {
+                //   dispatch(stopDebugPolling(planName));
+                // }
                 setIsOpen(!isOpen);
               }}
               toggleButtonProps={{
@@ -128,32 +98,9 @@ export const PlanDebugPage: React.FunctionComponent = () => {
               </Popover>
             </CardHeader>
             <CardExpandableContent>
-              {debug.isFetchingInitialDebugTree ? (
-                <Bullseye>
-                  <EmptyState variant="large">
-                    <div className="pf-c-empty-state__icon">
-                      <Spinner size="xl" />
-                    </div>
-                    <Title headingLevel="h2" size="xl">
-                      Loading...
-                    </Title>
-                  </EmptyState>
-                </Bullseye>
-              ) : (
-                <CardBody>
-                  <Split hasGutter>
-                    <SplitItem isFilled>
-                      <SearchInput
-                        placeholder="Type to search"
-                        value={searchText}
-                        onChange={setSearchText}
-                        onClear={() => setSearchText('')}
-                      />
-                    </SplitItem>
-                  </Split>
-                  <DebugTree filteredTreeData={filteredTreeData} />
-                </CardBody>
-              )}
+              <CardBody>
+                <DebugTree />
+              </CardBody>
             </CardExpandableContent>
           </Card>
         )}
