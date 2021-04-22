@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -42,30 +42,37 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [searchText, setSearchText] = useState('');
+  const [filteredTreeData, setFilteredTreeData] = useState([]);
 
-  const filterSubtree = (items: any[]) =>
-    items
-      .map((item) => {
-        const nameMatches = (item.name as string).toLowerCase().includes(searchText.toLowerCase());
-        if (!item.children) {
-          return nameMatches ? item : null;
-        }
-        const filteredChildren = filterSubtree(item.children);
-        if (filteredChildren.length > 0) {
-          return {
-            ...item,
-            children: filteredChildren,
-          };
-        }
-        return null;
-      })
-      .filter((item) => !!item) as TreeViewDataItem[];
-
-  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, debugRefs, plans);
-  let filteredTreeData = treeData;
-  if (searchText && treeData) {
-    filteredTreeData = filterSubtree(treeData);
-  }
+  useEffect(() => {
+    const filterSubtree = (items: any[]) =>
+      items
+        .map((item) => {
+          const nameMatches = (item.name as string)
+            .toLowerCase()
+            .includes(searchText.toLowerCase());
+          if (!item.children) {
+            return nameMatches ? item : null;
+          }
+          const filteredChildren = filterSubtree(item.children);
+          if (filteredChildren.length > 0) {
+            return {
+              ...item,
+              children: filteredChildren,
+            };
+          }
+          return null;
+        })
+        .filter((item) => !!item) as TreeViewDataItem[];
+    const treeData =
+      (debug.tree && debugRefs.length && convertRawTreeToViewTree(debug.tree, debugRefs, plans)) ||
+      [];
+    setFilteredTreeData(treeData);
+    if (searchText && treeData) {
+      setFilteredTreeData(filterSubtree(treeData));
+    }
+  }, [debug.tree]);
+  console.log('debug page rendering');
 
   return (
     <>

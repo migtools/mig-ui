@@ -67,6 +67,7 @@ export const convertRawTreeToViewTree = (
 
   // Doesn't seem to be an easy way from within the crawler to replace
   // the root node, so doing that here and just bringing in the rest of it
+  console.log('convertRawTreeToViewTree');
   return [
     {
       ...getShallowPropsForNode(workingTree, debugRefs, plans),

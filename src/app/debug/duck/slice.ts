@@ -16,7 +16,7 @@ const initialState = {
   isFetchingInitialDebugTree: true,
   isLoading: false,
   isPolling: false,
-  tree: {},
+  tree: null,
   objJson: null,
   errMsg: null,
   debugRefs: [],
