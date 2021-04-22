@@ -60,7 +60,7 @@ app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
 
-// NOTE: Any future backend-only routes here need to also be proxied by webpack-dev-server.
+// NOTE: Any future backend-only routes here need to also be proxied by webpack dev server (Now `webpack serve` as of webpack version 5).
 //       Add them to config/webpack.dev.js in the array under devServer.proxy.context.
 
 app.get('/login', async (req, res, next) => {

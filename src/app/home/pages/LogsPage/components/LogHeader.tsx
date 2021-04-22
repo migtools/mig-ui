@@ -1,5 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import Select from 'react-select';
 import {
   CardHeader,
   Grid,
@@ -17,6 +16,7 @@ import {
   IPodContainer,
 } from '../../../../../client/resources/discovery';
 import { ILogSource, LogUnselected } from './LogsContainer';
+import SimpleSelect from '../../../../common/components/SimpleSelect';
 
 interface ISelectItem {
   label: any;
@@ -26,7 +26,7 @@ interface ISelectItem {
 interface IProps {
   isFetchingLogs: boolean;
   report: IPlanLogSources;
-  cluster: ISelectItem;
+  cluster: string;
   logSource: ISelectItem;
   setCluster: (itemISelectItem) => void;
   setLogSource: (itemISelectItem) => void;
@@ -42,17 +42,12 @@ const LogHeader: FunctionComponent<IProps> = ({
   setLogSource,
   logFetchRequest,
 }) => {
-  const clusters = Object.keys(report).map((cl) => {
-    return {
-      label: cl,
-      value: cl,
-    };
-  });
+  const clusters = Object.keys(report).map((cl) => cl);
 
   const logSources =
-    report && report[cluster.value]
+    report && report[cluster]
       ? flatten(
-          report[cluster.value].map((pod: IPodLogSource, podIndex) =>
+          report[cluster].map((pod: IPodLogSource, podIndex) =>
             pod.containers.map((container: IPodContainer, containerIndex) => ({
               label: `${pod.name}-${container.name}`,
               value: {
@@ -75,9 +70,8 @@ const LogHeader: FunctionComponent<IProps> = ({
               </TextContent>
             </GridItem>
             <GridItem span={4}>
-              <Select
-                name="selectCluster"
-                value={cluster}
+              <SimpleSelect
+                id="selectCluster"
                 onChange={(clusterSelected) => {
                   setCluster(clusterSelected);
                   setLogSource({
@@ -88,6 +82,8 @@ const LogHeader: FunctionComponent<IProps> = ({
                     },
                   });
                 }}
+                value={cluster}
+                placeholderText="Select cluster..."
                 options={clusters}
               />
             </GridItem>
@@ -99,17 +95,22 @@ const LogHeader: FunctionComponent<IProps> = ({
               </TextContent>
             </GridItem>
             <GridItem span={4}>
-              <Select
-                name="selectPod"
-                value={logSource}
+              <SimpleSelect
+                id="selectPod"
                 onChange={(logSelection) => {
-                  setLogSource(logSelection);
-                  const logStore: ILogSource = logSelection.value;
+                  const foundLogSelection = logSources.find(
+                    (source) => source.label === logSelection
+                  );
+                  setLogSource(foundLogSelection);
+                  //@ts-ignore
+                  const logStore: ILogSource = foundLogSelection.value;
                   logFetchRequest(
-                    report[cluster.value][logStore.podIndex].containers[logStore.containerIndex].log
+                    report[cluster][logStore.podIndex].containers[logStore.containerIndex].log
                   );
                 }}
-                options={logSources}
+                value={logSource.label}
+                placeholderText="Select pod..."
+                options={logSources.map((logSource) => logSource.label)}
               />
             </GridItem>
           </Grid>

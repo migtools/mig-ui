@@ -16,7 +16,7 @@ export const LogsPage: React.FunctionComponent<IProps> = ({ match }) => {
           <GridItem>
             <Breadcrumb>
               <BreadcrumbItem>
-                <Link to="/">Home</Link>
+                <Link to="/plans">plans</Link>
               </BreadcrumbItem>
               <BreadcrumbItem to="#" isActive>
                 {match.params.planId} Logs
