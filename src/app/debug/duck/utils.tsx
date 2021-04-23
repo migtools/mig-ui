@@ -44,7 +44,7 @@ const convertNode = (rawNode: IDebugTreeNode, ctx, debugRefs, plans): void => {
   if (ctx.parent) {
     ctx.parent.children[ctx.index] = outNode;
   }
-
+  console.log('convertNode');
   ctx.replace(outNode);
 };
 

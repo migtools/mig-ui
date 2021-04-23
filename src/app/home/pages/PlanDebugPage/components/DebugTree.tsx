@@ -66,7 +66,7 @@ export const DebugTree: React.FunctionComponent = () => {
     };
     //@ts-ignore
     setBuiltRows(buildRows(treeData, 1, 1, false));
-  }, [debug.isFetchingInitialDebugTree, expandedRows]);
+  }, [debug.tree, debug.isFetchingInitialDebugTree, expandedRows]);
 
   useEffect(() => {
     setCells([

@@ -42,8 +42,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [searchText, setSearchText] = useState('');
-
   return (
     <>
       <PageSection>
@@ -55,12 +53,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
           <Card id="image-card" isExpanded={isOpen}>
             <CardHeader
               onExpand={() => {
-                // const { isPolling } = debug;
-                // if (!isPolling) {
-                //   dispatch(startDebugPolling(planName));
-                // } else if (isPolling) {
-                //   dispatch(stopDebugPolling(planName));
-                // }
                 setIsOpen(!isOpen);
               }}
               toggleButtonProps={{
