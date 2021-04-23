@@ -102,17 +102,24 @@ export const DebugTree: React.FunctionComponent = () => {
           </EmptyState>
         </Bullseye>
       ) : (
-        <Table
-          isTreeTable
-          aria-label="Tree table"
-          cells={cells}
-          rows={builtRows}
-          // rows={buildRows(filteredTreeData, 1, 1)}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <DebugTreeTable cells={cells} builtRows={builtRows} />
       )}
     </>
   );
 };
+interface IDebugTreeTable {
+  cells: any;
+  builtRows: any;
+}
+const DebugTreeTable = React.memo((props: IDebugTreeTable) => (
+  <Table
+    isTreeTable
+    aria-label="Tree table"
+    cells={props.cells}
+    rows={props.builtRows}
+    // rows={buildRows(filteredTreeData, 1, 1)}
+  >
+    <TableHeader />
+    <TableBody />
+  </Table>
+));
