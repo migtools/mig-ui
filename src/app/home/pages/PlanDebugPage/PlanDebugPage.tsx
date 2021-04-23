@@ -47,7 +47,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
     items
       .map((item) => {
-        const nameMatches = (item.name as string).toLowerCase().includes(searchText.toLowerCase());
+        const nameMatches = (item.id as string).toLowerCase().includes(searchText.toLowerCase());
         if (!item.children) {
           return nameMatches ? item : null;
         }
