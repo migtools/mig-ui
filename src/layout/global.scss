@@ -8,7 +8,6 @@ html,
 body,
 #root {
   height: 100%;
-  overflow-y: hidden;
 }
 
 .storage-modal-modifier {
@@ -28,5 +27,5 @@ body,
 }
 
 .pf-c-page {
-  height: 103%;
+  padding-bottom: 20px;
 }
