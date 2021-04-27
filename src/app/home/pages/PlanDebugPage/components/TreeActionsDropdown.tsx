@@ -25,13 +25,30 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
-  const onCopy = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const onCopyGet = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocCommand, clusterType } = getOCCommandAndClusterType(rawNode);
+    const { ocGetCommand: ocGetCommand, ocLogsCommand, clusterType } = getOCCommandAndClusterType(rawNode);
     setClusterType(clusterType);
-    el.value = ocCommand;
+    el.value = ocGetCommand;
+    clipboard.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    clipboard.removeChild(el);
+    copiedToClipboard(
+      `Command copied to clipboard. Run 'oc get' on 
+      ${clusterType} cluster to view resource details.`
+    );
+  };
+
+  const onCopyLogs = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const clipboard = event.currentTarget.parentElement;
+    const el = document.createElement('textarea');
+    const { ocGetCommand: ocGetCommand, ocLogsCommand, clusterType } = getOCCommandAndClusterType(rawNode);
+    setClusterType(clusterType);
+    el.value = ocLogsCommand;
     clipboard.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -52,9 +69,9 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       position="right"
       dropdownItems={[
         <DropdownItem
-          key="copy-oc-command"
+          key="copy-oc-get-command"
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-            onCopy(event);
+            onCopyGet(event);
           }}
         >
           <span>
@@ -65,6 +82,20 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
             command
           </span>
         </DropdownItem>,
+        <DropdownItem
+        key="copy-oc-logs-command"
+        onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+          onCopyLogs(event);
+        }}
+      >
+        <span>
+          Copy
+          <pre className={spacing.mxSm} style={{ display: 'inline' }}>
+            oc logs
+          </pre>
+          command
+        </span>
+      </DropdownItem>,
         <Link
           to={`${RAW_OBJECT_VIEW_ROUTE}?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`}
           target="_blank"

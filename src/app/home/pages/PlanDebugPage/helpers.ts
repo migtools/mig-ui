@@ -39,7 +39,8 @@ export const getFullKindName = (kind: any) => {
   }
 };
 interface ICommandAndTypeObj {
-  ocCommand: string;
+  ocGetCommand: string;
+  ocLogsCommand: string;
   clusterType: string;
 }
 export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAndTypeObj => {
@@ -47,87 +48,104 @@ export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAnd
   switch (kind) {
     case 'DirectImageStreamMigration':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dism":"${name}"'`,
         clusterType: '',
       };
     case 'DirectVolumeMigrationProgress':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
         clusterType: '',
       };
     case 'Hook':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migHook":"${name}"'`,
         clusterType: '',
       };
     case 'Job':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: null,
         clusterType: '',
       };
     case 'PV':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} ${name}`,
+        ocLogsCommand: null,
         clusterType: '',
       };
     case 'PVC':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: null,
         clusterType: '',
       };
     case 'Route':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: null,
         clusterType: '',
       };
     case 'Pod':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs ${getFullKindName(kind)} -n ${namespace} ${name}`,
         clusterType: '',
       };
     case 'Migration':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
         clusterType: 'source',
       };
     case 'Plan':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
         clusterType: 'source',
       };
     case 'Backup':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `velero backup logs ${name} -n ${namespace}`,
         clusterType: 'source',
       };
     case 'PodVolumeBackup':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: null,
         clusterType: 'source',
       };
     case 'Restore':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `velero restore logs ${name} -n ${namespace}`,
         clusterType: 'target',
       };
     case 'PodVolumeRestore':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: null,
         clusterType: 'target',
       };
     case 'DirectVolumeMigration':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvm":"${name}"'`,
         clusterType: '',
       };
     case 'DirectImageMigration':
       return {
-        ocCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocGetCommand: `oc get ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dism":"${name}"'`,
         clusterType: '',
       };
     default:
       return {
-        ocCommand: `Command was not copied.`,
+        ocGetCommand: `Command was not copied.`,
+        ocLogsCommand: `Command was not copied.`,
         clusterType: '',
       };
   }
