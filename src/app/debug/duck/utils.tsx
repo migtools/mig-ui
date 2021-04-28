@@ -14,13 +14,14 @@ const getShallowPropsForNode = (
   plans: IPlan[]
 ): TreeViewDataItem => {
   const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
+  const nodeIdentifier = rawNode.namespace
+    ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
+    : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
   return {
     id: rawNode.name,
     name: (
       <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
-        <FlexItem
-          className={styles.treeID}
-        >{`${rawNode.kind}: ${rawNode.namespace}/${rawNode.name}`}</FlexItem>
+        <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
           <div className={styles.alignStatus}>
             <TreeViewStatusIcon plans={plans} debugRef={matchingDebugRef} />

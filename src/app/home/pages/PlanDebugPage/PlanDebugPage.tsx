@@ -107,6 +107,9 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       View important Kubernetes resources involved in the migration process.
                       Currently active resources are highlighted. This view is helpful for debugging
                       migration issues.
+                      <br />
+                      <br />
+                      Resources are represented with cluster/namespace/name.
                     </p>
                   </>
                 }
