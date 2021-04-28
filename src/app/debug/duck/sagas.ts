@@ -39,6 +39,8 @@ function* fetchDebugTree(action) {
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
+    //
+    // sort migrations
 
     const linkRefs = [];
     const eachRecursive = (obj) => {
@@ -64,7 +66,22 @@ function* fetchDebugTree(action) {
     });
 
     const debugRefs = yield Promise.all(refs);
+    //combine data from refs and tree
+    const addRefsToTree = (obj) => {
+      for (const k in obj) {
+        if (typeof obj[k] == 'object' && obj[k] !== null) {
+          addRefsToTree(obj[k]);
+        } else {
+          const matchingDebugRef = debugRefs?.find((ref) => ref?.value.data.name === obj?.name);
+          obj.debugRef = matchingDebugRef;
+        }
+      }
+    };
+    addRefsToTree(res.data);
+    // res.data.forEach((node) =>{
+    //   if
 
+    // })
     yield put(treeFetchSuccess(res.data, debugRefs));
   } catch (err) {
     yield put(treeFetchFailure(err.message));
