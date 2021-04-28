@@ -8,7 +8,7 @@ import {
   IDebugTreeNode,
   RAW_OBJECT_VIEW_ROUTE,
 } from '../../../../debug/duck/types';
-import { getOCCommandAndClusterType } from '../helpers';
+import { getOCCommandAndClusterType, hasLogsCommand } from '../helpers';
 import { AlertActions } from '../../../../common/duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,15 +25,17 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
-  const onCopyGet = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const onCopyDescribe = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocGetCommand: ocGetCommand, ocLogsCommand, clusterType } = getOCCommandAndClusterType(
-      rawNode
-    );
+    const {
+      ocDescribeCommand: ocDescribeCommand,
+      ocLogsCommand,
+      clusterType,
+    } = getOCCommandAndClusterType(rawNode);
     setClusterType(clusterType);
-    el.value = ocGetCommand;
+    el.value = ocDescribeCommand;
     clipboard.appendChild(el);
     el.select();
     document.execCommand('copy');
@@ -48,9 +50,11 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocGetCommand: ocGetCommand, ocLogsCommand, clusterType } = getOCCommandAndClusterType(
-      rawNode
-    );
+    const {
+      ocDescribeCommand: ocDescribeCommand,
+      ocLogsCommand,
+      clusterType,
+    } = getOCCommandAndClusterType(rawNode);
     setClusterType(clusterType);
     el.value = ocLogsCommand;
     clipboard.appendChild(el);
@@ -63,28 +67,63 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     );
   };
 
-  const onCopyGetEvents = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    const clipboard = event.currentTarget.parentElement;
-    const el = document.createElement('textarea');
-    const {
-      ocGetCommand: ocGetCommand,
-      ocLogsCommand,
-      ocGetEventsCommand,
-      clusterType,
-    } = getOCCommandAndClusterType(rawNode);
-    setClusterType(clusterType);
-    el.value = ocGetEventsCommand;
-    clipboard.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    clipboard.removeChild(el);
-    copiedToClipboard(
-      `Command copied to clipboard. Run 'oc get' on 
-      ${clusterType} cluster to view resource details.`
-    );
-  };
   const encodedPath = encodeURI(rawNode.objectLink);
+
+  const describeDropdownButton = (
+    <DropdownItem
+      key="copy-oc-describe-command"
+      onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+        onCopyDescribe(event);
+      }}
+    >
+      <span>
+        Copy
+        <pre className={spacing.mxSm} style={{ display: 'inline' }}>
+          oc describe
+        </pre>
+        command
+      </span>
+    </DropdownItem>
+  );
+
+  const logsDropdownButton = (
+    <DropdownItem
+      key="copy-oc-logs-command"
+      onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+        onCopyLogs(event);
+      }}
+    >
+      <span>
+        Copy
+        <pre className={spacing.mxSm} style={{ display: 'inline' }}>
+          oc logs
+        </pre>
+        command
+      </span>
+    </DropdownItem>
+  );
+
+  const jsonLinkButton = (
+    <Link
+      to={`${RAW_OBJECT_VIEW_ROUTE}?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: 'none' }}
+    >
+      <DropdownItem
+        key="view-raw"
+        onClick={() => {
+          setKebabIsOpen(false);
+        }}
+      >
+        View JSON
+      </DropdownItem>
+    </Link>
+  );
+
+  const actionListWithLogsButton = [describeDropdownButton, logsDropdownButton, jsonLinkButton];
+  const actionListWithoutLogsButton = [describeDropdownButton, jsonLinkButton];
+  const nodeHasLogsCommand = hasLogsCommand(rawNode.kind);
 
   return (
     <Dropdown
@@ -93,65 +132,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       isOpen={kebabIsOpen}
       isPlain
       position="right"
-      dropdownItems={[
-        <DropdownItem
-          key="copy-oc-get-command"
-          onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-            onCopyGet(event);
-          }}
-        >
-          <span>
-            Copy
-            <pre className={spacing.mxSm} style={{ display: 'inline' }}>
-              oc get
-            </pre>
-            command
-          </span>
-        </DropdownItem>,
-        <DropdownItem
-          key="copy-oc-get-events-command"
-          onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-            onCopyGetEvents(event);
-          }}
-        >
-          <span>
-            Copy
-            <pre className={spacing.mxSm} style={{ display: 'inline' }}>
-              oc get events
-            </pre>
-            command
-          </span>
-        </DropdownItem>,
-        <DropdownItem
-          key="copy-oc-logs-command"
-          onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-            onCopyLogs(event);
-          }}
-        >
-          <span>
-            Copy
-            <pre className={spacing.mxSm} style={{ display: 'inline' }}>
-              oc logs
-            </pre>
-            command
-          </span>
-        </DropdownItem>,
-        <Link
-          to={`${RAW_OBJECT_VIEW_ROUTE}?${DEBUG_PATH_SEARCH_KEY}=${encodedPath}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <DropdownItem
-            key="view-raw"
-            onClick={() => {
-              setKebabIsOpen(false);
-            }}
-          >
-            View JSON
-          </DropdownItem>
-        </Link>,
-      ]}
+      dropdownItems={nodeHasLogsCommand ? actionListWithLogsButton : actionListWithoutLogsButton}
     />
   );
 };
