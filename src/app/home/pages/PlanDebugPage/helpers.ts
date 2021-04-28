@@ -48,9 +48,9 @@ export const hasLogsCommand = (kind: any) => {
     case 'Backup':
       return true;
     case 'PodVolumeBackup':
-      return true;
+      return false;
     case 'PodVolumeRestore':
-      return true;
+      return false;
     case 'Restore':
       return true;
     case 'DirectVolumeMigration':
@@ -64,7 +64,7 @@ export const hasLogsCommand = (kind: any) => {
     case 'Hook':
       return true;
     case 'Job':
-      return true;
+      return false;
     case 'Pod':
       return true;
     case 'PV':
