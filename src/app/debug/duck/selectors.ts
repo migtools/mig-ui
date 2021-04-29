@@ -49,7 +49,6 @@ const updateTreeToIncludeRefsWithStatus = (tree, refs) => {
   };
   modifyTree(clonedTree, addDebugStatusToRef);
   modifyTree(clonedTree, sortMigrations);
-  // sortMigrationsInTree(clonedTree);
 
   return clonedTree;
 };
@@ -57,10 +56,7 @@ const updateTreeToIncludeRefsWithStatus = (tree, refs) => {
 const getDebugTreeWithStatus = createSelector(
   [debugTreeSelector, debugRefsSelector],
   (tree: any, refs: any) => {
-    //combine data from refs and tree
-
     const updatedTree = updateTreeToIncludeRefsWithStatus(tree, refs);
-
     return updatedTree;
   }
 );
