@@ -40,7 +40,7 @@ const debugSlice = createSlice({
       state.errMsg = action.payload.trim();
     },
     debugRefsFetchRequest(state, action: PayloadAction<any>) {
-      // state.isLoading = true;
+      //N/A
     },
     debugRefsFetchSuccess(state, action: PayloadAction<IDebugRefRes[]>) {
       state.debugRefs = action.payload;
