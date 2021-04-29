@@ -1,4 +1,5 @@
-import { O_NONBLOCK } from 'constants';
+import dayjs from 'dayjs';
+import { cloneDeep } from 'lodash';
 import { createSelector } from 'reselect';
 import {
   DebugStatusType,
@@ -9,59 +10,58 @@ import {
 
 const debugTreeSelector = (state) => state.debug.tree;
 const debugRefsSelector = (state) => state.debug.debugRefs;
-const addDebugStatusToRef = (debugRef) => {
+
+const addDebugStatusToRef = (refs, obj) => {
+  const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
   const statusObject = {
-    ...getResourceStatus(debugRef),
+    ...getResourceStatus(matchingDebugRef),
   };
 
   const newDebugRef = {
-    ...debugRef?.value.data?.object,
-    refName: debugRef?.value.data?.name,
+    ...matchingDebugRef?.value.data?.object,
+    refName: matchingDebugRef?.value.data?.name,
     debugResourceStatus: statusObject,
-    resourceKind: debugRef.kind,
+    resourceKind: matchingDebugRef.kind,
   };
-  return newDebugRef;
+  obj['debugRef'] = newDebugRef;
 };
+
+const sortMigrations = (refs, obj) => {
+  if (obj['kind'] === 'Plan') {
+    obj['children'] = obj['children'].sort((left, right) => {
+      return dayjs
+        .utc(right.debugRef.metadata.creationTimestamp)
+        .diff(dayjs.utc(left.debugRef.metadata.creationTimestamp));
+    });
+  }
+};
+
+const updateTreeToIncludeRefsWithStatus = (tree, refs) => {
+  const clonedTree = cloneDeep(tree);
+  const modifyTree = (obj, modification) => {
+    for (const k in obj) {
+      if (typeof obj[k] == 'object' && obj[k] !== null) {
+        modifyTree(obj[k], modification);
+      } else {
+        modification(refs, obj);
+      }
+    }
+  };
+  modifyTree(clonedTree, addDebugStatusToRef);
+  modifyTree(clonedTree, sortMigrations);
+  // sortMigrationsInTree(clonedTree);
+
+  return clonedTree;
+};
+
 const getDebugTreeWithStatus = createSelector(
   [debugTreeSelector, debugRefsSelector],
   (tree: any, refs: any) => {
     //combine data from refs and tree
 
-    const addRefsToTree = (obj) => {
-      for (const k in obj) {
-        if (typeof obj[k] == 'object' && obj[k] !== null) {
-          addRefsToTree(obj[k]);
-        } else {
-          const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
-          const newDebugRef = addDebugStatusToRef(matchingDebugRef);
-          // obj = Object.assign({}, obj, { debugRef: newDebugRef });
-          //@ts-ignore
-          obj.debugRef = newDebugRef;
-          // obj = { ...obj, debugRef: newDebugRef };
-        }
-      }
-    };
-    const object2 = Object.create(tree);
+    const updatedTree = updateTreeToIncludeRefsWithStatus(tree, refs);
 
-    addRefsToTree(object2);
-
-    // const sortedMigrations = tree.
-
-    return tree;
-    // const refsWithStatus: IDebugRefWithStatus[] = tree.map((treeNode) => {
-    //   const statusObject = {
-    //     ...getResourceStatus(treeNode),
-    //   };
-
-    //   return {
-    //     ...treeNode?.value.data?.object,
-    //     refName: treeNode?.value.data?.name,
-    //     debugResourceStatus: statusObject,
-    //     resourceKind: treeNode.kind,
-    //   };
-    // });
-
-    // return refsWithStatus;
+    return updatedTree;
   }
 );
 
