@@ -39,8 +39,6 @@ function* fetchDebugTree(action) {
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
-    //
-    // sort migrations
 
     const linkRefs = [];
     const eachRecursive = (obj) => {

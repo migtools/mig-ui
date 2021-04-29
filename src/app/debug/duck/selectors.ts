@@ -11,53 +11,49 @@ import {
 const debugTreeSelector = (state) => state.debug.tree;
 const debugRefsSelector = (state) => state.debug.debugRefs;
 
-const addDebugStatusToRef = (refs, obj) => {
-  const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
-  const statusObject = {
-    ...getResourceStatus(matchingDebugRef),
-  };
-
-  const newDebugRef = {
-    ...matchingDebugRef?.value.data?.object,
-    refName: matchingDebugRef?.value.data?.name,
-    debugResourceStatus: statusObject,
-    resourceKind: matchingDebugRef.kind,
-  };
-  obj['debugRef'] = newDebugRef;
-};
-
-const sortMigrations = (refs, obj) => {
-  if (obj['kind'] === 'Plan') {
-    obj['children'] = obj['children'].sort((left, right) => {
-      return dayjs
-        .utc(right.debugRef.metadata.creationTimestamp)
-        .diff(dayjs.utc(left.debugRef.metadata.creationTimestamp));
-    });
-  }
-};
-
-const updateTreeToIncludeRefsWithStatus = (tree, refs) => {
-  const clonedTree = cloneDeep(tree);
-  const modifyTree = (obj, modification) => {
-    for (const k in obj) {
-      if (typeof obj[k] == 'object' && obj[k] !== null) {
-        modifyTree(obj[k], modification);
-      } else {
-        modification(refs, obj);
-      }
-    }
-  };
-  modifyTree(clonedTree, addDebugStatusToRef);
-  modifyTree(clonedTree, sortMigrations);
-
-  return clonedTree;
-};
-
 const getDebugTreeWithStatus = createSelector(
   [debugTreeSelector, debugRefsSelector],
   (tree: any, refs: any) => {
-    const updatedTree = updateTreeToIncludeRefsWithStatus(tree, refs);
-    return updatedTree;
+    const addDebugStatusToRef = (refs, obj) => {
+      const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
+      const statusObject = {
+        ...getResourceStatus(matchingDebugRef),
+      };
+
+      const newDebugRef = {
+        ...matchingDebugRef?.value.data?.object,
+        refName: matchingDebugRef?.value.data?.name,
+        debugResourceStatus: statusObject,
+        resourceKind: matchingDebugRef.kind,
+      };
+      obj['debugRef'] = newDebugRef;
+    };
+
+    const sortMigrations = (refs, obj) => {
+      if (obj['kind'] === 'Plan') {
+        obj['children'] = obj['children'].sort((left, right) => {
+          return dayjs
+            .utc(right.debugRef.metadata.creationTimestamp)
+            .diff(dayjs.utc(left.debugRef.metadata.creationTimestamp));
+        });
+      }
+    };
+    const clonedTree = cloneDeep(tree);
+
+    const modifyTree = (obj, modification) => {
+      for (const k in obj) {
+        if (typeof obj[k] == 'object' && obj[k] !== null) {
+          modifyTree(obj[k], modification);
+        } else {
+          modification(refs, obj);
+        }
+      }
+    };
+
+    modifyTree(clonedTree, addDebugStatusToRef);
+    modifyTree(clonedTree, sortMigrations);
+
+    return clonedTree;
   }
 );
 
