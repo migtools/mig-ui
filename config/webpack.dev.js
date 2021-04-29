@@ -55,7 +55,7 @@ if (devMode === 'local') {
 
 const webpackConfig = {
   entry: {
-    app: './src/index.tsx',
+    app: ['react-hot-loader/patch', './src/index.tsx'],
   },
   output: {
     path: __dirname + '../dist',
@@ -64,6 +64,9 @@ const webpackConfig = {
     pathinfo: false,
   },
   resolve: {
+    alias: {
+      'react-dom': '@hot-loader/react-dom',
+    },
     extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
   optimization: {
