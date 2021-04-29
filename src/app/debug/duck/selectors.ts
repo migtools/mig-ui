@@ -1,12 +1,7 @@
 import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash';
 import { createSelector } from 'reselect';
-import {
-  DebugStatusType,
-  IDebugRefRes,
-  IDebugRefWithStatus,
-  IDerivedDebugStatusObject,
-} from './types';
+import { DebugStatusType, IDebugRefRes, IDerivedDebugStatusObject } from './types';
 
 const debugTreeSelector = (state) => state.debug.tree;
 const debugRefsSelector = (state) => state.debug.debugRefs;
@@ -24,7 +19,7 @@ const getDebugTreeWithStatus = createSelector(
         ...matchingDebugRef?.value.data?.object,
         refName: matchingDebugRef?.value.data?.name,
         debugResourceStatus: statusObject,
-        resourceKind: matchingDebugRef.kind,
+        resourceKind: matchingDebugRef?.kind,
       };
       obj['debugRef'] = newDebugRef;
     };
@@ -67,9 +62,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
   };
 
-  // currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, hasBound, hasAdmitted),
-
-  switch (debugRef.kind) {
+  switch (debugRef?.kind) {
     case 'Job': {
       const { conditions, startTime, completionTime } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;

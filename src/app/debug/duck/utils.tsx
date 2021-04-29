@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, FlexItem, TreeViewDataItem } from '@patternfly/react-core';
-import { IDebugRefWithStatus, IDebugTreeNode } from './types';
+import { IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';

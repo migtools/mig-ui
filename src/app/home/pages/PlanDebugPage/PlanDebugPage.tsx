@@ -30,6 +30,7 @@ import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 import { TreeContainer } from './components/TreeContainer';
+import { IDebugTreeNode } from '../../../debug/duck/types';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -37,7 +38,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
 
-  const debugTreeWithStatus: any = useSelector((state) =>
+  const debugTreeWithStatus: IDebugTreeNode = useSelector((state) =>
     debugSelectors.getDebugTreeWithStatus(state)
   );
 

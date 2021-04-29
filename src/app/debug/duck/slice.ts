@@ -29,29 +29,24 @@ const debugSlice = createSlice({
     treeFetchRequest(state, action: PayloadAction<string>) {
       state.isLoading = true;
     },
-    treeFetchSuccess: {
-      reducer: (
-        state,
-        action: PayloadAction<{ tree: IDebugTreeNode; debugRefs: IDebugRefRes[] }>
-      ) => {
-        state.isLoading = false;
-        state.isFetchingInitialDebugTree = false;
-        state.tree = action.payload.tree;
-        state.debugRefs = action.payload.debugRefs;
-      },
-      prepare: (tree: IDebugTreeNode, debugRefs: IDebugRefRes[]) => {
-        return {
-          payload: {
-            tree,
-            debugRefs,
-          },
-        };
-      },
+    treeFetchSuccess(state, action: PayloadAction<any>) {
+      state.isLoading = false;
+      state.isFetchingInitialDebugTree = false;
+      state.tree = action.payload;
     },
     treeFetchFailure(state, action: PayloadAction<string>) {
       state.isFetchingInitialDebugTree = false;
       state.isLoading = false;
       state.errMsg = action.payload.trim();
+    },
+    debugRefsFetchRequest(state, action: PayloadAction<any>) {
+      // state.isLoading = true;
+    },
+    debugRefsFetchSuccess(state, action: PayloadAction<IDebugRefRes[]>) {
+      state.debugRefs = action.payload;
+    },
+    debugRefsFetchFailure(state, action: PayloadAction<any>) {
+      state.isLoading = false;
     },
     debugObjectFetchRequest(state, action: PayloadAction<string>) {
       state.isLoadingJSONObject = true;
@@ -88,5 +83,8 @@ export const {
   startDebugPolling,
   stopDebugPolling,
   clearJSONView,
+  debugRefsFetchFailure,
+  debugRefsFetchRequest,
+  debugRefsFetchSuccess,
 } = debugSlice.actions;
 export default debugSlice.reducer;

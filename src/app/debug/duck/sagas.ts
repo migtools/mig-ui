@@ -14,9 +14,45 @@ import {
   treeFetchFailure,
   treeFetchRequest,
   treeFetchSuccess,
+  debugRefsFetchFailure,
+  debugRefsFetchRequest,
+  debugRefsFetchSuccess,
 } from './slice';
-import { IDebugTreeNode } from './types';
-import { PlanActionTypes } from '../../plan/duck';
+
+function* fetchDebugRefs(action) {
+  const state: IReduxState = yield select();
+  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+  const linkRefs = [];
+  const eachRecursive = (obj) => {
+    for (const k in obj) {
+      if (typeof obj[k] == 'object' && obj[k] !== null) {
+        eachRecursive(obj[k]);
+      } else {
+        if (k === 'objectLink') {
+          linkRefs.push({ link: obj[k], kind: obj['kind'] });
+        }
+      }
+    }
+  };
+  eachRecursive(action.payload);
+
+  const refs: Array<Promise<any>> = linkRefs.map(function (linkRef) {
+    return discoveryClient.getRaw(linkRef.link).then(function (value) {
+      return {
+        kind: linkRef.kind,
+        value: value,
+      };
+    });
+  });
+
+  try {
+    const debugRefs = yield Promise.all(refs);
+    yield put(debugRefsFetchSuccess(debugRefs));
+  } catch (err) {
+    yield put(debugRefsFetchFailure(err.message));
+    yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug ref: ${err.message}`));
+  }
+}
 
 function* fetchDebugObject(action) {
   const state: IReduxState = yield select();
@@ -40,31 +76,9 @@ function* fetchDebugTree(action) {
   try {
     const res = yield discoveryClient.get(debugTreeResource);
 
-    const linkRefs = [];
-    const eachRecursive = (obj) => {
-      for (const k in obj) {
-        if (typeof obj[k] == 'object' && obj[k] !== null) {
-          eachRecursive(obj[k]);
-        } else {
-          if (k === 'objectLink') {
-            linkRefs.push({ link: obj[k], kind: obj['kind'] });
-          }
-        }
-      }
-    };
-    eachRecursive(res.data);
-
-    const refs: Array<Promise<any>> = linkRefs.map(function (linkRef) {
-      return discoveryClient.getRaw(linkRef.link).then(function (value) {
-        return {
-          kind: linkRef.kind,
-          value: value,
-        };
-      });
-    });
-
-    const debugRefs = yield Promise.all(refs);
-    yield put(treeFetchSuccess(res.data, debugRefs));
+    yield put(debugRefsFetchRequest(res.data));
+    yield take(debugRefsFetchSuccess);
+    yield put(treeFetchSuccess(res.data));
   } catch (err) {
     yield put(treeFetchFailure(err.message));
     yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
@@ -76,7 +90,7 @@ function* debugPoll(action) {
     try {
       yield put(treeFetchRequest(planName));
       yield take(treeFetchSuccess);
-      yield delay(5000);
+      yield delay(10000);
     } catch {
       yield put(stopDebugPolling);
     }
@@ -93,6 +107,10 @@ function* watchDebugTreeFetchRequest() {
   yield takeEvery(treeFetchRequest.type, fetchDebugTree);
 }
 
+function* watchDebugRefsFetchRequest() {
+  yield takeEvery(debugRefsFetchRequest.type, fetchDebugRefs);
+}
+
 function* watchDebugObjectFetchRequest() {
   yield takeEvery(debugObjectFetchRequest.type, fetchDebugObject);
 }
@@ -101,4 +119,5 @@ export default {
   watchDebugTreeFetchRequest,
   watchDebugObjectFetchRequest,
   watchDebugPolling,
+  watchDebugRefsFetchRequest,
 };
