@@ -36,8 +36,9 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const plans: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
-  const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
-    debugSelectors.getDebugRefsWithStatus(state)
+
+  const debugTreeWithStatus: any = useSelector((state) =>
+    debugSelectors.getDebugTreeWithStatus(state)
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +63,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
       })
       .filter((item) => !!item) as TreeViewDataItem[];
 
-  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, debugRefs, plans);
+  const treeData = debug.tree && convertRawTreeToViewTree(debug.tree, plans);
   let filteredTreeData = treeData;
   if (searchText && treeData) {
     filteredTreeData = filterSubtree(treeData);

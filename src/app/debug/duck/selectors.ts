@@ -1,3 +1,4 @@
+import { O_NONBLOCK } from 'constants';
 import { createSelector } from 'reselect';
 import {
   DebugStatusType,
@@ -6,24 +7,63 @@ import {
   IDerivedDebugStatusObject,
 } from './types';
 
-const debugRefsSelector = (state) => state.debug.debugRefs.map((r) => r);
+const debugTreeSelector = (state) => state.debug.tree;
+const debugRefsSelector = (state) => state.debug.debugRefs;
+const addDebugStatusToRef = (debugRef) => {
+  const statusObject = {
+    ...getResourceStatus(debugRef),
+  };
 
-const getDebugRefsWithStatus = createSelector([debugRefsSelector], (debugRefs: IDebugRefRes[]) => {
-  const refsWithStatus: IDebugRefWithStatus[] = debugRefs.map((ref) => {
-    const statusObject = {
-      ...getResourceStatus(ref),
+  const newDebugRef = {
+    ...debugRef?.value.data?.object,
+    refName: debugRef?.value.data?.name,
+    debugResourceStatus: statusObject,
+    resourceKind: debugRef.kind,
+  };
+  return newDebugRef;
+};
+const getDebugTreeWithStatus = createSelector(
+  [debugTreeSelector, debugRefsSelector],
+  (tree: any, refs: any) => {
+    //combine data from refs and tree
+
+    const addRefsToTree = (obj) => {
+      for (const k in obj) {
+        if (typeof obj[k] == 'object' && obj[k] !== null) {
+          addRefsToTree(obj[k]);
+        } else {
+          const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
+          const newDebugRef = addDebugStatusToRef(matchingDebugRef);
+          // obj = Object.assign({}, obj, { debugRef: newDebugRef });
+          //@ts-ignore
+          obj.debugRef = newDebugRef;
+          // obj = { ...obj, debugRef: newDebugRef };
+        }
+      }
     };
+    const object2 = Object.create(tree);
 
-    return {
-      ...ref?.value.data?.object,
-      refName: ref?.value.data?.name,
-      debugResourceStatus: statusObject,
-      resourceKind: ref.kind,
-    };
-  });
+    addRefsToTree(object2);
 
-  return refsWithStatus;
-});
+    // const sortedMigrations = tree.
+
+    return tree;
+    // const refsWithStatus: IDebugRefWithStatus[] = tree.map((treeNode) => {
+    //   const statusObject = {
+    //     ...getResourceStatus(treeNode),
+    //   };
+
+    //   return {
+    //     ...treeNode?.value.data?.object,
+    //     refName: treeNode?.value.data?.name,
+    //     debugResourceStatus: statusObject,
+    //     resourceKind: treeNode.kind,
+    //   };
+    // });
+
+    // return refsWithStatus;
+  }
+);
 
 const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject => {
   const warningConditionTypes = ['Critical', 'Error', 'Warn'];
@@ -533,5 +573,5 @@ const calculateCurrentStatus = (
 };
 
 export default {
-  getDebugRefsWithStatus,
+  getDebugTreeWithStatus,
 };
