@@ -750,12 +750,13 @@ function* runStageSaga(action) {
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
+    const migrationName = `stage-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
     yield put(AlertActions.alertProgressTimeout('Staging Started'));
 
     const migMigrationObj = createMigMigration(
-      uuidv1(),
+      migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       true,
@@ -880,11 +881,12 @@ function* runMigrationSaga(action) {
     const state: IReduxState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
+    const migrationName = `migration-${uuidv1().slice(0, 5)}`;
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(AlertActions.alertProgressTimeout('Migration Started'));
 
     const migMigrationObj = createMigMigration(
-      uuidv1(),
+      migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       false,
@@ -1007,12 +1009,13 @@ function* runRollbackSaga(action) {
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
+    const migrationName = `rollback-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
     yield put(AlertActions.alertProgressTimeout('Rollback Started'));
 
     const migMigrationObj = createMigMigration(
-      uuidv1(),
+      migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       false,
