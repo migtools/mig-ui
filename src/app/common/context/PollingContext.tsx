@@ -17,6 +17,7 @@ interface IPollingParams {
 }
 interface IPollingContext {
   isPollingEnabled: boolean;
+  pauseIrrelevantPolling: () => void;
   pausePolling: () => void;
   resumePolling: () => void;
   startDefaultClusterPolling: () => void;
@@ -31,6 +32,7 @@ interface IPollingContext {
 
 const PollingContext = React.createContext<IPollingContext>({
   isPollingEnabled: true,
+  pauseIrrelevantPolling: () => undefined,
   pausePolling: () => undefined,
   resumePolling: () => undefined,
   startDefaultClusterPolling: () => undefined,
@@ -173,6 +175,14 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
             setIsPollingEnabled(false);
           }
         },
+        pauseIrrelevantPolling: () => {
+          if (isPollingEnabled) {
+            dispatch(ClusterActions.stopClusterPolling());
+            dispatch(StorageActions.stopStoragePolling());
+            dispatch(PlanActions.stopHookPolling());
+            setIsPollingEnabled(false);
+          }
+        },
       }}
     >
       {children}
@@ -186,6 +196,19 @@ export const usePausedPollingEffect = (): void => {
   const { pausePolling, resumePolling } = usePollingContext();
   React.useEffect(() => {
     pausePolling();
+    return resumePolling;
+  }, [pausePolling, resumePolling]);
+};
+
+export const useDebugViewPollingEffect = (): void => {
+  const {
+    pausePolling,
+    resumePolling,
+    pauseIrrelevantPolling,
+    startDefaultPlanPolling,
+  } = usePollingContext();
+  React.useEffect(() => {
+    pauseIrrelevantPolling();
     return resumePolling;
   }, [pausePolling, resumePolling]);
 };

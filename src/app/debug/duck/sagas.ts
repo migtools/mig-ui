@@ -76,6 +76,7 @@ function* debugPoll(action) {
   while (true) {
     try {
       yield put(treeFetchRequest(planName));
+      yield take(treeFetchSuccess);
       yield delay(5000);
     } catch {
       yield put(stopDebugPolling);
