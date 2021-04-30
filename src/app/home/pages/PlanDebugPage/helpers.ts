@@ -81,112 +81,94 @@ export const hasLogsCommand = (kind: any) => {
 interface ICommandAndTypeObj {
   ocDescribeCommand: string;
   ocLogsCommand: string;
-  clusterType: string;
 }
-export const getOCCommandAndClusterType = (rawNode: IDebugTreeNode): ICommandAndTypeObj => {
+export const getDebugCommand = (rawNode: IDebugTreeNode): ICommandAndTypeObj => {
   const { kind, namespace, name } = rawNode;
   switch (kind) {
     case 'DirectImageStreamMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dism":"${name}"'`,
-        clusterType: 'host',
       };
     case 'DirectVolumeMigrationProgress':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
-        clusterType: 'host',
       };
     case 'Hook':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migHook":"${name}"'`,
-        clusterType: 'host',
       };
     case 'Job':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: null,
-        clusterType: '',
       };
     case 'PV':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} ${name}`,
         ocLogsCommand: null,
-        clusterType: '',
       };
     case 'PVC':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: null,
-        clusterType: '',
       };
     case 'Route':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: null,
-        clusterType: '',
       };
     case 'Pod':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs -n ${namespace} ${name}`,
-        clusterType: '',
       };
     case 'Migration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
-        clusterType: 'host',
       };
     case 'Plan':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
-        clusterType: 'host',
       };
     case 'Backup':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `velero backup logs ${name} -n ${namespace}`,
-        clusterType: 'source',
       };
     case 'PodVolumeBackup':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: null,
-        clusterType: 'source',
       };
     case 'Restore':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `velero restore logs ${name} -n ${namespace}`,
-        clusterType: 'target',
       };
     case 'PodVolumeRestore':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: null,
-        clusterType: 'target',
       };
     case 'DirectVolumeMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvm":"${name}"'`,
-        clusterType: 'host',
       };
     case 'DirectImageMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
         ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dim":"${name}"'`,
-        clusterType: 'host',
       };
     default:
       return {
         ocDescribeCommand: `Command was not copied.`,
         ocLogsCommand: `Command was not copied.`,
-        clusterType: '',
       };
   }
 };

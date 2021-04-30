@@ -8,7 +8,7 @@ import {
   IDebugTreeNode,
   RAW_OBJECT_VIEW_ROUTE,
 } from '../../../../debug/duck/types';
-import { getOCCommandAndClusterType, hasLogsCommand } from '../helpers';
+import { getDebugCommand, hasLogsCommand } from '../helpers';
 import { AlertActions } from '../../../../common/duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -29,11 +29,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const {
-      ocDescribeCommand: ocDescribeCommand,
-      ocLogsCommand,
-      clusterType,
-    } = getOCCommandAndClusterType(rawNode);
+    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(rawNode);
     setClusterType(clusterType);
     el.value = ocDescribeCommand;
     clipboard.appendChild(el);
@@ -42,7 +38,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     clipboard.removeChild(el);
     copiedToClipboard(
       `Command copied to clipboard. Run 'oc describe' on 
-      ${clusterType} cluster to view resource details.`
+      ${rawNode.clusterType} cluster to view resource details.`
     );
   };
 
@@ -50,11 +46,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const {
-      ocDescribeCommand: ocDescribeCommand,
-      ocLogsCommand,
-      clusterType,
-    } = getOCCommandAndClusterType(rawNode);
+    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(rawNode);
     setClusterType(clusterType);
     el.value = ocLogsCommand;
     clipboard.appendChild(el);
@@ -63,7 +55,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     clipboard.removeChild(el);
     copiedToClipboard(
       `Command copied to clipboard. Run 'oc logs' on 
-      ${clusterType} cluster to view resource details.`
+      ${rawNode.clusterType} cluster to view resource details.`
     );
   };
 
