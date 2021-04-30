@@ -17,9 +17,19 @@
   text-overflow: ellipsis;
 }
 
-.activeHighlight {
+.activeHighlightRunning {
   background-color: #bee1f4;
   border: #bee1f4 solid 1px;
+  border-radius: 7px;
+  font-weight: bold;
+  & > div {
+    padding: 15px 0 15px 0;
+  }
+}
+
+.activeHighlightPending {
+  background-color: #f4eebe;
+  border: #f4eebe solid 1px;
   border-radius: 7px;
   font-weight: bold;
   & > div {

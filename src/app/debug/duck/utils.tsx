@@ -17,10 +17,17 @@ const getShallowPropsForNode = (
   const nodeIdentifier = rawNode.namespace
     ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
     : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
+  
+  let highlightStyle = null;
+  if (matchingDebugRef?.debugResourceStatus?.hasRunning) {
+    highlightStyle = styles.activeHighlightRunning;
+  } else if (matchingDebugRef?.debugResourceStatus?.hasPending) {
+    highlightStyle = styles.activeHighlightPending;
+  }
   return {
     id: rawNode.name,
     name: (
-      <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
+      <Flex className={highlightStyle}>
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
           <div className={styles.alignStatus}>
