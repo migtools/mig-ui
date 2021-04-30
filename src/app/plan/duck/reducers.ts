@@ -222,7 +222,7 @@ export const updatePlanList: PlanReducerFn = (
 export const updatePlanMigrations: PlanReducerFn = (state = INITIAL_STATE, action) => {
   // TODO: add migplan and migmigration typing
   const updatedPlanList = state.migPlanList.map((p: IPlan) => {
-    if (p.MigPlan.metadata.name === action.updatedPlan.MigPlan.metadata.name) {
+    if (p?.MigPlan?.metadata?.name === action?.updatedPlan?.MigPlan?.metadata?.name) {
       //filter migrations
       // TODO: fix api for MigPlan: should not contain migrations to be sane kubeApi resource
       action.updatedPlan.Migrations = sortMigrations(action.updatedPlan.Migrations);

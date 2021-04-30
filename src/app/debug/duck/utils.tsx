@@ -2,11 +2,20 @@ import React from 'react';
 import { Flex, FlexItem, TreeViewDataItem } from '@patternfly/react-core';
 import { IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
-import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
+import isEqual from 'react-fast-compare';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
+import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 const styles = require('./utils.module').default;
 const uuidv1 = require('uuid/v1');
+
+interface ITreeActionsDropdownProps {
+  rawNode: any;
+}
+
+export const TreeActionsDropdownComponent = React.memo(({ rawNode }: ITreeActionsDropdownProps) => {
+  return <TreeActionsDropdown rawNode={rawNode} />;
+}, isEqual);
 
 const getShallowPropsForNode = (rawNode: IDebugTreeNode, plans: IPlan[]): TreeViewDataItem => {
   const nodeIdentifier = rawNode.namespace
@@ -24,7 +33,7 @@ const getShallowPropsForNode = (rawNode: IDebugTreeNode, plans: IPlan[]): TreeVi
         </FlexItem>
       </Flex>
     ),
-    action: <TreeActionsDropdown rawNode={rawNode} />,
+    action: <TreeActionsDropdownComponent rawNode={rawNode} />,
   };
 };
 

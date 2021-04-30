@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { useDebugViewPollingEffect } from '../../../../common/context';
+import { useDebugViewPollingEffect, usePausedPollingEffect } from '../../../../common/context';
 import isEqual from 'react-fast-compare';
-import { TreeView, TreeViewDataItem } from './TreeComponent/TreeView';
-import { CardBody, Split, SplitItem, SearchInput } from '@patternfly/react-core';
+import {
+  CardBody,
+  Split,
+  SplitItem,
+  SearchInput,
+  TreeView,
+  TreeViewDataItem,
+} from '@patternfly/react-core';
 
 interface ITreeContainerProps {
   treeData: any;
@@ -16,6 +22,7 @@ const TreeComponent = React.memo(({ filteredTreeData }: ITreeComponentProps) => 
 
 const TreeContainer: React.FunctionComponent<ITreeContainerProps> = ({ treeData }) => {
   useDebugViewPollingEffect();
+  // usePausedPollingEffect();
   const [searchText, setSearchText] = useState('');
   const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
     items

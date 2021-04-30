@@ -9,18 +9,12 @@ import {
   Spinner,
   Title,
   Card,
-  CardBody,
   Alert,
-  TreeViewDataItem,
-  Split,
-  SplitItem,
-  SearchInput,
   CardHeader,
   CardExpandableContent,
   Popover,
   PopoverPosition,
 } from '@patternfly/react-core';
-import { IDebugRefWithStatus } from '../../../debug/duck/types';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import { IDebugReducerState, startDebugPolling, stopDebugPolling } from '../../../debug/duck/slice';
@@ -30,7 +24,6 @@ import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 import TreeContainer from './components/TreeContainer';
 import { IDebugTreeNode } from '../../../debug/duck/types';
-import { TreeView } from './components/TreeComponent/TreeView';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
