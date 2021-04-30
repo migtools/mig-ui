@@ -11,7 +11,6 @@ import {
   Card,
   CardBody,
   Alert,
-  TreeView,
   TreeViewDataItem,
   Split,
   SplitItem,
@@ -22,7 +21,6 @@ import {
   PopoverPosition,
 } from '@patternfly/react-core';
 import { IDebugRefWithStatus } from '../../../debug/duck/types';
-const uuidv1 = require('uuid/v1');
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import { IDebugReducerState, startDebugPolling, stopDebugPolling } from '../../../debug/duck/slice';
@@ -31,6 +29,7 @@ import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
+import { TreeContainer } from './components/TreeContainer';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -152,11 +151,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                       />
                     </SplitItem>
                   </Split>
-                  <TreeView
-                    id={uuidv1()}
-                    data={filteredTreeData ? filteredTreeData : []}
-                    defaultAllExpanded
-                  />
+                  <TreeContainer filteredTreeData={filteredTreeData} />
                 </CardBody>
               )}
             </CardExpandableContent>
