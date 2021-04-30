@@ -41,7 +41,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     document.execCommand('copy');
     clipboard.removeChild(el);
     copiedToClipboard(
-      `Command copied to clipboard. Run 'oc get' on 
+      `Command copied to clipboard. Run 'oc describe' on 
       ${clusterType} cluster to view resource details.`
     );
   };
@@ -62,7 +62,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     document.execCommand('copy');
     clipboard.removeChild(el);
     copiedToClipboard(
-      `Command copied to clipboard. Run 'oc get' on 
+      `Command copied to clipboard. Run 'oc logs' on 
       ${clusterType} cluster to view resource details.`
     );
   };
@@ -74,6 +74,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       key="copy-oc-describe-command"
       onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
         onCopyDescribe(event);
+        setKebabIsOpen(false);
       }}
     >
       <span>
@@ -91,6 +92,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       key="copy-oc-logs-command"
       onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
         onCopyLogs(event);
+        setKebabIsOpen(false);
       }}
     >
       <span>
