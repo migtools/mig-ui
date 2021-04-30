@@ -6,7 +6,7 @@ import { initFromStorage, loginSuccess, logoutUserRequest, storeLoginToken } fro
 const LS_KEY_CURRENT_USER = 'currentUser';
 
 export function* storeLoginTokenFunc(action) {
-  const { user } = action;
+  const { payload: user } = action;
   localStorage.setItem(LS_KEY_CURRENT_USER, JSON.stringify(user));
   yield put(loginSuccess(user));
   yield put(push('/'));
