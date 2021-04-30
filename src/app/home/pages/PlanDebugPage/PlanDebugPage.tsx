@@ -24,12 +24,11 @@ import { IDebugRefWithStatus } from '../../../debug/duck/types';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
 import { IDebugReducerState, startDebugPolling, stopDebugPolling } from '../../../debug/duck/slice';
-import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
-import { TreeContainer } from './components/TreeContainer';
+import TreeContainer from './components/TreeContainer';
 import { IDebugTreeNode } from '../../../debug/duck/types';
 import { TreeView } from './components/TreeComponent/TreeView';
 
@@ -45,31 +44,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [searchText, setSearchText] = useState('');
-
-  const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
-    items
-      .map((item) => {
-        const nameMatches = (item.id as string).toLowerCase().includes(searchText.toLowerCase());
-        if (!item.children) {
-          return nameMatches ? item : null;
-        }
-        const filteredChildren = filterSubtree(item.children);
-        if (filteredChildren.length > 0) {
-          return {
-            ...item,
-            children: filteredChildren,
-          };
-        }
-        return null;
-      })
-      .filter((item) => !!item) as TreeViewDataItem[];
-
   const treeData = debugTreeWithStatus && convertRawTreeToViewTree(debugTreeWithStatus, plans);
-  let filteredTreeData = treeData;
-  if (searchText && treeData) {
-    filteredTreeData = filterSubtree(treeData);
-  }
 
   return (
     <>
@@ -143,19 +118,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
                   </EmptyState>
                 </Bullseye>
               ) : (
-                <CardBody>
-                  <Split hasGutter>
-                    <SplitItem isFilled>
-                      <SearchInput
-                        placeholder="Type to search"
-                        value={searchText}
-                        onChange={setSearchText}
-                        onClear={() => setSearchText('')}
-                      />
-                    </SplitItem>
-                  </Split>
-                  <TreeContainer filteredTreeData={filteredTreeData} />
-                </CardBody>
+                <TreeContainer treeData={treeData} />
               )}
             </CardExpandableContent>
           </Card>

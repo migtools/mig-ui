@@ -1,11 +1,58 @@
 import React, { useState } from 'react';
-import { TreeView } from '@patternfly/react-core';
 import { useDebugViewPollingEffect } from '../../../../common/context';
+import isEqual from 'react-fast-compare';
+import { TreeView, TreeViewDataItem } from './TreeComponent/TreeView';
+import { CardBody, Split, SplitItem, SearchInput } from '@patternfly/react-core';
 
 interface ITreeContainerProps {
+  treeData: any;
+}
+interface ITreeComponentProps {
   filteredTreeData: any;
 }
-export const TreeContainer = React.memo(({ filteredTreeData }: ITreeContainerProps) => {
+const TreeComponent = React.memo(({ filteredTreeData }: ITreeComponentProps) => {
+  return <TreeView data={filteredTreeData ? filteredTreeData : []} />;
+}, isEqual);
+
+const TreeContainer: React.FunctionComponent<ITreeContainerProps> = ({ treeData }) => {
   useDebugViewPollingEffect();
-  return <TreeView data={filteredTreeData ? filteredTreeData : []} defaultAllExpanded />;
-});
+  const [searchText, setSearchText] = useState('');
+  const filterSubtree = (items: TreeViewDataItem[]): TreeViewDataItem[] =>
+    items
+      .map((item) => {
+        const nameMatches = (item.id as string).toLowerCase().includes(searchText.toLowerCase());
+        if (!item.children) {
+          return nameMatches ? item : null;
+        }
+        const filteredChildren = filterSubtree(item.children);
+        if (filteredChildren.length > 0) {
+          return {
+            ...item,
+            children: filteredChildren,
+          };
+        }
+        return null;
+      })
+      .filter((item) => !!item) as TreeViewDataItem[];
+
+  let filteredTreeData = treeData;
+  if (searchText && treeData) {
+    filteredTreeData = filterSubtree(treeData);
+  }
+  return (
+    <CardBody>
+      <Split hasGutter>
+        <SplitItem isFilled>
+          <SearchInput
+            placeholder="Type to search"
+            value={searchText}
+            onChange={setSearchText}
+            onClear={() => setSearchText('')}
+          />
+        </SplitItem>
+      </Split>
+      <TreeComponent filteredTreeData={filteredTreeData} />
+    </CardBody>
+  );
+};
+export default TreeContainer;
