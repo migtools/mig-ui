@@ -20,7 +20,7 @@ const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType }
       <Alert
         variant={alertType}
         title={alertMessage}
-        actionClose={<AlertActionCloseButton onClose={dispatch(alertClear)} />}
+        actionClose={<AlertActionCloseButton onClose={() => dispatch(alertClear())} />}
       />
     </div>
   );

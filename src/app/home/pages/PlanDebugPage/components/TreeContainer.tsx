@@ -11,7 +11,7 @@ interface ITreeComponentProps {
   filteredTreeData: any;
 }
 const TreeComponent = React.memo(({ filteredTreeData }: ITreeComponentProps) => {
-  return <TreeView data={filteredTreeData ? filteredTreeData : []} />;
+  return <TreeView data={filteredTreeData ? filteredTreeData : []} defaultAllExpanded />;
 }, isEqual);
 
 const TreeContainer: React.FunctionComponent<ITreeContainerProps> = ({ treeData }) => {
