@@ -31,6 +31,10 @@
     font-size: var(--pf-c-icon--m-xl--FontSize);
   }
 
+  &.pf-m-default {
+    color: var(--pf-c-icon--Color);
+  }
+
   &.pf-m-info {
     color: var(--pf-c-icon--m-info--Color);
   }

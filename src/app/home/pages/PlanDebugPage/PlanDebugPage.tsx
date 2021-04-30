@@ -30,6 +30,7 @@ import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-c
 import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -119,7 +120,10 @@ export const PlanDebugPage: React.FunctionComponent = () => {
               >
                 <span>
                   <span className="pf-c-icon pf-m-info">
-                    <QuestionCircleIcon size="md" />
+                    <OutlinedQuestionCircleIcon
+                      className="pf-c-icon pf-m-default"
+                      size="md"
+                    ></OutlinedQuestionCircleIcon>
                   </span>
                 </span>
               </Popover>
