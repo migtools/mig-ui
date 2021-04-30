@@ -31,6 +31,7 @@ import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 import { TreeContainer } from './components/TreeContainer';
 import { IDebugTreeNode } from '../../../debug/duck/types';
+import { TreeView } from './components/TreeComponent/TreeView';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   const { planName } = useParams();
