@@ -2,7 +2,6 @@ import { TreeViewList } from '@patternfly/react-core/dist/js/components/TreeView
 import { TreeViewListItem } from '@patternfly/react-core/dist/js/components/TreeView/TreeViewListItem';
 import { TreeViewRoot } from '@patternfly/react-core/dist/js/components/TreeView/TreeViewRoot';
 import * as React from 'react';
-const uuidv1 = require('uuid/v1');
 
 export interface TreeViewDataItem {
   /** Internal content of a tree view item */
@@ -96,7 +95,7 @@ export const TreeView: React.FunctionComponent<TreeViewProps> = ({
     <TreeViewList isNested={isNested} onSearch={onSearch} searchProps={searchProps}>
       {data.map((item) => (
         <TreeViewListItem
-          key={uuidv1()}
+          key={item.id?.toString() || item.name.toString()}
           name={item.name}
           id={item.id}
           isExpanded={allExpanded}

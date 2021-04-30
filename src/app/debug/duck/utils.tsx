@@ -6,13 +6,14 @@ import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeA
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
 const styles = require('./utils.module').default;
+const uuidv1 = require('uuid/v1');
 
 const getShallowPropsForNode = (rawNode: IDebugTreeNode, plans: IPlan[]): TreeViewDataItem => {
   const nodeIdentifier = rawNode.namespace
     ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
     : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
   return {
-    id: rawNode.name,
+    id: uuidv1(),
     name: (
       <Flex className={rawNode.debugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
