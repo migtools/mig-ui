@@ -26,11 +26,13 @@ const getDebugTreeWithStatus = createSelector(
 
     const sortMigrations = (refs, obj) => {
       if (obj['kind'] === 'Plan') {
-        obj['children'] = obj['children'].sort((left, right) => {
-          return dayjs
-            .utc(right.debugRef.metadata.creationTimestamp)
-            .diff(dayjs.utc(left.debugRef.metadata.creationTimestamp));
-        });
+        if (obj['children']) {
+          obj['children'] = obj['children']?.sort((left, right) => {
+            return dayjs
+              .utc(right?.debugRef?.metadata?.creationTimestamp)
+              .diff(dayjs.utc(left?.debugRef?.metadata?.creationTimestamp));
+          });
+        }
       }
     };
     const clonedTree = cloneDeep(tree);

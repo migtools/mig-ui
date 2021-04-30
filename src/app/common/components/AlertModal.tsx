@@ -1,7 +1,5 @@
 import React from 'react';
 import { Alert, AlertActionCloseButton, AlertProps } from '@patternfly/react-core';
-import { AlertActions } from '../duck/actions';
-import { connect } from 'react-redux';
 const styles = require('./AlertModal.module').default;
 
 interface IProps {
@@ -25,7 +23,4 @@ const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType, 
     </div>
   );
 };
-
-export default connect(null, (dispatch) => ({
-  clearAlerts: () => dispatch(AlertActions.alertClear()),
-}))(AlertModal);
+export default AlertModal;

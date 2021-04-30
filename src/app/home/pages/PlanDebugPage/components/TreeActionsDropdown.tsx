@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { useParams, useHistory, Link } from 'react-router-dom';
-import { Dropdown, KebabToggle, DropdownItem, Tooltip, Alert } from '@patternfly/react-core';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Dropdown, KebabToggle, DropdownItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   DEBUG_PATH_SEARCH_KEY,
@@ -9,19 +9,16 @@ import {
   RAW_OBJECT_VIEW_ROUTE,
 } from '../../../../debug/duck/types';
 import { getOCCommandAndClusterType } from '../helpers';
-import { AlertActions } from '../../../../common/duck/actions';
-import { useDispatch, useSelector } from 'react-redux';
+import { alertSuccess } from '../../../../common/duck/slice';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
-  viewRawDebugObject: (node: IDebugTreeNode) => void;
-  copiedToClipboard: (text: string) => void;
 }
 
 const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = ({
   rawNode,
-  copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
+  const dispatch = useDispatch();
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
@@ -36,15 +33,18 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     el.select();
     document.execCommand('copy');
     clipboard.removeChild(el);
-    copiedToClipboard(
-      `Command copied to clipboard. Run 'oc get' on 
+    dispatch(
+      alertSuccess(
+        `Command copied to clipboard. Run 'oc get' on 
       ${clusterType} cluster to view resource details.`
+      )
     );
   };
   const encodedPath = encodeURI(rawNode.objectLink);
 
   return (
     <Dropdown
+      key={rawNode?.name}
       aria-label="Actions"
       toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
       isOpen={kebabIsOpen}
@@ -52,7 +52,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       position="right"
       dropdownItems={[
         <DropdownItem
-          key="copy-oc-command"
+          key={rawNode?.name}
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
             onCopy(event);
           }}
@@ -70,9 +70,10 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: 'none' }}
+          key={rawNode.name}
         >
           <DropdownItem
-            key="view-raw"
+            key={rawNode?.name}
             onClick={() => {
               setKebabIsOpen(false);
             }}
@@ -84,12 +85,4 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     />
   );
 };
-
-export default connect(
-  () => {
-    return {};
-  },
-  (dispatch) => ({
-    copiedToClipboard: (text) => dispatch(AlertActions.alertSuccess(text)),
-  })
-)(TreeActionsDropdown);
+export default TreeActionsDropdown;

@@ -1,6 +1,5 @@
-import { push } from 'connected-react-router';
 import { AuthActions } from '../../auth/duck/actions';
-import { AlertActions } from './actions/alerts';
+import { alertErrorModal } from './slice';
 
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 const URLValidator = /(http(s)?:\/\/.)(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
@@ -42,7 +41,7 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
     name: 'SSL cert error',
     errorMessage: '',
   };
-  dispatch(AlertActions.alertErrorModal(alertModalObj));
+  dispatch(alertErrorModal(alertModalObj));
   dispatch(AuthActions.certErrorOccurred(failedUrl));
 };
 

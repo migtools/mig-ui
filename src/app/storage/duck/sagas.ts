@@ -24,6 +24,7 @@ import {
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
 import { IReduxState } from '../../../reducers';
+import { alertSuccessTimeout, alertErrorTimeout } from '../../common/duck/slice';
 
 function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -100,11 +101,9 @@ function* removeStorageSaga(action) {
     ]);
 
     yield put(StorageActions.removeStorageSuccess(name));
-    yield put(
-      AlertActions.alertSuccessTimeout(`Successfully removed replication repository "${name}"!`)
-    );
+    yield put(alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
   }
 }
 
@@ -170,7 +169,7 @@ function* addStorageRequest(action) {
     storageAddResults.push(yield client.create(secretResource, storageSecret));
   } catch (err) {
     console.error('Storage Secret failed creation with error', err);
-    put(AlertActions.alertErrorTimeout('Storage Secret failed creation'));
+    put(alertErrorTimeout('Storage Secret failed creation'));
     return;
   }
 
@@ -211,7 +210,7 @@ function* addStorageRequest(action) {
     yield put(StorageActions.watchStorageAddEditStatus(storageValues.name));
   } catch (err) {
     console.error('Storage failed creation with error: ', err);
-    put(AlertActions.alertErrorTimeout('Storage failed creation'));
+    put(alertErrorTimeout('Storage failed creation'));
     return;
   }
 }

@@ -5,7 +5,6 @@ import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
-const uuidv1 = require('uuid/v1');
 const styles = require('./utils.module').default;
 
 const getShallowPropsForNode = (rawNode: IDebugTreeNode, plans: IPlan[]): TreeViewDataItem => {
@@ -56,9 +55,9 @@ export const convertRawTreeToViewTree = (
 
   // Doesn't seem to be an easy way from within the crawler to replace
   // the root node, so doing that here and just bringing in the rest of it
+
   return [
     {
-      id: uuidv1(),
       ...getShallowPropsForNode(workingTree, plans),
       children: workingTree.children,
       defaultExpanded: true,

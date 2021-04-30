@@ -2,9 +2,9 @@ import React from 'react';
 import { Modal, Button, Grid, GridItem, Title, BaseSizes } from '@patternfly/react-core';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 import { useHistory } from 'react-router-dom';
-import { AlertActions } from '../duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePausedPollingEffect } from '../context';
+import { errorModalClear } from '../duck/slice';
 
 const styles = require('./ErrorModal.module').default;
 
@@ -37,7 +37,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       variant="large"
       isOpen={isOpen}
       onClose={() => {
-        dispatch(AlertActions.errorModalClear());
+        dispatch(errorModalClear());
       }}
       title={`Error while fetching ${errorModalObj.name || 'data'}`}
     >
@@ -84,7 +84,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   key="cancel"
                   variant="primary"
                   onClick={() => {
-                    dispatch(AlertActions.errorModalClear());
+                    dispatch(errorModalClear());
                   }}
                 >
                   Close

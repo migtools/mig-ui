@@ -3,7 +3,6 @@ import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IReduxState } from '../../../reducers';
 import { DebugTreeDiscoveryResource } from '../../../client/resources/discovery';
-import { AlertActions } from '../../common/duck/actions';
 import { IDiscoveryResource } from '../../../client/resources/common';
 import {
   debugObjectFetchFailure,
@@ -18,6 +17,7 @@ import {
   debugRefsFetchRequest,
   debugRefsFetchSuccess,
 } from './slice';
+import { alertErrorTimeout } from '../../common/duck/slice';
 
 function* fetchDebugRefs(action) {
   const state: IReduxState = yield select();
@@ -50,7 +50,7 @@ function* fetchDebugRefs(action) {
     yield put(debugRefsFetchSuccess(debugRefs));
   } catch (err) {
     yield put(debugRefsFetchFailure(err.message));
-    yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug ref: ${err.message}`));
+    yield put(alertErrorTimeout(`Failed to fetch debug ref: ${err.message}`));
   }
 }
 
@@ -63,7 +63,7 @@ function* fetchDebugObject(action) {
     yield put(debugObjectFetchSuccess(res.data));
   } catch (err) {
     yield put(debugObjectFetchFailure(err.message));
-    yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
+    yield put(alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
 
@@ -81,7 +81,7 @@ function* fetchDebugTree(action) {
     yield put(treeFetchSuccess(res.data));
   } catch (err) {
     yield put(treeFetchFailure(err.message));
-    yield put(AlertActions.alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
+    yield put(alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
 function* debugPoll(action) {
