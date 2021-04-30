@@ -1,5 +1,4 @@
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
-import { AuthActions } from '../../auth/duck/actions';
 
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
@@ -17,6 +16,7 @@ import {
   alertSuccessTimeout,
 } from './slice';
 import { IAlertModalObj } from './types';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -40,7 +40,7 @@ function* poll(action) {
         };
         if (state.common.errorModalObject === null) {
           yield put(alertErrorModal(alertModalObj));
-          yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+          yield put(certErrorOccurred(oauthMetaUrl));
         }
       }
       //TODO: Handle "secrets not found error" & any other fetch errors here

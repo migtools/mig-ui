@@ -28,11 +28,11 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { PlanActions } from '../../plan/duck';
 import utils from '../../common/duck/utils';
-import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import { ICluster } from './types';
 import Q from 'q';
 import { alertSuccessTimeout, alertErrorTimeout, alertErrorModal } from '../../common/duck/slice';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -570,7 +570,7 @@ function* initDiscoveryCert() {
           errorMessage: '',
         };
         yield put(alertErrorModal(alertModalObj));
-        yield put(AuthActions.certErrorOccurred(failedUrl));
+        yield put(certErrorOccurred(failedUrl));
         break;
       }
       yield put(PlanActions.namespaceFetchFailure(err));

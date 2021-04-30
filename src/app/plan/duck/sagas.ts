@@ -22,14 +22,12 @@ import {
   updateMigHook,
   updatePlanHookList,
 } from '../../../client/resources/conversions';
-import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
-import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
@@ -42,6 +40,7 @@ import {
   alertProgressTimeout,
   alertWarn,
 } from '../../common/duck/slice';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -209,7 +208,7 @@ function* namespaceFetchRequest(action) {
         errorMessage: '',
       };
       yield put(alertErrorModal(alertModalObj));
-      yield put(AuthActions.certErrorOccurred(failedUrl));
+      yield put(certErrorOccurred(failedUrl));
       return;
     }
     yield put(PlanActions.namespaceFetchFailure(err));

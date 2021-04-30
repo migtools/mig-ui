@@ -1,4 +1,4 @@
-import { AuthActions } from '../../auth/duck/actions';
+import { certErrorOccurred } from '../../auth/duck/slice';
 import { alertErrorModal } from './slice';
 
 const DNS1123Validator = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
@@ -42,7 +42,7 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
     errorMessage: '',
   };
   dispatch(alertErrorModal(alertModalObj));
-  dispatch(AuthActions.certErrorOccurred(failedUrl));
+  dispatch(certErrorOccurred(failedUrl));
 };
 
 const DNS1123Error = (value) => {

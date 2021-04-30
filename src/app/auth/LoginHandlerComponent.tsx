@@ -1,19 +1,12 @@
 import React, { useEffect } from 'react';
 import { useLocation, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { AuthActions } from './duck/actions';
+import { authErrorOccurred, storeLoginToken } from './duck/slice';
 
-interface ILoginHandlerComponentProps {
-  saveLoginToken: (user: object) => void;
-  authErrorOccurred: (authError: string) => void;
-}
-
-const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps> = ({
-  saveLoginToken,
-  authErrorOccurred,
-}) => {
+const LoginHandlerComponent: React.FunctionComponent = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
@@ -30,20 +23,14 @@ const LoginHandlerComponent: React.FunctionComponent<ILoginHandlerComponentProps
   useEffect(() => {
     if (loginError) {
       console.log('Authentication error: ', loginError.message);
-      authErrorOccurred(loginError.message); // Will cause a redirect to "/auth-error
+      dispatch(authErrorOccurred(loginError.message)); // Will cause a redirect to "/auth-error
       history.push('/auth-error');
     } else if (user) {
-      saveLoginToken(user); // Will cause a redirect to "/"
+      dispatch(storeLoginToken(user)); // Will cause a redirect to "/"
     }
   }, []);
 
   return user ? null : <Redirect to="/" />;
 };
 
-export default connect(
-  (state) => ({}),
-  (dispatch) => ({
-    saveLoginToken: (user) => dispatch(AuthActions.storeLoginToken(user)),
-    authErrorOccurred: (loginError) => dispatch(AuthActions.authErrorOccurred(loginError)),
-  })
-)(LoginHandlerComponent);
+export default LoginHandlerComponent;
