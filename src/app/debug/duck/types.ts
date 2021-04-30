@@ -6,6 +6,7 @@ export interface IDebugTreeNode {
   name: string;
   objectLink: string;
   children: IDebugTreeNode[];
+  clusterType: string;
 }
 export interface IDebugRefRes {
   kind: string;
