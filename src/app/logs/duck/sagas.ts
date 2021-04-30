@@ -12,7 +12,6 @@ import {
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
-import { AlertActions } from '../../common/duck/actions';
 import { IReduxState } from '../../../reducers';
 import { alertErrorTimeout } from '../../common/duck/slice';
 
