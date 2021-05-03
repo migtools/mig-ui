@@ -77,7 +77,7 @@
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.1",
     "@konveyor/lib-ui": "^1.4.5",
-    "@patternfly/react-core": "^4.101.3",
+    "@patternfly/react-core": "^4.115.5",
     "@patternfly/react-icons": "^4.9.5",
     "@patternfly/react-styles": "^4.8.5",
     "@patternfly/react-table": "^4.26.6",
