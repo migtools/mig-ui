@@ -19,7 +19,12 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
+import {
+  createAddEditStatus,
+  AddEditState,
+  AddEditMode,
+  IAddEditStatus,
+} from '../../../common/add_edit_state';
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
@@ -37,6 +42,8 @@ interface IClustersPageBaseProps {
   removeCluster: (clusterName: string) => void;
   isFetchingInitialClusters: boolean;
   setCurrentCluster: (currentCluster: ICluster) => void;
+  currentCluster: ICluster;
+  addEditStatus: IAddEditStatus;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -47,6 +54,8 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   removeCluster,
   isFetchingInitialClusters,
   setCurrentCluster,
+  currentCluster,
+  addEditStatus,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -97,6 +106,8 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
                     setCurrentCluster={setCurrentCluster}
+                    currentCluster={currentCluster}
+                    addEditStatus={addEditStatus}
                   />
                 )}
                 <AddEditClusterModal
@@ -117,6 +128,8 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.auth.migMeta,
+  currentCluster: state.cluster.currentCluster,
+  addEditStatus: state.cluster.addEditStatus,
 });
 
 const mapDispatchToProps = (dispatch) => ({

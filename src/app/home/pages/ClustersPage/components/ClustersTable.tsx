@@ -22,6 +22,8 @@ import { IMigMeta } from '../../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import { addEditStatusText, IAddEditStatus } from '../../../../common/add_edit_state';
+import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
 
 interface IClustersTableProps {
   clusterList: ICluster[];
@@ -30,6 +32,8 @@ interface IClustersTableProps {
   removeCluster: (clusterName: string) => void;
   toggleAddEditModal: () => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
+  currentCluster: ICluster;
+  addEditStatus: IAddEditStatus;
 }
 
 const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
@@ -39,6 +43,8 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   removeCluster,
   toggleAddEditModal,
   setCurrentCluster,
+  currentCluster,
+  addEditStatus,
 }: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -64,6 +70,10 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
 
   const rows = currentPageItems.map((cluster: ICluster) => {
     const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
+
+    const componentTypeStr = 'cluster';
+    const currentStatusFn = addEditStatusText(componentTypeStr);
+
     const {
       clusterName,
       clusterStatus,
@@ -119,10 +129,19 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
         },
         {
           title: (
-            <StatusIcon
-              status={clusterStatus ? StatusType.Ok : StatusType.Error}
-              label={clusterStatus ? `Connected` : `Connection Failed`}
-            />
+            <>
+              {cluster.MigCluster.metadata.name === currentCluster?.MigCluster?.metadata?.name ? (
+                <ConnectionStatusLabel
+                  status={addEditStatus}
+                  statusText={currentStatusFn(addEditStatus)}
+                />
+              ) : (
+                <StatusIcon
+                  status={clusterStatus ? StatusType.Ok : StatusType.Error}
+                  label={clusterStatus ? `Connected` : `Connection Failed`}
+                />
+              )}
+            </>
           ),
         },
         {
