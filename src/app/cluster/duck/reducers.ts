@@ -95,6 +95,7 @@ export const startClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, act
   return {
     ...state,
     isPolling: true,
+    isFetchingInitialClusters: true,
   };
 };
 
