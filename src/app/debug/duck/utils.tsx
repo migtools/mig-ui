@@ -20,7 +20,13 @@ const getShallowPropsForNode = (
   return {
     id: rawNode.name,
     name: (
-      <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
+      <Flex
+        className={
+          (matchingDebugRef?.debugResourceStatus?.hasPending ||
+            matchingDebugRef?.debugResourceStatus?.hasRunning) &&
+          styles.activeHighlight
+        }
+      >
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
           <div className={styles.alignStatus}>
