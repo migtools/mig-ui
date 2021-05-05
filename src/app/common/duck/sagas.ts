@@ -1,12 +1,22 @@
 import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
-import { AlertActions, AlertActionTypes } from '../../common/duck/actions';
-import { AuthActions } from '../../auth/duck/actions';
 
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
 import utils from '../../common/duck/utils';
 import { IReduxState } from '../../../reducers';
+import {
+  alertClear,
+  alertError,
+  alertErrorModal,
+  alertErrorTimeout,
+  alertProgress,
+  alertProgressTimeout,
+  alertSuccess,
+  alertSuccessTimeout,
+} from './slice';
+import { IAlertModalObj } from './types';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -24,13 +34,13 @@ function* poll(action) {
       //handle selfSignedCert error & network connectivity error
       if (utils.isSelfSignedCertError(err)) {
         const oauthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
-        const alertModalObj = {
+        const alertModalObj: IAlertModalObj = {
           name: params.pollName,
           errorMessage: 'error',
         };
         if (state.common.errorModalObject === null) {
-          yield put(AlertActions.alertErrorModal(alertModalObj));
-          yield put(AuthActions.certErrorOccurred(oauthMetaUrl));
+          yield put(alertErrorModal(alertModalObj));
+          yield put(certErrorOccurred(oauthMetaUrl));
         }
       }
       //TODO: Handle "secrets not found error" & any other fetch errors here
@@ -68,38 +78,38 @@ function* watchHookPolling() {
 
 export function* progressTimeoutSaga(action) {
   try {
-    yield put(AlertActions.alertProgress(action.params));
+    yield put(alertProgress(action.payload));
     yield delay(5000);
-    yield put(AlertActions.alertClear());
+    yield put(alertClear());
   } catch (error) {
-    put(AlertActions.alertClear());
+    put(alertClear());
   }
 }
 
 export function* errorTimeoutSaga(action) {
   try {
-    yield put(AlertActions.alertError(action.params));
+    yield put(alertError(action.payload));
     yield delay(ErrorToastTimeout);
-    yield put(AlertActions.alertClear());
+    yield put(alertClear());
   } catch (error) {
-    put(AlertActions.alertClear());
+    put(alertClear());
   }
 }
 
 export function* successTimeoutSaga(action) {
   try {
-    yield put(AlertActions.alertSuccess(action.params));
+    yield put(alertSuccess(action.payload));
     yield delay(5000);
-    yield put(AlertActions.alertClear());
+    yield put(alertClear());
   } catch (error) {
-    yield put(AlertActions.alertClear());
+    yield put(alertClear());
   }
 }
 
 function* watchAlerts() {
-  yield takeLatest(AlertActionTypes.ALERT_PROGRESS_TIMEOUT, progressTimeoutSaga);
-  yield takeLatest(AlertActionTypes.ALERT_ERROR_TIMEOUT, errorTimeoutSaga);
-  yield takeLatest(AlertActionTypes.ALERT_SUCCESS_TIMEOUT, successTimeoutSaga);
+  yield takeLatest(alertProgressTimeout, progressTimeoutSaga);
+  yield takeLatest(alertErrorTimeout, errorTimeoutSaga);
+  yield takeLatest(alertSuccessTimeout, successTimeoutSaga);
 }
 
 export default {

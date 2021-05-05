@@ -5,6 +5,7 @@ export interface IDebugTreeNode {
   namespace: string;
   name: string;
   objectLink: string;
+  debugRef: IDebugRefWithStatus;
   children: IDebugTreeNode[];
   clusterType: string;
 }

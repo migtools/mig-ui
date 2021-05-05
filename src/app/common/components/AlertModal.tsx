@@ -1,16 +1,16 @@
 import React from 'react';
 import { Alert, AlertActionCloseButton, AlertProps } from '@patternfly/react-core';
-import { AlertActions } from '../duck/actions';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { alertClear } from '../duck/slice';
 const styles = require('./AlertModal.module').default;
 
 interface IProps {
   alertMessage: string;
   alertType: AlertProps['variant'];
-  clearAlerts: () => null;
 }
 
-const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType, clearAlerts }) => {
+const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType }) => {
+  const dispatch = useDispatch();
   if (!alertMessage) {
     return null;
   }
@@ -20,12 +20,9 @@ const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType, 
       <Alert
         variant={alertType}
         title={alertMessage}
-        actionClose={<AlertActionCloseButton onClose={clearAlerts} />}
+        actionClose={<AlertActionCloseButton onClose={() => dispatch(alertClear())} />}
       />
     </div>
   );
 };
-
-export default connect(null, (dispatch) => ({
-  clearAlerts: () => dispatch(AlertActions.alertClear()),
-}))(AlertModal);
+export default AlertModal;

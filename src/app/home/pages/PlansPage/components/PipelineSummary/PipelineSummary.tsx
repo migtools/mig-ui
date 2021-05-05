@@ -96,7 +96,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
           <Summary title={title} migration={migration}>
             {migration?.status?.pipeline.map((step, index) => {
               return (
-                <>
+                <React.Fragment key={step?.name}>
                   {index != 0 ? (
                     <Dash
                       key={step.name}
@@ -121,7 +121,7 @@ const PipelineSummary: React.FunctionComponent<IPipelineSummaryProps> = ({
                   ) : (
                     <Chain key={index} Face={ResourcesFullIcon} times={1} color={successColor} />
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </Summary>

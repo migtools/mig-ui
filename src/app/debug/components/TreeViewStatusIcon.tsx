@@ -8,6 +8,7 @@ import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-
 import { IMigration, IPlan } from '../../plan/duck/types';
 import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
 import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
+import PendingIcon from '@patternfly/react-icons/dist/js/icons/pending-icon';
 
 interface IProps {
   debugRef: IDebugRefWithStatus;
@@ -15,6 +16,14 @@ interface IProps {
 }
 
 const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
+  if (!debugRef || !debugRef.resourceKind) {
+    return (
+      <>
+        <PendingIcon className="pf-c-icom pf-m-default"></PendingIcon>
+        <span className={spacing.mlSm}>Pending</span>
+      </>
+    );
+  }
   const matchingPlanRef = plans?.find((plan) => plan.MigPlan.metadata.name === debugRef?.refName);
   const matchingMigrationRef: IMigration[] = [];
   plans?.forEach((plan) => {
