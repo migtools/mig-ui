@@ -55,7 +55,7 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
       </PageSection>
       {isPausedCondition && (
         <PageSection>
-          <Alert variant="warning" isInline title="Paused - waiting for route to be admitted">
+          <Alert variant="warning" isInline title="Migration may be stuck.">
             {migration?.tableStatus.warnings.map((warning, idx) => {
               return (
                 <>
