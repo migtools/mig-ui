@@ -5,7 +5,6 @@ import crawl from 'tree-crawl';
 import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
-const uuidv1 = require('uuid/v1');
 const styles = require('./utils.module').default;
 
 const getShallowPropsForNode = (
@@ -18,7 +17,7 @@ const getShallowPropsForNode = (
     ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
     : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
   return {
-    id: uuidv1(),
+    id: rawNode.name,
     name: (
       <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
@@ -68,7 +67,7 @@ export const convertRawTreeToViewTree = (
   // the root node, so doing that here and just bringing in the rest of it
   return [
     {
-      id: uuidv1(),
+      id: workingTree.name,
       ...getShallowPropsForNode(workingTree, debugRefs, plans),
       children: workingTree.children,
       defaultExpanded: true,
