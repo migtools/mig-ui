@@ -127,7 +127,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
               {cluster.MigCluster.metadata.name === currentCluster?.MigCluster?.metadata?.name ? (
                 <div>
                   <PendingIcon className="pf-c-icon pf-m-default"> </PendingIcon>
-                  Pending
+                  <span className={spacing.mlSm}> Pending </span>
                 </div>
               ) : (
                 <StatusIcon
