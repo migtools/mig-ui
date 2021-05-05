@@ -22,8 +22,7 @@ import { IMigMeta } from '../../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-import { addEditStatusText, IAddEditStatus } from '../../../../common/add_edit_state';
-import ConnectionStatusLabel from '../../../../common/components/ConnectionStatusLabel';
+import PendingIcon from '@patternfly/react-icons/dist/js/icons/pending-icon';
 
 interface IClustersTableProps {
   clusterList: ICluster[];
@@ -33,7 +32,6 @@ interface IClustersTableProps {
   toggleAddEditModal: () => void;
   setCurrentCluster: (currentCluster: ICluster) => void;
   currentCluster: ICluster;
-  addEditStatus: IAddEditStatus;
 }
 
 const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
@@ -44,7 +42,6 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
   toggleAddEditModal,
   setCurrentCluster,
   currentCluster,
-  addEditStatus,
 }: IClustersTableProps) => {
   const columns = [
     { title: 'Name', transforms: [sortable] },
@@ -70,9 +67,6 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
 
   const rows = currentPageItems.map((cluster: ICluster) => {
     const clusterInfo = getClusterInfo(cluster, migMeta, associatedPlans);
-
-    const componentTypeStr = 'cluster';
-    const currentStatusFn = addEditStatusText(componentTypeStr);
 
     const {
       clusterName,
@@ -131,10 +125,10 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
           title: (
             <>
               {cluster.MigCluster.metadata.name === currentCluster?.MigCluster?.metadata?.name ? (
-                <ConnectionStatusLabel
-                  status={addEditStatus}
-                  statusText={currentStatusFn(addEditStatus)}
-                />
+                <div>
+                  <PendingIcon className="pf-c-icon pf-m-default"> </PendingIcon>
+                  Pending
+                </div>
               ) : (
                 <StatusIcon
                   status={clusterStatus ? StatusType.Ok : StatusType.Error}

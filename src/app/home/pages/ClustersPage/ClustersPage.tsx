@@ -11,10 +11,8 @@ import {
   Title,
   Bullseye,
   Spinner,
-  EmptyStateBody,
   Button,
 } from '@patternfly/react-core';
-import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
@@ -43,7 +41,6 @@ interface IClustersPageBaseProps {
   isFetchingInitialClusters: boolean;
   setCurrentCluster: (currentCluster: ICluster) => void;
   currentCluster: ICluster;
-  addEditStatus: IAddEditStatus;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -55,7 +52,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   isFetchingInitialClusters,
   setCurrentCluster,
   currentCluster,
-  addEditStatus,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -107,7 +103,6 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     toggleAddEditModal={toggleAddEditModal}
                     setCurrentCluster={setCurrentCluster}
                     currentCluster={currentCluster}
-                    addEditStatus={addEditStatus}
                   />
                 )}
                 <AddEditClusterModal
