@@ -1,29 +1,30 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { useParams, useHistory, Link } from 'react-router-dom';
-import { Dropdown, KebabToggle, DropdownItem, Tooltip, Alert } from '@patternfly/react-core';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Dropdown, KebabToggle, DropdownItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   DEBUG_PATH_SEARCH_KEY,
   IDebugTreeNode,
   RAW_OBJECT_VIEW_ROUTE,
 } from '../../../../debug/duck/types';
+import { alertSuccess } from '../../../../common/duck/slice';
 import { getDebugCommand, hasLogsCommand } from '../helpers';
-import { AlertActions } from '../../../../common/duck/actions';
-import { useDispatch, useSelector } from 'react-redux';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
-  viewRawDebugObject: (node: IDebugTreeNode) => void;
-  copiedToClipboard: (text: string) => void;
 }
 
 const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = ({
   rawNode,
-  copiedToClipboard,
 }: ITreeActionsDropdownProps) => {
+  const dispatch = useDispatch();
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
+
+  const nodeIdentifier = rawNode.namespace
+    ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
+    : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
 
   const onCopyDescribe = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -36,9 +37,11 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     el.select();
     document.execCommand('copy');
     clipboard.removeChild(el);
-    copiedToClipboard(
-      `Command copied to clipboard. Run 'oc describe' on 
+    dispatch(
+      alertSuccess(
+        `Command copied to clipboard. Run 'oc get' on 
       ${rawNode.clusterType} cluster to view resource details.`
+      )
     );
   };
 
@@ -53,9 +56,11 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     el.select();
     document.execCommand('copy');
     clipboard.removeChild(el);
-    copiedToClipboard(
-      `Command copied to clipboard. Run 'oc logs' on 
+    dispatch(
+      alertSuccess(
+        `Command copied to clipboard. Run 'oc logs' on 
       ${rawNode.clusterType} cluster to view resource details.`
+      )
     );
   };
 
@@ -121,6 +126,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
 
   return (
     <Dropdown
+      key={nodeIdentifier}
       aria-label="Actions"
       toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
       isOpen={kebabIsOpen}
@@ -130,12 +136,4 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     />
   );
 };
-
-export default connect(
-  () => {
-    return {};
-  },
-  (dispatch) => ({
-    copiedToClipboard: (text) => dispatch(AlertActions.alertSuccess(text)),
-  })
-)(TreeActionsDropdown);
+export default TreeActionsDropdown;

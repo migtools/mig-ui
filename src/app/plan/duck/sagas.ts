@@ -22,19 +22,25 @@ import {
   updateMigHook,
   updatePlanHookList,
 } from '../../../client/resources/conversions';
-import { AlertActions } from '../../common/duck/actions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
 import { MigResource, MigResourceKind } from '../../../client/resources';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
-import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
 import { IReduxState } from '../../../reducers';
 import Q from 'q';
+import {
+  alertErrorTimeout,
+  alertErrorModal,
+  alertSuccessTimeout,
+  alertProgressTimeout,
+  alertWarn,
+} from '../../common/duck/slice';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -175,7 +181,7 @@ function* addPlanSaga(action) {
     yield put(PlanActions.setCurrentPlan(createPlanRes.data));
     yield put(PlanActions.addPlanSuccess(createPlanRes.data));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout('Failed to add plan'));
+    yield put(alertErrorTimeout('Failed to add plan'));
   }
 }
 
@@ -194,19 +200,19 @@ function* namespaceFetchRequest(action) {
     }
   } catch (err) {
     if (utils.isTimeoutError(err)) {
-      yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+      yield put(alertErrorTimeout('Timed out while fetching namespaces'));
     } else if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
       const alertModalObj = {
         name: 'SSL cert error',
         errorMessage: '',
       };
-      yield put(AlertActions.alertErrorModal(alertModalObj));
-      yield put(AuthActions.certErrorOccurred(failedUrl));
+      yield put(alertErrorModal(alertModalObj));
+      yield put(certErrorOccurred(failedUrl));
       return;
     }
     yield put(PlanActions.namespaceFetchFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
+    yield put(alertErrorTimeout('Failed to fetch namespaces'));
   }
 }
 
@@ -247,7 +253,7 @@ function* refreshAnalyticSaga(action) {
       yield delay(1000);
     } else {
       //timeout case
-      yield put(AlertActions.alertErrorTimeout('Timed out during analytics fetch.'));
+      yield put(alertErrorTimeout('Timed out during analytics fetch.'));
       yield put(PlanActions.refreshAnalyticFailure('Timed out'));
     }
   }
@@ -301,10 +307,10 @@ function* migrationCancel(action) {
       canceledMigrationSpec
     );
     yield put(PlanActions.migrationCancelSuccess(action.migrationName));
-    yield put(AlertActions.alertSuccessTimeout(`Cancel requested for "${action.migrationName}"!`));
+    yield put(alertSuccessTimeout(`Cancel requested for "${action.migrationName}"!`));
   } catch (err) {
     yield put(PlanActions.migrationCancelFailure(err, action.migrationName));
-    yield put(AlertActions.alertErrorTimeout(`Failed to cancel "${action.migrationName}"`));
+    yield put(alertErrorTimeout(`Failed to cancel "${action.migrationName}"`));
   }
 }
 
@@ -478,7 +484,7 @@ function* pvUpdatePoll(action) {
     } else {
       //timeout case
       yield put(PlanActions.pvUpdatePollStop());
-      yield put(AlertActions.alertErrorTimeout('Timed out during PV discovery'));
+      yield put(alertErrorTimeout('Timed out during PV discovery'));
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.TimedOut }));
       yield put(PlanActions.pvUpdatePollStop());
     }
@@ -507,7 +513,7 @@ function* checkClosedStatus(action) {
   }
 
   yield put(PlanActions.planCloseFailure('Failed to close plan', action.planName));
-  yield put(AlertActions.alertErrorTimeout(`Timed out during plan close ${action.planName}`));
+  yield put(alertErrorTimeout(`Timed out during plan close ${action.planName}`));
 }
 
 const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
@@ -643,7 +649,7 @@ function* planCloseSaga(action) {
     );
   } catch (err) {
     yield put(PlanActions.planCloseFailure(err, action.planName));
-    yield put(AlertActions.alertErrorTimeout('Plan close request failed'));
+    yield put(alertErrorTimeout('Plan close request failed'));
   }
 }
 
@@ -661,12 +667,10 @@ function* planCloseAndDelete(action) {
     yield call(planDeleteAfterClose, action.planName);
     yield put(PlanActions.deleteAnalyticRequest(action.planName));
     yield put(PlanActions.planCloseAndDeleteSuccess(action.planName));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
+    yield put(alertSuccessTimeout(`Successfully removed plan "${action.planName}"!`));
   } catch (err) {
     yield put(PlanActions.planCloseAndDeleteFailure(err, action.planName));
-    yield put(
-      AlertActions.alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`)
-    );
+    yield put(alertErrorTimeout(`Plan delete request failed for plan "${action.planName}"`));
   }
 }
 
@@ -690,7 +694,7 @@ function* getPVResourcesRequest(action) {
     yield put(PlanActions.getPVResourcesSuccess(pvList));
   } catch (err) {
     if (utils.isTimeoutError(err)) {
-      yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+      yield put(alertErrorTimeout('Timed out while fetching namespaces'));
     }
     yield put(PlanActions.getPVResourcesFailure('Failed to get pv details'));
   }
@@ -753,7 +757,7 @@ function* runStageSaga(action) {
     const migrationName = `stage-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
-    yield put(AlertActions.alertProgressTimeout('Staging Started'));
+    yield put(alertProgressTimeout('Staging Started'));
 
     const migMigrationObj = createMigMigration(
       migrationName,
@@ -780,7 +784,7 @@ function* runStageSaga(action) {
     yield put(PlanActions.startStagePolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -794,23 +798,17 @@ function* stagePoll(action) {
     switch (pollingStatusObj.status) {
       case 'SUCCESS':
         yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Staging Successful'));
+        yield put(alertSuccessTimeout('Staging Successful'));
         yield put(PlanActions.stopStagePolling());
         break;
       case 'FAILURE':
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`)
-        );
+        yield put(alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Staging Failed'}`));
         yield put(PlanActions.stopStagePolling());
         break;
       case 'WARN':
         yield put(PlanActions.stagingFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `Warning(s) occurred during stage: ${pollingStatusObj.errorMessage}`
-          )
-        );
+        yield put(alertWarn(`Warning(s) occurred during stage: ${pollingStatusObj.errorMessage}`));
         yield put(PlanActions.stopStagePolling());
         break;
       default:
@@ -883,7 +881,7 @@ function* runMigrationSaga(action) {
     const client: IClusterClient = ClientFactory.cluster(state);
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
-    yield put(AlertActions.alertProgressTimeout('Migration Started'));
+    yield put(alertProgressTimeout('Migration Started'));
 
     const migMigrationObj = createMigMigration(
       migrationName,
@@ -911,7 +909,7 @@ function* runMigrationSaga(action) {
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(PlanActions.migrationFailure(err));
   }
 }
@@ -923,28 +921,22 @@ function* migrationPoll(action) {
 
     switch (pollingStatusObj.status) {
       case 'CANCELED':
-        yield put(AlertActions.alertSuccessTimeout('Migration canceled'));
+        yield put(alertSuccessTimeout('Migration canceled'));
         yield put(PlanActions.stopMigrationPolling());
         break;
       case 'SUCCESS':
         yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Migration Successful'));
+        yield put(alertSuccessTimeout('Migration Successful'));
         yield put(PlanActions.stopMigrationPolling());
         break;
       case 'FAILURE':
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`)
-        );
+        yield put(alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Migration Failed'}`));
         yield put(PlanActions.stopMigrationPolling());
         break;
       case 'WARN':
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `Migration succeeded with warnings. ${pollingStatusObj.errorMessage}`
-          )
-        );
+        yield put(alertWarn(`Migration succeeded with warnings. ${pollingStatusObj.errorMessage}`));
         yield put(PlanActions.stopMigrationPolling());
         break;
 
@@ -1012,7 +1004,7 @@ function* runRollbackSaga(action) {
     const migrationName = `rollback-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
-    yield put(AlertActions.alertProgressTimeout('Rollback Started'));
+    yield put(alertProgressTimeout('Rollback Started'));
 
     const migMigrationObj = createMigMigration(
       migrationName,
@@ -1039,7 +1031,7 @@ function* runRollbackSaga(action) {
     yield put(PlanActions.startRollbackPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -1052,28 +1044,22 @@ function* rollbackPoll(action) {
 
     switch (pollingStatusObj.status) {
       case 'CANCELED':
-        yield put(AlertActions.alertSuccessTimeout('Rollback canceled'));
+        yield put(alertSuccessTimeout('Rollback canceled'));
         yield put(PlanActions.stopRollbackPolling());
         break;
       case 'SUCCESS':
         yield put(PlanActions.migrationSuccess(pollingStatusObj.planName));
-        yield put(AlertActions.alertSuccessTimeout('Rollback Successful'));
+        yield put(alertSuccessTimeout('Rollback Successful'));
         yield put(PlanActions.stopRollbackPolling());
         break;
       case 'FAILURE':
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Rollback Failed'}`)
-        );
+        yield put(alertErrorTimeout(`${pollingStatusObj.errorMessage || 'Rollback Failed'}`));
         yield put(PlanActions.stopRollbackPolling());
         break;
       case 'WARN':
         yield put(PlanActions.migrationFailure(pollingStatusObj.error));
-        yield put(
-          AlertActions.alertWarn(
-            `Rollback succeeded with warnings. ${pollingStatusObj.errorMessage}`
-          )
-        );
+        yield put(alertWarn(`Rollback succeeded with warnings. ${pollingStatusObj.errorMessage}`));
         yield put(PlanActions.stopRollbackPolling());
         break;
 
@@ -1127,7 +1113,7 @@ function* fetchPlanHooksSaga() {
     yield put(PlanActions.fetchPlanHooksSuccess(associatedHooks));
   } catch (err) {
     yield put(PlanActions.fetchPlanHooksFailure());
-    yield put(AlertActions.alertErrorTimeout('Failed to fetch hooks'));
+    yield put(alertErrorTimeout('Failed to fetch hooks'));
   }
 }
 
@@ -1223,7 +1209,7 @@ function* associateHookToPlanSaga(action) {
   } catch (err) {
     yield put(PlanActions.associateHookToPlanFailure());
     yield put(PlanActions.addHookFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
+    yield put(alertErrorTimeout('Failed to add hook.'));
   }
 }
 
@@ -1246,11 +1232,11 @@ function* addHookSaga(action) {
     }
     const updatedHooks = yield call(fetchHooksGenerator);
     yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
-    yield put(AlertActions.alertSuccessTimeout('Successfully added a hook to plan.'));
+    yield put(alertSuccessTimeout('Successfully added a hook to plan.'));
     yield put(PlanActions.addHookSuccess(createHookRes.data));
   } catch (err) {
     yield put(PlanActions.addHookFailure(err));
-    yield put(AlertActions.alertErrorTimeout('Failed to add hook.'));
+    yield put(alertErrorTimeout('Failed to add hook.'));
   }
 }
 
@@ -1284,12 +1270,12 @@ function* removeHookFromPlanSaga(action) {
       createHooksSpec()
     );
 
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook from plan"${name}"!`));
+    yield put(alertSuccessTimeout(`Successfully removed hook from plan"${name}"!`));
     yield put(PlanActions.removeHookFromPlanSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(PlanActions.removeHookFromPlanFailure(err));
   }
 }
@@ -1307,10 +1293,10 @@ function* removeHookSaga(action) {
 
     const updatedHooks = yield call(fetchHooksGenerator);
     yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed hook "${name}"!`));
+    yield put(alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(PlanActions.removeHookFailure(err));
   }
 }
@@ -1357,7 +1343,7 @@ function* updateHookRequest(action) {
       yield put(PlanActions.updatePlanHookList(currentPlanHookRefPatch));
     }
 
-    yield put(AlertActions.alertSuccessTimeout('Successfully updated hook.'));
+    yield put(alertSuccessTimeout('Successfully updated hook.'));
     yield put(
       PlanActions.setHookAddEditStatus(createAddEditStatus(AddEditState.Ready, AddEditMode.Add))
     );
@@ -1369,7 +1355,7 @@ function* updateHookRequest(action) {
     }
   } catch (err) {
     yield put(PlanActions.updateHookFailure());
-    yield put(AlertActions.alertErrorTimeout('Failed to update hook.'));
+    yield put(alertErrorTimeout('Failed to update hook.'));
     throw err;
   }
 }

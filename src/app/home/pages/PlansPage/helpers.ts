@@ -11,6 +11,9 @@ import { IMigration, IPlan, IStep } from '../../../plan/duck/types';
 import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
+  if (!plan || !plan?.PlanStatus) {
+    return '';
+  }
   const {
     hasClosedCondition,
     hasReadyCondition,

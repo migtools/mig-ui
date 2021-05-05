@@ -11,7 +11,6 @@ import {
 } from '../../../client/resources/conversions';
 
 import { ClusterActions, ClusterActionTypes } from './actions';
-import { AlertActions } from '../../common/duck/actions';
 import {
   createAddEditStatus,
   AddEditState,
@@ -29,10 +28,11 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { PlanActions } from '../../plan/duck';
 import utils from '../../common/duck/utils';
-import { AuthActions } from '../../auth/duck/actions';
 import { push } from 'connected-react-router';
 import { ICluster } from './types';
 import Q from 'q';
+import { alertSuccessTimeout, alertErrorTimeout, alertErrorModal } from '../../common/duck/slice';
+import { certErrorOccurred } from '../../auth/duck/slice';
 
 function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -113,9 +113,9 @@ function* removeClusterSaga(action) {
     ]);
 
     yield put(ClusterActions.removeClusterSuccess(name));
-    yield put(AlertActions.alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
+    yield put(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err));
     yield put(ClusterActions.removeClusterFailure(err));
   }
 }
@@ -279,7 +279,7 @@ function* addClusterRequest(action) {
     yield put(ClusterActions.watchClusterAddEditStatus(clusterValues.name));
   } catch (err) {
     console.error('Cluster failed creation with error: ', err);
-    put(AlertActions.alertErrorTimeout('Cluster failed creation'));
+    put(alertErrorTimeout('Cluster failed creation'));
     return;
   }
 }
@@ -561,7 +561,7 @@ function* initDiscoveryCert() {
       break;
     } catch (err) {
       if (utils.isTimeoutError(err)) {
-        yield put(AlertActions.alertErrorTimeout('Timed out while fetching namespaces'));
+        yield put(alertErrorTimeout('Timed out while fetching namespaces'));
         break;
       } else if (utils.isSelfSignedCertError(err)) {
         const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
@@ -569,12 +569,12 @@ function* initDiscoveryCert() {
           name: 'Discovery service cert',
           errorMessage: '',
         };
-        yield put(AlertActions.alertErrorModal(alertModalObj));
-        yield put(AuthActions.certErrorOccurred(failedUrl));
+        yield put(alertErrorModal(alertModalObj));
+        yield put(certErrorOccurred(failedUrl));
         break;
       }
       yield put(PlanActions.namespaceFetchFailure(err));
-      yield put(AlertActions.alertErrorTimeout('Failed to fetch namespaces'));
+      yield put(alertErrorTimeout('Failed to fetch namespaces'));
       break;
     }
   }

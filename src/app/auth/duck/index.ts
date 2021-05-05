@@ -1,5 +1,4 @@
-import authReducer from './reducers';
-export { IAuthReducerState } from './reducers';
+import authReducer from './slice';
+export { IAuthReducerState } from './slice';
 export { default as authSagas } from './sagas';
-export { AuthActions as authActionCreators } from './actions';
 export default authReducer;
