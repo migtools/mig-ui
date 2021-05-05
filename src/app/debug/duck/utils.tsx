@@ -17,7 +17,7 @@ const getShallowPropsForNode = (
     ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
     : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
   return {
-    id: rawNode.name,
+    id: nodeIdentifier,
     name: (
       <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>

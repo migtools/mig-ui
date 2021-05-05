@@ -40,11 +40,15 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       )
     );
   };
+  const nodeIdentifier = rawNode.namespace
+    ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
+    : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
+
   const encodedPath = encodeURI(rawNode.objectLink);
 
   return (
     <Dropdown
-      key={rawNode?.name}
+      key={nodeIdentifier}
       aria-label="Actions"
       toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
       isOpen={kebabIsOpen}
@@ -52,7 +56,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
       position="right"
       dropdownItems={[
         <DropdownItem
-          key={rawNode?.name}
+          key={`${nodeIdentifier} - copy command`}
           onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
             onCopy(event);
           }}
@@ -73,7 +77,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
           key={rawNode.name}
         >
           <DropdownItem
-            key={rawNode?.name}
+            key={`${nodeIdentifier} - view JSON`}
             onClick={() => {
               setKebabIsOpen(false);
             }}
