@@ -12,8 +12,8 @@ import {
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
-import { AlertActions } from '../../common/duck/actions';
 import { IReduxState } from '../../../reducers';
+import { alertErrorTimeout } from '../../common/duck/slice';
 
 const clusterIndex = 4;
 const logIndex = 8;
@@ -36,7 +36,7 @@ function* downloadLog(action) {
     const url = URL.createObjectURL(file);
     yield put(LogActions.createLogArchive(url));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err.message));
   }
 }
 
@@ -68,7 +68,7 @@ function* downloadLogs(action) {
     const url = URL.createObjectURL(file);
     yield put(LogActions.createLogArchive(url));
   } catch (err) {
-    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err.message));
   }
 }
 
@@ -86,7 +86,7 @@ function* extractLogs(action) {
       yield handleCertError(failedUrl);
       return;
     }
-    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err.message));
     yield put(LogActions.logsFetchFailure(err));
   }
 }
@@ -105,13 +105,13 @@ function* collectReport(action) {
     yield put(LogActions.reportFetchSuccess(planReport));
   } catch (err) {
     if (utils.isTimeoutError(err)) {
-      yield put(AlertActions.alertErrorTimeout('Timed out while fetching plan report'));
+      yield put(alertErrorTimeout('Timed out while fetching plan report'));
     } else if (utils.isSelfSignedCertError(err)) {
       const failedUrl = `${discoveryClient.apiRoot()}`;
       yield handleCertError(failedUrl);
       return;
     }
-    yield put(AlertActions.alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err.message));
     yield put(LogActions.reportFetchFailure(err));
   }
 }

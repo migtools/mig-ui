@@ -14,3 +14,8 @@ export interface INameNamespaceRef {
   name: string;
   namespace: string;
 }
+
+export interface IAlertModalObj {
+  name: string;
+  errorMessage: string;
+}

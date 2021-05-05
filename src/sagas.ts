@@ -6,9 +6,9 @@ import planSagas from './app/plan/duck/sagas';
 import logSagas from './app/logs/duck/sagas';
 import clusterSagas from './app/cluster/duck/sagas';
 import storageSagas from './app/storage/duck/sagas';
-import { AuthActions } from './app/auth/duck/actions';
 import { setTokenExpiryHandler } from './client/client_factory';
 import { ClusterActions } from './app/cluster/duck/actions';
+import { initFromStorage, initMigMeta } from './app/auth/duck/slice';
 
 export default function* rootSaga() {
   function* appStarted() {
@@ -19,8 +19,8 @@ export default function* rootSaga() {
     // Will only be present in remote-dev and production scenarios where
     // oauth meta must be loaded
     if (migMeta) {
-      yield put(AuthActions.initMigMeta(migMeta));
-      yield put(AuthActions.initFromStorage());
+      yield put(initMigMeta(migMeta));
+      yield put(initFromStorage());
       // Early prompt for discovery service cert acceptance if it hasn't already been accepted
       yield put(ClusterActions.initializeDiscoveryCert());
     }
@@ -37,6 +37,7 @@ export default function* rootSaga() {
     appStarted(),
     debugSagas.watchDebugObjectFetchRequest(),
     debugSagas.watchDebugTreeFetchRequest(),
+    debugSagas.watchDebugRefsFetchRequest(),
     debugSagas.watchDebugPolling(),
     commonSagas.watchPlanPolling(),
     commonSagas.watchClustersPolling(),
