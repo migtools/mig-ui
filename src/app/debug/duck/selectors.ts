@@ -1,58 +1,29 @@
-import dayjs from 'dayjs';
-import { cloneDeep } from 'lodash';
 import { createSelector } from 'reselect';
-import { DebugStatusType, IDebugRefRes, IDerivedDebugStatusObject } from './types';
+import {
+  DebugStatusType,
+  IDebugRefRes,
+  IDebugRefWithStatus,
+  IDerivedDebugStatusObject,
+} from './types';
 
-const debugTreeSelector = (state) => state.debug.tree;
-const debugRefsSelector = (state) => state.debug.debugRefs;
+const debugRefsSelector = (state) => state.debug.debugRefs.map((r) => r);
 
-const getDebugTreeWithStatus = createSelector(
-  [debugTreeSelector, debugRefsSelector],
-  (tree: any, refs: any) => {
-    const addDebugStatusToRef = (refs, obj) => {
-      const matchingDebugRef = refs?.find((ref) => ref?.value.data.name === obj?.name);
-      const statusObject = {
-        ...getResourceStatus(matchingDebugRef),
-      };
-
-      const newDebugRef = {
-        ...matchingDebugRef?.value.data?.object,
-        refName: matchingDebugRef?.value.data?.name,
-        debugResourceStatus: statusObject,
-        resourceKind: matchingDebugRef?.kind,
-      };
-      obj['debugRef'] = newDebugRef;
+const getDebugRefsWithStatus = createSelector([debugRefsSelector], (debugRefs: IDebugRefRes[]) => {
+  const refsWithStatus: IDebugRefWithStatus[] = debugRefs.map((ref) => {
+    const statusObject = {
+      ...getResourceStatus(ref),
     };
 
-    const sortMigrations = (refs, obj) => {
-      if (obj['kind'] === 'Plan') {
-        if (obj['children']) {
-          obj['children'] = obj['children']?.sort((left, right) => {
-            return dayjs
-              .utc(right?.debugRef?.metadata?.creationTimestamp)
-              .diff(dayjs.utc(left?.debugRef?.metadata?.creationTimestamp));
-          });
-        }
-      }
+    return {
+      ...ref?.value.data?.object,
+      refName: ref?.value.data?.name,
+      debugResourceStatus: statusObject,
+      resourceKind: ref.kind,
     };
-    const clonedTree = cloneDeep(tree);
+  });
 
-    const modifyTree = (obj, modification) => {
-      for (const k in obj) {
-        if (typeof obj[k] == 'object' && obj[k] !== null) {
-          modifyTree(obj[k], modification);
-        } else {
-          modification(refs, obj);
-        }
-      }
-    };
-
-    modifyTree(clonedTree, addDebugStatusToRef);
-    modifyTree(clonedTree, sortMigrations);
-
-    return clonedTree;
-  }
-);
+  return refsWithStatus;
+});
 
 const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject => {
   const warningConditionTypes = ['Critical', 'Error', 'Warn'];
@@ -64,7 +35,9 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     }
   };
 
-  switch (debugRef?.kind) {
+  // currentStatus: calculateCurrentStatus(hasWarning, hasFailure, hasCompleted, hasRunning, hasTerminating, hasPending, hasBound, hasAdmitted),
+
+  switch (debugRef.kind) {
     case 'Job': {
       const { conditions, startTime, completionTime } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
@@ -560,5 +533,5 @@ const calculateCurrentStatus = (
 };
 
 export default {
-  getDebugTreeWithStatus,
+  getDebugRefsWithStatus,
 };

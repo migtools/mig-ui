@@ -1,44 +1,40 @@
 import React from 'react';
 import { Flex, FlexItem, TreeViewDataItem } from '@patternfly/react-core';
-import { IDebugTreeNode } from './types';
+import { IDebugRefWithStatus, IDebugTreeNode } from './types';
 import crawl from 'tree-crawl';
-import isEqual from 'react-fast-compare';
+import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
 import TreeViewStatusIcon from '../components/TreeViewStatusIcon';
 import { IPlan } from '../../plan/duck/types';
-import TreeActionsDropdown from '../../home/pages/PlanDebugPage/components/TreeActionsDropdown';
-const styles = require('./utils.module').default;
 const uuidv1 = require('uuid/v1');
+const styles = require('./utils.module').default;
 
-interface ITreeActionsDropdownProps {
-  rawNode: any;
-}
-
-export const TreeActionsDropdownComponent = React.memo(({ rawNode }: ITreeActionsDropdownProps) => {
-  return <TreeActionsDropdown rawNode={rawNode} />;
-}, isEqual);
-
-const getShallowPropsForNode = (rawNode: IDebugTreeNode, plans: IPlan[]): TreeViewDataItem => {
+const getShallowPropsForNode = (
+  rawNode: IDebugTreeNode,
+  debugRefs: IDebugRefWithStatus[],
+  plans: IPlan[]
+): TreeViewDataItem => {
+  const matchingDebugRef = debugRefs?.find((ref) => ref?.refName === rawNode?.name);
   const nodeIdentifier = rawNode.namespace
     ? `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.namespace}/${rawNode.name}`
     : `${rawNode.kind}: ${rawNode.clusterType}/${rawNode.name}`;
   return {
     id: uuidv1(),
     name: (
-      <Flex className={rawNode.debugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
+      <Flex className={matchingDebugRef?.debugResourceStatus?.hasRunning && styles.activeHighlight}>
         <FlexItem className={styles.treeID}>{`${nodeIdentifier}`}</FlexItem>
         <FlexItem className={styles.statusIcon}>
           <div className={styles.alignStatus}>
-            <TreeViewStatusIcon plans={plans} debugRef={rawNode.debugRef} />
+            <TreeViewStatusIcon plans={plans} debugRef={matchingDebugRef} />
           </div>
         </FlexItem>
       </Flex>
     ),
-    action: <TreeActionsDropdownComponent rawNode={rawNode} />,
+    action: <TreeActionsDropdown rawNode={rawNode} />,
   };
 };
 
-const convertNode = (rawNode: IDebugTreeNode, ctx, plans): void => {
-  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, plans);
+const convertNode = (rawNode: IDebugTreeNode, ctx, debugRefs, plans): void => {
+  const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, debugRefs, plans);
 
   if (rawNode.children) {
     outNode.children = rawNode.children;
@@ -53,22 +49,27 @@ const convertNode = (rawNode: IDebugTreeNode, ctx, plans): void => {
 
 export const convertRawTreeToViewTree = (
   inTree: IDebugTreeNode,
+  debugRefs: IDebugRefWithStatus[],
   plans: IPlan[]
 ): TreeViewDataItem[] => {
   // Deep clone. Not the most efficient, but easy and we're not going for
   // blazing performance here.
   const workingTree: IDebugTreeNode = JSON.parse(JSON.stringify(inTree));
 
-  crawl(workingTree, (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, plans), {
-    order: 'pre',
-  });
+  crawl(
+    workingTree,
+    (rawNode: IDebugTreeNode, ctx) => convertNode(rawNode, ctx, debugRefs, plans),
+    {
+      order: 'pre',
+    }
+  );
 
   // Doesn't seem to be an easy way from within the crawler to replace
   // the root node, so doing that here and just bringing in the rest of it
-
   return [
     {
-      ...getShallowPropsForNode(workingTree, plans),
+      id: uuidv1(),
+      ...getShallowPropsForNode(workingTree, debugRefs, plans),
       children: workingTree.children,
       defaultExpanded: true,
     },
