@@ -28,6 +28,7 @@ const debugSlice = createSlice({
   reducers: {
     treeFetchRequest(state, action: PayloadAction<string>) {
       state.isLoading = true;
+      state.errMsg = null;
     },
     treeFetchSuccess(state, action: PayloadAction<any>) {
       state.isLoading = false;
