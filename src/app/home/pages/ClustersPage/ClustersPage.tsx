@@ -17,12 +17,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import { ClusterActions } from '../../../cluster/duck/actions';
-import {
-  createAddEditStatus,
-  AddEditState,
-  AddEditMode,
-  IAddEditStatus,
-} from '../../../common/add_edit_state';
+import { createAddEditStatus, AddEditState, AddEditMode } from '../../../common/add_edit_state';
 import ClustersTable from './components/ClustersTable';
 import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
@@ -124,7 +119,6 @@ const mapStateToProps = (state: IReduxState) => ({
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.auth.migMeta,
   currentCluster: state.cluster.currentCluster,
-  addEditStatus: state.cluster.addEditStatus,
 });
 
 const mapDispatchToProps = (dispatch) => ({
