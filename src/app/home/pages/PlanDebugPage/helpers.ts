@@ -87,22 +87,22 @@ export const getDebugCommand = (rawNode: IDebugTreeNode): ICommandAndTypeObj => 
   switch (kind) {
     case 'DirectImageStreamMigration':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dism":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dism":"${name}"'`,
       };
     case 'DirectVolumeMigrationProgress':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
       };
     case 'Hook':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migHook":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migHook":"${name}"'`,
       };
     case 'Job':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: null,
       };
     case 'PV':
@@ -112,58 +112,58 @@ export const getDebugCommand = (rawNode: IDebugTreeNode): ICommandAndTypeObj => 
       };
     case 'PVC':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: null,
       };
     case 'Route':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: null,
       };
     case 'Pod':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --namespace ${namespace} ${name} --all-containers`,
       };
     case 'Migration':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
       };
     case 'Plan':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
       };
     case 'Backup':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `velero backup logs ${name} -n ${namespace}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `velero backup logs ${name} --namespace ${namespace}`,
       };
     case 'PodVolumeBackup':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: null,
       };
     case 'Restore':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `velero restore logs ${name} -n ${namespace}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `velero restore logs ${name} --namespace ${namespace}`,
       };
     case 'PodVolumeRestore':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: null,
       };
     case 'DirectVolumeMigration':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dvm":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvm":"${name}"'`,
       };
     case 'DirectImageMigration':
       return {
-        ocDescribeCommand: `oc describe ${getFullKindName(kind)} -n ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager -n ${namespace} --container mtc | grep '"dim":"${name}"'`,
+        ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
+        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dim":"${name}"'`,
       };
     default:
       return {
