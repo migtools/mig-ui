@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { PlanDebugPage } from '../../../PlanDebugPage';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   PageSection,
@@ -132,6 +133,9 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
           </Bullseye>
         </PageSection>
       )}
+      <PageSection>
+        <PlanDebugPage />
+      </PageSection>
     </>
   );
 };
