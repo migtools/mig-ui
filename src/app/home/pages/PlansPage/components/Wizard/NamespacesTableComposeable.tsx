@@ -51,6 +51,7 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
   values,
 }: INamespacesTableProps) => {
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [editableRows, setEditableRows] = React.useState([]);
 
   if (values.sourceCluster === null) return null;
 
@@ -86,7 +87,11 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
   const rows = currentPageItems.map((namespace) => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
     selected: values.selectedNamespaces.includes(namespace.name),
-    meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
+    meta: {
+      selectedNamespaces: values.selectedNamespaces,
+      editedNamespaces: values.editedNamespaces,
+      editableRows: editableRows,
+    }, // See comments on onSelect
   }));
 
   // const columns = ['Repositories', 'Branches', 'Pull requests', 'Workspaces', 'Last commit'];
@@ -146,68 +151,77 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
         </Tr>
       </Thead>
       <Tbody>
-        {rows.map((row, rowIndex) => (
-          <Tr key={rowIndex}>
-            <Td
-              key={`${rowIndex}_0`}
-              select={{
-                rowIndex,
-                onSelect,
-                isSelected: row.selected,
-                meta: row,
-                // disable: rowIndex === 1,
-              }}
-            />
-            {row.cells.map((cell, cellIndex) => {
-              const shiftedIndex = cellIndex + 1;
-              if (columns[cellIndex].title === 'Name') {
-                return (
-                  <div>
-                    <TextInput
-                      value={cell}
-                      type="text"
-                      // onChange={handleTextInputChange}
-                      aria-label="text input example"
-                      // isReadOnly={}
+        {rows.map((row, rowIndex) => {
+          const isEditable = row.meta.editableRows.includes(rowIndex);
+          return (
+            <Tr key={rowIndex}>
+              <Td
+                key={`${rowIndex}_0`}
+                select={{
+                  rowIndex,
+                  onSelect,
+                  isSelected: row.selected,
+                  meta: row,
+                  // disable: rowIndex === 1,
+                }}
+              />
+              {row.cells.map((cell, cellIndex) => {
+                console.log('row, rows', row, rowIndex, cell, cellIndex);
+                const shiftedIndex = cellIndex + 1;
+                if (columns[cellIndex].title === 'Name') {
+                  return (
+                    <div>
+                      <TextInput
+                        value={cell}
+                        type="text"
+                        // onChange={handleTextInputChange}
+                        aria-label="text input example"
+                        isReadOnly={!isEditable}
+                      />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <Td key={`${rowIndex}_${shiftedIndex}`} dataLabel={columns[cellIndex].title}>
+                      {cell}
+                    </Td>
+                  );
+                }
+              })}
+              <Td key={`${rowIndex}_5`} className="pf-c-table__inline-edit-action" role="cell">
+                {isEditable ? (
+                  <>
+                    <span id="save-edit-icon" className="pf-c-icon pf-m-success">
+                      <CheckIcon
+                        type="button"
+                        onClick={() => {
+                          console.log('success');
+                        }}
+                      />
+                    </span>
+                    <span id="inline-edit-icon" className="pf-c-icon pf-m-danger">
+                      <TimesIcon
+                        type="button"
+                        onClick={() => {
+                          console.log('ping me');
+                        }}
+                      />
+                    </span>
+                  </>
+                ) : (
+                  <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
+                    <PencilAltIcon
+                      type="button"
+                      onClick={() => {
+                        setEditableRows([...editableRows, rowIndex]);
+                      }}
                     />
-                  </div>
-                );
-              } else {
-                return (
-                  <Td key={`${rowIndex}_${shiftedIndex}`} dataLabel={columns[cellIndex].title}>
-                    {cell}
-                  </Td>
-                );
-              }
-            })}
-            <Td key={`${rowIndex}_5`} className="pf-c-table__inline-edit-action" role="cell">
-              {/* <span id="save-edit-icon" className="pf-c-icon pf-m-success">
-                <CheckIcon
-                  type="button"
-                  onClick={() => {
-                    console.log('success');
-                  }}
-                />
-              </span>
-              <span id="inline-edit-icon" className="pf-c-icon pf-m-danger">
-                <TimesIcon
-                  type="button"
-                  onClick={() => {
-                    console.log('ping me');
-                  }}
-                />
-              </span> */}
-              <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
-                <PencilAltIcon
-                  type="button"
-                  onClick={() => {
-                    console.log('ping me');
-                  }}
-                />
-              </span>
-            </Td>
-          </Tr>
-        ))}
+                  </span>
+                )}
+              </Td>
+            </Tr>
+          );
+        })}
       </Tbody>
     </TableComposable>
   );

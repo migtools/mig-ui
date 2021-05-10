@@ -35,6 +35,7 @@ export interface IFormValues {
   targetTokenRef: INameNamespaceRef;
   selectedStorage: string;
   selectedNamespaces: string[];
+  editedNamespaces: string[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
   pvStorageClassAssignment: {
     [pvName: string]: {
@@ -112,6 +113,7 @@ export const defaultInitialValues: IFormValues = {
   sourceTokenRef: null,
   targetCluster: null,
   targetTokenRef: null,
+  editedNamespaces: [],
   selectedNamespaces: [],
   selectedStorage: null,
   persistentVolumes: [],
@@ -128,6 +130,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     initialValues.selectedNamespaces = editPlanObj.spec.namespaces || [];
+    // initialValues.editedNamespaces= editPlanObj.spec.namespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
     initialValues.sourceTokenRef = editPlanObj.spec.srcMigTokenRef || null;
@@ -156,6 +159,7 @@ const mapStateToProps = (state: IReduxState) => {
     planName: '',
     sourceCluster: null,
     targetCluster: null,
+    editedNamespaces: [],
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],
