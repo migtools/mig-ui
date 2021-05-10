@@ -5,6 +5,7 @@ import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-c
 import NamespacesTable from './NamespacesTable';
 import { Spinner } from '@patternfly/react-core';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import NamespacesTableComposeable from './NamespacesTableComposeable';
 
 type INamespacesFormProps = Pick<
   IOtherProps,
@@ -39,7 +40,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespacesTable
+        <NamespacesTableComposeable
           setFieldValue={setFieldValue}
           values={values}
           sourceClusterNamespaces={sourceClusterNamespaces}
