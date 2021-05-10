@@ -22,7 +22,6 @@ import {
   sortable,
   TableComposable,
   Tbody,
-  Td,
   Th,
   Thead,
   Tr,
@@ -40,6 +39,7 @@ import CheckCircleIcon from '@patternfly/react-icons/dist/js/icons/check-circle-
 import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
+import { Td } from '../Td';
 
 interface INamespacesTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
@@ -94,38 +94,65 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
   //   ['p', 'two', 'b', 'four', 'five'],
   // ];
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
-  const [selected, setSelected] = React.useState(rows.map((row) => false));
-  const onSelect = (event, isSelected, rowId) => {
-    setSelected(selected.map((sel, index) => (index === rowId ? isSelected : sel)));
-    if (!isSelected && allRowsSelected) {
-      setAllRowsSelected(false);
-    } else if (isSelected && !allRowsSelected) {
-      let allSelected = true;
-      for (let i = 0; i < selected.length; i++) {
-        if (i !== rowId) {
-          if (!selected[i]) {
-            allSelected = false;
-          }
-        }
+  // const [selected, setSelected] = React.useState(rows.map((row) => false));
+  const onSelect = (event, isSelected, rowIndex, rowData) => {
+    // Because of a bug in Table where a shouldComponentUpdate method is too strict,
+    // when onSelect is called it may not be the one from the scope of the latest render.
+    // So, it is not safe to reference the current selection state directly from the outer scope.
+    // This is why we use rowData.meta.selectedNamespaces instead of values.selectedNamespaces.
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+      } else {
+        newSelected = []; // Deselect all
       }
-      if (allSelected) {
-        setAllRowsSelected(true);
+    } else {
+      const { meta } = rowData;
+      if (isSelected) {
+        newSelected = [...new Set([...meta.meta.selectedNamespaces, meta.cells[0]])];
+      } else {
+        newSelected = meta.selectedNamespaces.filter((selected) => selected !== meta.cells[0]);
       }
     }
+    setFieldValue('selectedNamespaces', newSelected);
   };
-  const onSelectAll = (event, isSelected) => {
-    setAllRowsSelected(isSelected);
-    setSelected(selected.map((sel) => isSelected));
-  };
+  // const onSelect = (event, isSelected, rowId) => {
+  //   const newSelected = selected.map((sel, index) => (index === rowId ? isSelected : sel));
+  //   setSelected(newSelected);
+  //   setFieldValue('selectedNamespaces', newSelected);
+
+  //   if (!isSelected && allRowsSelected) {
+  //     setAllRowsSelected(false);
+  //   } else if (isSelected && !allRowsSelected) {
+  //     let allSelected = true;
+  //     for (let i = 0; i < selected.length; i++) {
+  //       if (i !== rowId) {
+  //         if (!selected[i]) {
+  //           allSelected = false;
+  //         }
+  //       }
+  //     }
+  //     if (allSelected) {
+  //       setAllRowsSelected(true);
+  //     }
+  //   }
+  // };
+  // const onSelectAll = (event, isSelected) => {
+  //   setAllRowsSelected(isSelected);
+  //   const newSelected = selected.map((sel) => isSelected);
+  //   setSelected(newSelected);
+  //   setFieldValue('selectedNamespaces', newSelected);
+  // };
   return (
     <TableComposable aria-label="Selectable Table">
       <Thead>
         <Tr>
           <Th
-            select={{
-              onSelect: onSelectAll,
-              isSelected: allRowsSelected,
-            }}
+          // select={{
+          //   onSelect: onSelectAll,
+          //   isSelected: allRowsSelected,
+          // }}
           />
           <Th>{columns[0].title}</Th>
           <Th>{columns[1].title}</Th>
@@ -141,8 +168,9 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
               select={{
                 rowIndex,
                 onSelect,
-                isSelected: selected[rowIndex],
-                disable: rowIndex === 1,
+                isSelected: row.selected,
+                meta: row,
+                // disable: rowIndex === 1,
               }}
             />
             {row.cells.map((cell, cellIndex) => {
@@ -150,23 +178,13 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
               if (columns[cellIndex].title === 'Name') {
                 return (
                   <div>
-                    {/* <div className="pf-c-inline-edit__value">Text input description content</div> */}
-                    {/* <div className="pf-c-inline-edit__input"> */}
-                    {/* <input
-                        className="pf-c-form-control"
-                        type="text"
-                        value="Text input description content"
-                        id="bulk-edit-table-example-row-1-text-input"
-                        aria-label="Text input"
-                      /> */}
                     <TextInput
                       value={cell}
                       type="text"
                       // onChange={handleTextInputChange}
                       aria-label="text input example"
-                      isReadOnly={true}
+                      // isReadOnly={}
                     />
-                    {/* </div> */}
                   </div>
                 );
               } else {
