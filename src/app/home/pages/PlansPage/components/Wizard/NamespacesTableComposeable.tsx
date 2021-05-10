@@ -50,6 +50,8 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
   sourceClusterNamespaces,
   values,
 }: INamespacesTableProps) => {
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+
   if (values.sourceCluster === null) return null;
 
   const columns = [
@@ -93,7 +95,6 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
   //   ['a', 'two', 'k', 'four', 'five'],
   //   ['p', 'two', 'b', 'four', 'five'],
   // ];
-  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   // const [selected, setSelected] = React.useState(rows.map((row) => false));
   const onSelect = (event, isSelected, rowIndex, rowData) => {
     // Because of a bug in Table where a shouldComponentUpdate method is too strict,
@@ -117,42 +118,26 @@ const NamespacesTableComposeable: React.FunctionComponent<INamespacesTableProps>
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
-  // const onSelect = (event, isSelected, rowId) => {
-  //   const newSelected = selected.map((sel, index) => (index === rowId ? isSelected : sel));
-  //   setSelected(newSelected);
-  //   setFieldValue('selectedNamespaces', newSelected);
+  const onSelectAll = (event, isSelected, rowIndex, rowData) => {
+    setAllRowsSelected(isSelected);
 
-  //   if (!isSelected && allRowsSelected) {
-  //     setAllRowsSelected(false);
-  //   } else if (isSelected && !allRowsSelected) {
-  //     let allSelected = true;
-  //     for (let i = 0; i < selected.length; i++) {
-  //       if (i !== rowId) {
-  //         if (!selected[i]) {
-  //           allSelected = false;
-  //         }
-  //       }
-  //     }
-  //     if (allSelected) {
-  //       setAllRowsSelected(true);
-  //     }
-  //   }
-  // };
-  // const onSelectAll = (event, isSelected) => {
-  //   setAllRowsSelected(isSelected);
-  //   const newSelected = selected.map((sel) => isSelected);
-  //   setSelected(newSelected);
-  //   setFieldValue('selectedNamespaces', newSelected);
-  // };
+    let newSelected;
+    if (isSelected) {
+      newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+    } else {
+      newSelected = []; // Deselect all
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
   return (
     <TableComposable aria-label="Selectable Table">
       <Thead>
         <Tr>
           <Th
-          // select={{
-          //   onSelect: onSelectAll,
-          //   isSelected: allRowsSelected,
-          // }}
+            select={{
+              onSelect: onSelectAll,
+              isSelected: allRowsSelected,
+            }}
           />
           <Th>{columns[0].title}</Th>
           <Th>{columns[1].title}</Th>
