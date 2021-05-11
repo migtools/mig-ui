@@ -78,22 +78,28 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map((namespace) => ({
-    cells: [
-      namespace.name,
-      namespace.podCount,
-      namespace.pvcCount,
-      namespace.serviceCount,
-      //check for modification and display modification for target
-      namespace.name,
-    ],
-    selected: values.selectedNamespaces.includes(namespace.name),
-    meta: {
-      selectedNamespaces: values.selectedNamespaces,
-      editedNamespaces: values.editedNamespaces,
-      editableRow: editableRow,
-    }, // See comments on onSelect
-  }));
+  const rows = currentPageItems.map((namespace) => {
+    console.log('values.edited', values.editedNamespaces);
+    console.log('namespace.name', namespace.name);
+    const editedNamespace = values.editedNamespaces.find((ns) => ns.oldName === namespace.name);
+    const targetName = editedNamespace ? editedNamespace.newName : namespace.name;
+    return {
+      cells: [
+        namespace.name,
+        namespace.podCount,
+        namespace.pvcCount,
+        namespace.serviceCount,
+        //check for modification and display modification for target
+        targetName,
+      ],
+      selected: values.selectedNamespaces.includes(namespace.name),
+      meta: {
+        selectedNamespaces: values.selectedNamespaces,
+        editedNamespaces: values.editedNamespaces,
+        editableRow: editableRow,
+      }, // See comments on onSelect
+    };
+  });
 
   const handleTextInputChange = (value, event) => {
     console.log('value, event', value, event);
@@ -171,11 +177,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                     isSelected: allRowsSelected,
                   }}
                 />
-                <Th>{columns[0].title}</Th>
-                <Th>{columns[1].title}</Th>
-                <Th>{columns[2].title}</Th>
-                <Th>{columns[3].title}</Th>
-                <Th>{columns[4].title}</Th>
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={10}>{columns[3].title}</Th>
+                <Th width={40}>{columns[4].title}</Th>
                 <Th></Th>
               </Tr>
             </Thead>
@@ -199,15 +205,25 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       const shiftedIndex = cellIndex + 1;
                       if (columns[cellIndex].title === 'Target name') {
                         return (
-                          <div>
-                            <TextInput
-                              value={isEditable ? currentEdit : cell}
-                              type="text"
-                              onChange={handleTextInputChange}
-                              aria-label="text input example"
-                              isReadOnly={!isEditable}
-                            />
-                          </div>
+                          <>
+                            {!isEditable ? (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={columns[cellIndex].title}
+                              >
+                                {cell}
+                              </Td>
+                            ) : (
+                              <TextInput
+                                value={currentEdit}
+                                type="text"
+                                onChange={handleTextInputChange}
+                                aria-label="text input example"
+                                isReadOnly={!isEditable}
+                                // className={styles.targetInput}
+                              />
+                            )}
+                          </>
                         );
                       } else {
                         return (
@@ -231,14 +247,41 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                             <span id="save-edit-icon" className="pf-c-icon pf-m-success">
                               <CheckIcon
                                 type="button"
+                                className={styles.clickable}
                                 onClick={() => {
                                   setEditableRow(null);
-                                  const newEditedNamespaces = [
-                                    ...new Set([
-                                      ...values.editedNamespaces,
-                                      { oldName: row.cells[0], newName: currentEdit },
-                                    ]),
-                                  ];
+                                  const hasEditedValue = values.editedNamespaces.find(
+                                    (ns) => row.cells[0] === ns.oldName
+                                  );
+                                  let newEditedNamespaces;
+                                  if (hasEditedValue) {
+                                    newEditedNamespaces = [
+                                      ...new Set([...values.editedNamespaces]),
+                                    ];
+
+                                    const index = values.editedNamespaces.findIndex(
+                                      (ns) => ns.oldName === row.cells[0]
+                                    );
+                                    //check if no changes made
+                                    if (newEditedNamespaces[index].oldName === currentEdit) {
+                                      if (index > -1) {
+                                        newEditedNamespaces.splice(index, 1);
+                                      }
+                                      //replace found edit with current edit
+                                    } else if (index || index === 0) {
+                                      newEditedNamespaces[index] = {
+                                        oldName: row.cells[0],
+                                        newName: currentEdit,
+                                      };
+                                    }
+                                  } else {
+                                    newEditedNamespaces = [
+                                      ...new Set([
+                                        ...values.editedNamespaces,
+                                        { oldName: row.cells[0], newName: currentEdit },
+                                      ]),
+                                    ];
+                                  }
                                   setFieldValue('editedNamespaces', newEditedNamespaces);
                                   setCurrentEdit(null);
                                 }}
@@ -248,6 +291,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                           <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
                             <span id="inline-edit-icon" className="pf-c-icon pf-m-danger">
                               <TimesIcon
+                                className={styles.clickable}
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
@@ -260,9 +304,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       ) : (
                         <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
                           <PencilAltIcon
+                            className={styles.clickable}
                             type="button"
                             onClick={() => {
                               setEditableRow(rowIndex);
+                              setCurrentEdit(row.cells[4]);
                             }}
                           />
                         </span>
