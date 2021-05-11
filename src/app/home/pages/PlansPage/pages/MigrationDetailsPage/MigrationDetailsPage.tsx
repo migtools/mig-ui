@@ -133,9 +133,6 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
           </Bullseye>
         </PageSection>
       )}
-      <PageSection>
-        <PlanDebugPage />
-      </PageSection>
     </>
   );
 };

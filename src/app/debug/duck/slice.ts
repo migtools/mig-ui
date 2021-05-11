@@ -60,10 +60,10 @@ const debugSlice = createSlice({
       state.isLoadingJSONObject = false;
       state.errMsg = action.payload.trim();
     },
-    startDebugPolling(state, action: PayloadAction<string>) {
+    startDebugPolling(state, action: PayloadAction<any>) {
       state.isPolling = true;
     },
-    stopDebugPolling(state, action: PayloadAction<string>) {
+    stopDebugPolling(state, action: PayloadAction<any>) {
       state.isPolling = false;
       state.isFetchingInitialDebugTree = true;
     },
