@@ -11,8 +11,12 @@ import {
   Pagination,
   PaginationVariant,
   DropdownDirection,
+  TextInput,
+  Button,
+  FlexItem,
+  Flex,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, TableVariant, sortable } from '@patternfly/react-table';
+import { sortable, TableComposable, Tbody, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import {
@@ -22,6 +26,11 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
+import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
+import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
+import { Td } from '../Td';
+const styles = require('./NamespacesTable.module').default;
 
 interface INamespacesTableProps
   extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
@@ -32,6 +41,9 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   sourceClusterNamespaces,
   values,
 }: INamespacesTableProps) => {
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [editableRows, setEditableRows] = React.useState([]);
+
   if (values.sourceCluster === null) return null;
 
   const columns = [
@@ -66,7 +78,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   const rows = currentPageItems.map((namespace) => ({
     cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
     selected: values.selectedNamespaces.includes(namespace.name),
-    meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
+    meta: {
+      selectedNamespaces: values.selectedNamespaces,
+      editedNamespaces: values.editedNamespaces,
+      editableRows: editableRows,
+    }, // See comments on onSelect
   }));
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
@@ -82,16 +98,26 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         newSelected = []; // Deselect all
       }
     } else {
-      const { meta, name } = rowData;
+      const { meta } = rowData;
       if (isSelected) {
-        newSelected = [...new Set([...meta.selectedNamespaces, name.title])];
+        newSelected = [...new Set([...meta.meta.selectedNamespaces, meta.cells[0]])];
       } else {
-        newSelected = meta.selectedNamespaces.filter((selected) => selected !== name.title);
+        newSelected = meta.selectedNamespaces.filter((selected) => selected !== meta.cells[0]);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+  const onSelectAll = (event, isSelected, rowIndex, rowData) => {
+    setAllRowsSelected(isSelected);
 
+    let newSelected;
+    if (isSelected) {
+      newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+    } else {
+      newSelected = []; // Deselect all
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
   return (
     <React.Fragment>
       <GridItem>
@@ -120,19 +146,113 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Projects table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-            onSelect={onSelect}
-            canSelectAll
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th
+                  select={{
+                    onSelect: onSelectAll,
+                    isSelected: allRowsSelected,
+                  }}
+                />
+                <Th>{columns[0].title}</Th>
+                <Th>{columns[1].title}</Th>
+                <Th>{columns[2].title}</Th>
+                <Th>{columns[3].title}</Th>
+                <Th></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                const isEditable = row.meta.editableRows.includes(rowIndex);
+                return (
+                  <Tr key={rowIndex}>
+                    <Td
+                      key={`${rowIndex}_0`}
+                      select={{
+                        rowIndex,
+                        onSelect,
+                        isSelected: row.selected,
+                        meta: row,
+                        // disable: rowIndex === 1,
+                      }}
+                    />
+                    {row.cells.map((cell, cellIndex) => {
+                      console.log('row, rows', row, rowIndex, cell, cellIndex);
+                      const shiftedIndex = cellIndex + 1;
+                      if (columns[cellIndex].title === 'Name') {
+                        return (
+                          <div>
+                            <TextInput
+                              value={cell}
+                              type="text"
+                              // onChange={handleTextInputChange}
+                              aria-label="text input example"
+                              isReadOnly={!isEditable}
+                            />
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <Td
+                            key={`${rowIndex}_${shiftedIndex}`}
+                            dataLabel={columns[cellIndex].title}
+                          >
+                            {cell}
+                          </Td>
+                        );
+                      }
+                    })}
+                    <Td
+                      key={`${rowIndex}_5`}
+                      className="pf-c-table__inline-edit-action"
+                      role="cell"
+                    >
+                      {isEditable ? (
+                        <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
+                          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+                            <span id="save-edit-icon" className="pf-c-icon pf-m-success">
+                              <CheckIcon
+                                type="button"
+                                onClick={() => {
+                                  const newEditable = editableRows.filter(
+                                    (index) => index !== rowIndex
+                                  );
+                                  setEditableRows(newEditable);
+                                }}
+                              />
+                            </span>
+                          </FlexItem>
+                          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
+                            <span id="inline-edit-icon" className="pf-c-icon pf-m-danger">
+                              <TimesIcon
+                                type="button"
+                                onClick={() => {
+                                  const newEditable = editableRows.filter(
+                                    (index) => index !== rowIndex
+                                  );
+                                  setEditableRows(newEditable);
+                                }}
+                              />
+                            </span>
+                          </FlexItem>
+                        </Flex>
+                      ) : (
+                        <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
+                          <PencilAltIcon
+                            type="button"
+                            onClick={() => {
+                              setEditableRows([...editableRows, rowIndex]);
+                            }}
+                          />
+                        </span>
+                      )}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
           <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
         )}
@@ -163,5 +283,4 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     </React.Fragment>
   );
 };
-
 export default NamespacesTable;
