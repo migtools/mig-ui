@@ -42,7 +42,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   values,
 }: INamespacesTableProps) => {
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
-  const [editableRows, setEditableRows] = React.useState([]);
+  const [editableRow, setEditableRow] = React.useState(null);
 
   if (values.sourceCluster === null) return null;
 
@@ -81,9 +81,13 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     meta: {
       selectedNamespaces: values.selectedNamespaces,
       editedNamespaces: values.editedNamespaces,
-      editableRows: editableRows,
+      editableRow: editableRow,
     }, // See comments on onSelect
   }));
+
+  const handleTextInputChange = (value, event) => {
+    console.log('value, event', value, event);
+  };
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
     // Because of a bug in Table where a shouldComponentUpdate method is too strict,
@@ -164,7 +168,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
             </Thead>
             <Tbody>
               {rows.map((row, rowIndex) => {
-                const isEditable = row.meta.editableRows.includes(rowIndex);
+                const isEditable = row.meta.editableRow === rowIndex;
                 return (
                   <Tr key={rowIndex}>
                     <Td
@@ -186,7 +190,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                             <TextInput
                               value={cell}
                               type="text"
-                              // onChange={handleTextInputChange}
+                              onChange={handleTextInputChange}
                               aria-label="text input example"
                               isReadOnly={!isEditable}
                             />
@@ -215,10 +219,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                               <CheckIcon
                                 type="button"
                                 onClick={() => {
-                                  const newEditable = editableRows.filter(
-                                    (index) => index !== rowIndex
-                                  );
-                                  setEditableRows(newEditable);
+                                  setEditableRow(null);
                                 }}
                               />
                             </span>
@@ -228,10 +229,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                               <TimesIcon
                                 type="button"
                                 onClick={() => {
-                                  const newEditable = editableRows.filter(
-                                    (index) => index !== rowIndex
-                                  );
-                                  setEditableRows(newEditable);
+                                  setEditableRow(null);
                                 }}
                               />
                             </span>
@@ -242,7 +240,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                           <PencilAltIcon
                             type="button"
                             onClick={() => {
-                              setEditableRows([...editableRows, rowIndex]);
+                              setEditableRow(rowIndex);
                             }}
                           />
                         </span>
