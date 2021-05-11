@@ -172,6 +172,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
             <Thead>
               <Tr>
                 <Th
+                  width={10}
                   select={{
                     onSelect: onSelectAll,
                     isSelected: allRowsSelected,
@@ -181,8 +182,8 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
                 <Th width={10}>{columns[3].title}</Th>
-                <Th width={40}>{columns[4].title}</Th>
-                <Th></Th>
+                <Th width={30}>{columns[4].title}</Th>
+                <Th width={20}></Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -214,14 +215,19 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 {cell}
                               </Td>
                             ) : (
-                              <TextInput
-                                value={currentEdit}
-                                type="text"
-                                onChange={handleTextInputChange}
-                                aria-label="text input example"
-                                isReadOnly={!isEditable}
-                                // className={styles.targetInput}
-                              />
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={columns[cellIndex].title}
+                              >
+                                <TextInput
+                                  value={currentEdit}
+                                  type="text"
+                                  onChange={handleTextInputChange}
+                                  aria-label="text input example"
+                                  isReadOnly={!isEditable}
+                                  // className={styles.targetInput}
+                                />
+                              </Td>
                             )}
                           </>
                         );
@@ -240,12 +246,14 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       key={`${rowIndex}_5`}
                       className="pf-c-table__inline-edit-action"
                       role="cell"
+                      width={10}
                     >
                       {isEditable ? (
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
-                          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-                            <span id="save-edit-icon" className="pf-c-icon pf-m-success">
+                          <FlexItem flex={{ default: 'flex_1' }}>
+                            <span id="save-edit-icon" className="pf-c-icon pf-m-info">
                               <CheckIcon
+                                size="md"
                                 type="button"
                                 className={styles.clickable}
                                 onClick={() => {
@@ -287,10 +295,14 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 }}
                               />
                             </span>
-                          </FlexItem>
-                          <FlexItem flex={{ default: 'flex_1' }} className={spacing.mAuto}>
-                            <span id="inline-edit-icon" className="pf-c-icon pf-m-danger">
+                            {/* </FlexItem> */}
+                            {/* <FlexItem flex={{ default: 'flex_1' }} className={spacing.mlSm}> */}
+                            <span
+                              id="inline-edit-icon"
+                              className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
+                            >
                               <TimesIcon
+                                size="md"
                                 className={styles.clickable}
                                 type="button"
                                 onClick={() => {
@@ -306,6 +318,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                           <PencilAltIcon
                             className={styles.clickable}
                             type="button"
+                            size="md"
                             onClick={() => {
                               setEditableRow(rowIndex);
                               setCurrentEdit(row.cells[4]);
