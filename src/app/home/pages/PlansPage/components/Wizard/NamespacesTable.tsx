@@ -43,6 +43,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
 }: INamespacesTableProps) => {
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
+  const [currentEdit, setCurrentEdit] = React.useState(null);
 
   if (values.sourceCluster === null) return null;
 
@@ -87,6 +88,8 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
 
   const handleTextInputChange = (value, event) => {
     console.log('value, event', value, event);
+    setCurrentEdit(event.target.value);
+    console.log('currentEdit', currentEdit);
   };
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
@@ -182,13 +185,13 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       }}
                     />
                     {row.cells.map((cell, cellIndex) => {
-                      console.log('row, rows', row, rowIndex, cell, cellIndex);
+                      // console.log('row, rows', row, rowIndex, cell, cellIndex);
                       const shiftedIndex = cellIndex + 1;
                       if (columns[cellIndex].title === 'Name') {
                         return (
                           <div>
                             <TextInput
-                              value={cell}
+                              value={isEditable ? currentEdit : cell}
                               type="text"
                               onChange={handleTextInputChange}
                               aria-label="text input example"
@@ -220,6 +223,13 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
+                                  const newEditedNamespaces = [
+                                    ...new Set([
+                                      ...values.editedNamespaces,
+                                      { oldName: row.cells[0], newName: currentEdit },
+                                    ]),
+                                  ];
+                                  setFieldValue('editedNamespaces', newEditedNamespaces);
                                 }}
                               />
                             </span>

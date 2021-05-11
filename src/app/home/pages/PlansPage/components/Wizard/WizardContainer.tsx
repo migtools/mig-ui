@@ -22,7 +22,7 @@ import {
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
 import { IReduxState } from '../../../../../../reducers';
-import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
@@ -35,7 +35,7 @@ export interface IFormValues {
   targetTokenRef: INameNamespaceRef;
   selectedStorage: string;
   selectedNamespaces: string[];
-  editedNamespaces: string[];
+  editedNamespaces: IEditedNamespaceMap[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
   pvStorageClassAssignment: {
     [pvName: string]: {
