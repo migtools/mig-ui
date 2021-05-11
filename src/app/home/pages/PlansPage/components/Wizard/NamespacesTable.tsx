@@ -48,10 +48,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   if (values.sourceCluster === null) return null;
 
   const columns = [
-    { title: 'Name', transforms: [sortable] },
+    { title: 'Source name', transforms: [sortable] },
     { title: 'Pods', transforms: [sortable] },
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
+    { title: 'Target name', transforms: [sortable] },
   ];
   const getSortValues = (namespace) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
@@ -59,6 +60,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     namespace.podCount,
     namespace.pvcCount,
     namespace.serviceCount,
+    namespace.name,
   ];
   const filterCategories: FilterCategory[] = [
     {
@@ -77,7 +79,14 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((namespace) => ({
-    cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
+    cells: [
+      namespace.name,
+      namespace.podCount,
+      namespace.pvcCount,
+      namespace.serviceCount,
+      //check for modification and display modification for target
+      namespace.name,
+    ],
     selected: values.selectedNamespaces.includes(namespace.name),
     meta: {
       selectedNamespaces: values.selectedNamespaces,
@@ -166,6 +175,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                 <Th>{columns[1].title}</Th>
                 <Th>{columns[2].title}</Th>
                 <Th>{columns[3].title}</Th>
+                <Th>{columns[4].title}</Th>
                 <Th></Th>
               </Tr>
             </Thead>
@@ -187,7 +197,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                     {row.cells.map((cell, cellIndex) => {
                       // console.log('row, rows', row, rowIndex, cell, cellIndex);
                       const shiftedIndex = cellIndex + 1;
-                      if (columns[cellIndex].title === 'Name') {
+                      if (columns[cellIndex].title === 'Target name') {
                         return (
                           <div>
                             <TextInput
@@ -230,6 +240,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                     ]),
                                   ];
                                   setFieldValue('editedNamespaces', newEditedNamespaces);
+                                  setCurrentEdit(null);
                                 }}
                               />
                             </span>
@@ -240,6 +251,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
+                                  setCurrentEdit(null);
                                 }}
                               />
                             </span>
