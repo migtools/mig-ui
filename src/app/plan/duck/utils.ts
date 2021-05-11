@@ -96,7 +96,7 @@ export function groupPlans(
 
 const groupPlan: any = (plan, response) => {
   const fullPlan = {
-    ...plan.MigPlan,
+    MigPlan: plan.MigPlan,
   };
   if (response.data.items.length > 0) {
     const sortMigrations = (migrationList) =>

@@ -2,9 +2,9 @@ import React from 'react';
 import { Modal, Button, Grid, GridItem, Title, BaseSizes } from '@patternfly/react-core';
 import ErrorCircleOIcon from '@patternfly/react-icons/dist/js/icons/error-circle-o-icon';
 import { useHistory } from 'react-router-dom';
-import { AlertActions } from '../duck/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePausedPollingEffect } from '../context';
+import { errorModalClear } from '../duck/slice';
 
 const styles = require('./ErrorModal.module').default;
 
@@ -26,7 +26,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
     <React.Fragment>
       <Title headingLevel={'h1'} size={BaseSizes['2xl']}>
         <ErrorCircleOIcon className={styles.errorIconStyles} />
-        {`Error while fetching ${errorModalObj?.name || 'data'}`}
+        {`Error`}
       </Title>
     </React.Fragment>
   );
@@ -37,9 +37,9 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
       variant="large"
       isOpen={isOpen}
       onClose={() => {
-        dispatch(AlertActions.errorModalClear());
+        dispatch(errorModalClear());
       }}
-      title={`Error while fetching ${errorModalObj.name || 'data'}`}
+      title={`Error'}`}
     >
       <Grid hasGutter>
         <form>
@@ -57,21 +57,32 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
             <>
               <br />
               <div>
-                A certificate error has occurred, likely caused by using self-signed CA certificates
-                in one of the clusters. Navigate to the following URL and accept the certificate:
+                A network error has occurred. The likely cause of the error is one of the following
+                issues:
                 <br />
                 <br />
-                <a target="_blank" href={certError.failedUrl}>
-                  {certError.failedUrl}
-                </a>
-                <br />
-                <br />
-                <div />
-                If an "Unauthorized" message appears after you have accepted the certificate,
-                navigate to the MTC console and refresh the page.
-                <div />
-                To fix this issue permanently, add the certificate to your web browser's trust
-                store.
+                <ul>
+                  <li>
+                    1) The cluster is using self-signed certificates and you have not installed the
+                    certificate authority so that it is trusted. To bypass the certificate check,
+                    navigate to the following URL to accept the certificate:
+                    <br />
+                    <br />
+                    <a target="_blank" href={certError.failedUrl}>
+                      {certError.failedUrl}
+                    </a>
+                    <br />
+                    <br />
+                    The best practice is to install the certificate authority in the browser's trust
+                    store.
+                  </li>
+                  <br />
+                  <li>
+                    2) Cross-origin resource sharing has not yet been configured. This process can
+                    take at least 10 minutes. Wait for the process to complete and then refresh your
+                    browser.
+                  </li>
+                </ul>
               </div>
             </>
           )}
@@ -84,7 +95,7 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                   key="cancel"
                   variant="primary"
                   onClick={() => {
-                    dispatch(AlertActions.errorModalClear());
+                    dispatch(errorModalClear());
                   }}
                 >
                   Close
