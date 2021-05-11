@@ -120,11 +120,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         newSelected = []; // Deselect all
       }
     } else {
-      const { meta } = rowData;
+      const { props } = rowData;
       if (isSelected) {
-        newSelected = [...new Set([...meta.meta.selectedNamespaces, meta.cells[0]])];
+        newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
       } else {
-        newSelected = meta.selectedNamespaces.filter((selected) => selected !== meta.cells[0]);
+        newSelected = props.selectedNamespaces.filter((selected) => selected !== props.cells[0]);
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
@@ -196,7 +196,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                         rowIndex,
                         onSelect,
                         isSelected: row.selected,
-                        meta: row,
+                        props: row,
                         // disable: rowIndex === 1,
                       }}
                     />

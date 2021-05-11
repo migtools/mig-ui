@@ -50,7 +50,7 @@ export interface TdProps
     /** The row index */
     rowIndex: number;
     /**additional user defined row data */
-    meta?: any;
+    props?: any;
   };
   /** Turns the cell into an actions cell */
   actions?: {
@@ -131,7 +131,7 @@ const TdBase: React.FunctionComponent<TdProps> = ({
         rowData: {
           selected: select.isSelected,
           disableSelection: select?.disable,
-          meta: select?.meta,
+          props: select?.props,
         },
         column: {
           extraParams: {
