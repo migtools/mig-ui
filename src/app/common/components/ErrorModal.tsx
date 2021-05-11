@@ -57,16 +57,15 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
             <>
               <br />
               <div>
-                A network error has occurred and we are unable to fetch one or more resources. We
-                are unable to determine the precise cause due to browser obfuscation, but based on
-                the content of the error it is likely one of two root issues:
+                A network error has occurred. The likely cause of the error is one of the following
+                issues:
                 <br />
                 <br />
                 <ul>
                   <li>
-                    * Your cluster API and/or its services are using self-signed certificates and
-                    you have not installed the CA as trusted. You can grant an exception within your
-                    browser by visiting the following link and accepting the certificate:
+                    1) The cluster is using self-signed certificates and you have not installed the
+                    certificate authority so that it is trusted. To bypass the certificate check,
+                    navigate to the following URL to accept the certificate:
                     <br />
                     <br />
                     <a target="_blank" href={certError.failedUrl}>
@@ -74,18 +73,14 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
                     </a>
                     <br />
                     <br />
-                    NOTE: It is recommended if using a self-signed certificate to install the
-                    trusted CA in your browser’s supported store prior to using the Migration
-                    Toolkit.
+                    The best practice is to install the certificate authority in the browser's trust
+                    store.
                   </li>
                   <br />
-                  <br />
                   <li>
-                    * If you are sure that you have already accepted the requisite CAs, it could be
-                    a Cross Origin Resource Sharing rejection. This is something that is configured
-                    in the cluster’s API server settings by the MTC operator and can take up to 10
-                    minutes to propagate across all related services. Please wait and check back in
-                    at a later point in time.
+                    2) Cross-origin resource sharing has not yet been configured. This process can
+                    take at least 10 minutes. Wait for the process to complete and then refresh your
+                    browser.
                   </li>
                 </ul>
               </div>
