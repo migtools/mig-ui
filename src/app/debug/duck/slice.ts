@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IDebugRefRes, IDebugTreeNode } from './types';
+import { IDebugPollingPayload, IDebugRefRes, IDebugTreeNode } from './types';
 
 export interface IDebugReducerState {
   tree: IDebugTreeNode;
@@ -60,10 +60,10 @@ const debugSlice = createSlice({
       state.isLoadingJSONObject = false;
       state.errMsg = action.payload.trim();
     },
-    startDebugPolling(state, action: PayloadAction<string>) {
+    startDebugPolling(state, action: PayloadAction<IDebugPollingPayload>) {
       state.isPolling = true;
     },
-    stopDebugPolling(state, action: PayloadAction<string>) {
+    stopDebugPolling(state, action: PayloadAction<IDebugPollingPayload>) {
       state.isPolling = false;
       state.isFetchingInitialDebugTree = true;
     },

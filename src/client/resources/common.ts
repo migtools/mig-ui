@@ -5,11 +5,16 @@ export interface IKubeResource {
   namedPath(name: string): string;
 }
 
+export interface IDebugTreeResource {
+  discoveryAggregator(): string;
+  discoveryType(): string;
+  path(): string;
+}
 export interface IDiscoveryResource {
   discoveryAggregator(): string;
   discoveryType(): string;
   path(): string;
-  parametrized(IDiscoveryParameters?): { [param: string]: string };
+  parametrized?(IDiscoveryParameters?): { [param: string]: string };
 }
 
 export interface INamedDiscoveryResource extends IDiscoveryResource {
@@ -169,5 +174,29 @@ export abstract class OAuthClient {
       token: this._token,
       tokenExpiryTime: this._tokenExpiryTime,
     };
+  }
+}
+
+export class DebugTreeDiscoveryResource implements IDebugTreeResource {
+  private readonly _aggregatorType: string;
+  private readonly _aggregatorName: string;
+  private readonly _aggregatorSpecifier: string;
+
+  constructor(planName: string, migrationName: string, treeType = 'plans') {
+    this._aggregatorType = treeType;
+    this._aggregatorName = planName;
+    this._aggregatorSpecifier = migrationName;
+  }
+
+  public discoveryType() {
+    return 'tree';
+  }
+
+  public discoveryAggregator() {
+    return [this._aggregatorType, this._aggregatorName].join('/');
+  }
+
+  public path(): string {
+    return [this.discoveryAggregator(), this.discoveryType(), this._aggregatorSpecifier].join('/');
   }
 }
