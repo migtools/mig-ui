@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useParams, useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import {
@@ -15,7 +15,6 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
-import { clearJSONView, stopDebugPolling } from '../../../../../debug/duck/slice';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 
 export const MigrationsPage: React.FunctionComponent = () => {
@@ -23,14 +22,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
   const { path, url } = useRouteMatch();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    return () => {
-      //cleanup on dismount
-      dispatch(stopDebugPolling(planName));
-      dispatch(clearJSONView());
-    };
-  }, []);
 
   return (
     <>
@@ -71,6 +62,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
         </Route>
         <Route exact path={`${path}/:migrationID/:stepName`}>
           <MigrationStepDetailsPage />
+          <PlanDebugPage />
         </Route>
       </Switch>
     </>

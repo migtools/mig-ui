@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -23,7 +23,12 @@ import {
 import { IDebugRefWithStatus } from '../../../debug/duck/types';
 
 import { convertRawTreeToViewTree } from '../../../debug/duck/utils';
-import { IDebugReducerState, startDebugPolling, stopDebugPolling } from '../../../debug/duck/slice';
+import {
+  IDebugReducerState,
+  startDebugPolling,
+  stopDebugPolling,
+  clearJSONView,
+} from '../../../debug/duck/slice';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
@@ -39,6 +44,19 @@ export const PlanDebugPage: React.FunctionComponent = () => {
   const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
     debugSelectors.getDebugRefsWithStatus(state)
   );
+
+  useEffect(() => {
+    // Start polling when Debug component loads
+    const { isPolling } = debug;
+    if (!isPolling) {
+      dispatch(startDebugPolling({ planName: planName, migrationID: migrationID }));
+    }
+    return () => {
+      // Cleanup on dismount of Debug component, stop polling
+      dispatch(stopDebugPolling(planName));
+      dispatch(clearJSONView());
+    };
+  }, []);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -79,12 +97,6 @@ export const PlanDebugPage: React.FunctionComponent = () => {
           <Card id="image-card" isExpanded={isOpen}>
             <CardHeader
               onExpand={() => {
-                const { isPolling } = debug;
-                if (!isPolling) {
-                  dispatch(startDebugPolling({ planName: planName, migrationID: migrationID }));
-                } else if (isPolling) {
-                  dispatch(stopDebugPolling({ planName: planName, migrationID: migrationID }));
-                }
                 setIsOpen(!isOpen);
               }}
               toggleButtonProps={{
@@ -94,7 +106,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
               }}
             >
               <Title headingLevel="h1" size="xl" className={spacing.mrLg}>
-                Migration plan resources
+                Migration resources
               </Title>
               <Popover
                 position={PopoverPosition.bottom}
