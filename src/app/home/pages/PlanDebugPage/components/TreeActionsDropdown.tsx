@@ -39,7 +39,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     clipboard.removeChild(el);
     dispatch(
       alertSuccess(
-        `Command copied to clipboard. Run 'oc get' on 
+        `Command copied to clipboard. Run 'oc describe' on the 
       ${rawNode.clusterType} cluster to view resource details.`
       )
     );
@@ -58,7 +58,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     clipboard.removeChild(el);
     dispatch(
       alertSuccess(
-        `Command copied to clipboard. Run 'oc logs' on 
+        `Command copied to clipboard. Run 'oc logs' on the 
       ${rawNode.clusterType} cluster to view resource details.`
       )
     );
