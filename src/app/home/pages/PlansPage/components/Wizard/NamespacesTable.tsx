@@ -188,7 +188,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                     bodyContent={
                       <>
                         <p className={spacing.mtMd}>
-                          By default, a target namespace will have the same names as its
+                          By default, a target namespace will have the same name as its
                           corresponding source namespace.
                           <br></br>
                           <br></br>
