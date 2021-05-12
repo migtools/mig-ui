@@ -15,6 +15,9 @@ import {
   Button,
   FlexItem,
   Flex,
+  Popover,
+  PopoverPosition,
+  Title,
 } from '@patternfly/react-core';
 import { sortable, TableComposable, Tbody, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -30,6 +33,7 @@ import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { Td } from '../Td';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 const styles = require('./NamespacesTable.module').default;
 
 interface INamespacesTableProps
@@ -182,7 +186,33 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
                 <Th width={10}>{columns[3].title}</Th>
-                <Th width={30}>{columns[4].title}</Th>
+                <Th width={30}>
+                  {columns[4].title}
+                  <Popover
+                    position={PopoverPosition.right}
+                    bodyContent={
+                      <>
+                        <p className={spacing.mtMd}>
+                          By default, a target namespace will have the same names as its
+                          corresponding source namespace.
+                          <br></br>
+                          <br></br>
+                          To change the name of the target namespace, click the edit icon.
+                        </p>
+                      </>
+                    }
+                    aria-label="edit-target-ns-details"
+                    closeBtnAriaLabel="close--details"
+                    maxWidth="30rem"
+                  >
+                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                      <OutlinedQuestionCircleIcon
+                        className="pf-c-icon pf-m-default"
+                        size="sm"
+                      ></OutlinedQuestionCircleIcon>
+                    </span>
+                  </Popover>
+                </Th>
                 <Th width={20}></Th>
               </Tr>
             </Thead>
@@ -198,11 +228,9 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                         onSelect,
                         isSelected: row.selected,
                         props: row,
-                        // disable: rowIndex === 1,
                       }}
                     />
                     {row.cells.map((cell, cellIndex) => {
-                      // console.log('row, rows', row, rowIndex, cell, cellIndex);
                       const shiftedIndex = cellIndex + 1;
                       if (columns[cellIndex].title === 'Target name') {
                         return (
