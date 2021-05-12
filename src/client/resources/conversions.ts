@@ -408,7 +408,6 @@ export function updateMigPlanFromValues(
     };
   }
   if (updatedSpec.namespaces) {
-    //handle mapping here
     const selectedNamespacesMapped = planValues.selectedNamespaces.map((selectedNs, i) => {
       const editedNamespace = planValues.editedNamespaces.find(
         (editedNs, index) => selectedNs === editedNs.oldName

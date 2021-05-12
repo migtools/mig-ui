@@ -83,8 +83,6 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((namespace) => {
-    console.log('values.edited', values.editedNamespaces);
-    console.log('namespace.name', namespace.name);
     const editedNamespace = values.editedNamespaces.find((ns) => ns.oldName === namespace.name);
     const targetName = editedNamespace ? editedNamespace.newName : namespace.name;
     return {
@@ -93,7 +91,6 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         namespace.podCount,
         namespace.pvcCount,
         namespace.serviceCount,
-        //check for modification and display modification for target
         targetName,
       ],
       selected: values.selectedNamespaces.includes(namespace.name),
@@ -106,9 +103,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   });
 
   const handleTextInputChange = (value, event) => {
-    console.log('value, event', value, event);
     setCurrentEdit(event.target.value);
-    console.log('currentEdit', currentEdit);
   };
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
