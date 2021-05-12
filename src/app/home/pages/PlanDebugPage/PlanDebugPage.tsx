@@ -29,7 +29,6 @@ import {
   stopDebugPolling,
   clearJSONView,
 } from '../../../debug/duck/slice';
-import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { debugSelectors } from '../../../debug/duck';
 import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
