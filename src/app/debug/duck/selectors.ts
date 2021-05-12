@@ -98,12 +98,15 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasFailure = phase === 'Lost';
       const hasPending = phase === 'Pending';
       const hasBound = phase === 'Bound';
+      const hasCompleted = false;
+      const hasRunning = false;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasFailure,
-        hasPending,
-        hasBound,
+        hasCompleted,
+        hasRunning,
         hasTerminating,
+        hasPending,
         currentStatus: calculateCurrentStatus(
           null,
           hasFailure,
@@ -123,12 +126,15 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasFailure = phase === 'Failed';
       const hasPending = phase === 'Pending';
       const hasBound = phase === 'Bound';
+      const hasCompleted = false;
+      const hasRunning = false;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasFailure,
-        hasPending,
-        hasBound,
+        hasCompleted,
+        hasRunning,
         hasTerminating,
+        hasPending,
         currentStatus: calculateCurrentStatus(
           null,
           hasFailure,
@@ -391,19 +397,23 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef']) || phase === 'Failed'
       );
       const hasCompleted = phase === 'Succeeded';
-      const hasRunning = totalProgressPercentage !== '100%';
+      const hasRunning = totalProgressPercentage !== '0%' && totalProgressPercentage !== '100%';
+      const hasPending = !hasRunning && !hasCompleted;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
+        hasCompleted,
+        hasRunning,
         hasTerminating,
+        hasPending,
         currentStatus: calculateCurrentStatus(
           hasWarning,
           hasFailure,
           hasCompleted,
           hasRunning,
           hasTerminating,
-          null,
+          hasPending,
           null,
           null,
           null
@@ -420,7 +430,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasCompleted = conditions?.some((c) =>
         checkListContainsString(c.type, ['Succeeded', 'Completed'])
       );
-      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasRunning = false;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,

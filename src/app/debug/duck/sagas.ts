@@ -2,8 +2,11 @@ import { select, put, takeEvery, delay, call, race, take } from 'redux-saga/effe
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { IReduxState } from '../../../reducers';
-import { DebugTreeDiscoveryResource } from '../../../client/resources/discovery';
-import { IDiscoveryResource } from '../../../client/resources/common';
+import {
+  DebugTreeDiscoveryResource,
+  IDebugTreeResource,
+  IDiscoveryResource,
+} from '../../../client/resources/common';
 import {
   debugObjectFetchFailure,
   debugObjectFetchRequest,
@@ -68,10 +71,13 @@ function* fetchDebugObject(action) {
 }
 
 function* fetchDebugTree(action) {
-  const planName: string = action.payload;
+  const { planName, migrationID } = action.payload;
   const state: IReduxState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-  const debugTreeResource: IDiscoveryResource = new DebugTreeDiscoveryResource(planName);
+  const debugTreeResource: IDebugTreeResource = new DebugTreeDiscoveryResource(
+    planName,
+    migrationID
+  );
 
   try {
     const res = yield discoveryClient.get(debugTreeResource);
@@ -85,10 +91,9 @@ function* fetchDebugTree(action) {
   }
 }
 function* debugPoll(action) {
-  const planName = action.payload;
   while (true) {
     try {
-      yield put(treeFetchRequest(planName));
+      yield put(treeFetchRequest(action.payload));
       yield take(treeFetchSuccess);
       yield delay(10000);
     } catch {
