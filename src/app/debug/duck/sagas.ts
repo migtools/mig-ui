@@ -80,7 +80,6 @@ function* fetchDebugTree(action) {
   );
 
   try {
-    // http://localhost:8080/namespaces/openshift-migration/plans/testing/tree
     const res = yield discoveryClient.get(debugTreeResource);
 
     yield put(debugRefsFetchRequest(res.data));
