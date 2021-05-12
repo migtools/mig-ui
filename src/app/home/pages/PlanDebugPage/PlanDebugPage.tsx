@@ -32,7 +32,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icon
 import { TreeContainer } from './components/TreeContainer';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
-  const { planName } = useParams();
+  const { planName, migrationID } = useParams();
   const plans: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state) => state.debug);
@@ -81,9 +81,9 @@ export const PlanDebugPage: React.FunctionComponent = () => {
               onExpand={() => {
                 const { isPolling } = debug;
                 if (!isPolling) {
-                  dispatch(startDebugPolling(planName));
+                  dispatch(startDebugPolling({ planName: planName, migrationID: migrationID }));
                 } else if (isPolling) {
-                  dispatch(stopDebugPolling(planName));
+                  dispatch(stopDebugPolling({ planName: planName, migrationID: migrationID }));
                 }
                 setIsOpen(!isOpen);
               }}

@@ -16,6 +16,7 @@ import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { clearJSONView, stopDebugPolling } from '../../../../../debug/duck/slice';
+import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 
 export const MigrationsPage: React.FunctionComponent = () => {
   const { planName } = useParams();
@@ -66,6 +67,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
         </Route>
         <Route exact path={`${path}/:migrationID`}>
           <MigrationDetailsPage />
+          <PlanDebugPage />
         </Route>
         <Route exact path={`${path}/:migrationID/:stepName`}>
           <MigrationStepDetailsPage />

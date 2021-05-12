@@ -71,8 +71,8 @@ export class PlanPodReportDiscovery extends DiscoveryResource {
   }
 }
 
-export class DebugTreeDiscoveryResource extends DiscoveryResource {
-  constructor(planName: string, params: IDiscoveryParameters = {}) {
-    super(planName, 'tree', params, 'plans');
-  }
-}
+// export class DebugTreeDiscoveryResource extends DiscoveryResource {
+//   constructor(planName: string, params: IDiscoveryParameters = {}) {
+//     super(planName, 'tree', params, 'plans');
+//   }
+// }
