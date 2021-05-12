@@ -9,6 +9,11 @@ export interface IDebugTreeNode {
   children: IDebugTreeNode[];
   clusterType: string;
 }
+export interface IDebugPollingPayload {
+  planName: string;
+  migrationID: any;
+}
+
 export interface IDebugRefRes {
   kind: string;
   value: any;
