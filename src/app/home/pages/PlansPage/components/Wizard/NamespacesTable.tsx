@@ -19,7 +19,7 @@ import {
   PopoverPosition,
   Title,
 } from '@patternfly/react-core';
-import { sortable, TableComposable, Tbody, Th, Thead, Tr } from '@patternfly/react-table';
+import { sortable, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import {
@@ -32,7 +32,6 @@ import { usePaginationState } from '../../../../../common/duck/hooks/usePaginati
 import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
-import { Td } from '../Td';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 const styles = require('./NamespacesTable.module').default;
 
