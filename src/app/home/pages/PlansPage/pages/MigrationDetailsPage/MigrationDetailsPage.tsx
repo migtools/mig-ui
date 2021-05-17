@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { useParams, Link, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -33,6 +33,7 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
   const isWarningCondition = migration?.tableStatus.migrationState === 'warn';
   const isErrorCondition = migration?.tableStatus.migrationState === 'error';
   const type = migration?.spec?.stage ? 'Stage' : 'Final';
+
   return (
     <>
       <PageSection variant="light">

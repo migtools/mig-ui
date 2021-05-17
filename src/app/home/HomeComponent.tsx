@@ -30,7 +30,6 @@ const HomeComponent: React.FunctionComponent = () => {
           </Route>
           <Route path="/plans/:planName/migrations">
             <MigrationsPage />
-            <PlanDebugPage />
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
