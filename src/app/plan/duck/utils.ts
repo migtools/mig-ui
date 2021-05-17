@@ -56,7 +56,7 @@ export function groupPlans(
     const fullPlan = {
       MigPlan: mp,
     };
-    if (migMigrationRefs[0].data.items.length > 0) {
+    if (migMigrationRefs.length > 0) {
       const matchingMigrations = migMigrationRefs[0].data.items.filter(
         (i) => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
@@ -64,20 +64,20 @@ export function groupPlans(
     } else {
       fullPlan['Migrations'] = [];
     }
-    if (migAnalyticRefs[0].data.items.length > 0) {
-      const matchingMigAnalytics = migAnalyticRefs[0].data.items.filter(
+    if (migAnalyticRefs.length > 0) {
+      const matchingMigAnalytics = migAnalyticRefs.filter(
         (i) => i.kind === 'MigAnalytic' && i.spec.migPlanRef.name === mp.metadata.name
       );
       fullPlan['Analytics'] = matchingMigAnalytics;
     } else {
       fullPlan['Analytics'] = [];
     }
-    if (migHookRefs[0].data.items.length > 0) {
+    if (migHookRefs.length > 0) {
       const currentPlanHooks = mp.spec.hooks;
       const associatedHooks = [];
       if (currentPlanHooks) {
         currentPlanHooks.forEach((currentPlanHookRef) =>
-          migHookRefs[0].data.items.forEach((hookRef) => {
+          migHookRefs.forEach((hookRef) => {
             if (currentPlanHookRef.reference.name === hookRef.metadata.name) {
               const uiHookObject = convertMigHookToUIObject(currentPlanHookRef, hookRef);
               associatedHooks.push(uiHookObject);
