@@ -6,7 +6,14 @@ import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
-import { Table, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  sortable,
+  truncate,
+  cellWidth,
+} from '@patternfly/react-table';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
 
@@ -53,7 +60,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       title: 'Namespaces',
       transforms: [sortable],
     },
-    { title: 'Last state', transforms: [sortable] },
+    { title: 'Last state', transforms: [sortable, cellWidth(40)], cellTransforms: [truncate] },
     '',
   ];
 
