@@ -9,29 +9,45 @@ import {
   defaultAddEditStatus,
   createAddEditStatus,
   AddEditState,
+  IAddEditStatus,
 } from '../../../../../common/add_edit_state';
+import { IStorage } from '../../../../../storage/duck/types';
 
-// TODO add types here
+interface IAddEditClusterModal {
+  addEditStatus: IAddEditStatus;
+  isOpen: boolean;
+  isPolling: boolean;
+  checkConnection: (name) => void;
+  storageList: IStorage[];
+  addStorage: (storage) => void;
+  cancelAddEditWatch: () => void;
+  onHandleClose: () => void;
+  resetAddEditState: () => void;
+  resetStoragePage: () => void;
+  updateStorage: (updatedStorage) => void;
+}
 const AddEditStorageModal = ({
   addEditStatus,
   isOpen,
-  isPolling,
   storageList,
   checkConnection,
-  isLoadingStorage,
-  initialStorageValues,
-  ...props
-}) => {
+  updateStorage,
+  addStorage,
+  cancelAddEditWatch,
+  resetAddEditState,
+  onHandleClose,
+  resetStoragePage,
+}: IAddEditClusterModal) => {
   const storageContext = useContext(StorageContext);
 
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
-        props.updateStorage(storageValues);
+        updateStorage(storageValues);
         break;
       }
       case AddEditMode.Add: {
-        props.addStorage(storageValues);
+        addStorage(storageValues);
         storageContext.setCurrentStorage(storageValues.name);
         break;
       }
@@ -44,9 +60,10 @@ const AddEditStorageModal = ({
   };
 
   const onClose = () => {
-    props.cancelAddEditWatch();
-    props.resetAddEditState();
-    props.onHandleClose();
+    cancelAddEditWatch();
+    resetAddEditState();
+    onHandleClose();
+    resetStoragePage();
   };
 
   const modalTitle =
@@ -98,5 +115,6 @@ export default connect(
       );
       dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     },
+    resetStoragePage: () => dispatch(StorageActions.resetStoragePage()),
   })
 )(AddEditStorageModal);

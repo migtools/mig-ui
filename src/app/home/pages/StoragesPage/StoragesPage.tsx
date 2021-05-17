@@ -86,6 +86,8 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
                     associatedPlans={storageAssociatedPlans}
                     toggleAddEditModal={toggleAddEditModal}
                     removeStorage={removeStorage}
+                    setCurrentStorage={setCurrentStorage}
+                    currentStorage={currentStorage}
                   />
                 )}
                 <AddEditStorageModal
