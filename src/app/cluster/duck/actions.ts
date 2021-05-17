@@ -23,6 +23,7 @@ export const ClusterActionTypes = {
   CLUSTER_POLL_STOP: 'CLUSTER_POLL_STOP',
   SET_CURRENT_CLUSTER: 'SET_CURRENT_CLUSTER',
   INIT_DISCOVERY_CERT: 'INIT_DISCOVERY_CERT',
+  RESET_CLUSTER_PAGE: 'RESET_CLUSTER_PAGE',
 };
 
 const initializeDiscoveryCert = () => ({
@@ -116,6 +117,10 @@ const setCurrentCluster = (currentCluster: ICluster) => {
   };
 };
 
+const resetClusterPage = () => ({
+  type: ClusterActionTypes.RESET_CLUSTER_PAGE,
+});
+
 export const ClusterActions = {
   updateClusters,
   addClusterSuccess,
@@ -136,4 +141,5 @@ export const ClusterActions = {
   stopClusterPolling,
   setCurrentCluster,
   initializeDiscoveryCert,
+  resetClusterPage,
 };
