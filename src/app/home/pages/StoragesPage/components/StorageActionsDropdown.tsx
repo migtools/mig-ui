@@ -43,12 +43,6 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
 
   const storageContext = useContext(StorageContext);
 
-  const editStorage = () => {
-    storageContext.watchStorageAddEditStatus(storageName);
-    storageContext.setCurrentStorage(storageName);
-    toggleAddEditModal();
-  };
-
   const removeItem = (
     <DropdownItem
       onClick={() => {
@@ -72,8 +66,9 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
-              editStorage();
+              storageContext.watchStorageAddEditStatus(storageName);
               setCurrentStorage(storage);
+              toggleAddEditModal();
             }}
             key="editStorage"
           >

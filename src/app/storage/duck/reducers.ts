@@ -170,6 +170,8 @@ const storageReducer: StorageReducerFn = (state = INITIAL_STATE, action) => {
       return stopStoragePolling(state, action);
     case StorageActionTypes.RESET_STORAGE_PAGE:
       return resetStoragePage(state, action);
+    case StorageActionTypes.SET_CURRENT_STORAGE:
+      return setCurrentStorage(state, action);
     default:
       return state;
   }

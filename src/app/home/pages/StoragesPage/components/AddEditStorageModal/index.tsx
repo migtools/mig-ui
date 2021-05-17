@@ -25,6 +25,8 @@ interface IAddEditClusterModal {
   resetAddEditState: () => void;
   resetStoragePage: () => void;
   updateStorage: (updatedStorage) => void;
+  setCurrentStorage: (currentStorage: IStorage) => void;
+  currentStorage: IStorage;
 }
 const AddEditStorageModal = ({
   addEditStatus,
@@ -37,9 +39,9 @@ const AddEditStorageModal = ({
   resetAddEditState,
   onHandleClose,
   resetStoragePage,
+  setCurrentStorage,
+  currentStorage,
 }: IAddEditClusterModal) => {
-  const storageContext = useContext(StorageContext);
-
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -48,7 +50,6 @@ const AddEditStorageModal = ({
       }
       case AddEditMode.Add: {
         addStorage(storageValues);
-        storageContext.setCurrentStorage(storageValues.name);
         break;
       }
       default: {
@@ -64,6 +65,7 @@ const AddEditStorageModal = ({
     resetAddEditState();
     onHandleClose();
     resetStoragePage();
+    setCurrentStorage(null);
   };
 
   const modalTitle =
@@ -85,6 +87,7 @@ const AddEditStorageModal = ({
         addEditStatus={addEditStatus}
         checkConnection={checkConnection}
         storageList={storageList}
+        currentStorage={currentStorage}
       />
     </Modal>
   );
@@ -97,6 +100,7 @@ export default connect(
       isPolling: state.storage.isPolling,
       storageList: state.storage.migStorageList,
       isLoadingStorage: state.storage.isLoadingStorage,
+      currentStorage: state.storage.currentStorage,
     };
   },
   (dispatch) => ({
@@ -116,5 +120,7 @@ export default connect(
       dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     },
     resetStoragePage: () => dispatch(StorageActions.resetStoragePage()),
+    setCurrentStorage: (currentStorage: IStorage) =>
+      dispatch(StorageActions.setCurrentStorage(currentStorage)),
   })
 )(AddEditStorageModal);
