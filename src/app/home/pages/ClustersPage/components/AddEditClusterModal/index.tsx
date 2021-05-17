@@ -28,6 +28,7 @@ interface IAddEditClusterModal {
   updateCluster: (updatedCluster) => void;
   currentCluster: ICluster;
   setCurrentCluster: (currentCluster: ICluster) => void;
+  resetClusterPage: () => void;
 }
 
 const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
@@ -44,6 +45,7 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
   updateCluster,
   currentCluster,
   setCurrentCluster,
+  resetClusterPage,
 }: IAddEditClusterModal) => {
   const onAddEditSubmit = (clusterValues) => {
     switch (addEditStatus.mode) {
@@ -68,6 +70,7 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
     cancelAddEditWatch();
     setCurrentCluster(null);
     onHandleClose();
+    resetClusterPage();
   };
 
   const modalTitle = addEditStatus.mode === AddEditMode.Edit ? 'Edit cluster' : 'Add cluster';
@@ -119,5 +122,6 @@ export default connect(
     },
     setCurrentCluster: (currentCluster: ICluster) =>
       dispatch(ClusterActions.setCurrentCluster(currentCluster)),
+    resetClusterPage: () => dispatch(ClusterActions.resetClusterPage()),
   })
 )(AddEditClusterModal);

@@ -11,10 +11,8 @@ import {
   Title,
   Bullseye,
   Spinner,
-  EmptyStateBody,
   Button,
 } from '@patternfly/react-core';
-import SearchIcon from '@patternfly/react-icons/dist/js/icons/search-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
 import clusterSelectors from '../../../cluster/duck/selectors';
@@ -37,6 +35,7 @@ interface IClustersPageBaseProps {
   removeCluster: (clusterName: string) => void;
   isFetchingInitialClusters: boolean;
   setCurrentCluster: (currentCluster: ICluster) => void;
+  currentCluster: ICluster;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -47,6 +46,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   removeCluster,
   isFetchingInitialClusters,
   setCurrentCluster,
+  currentCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
 
@@ -97,6 +97,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
                     removeCluster={removeCluster}
                     toggleAddEditModal={toggleAddEditModal}
                     setCurrentCluster={setCurrentCluster}
+                    currentCluster={currentCluster}
                   />
                 )}
                 <AddEditClusterModal
@@ -117,6 +118,7 @@ const mapStateToProps = (state: IReduxState) => ({
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.auth.migMeta,
+  currentCluster: state.cluster.currentCluster,
 });
 
 const mapDispatchToProps = (dispatch) => ({
