@@ -57,7 +57,7 @@ export function groupPlans(
       MigPlan: mp,
     };
     if (migMigrationRefs.length > 0) {
-      const matchingMigrations = migMigrationRefs[0].data.items.filter(
+      const matchingMigrations = migMigrationRefs.filter(
         (i) => i.kind === 'MigMigration' && i.spec.migPlanRef.name === mp.metadata.name
       );
       fullPlan['Migrations'] = matchingMigrations;
