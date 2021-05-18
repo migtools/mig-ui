@@ -10,7 +10,6 @@ export interface IClusterReducerState {
   isFetchingInitialClusters: boolean;
   isPolling: boolean;
   isError: boolean;
-  isFetching: boolean;
   clusterList: ICluster[];
   searchTerm: string;
   addEditStatus: IAddEditStatus;
@@ -24,7 +23,6 @@ export const INITIAL_STATE: IClusterReducerState = {
   isFetchingInitialClusters: true,
   isPolling: false,
   isError: false,
-  isFetching: false,
   clusterList: [],
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
@@ -38,11 +36,11 @@ export const setCurrentCluster: ClusterReducerFn = (state = INITIAL_STATE, actio
 };
 
 export const clusterFetchSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return { ...state, clusterList: action.clusterList, isFetching: false };
+  return { ...state, clusterList: action.clusterList, isFetchingInitialClusters: false };
 };
 
 export const clusterFetchFailure: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return { ...state, isError: true, isFetching: false };
+  return { ...state, isError: true, isFetchingInitialClusters: false };
 };
 
 export const clusterFetchRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
@@ -104,6 +102,12 @@ export const stopClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, acti
     isPolling: false,
   };
 };
+export const resetClusterPage: ClusterReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isFetchingInitialClusters: true,
+  };
+};
 
 export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -129,6 +133,8 @@ export const clusterReducer: ClusterReducerFn = (state = INITIAL_STATE, action) 
       return startClusterPolling(state, action);
     case ClusterActionTypes.CLUSTER_POLL_STOP:
       return stopClusterPolling(state, action);
+    case ClusterActionTypes.RESET_CLUSTER_PAGE:
+      return resetClusterPage(state, action);
     default:
       return state;
   }
