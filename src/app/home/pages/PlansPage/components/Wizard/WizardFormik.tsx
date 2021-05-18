@@ -33,6 +33,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.planName =
           'A plan with that name already exists. Enter a unique name for the migration plan.';
       }
+
       if (!values.sourceCluster) {
         errors.sourceCluster = 'Required';
       } else if (values.sourceCluster === values.targetCluster) {
@@ -51,6 +52,18 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
+      if (!values.currentTargetName) {
+        errors.currentTargetName = 'Required';
+      } else if (!utils.testDNS1123(values.currentTargetName)) {
+        errors.currentTargetName = utils.DNS1123Error(values.currentTargetName);
+      } else if (
+        //check for duplicate ns mappings
+        values.editedNamespaces.some((ns) => ns.newName === values.currentTargetName)
+      ) {
+        errors.currentTargetName =
+          'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
+      }
+
       return errors;
     }}
     onSubmit={() => {

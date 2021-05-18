@@ -39,11 +39,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespacesTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
+        <NamespacesTable sourceClusterNamespaces={sourceClusterNamespaces} />
       )}
     </Grid>
   );

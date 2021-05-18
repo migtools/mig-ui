@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FormikProps } from 'formik';
+import { FormikProps, useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   GridItem,
@@ -18,6 +18,7 @@ import {
   Popover,
   PopoverPosition,
   Title,
+  FormGroup,
 } from '@patternfly/react-core';
 import { sortable, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -33,20 +34,30 @@ import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { validatedState } from '../../../../../common/helpers';
 const styles = require('./NamespacesTable.module').default;
 
-interface INamespacesTableProps
-  extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+interface INamespacesTableProps extends Pick<IOtherProps, 'sourceClusterNamespaces'> {}
 
 const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
-  setFieldValue,
   sourceClusterNamespaces,
-  values,
 }: INamespacesTableProps) => {
+  const formikHandleChange = (_val, e) => handleChange(e);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const {
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    values,
+    touched,
+    errors,
+    validateForm,
+  } = useFormikContext<IFormValues>();
+
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
-  const [currentEdit, setCurrentEdit] = React.useState(null);
+  const currentTargetNameKey = 'currentTargetName';
 
   if (values.sourceCluster === null) return null;
 
@@ -100,10 +111,6 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
       }, // See comments on onSelect
     };
   });
-
-  const handleTextInputChange = (value, event) => {
-    setCurrentEdit(event.target.value);
-  };
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
     // Because of a bug in Table where a shouldComponentUpdate method is too strict,
@@ -241,14 +248,31 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 key={`${rowIndex}_${shiftedIndex}`}
                                 dataLabel={columns[cellIndex].title}
                               >
-                                <TextInput
-                                  value={currentEdit}
-                                  type="text"
-                                  onChange={handleTextInputChange}
-                                  aria-label="text input example"
-                                  isReadOnly={!isEditable}
-                                  // className={styles.targetInput}
-                                />
+                                <FormGroup
+                                  isRequired
+                                  fieldId={currentTargetNameKey}
+                                  helperTextInvalid={
+                                    touched.currentTargetName && errors.currentTargetName
+                                  }
+                                  validated={validatedState(
+                                    touched.currentTargetName,
+                                    errors.currentTargetName
+                                  )}
+                                >
+                                  <TextInput
+                                    name={currentTargetNameKey}
+                                    value={values.currentTargetName}
+                                    type="text"
+                                    onChange={formikHandleChange}
+                                    onInput={formikSetFieldTouched(currentTargetNameKey)}
+                                    onBlur={handleBlur}
+                                    isReadOnly={!isEditable}
+                                    validated={validatedState(
+                                      touched.currentTargetName,
+                                      errors.currentTargetName
+                                    )}
+                                  />
+                                </FormGroup>
                               </Td>
                             )}
                           </>
@@ -273,52 +297,58 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       {isEditable ? (
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
                           <FlexItem flex={{ default: 'flex_1' }}>
-                            <span id="save-edit-icon" className="pf-c-icon pf-m-info">
-                              <CheckIcon
-                                size="md"
-                                type="button"
-                                className={styles.clickable}
-                                onClick={() => {
-                                  setEditableRow(null);
-                                  const hasEditedValue = values.editedNamespaces.find(
-                                    (ns) => row.cells[0] === ns.oldName
-                                  );
-                                  let newEditedNamespaces;
-                                  if (hasEditedValue) {
-                                    newEditedNamespaces = [
-                                      ...new Set([...values.editedNamespaces]),
-                                    ];
-
-                                    const index = values.editedNamespaces.findIndex(
-                                      (ns) => ns.oldName === row.cells[0]
+                            {!errors.currentTargetName && (
+                              <span id="save-edit-icon" className="pf-c-icon pf-m-info">
+                                <CheckIcon
+                                  size="md"
+                                  type="button"
+                                  className={styles.clickable}
+                                  onClick={() => {
+                                    setEditableRow(null);
+                                    const hasEditedValue = values.editedNamespaces.find(
+                                      (ns) => row.cells[0] === ns.oldName
                                     );
-                                    //check if no changes made
-                                    if (newEditedNamespaces[index].oldName === currentEdit) {
-                                      if (index > -1) {
-                                        newEditedNamespaces.splice(index, 1);
+                                    let newEditedNamespaces;
+                                    if (hasEditedValue) {
+                                      newEditedNamespaces = [
+                                        ...new Set([...values.editedNamespaces]),
+                                      ];
+
+                                      const index = values.editedNamespaces.findIndex(
+                                        (ns) => ns.oldName === row.cells[0]
+                                      );
+                                      //check if no changes made
+                                      if (
+                                        newEditedNamespaces[index].oldName ===
+                                        values.currentTargetName
+                                      ) {
+                                        if (index > -1) {
+                                          newEditedNamespaces.splice(index, 1);
+                                        }
+                                        //replace found edit with current edit
+                                      } else if (index || index === 0) {
+                                        newEditedNamespaces[index] = {
+                                          oldName: row.cells[0],
+                                          newName: values.currentTargetName,
+                                        };
                                       }
-                                      //replace found edit with current edit
-                                    } else if (index || index === 0) {
-                                      newEditedNamespaces[index] = {
-                                        oldName: row.cells[0],
-                                        newName: currentEdit,
-                                      };
+                                    } else {
+                                      newEditedNamespaces = [
+                                        ...new Set([
+                                          ...values.editedNamespaces,
+                                          {
+                                            oldName: row.cells[0],
+                                            newName: values.currentTargetName,
+                                          },
+                                        ]),
+                                      ];
                                     }
-                                  } else {
-                                    newEditedNamespaces = [
-                                      ...new Set([
-                                        ...values.editedNamespaces,
-                                        { oldName: row.cells[0], newName: currentEdit },
-                                      ]),
-                                    ];
-                                  }
-                                  setFieldValue('editedNamespaces', newEditedNamespaces);
-                                  setCurrentEdit(null);
-                                }}
-                              />
-                            </span>
-                            {/* </FlexItem> */}
-                            {/* <FlexItem flex={{ default: 'flex_1' }} className={spacing.mlSm}> */}
+                                    setFieldValue('editedNamespaces', newEditedNamespaces);
+                                    setFieldValue(currentTargetNameKey, null);
+                                  }}
+                                />
+                              </span>
+                            )}
                             <span
                               id="inline-edit-icon"
                               className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
@@ -329,7 +359,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
-                                  setCurrentEdit(null);
+                                  setFieldValue(currentTargetNameKey, null);
                                 }}
                               />
                             </span>
@@ -343,7 +373,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                             size="md"
                             onClick={() => {
                               setEditableRow(rowIndex);
-                              setCurrentEdit(row.cells[4]);
+                              setFieldValue(currentTargetNameKey, row.cells[4]);
                             }}
                           />
                         </span>
