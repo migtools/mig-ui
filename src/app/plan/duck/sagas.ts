@@ -52,61 +52,36 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /* Plan sagas */
 /******************************************************************** */
 function* fetchPlansGenerator() {
-  function fetchMigHookRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
-    const refs: Array<Promise<any>> = [];
-
-    migPlans.forEach((plan) => {
-      const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
-      refs.push(client.list(migHookResource));
-    });
-
-    return refs;
-  }
-
-  function fetchMigAnalyticRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
-    const refs: Array<Promise<any>> = [];
-
-    migPlans.forEach((plan) => {
-      const migAnalyticResource = new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace);
-      refs.push(client.list(migAnalyticResource));
-    });
-
-    return refs;
-  }
-
-  function fetchMigMigrationsRefs(client: IClusterClient, migMeta, migPlans): Array<Promise<any>> {
-    const refs: Array<Promise<any>> = [];
-
-    migPlans.forEach((plan) => {
-      const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
-      refs.push(client.list(migMigrationResource));
-    });
-
-    return refs;
-  }
-
   const state = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
-  const resource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
+  const planResource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
+  const migHookResource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
+  const migMigrationResource = new MigResource(
+    MigResourceKind.MigMigration,
+    state.auth.migMeta.namespace
+  );
+  const migAnalyticResource = new MigResource(
+    MigResourceKind.MigAnalytic,
+    state.auth.migMeta.namespace
+  );
   try {
-    let planList = yield client.list(resource);
+    let planList = yield client.list(planResource);
     planList = yield planList.data.items;
 
-    const migMigrationRefs = yield Promise.all(
-      fetchMigMigrationsRefs(client, state.auth.migMeta, planList)
-    );
+    let hookList = yield client.list(migHookResource);
+    hookList = yield hookList.data.items;
 
-    const migAnalyticRefs = yield Promise.all(
-      fetchMigAnalyticRefs(client, state.auth.migMeta, planList)
-    );
+    let migrationList = yield client.list(migMigrationResource);
+    migrationList = yield migrationList.data.items;
 
-    const migHookRefs = yield Promise.all(fetchMigHookRefs(client, state.auth.migMeta, planList));
+    let analyticList = yield client.list(migAnalyticResource);
+    analyticList = yield analyticList.data.items;
 
     const groupedPlans = yield planUtils.groupPlans(
       planList,
-      migMigrationRefs,
-      migAnalyticRefs,
-      migHookRefs
+      migrationList,
+      analyticList,
+      hookList
     );
     return { updatedPlans: groupedPlans };
   } catch (e) {
