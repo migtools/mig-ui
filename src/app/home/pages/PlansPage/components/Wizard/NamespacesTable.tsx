@@ -37,7 +37,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { validatedState } from '../../../../../common/helpers';
 const styles = require('./NamespacesTable.module').default;
 
-interface INamespacesTableProps extends Pick<IOtherProps, 'sourceClusterNamespaces'> {}
+type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
 
 const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   sourceClusterNamespaces,
