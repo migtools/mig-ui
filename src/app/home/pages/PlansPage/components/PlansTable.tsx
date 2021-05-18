@@ -58,7 +58,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     { title: 'Repository', transforms: [sortable, cellWidth(10)] },
     {
       title: 'Namespaces',
-      transforms: [sortable, cellWidth(10)],
+      transforms: [sortable, cellWidth(15)],
     },
     { title: 'Last state', transforms: [sortable, cellWidth(40)], cellTransforms: [truncate] },
     '',
