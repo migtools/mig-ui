@@ -1,6 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { IPlan } from '../../../../../plan/duck/types';
+import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
 import { IFormValues } from './WizardContainer';
 import utils from '../../../../../common/duck/utils';
 
@@ -8,6 +8,7 @@ export interface IWizardFormikProps {
   initialValues: IFormValues;
   isEdit?: boolean;
   planList?: IPlan[];
+  sourceClusterNamespaces: ISourceClusterNamespace[];
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
   initialValues,
   isEdit = false,
   planList = [],
+  sourceClusterNamespaces,
   children,
 }: IWizardFormikProps) => (
   <Formik<IFormValues>
@@ -58,7 +60,8 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.currentTargetName = utils.DNS1123Error(values.currentTargetName);
       } else if (
         //check for duplicate ns mappings
-        values.editedNamespaces.some((ns) => ns.newName === values.currentTargetName)
+        values.editedNamespaces.some((ns) => ns.newName === values.currentTargetName) ||
+        sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName)
       ) {
         errors.currentTargetName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';

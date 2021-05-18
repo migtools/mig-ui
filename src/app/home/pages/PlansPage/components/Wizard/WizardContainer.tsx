@@ -124,7 +124,7 @@ export const defaultInitialValues: IFormValues = {
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
-  const { editPlanObj, isEdit, planList } = props;
+  const { editPlanObj, isEdit, planList, sourceClusterNamespaces } = props;
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit) {
     initialValues.planName = editPlanObj.metadata.name || '';
@@ -160,7 +160,12 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     // initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
   }
   return (
-    <WizardFormik initialValues={initialValues} isEdit={isEdit} planList={planList}>
+    <WizardFormik
+      initialValues={initialValues}
+      isEdit={isEdit}
+      planList={planList}
+      sourceClusterNamespaces={sourceClusterNamespaces}
+    >
       <WizardComponent {...props} />
     </WizardFormik>
   );
