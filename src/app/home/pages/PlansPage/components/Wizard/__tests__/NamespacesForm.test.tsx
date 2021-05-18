@@ -12,6 +12,7 @@ describe('<NamespacesForm />', () => {
     const initialFormikProps: IWizardFormikProps = {
       initialValues: defaultInitialValues,
       isEdit: false,
+      sourceClusterNamespaces: [],
       planList: [],
       children: Children,
     };
@@ -37,6 +38,7 @@ describe('<NamespacesForm />', () => {
     const initialFormikProps: IWizardFormikProps = {
       initialValues: { ...defaultInitialValues, sourceCluster: 'src-cluster' },
       planList: [],
+      sourceClusterNamespaces: [],
       children: Children,
     };
 
