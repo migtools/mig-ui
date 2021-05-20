@@ -129,7 +129,9 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
       if (isSelected) {
         newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
       } else {
-        newSelected = props.selectedNamespaces.filter((selected) => selected !== props.cells[0]);
+        newSelected = props.meta.selectedNamespaces.filter(
+          (selected) => selected !== props.cells[0]
+        );
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
