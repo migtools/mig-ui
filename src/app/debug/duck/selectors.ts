@@ -184,6 +184,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasFailure = errors?.length > 0 || phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasPending = phase === undefined;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -191,13 +192,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasCompleted,
         hasRunning,
         hasTerminating,
+        hasPending,
         currentStatus: calculateCurrentStatus(
           hasWarning,
           hasFailure,
           hasCompleted,
           hasRunning,
           hasTerminating,
-          null,
+          hasPending,
           null,
           null,
           null
@@ -211,21 +213,22 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasFailure = errors?.length > 0 || phase === 'Failed';
       const hasCompleted = phase === 'Completed';
       const hasRunning = phase === 'InProgress';
+      const hasPending = phase === undefined;
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
         hasFailure,
         hasCompleted,
         hasRunning,
-
         hasTerminating,
+        hasPending,
         currentStatus: calculateCurrentStatus(
           hasWarning,
           hasFailure,
           hasCompleted,
           hasRunning,
           hasTerminating,
-          null,
+          hasPending,
           null,
           null,
           null
