@@ -347,6 +347,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                     }
                                     setFieldValue('editedNamespaces', newEditedNamespaces);
                                     setFieldValue(currentTargetNameKey, null);
+                                    setFieldTouched(currentTargetNameKey, false);
                                   }}
                                 />
                               </span>
@@ -362,6 +363,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 onClick={() => {
                                   setEditableRow(null);
                                   setFieldValue(currentTargetNameKey, null);
+                                  setFieldTouched(currentTargetNameKey, false);
                                 }}
                               />
                             </span>
