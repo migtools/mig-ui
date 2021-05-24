@@ -48,17 +48,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
   const columns = [
-    { title: 'Name', transforms: [sortable] },
+    { title: 'Name', transforms: [sortable, cellWidth(10)] },
     {
       title: 'Migrations',
-      transforms: [sortable],
+      transforms: [sortable, cellWidth(15)],
     },
-    { title: 'Source', transforms: [sortable] },
-    { title: 'Target', transforms: [sortable] },
-    { title: 'Repository', transforms: [sortable] },
+    { title: 'Source', transforms: [sortable, cellWidth(10)] },
+    { title: 'Target', transforms: [sortable, cellWidth(10)] },
+    { title: 'Repository', transforms: [sortable, cellWidth(10)] },
     {
       title: 'Namespaces',
-      transforms: [sortable],
+      transforms: [sortable, cellWidth(15)],
     },
     { title: 'Last state', transforms: [sortable, cellWidth(40)], cellTransforms: [truncate] },
     '',

@@ -12,6 +12,7 @@ describe('<NamespacesForm />', () => {
     const initialFormikProps: IWizardFormikProps = {
       initialValues: defaultInitialValues,
       isEdit: false,
+      sourceClusterNamespaces: [],
       planList: [],
       children: Children,
     };
@@ -37,6 +38,7 @@ describe('<NamespacesForm />', () => {
     const initialFormikProps: IWizardFormikProps = {
       initialValues: { ...defaultInitialValues, sourceCluster: 'src-cluster' },
       planList: [],
+      sourceClusterNamespaces: [],
       children: Children,
     };
 
@@ -66,10 +68,10 @@ describe('<NamespacesForm />', () => {
     );
 
     initialNamespaceProps.sourceClusterNamespaces.forEach((namespace) => {
-      const row = screen.getByText(namespace.name).closest('tr');
+      const row = screen.getAllByText(namespace.name)[0].closest('tr');
       const utils = within(row);
 
-      expect(utils.getByText(namespace.name)).toBeInTheDocument();
+      expect(utils.getAllByText(namespace.name)[0]).toBeInTheDocument();
       expect(utils.getByText(namespace.podCount.toString())).toBeInTheDocument();
       expect(utils.getByText(namespace.pvcCount.toString())).toBeInTheDocument();
       expect(utils.getByText(namespace.serviceCount.toString())).toBeInTheDocument();

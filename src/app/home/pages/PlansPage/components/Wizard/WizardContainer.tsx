@@ -22,7 +22,7 @@ import {
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
 import { IReduxState } from '../../../../../../reducers';
-import { INameNamespaceRef } from '../../../../../common/duck/types';
+import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
@@ -35,6 +35,7 @@ export interface IFormValues {
   targetTokenRef: INameNamespaceRef;
   selectedStorage: string;
   selectedNamespaces: string[];
+  editedNamespaces: IEditedNamespaceMap[];
   persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
   pvStorageClassAssignment: {
     [pvName: string]: {
@@ -50,6 +51,7 @@ export interface IFormValues {
   };
   indirectImageMigration?: boolean;
   indirectVolumeMigration?: boolean;
+  currentTargetName?: string;
 }
 
 export interface IOtherProps {
@@ -112,6 +114,7 @@ export const defaultInitialValues: IFormValues = {
   sourceTokenRef: null,
   targetCluster: null,
   targetTokenRef: null,
+  editedNamespaces: [],
   selectedNamespaces: [],
   selectedStorage: null,
   persistentVolumes: [],
@@ -121,13 +124,25 @@ export const defaultInitialValues: IFormValues = {
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
-  const { editPlanObj, isEdit, planList } = props;
+  const { editPlanObj, isEdit, planList, sourceClusterNamespaces } = props;
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit) {
     initialValues.planName = editPlanObj.metadata.name || '';
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
-    initialValues.selectedNamespaces = editPlanObj.spec.namespaces || [];
+    const editedNamespaces: IEditedNamespaceMap[] = [];
+    const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
+      const includesMapping = ns.includes(':');
+      if (includesMapping) {
+        const mappedNsArr = ns.split(':');
+        editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
+        return mappedNsArr[0];
+      } else {
+        return ns;
+      }
+    });
+    initialValues.selectedNamespaces = mappedNamespaces || [];
+    initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
     initialValues.sourceTokenRef = editPlanObj.spec.srcMigTokenRef || null;
@@ -145,7 +160,12 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     // initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
   }
   return (
-    <WizardFormik initialValues={initialValues} isEdit={isEdit} planList={planList}>
+    <WizardFormik
+      initialValues={initialValues}
+      isEdit={isEdit}
+      planList={planList}
+      sourceClusterNamespaces={sourceClusterNamespaces}
+    >
       <WizardComponent {...props} />
     </WizardFormik>
   );
@@ -156,6 +176,7 @@ const mapStateToProps = (state: IReduxState) => {
     planName: '',
     sourceCluster: null,
     targetCluster: null,
+    editedNamespaces: [],
     selectedNamespaces: [],
     selectedStorage: '',
     persistentVolumes: [],

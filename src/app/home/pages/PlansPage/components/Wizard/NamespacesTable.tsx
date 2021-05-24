@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FormikProps } from 'formik';
+import { FormikProps, useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import {
   GridItem,
@@ -11,8 +11,16 @@ import {
   Pagination,
   PaginationVariant,
   DropdownDirection,
+  TextInput,
+  Button,
+  FlexItem,
+  Flex,
+  Popover,
+  PopoverPosition,
+  Title,
+  FormGroup,
 } from '@patternfly/react-core';
-import { Table, TableHeader, TableBody, TableVariant, sortable } from '@patternfly/react-table';
+import { sortable, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import {
@@ -22,23 +30,43 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
+import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
+import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { validatedState } from '../../../../../common/helpers';
+const styles = require('./NamespacesTable.module').default;
 
-interface INamespacesTableProps
-  extends Pick<IOtherProps, 'sourceClusterNamespaces'>,
-    Pick<FormikProps<IFormValues>, 'setFieldValue' | 'values'> {}
+type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
 
 const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
-  setFieldValue,
   sourceClusterNamespaces,
-  values,
 }: INamespacesTableProps) => {
+  const formikHandleChange = (_val, e) => handleChange(e);
+  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const {
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    values,
+    touched,
+    errors,
+    validateForm,
+  } = useFormikContext<IFormValues>();
+
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [editableRow, setEditableRow] = React.useState(null);
+  const currentTargetNameKey = 'currentTargetName';
+
   if (values.sourceCluster === null) return null;
 
   const columns = [
-    { title: 'Name', transforms: [sortable] },
+    { title: 'Source name', transforms: [sortable] },
     { title: 'Pods', transforms: [sortable] },
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
+    { title: 'Target name', transforms: [sortable] },
   ];
   const getSortValues = (namespace) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
@@ -46,6 +74,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     namespace.podCount,
     namespace.pvcCount,
     namespace.serviceCount,
+    namespace.name,
   ];
   const filterCategories: FilterCategory[] = [
     {
@@ -63,11 +92,25 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map((namespace) => ({
-    cells: [namespace.name, namespace.podCount, namespace.pvcCount, namespace.serviceCount],
-    selected: values.selectedNamespaces.includes(namespace.name),
-    meta: { selectedNamespaces: values.selectedNamespaces }, // See comments on onSelect
-  }));
+  const rows = currentPageItems.map((namespace) => {
+    const editedNamespace = values.editedNamespaces.find((ns) => ns.oldName === namespace.name);
+    const targetName = editedNamespace ? editedNamespace.newName : namespace.name;
+    return {
+      cells: [
+        namespace.name,
+        namespace.podCount,
+        namespace.pvcCount,
+        namespace.serviceCount,
+        targetName,
+      ],
+      selected: values.selectedNamespaces.includes(namespace.name),
+      meta: {
+        selectedNamespaces: values.selectedNamespaces,
+        editedNamespaces: values.editedNamespaces,
+        editableRow: editableRow,
+      }, // See comments on onSelect
+    };
+  });
 
   const onSelect = (event, isSelected, rowIndex, rowData) => {
     // Because of a bug in Table where a shouldComponentUpdate method is too strict,
@@ -82,16 +125,28 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         newSelected = []; // Deselect all
       }
     } else {
-      const { meta, name } = rowData;
+      const { props } = rowData;
       if (isSelected) {
-        newSelected = [...new Set([...meta.selectedNamespaces, name.title])];
+        newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
       } else {
-        newSelected = meta.selectedNamespaces.filter((selected) => selected !== name.title);
+        newSelected = props.meta.selectedNamespaces.filter(
+          (selected) => selected !== props.cells[0]
+        );
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+  const onSelectAll = (event, isSelected, rowIndex, rowData) => {
+    setAllRowsSelected(isSelected);
 
+    let newSelected;
+    if (isSelected) {
+      newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+    } else {
+      newSelected = []; // Deselect all
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
   return (
     <React.Fragment>
       <GridItem>
@@ -120,19 +175,217 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Projects table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-            onSelect={onSelect}
-            canSelectAll
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th
+                  width={10}
+                  select={{
+                    onSelect: onSelectAll,
+                    isSelected: allRowsSelected,
+                  }}
+                />
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={10}>{columns[3].title}</Th>
+                <Th width={30}>
+                  {columns[4].title}
+                  <Popover
+                    position={PopoverPosition.right}
+                    bodyContent={
+                      <>
+                        <p className={spacing.mtMd}>
+                          By default, a target namespace will have the same name as its
+                          corresponding source namespace.
+                          <br></br>
+                          <br></br>
+                          To change the name of the target namespace, click the edit icon.
+                        </p>
+                      </>
+                    }
+                    aria-label="edit-target-ns-details"
+                    closeBtnAriaLabel="close--details"
+                    maxWidth="30rem"
+                  >
+                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                      <OutlinedQuestionCircleIcon
+                        className="pf-c-icon pf-m-default"
+                        size="sm"
+                      ></OutlinedQuestionCircleIcon>
+                    </span>
+                  </Popover>
+                </Th>
+                <Th width={20}></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                const isEditable = row.meta.editableRow === rowIndex;
+                return (
+                  <Tr key={rowIndex}>
+                    <Td
+                      key={`${rowIndex}_0`}
+                      select={{
+                        rowIndex,
+                        onSelect,
+                        isSelected: row.selected,
+                        props: row,
+                      }}
+                    />
+                    {row.cells.map((cell, cellIndex) => {
+                      const shiftedIndex = cellIndex + 1;
+                      if (columns[cellIndex].title === 'Target name') {
+                        return (
+                          <>
+                            {!isEditable ? (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={columns[cellIndex].title}
+                              >
+                                {cell}
+                              </Td>
+                            ) : (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={columns[cellIndex].title}
+                              >
+                                <FormGroup
+                                  isRequired
+                                  fieldId={currentTargetNameKey}
+                                  helperTextInvalid={
+                                    touched.currentTargetName && errors.currentTargetName
+                                  }
+                                  validated={validatedState(
+                                    touched.currentTargetName,
+                                    errors.currentTargetName
+                                  )}
+                                >
+                                  <TextInput
+                                    name={currentTargetNameKey}
+                                    value={values.currentTargetName}
+                                    type="text"
+                                    onChange={formikHandleChange}
+                                    onInput={formikSetFieldTouched(currentTargetNameKey)}
+                                    onBlur={handleBlur}
+                                    isReadOnly={!isEditable}
+                                    validated={validatedState(
+                                      touched.currentTargetName,
+                                      errors.currentTargetName
+                                    )}
+                                  />
+                                </FormGroup>
+                              </Td>
+                            )}
+                          </>
+                        );
+                      } else {
+                        return (
+                          <Td
+                            key={`${rowIndex}_${shiftedIndex}`}
+                            dataLabel={columns[cellIndex].title}
+                          >
+                            {cell}
+                          </Td>
+                        );
+                      }
+                    })}
+                    <Td
+                      key={`${rowIndex}_5`}
+                      className="pf-c-table__inline-edit-action"
+                      role="cell"
+                      width={10}
+                    >
+                      {isEditable ? (
+                        <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
+                          <FlexItem flex={{ default: 'flex_1' }}>
+                            {!errors.currentTargetName && (
+                              <span id="save-edit-icon" className="pf-c-icon pf-m-info">
+                                <CheckIcon
+                                  size="md"
+                                  type="button"
+                                  className={styles.clickable}
+                                  onClick={() => {
+                                    setEditableRow(null);
+                                    const hasEditedValue = values.editedNamespaces.find(
+                                      (ns) => row.cells[0] === ns.oldName
+                                    );
+                                    let newEditedNamespaces;
+                                    if (hasEditedValue) {
+                                      newEditedNamespaces = [
+                                        ...new Set([...values.editedNamespaces]),
+                                      ];
+
+                                      const index = values.editedNamespaces.findIndex(
+                                        (ns) => ns.oldName === row.cells[0]
+                                      );
+                                      //check if no changes made
+                                      if (
+                                        newEditedNamespaces[index].oldName ===
+                                        values.currentTargetName
+                                      ) {
+                                        if (index > -1) {
+                                          newEditedNamespaces.splice(index, 1);
+                                        }
+                                        //replace found edit with current edit
+                                      } else if (index || index === 0) {
+                                        newEditedNamespaces[index] = {
+                                          oldName: row.cells[0],
+                                          newName: values.currentTargetName,
+                                        };
+                                      }
+                                    } else {
+                                      newEditedNamespaces = [
+                                        ...new Set([
+                                          ...values.editedNamespaces,
+                                          {
+                                            oldName: row.cells[0],
+                                            newName: values.currentTargetName,
+                                          },
+                                        ]),
+                                      ];
+                                    }
+                                    setFieldValue('editedNamespaces', newEditedNamespaces);
+                                    setFieldValue(currentTargetNameKey, null);
+                                  }}
+                                />
+                              </span>
+                            )}
+                            <span
+                              id="inline-edit-icon"
+                              className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
+                            >
+                              <TimesIcon
+                                size="md"
+                                className={styles.clickable}
+                                type="button"
+                                onClick={() => {
+                                  setEditableRow(null);
+                                  setFieldValue(currentTargetNameKey, null);
+                                }}
+                              />
+                            </span>
+                          </FlexItem>
+                        </Flex>
+                      ) : (
+                        <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
+                          <PencilAltIcon
+                            className={styles.clickable}
+                            type="button"
+                            size="md"
+                            onClick={() => {
+                              setEditableRow(rowIndex);
+                              setFieldValue(currentTargetNameKey, row.cells[4]);
+                            }}
+                          />
+                        </span>
+                      )}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
           <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
         )}
@@ -163,5 +416,4 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     </React.Fragment>
   );
 };
-
 export default NamespacesTable;
