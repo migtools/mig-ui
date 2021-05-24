@@ -1,9 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Form, FormGroup } from '@patternfly/react-core';
 import S3Form from './ProviderForms/S3Form';
 import GCPForm from './ProviderForms/GCPForm';
 import AzureForm from './ProviderForms/AzureForm';
-import { StorageContext } from '../../../../duck/context';
 import { IStorage } from '../../../../../storage/duck/types';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { usePausedPollingEffect } from '../../../../../common/context/PollingContext';
@@ -14,6 +13,7 @@ interface IOtherProps {
   addEditStatus: any;
   checkConnection: (name) => void;
   storageList: IStorage[];
+  currentStorage: IStorage;
 }
 
 interface IProviderOption extends OptionWithValue {
@@ -23,10 +23,10 @@ interface IProviderOption extends OptionWithValue {
 const AddEditStorageForm = (props: IOtherProps) => {
   usePausedPollingEffect();
 
-  const { storageList } = props;
-  const storageContext = useContext(StorageContext);
+  const { storageList, currentStorage } = props;
   const storage = storageList.find(
-    (storageItem) => storageItem.MigStorage.metadata.name === storageContext.currentStorage
+    (storageItem) =>
+      storageItem.MigStorage.metadata.name === currentStorage?.MigStorage?.metadata?.name
   );
 
   let name;

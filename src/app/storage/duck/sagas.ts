@@ -199,6 +199,7 @@ function* addStorageRequest(action) {
     }, {});
 
     yield put(StorageActions.addStorageSuccess(storage));
+    yield put(StorageActions.setCurrentStorage(storage));
 
     // Push into watching state
     yield put(
@@ -384,6 +385,8 @@ function* updateStorageRequest(action) {
     // Update the state tree with the updated storage, and start to watch
     // again to check for its condition after edits
     yield put(StorageActions.updateStorageSuccess(updatedStorage));
+    yield put(StorageActions.setCurrentStorage(updatedStorage));
+
     yield put(
       StorageActions.setStorageAddEditStatus(
         createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)

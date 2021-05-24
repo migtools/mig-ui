@@ -1,5 +1,6 @@
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigStorage } from '../../../client/resources/conversions';
+import { IStorage } from './types';
 
 export const StorageActionTypes = {
   MIG_STORAGE_FETCH_REQUEST: 'MIG_STORAGE_FETCH_REQUEST',
@@ -21,6 +22,8 @@ export const StorageActionTypes = {
   UPDATE_STORAGES: 'UPDATE_STORAGES',
   STORAGE_POLL_START: 'STORAGE_POLL_START',
   STORAGE_POLL_STOP: 'STORAGE_POLL_STOP',
+  RESET_STORAGE_PAGE: 'RESET_STORAGE_PAGE',
+  SET_CURRENT_STORAGE: 'SET_CURRENT_STORAGE',
 };
 
 const updateStorageSearchText = (StorageSearchText: string) => ({
@@ -114,6 +117,17 @@ const stopStoragePolling = () => ({
   type: StorageActionTypes.STORAGE_POLL_STOP,
 });
 
+const resetStoragePage = () => ({
+  type: StorageActionTypes.RESET_STORAGE_PAGE,
+});
+
+const setCurrentStorage = (currentStorage: IStorage) => {
+  return {
+    type: StorageActionTypes.SET_CURRENT_STORAGE,
+    currentStorage,
+  };
+};
+
 export const StorageActions = {
   updateSearchTerm,
   setStorageAddEditStatus,
@@ -134,4 +148,6 @@ export const StorageActions = {
   updateStorages,
   startStoragePolling,
   stopStoragePolling,
+  resetStoragePage,
+  setCurrentStorage,
 };
