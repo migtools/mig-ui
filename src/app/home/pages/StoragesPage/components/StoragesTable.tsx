@@ -12,12 +12,15 @@ import StorageActionsDropdown from './StorageActionsDropdown';
 import { IStorage } from '../../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
+import PendingIcon from '@patternfly/react-icons/dist/js/icons/pending-icon';
 
 interface IStoragesTableProps {
   storageList: IStorage[];
   associatedPlans: IPlanCountByResourceName;
   toggleAddEditModal: () => void;
   removeStorage: (storageName: string) => void;
+  setCurrentStorage: (currentCluster: IStorage) => void;
+  currentStorage: IStorage;
 }
 
 const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
@@ -25,6 +28,8 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
   associatedPlans,
   toggleAddEditModal,
   removeStorage,
+  currentStorage,
+  setCurrentStorage,
 }: IStoragesTableProps) => {
   const hasSomeLocationValue = storageList.some(
     (storage) => !!getStorageInfo(storage, associatedPlans).s3Url
@@ -75,10 +80,19 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
         },
         {
           title: (
-            <StatusIcon
-              status={storageStatus ? StatusType.Ok : StatusType.Error}
-              label={storageStatus ? 'Connected' : 'Connection Failed'}
-            />
+            <>
+              {storageName === currentStorage?.MigStorage?.metadata?.name ? (
+                <div>
+                  <PendingIcon className="pf-c-icon pf-m-default"> </PendingIcon>
+                  <span className={spacing.mlSm}> Pending </span>
+                </div>
+              ) : (
+                <StatusIcon
+                  status={storageStatus ? StatusType.Ok : StatusType.Error}
+                  label={storageStatus ? 'Connected' : 'Connection Failed'}
+                />
+              )}
+            </>
           ),
         },
         {
@@ -87,6 +101,8 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
               storageInfo={storageInfo}
               removeStorage={removeStorage}
               toggleAddEditModal={toggleAddEditModal}
+              storage={storage}
+              setCurrentStorage={setCurrentStorage}
             />
           ),
         },
