@@ -17,6 +17,7 @@ import { IMigration, IPlan } from '../../plan/duck/types';
 import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
 import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
 import PendingIcon from '@patternfly/react-icons/dist/js/icons/pending-icon';
+import TreeWarningsGrid from './TreeWarningsGrid';
 
 interface IProps {
   debugRef: IDebugRefWithStatus;
@@ -70,17 +71,17 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
     } else {
       return renderStatusIcon(
         debugRef?.debugResourceStatus?.currentStatus,
-        debugRef?.debugResourceStatus?.warningText
+        debugRef?.debugResourceStatus?.warningTextArr
       );
     }
   }
   return renderStatusIcon(
     debugRef?.debugResourceStatus?.currentStatus,
-    debugRef?.debugResourceStatus?.warningText
+    debugRef?.debugResourceStatus?.warningTextArr
   );
 };
 
-const renderStatusIcon = (currentStatus, warningText) => {
+const renderStatusIcon = (currentStatus, warningTextArr) => {
   switch (currentStatus) {
     case DebugStatusType.Running:
       return (
@@ -116,19 +117,7 @@ const renderStatusIcon = (currentStatus, warningText) => {
       return (
         <Popover
           position={PopoverPosition.bottom}
-          bodyContent={
-            <>
-              <Title headingLevel="h2" size="xl">
-                <>
-                  <span className="pf-c-icon pf-m-warning">
-                    <ExclamationTriangleIcon />
-                  </span>
-                  <span className={spacing.mlMd}>Warning</span>
-                </>
-              </Title>
-              <p className={spacing.mtMd}>{warningText}</p>
-            </>
-          }
+          bodyContent={<TreeWarningsGrid warningTextArr={warningTextArr} />}
           aria-label="operator-mismatch-details"
           closeBtnAriaLabel="close--details"
           maxWidth="30rem"

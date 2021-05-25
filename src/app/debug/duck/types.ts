@@ -49,7 +49,7 @@ export interface IDerivedDebugStatusObject {
   hasAdmitted?: boolean;
   hasReady?: boolean;
   currentStatus: DebugStatusType;
-  warningText: string;
+  warningTextArr: Array<any>;
 }
 export enum DebugStatusType {
   Warning = 'Warning',
