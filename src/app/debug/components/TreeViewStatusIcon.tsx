@@ -115,20 +115,31 @@ const renderStatusIcon = (currentStatus, warningTextArr) => {
       );
     case DebugStatusType.Warning:
       return (
-        <Popover
-          position={PopoverPosition.bottom}
-          bodyContent={<TreeWarningsGrid warningTextArr={warningTextArr} />}
-          aria-label="operator-mismatch-details"
-          closeBtnAriaLabel="close--details"
-          maxWidth="30rem"
-        >
-          <>
-            <span className="pf-c-icon pf-m-warning">
-              <ExclamationTriangleIcon />
-            </span>
-            <span className={spacing.mlSm}>Warning</span>
-          </>
-        </Popover>
+        <>
+          {warningTextArr.length > 0 ? (
+            <Popover
+              position={PopoverPosition.bottom}
+              bodyContent={<TreeWarningsGrid warningTextArr={warningTextArr} />}
+              aria-label="operator-mismatch-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <>
+                <span className="pf-c-icon pf-m-warning">
+                  <ExclamationTriangleIcon />
+                </span>
+                <span className={spacing.mlSm}>Warning</span>
+              </>
+            </Popover>
+          ) : (
+            <>
+              <span className="pf-c-icon pf-m-warning">
+                <ExclamationTriangleIcon />
+              </span>
+              <span className={spacing.mlSm}>Warning</span>
+            </>
+          )}
+        </>
       );
     case DebugStatusType.Completed:
       return (
