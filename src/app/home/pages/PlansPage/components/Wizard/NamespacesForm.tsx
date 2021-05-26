@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useFormikContext } from 'formik';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-core';
-import NamespacesTable from './NamespacesTable';
 import { Spinner } from '@patternfly/react-core';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import NamespacesTable from './NamespacesTable';
 
 type INamespacesFormProps = Pick<
   IOtherProps,
@@ -39,11 +39,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespacesTable
-          setFieldValue={setFieldValue}
-          values={values}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
+        <NamespacesTable sourceClusterNamespaces={sourceClusterNamespaces} />
       )}
     </Grid>
   );

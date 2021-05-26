@@ -14,6 +14,7 @@ const initialFormikProps: IWizardFormikProps = {
   initialValues: defaultInitialValues,
   isEdit: false,
   planList: [],
+  sourceClusterNamespaces: [],
   children: Children,
 };
 
@@ -23,6 +24,7 @@ describe('<GeneralForm />', () => {
       initialValues: { ...defaultInitialValues },
       isEdit: false,
       planList: [],
+      sourceClusterNamespaces: [],
       children: Children,
     };
 
@@ -76,6 +78,7 @@ describe('<GeneralForm />', () => {
       initialValues: { ...defaultInitialValues, ...editValues },
       isEdit: true,
       planList: [],
+      sourceClusterNamespaces: [],
       children: Children,
     };
 

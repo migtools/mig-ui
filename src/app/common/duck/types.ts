@@ -15,6 +15,11 @@ export interface INameNamespaceRef {
   namespace: string;
 }
 
+export interface IEditedNamespaceMap {
+  oldName: string;
+  newName: string;
+}
+
 export interface IAlertModalObj {
   name: string;
   errorMessage: string;

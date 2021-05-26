@@ -12,6 +12,7 @@ export interface IStorageReducerState {
   searchTerm: string;
   addEditStatus: IAddEditStatus;
   isFetchingInitialStorages: boolean;
+  currentStorage: IStorage;
 }
 
 type StorageReducerFn = (state: IStorageReducerState, action: any) => IStorageReducerState;
@@ -25,6 +26,14 @@ export const INITIAL_STATE: IStorageReducerState = {
   searchTerm: '',
   addEditStatus: defaultAddEditStatus(),
   isFetchingInitialStorages: true,
+  currentStorage: null,
+};
+
+export const setCurrentStorage: StorageReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    currentStorage: action.currentStorage,
+  };
 };
 
 export const migStorageFetchRequest: StorageReducerFn = (state = INITIAL_STATE, action) => {
@@ -36,6 +45,7 @@ export const migStorageFetchSuccess: StorageReducerFn = (state = INITIAL_STATE, 
     ...state,
     migStorageList: action.migStorageList,
     isFetching: false,
+    isFetchingInitialStorages: false,
   };
 };
 export const migStorageFetchFailure: StorageReducerFn = (state = INITIAL_STATE, action) => {
@@ -43,6 +53,7 @@ export const migStorageFetchFailure: StorageReducerFn = (state = INITIAL_STATE, 
     ...state,
     isError: true,
     isFetching: false,
+    isFetchingInitialStorages: false,
   };
 };
 
@@ -122,6 +133,13 @@ export const stopStoragePolling: StorageReducerFn = (state = INITIAL_STATE, acti
   };
 };
 
+export const resetStoragePage: StorageReducerFn = (state = INITIAL_STATE, action) => {
+  return {
+    ...state,
+    isFetchingInitialStorages: true,
+  };
+};
+
 const storageReducer: StorageReducerFn = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case StorageActionTypes.MIG_STORAGE_FETCH_REQUEST:
@@ -150,6 +168,10 @@ const storageReducer: StorageReducerFn = (state = INITIAL_STATE, action) => {
       return startStoragePolling(state, action);
     case StorageActionTypes.STORAGE_POLL_STOP:
       return stopStoragePolling(state, action);
+    case StorageActionTypes.RESET_STORAGE_PAGE:
+      return resetStoragePage(state, action);
+    case StorageActionTypes.SET_CURRENT_STORAGE:
+      return setCurrentStorage(state, action);
     default:
       return state;
   }

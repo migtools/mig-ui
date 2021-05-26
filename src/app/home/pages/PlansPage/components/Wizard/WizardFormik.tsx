@@ -1,6 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { IPlan } from '../../../../../plan/duck/types';
+import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
 import { IFormValues } from './WizardContainer';
 import utils from '../../../../../common/duck/utils';
 
@@ -8,6 +8,7 @@ export interface IWizardFormikProps {
   initialValues: IFormValues;
   isEdit?: boolean;
   planList?: IPlan[];
+  sourceClusterNamespaces: ISourceClusterNamespace[];
   children: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
   initialValues,
   isEdit = false,
   planList = [],
+  sourceClusterNamespaces,
   children,
 }: IWizardFormikProps) => (
   <Formik<IFormValues>
@@ -33,6 +35,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.planName =
           'A plan with that name already exists. Enter a unique name for the migration plan.';
       }
+
       if (!values.sourceCluster) {
         errors.sourceCluster = 'Required';
       } else if (values.sourceCluster === values.targetCluster) {
@@ -51,6 +54,31 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
+      if (!values.currentTargetName) {
+        errors.currentTargetName = 'Required';
+      } else if (!utils.testDNS1123(values.currentTargetName)) {
+        errors.currentTargetName = utils.DNS1123Error(values.currentTargetName);
+      } else if (
+        //check for duplicate ns mappings
+        // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
+        !!values.editedNamespaces.find((ns) => {
+          if (values.editedNamespaces.length > 0) {
+            return (
+              ns.newName === values.currentTargetName && ns.oldName !== values.currentTargetName
+            );
+          } else {
+            return false;
+          }
+        }) ||
+        // If an existing src namespace exists, throw a validation error as long as the user isnt attempting to revert to the old mapped name
+        (sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName) &&
+          values.editedNamespaces.length !== 0 &&
+          !values.editedNamespaces.some((ns) => ns.oldName === values.currentTargetName))
+      ) {
+        errors.currentTargetName =
+          'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
+      }
+
       return errors;
     }}
     onSubmit={() => {

@@ -10,17 +10,22 @@ import { IStorageInfo } from '../helpers';
 import { useOpenModal } from '../../../duck';
 import { StorageContext } from '../../../duck/context';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
+import { IStorage } from '../../../../storage/duck/types';
 
 interface IStorageActionsDropdownProps {
+  storage: IStorage;
   storageInfo: IStorageInfo;
   removeStorage: (storageName: string) => void;
   toggleAddEditModal: () => void;
+  setCurrentStorage: (currentStorage: IStorage) => void;
 }
 
 const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownProps> = ({
   storageInfo,
   removeStorage,
   toggleAddEditModal,
+  setCurrentStorage,
+  storage,
 }: IStorageActionsDropdownProps) => {
   const { storageName, associatedPlanCount } = storageInfo;
 
@@ -37,12 +42,6 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
   };
 
   const storageContext = useContext(StorageContext);
-
-  const editStorage = () => {
-    storageContext.watchStorageAddEditStatus(storageName);
-    storageContext.setCurrentStorage(storageName);
-    toggleAddEditModal();
-  };
 
   const removeItem = (
     <DropdownItem
@@ -67,7 +66,9 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
           <DropdownItem
             onClick={() => {
               setKebabIsOpen(false);
-              editStorage();
+              storageContext.watchStorageAddEditStatus(storageName);
+              setCurrentStorage(storage);
+              toggleAddEditModal();
             }}
             key="editStorage"
           >

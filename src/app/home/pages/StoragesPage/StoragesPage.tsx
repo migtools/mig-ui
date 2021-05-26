@@ -27,14 +27,18 @@ import { IPlanCountByResourceName } from '../../../common/duck/types';
 import { IReduxState } from '../../../../reducers';
 
 interface IStoragesPageBaseProps {
+  currentStorage: IStorage;
   storageList: IStorage[];
   storageAssociatedPlans: IPlanCountByResourceName;
   watchStorageAddEditStatus: (storageName: string) => void;
   removeStorage: (storageName: string) => void;
+  setCurrentStorage: (storage: IStorage) => void;
   isFetchingInitialStorages: boolean;
 }
 
 const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
+  currentStorage,
+  setCurrentStorage,
   storageList,
   storageAssociatedPlans,
   watchStorageAddEditStatus,
@@ -42,7 +46,6 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   isFetchingInitialStorages,
 }: IStoragesPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
-  const [currentStorage, setCurrentStorage] = useState(null);
   return (
     <>
       <PageSection variant="light">
@@ -67,9 +70,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
         ) : (
           <Card>
             <CardBody>
-              <StorageContext.Provider
-                value={{ watchStorageAddEditStatus, setCurrentStorage, currentStorage }}
-              >
+              <StorageContext.Provider value={{ watchStorageAddEditStatus }}>
                 {!storageList ? null : storageList.length === 0 ? (
                   <EmptyState variant="full">
                     <EmptyStateIcon icon={AddCircleOIcon} />
@@ -86,13 +87,14 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
                     associatedPlans={storageAssociatedPlans}
                     toggleAddEditModal={toggleAddEditModal}
                     removeStorage={removeStorage}
+                    setCurrentStorage={setCurrentStorage}
+                    currentStorage={currentStorage}
                   />
                 )}
                 <AddEditStorageModal
                   isOpen={isAddEditModalOpen}
                   onHandleClose={() => {
                     toggleAddEditModal();
-                    setCurrentStorage(null);
                   }}
                 />
               </StorageContext.Provider>
@@ -108,6 +110,7 @@ const mapStateToProps = (state: IReduxState) => ({
   storageList: storageSelectors.getAllStorage(state),
   storageAssociatedPlans: storageSelectors.getAssociatedPlans(state),
   isFetchingInitialStorages: state.storage.isFetchingInitialStorages,
+  currentStorage: state.storage.currentStorage,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -122,6 +125,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   removeStorage: (storageName: string) =>
     dispatch(StorageActions.removeStorageRequest(storageName)),
+  setCurrentStorage: (storage: IStorage) => dispatch(StorageActions.setCurrentStorage(storage)),
 });
 
 export const StoragesPage = connect(mapStateToProps, mapDispatchToProps)(StoragesPageBase);

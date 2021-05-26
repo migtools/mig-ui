@@ -408,7 +408,19 @@ export function updateMigPlanFromValues(
     };
   }
   if (updatedSpec.namespaces) {
-    updatedSpec.namespaces = planValues.selectedNamespaces;
+    const selectedNamespacesMapped = planValues.selectedNamespaces.map((selectedNs, i) => {
+      const editedNamespace = planValues.editedNamespaces.find(
+        (editedNs, index) => selectedNs === editedNs.oldName
+      );
+      if (editedNamespace) {
+        const mappedNS = `${selectedNs}:${editedNamespace.newName}`;
+        return mappedNS;
+      } else {
+        return selectedNs;
+      }
+    });
+
+    updatedSpec.namespaces = selectedNamespacesMapped;
   }
   if (updatedSpec.persistentVolumes) {
     updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
