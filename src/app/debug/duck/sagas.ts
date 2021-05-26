@@ -21,6 +21,7 @@ import {
   debugRefsFetchSuccess,
 } from './slice';
 import { alertErrorTimeout } from '../../common/duck/slice';
+import debugReducer from '.';
 
 function* fetchDebugRefs(action) {
   const state: IReduxState = yield select();
@@ -39,7 +40,7 @@ function* fetchDebugRefs(action) {
   };
   eachRecursive(action.payload);
 
-  const refs: Array<Promise<any>> = linkRefs.map(function (linkRef) {
+  const debugRefs: Array<Promise<any>> = linkRefs.map(function (linkRef) {
     return discoveryClient.getRaw(linkRef.link).then(function (value) {
       return {
         kind: linkRef.kind,
@@ -49,8 +50,31 @@ function* fetchDebugRefs(action) {
   });
 
   try {
-    const debugRefs = yield Promise.all(refs);
-    yield put(debugRefsFetchSuccess(debugRefs));
+    const debugRefsRes = yield Promise.all(debugRefs);
+    const assembledEventLinks = [];
+    debugRefsRes.forEach((val) => {
+      const uid = val.value.data.object.metadata.uid;
+      const assembledLink = `/namespaces/openshift-migration/events/${uid}`;
+      assembledEventLinks.push(assembledLink);
+    });
+    const eventRefs: Array<Promise<any>> = assembledEventLinks.map(function (eventLinkRef) {
+      return discoveryClient.getRaw(eventLinkRef).then(function (value) {
+        return value;
+      });
+    });
+    const eventRefsRes = yield Promise.all(eventRefs).then((result) => {
+      return debugRefsRes.map((debugRef) => {
+        const foundEvent = result.find(
+          (resItem) => resItem?.data?.uid === debugRef?.value?.data?.object?.metadata?.uid
+        );
+        return {
+          ...debugRef,
+          associatedEvents: foundEvent?.data,
+        };
+      });
+    });
+
+    yield put(debugRefsFetchSuccess(eventRefsRes));
   } catch (err) {
     yield put(debugRefsFetchFailure(err.message));
     yield put(alertErrorTimeout(`Failed to fetch debug ref: ${err.message}`));
@@ -83,6 +107,9 @@ function* fetchDebugTree(action) {
     const res = yield discoveryClient.get(debugTreeResource);
 
     yield put(debugRefsFetchRequest(res.data));
+    ////////////////
+    // Fetch events for each debug Ref
+    ///////////////
     yield take(debugRefsFetchSuccess);
     yield put(treeFetchSuccess(res.data));
   } catch (err) {

@@ -17,6 +17,11 @@ export interface IDebugPollingPayload {
 export interface IDebugRefRes {
   kind: string;
   value: any;
+  associatedEvents: {
+    count: number;
+    uid: string;
+    resources: any;
+  };
 }
 export interface IDebugRefWithStatus {
   apiVersion: string;
@@ -44,6 +49,7 @@ export interface IDerivedDebugStatusObject {
   hasAdmitted?: boolean;
   hasReady?: boolean;
   currentStatus: DebugStatusType;
+  warningTextArr: Array<any>;
 }
 export enum DebugStatusType {
   Warning = 'Warning',

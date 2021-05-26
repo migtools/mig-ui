@@ -1,6 +1,14 @@
 import React from 'react';
 import ExclamationCircleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-circle-icon';
-import { FlexItem, Progress, ProgressSize, Spinner } from '@patternfly/react-core';
+import {
+  FlexItem,
+  Popover,
+  PopoverPosition,
+  Progress,
+  ProgressSize,
+  Spinner,
+  Title,
+} from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { DebugStatusType, IDebugRefWithStatus } from '../duck/types';
@@ -9,6 +17,7 @@ import { IMigration, IPlan } from '../../plan/duck/types';
 import PipelineSummary from '../../home/pages/PlansPage/components/PipelineSummary/PipelineSummary';
 import PlanStatus from '../../home/pages/PlansPage/components/PlanStatus';
 import PendingIcon from '@patternfly/react-icons/dist/js/icons/pending-icon';
+import TreeWarningsGrid from './TreeWarningsGrid';
 
 interface IProps {
   debugRef: IDebugRefWithStatus;
@@ -60,13 +69,19 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
         </>
       );
     } else {
-      return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+      return renderStatusIcon(
+        debugRef?.debugResourceStatus?.currentStatus,
+        debugRef?.debugResourceStatus?.warningTextArr
+      );
     }
   }
-  return renderStatusIcon(debugRef?.debugResourceStatus?.currentStatus);
+  return renderStatusIcon(
+    debugRef?.debugResourceStatus?.currentStatus,
+    debugRef?.debugResourceStatus?.warningTextArr
+  );
 };
 
-const renderStatusIcon = (currentStatus) => {
+const renderStatusIcon = (currentStatus, warningTextArr) => {
   switch (currentStatus) {
     case DebugStatusType.Running:
       return (
@@ -101,10 +116,29 @@ const renderStatusIcon = (currentStatus) => {
     case DebugStatusType.Warning:
       return (
         <>
-          <span className="pf-c-icon pf-m-warning">
-            <ExclamationTriangleIcon />
-          </span>
-          <span className={spacing.mlSm}>Warning</span>
+          {warningTextArr.length > 0 ? (
+            <Popover
+              position={PopoverPosition.bottom}
+              bodyContent={<TreeWarningsGrid warningTextArr={warningTextArr} />}
+              aria-label="operator-mismatch-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <>
+                <span className="pf-c-icon pf-m-warning">
+                  <ExclamationTriangleIcon />
+                </span>
+                <span className={spacing.mlSm}>Warning</span>
+              </>
+            </Popover>
+          ) : (
+            <>
+              <span className="pf-c-icon pf-m-warning">
+                <ExclamationTriangleIcon />
+              </span>
+              <span className={spacing.mlSm}>Warning</span>
+            </>
+          )}
         </>
       );
     case DebugStatusType.Completed:
