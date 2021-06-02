@@ -88,7 +88,7 @@ const StoragesTable: React.FunctionComponent<IStoragesTableProps> = ({
                 </div>
               ) : (
                 <StatusIcon
-                  status={storageStatus ? StatusType.Ok : StatusType.Error}
+                  status={storageStatus ? 'Ok' : 'Error'}
                   label={storageStatus ? 'Connected' : 'Connection Failed'}
                 />
               )}

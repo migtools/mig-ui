@@ -1,7 +1,6 @@
 import { select, put, takeEvery, delay, call, race, take } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
-import { IReduxState } from '../../../reducers';
 import {
   DebugTreeDiscoveryResource,
   IDebugTreeResource,
@@ -22,9 +21,10 @@ import {
 } from './slice';
 import { alertErrorTimeout } from '../../common/duck/slice';
 import debugReducer from '.';
+import { DefaultRootState } from '../../../configureStore';
 
 function* fetchDebugRefs(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const linkRefs = [];
   const eachRecursive = (obj) => {
@@ -82,7 +82,7 @@ function* fetchDebugRefs(action) {
 }
 
 function* fetchDebugObject(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
 
   try {
@@ -96,7 +96,7 @@ function* fetchDebugObject(action) {
 
 function* fetchDebugTree(action) {
   const { planName, migrationID } = action.payload;
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const debugTreeResource: IDebugTreeResource = new DebugTreeDiscoveryResource(
     planName,

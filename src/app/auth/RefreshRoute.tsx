@@ -1,13 +1,12 @@
 import React from 'react';
-import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
-import { ICluster } from '../cluster/duck/types';
+import { Route, Redirect, RouteComponentProps, RouteProps } from 'react-router-dom';
 
 interface IProps {
-  component: React.ReactNode;
+  component: React.FunctionComponent;
   isLoggedIn: boolean;
 }
 
-const RefreshRoute: React.FunctionComponent<IProps & RouteComponentProps> = ({
+const RefreshRoute: React.FunctionComponent<IProps & RouteProps> = ({
   component: Component,
   isLoggedIn,
   ...rest

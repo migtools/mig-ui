@@ -12,6 +12,7 @@ import {
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { IStorage } from '../../../../../storage/duck/types';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
@@ -41,7 +42,8 @@ const AddEditStorageModal = ({
   resetStoragePage,
   setCurrentStorage,
   currentStorage,
-}: IAddEditClusterModal) => {
+}: IAddEditClusterModal | any) => {
+  //TODO: Remove explicit any when we refactor to use redux hooks api
   const onAddEditSubmit = (storageValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
@@ -94,7 +96,7 @@ const AddEditStorageModal = ({
 };
 
 export default connect(
-  (state) => {
+  (state: DefaultRootState) => {
     return {
       addEditStatus: state.storage.addEditStatus,
       isPolling: state.storage.isPolling,

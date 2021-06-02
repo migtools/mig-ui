@@ -21,11 +21,11 @@ import {
   IPlan,
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
-import { IReduxState } from '../../../../../../reducers';
 import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 export interface IFormValues {
   planName: string;
@@ -171,7 +171,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   );
 };
 
-const mapStateToProps = (state: IReduxState) => {
+const mapStateToProps = (state: DefaultRootState) => {
   return {
     planName: '',
     sourceCluster: null,

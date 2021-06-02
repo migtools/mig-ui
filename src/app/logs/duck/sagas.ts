@@ -12,14 +12,14 @@ import {
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
-import { IReduxState } from '../../../reducers';
 import { alertErrorTimeout } from '../../common/duck/slice';
+import { DefaultRootState } from '../../../configureStore';
 
 const clusterIndex = 4;
 const logIndex = 8;
 
 function* downloadLog(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const logPath: string = action.logPath;
@@ -41,7 +41,7 @@ function* downloadLog(action) {
 }
 
 function* downloadLogs(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const report: IPlanLogSources = action.report;
@@ -73,7 +73,7 @@ function* downloadLogs(action) {
 }
 
 function* extractLogs(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const { logPath } = action;
@@ -93,7 +93,7 @@ function* extractLogs(action) {
 
 function* collectReport(action) {
   const { planName } = action;
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const planPodReportDiscovery = new PlanPodReportDiscovery(planName);

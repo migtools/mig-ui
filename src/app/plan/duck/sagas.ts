@@ -31,7 +31,6 @@ import { DiscoveryResource } from '../../../client/resources/common';
 import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import { IReduxState } from '../../../reducers';
 import Q from 'q';
 import {
   alertErrorTimeout,
@@ -41,6 +40,7 @@ import {
   alertWarn,
 } from '../../common/duck/slice';
 import { certErrorOccurred } from '../../auth/duck/slice';
+import { DefaultRootState } from '../../../configureStore';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -133,7 +133,7 @@ function* addAnalyticSaga(action) {
 function* addPlanSaga(action) {
   const { migPlan } = action;
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -161,7 +161,7 @@ function* addPlanSaga(action) {
 }
 
 function* namespaceFetchRequest(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
@@ -235,7 +235,7 @@ function* refreshAnalyticSaga(action) {
 }
 
 function* planPatchClose(planValues) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
@@ -260,7 +260,7 @@ function* planPatchClose(planValues) {
 }
 
 function* migrationCancel(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
@@ -299,7 +299,7 @@ function* validatePlanSaga(action) {
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
       function* (planValues) {
-        const state: IReduxState = yield select();
+        const state: DefaultRootState = yield select();
         const migMeta = state.auth.migMeta;
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
@@ -334,7 +334,7 @@ function* validatePlanSaga(action) {
 function* validatePlanPoll(action) {
   const params = { ...action.params };
   while (true) {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { currentPlan } = state.plan;
     let updatedPlan = null;
     const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
@@ -385,7 +385,7 @@ function* pvDiscoveryRequest(action) {
       PlanUpdateTotalTries,
       PlanUpdateRetryPeriodSeconds * 1000,
       function* (planValues) {
-        const state: IReduxState = yield select();
+        const state: DefaultRootState = yield select();
         const migMeta = state.auth.migMeta;
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
@@ -427,7 +427,7 @@ function* pvUpdatePoll(action) {
   while (true) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
-      const state: IReduxState = yield select();
+      const state: DefaultRootState = yield select();
       const { currentPlan } = state.plan;
       if (currentPlan) {
         const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
@@ -521,7 +521,7 @@ function* checkPlanStatus(action) {
       const updatedPlan = getPlanResponse.data;
 
       //diff current plan before setting
-      const state: IReduxState = yield select();
+      const state: DefaultRootState = yield select();
       const { currentPlan } = state.plan;
       if (!currentPlan || isUpdatedPlan(updatedPlan, currentPlan)) {
         yield put(PlanActions.setCurrentPlan(updatedPlan));
@@ -629,7 +629,7 @@ function* planCloseSaga(action) {
 }
 
 function* planDeleteAfterClose(planName) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   yield client.delete(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
@@ -650,7 +650,7 @@ function* planCloseAndDelete(action) {
 }
 
 function* getPVResourcesRequest(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
     const pvResourceRefs = action.pvList.map((pv) => {
@@ -725,7 +725,7 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
 }
 function* runStageSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
@@ -851,7 +851,7 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
 function* runMigrationSaga(action) {
   try {
     const { plan, enableQuiesce } = action;
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;
@@ -972,7 +972,7 @@ function getRollbackStatusCondition(updatedPlans, createMigRes) {
 
 function* runRollbackSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
@@ -1064,7 +1064,7 @@ function* fetchHooksGenerator() {
 }
 
 function* fetchPlanHooksSaga() {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   try {
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1093,7 +1093,7 @@ function* fetchPlanHooksSaga() {
 }
 
 function* updatePlanHookListSaga(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { currentPlan } = state.plan;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -1111,7 +1111,7 @@ function* updatePlanHookListSaga(action) {
 
 function* associateHookToPlanSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { hookValues, migHook } = action;
@@ -1191,7 +1191,7 @@ function* associateHookToPlanSaga(action) {
 function* addHookSaga(action) {
   const { migHook } = action;
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const { currentPlan } = state.plan;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1217,7 +1217,7 @@ function* addHookSaga(action) {
 
 function* removeHookFromPlanSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1257,7 +1257,7 @@ function* removeHookFromPlanSaga(action) {
 
 function* removeHookSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1277,7 +1277,7 @@ function* removeHookSaga(action) {
 }
 
 function* updateHookRequest(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
