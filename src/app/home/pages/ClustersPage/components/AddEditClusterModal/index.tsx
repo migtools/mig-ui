@@ -31,13 +31,11 @@ interface IAddEditClusterModal {
   resetClusterPage: () => void;
 }
 
-const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
+const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal | any> = ({
   addEditStatus,
   initialClusterValues,
   isOpen,
-  isPolling,
   checkConnection,
-  clusterList,
   addCluster,
   cancelAddEditWatch,
   onHandleClose,

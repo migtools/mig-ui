@@ -39,4 +39,4 @@ export const getClusterInfo = (
   };
 };
 
-export type IClusterInfo = ReturnType<typeof getClusterInfo>;
+export type IClusterInfo = ReturnType<typeof getClusterInfo | any>;

@@ -17,6 +17,7 @@ import {
 } from '../../../../../client/resources/discovery';
 import { ILogSource, LogUnselected } from './LogsContainer';
 import SimpleSelect from '../../../../common/components/SimpleSelect';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface ISelectItem {
   label: any;
@@ -121,7 +122,7 @@ const LogHeader: FunctionComponent<IProps> = ({
 };
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,
   }),

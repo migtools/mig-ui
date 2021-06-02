@@ -17,10 +17,16 @@ import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 
+interface IMigrationsPageParams {
+  planName: string;
+}
 export const MigrationsPage: React.FunctionComponent = () => {
-  const { planName } = useParams();
-  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
-  const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
+  const { planName } = useParams<IMigrationsPageParams>();
+  const planList: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
+  const plan: IPlan = planList.find(
+    (planItem: IPlan) => planItem.MigPlan.metadata.name === planName
+  );
+  const migrations = plan.Migrations;
   const { path, url } = useRouteMatch();
 
   return (
@@ -47,7 +53,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                   <MigrationsTable
                     type="Migrations"
                     planName={planName}
-                    migrations={plan.Migrations}
+                    migrations={migrations}
                     isPlanLocked={plan.PlanStatus.isPlanLocked}
                     id="migrations-history-expansion-table"
                   />

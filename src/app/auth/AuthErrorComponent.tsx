@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'connected-react-router';
 import { Card, CardBody, Title } from '@patternfly/react-core';
+import { DefaultRootState } from '../../configureStore';
 
 class AuthErrorComponent extends React.Component<any> {
   componentDidMount() {
@@ -25,7 +26,7 @@ class AuthErrorComponent extends React.Component<any> {
 }
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     authError: state.auth.authError,
   }),
   (dispatch) => ({

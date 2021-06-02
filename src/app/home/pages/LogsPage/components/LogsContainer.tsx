@@ -14,6 +14,7 @@ import {
 } from '@patternfly/react-core';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../common/context/PollingContext';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface IProps {
   planName: string;
@@ -99,7 +100,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
 };
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     logErrorMsg: state.logs.logErrorMsg,
     archive: state.logs.archive,
   }),

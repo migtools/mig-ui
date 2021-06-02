@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePausedPollingEffect } from '../context';
 import { errorModalClear } from '../duck/slice';
+import { DefaultRootState } from '../../../configureStore';
 
 const styles = require('./ErrorModal.module').default;
 
@@ -15,7 +16,7 @@ interface IProps {
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   const dispatch = useDispatch();
-  const certError = useSelector((state) => state.auth.certError);
+  const certError = useSelector((state: DefaultRootState) => state.auth.certError);
 
   usePausedPollingEffect();
   const history = useHistory();

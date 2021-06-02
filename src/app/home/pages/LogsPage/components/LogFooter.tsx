@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { LogActions } from '../../../../logs/duck';
 import { LogUnselected, ILogSource } from './LogsContainer';
 import { IPlanLogSources } from '../../../../../client/resources/discovery';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface IProps {
   logSource: ILogSource;
@@ -56,7 +57,7 @@ const LogFooter: FunctionComponent<IProps> = ({
 };
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,
   }),

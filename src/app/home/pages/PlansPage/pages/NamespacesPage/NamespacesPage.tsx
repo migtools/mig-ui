@@ -34,13 +34,16 @@ interface INamespacesPageProps {
   refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
 }
+interface INamespacesPageParams {
+  planName: string;
+}
 
-const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
+const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   planList,
   isRefreshingAnalytic,
   refreshAnalyticRequest,
 }: INamespacesPageProps) => {
-  const { planName } = useParams();
+  const { planName } = useParams<INamespacesPageParams>();
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
   const history = useHistory();
   if (!plan) {
@@ -145,7 +148,7 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   );
 };
 
-export const NamespacesPage = connect(
+export default connect(
   (state: DefaultRootState) => ({
     isRefreshingAnalytic: state.plan.isRefreshingAnalytic,
     planList: planSelectors.getPlansWithStatus(state),
@@ -154,4 +157,4 @@ export const NamespacesPage = connect(
     refreshAnalyticRequest: (analyticName: string) =>
       dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
   })
-)(BaseNamespacesPage);
+)(NamespacesPage);
