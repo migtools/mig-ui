@@ -19,7 +19,7 @@ import { DefaultRootState } from '../../../../../configureStore';
 interface IProps {
   isFetchingLogs: boolean;
   report: IPlanLogSources;
-  log: any[];
+  log: any;
   requestDownloadAll: (report) => void;
 }
 

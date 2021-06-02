@@ -32,7 +32,7 @@ const logFetchRequest = (logPath: string) => ({
   logPath,
 });
 
-const logsFetchSuccess = (log: string[]) => ({
+const logsFetchSuccess = (log: any[]) => ({
   type: LogActionTypes.LOG_FETCH_SUCCESS,
   log,
 });

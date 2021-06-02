@@ -24,16 +24,20 @@ const clusterSelectorWithStatus = (state) =>
     );
     hasWarnCondition = cluster.MigCluster?.status?.conditions.some((c) => c.category === 'Warn');
     if (hasCriticalCondition) {
-      errorMessage = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Critical')
-        ?.message;
-      conditionType = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Warn')
-        ?.type;
+      errorMessage = cluster.MigCluster?.status?.conditions.find(
+        (c) => c.category === 'Critical'
+      )?.message;
+      conditionType = cluster.MigCluster?.status?.conditions.find(
+        (c) => c.category === 'Warn'
+      )?.type;
     }
     if (hasWarnCondition) {
-      errorMessage = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Warn')
-        ?.message;
-      conditionType = cluster.MigCluster?.status?.conditions.find((c) => c.category === 'Warn')
-        ?.type;
+      errorMessage = cluster.MigCluster?.status?.conditions.find(
+        (c) => c.category === 'Warn'
+      )?.message;
+      conditionType = cluster.MigCluster?.status?.conditions.find(
+        (c) => c.category === 'Warn'
+      )?.type;
     }
     const statusObject = {
       hasReadyCondition,

@@ -100,7 +100,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                 id="selectPod"
                 onChange={(logSelection) => {
                   const foundLogSelection = logSources.find(
-                    (source) => source.label === logSelection
+                    (source: any) => source?.label === logSelection
                   );
                   setLogSource(foundLogSelection);
                   //@ts-ignore
@@ -111,7 +111,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                 }}
                 value={logSource.label}
                 placeholderText="Select pod..."
-                options={logSources.map((logSource) => logSource.label)}
+                options={logSources.map((logSource: any) => logSource?.label)}
               />
             </GridItem>
           </Grid>

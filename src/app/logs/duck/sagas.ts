@@ -47,15 +47,15 @@ function* downloadLogs(action) {
   const report: IPlanLogSources = action.report;
   try {
     const archive = new JSZip();
-    let logPaths = flatten(
+    let logPaths: any = flatten(
       Object.values(ClusterKind).map((src) =>
         report[src].map((pod) => pod.containers.map((container) => container.log))
       )
     );
     logPaths = flatten(logPaths.filter((log) => log.length > 0));
-    const logs = yield all(logPaths.map((log) => discoveryClient.getRaw(log)));
+    const logs = yield all(logPaths.map((log: string) => discoveryClient.getRaw(log)));
 
-    logs.map((log, index) => {
+    logs.map((log: any, index) => {
       const fullPath = logPaths[index].split(/\//);
       const clusterName = fullPath[clusterIndex];
       const logName = fullPath[logIndex];
