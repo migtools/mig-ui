@@ -22,12 +22,12 @@ import {
   Card,
   CardBody,
 } from '@patternfly/react-core';
-import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import dayjs from 'dayjs';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface INamespacesPageProps {
   planList: IPlan[];
@@ -146,7 +146,7 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
 };
 
 export const NamespacesPage = connect(
-  (state: IReduxState) => ({
+  (state: DefaultRootState) => ({
     isRefreshingAnalytic: state.plan.isRefreshingAnalytic,
     planList: planSelectors.getPlansWithStatus(state),
   }),
