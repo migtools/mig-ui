@@ -9,7 +9,7 @@ export enum ClusterKind {
 
 export interface IPodContainer {
   name: string;
-  log: string;
+  log: any;
 }
 
 export interface IPodLogSource {

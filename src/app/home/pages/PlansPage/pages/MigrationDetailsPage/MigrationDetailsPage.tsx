@@ -21,8 +21,13 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';
 import { formatGolangTimestamp } from '../../helpers';
 
+interface IMigrationDetailsPageParams {
+  planName: string;
+  migrationID: string;
+}
+
 export const MigrationDetailsPage: React.FunctionComponent = () => {
-  const { planName, migrationID } = useParams();
+  const { planName, migrationID } = useParams<IMigrationDetailsPageParams>();
   const { path, url } = useRouteMatch();
 
   const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));

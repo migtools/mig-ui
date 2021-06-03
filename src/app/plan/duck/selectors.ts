@@ -9,9 +9,10 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
-import { IPlan, IPlanSpecHook, IStep } from './types';
+import { IMigPlan, IMigration, IPlan, IPlanSpecHook, IStep } from './types';
 import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 import { IMigHook } from '../../home/pages/HooksPage/types';
+import { IMigMigration } from '../../../client/resources/conversions';
 
 const planSelector = (state) => state.plan.migPlanList.map((p) => p);
 
@@ -131,7 +132,7 @@ const getFilteredNamespaces = createSelector(
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
-    const plansWithStatus: IPlan[] = plans.map((plan) => {
+    const plansWithStatus = plans.map((plan) => {
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
@@ -296,7 +297,7 @@ const getCounts = createSelector([planSelector], (plans: any[]) => {
   return counts;
 });
 
-const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
+const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPlan[] => {
   const getMigrationStatus = (plan, migration) => {
     const { MigPlan } = plan;
     const status = {
@@ -472,8 +473,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans) => {
 
     return status;
   };
-  const plansWithMigrationStatus = plans.map((plan) => {
-    const migrationsWithStatus = plan.Migrations.map((migration) => {
+  const plansWithMigrationStatus: IPlan[] = plans.map((plan): IPlan[] => {
+    const migrationsWithStatus = plan.Migrations.map((migration: IMigration) => {
       const tableStatus = getMigrationStatus(plan, migration);
       if (migration?.status?.pipeline) {
         migration.status.pipeline = migration?.status?.pipeline?.map((step: IStep) => {

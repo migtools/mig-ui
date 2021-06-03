@@ -106,7 +106,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       <Grid hasGutter className={styles.centerAlign}>
         <GridItem>
           <div className={styles.errorDiv}>
-            <StatusIcon status={StatusType.Error} label="PV Discovery Error" />
+            <StatusIcon status="Error" label="PV Discovery Error" />
           </div>
         </GridItem>
       </Grid>

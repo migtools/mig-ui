@@ -5,12 +5,12 @@ import '@testing-library/jest-dom';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import rootReducer from '../../../../../../../reducers';
 
 import AddEditStorageModal from '../index';
 import S3Form from '../ProviderForms/S3Form';
 import GCPForm from '../ProviderForms/GCPForm';
 import AzureForm from '../ProviderForms/AzureForm';
+import { rootReducer } from '../../../../../../../configureStore';
 
 const store = createStore(rootReducer, {});
 

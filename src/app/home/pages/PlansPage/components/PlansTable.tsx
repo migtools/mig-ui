@@ -18,12 +18,12 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
 
 import PlanStatus from './PlanStatus';
-import PlanActions from './PlanActions';
 import { useSortState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
+import { PlanActions } from './PlanActions';
 const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {

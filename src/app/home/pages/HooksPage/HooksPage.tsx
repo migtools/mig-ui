@@ -24,7 +24,6 @@ import {
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IMigMeta } from '../../../auth/duck/types';
-import { IReduxState } from '../../../../reducers';
 import { IMigPlan, IPlanSpecHook } from '../../../plan/duck/types';
 import {
   AddEditMode,
@@ -37,6 +36,7 @@ import { PlanActions, planSelectors } from '../../../plan/duck';
 import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContainer';
 import { IMigHook } from './types';
 import HookActions from './HookActions';
+import { DefaultRootState } from '../../../../configureStore';
 
 const styles = require('./HooksPage.module').default;
 const classNames = require('classnames');
@@ -55,7 +55,8 @@ interface IHooksPageBaseProps {
   watchHookAddEditStatus: (name: string) => void;
 }
 
-const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
+const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
+  //TODO: Convert plan to redux hooks API to get rid of this explicit any when the component is called
   props: IHooksPageBaseProps
 ) => {
   const {
@@ -304,7 +305,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps> = (
   );
 };
 
-const mapStateToProps = (state: IReduxState) => {
+const mapStateToProps = (state: DefaultRootState) => {
   return {
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
     allHooks: planSelectors.getHooksWithStatus(state),

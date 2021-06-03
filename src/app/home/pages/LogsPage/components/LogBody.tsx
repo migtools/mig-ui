@@ -14,11 +14,12 @@ import { Spinner } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { LogActions } from '../../../../logs/duck';
 import { IPlanLogSources } from '../../../../../client/resources/discovery';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface IProps {
   isFetchingLogs: boolean;
   report: IPlanLogSources;
-  log: string;
+  log: any;
   requestDownloadAll: (report) => void;
 }
 
@@ -61,7 +62,7 @@ const LogBody: FunctionComponent<IProps> = ({
 };
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     log: state.logs.log,
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,

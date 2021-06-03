@@ -184,8 +184,6 @@ const WizardComponent = (props: IOtherProps) => {
             fetchPlanHooksRequest={fetchPlanHooksRequest}
             watchHookAddEditStatus={watchHookAddEditStatus}
             hookAddEditStatus={hookAddEditStatus}
-            cancelAddEditWatch={cancelAddEditWatch}
-            resetAddEditState={resetAddEditState}
             currentPlan={currentPlan}
             isAddHooksOpen={isAddHooksOpen}
             setIsAddHooksOpen={setIsAddHooksOpen}

@@ -36,11 +36,11 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
   const matchingPlanRef = plans?.find((plan) => plan.MigPlan.metadata.name === debugRef?.refName);
   const matchingMigrationRef: IMigration[] = [];
   plans?.forEach((plan) => {
-    const foundMigration: IMigration = plan.Migrations.find(
-      (m) => m.metadata.name === debugRef?.refName
+    const foundMigration = plan.Migrations.find(
+      (m: IMigration) => m?.metadata?.name === debugRef?.refName
     );
     if (foundMigration) {
-      matchingMigrationRef.push(foundMigration);
+      matchingMigrationRef.push(foundMigration as IMigration);
     }
   });
   if (debugRef.resourceKind === 'Plan') {

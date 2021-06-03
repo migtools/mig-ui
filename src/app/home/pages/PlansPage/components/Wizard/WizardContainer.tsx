@@ -21,11 +21,11 @@ import {
   IPlan,
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
-import { IReduxState } from '../../../../../../reducers';
 import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 export interface IFormValues {
   planName: string;
@@ -123,7 +123,8 @@ export const defaultInitialValues: IFormValues = {
   pvCopyMethodAssignment: {},
 };
 
-const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
+const WizardContainer: React.FunctionComponent<IOtherProps | any> = (props: IOtherProps) => {
+  //TODO: remove explicit any once we convert to redux hooks api
   const { editPlanObj, isEdit, planList, sourceClusterNamespaces } = props;
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit) {
@@ -171,7 +172,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   );
 };
 
-const mapStateToProps = (state: IReduxState) => {
+const mapStateToProps = (state: DefaultRootState) => {
   return {
     planName: '',
     sourceCluster: null,

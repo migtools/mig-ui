@@ -17,6 +17,7 @@ import {
 } from '../../../../../client/resources/discovery';
 import { ILogSource, LogUnselected } from './LogsContainer';
 import SimpleSelect from '../../../../common/components/SimpleSelect';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface ISelectItem {
   label: any;
@@ -99,7 +100,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                 id="selectPod"
                 onChange={(logSelection) => {
                   const foundLogSelection = logSources.find(
-                    (source) => source.label === logSelection
+                    (source: any) => source?.label === logSelection
                   );
                   setLogSource(foundLogSelection);
                   //@ts-ignore
@@ -110,7 +111,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                 }}
                 value={logSource.label}
                 placeholderText="Select pod..."
-                options={logSources.map((logSource) => logSource.label)}
+                options={logSources.map((logSource: any) => logSource?.label)}
               />
             </GridItem>
           </Grid>
@@ -121,7 +122,7 @@ const LogHeader: FunctionComponent<IProps> = ({
 };
 
 export default connect(
-  (state) => ({
+  (state: DefaultRootState) => ({
     report: state.logs.report,
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
