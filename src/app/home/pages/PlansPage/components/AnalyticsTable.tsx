@@ -49,14 +49,8 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   isRefreshingAnalytic,
 }) => {
   const getSortValues = (namespaceFromAnalytic: any) => {
-    const {
-      namespace,
-      k8sResourceTotal,
-      pvCount,
-      pvCapacity,
-      imageCount,
-      imageSizeTotal,
-    } = namespaceFromAnalytic;
+    const { namespace, k8sResourceTotal, pvCount, pvCapacity, imageCount, imageSizeTotal } =
+      namespaceFromAnalytic;
     return [namespace, k8sResourceTotal, pvCount, pvCapacity, imageCount];
   };
 
@@ -170,59 +164,59 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
         },
       ],
     });
-    const analytics = latestAnalytic?.status?.analytics || [];
-    const totalsRowCells = analytics
-      ? [
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> Plan total</Text>
-              </TextContent>
-            ),
-          },
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> {analytics.k8sResourceTotal || 0}</Text>
-              </TextContent>
-            ),
-          },
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> {analytics.pvCount || 0}</Text>
-              </TextContent>
-            ),
-          },
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> {analytics.pvCapacity || 0}</Text>
-              </TextContent>
-            ),
-          },
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> {analytics.imageCount || 0}</Text>
-              </TextContent>
-            ),
-          },
-          {
-            title: (
-              <TextContent className={spacing.mbMd}>
-                <Text component={TextVariants.h5}> {analytics.imageSizeTotal || 0}</Text>
-              </TextContent>
-            ),
-          },
-        ]
-      : [];
-    const totalsRow = {
-      cells: totalsRowCells,
-      isTotalsRow: true,
-    };
-    rows.push(totalsRow);
   });
+  const analytics = latestAnalytic?.status?.analytics || [];
+  const totalsRowCells = analytics
+    ? [
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> Plan total</Text>
+            </TextContent>
+          ),
+        },
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> {analytics.k8sResourceTotal || 0}</Text>
+            </TextContent>
+          ),
+        },
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> {analytics.pvCount || 0}</Text>
+            </TextContent>
+          ),
+        },
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> {analytics.pvCapacity || 0}</Text>
+            </TextContent>
+          ),
+        },
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> {analytics.imageCount || 0}</Text>
+            </TextContent>
+          ),
+        },
+        {
+          title: (
+            <TextContent className={spacing.mbMd}>
+              <Text component={TextVariants.h5}> {analytics.imageSizeTotal || 0}</Text>
+            </TextContent>
+          ),
+        },
+      ]
+    : [];
+  const totalsRow = {
+    cells: totalsRowCells,
+    isTotalsRow: true,
+  };
+  rows.push(totalsRow);
 
   const staleCompleteValue = isRefreshingAnalytic && analyticPercentComplete === 100;
 

@@ -10,9 +10,9 @@ import {
   AddEditState,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
-import { IReduxState } from '../../../../../../reducers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { IClusterInfo } from '../../helpers';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
@@ -31,13 +31,11 @@ interface IAddEditClusterModal {
   resetClusterPage: () => void;
 }
 
-const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
+const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal | any> = ({
   addEditStatus,
   initialClusterValues,
   isOpen,
-  isPolling,
   checkConnection,
-  clusterList,
   addCluster,
   cancelAddEditWatch,
   onHandleClose,
@@ -96,7 +94,7 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal> = ({
 };
 
 export default connect(
-  (state: IReduxState) => {
+  (state: DefaultRootState) => {
     return {
       addEditStatus: state.cluster.addEditStatus,
       isPolling: state.cluster.isPolling,

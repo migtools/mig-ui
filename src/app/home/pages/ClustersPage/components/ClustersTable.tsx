@@ -131,7 +131,7 @@ const ClustersTable: React.FunctionComponent<IClustersTableProps> = ({
                 </div>
               ) : (
                 <StatusIcon
-                  status={clusterStatus ? StatusType.Ok : StatusType.Error}
+                  status={clusterStatus ? 'Ok' : 'Error'}
                   label={clusterStatus ? `Connected` : `Connection Failed`}
                 />
               )}

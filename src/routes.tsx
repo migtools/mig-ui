@@ -14,10 +14,11 @@ import { PollingContextProvider } from './app/common/context/PollingContext';
 import { ICommonReducerState } from './app/common/duck/slice';
 import { useSelector } from 'react-redux';
 import { IAuthReducerState } from './app/auth/duck/slice';
+import { DefaultRootState } from './configureStore';
 
 const AppRoutes: React.FunctionComponent = () => {
-  const common: ICommonReducerState = useSelector((state) => state.common);
-  const auth: IAuthReducerState = useSelector((state) => state.auth);
+  const common: ICommonReducerState = useSelector((state: DefaultRootState) => state.common);
+  const auth: IAuthReducerState = useSelector((state: DefaultRootState) => state.auth);
   return (
     <React.Fragment>
       <PollingContextProvider>

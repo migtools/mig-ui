@@ -22,8 +22,8 @@ import {
   AddEditConditionReady,
   AddEditDebounceWait,
 } from '../../common/add_edit_state';
-import { IReduxState } from '../../../reducers';
 import { alertSuccessTimeout, alertErrorTimeout } from '../../common/duck/slice';
+import { DefaultRootState } from '../../../configureStore';
 
 function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
@@ -58,7 +58,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 }
 
 function* fetchStorageGenerator() {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigStorage, state.auth.migMeta.namespace);
   try {
@@ -74,7 +74,7 @@ function* fetchStorageGenerator() {
 
 function* removeStorageSaga(action) {
   try {
-    const state: IReduxState = yield select();
+    const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -107,7 +107,7 @@ function* removeStorageSaga(action) {
 }
 
 function* addStorageRequest(action) {
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -224,7 +224,7 @@ const secretAccessKeySecretField = 'aws-secret-access-key';
 
 function* updateStorageRequest(action) {
   // TODO: Probably need rollback logic here too if any fail
-  const state: IReduxState = yield select();
+  const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { storageValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -409,7 +409,7 @@ function* pollStorageAddEditStatus(action) {
   yield delay(AddEditDebounceWait);
   while (true) {
     try {
-      const state: IReduxState = yield select();
+      const state: DefaultRootState = yield select();
       const { migMeta } = state.auth;
       const { storageName } = action;
 

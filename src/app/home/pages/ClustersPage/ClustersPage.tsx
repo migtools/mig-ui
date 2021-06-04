@@ -23,9 +23,9 @@ import AddEditClusterModal from './components/AddEditClusterModal';
 import { useOpenModal } from '../../duck';
 import { ICluster } from '../../../cluster/duck/types';
 import { IMigMeta } from '../../../auth/duck/types';
-import { IReduxState } from '../../../../reducers';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
+import { DefaultRootState } from '../../../../configureStore';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -113,7 +113,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({
+const mapStateToProps = (state: DefaultRootState) => ({
   clusterList: clusterSelectors.getAllClusters(state),
   clusterAssociatedPlans: clusterSelectors.getAssociatedPlans(state),
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,

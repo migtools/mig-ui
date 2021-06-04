@@ -4,7 +4,6 @@ import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
 import { ClusterActionTypes, ClusterActions } from '../../cluster/duck/actions';
 import utils from '../../common/duck/utils';
-import { IReduxState } from '../../../reducers';
 import {
   alertClear,
   alertError,
@@ -17,6 +16,7 @@ import {
 } from './slice';
 import { IAlertModalObj } from './types';
 import { certErrorOccurred } from '../../auth/duck/slice';
+import { DefaultRootState } from '../../../configureStore';
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
@@ -29,7 +29,7 @@ function* poll(action) {
       const response = yield call(params.asyncFetch);
       params.callback(response);
     } catch (err) {
-      const state: IReduxState = yield select();
+      const state: DefaultRootState = yield select();
       const migMeta = state.auth.migMeta;
       //handle selfSignedCert error & network connectivity error
       if (utils.isSelfSignedCertError(err)) {

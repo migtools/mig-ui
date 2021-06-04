@@ -34,12 +34,17 @@ import { IPlan } from '../../../plan/duck/types';
 import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 import { TreeContainer } from './components/TreeContainer';
+import { DefaultRootState } from '../../../../configureStore';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
-  const { planName, migrationID } = useParams();
+  interface IPlanDebugPageParams {
+    planName: string;
+    migrationID: string;
+  }
+  const { planName, migrationID } = useParams<IPlanDebugPageParams>();
   const plans: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const dispatch = useDispatch();
-  const debug: IDebugReducerState = useSelector((state) => state.debug);
+  const debug: IDebugReducerState = useSelector((state: DefaultRootState) => state.debug);
   const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
     debugSelectors.getDebugRefsWithStatus(state)
   );
@@ -52,7 +57,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
     }
     return () => {
       // Cleanup on dismount of Debug component, stop polling
-      dispatch(stopDebugPolling(planName));
+      dispatch(stopDebugPolling({ planName: planName, migrationID: migrationID }));
       dispatch(clearJSONView());
     };
   }, []);

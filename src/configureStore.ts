@@ -1,47 +1,73 @@
 import { history } from './helpers';
 import { createLogger } from 'redux-logger';
-import { createStore, applyMiddleware, compose } from 'redux';
-import rootReducer from './reducers';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { getDefaultMiddleware } from '@reduxjs/toolkit';
+import { connectRouter } from 'connected-react-router';
 import { routerMiddleware } from 'connected-react-router';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import createSagaMiddleware from 'redux-saga';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+import authReducer, { IAuthReducerState } from './app/auth/duck';
+import clusterReducer, { IClusterReducerState } from './app/cluster/duck';
+import commonReducer from './app/common/duck';
+import debugReducer, { IDebugReducerState } from './app/debug/duck';
+import logReducer from './app/logs/duck';
+import planReducer, { IPlanReducerState } from './app/plan/duck';
+import storageReducer, { IStorageReducerState } from './app/storage/duck';
 import rootSaga from './sagas';
-declare global {
-  interface Window {
-    __REDUX_DEVTOOLS_EXTENSION__: any;
-  }
-}
 
-const devMode = process.env.DEVMODE || 'local';
+const sagaMiddleware = createSagaMiddleware();
 
+const logger = createLogger({ collapsed: true });
 const persistConfig = {
   key: 'root',
   storage,
   //whitelist: ['cluster', 'storage', 'plan'],
   whitelist: [],
 };
+export const rootReducer = combineReducers({
+  router: connectRouter(history),
+  auth: authReducer,
+  common: commonReducer,
+  debug: debugReducer,
+  cluster: clusterReducer,
+  storage: storageReducer,
+  plan: planReducer,
+  logs: logReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-const sagaMiddleware = createSagaMiddleware();
-
-const enhancers = [];
-const logger = createLogger({ collapsed: true });
-const middleware = [logger, sagaMiddleware, routerMiddleware(history)];
-
-if (devMode === 'local') {
-  const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
-
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
-}
-const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: [
+    logger,
+    sagaMiddleware,
+    routerMiddleware(history),
+    // ...getDefaultMiddleware({
+    //   serializableCheck: {
+    //     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    //   },
+    // }),
+  ],
+  devTools: process.env.NODE_ENV !== 'production',
+});
 
 const createdStore = () => {
-  const store = createStore<any, any, any, any>(persistedReducer, composedEnhancers);
   sagaMiddleware.run(rootSaga);
   return { store, persistor: persistStore(store) };
 };
+// Inferred types
+export type DefaultRootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 export default createdStore;

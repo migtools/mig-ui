@@ -22,25 +22,28 @@ import {
   Card,
   CardBody,
 } from '@patternfly/react-core';
-import { IReduxState } from '../../../../../../reducers';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
 import AnalyticsTable from '../../components/AnalyticsTable';
 import dayjs from 'dayjs';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface INamespacesPageProps {
   planList: IPlan[];
   refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
 }
+interface INamespacesPageParams {
+  planName: string;
+}
 
-const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
+const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   planList,
   isRefreshingAnalytic,
   refreshAnalyticRequest,
 }: INamespacesPageProps) => {
-  const { planName } = useParams();
+  const { planName } = useParams<INamespacesPageParams>();
   const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
   const history = useHistory();
   if (!plan) {
@@ -145,8 +148,8 @@ const BaseNamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   );
 };
 
-export const NamespacesPage = connect(
-  (state: IReduxState) => ({
+export default connect(
+  (state: DefaultRootState) => ({
     isRefreshingAnalytic: state.plan.isRefreshingAnalytic,
     planList: planSelectors.getPlansWithStatus(state),
   }),
@@ -154,4 +157,4 @@ export const NamespacesPage = connect(
     refreshAnalyticRequest: (analyticName: string) =>
       dispatch(PlanActions.refreshAnalyticRequest(analyticName)),
   })
-)(BaseNamespacesPage);
+)(NamespacesPage);

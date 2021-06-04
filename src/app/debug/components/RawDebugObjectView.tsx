@@ -18,11 +18,12 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import React, { useEffect } from 'react';
 import ReactJson from 'react-json-view';
 import { useDispatch, useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../configureStore';
 import { debugObjectFetchRequest } from '../duck/slice';
 import { DEBUG_PATH_SEARCH_KEY } from '../duck/types';
 
 const RawDebugObjectView: React.FunctionComponent = () => {
-  const debug = useSelector((state) => state.debug);
+  const debug = useSelector((state: DefaultRootState) => state.debug);
   const dispatch = useDispatch();
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

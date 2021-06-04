@@ -13,9 +13,12 @@ interface IProps {
   migration: IMigration;
   id: string;
 }
+interface IMigrationDetailsTableParams {
+  planName: string;
+}
 
 const MigrationDetailsTable: React.FunctionComponent<IProps> = ({ migration }) => {
-  const { planName } = useParams();
+  const { planName } = useParams<IMigrationDetailsTableParams>();
   const { path, url } = useRouteMatch();
   const columns = [
     { title: 'Step', transforms: [cellWidth(20)] },

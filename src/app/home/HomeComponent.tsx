@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ClustersPage, StoragesPage, PlansPage, PlanDebugPage, LogsPage } from './pages';
-import { NamespacesPage } from './pages/PlansPage/pages/NamespacesPage';
 import RefreshRoute from '../auth/RefreshRoute';
 import { MigrationsPage } from './pages/PlansPage/pages/MigrationsPage';
 import { HooksPage } from './pages/HooksPage/HooksPage';
 import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 import { RAW_OBJECT_VIEW_ROUTE } from '../debug/duck/types';
+import NamespacesPage from './pages/PlansPage/pages/NamespacesPage/NamespacesPage';
 
 const HomeComponent: React.FunctionComponent = () => {
   return (

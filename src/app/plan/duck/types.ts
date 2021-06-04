@@ -65,7 +65,7 @@ export interface IMigration {
   metadata: {
     name: string;
     namespace: string;
-    creationTimestamp: string;
+    creationTimestamp?: string;
   };
   spec: {
     migPlanRef: {
@@ -149,6 +149,8 @@ export interface IPlan {
     hasCriticalCondition: boolean;
     hasCancelingCondition: boolean;
     hasClosedCondition: boolean;
+    hasErrorCondition: boolean;
+    hasAttemptedMigration: boolean;
     hasConflictCondition: boolean;
     hasNotReadyCondition: boolean;
     hasPODWarnCondition: boolean;

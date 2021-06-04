@@ -21,19 +21,19 @@ import {
 import { AddEditMode, IAddEditStatus } from '../../../../../common/add_edit_state';
 import HooksFormContainer from './HooksFormContainer';
 import { IMigMeta } from '../../../../../auth/duck/types';
-import { IMigPlan, IPlan, IPlanSpecHook } from '../../../../../plan/duck/types';
+import { IMigPlan } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 const classNames = require('classnames');
 
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksStepBaseProps {
   migMeta: IMigMeta;
-  isFetchingInitialHooks: boolean;
   updateHookRequest: (values) => void;
-  addHookRequest: (hook: IMigHook) => void;
+  addHookRequest: (hook: IMigHook | IHook) => void;
   isFetchingHookList: boolean;
   isUpdatingGlobalHookList: boolean;
   isAssociatingHookToPlan: boolean;
@@ -58,10 +58,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     isFetchingHookList,
     isUpdatingGlobalHookList,
     isAssociatingHookToPlan,
-    fetchPlanHooksRequest,
     currentPlanHooks,
     hookAddEditStatus,
-    currentPlan,
     removeHookFromPlanRequest,
     watchHookAddEditStatus,
     isAddHooksOpen,
@@ -243,6 +241,6 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   );
 };
 
-export default connect((state) => ({
+export default connect((state: DefaultRootState) => ({
   migMeta: state.auth.migMeta,
 }))(HooksStep);

@@ -12,16 +12,21 @@ import {
 import { useOpenModal } from '../../../duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
-import { withRouter } from 'react-router-dom';
+import { RouteComponentProps, RouteProps, useHistory, withRouter } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
-
-const PlanActions = ({ plan, history }) => {
+import { IPlan } from '../../../../plan/duck/types';
+interface IPlanActionsProps {
+  plan: IPlan;
+}
+export const PlanActions: React.FunctionComponent<IPlanActionsProps> = ({ plan }) => {
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
   const planContext = useContext(PlanContext);
+  const history = useHistory();
+
   const {
     hasClosedCondition,
     hasReadyCondition,
@@ -168,5 +173,3 @@ const PlanActions = ({ plan, history }) => {
     </Flex>
   );
 };
-
-export default withRouter(PlanActions);

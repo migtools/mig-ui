@@ -24,7 +24,7 @@ import StoragesTable from './components/StoragesTable';
 import AddEditStorageModal from './components/AddEditStorageModal';
 import { IStorage } from '../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
-import { IReduxState } from '../../../../reducers';
+import { DefaultRootState } from '../../../../configureStore';
 
 interface IStoragesPageBaseProps {
   currentStorage: IStorage;
@@ -106,7 +106,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   );
 };
 
-const mapStateToProps = (state: IReduxState) => ({
+const mapStateToProps = (state: DefaultRootState) => ({
   storageList: storageSelectors.getAllStorage(state),
   storageAssociatedPlans: storageSelectors.getAssociatedPlans(state),
   isFetchingInitialStorages: state.storage.isFetchingInitialStorages,
