@@ -24,8 +24,9 @@ import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
-import { useContext } from 'react';
 import { usePlanContext } from '../../../../context';
+import MigrateModal from '../../components/MigrateModal';
+import RollbackModal from '../../components/RollbackModal';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -168,6 +169,17 @@ export const MigrationsPage: React.FunctionComponent = () => {
                       migrations={migrations}
                       isPlanLocked={plan.PlanStatus.isPlanLocked}
                       id="migrations-history-expansion-table"
+                    />
+                    <MigrateModal
+                      plan={plan}
+                      isOpen={planContext.isMigrateModalOpen}
+                      onHandleClose={planContext.toggleMigrateModalOpen}
+                    />
+
+                    <RollbackModal
+                      plan={plan}
+                      isOpen={planContext.isRollbackModalOpen}
+                      onHandleClose={planContext.toggleRollbackModalOpen}
                     />
                   </CardBody>
                 </Card>
