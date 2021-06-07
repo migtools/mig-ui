@@ -23,6 +23,12 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/storages">
             <StoragesPage />
           </Route>
+          <Route exact path="/plans/:planName/namespaces">
+            <NamespacesPage />
+          </Route>
+          <Route exact path="/hooks">
+            <HooksPage />
+          </Route>
           <PlanContextProvider>
             <Route exact path="/plans">
               <PlansPage />
@@ -31,12 +37,6 @@ const HomeComponent: React.FunctionComponent = () => {
               <MigrationsPage />
             </Route>
           </PlanContextProvider>
-          <Route exact path="/plans/:planName/namespaces">
-            <NamespacesPage />
-          </Route>
-          <Route exact path="/hooks">
-            <HooksPage />
-          </Route>
           <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
           <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
           <Route path="*">
