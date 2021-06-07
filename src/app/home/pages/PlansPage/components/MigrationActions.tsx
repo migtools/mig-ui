@@ -7,6 +7,7 @@ import {
   DropdownPosition,
   Flex,
   FlexItem,
+  Button,
 } from '@patternfly/react-core';
 import { IMigration } from '../../../../plan/duck/types';
 import { PlanActions } from '../../../../plan/duck';
@@ -25,29 +26,21 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
         {!migration.tableStatus.isSucceeded &&
           !migration.tableStatus.isCanceled &&
           !migration.tableStatus.isCanceling && (
-            <Dropdown
-              toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
-              isOpen={kebabIsOpen}
-              isPlain
-              dropdownItems={[
-                <DropdownItem
-                  onClick={() => {
-                    setKebabIsOpen(false);
-                    dispatch(PlanActions.migrationCancelRequest(migration.metadata.name));
-                  }}
-                  key={`cancelMigration-${migration.metadata.name}`}
-                  isDisabled={
-                    migration.tableStatus.isSucceeded ||
-                    migration.tableStatus.isSucceededWithWarnings ||
-                    migration.tableStatus.isFailed ||
-                    migration.tableStatus.stepName === 'Canceled'
-                  }
-                >
-                  Cancel
-                </DropdownItem>,
-              ]}
-              position={DropdownPosition.right}
-            />
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(PlanActions.migrationCancelRequest(migration.metadata.name));
+              }}
+              isDisabled={
+                migration.tableStatus.isSucceeded ||
+                migration.tableStatus.isSucceededWithWarnings ||
+                migration.tableStatus.isFailed ||
+                migration.tableStatus.stepName === 'Canceled'
+              }
+              key={`cancelMigration-${migration.metadata.name}`}
+            >
+              Cancel
+            </Button>
           )}
       </FlexItem>
     </Flex>

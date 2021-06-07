@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
-import { Button, Checkbox } from '@patternfly/react-core';
-import { PlanContext } from '../../../duck/context';
+import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-const styles = require('./MigrateModal.module').default;
+import { PlanActions } from '../../../../plan/duck/actions';
 
 interface IProps {
   onHandleClose: () => void;
@@ -13,8 +13,7 @@ interface IProps {
 }
 
 const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
-  const planContext = useContext(PlanContext);
-
+  const dispatch = useDispatch();
   return (
     <Modal
       variant="small"
@@ -55,7 +54,7 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    planContext.handleRollbackTriggered(plan);
+                    dispatch(PlanActions.runRollbackRequest(plan));
                   }}
                 >
                   Rollback

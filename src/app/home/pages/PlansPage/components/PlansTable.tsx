@@ -23,14 +23,13 @@ import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
-import { PlanActions } from './PlanActions';
+import { PlanActionsComponent } from './PlanActionsComponent';
 const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {
   planList: IPlan[];
   addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
-  refreshAnalyticRequest: (analyticName: string) => void;
   isRefreshingAnalytic: boolean;
 }
 
@@ -42,7 +41,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
   addPlanDisabledObj,
   toggleAddWizardOpen,
-  refreshAnalyticRequest,
   isRefreshingAnalytic,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
@@ -160,7 +158,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               title: <PlanStatus plan={plan} />,
             },
             {
-              title: <PlanActions plan={plan} />,
+              title: <PlanActionsComponent plan={plan} />,
               props: {
                 className: 'pf-c-table__action',
               },

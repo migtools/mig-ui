@@ -1,0 +1,23 @@
+@import 'src/layout/colors';
+
+.lineContainer {
+  margin: auto 0.5em;
+}
+.verticalLine {
+  border-left: 3px solid $medGray3;
+  height: 3em;
+  margin: auto 0.5em auto 1em;
+  border-radius: 20%;
+}
+
+.logsButton {
+  margin: auto 1em;
+}
+
+.kebabContainer {
+  margin: auto auto;
+}
+
+.flexStyle {
+  height: 5em;
+}
