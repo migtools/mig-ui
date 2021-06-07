@@ -410,13 +410,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       };
     }
     case 'DirectVolumeMigrationProgress': {
-      const {
-        errors,
-        warnings,
-        phase,
-        conditions,
-        totalProgressPercentage,
-      } = debugRef.value.data.object.status;
+      const { errors, warnings, phase, conditions, totalProgressPercentage } =
+        debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
 
       const hasWarning = conditions?.some((c) =>

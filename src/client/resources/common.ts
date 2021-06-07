@@ -119,7 +119,8 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
 
 export abstract class NamedDiscoveryResource
   extends DiscoveryResource
-  implements INamedDiscoveryResource {
+  implements INamedDiscoveryResource
+{
   private readonly _name: string;
 
   constructor(

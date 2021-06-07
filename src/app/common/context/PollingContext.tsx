@@ -201,12 +201,8 @@ export const usePausedPollingEffect = (): void => {
 };
 
 export const useDebugViewPollingEffect = (): void => {
-  const {
-    pausePolling,
-    resumePolling,
-    pauseIrrelevantPolling,
-    startDefaultPlanPolling,
-  } = usePollingContext();
+  const { pausePolling, resumePolling, pauseIrrelevantPolling, startDefaultPlanPolling } =
+    usePollingContext();
   React.useEffect(() => {
     pauseIrrelevantPolling();
     return resumePolling;
