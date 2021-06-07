@@ -27,6 +27,9 @@ import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 import { usePlanContext } from '../../../../context';
 import MigrateModal from '../../components/MigrateModal';
 import RollbackModal from '../../components/RollbackModal';
+import { useOpenModal } from '../../../../duck';
+import { access } from 'fs';
+import AccessLogsModal from '../../components/AccessLogsModal';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -56,6 +59,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
       isPlanLocked,
     } = plan?.PlanStatus;
     const [kebabIsOpen, setKebabIsOpen] = useState(false);
+    const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
     const kebabDropdownItems = [
       <DropdownItem
         onClick={() => {
@@ -134,16 +138,10 @@ export const MigrationsPage: React.FunctionComponent = () => {
                       <FlexItem className={styles.logsButton}>
                         <Button
                           variant="secondary"
-                          // onClick={() => {
-                          //   dispatch(PlanActions.migrationCancelRequest(migration.metadata.name));
-                          // }}
-                          // isDisabled={
-                          //   migration.tableStatus.isSucceeded ||
-                          //   migration.tableStatus.isSucceededWithWarnings ||
-                          //   migration.tableStatus.isFailed ||
-                          //   migration.tableStatus.stepName === 'Canceled'
-                          // }
-                          // key={`cancelMigration-${migration.metadata.name}`}
+                          onClick={() => {
+                            setAccessLogsModalIsOpen();
+                          }}
+                          key={`logs-modal-${plan?.MigPlan.metadata.name}`}
                         >
                           Access logs
                         </Button>
@@ -169,6 +167,10 @@ export const MigrationsPage: React.FunctionComponent = () => {
                       migrations={migrations}
                       isPlanLocked={plan.PlanStatus.isPlanLocked}
                       id="migrations-history-expansion-table"
+                    />
+                    <AccessLogsModal
+                      isOpen={accessLogsModalIsOpen}
+                      onHandleClose={setAccessLogsModalIsOpen}
                     />
                     <MigrateModal
                       plan={plan}
