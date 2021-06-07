@@ -143,7 +143,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                           }}
                           key={`logs-modal-${plan?.MigPlan.metadata.name}`}
                         >
-                          Access logs
+                          View logs
                         </Button>
                       </FlexItem>
                       <FlexItem className={styles.lineContainer}>

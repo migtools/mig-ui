@@ -12,33 +12,31 @@ interface IProps {
 
 const AccessLogsModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen }) => {
   return (
-    <Modal variant="large" isOpen={isOpen} onClose={() => onHandleClose()} title={`Access logs`}>
+    <Modal variant="large" isOpen={isOpen} onClose={() => onHandleClose()} title={`View logs`}>
       <Grid hasGutter>
         <GridItem>
-          Run the command below on the source or target cluster CLI to view aggregated logs from the
-          following pods:
+          Copy and paste the command to view aggregated logs from the following pods:
           <ul>
-            <li>- mig-controller logs</li>
-            <li>- velero logs</li>
-            <li>- restic logs</li>
-            <li>- rsync logs</li>
-            <li>- stunnel logs</li>
-            <li>- registry logs</li>
+            <li>- mig-controller</li>
+            <li>- velero</li>
+            <li>- restic</li>
+            <li>- rsync</li>
+            <li>- stunnel</li>
+            <li>- registry</li>
           </ul>
         </GridItem>
         <GridItem className={styles.gridMargin}>
           <Text>To view colorized logs (each pod has a different color):</Text>
           <ClipboardCopy isReadOnly>
-            oc logs -f -l logreader=mig -n openshift-migration -c color
+            oc logs --follow --selector logreader=mig --namespace openshift-migration --container
+            color
           </ClipboardCopy>
         </GridItem>
         <GridItem>
-          <Text>
-            To view plain logs (for grepping or other processing where shell color codes would be a
-            nuisance):
-          </Text>
+          <Text>To view plain logs (for grepping or other processing):</Text>
           <ClipboardCopy isReadOnly>
-            oc logs -f -l logreader=mig -n openshift-migration -c plain
+            oc logs --follow --selector logreader=mig --namespace openshift-migration --container
+            plain
           </ClipboardCopy>
         </GridItem>
       </Grid>

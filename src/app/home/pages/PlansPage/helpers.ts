@@ -197,8 +197,7 @@ export const getMigrationStepProgress = (progressLine: string): IStepProgressInf
   message = message.replace(/[\d\.]*%/, '');
 
   // Progress parsing for Velero Backup / Restore
-  const progressRegex =
-    /.*?([\d\.]*) *(bytes|kB|MB|GB|TB|PB|EB)* out of (estimated total of| )*([\d\.]*) *(bytes|MB|kB|GB|TB|PB|EB)*/;
+  const progressRegex = /.*?([\d\.]*) *(bytes|kB|MB|GB|TB|PB|EB)* out of (estimated total of| )*([\d\.]*) *(bytes|MB|kB|GB|TB|PB|EB)*/;
   if (progressRegex.test(progressLine)) {
     progressBarApplicable = true;
     const matched = progressLine.match(progressRegex);

@@ -49,8 +49,14 @@ const AnalyticsTable: React.FunctionComponent<IProps> = ({
   isRefreshingAnalytic,
 }) => {
   const getSortValues = (namespaceFromAnalytic: any) => {
-    const { namespace, k8sResourceTotal, pvCount, pvCapacity, imageCount, imageSizeTotal } =
-      namespaceFromAnalytic;
+    const {
+      namespace,
+      k8sResourceTotal,
+      pvCount,
+      pvCapacity,
+      imageCount,
+      imageSizeTotal,
+    } = namespaceFromAnalytic;
     return [namespace, k8sResourceTotal, pvCount, pvCapacity, imageCount];
   };
 
