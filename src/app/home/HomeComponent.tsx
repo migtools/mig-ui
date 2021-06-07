@@ -29,6 +29,8 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/hooks">
             <HooksPage />
           </Route>
+          <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
+          <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
           <PlanContextProvider>
             <Route exact path="/plans">
               <PlansPage />
@@ -37,8 +39,6 @@ const HomeComponent: React.FunctionComponent = () => {
               <MigrationsPage />
             </Route>
           </PlanContextProvider>
-          <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
-          <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
           <Route path="*">
             <Redirect to="/" />
           </Route>
