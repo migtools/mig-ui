@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
-import { PlanContext } from '../../../duck/context';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { PlanActions } from '../../../../plan/duck/actions';
+import { useDispatch } from 'react-redux';
 const styles = require('./MigrateModal.module').default;
 
 interface IProps {
@@ -13,11 +14,11 @@ interface IProps {
 }
 
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
+  const dispatch = useDispatch();
   const [enableQuiesce, toggleQuiesce] = useState(true);
   const handleChange = (checked, _event) => {
     toggleQuiesce(!!checked);
   };
-  const planContext = useContext(PlanContext);
 
   return (
     <Modal
@@ -51,7 +52,7 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    planContext.handleRunMigration(plan, enableQuiesce);
+                    dispatch(PlanActions.runMigrationRequest(plan, enableQuiesce));
                   }}
                 >
                   Migrate

@@ -7,6 +7,7 @@ import { HooksPage } from './pages/HooksPage/HooksPage';
 import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 import { RAW_OBJECT_VIEW_ROUTE } from '../debug/duck/types';
 import NamespacesPage from './pages/PlansPage/pages/NamespacesPage/NamespacesPage';
+import { PlanContextProvider } from './context';
 
 const HomeComponent: React.FunctionComponent = () => {
   return (
@@ -22,20 +23,22 @@ const HomeComponent: React.FunctionComponent = () => {
           <Route exact path="/storages">
             <StoragesPage />
           </Route>
-          <Route exact path="/plans">
-            <PlansPage />
-          </Route>
           <Route exact path="/plans/:planName/namespaces">
             <NamespacesPage />
-          </Route>
-          <Route path="/plans/:planName/migrations">
-            <MigrationsPage />
           </Route>
           <Route exact path="/hooks">
             <HooksPage />
           </Route>
           <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
           <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
+          <PlanContextProvider>
+            <Route exact path="/plans">
+              <PlansPage />
+            </Route>
+            <Route path="/plans/:planName/migrations">
+              <MigrationsPage />
+            </Route>
+          </PlanContextProvider>
           <Route path="*">
             <Redirect to="/" />
           </Route>
