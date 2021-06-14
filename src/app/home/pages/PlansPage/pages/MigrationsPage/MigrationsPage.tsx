@@ -146,9 +146,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
                           View logs
                         </Button>
                       </FlexItem>
-                      <FlexItem className={styles.lineContainer}>
-                        <div className={styles.verticalLine}></div>
-                      </FlexItem>
                       <FlexItem className={styles.kebabContainer}>
                         <Dropdown
                           toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
