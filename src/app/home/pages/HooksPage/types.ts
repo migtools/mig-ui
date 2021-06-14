@@ -26,4 +26,5 @@ export interface IMigHook {
   };
   id: string;
   HookStatus?: any;
+  hookName?: string;
 }

@@ -27,11 +27,15 @@ import { IAddPlanDisabledObjModel } from './types';
 import { DefaultRootState } from '../../../../configureStore';
 
 export const PlansPage: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
-
-  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
-  const clusterList = useSelector((state) => clusterSelectors.getAllClusters(state));
-  const storageList = useSelector((state) => storageSelectors.getAllStorage(state));
+  const planList = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
+  const clusterList = useSelector((state: DefaultRootState) =>
+    clusterSelectors.getAllClusters(state)
+  );
+  const storageList = useSelector((state: DefaultRootState) =>
+    storageSelectors.getAllStorage(state)
+  );
   const planState: IPlanReducerState = useSelector((state: DefaultRootState) => state.plan);
 
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);

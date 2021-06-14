@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Modal } from '@patternfly/react-core';
 
 interface IProps {
-  onHandleClose: (isConfirmed) => void;
+  onHandleClose: (isConfirmed: boolean) => void;
   id: string;
   title: string;
   message: string;

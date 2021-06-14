@@ -11,7 +11,7 @@ interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   storageList: IStorage[];
   currentStorage: IStorage;
 }

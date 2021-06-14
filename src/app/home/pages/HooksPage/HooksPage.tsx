@@ -44,7 +44,7 @@ const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksPageBaseProps {
   migMeta: IMigMeta;
   isFetchingInitialHooks: boolean;
-  updateHookRequest: (values) => void;
+  updateHookRequest: (values: any) => void;
   addHookRequest: (hook: IMigHook) => void;
   isUpdatingGlobalHookList: boolean;
   allHooks: IMigHook[];
@@ -77,7 +77,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
   const [initialHookValues, setInitialHookValues] = useState({});
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
-  const onAddEditHookSubmit = (hookValues) => {
+  const onAddEditHookSubmit = (hookValues: any) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
@@ -115,8 +115,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
     spacing.pySm
   );
 
-  let rows = [];
-  const actions = [];
+  let rows: Array<any> = [];
+  const actions: Array<any> = [];
   if (allHooks.length > 0) {
     rows = allHooks.map((migHook, id) => {
       const name = migHook.metadata.name;
@@ -125,7 +125,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
       const clusterTypeText = targetCluster === 'destination' ? 'Target cluster' : 'Source cluster';
 
       const type = custom ? 'Custom container image' : 'Ansible playbook';
-      const listItems = associatedPlans.map((planName) => (
+      const listItems = associatedPlans.map((planName: string) => (
         <li key={planName}>
           <Link to={`/plans/`}>{planName}</Link>
         </li>
@@ -315,11 +315,11 @@ const mapStateToProps = (state: DefaultRootState) => {
     migMeta: state.auth.migMeta,
   };
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: any) => {
   return {
-    addHookRequest: (migHook) => dispatch(PlanActions.addHookRequest(migHook)),
+    addHookRequest: (migHook: IMigHook) => dispatch(PlanActions.addHookRequest(migHook)),
     fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
-    watchHookAddEditStatus: (hookName) => {
+    watchHookAddEditStatus: (hookName: string) => {
       // Push the add edit status into watching state, and start watching
       dispatch(
         PlanActions.setHookAddEditStatus(
@@ -328,8 +328,8 @@ const mapDispatchToProps = (dispatch) => {
       );
       dispatch(PlanActions.watchHookAddEditStatus(hookName));
     },
-    removeHookRequest: (name) => dispatch(PlanActions.removeHookRequest(name)),
-    updateHookRequest: (migHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+    removeHookRequest: (name: string) => dispatch(PlanActions.removeHookRequest(name)),
+    updateHookRequest: (migHook: IMigHook) => dispatch(PlanActions.updateHookRequest(migHook)),
   };
 };
 

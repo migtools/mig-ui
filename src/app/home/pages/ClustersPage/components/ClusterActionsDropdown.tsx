@@ -43,7 +43,7 @@ const ClusterActionsDropdown: React.FunctionComponent<IClusterActionsDropdownPro
   const [isAddEditOpen, toggleIsAddEditOpen] = useOpenModal(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
-  const handleRemoveCluster = (isConfirmed) => {
+  const handleRemoveCluster = (isConfirmed: boolean) => {
     if (isConfirmed) {
       removeCluster(clusterName);
       toggleConfirmOpen();

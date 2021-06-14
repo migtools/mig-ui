@@ -33,7 +33,7 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   initialStorageValues: any;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   provider: string;
   isAWS: boolean;
 }
@@ -67,20 +67,20 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
 
   const [isAccessKeyHidden, setIsAccessKeyHidden] = useState(true);
 
-  const handleAccessKeyHiddenToggle = (e) => {
+  const handleAccessKeyHiddenToggle = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     setIsAccessKeyHidden(!isAccessKeyHidden);
   };
   const [isSecretHidden, setIsSecretHidden] = useState(true);
-  const handleSecretHiddenToggle = (e) => {
+  const handleSecretHiddenToggle = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSecretHidden(!isSecretHidden);
   };
 
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikHandleChange = (_val: any, e: any) => handleChange(e);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>

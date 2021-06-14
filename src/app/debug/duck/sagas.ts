@@ -1,4 +1,4 @@
-import { select, put, takeEvery, delay, call, race, take } from 'redux-saga/effects';
+import { select, put, takeEvery, delay, call, race, take, StrictEffect } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
@@ -23,11 +23,16 @@ import { alertErrorTimeout } from '../../common/duck/slice';
 import debugReducer from '.';
 import { DefaultRootState } from '../../../configureStore';
 
-function* fetchDebugRefs(action) {
-  const state: DefaultRootState = yield select();
+function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
+  const res: DefaultRootState = yield select();
+  return res;
+}
+
+function* fetchDebugRefs(action: any): Generator<any, any, any> {
+  const state = yield* getState();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
-  const linkRefs = [];
-  const eachRecursive = (obj) => {
+  const linkRefs: Array<any> = [];
+  const eachRecursive = (obj: any) => {
     for (const k in obj) {
       if (typeof obj[k] == 'object' && obj[k] !== null) {
         eachRecursive(obj[k]);
@@ -51,8 +56,8 @@ function* fetchDebugRefs(action) {
 
   try {
     const debugRefsRes = yield Promise.all(debugRefs);
-    const assembledEventLinks = [];
-    debugRefsRes.forEach((val) => {
+    const assembledEventLinks: Array<any> = [];
+    debugRefsRes.forEach((val: any) => {
       const uid = val.value.data.object.metadata.uid;
       const assembledLink = `/namespaces/openshift-migration/events/${uid}`;
       assembledEventLinks.push(assembledLink);
@@ -63,7 +68,7 @@ function* fetchDebugRefs(action) {
       });
     });
     const eventRefsRes = yield Promise.all(eventRefs).then((result) => {
-      return debugRefsRes.map((debugRef) => {
+      return debugRefsRes.map((debugRef: any) => {
         const foundEvent = result.find(
           (resItem) => resItem?.data?.uid === debugRef?.value?.data?.object?.metadata?.uid
         );
@@ -81,8 +86,8 @@ function* fetchDebugRefs(action) {
   }
 }
 
-function* fetchDebugObject(action) {
-  const state: DefaultRootState = yield select();
+function* fetchDebugObject(action: any): Generator<any, any, any> {
+  const state = yield* getState();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
 
   try {
@@ -94,9 +99,9 @@ function* fetchDebugObject(action) {
   }
 }
 
-function* fetchDebugTree(action) {
+function* fetchDebugTree(action: any): Generator<any, any, any> {
   const { planName, migrationID } = action.payload;
-  const state: DefaultRootState = yield select();
+  const state = yield* getState();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const debugTreeResource: IDebugTreeResource = new DebugTreeDiscoveryResource(
     planName,
@@ -117,7 +122,7 @@ function* fetchDebugTree(action) {
     yield put(alertErrorTimeout(`Failed to fetch debug tree: ${err.message}`));
   }
 }
-function* debugPoll(action) {
+function* debugPoll(action: any): Generator<any, any, any> {
   while (true) {
     try {
       yield put(treeFetchRequest(action.payload));
@@ -129,7 +134,7 @@ function* debugPoll(action) {
   }
 }
 
-function* watchDebugPolling() {
+function* watchDebugPolling(): Generator {
   while (true) {
     const data = yield take(startDebugPolling.type);
     yield race([call(debugPoll, data), take(stopDebugPolling.type)]);

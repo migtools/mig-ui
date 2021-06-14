@@ -20,7 +20,16 @@ import {
   Title,
   FormGroup,
 } from '@patternfly/react-core';
-import { sortable, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import {
+  IRowData,
+  sortable,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import {
@@ -42,8 +51,7 @@ type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
 const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   sourceClusterNamespaces,
 }: INamespacesTableProps) => {
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const {
     handleBlur,
     handleChange,
@@ -68,7 +76,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     { title: 'Services', transforms: [sortable] },
     { title: 'Target name', transforms: [sortable] },
   ];
-  const getSortValues = (namespace) => [
+  const getSortValues = (namespace: any) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
     namespace.name,
     namespace.podCount,
@@ -112,7 +120,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     };
   });
 
-  const onSelect = (event, isSelected, rowIndex, rowData) => {
+  const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     // Because of a bug in Table where a shouldComponentUpdate method is too strict,
     // when onSelect is called it may not be the one from the scope of the latest render.
     // So, it is not safe to reference the current selection state directly from the outer scope.
@@ -130,13 +138,13 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
       } else {
         newSelected = props.meta.selectedNamespaces.filter(
-          (selected) => selected !== props.cells[0]
+          (selected: string) => selected !== props.cells[0]
         );
       }
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
-  const onSelectAll = (event, isSelected, rowIndex, rowData) => {
+  const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     setAllRowsSelected(isSelected);
 
     let newSelected;

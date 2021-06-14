@@ -42,10 +42,10 @@ export const PlanDebugPage: React.FunctionComponent = () => {
     migrationID: string;
   }
   const { planName, migrationID } = useParams<IPlanDebugPageParams>();
-  const plans: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
+  const plans = useSelector((state: DefaultRootState) => planSelectors.getPlansWithStatus(state));
   const dispatch = useDispatch();
   const debug: IDebugReducerState = useSelector((state: DefaultRootState) => state.debug);
-  const debugRefs: IDebugRefWithStatus[] = useSelector((state) =>
+  const debugRefs: IDebugRefWithStatus[] = useSelector((state: DefaultRootState) =>
     debugSelectors.getDebugRefsWithStatus(state)
   );
 

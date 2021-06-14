@@ -1,4 +1,15 @@
-import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
+import {
+  takeLatest,
+  select,
+  race,
+  take,
+  call,
+  put,
+  delay,
+  StrictEffect,
+  SimpleEffect,
+  Effect,
+} from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind } from '../../../client/resources';
@@ -8,6 +19,7 @@ import {
   createMigStorage,
   updateMigStorage,
   updateStorageSecret,
+  IMigStorage,
 } from '../../../client/resources/conversions';
 import { StorageActions, StorageActionTypes } from './actions';
 import {
@@ -24,8 +36,13 @@ import {
 } from '../../common/add_edit_state';
 import { alertSuccessTimeout, alertErrorTimeout } from '../../common/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
+import { IStorage } from './types';
+import { ICondition } from '../../plan/duck/types';
 
-function fetchMigStorageRefs(client: IClusterClient, migMeta, migStorages): Array<Promise<any>> {
+function fetchMigStorageRefs(
+  client: IClusterClient,
+  migStorages: IMigStorage[]
+): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migStorages.forEach((storage) => {
@@ -44,6 +61,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
   return migStorages.map((ms) => {
     const fullStorage = {
       MigStorage: ms,
+      Secret: '',
     };
     // TODO: When VSL configuration is supported separate from BSL,
     // this needs to be updated to support two different, distinct secrets
@@ -57,14 +75,14 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
   });
 }
 
-function* fetchStorageGenerator() {
+function* fetchStorageGenerator(): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigStorage, state.auth.migMeta.namespace);
   try {
     let storageList = yield client.list(resource);
     storageList = yield storageList.data.items;
-    const refs = yield Promise.all(fetchMigStorageRefs(client, state.auth.migMeta, storageList));
+    const refs = yield Promise.all(fetchMigStorageRefs(client, storageList as IMigStorage[]));
     const groupedStorages = groupStorages(storageList, refs);
     return { updatedStorages: groupedStorages };
   } catch (e) {
@@ -72,7 +90,7 @@ function* fetchStorageGenerator() {
   }
 }
 
-function* removeStorageSaga(action) {
+function* removeStorageSaga(action: any): Generator<any, any, any> {
   try {
     const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
@@ -106,7 +124,7 @@ function* removeStorageSaga(action) {
   }
 }
 
-function* addStorageRequest(action) {
+function* addStorageRequest(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { storageValues } = action;
@@ -222,7 +240,7 @@ function* watchAddStorageRequest() {
 const accessKeyIdSecretField = 'aws-access-key-id';
 const secretAccessKeySecretField = 'aws-secret-access-key';
 
-function* updateStorageRequest(action) {
+function* updateStorageRequest(action: any): Generator<any, any, any> {
   // TODO: Probably need rollback logic here too if any fail
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
@@ -372,7 +390,7 @@ function* updateStorageRequest(action) {
     // Then yield a wrapper all promise to the saga middleware and wait
     // on the results
     const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
-    const groupedResults = results.reduce((accum, res) => {
+    const groupedResults = results.reduce((accum: any, res: any) => {
       accum[res.data.kind] = res.data;
       return accum;
     }, {});
@@ -403,8 +421,9 @@ function* updateStorageRequest(action) {
 function* watchUpdateStorageRequest() {
   yield takeLatest(StorageActionTypes.UPDATE_STORAGE_REQUEST, updateStorageRequest);
 }
-
-function* pollStorageAddEditStatus(action) {
+// function* pollStorageAddEditStatus(action: string): Generator<StrictEffect, number, any> {
+// function* pollStorageAddEditStatus(action: any): Generator<number, 'done!', boolean> {
+function* pollStorageAddEditStatus(action: any): Generator<any, any, any> {
   // Give the controller some time to bounce
   yield delay(AddEditDebounceWait);
   while (true) {
@@ -420,7 +439,7 @@ function* pollStorageAddEditStatus(action) {
       const hasStatusAndConditions = storagePollResult.data.status?.conditions;
 
       if (hasStatusAndConditions) {
-        const criticalCond = storagePollResult.data.status.conditions.find((cond) => {
+        const criticalCond = storagePollResult.data.status.conditions.find((cond: ICondition) => {
           return cond.category === AddEditConditionCritical;
         });
 
@@ -433,7 +452,7 @@ function* pollStorageAddEditStatus(action) {
           );
         }
 
-        const readyCond = storagePollResult.data.status.conditions.find((cond) => {
+        const readyCond = storagePollResult.data.status.conditions.find((cond: ICondition) => {
           return cond.type === AddEditConditionReady;
         });
 
@@ -457,7 +476,7 @@ function* pollStorageAddEditStatus(action) {
   }
 }
 
-function* startWatchingStorageAddEditStatus(action) {
+function* startWatchingStorageAddEditStatus(action: any): any {
   // Start a race, poll until the watch is cancelled (by closing the modal),
   // polling times out, or the condition is added, in that order of precedence.
   const raceResult = yield race({

@@ -1,4 +1,6 @@
 import { createSelector } from 'reselect';
+import { DefaultRootState } from '../../../configureStore';
+import { ICondition } from '../../plan/duck/types';
 import {
   DebugStatusType,
   IDebugRefRes,
@@ -6,7 +8,7 @@ import {
   IDerivedDebugStatusObject,
 } from './types';
 
-const debugRefsSelector = (state) => state.debug.debugRefs.map((r) => r);
+const debugRefsSelector = (state: DefaultRootState) => state.debug.debugRefs.map((r) => r);
 
 const getDebugRefsWithStatus = createSelector([debugRefsSelector], (debugRefs: IDebugRefRes[]) => {
   const refsWithStatus: IDebugRefWithStatus[] = debugRefs.map((ref) => {
@@ -34,17 +36,17 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       return false;
     }
   };
-  const warningTextArr = [];
+  const warningTextArr: Array<any> = [];
   const hasEventWarning =
     debugRef?.associatedEvents?.resources &&
-    debugRef.associatedEvents?.resources.some((event) => event?.object?.type === 'Warning');
+    debugRef.associatedEvents?.resources.some((event: any) => event?.object?.type === 'Warning');
 
   const eventWarningList = hasEventWarning
     ? debugRef.associatedEvents?.resources.filter(
-        (resource) => resource?.object?.type === 'Warning'
+        (resource: any) => resource?.object?.type === 'Warning'
       )
     : [];
-  eventWarningList.forEach((eventWarning) => {
+  eventWarningList.forEach((eventWarning: any) => {
     const eventWarningText = `${eventWarning.object.reason} - ${eventWarning.object.message}`;
     warningTextArr.push(eventWarningText);
   });
@@ -55,10 +57,10 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasRunning =
         startTime != undefined &&
         completionTime == undefined &&
-        !conditions?.some((c) => c.type === 'Failed');
+        !conditions?.some((c: ICondition) => c.type === 'Failed');
       const hasTerminating = deletionTimestamp != undefined;
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) => c.type === 'Complete');
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) => c.type === 'Complete');
       const hasPending = startTime == undefined;
       return {
         hasFailure,
@@ -171,7 +173,9 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
 
       let admitted = '';
-      ingress.forEach((ing) => ing.conditions.forEach((cond) => (admitted = cond.status)));
+      ingress.forEach((ing: any) =>
+        ing.conditions.forEach((cond: ICondition) => (admitted = cond.status))
+      );
 
       const hasFailure = admitted === 'Unknown';
       const hasPending = admitted === 'False';
@@ -319,14 +323,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'DirectImageMigration': {
       const { conditions, startTimestamp } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) =>
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
-      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasRunning = conditions?.some((c: ICondition) => c.type === 'Running');
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -351,14 +355,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'DirectVolumeMigration': {
       const { conditions, startTimestamp } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) =>
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
-      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasRunning = conditions?.some((c: ICondition) => c.type === 'Running');
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -383,14 +387,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'DirectImageStreamMigration': {
       const { conditions, startTimestamp } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) =>
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) =>
         checkListContainsString(c.type, ['Completed', 'Succeeded'])
       );
-      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasRunning = conditions?.some((c: ICondition) => c.type === 'Running');
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -417,11 +421,11 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
 
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
       const hasFailure = conditions?.some(
-        (c) =>
+        (c: ICondition) =>
           checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef']) || phase === 'Failed'
       );
       const hasCompleted = phase === 'Succeeded' || totalProgressPercentage === '100%';
@@ -450,13 +454,13 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       };
     }
     case 'Migration': {
-      const { conditions, startTimestamp } = debugRef.value.data.object.status;
+      const { conditions } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) =>
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) =>
         checkListContainsString(c.type, ['Succeeded', 'Completed'])
       );
       const hasRunning = false;
@@ -484,14 +488,14 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'Plan': {
       const { conditions } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) =>
+      const hasWarning = conditions?.some((c: ICondition) =>
         checkListContainsString(c.category, warningConditionTypes)
       );
-      const hasFailure = conditions?.some((c) => c.type === 'Failed');
-      const hasCompleted = conditions?.some((c) =>
+      const hasFailure = conditions?.some((c: ICondition) => c.type === 'Failed');
+      const hasCompleted = conditions?.some((c: ICondition) =>
         checkListContainsString(c.type, ['Succeeded', 'Completed'])
       );
-      const hasRunning = conditions?.some((c) => c.type === 'Running');
+      const hasRunning = conditions?.some((c: ICondition) => c.type === 'Running');
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -516,8 +520,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'Hook': {
       const { conditions } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasWarning = conditions?.some((c) => c.type === 'Critical');
-      const hasReady = conditions?.some((c) => c.type === 'Ready');
+      const hasWarning = conditions?.some((c: ICondition) => c.type === 'Critical');
+      const hasReady = conditions?.some((c: ICondition) => c.type === 'Ready');
       const hasTerminating = deletionTimestamp != undefined;
       return {
         hasWarning,
@@ -541,15 +545,15 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
 };
 
 const calculateCurrentStatus = (
-  hasWarning?,
-  hasFailure?,
-  hasCompleted?,
-  hasRunning?,
-  hasTerminating?,
-  hasPending?,
-  hasBound?,
-  hasAdmitted?,
-  hasReady?
+  hasWarning?: boolean,
+  hasFailure?: boolean,
+  hasCompleted?: boolean,
+  hasRunning?: boolean,
+  hasTerminating?: boolean,
+  hasPending?: boolean,
+  hasBound?: boolean,
+  hasAdmitted?: boolean,
+  hasReady?: boolean
 ) => {
   let currentStatus;
   if (hasTerminating) {

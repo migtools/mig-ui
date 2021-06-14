@@ -37,7 +37,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     planNameInputRef.current.focus();
   }, []);
 
-  const onHandleChange = (val, e) => handleChange(e);
+  const onHandleChange = (val: any, e: any) => handleChange(e);
 
   let storageOptions: string[] = ['No valid storage found'];
 
@@ -109,7 +109,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       .map((storage) => storage.MigStorage.metadata.name);
   }
 
-  const handleStorageChange = (value) => {
+  const handleStorageChange = (value: any) => {
     const matchingStorage = storageList.find((c) => c.MigStorage.metadata.name === value);
     if (matchingStorage) {
       setFieldValue('selectedStorage', value);
@@ -117,7 +117,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     }
   };
 
-  const handleSourceChange = (clusterOption) => {
+  const handleSourceChange = (clusterOption: any) => {
     const matchingCluster = clusterList.find(
       (c) => c.MigCluster.metadata.name === clusterOption.value.MigCluster.metadata.name
     );
@@ -128,7 +128,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     }
   };
 
-  const handleTargetChange = (clusterOption) => {
+  const handleTargetChange = (clusterOption: any) => {
     const matchingCluster = clusterList.find(
       (c) => c.MigCluster.metadata.name === clusterOption.value.MigCluster.metadata.name
     );

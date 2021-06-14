@@ -1,4 +1,4 @@
-import { select, call, put, take, takeEvery, all } from 'redux-saga/effects';
+import { select, call, put, take, takeEvery, all, StrictEffect } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { flatten } from 'lodash';
 import { LogActions, LogActionTypes } from './actions';
@@ -15,11 +15,16 @@ import { handleCertError } from './utils';
 import { alertErrorTimeout } from '../../common/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 
+function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
+  const res: DefaultRootState = yield select();
+  return res;
+}
+
 const clusterIndex = 4;
 const logIndex = 8;
 
-function* downloadLog(action) {
-  const state: DefaultRootState = yield select();
+function* downloadLog(action: any): Generator<any, any, any> {
+  const state = yield* getState();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const logPath: string = action.logPath;
@@ -40,8 +45,8 @@ function* downloadLog(action) {
   }
 }
 
-function* downloadLogs(action) {
-  const state: DefaultRootState = yield select();
+function* downloadLogs(action: any): Generator<any, any, any> {
+  const state = yield* getState();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const report: IPlanLogSources = action.report;
@@ -52,10 +57,10 @@ function* downloadLogs(action) {
         report[src].map((pod) => pod.containers.map((container) => container.log))
       )
     );
-    logPaths = flatten(logPaths.filter((log) => log.length > 0));
+    logPaths = flatten(logPaths.filter((log: any) => log.length > 0));
     const logs = yield all(logPaths.map((log: string) => discoveryClient.getRaw(log)));
 
-    logs.map((log: any, index) => {
+    logs.map((log: any, index: number) => {
       const fullPath = logPaths[index].split(/\//);
       const clusterName = fullPath[clusterIndex];
       const logName = fullPath[logIndex];
@@ -72,8 +77,8 @@ function* downloadLogs(action) {
   }
 }
 
-function* extractLogs(action) {
-  const state: DefaultRootState = yield select();
+function* extractLogs(action: any): Generator<any, any, any> {
+  const state = yield* getState();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const { logPath } = action;
@@ -91,7 +96,7 @@ function* extractLogs(action) {
   }
 }
 
-function* collectReport(action) {
+function* collectReport(action: any) {
   const { planName } = action;
   const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request

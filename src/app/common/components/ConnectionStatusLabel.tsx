@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const ConnectionStatusLabel: React.FunctionComponent<IProps> = ({ status, statusText }) => {
-  const getStatusIcon = (iconStatus) => {
+  const getStatusIcon = (iconStatus: any) => {
     const WrappedSpinner = () => <Spinner size="md"></Spinner>;
 
     switch (iconStatus.state) {

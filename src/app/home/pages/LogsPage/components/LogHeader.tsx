@@ -26,12 +26,12 @@ interface ISelectItem {
 
 interface IProps {
   isFetchingLogs: boolean;
-  report: IPlanLogSources;
+  report: any;
   cluster: string;
   logSource: ISelectItem;
-  setCluster: (itemISelectItem) => void;
-  setLogSource: (itemISelectItem) => void;
-  logFetchRequest: (string) => void;
+  setCluster: (itemISelectItem: any) => void;
+  setLogSource: (itemISelectItem: any) => void;
+  logFetchRequest: (log: any) => void;
 }
 
 const LogHeader: FunctionComponent<IProps> = ({
@@ -48,7 +48,7 @@ const LogHeader: FunctionComponent<IProps> = ({
   const logSources =
     report && report[cluster]
       ? flatten(
-          report[cluster].map((pod: IPodLogSource, podIndex) =>
+          report[cluster].map((pod: IPodLogSource, podIndex: number) =>
             pod.containers.map((container: IPodContainer, containerIndex) => ({
               label: `${pod.name}-${container.name}`,
               value: {
@@ -127,6 +127,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    logFetchRequest: (logPath) => dispatch(LogActions.logFetchRequest(logPath)),
+    logFetchRequest: (logPath: any) => dispatch(LogActions.logFetchRequest(logPath)),
   })
 )(LogHeader);

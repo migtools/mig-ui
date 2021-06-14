@@ -55,7 +55,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
   const [isPollingEnabled, setIsPollingEnabled] = React.useState(true);
   const dispatch = useDispatch();
 
-  const handlePlanPoll = (response) => {
+  const handlePlanPoll = (response: any) => {
     if (response) {
       dispatch(PlanActions.updatePlans(response.updatedPlans));
       return true;
@@ -63,7 +63,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
     return false;
   };
 
-  const handleClusterPoll = (response) => {
+  const handleClusterPoll = (response: any) => {
     if (response) {
       dispatch(ClusterActions.updateClusters(response.updatedClusters));
       return true;
@@ -71,7 +71,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
     return false;
   };
 
-  const handleStoragePoll = (response) => {
+  const handleStoragePoll = (response: any) => {
     if (response) {
       dispatch(StorageActions.updateStorages(response.updatedStorages));
       return true;
@@ -79,7 +79,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
     return false;
   };
 
-  const handleHookPoll = (response) => {
+  const handleHookPoll = (response: any) => {
     if (response) {
       dispatch(PlanActions.updateHooks(response.updatedHooks));
       return true;

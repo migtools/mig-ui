@@ -32,7 +32,7 @@ const StorageActionsDropdown: React.FunctionComponent<IStorageActionsDropdownPro
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [isConfirmOpen, toggleConfirmOpen] = useOpenModal(false);
 
-  const handleRemoveStorage = (isConfirmed) => {
+  const handleRemoveStorage = (isConfirmed: boolean) => {
     if (isConfirmed) {
       removeStorage(storageName);
       toggleConfirmOpen();

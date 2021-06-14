@@ -32,7 +32,7 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { IPersistentVolumeResource, IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 
 const styles = require('./VolumesTable.module').default;
@@ -58,7 +58,14 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
-  const getSortValues = (pv) => [pv.name, pv.claim, pv.project, pv.storageClass, pv.size, pv.type];
+  const getSortValues = (pv: any) => [
+    pv.name,
+    pv.claim,
+    pv.project,
+    pv.storageClass,
+    pv.size,
+    pv.type,
+  ];
   const filterCategories: FilterCategory[] = [
     {
       key: 'name',

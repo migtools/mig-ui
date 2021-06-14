@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
 import { StorageActions } from '../../../../../storage/duck/actions';
 import { Modal } from '@patternfly/react-core';
-import { StorageContext } from '../../../../duck/context';
 import {
   AddEditMode,
   defaultAddEditStatus,
@@ -18,14 +17,14 @@ interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
   isOpen: boolean;
   isPolling: boolean;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   storageList: IStorage[];
-  addStorage: (storage) => void;
+  addStorage: (storage: any) => void;
   cancelAddEditWatch: () => void;
   onHandleClose: () => void;
   resetAddEditState: () => void;
   resetStoragePage: () => void;
-  updateStorage: (updatedStorage) => void;
+  updateStorage: (updatedStorage: any) => void;
   setCurrentStorage: (currentStorage: IStorage) => void;
   currentStorage: IStorage;
 }
@@ -44,7 +43,7 @@ const AddEditStorageModal = ({
   currentStorage,
 }: IAddEditClusterModal | any) => {
   //TODO: Remove explicit any when we refactor to use redux hooks api
-  const onAddEditSubmit = (storageValues) => {
+  const onAddEditSubmit = (storageValues: any) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
         updateStorage(storageValues);
@@ -106,8 +105,8 @@ export default connect(
     };
   },
   (dispatch) => ({
-    addStorage: (storageValues) => dispatch(StorageActions.addStorageRequest(storageValues)),
-    updateStorage: (updatedStorageValues) =>
+    addStorage: (storageValues: any) => dispatch(StorageActions.addStorageRequest(storageValues)),
+    updateStorage: (updatedStorageValues: any) =>
       dispatch(StorageActions.updateStorageRequest(updatedStorageValues)),
     cancelAddEditWatch: () => dispatch(StorageActions.cancelWatchStorageAddEditStatus()),
     resetAddEditState: () => {

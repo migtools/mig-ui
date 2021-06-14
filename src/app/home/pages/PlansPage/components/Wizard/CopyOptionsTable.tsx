@@ -140,7 +140,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     },
     { title: 'Target storage class', transforms: [sortable] },
   ];
-  const getSortValues = (pv) => [
+  const getSortValues = (pv: any) => [
     pv.name,
     pv.claim,
     pv.project,

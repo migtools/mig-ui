@@ -13,7 +13,7 @@ import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { usePausedPollingEffect } from '../../../../../common/context';
 
 interface IProps {
-  startPlanStatusPolling: (planName) => void;
+  startPlanStatusPolling: (planName: string) => void;
   onClose: () => void;
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;

@@ -113,7 +113,7 @@ const mapStateToProps = (state: DefaultRootState) => ({
   currentStorage: state.storage.currentStorage,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   watchStorageAddEditStatus: (storageName: string) => {
     // Push the add edit status into watching state, and start watching
     dispatch(

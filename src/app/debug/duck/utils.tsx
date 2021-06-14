@@ -38,7 +38,7 @@ const getShallowPropsForNode = (
   };
 };
 
-const convertNode = (rawNode: IDebugTreeNode, ctx, debugRefs, plans): void => {
+const convertNode = (rawNode: IDebugTreeNode, ctx: any, debugRefs: any, plans: any): void => {
   const outNode: TreeViewDataItem = getShallowPropsForNode(rawNode, debugRefs, plans);
 
   if (rawNode.children) {

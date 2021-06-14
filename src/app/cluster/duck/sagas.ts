@@ -1,4 +1,4 @@
-import { takeLatest, select, race, take, call, put, delay } from 'redux-saga/effects';
+import { takeLatest, select, race, take, call, put, delay, StrictEffect } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IClusterClient } from '../../../client/client';
 import { MigResource, MigResourceKind, DiscoveryResource } from '../../../client/resources';
@@ -27,14 +27,24 @@ import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { PlanActions } from '../../plan/duck';
 import utils from '../../common/duck/utils';
-import { push } from 'connected-react-router';
-import { ICluster } from './types';
+import { ICluster, IMigCluster } from './types';
 import Q from 'q';
 import { alertSuccessTimeout, alertErrorTimeout, alertErrorModal } from '../../common/duck/slice';
 import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
+import { IMigMeta } from '../../auth/duck/types';
+import { ICondition } from '../../plan/duck/types';
 
-function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Array<Promise<any>> {
+function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
+  const res: DefaultRootState = yield select();
+  return res;
+}
+
+function fetchMigClusterRefs(
+  client: IClusterClient,
+  migMeta: IMigMeta,
+  migClusters: IMigCluster[]
+): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migClusters.forEach((cluster) => {
@@ -49,10 +59,11 @@ function fetchMigClusterRefs(client: IClusterClient, migMeta, migClusters): Arra
   return refs;
 }
 
-function groupClusters(migClusters: any[], refs: any[]): any[] {
+function groupClusters(migClusters: IMigCluster[], refs: any[]): ICluster[] {
   return migClusters.map((mc) => {
-    const fullCluster = {
+    const fullCluster: ICluster = {
       MigCluster: mc,
+      Secret: null,
     };
 
     if (!mc.spec.isHostCluster) {
@@ -66,14 +77,14 @@ function groupClusters(migClusters: any[], refs: any[]): any[] {
   });
 }
 
-function* fetchClustersGenerator() {
-  const state: DefaultRootState = yield select();
+function* fetchClustersGenerator(): Generator<any, any, any> {
+  const state = yield* getState();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigCluster, state.auth.migMeta.namespace);
   try {
     let clusterList = yield client.list(resource);
     clusterList = yield clusterList.data.items;
-    const nonHostClusters = clusterList.filter((c) => !c.spec.isHostCluster);
+    const nonHostClusters = clusterList.filter((c: IMigCluster) => !c.spec.isHostCluster);
     const refs = yield Promise.all(
       fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters)
     );
@@ -84,9 +95,9 @@ function* fetchClustersGenerator() {
   }
 }
 
-function* removeClusterSaga(action) {
+function* removeClusterSaga(action: any): Generator<any, any, any> {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -120,7 +131,7 @@ function* removeClusterSaga(action) {
   }
 }
 
-function* addClusterRequest(action) {
+function* addClusterRequest(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
@@ -162,7 +173,7 @@ function* addClusterRequest(action) {
       client.get(migClusterResource, migCluster.metadata.name),
     ]);
 
-    const alreadyExists = getResults.reduce((exists, res) => {
+    const alreadyExists = getResults.reduce((exists: any, res: any) => {
       return res && res.status === 200
         ? [
             ...exists,
@@ -179,7 +190,7 @@ function* addClusterRequest(action) {
 
     if (alreadyExists.length > 0) {
       throw new Error(
-        alreadyExists.reduce((msg, v) => {
+        alreadyExists.reduce((msg: any, v: any) => {
           return msg + `- kind: "${v.kind}", name: "${v.name}"`;
         }, 'Some cluster objects already exist ')
       );
@@ -225,7 +236,7 @@ function* addClusterRequest(action) {
       clusterAddResults.find((res) => res.status !== 201);
 
     if (isRollbackRequired) {
-      const kindToResourceMap = {
+      const kindToResourceMap: any = {
         MigCluster: migClusterResource,
         Secret: secretResource,
       };
@@ -238,16 +249,16 @@ function* addClusterRequest(action) {
       }, []);
 
       const rollbackResults = yield Q.allSettled(
-        rollbackObjs.map((r) => {
+        rollbackObjs.map((r: any) => {
           return client.delete(kindToResourceMap[r.kind], r.name);
         })
       );
 
       // Something went wrong with rollback, not much we can do at this point
       // except inform the user about what's gone wrong so they can take manual action
-      if (rollbackResults.find((res) => res.state === 'rejected')) {
+      if (rollbackResults.find((res: any) => res.state === 'rejected')) {
         throw new Error(
-          rollbackResults.reduce((msg, r) => {
+          rollbackResults.reduce((msg: string, r: any) => {
             const kind = r.reason.request.response.kind;
             const name = r.reason.request.response.details.name;
             return msg + `- kind: ${kind}, name: ${name}`;
@@ -288,9 +299,9 @@ function* watchAddClusterRequest() {
   yield takeLatest(ClusterActionTypes.ADD_CLUSTER_REQUEST, addClusterRequest);
 }
 
-function* updateClusterRequest(action) {
+function* updateClusterRequest(action: any): Generator<any, any, any> {
   // TODO: Probably need rollback logic here too if any fail
-  const state: DefaultRootState = yield select();
+  const state = yield* getState();
   const { migMeta } = state.auth;
   const { clusterValues } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -347,7 +358,7 @@ function* updateClusterRequest(action) {
   }
 
   const updatePromises = [];
-  const aggregatedPatch = { spec: {} };
+  const aggregatedPatch: any = { spec: {} };
 
   if (urlUpdated) {
     aggregatedPatch.spec['url'] = clusterValues.url.trim();
@@ -412,7 +423,7 @@ function* updateClusterRequest(action) {
     // on the results
     const results = yield Promise.all(updatePromises.map((reqfn) => reqfn()));
 
-    const groupedResults = results.reduce((accum, res) => {
+    const groupedResults = results.reduce((accum: any, res: any) => {
       accum[res.data.kind] = res.data;
       return accum;
     }, {});
@@ -443,12 +454,12 @@ function* watchUpdateClusterRequest() {
   yield takeLatest(ClusterActionTypes.UPDATE_CLUSTER_REQUEST, updateClusterRequest);
 }
 
-function* pollClusterAddEditStatus(action) {
+function* pollClusterAddEditStatus(action: any): Generator<any, any, any> {
   // Give the controller some time to bounce
   yield delay(AddEditDebounceWait);
   while (true) {
     try {
-      const state: DefaultRootState = yield select();
+      const state = yield* getState();
       const { migMeta } = state.auth;
       const { clusterName } = action;
 
@@ -460,7 +471,7 @@ function* pollClusterAddEditStatus(action) {
         clusterPollResult.data.status && clusterPollResult.data.status.conditions;
 
       if (hasStatusAndConditions) {
-        const criticalCond = clusterPollResult.data.status.conditions.find((cond) => {
+        const criticalCond = clusterPollResult.data.status.conditions.find((cond: ICondition) => {
           return cond.category === AddEditConditionCritical;
         });
 
@@ -473,7 +484,7 @@ function* pollClusterAddEditStatus(action) {
           );
         }
 
-        const readyCond = clusterPollResult.data.status.conditions.find((cond) => {
+        const readyCond = clusterPollResult.data.status.conditions.find((cond: ICondition) => {
           return cond.type === AddEditConditionReady;
         });
 
@@ -497,7 +508,7 @@ function* pollClusterAddEditStatus(action) {
   }
 }
 
-function* startWatchingClusterAddEditStatus(action) {
+function* startWatchingClusterAddEditStatus(action: any): Generator<any, any, any> {
   // Start a race, poll until the watch is cancelled (by closing the modal),
   // polling times out, or the condition is added, in that order of precedence.
   const raceResult = yield race({

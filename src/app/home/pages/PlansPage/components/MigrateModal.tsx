@@ -16,7 +16,7 @@ interface IProps {
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
   const [enableQuiesce, toggleQuiesce] = useState(true);
-  const handleChange = (checked, _event) => {
+  const handleChange = (checked: boolean, _event: React.FormEvent<HTMLElement>) => {
     toggleQuiesce(!!checked);
   };
 

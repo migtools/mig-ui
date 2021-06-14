@@ -20,7 +20,7 @@ interface IProps {
   isFetchingLogs: boolean;
   report: IPlanLogSources;
   log: any;
-  requestDownloadAll: (report) => void;
+  requestDownloadAll: (report: any) => void;
 }
 
 const LogBody: FunctionComponent<IProps> = ({
@@ -68,6 +68,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    requestDownloadAll: (report) => dispatch(LogActions.requestDownloadAll(report)),
+    requestDownloadAll: (report: any) => dispatch(LogActions.requestDownloadAll(report)),
   })
 )(LogBody);

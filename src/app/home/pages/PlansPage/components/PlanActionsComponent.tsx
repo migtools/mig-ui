@@ -19,15 +19,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { planSelectors, PlanActions } from '../../../../plan/duck';
 import { clusterSelectors } from '../../../../cluster/duck';
 import { storageSelectors } from '../../../../storage/duck';
+import { DefaultRootState } from '../../../../../configureStore';
 interface IPlanActionsProps {
   plan: IPlan;
 }
-export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = ({ plan }) => {
+export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
+  const { plan } = props;
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
-  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
-  const clusterList = useSelector((state) => clusterSelectors.getAllClusters(state));
-  const storageList = useSelector((state) => storageSelectors.getAllStorage(state));
+  const planList = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
+  const clusterList = useSelector((state: DefaultRootState) =>
+    clusterSelectors.getAllClusters(state)
+  );
+  const storageList = useSelector((state: DefaultRootState) =>
+    storageSelectors.getAllStorage(state)
+  );
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const dispatch = useDispatch();
@@ -150,6 +158,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           onHandleWizardModalClose={toggleEditWizardOpen}
           editPlanObj={plan.MigPlan}
           isEdit={true}
+          {...props}
         />
 
         <MigrateModal

@@ -10,8 +10,8 @@ const LoginHandlerComponent: React.FunctionComponent = () => {
   const searchParams = new URLSearchParams(useLocation().search);
   const userStr = searchParams.get('user');
   const errorStr = searchParams.get('error');
-  let user;
-  let loginError;
+  let user: any;
+  let loginError: any;
   try {
     user = userStr && JSON.parse(userStr);
     loginError = errorStr && JSON.parse(errorStr);

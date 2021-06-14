@@ -9,7 +9,7 @@ export interface IClusterClient {
   create(resource: KubeResource, newObject: object, params?: object): Promise<any>;
   delete(resource: KubeResource, name: string, params?: object): Promise<any>;
   apiRoot: string;
-  setTokenExpiryHandler: (TokenExpiryHandler, number) => void;
+  setTokenExpiryHandler: (TokenExpiryHandler: any, number: number) => void;
 }
 
 export class ClientTokenExpiredError extends Error {

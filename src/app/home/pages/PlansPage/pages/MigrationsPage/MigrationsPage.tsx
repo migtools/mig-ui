@@ -29,6 +29,7 @@ import RollbackModal from '../../components/RollbackModal';
 import { useOpenModal } from '../../../../duck';
 import { access } from 'fs';
 import AccessLogsModal from '../../components/AccessLogsModal';
+import { DefaultRootState } from '../../../../../../configureStore';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -37,7 +38,9 @@ interface IMigrationsPageParams {
 export const MigrationsPage: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { planName } = useParams<IMigrationsPageParams>();
-  const planList: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
+  const planList: IPlan[] = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
   const plan: IPlan = planList.find(
     (planItem: IPlan) => planItem.MigPlan.metadata.name === planName
   );

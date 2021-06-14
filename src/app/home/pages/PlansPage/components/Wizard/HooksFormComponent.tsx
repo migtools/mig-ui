@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { FormikProps } from 'formik';
 import planUtils from './../../../../../plan/duck/utils';
 import {
@@ -25,10 +25,10 @@ import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_s
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
-import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
 import ConditionalTooltip from './ConditionalTooltip';
 import '../../../../../common/components/SimpleSelect.css';
+import { IPlanSpecHook } from '../../../../../plan/duck/types';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -59,9 +59,9 @@ interface IHooksFormOtherProps {
   currentPlan: any;
   defaultHookRunnerImage: string;
   allHooks: IMigHook[];
-  currentPlanHooks?: IHook[];
+  currentPlanHooks?: IMigHook[];
   selectedExistingHook?: any;
-  setSelectedExistingHook?: (val) => void;
+  setSelectedExistingHook?: (val: any) => void;
   isCreateHookSelected?: boolean;
   setIsCreateHookSelected?: (isCreate: boolean) => void;
 }
@@ -111,8 +111,8 @@ const HooksFormComponent: React.FunctionComponent<
   isCreateHookSelected,
   setIsCreateHookSelected,
 }: IHooksFormOtherProps & FormikProps<IHooksFormValues>) => {
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikHandleChange = (_val: any, e: FormEvent<HTMLElement>) => handleChange(e);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   const styles = require('./HooksFormComponent.module').default;
 
@@ -121,7 +121,7 @@ const HooksFormComponent: React.FunctionComponent<
   const mappingOptions = initialPhaseOptions.map((phase) => {
     let isExistingPhase = false;
     if (currentPlan?.spec?.hooks) {
-      const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
+      const existingPhases = currentPlan.spec.hooks.map((hook: IPlanSpecHook) => hook.phase);
       isExistingPhase = !!existingPhases.includes(phase);
     }
     return {
@@ -145,7 +145,7 @@ const HooksFormComponent: React.FunctionComponent<
   const [isPhaseSelectOpen, setIsPhaseSelectOpen] = useState(false);
   const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
 
-  const handleFileChange = (value, filename, event) => {
+  const handleFileChange = (value: any, filename: string, event: FormEvent) => {
     setFieldValue('ansibleFile', value);
     setFieldValue('ansibleFilename', filename);
   };
@@ -204,15 +204,15 @@ const HooksFormComponent: React.FunctionComponent<
                     : []
                 }
                 onSelect={(_event, selection: SelectOptionObject) => {
-                  const sel = selection as OptionWithValue<IHook | 'new'>;
+                  const sel = selection as OptionWithValue<IMigHook | 'new'>;
                   if (sel.value === 'new') {
                     setIsCreateHookSelected(true);
                     setSelectedExistingHook(null);
                     setInitialHookValues({});
                   } else {
                     sel.value;
-                    const currentPlanHookRef = null;
-                    const hookRef = sel.value;
+                    const currentPlanHookRef: any = null;
+                    const hookRef: IMigHook = sel.value;
                     const uiHookObject = planUtils.convertMigHookToUIObject(
                       currentPlanHookRef,
                       hookRef

@@ -14,7 +14,6 @@ import {
   IMigration,
 } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
-import { IHook } from '../../../client/resources/conversions';
 
 export enum CurrentPlanState {
   Pending = 'Pending',
@@ -50,7 +49,7 @@ export interface IPlanReducerState {
   lockedPlanList: string[]; // Plan names
   isFetchingHookList: boolean;
   isAssociatingHookToPlan: boolean;
-  currentPlanHooks: IHook[];
+  currentPlanHooks: IMigHook[];
   allHooks: IMigHook[];
   isUpdatingGlobalHookList: boolean;
   hookAddEditStatus: IAddEditStatus;
@@ -241,7 +240,7 @@ export const updatePlanMigrations: PlanReducerFn = (state = INITIAL_STATE, actio
 };
 
 export const updatePlans: PlanReducerFn = (state = INITIAL_STATE, action) => {
-  const updatedPlanList = action.updatedPlans.map((p) => {
+  const updatedPlanList = action.updatedPlans.map((p: IPlan) => {
     //filter migrations
     p.Migrations = sortMigrations(p.Migrations);
     return p;

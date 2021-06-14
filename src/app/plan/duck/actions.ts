@@ -2,7 +2,7 @@ import { ICurrentPlanStatus } from './reducers';
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigPlan, IPlan } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
-import { IHook } from '../../../client/resources/conversions';
+import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
 
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
@@ -123,7 +123,7 @@ const updatePlans = (updatedPlans: IPlan[]) => ({
   updatedPlans,
 });
 
-const removePlanSuccess = (id) => ({
+const removePlanSuccess = (id: string) => ({
   type: PlanActionTypes.REMOVE_PLAN_SUCCESS,
   id,
 });
@@ -139,7 +139,7 @@ const stagingSuccess = (planName: string) => ({
   planName,
 });
 
-const stagingFailure = (err) => ({
+const stagingFailure = (err: any) => ({
   type: PlanActionTypes.STAGING_FAILURE,
   err,
 });
@@ -149,7 +149,7 @@ const migrationSuccess = (planName: string) => ({
   planName,
 });
 
-const migrationFailure = (err) => ({
+const migrationFailure = (err: any) => ({
   type: PlanActionTypes.MIGRATION_FAILURE,
   err,
 });
@@ -192,12 +192,12 @@ const namespaceFetchSuccess = (sourceClusterNamespaces: any[]) => ({
   sourceClusterNamespaces,
 });
 
-const namespaceFetchFailure = (err) => ({
+const namespaceFetchFailure = (err: any) => ({
   type: PlanActionTypes.NAMESPACE_FETCH_FAILURE,
   err,
 });
 
-const validatePlanPollStart = (params) => ({
+const validatePlanPollStart = (params: any) => ({
   type: PlanActionTypes.VALIDATE_PLAN_POLL_START,
   params,
 });
@@ -206,7 +206,7 @@ const validatePlanPollStop = () => ({
   type: PlanActionTypes.VALIDATE_PLAN_POLL_STOP,
 });
 
-const validatePlanRequest = (planValues) => ({
+const validatePlanRequest = (planValues: IFormValues) => ({
   type: PlanActionTypes.VALIDATE_PLAN_REQUEST,
   planValues,
 });
@@ -215,11 +215,11 @@ const validatePlanSuccess = () => ({
   type: PlanActionTypes.VALIDATE_PLAN_SUCCESS,
 });
 
-const validatePlanFailure = (error) => ({
+const validatePlanFailure = (error: any) => ({
   type: PlanActionTypes.VALIDATE_PLAN_FAILURE,
   error,
 });
-const pvDiscoveryRequest = (planValues) => ({
+const pvDiscoveryRequest = (planValues: IFormValues) => ({
   type: PlanActionTypes.PV_DISCOVERY_REQUEST,
   planValues,
 });
@@ -228,12 +228,12 @@ const pvDiscoverySuccess = () => ({
   type: PlanActionTypes.PV_DISCOVERY_SUCCESS,
 });
 
-const pvDiscoveryFailure = (error) => ({
+const pvDiscoveryFailure = (error: any) => ({
   type: PlanActionTypes.PV_DISCOVERY_FAILURE,
   error,
 });
 
-const pvUpdatePollStart = (params) => ({
+const pvUpdatePollStart = (params: any) => ({
   type: PlanActionTypes.PV_UPDATE_POLL_START,
   params,
 });
@@ -252,7 +252,7 @@ const addPlanSuccess = (newPlan: IMigPlan) => ({
   newPlan,
 });
 
-const addPlanFailure = (error) => ({
+const addPlanFailure = (error: any) => ({
   type: PlanActionTypes.ADD_PLAN_FAILURE,
   error,
 });
@@ -266,7 +266,7 @@ const addAnalyticSuccess = () => ({
   type: PlanActionTypes.ADD_ANALYTIC_SUCCESS,
 });
 
-const addAnalyticFailure = (error) => ({
+const addAnalyticFailure = (error: any) => ({
   type: PlanActionTypes.ADD_ANALYTIC_FAILURE,
   error,
 });
@@ -280,7 +280,7 @@ const refreshAnalyticSuccess = () => ({
   type: PlanActionTypes.REFRESH_ANALYTIC_SUCCESS,
 });
 
-const refreshAnalyticFailure = (error) => ({
+const refreshAnalyticFailure = (error: any) => ({
   type: PlanActionTypes.REFRESH_ANALYTIC_FAILURE,
   error,
 });
@@ -294,7 +294,7 @@ const deleteAnalyticSuccess = () => ({
   type: PlanActionTypes.DELETE_ANALYTIC_SUCCESS,
 });
 
-const deleteAnalyticFailure = (error) => ({
+const deleteAnalyticFailure = (error: any) => ({
   type: PlanActionTypes.DELETE_ANALYTIC_FAILURE,
   error,
 });
@@ -329,7 +329,7 @@ const migrationCancelSuccess = (migrationName: string) => ({
   migrationName,
 });
 
-const migrationCancelFailure = (err, migrationName: string) => ({
+const migrationCancelFailure = (err: any, migrationName: string) => ({
   type: PlanActionTypes.MIGRATION_CANCEL_FAILURE,
   err,
   migrationName,
@@ -340,7 +340,7 @@ const planCloseAndDeleteSuccess = (planName: string) => ({
   planName,
 });
 
-const planCloseAndDeleteFailure = (err, planName: string) => ({
+const planCloseAndDeleteFailure = (err: any, planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_AND_DELETE_FAILURE,
   err,
   planName,
@@ -351,7 +351,7 @@ const planCloseSuccess = (planName: string) => ({
   planName,
 });
 
-const planCloseFailure = (err, planName: string) => ({
+const planCloseFailure = (err: any, planName: string) => ({
   type: PlanActionTypes.PLAN_CLOSE_FAILURE,
   err,
   planName,
@@ -363,12 +363,12 @@ const getPVResourcesRequest = (pvList: any, clusterName: string) => ({
   clusterName,
 });
 
-const getPVResourcesSuccess = (pvResources) => ({
+const getPVResourcesSuccess = (pvResources: any) => ({
   type: PlanActionTypes.GET_PV_RESOURCES_SUCCESS,
   pvResources,
 });
 
-const getPVResourcesFailure = (error) => ({
+const getPVResourcesFailure = (error: any) => ({
   type: PlanActionTypes.GET_PV_RESOURCES_FAILURE,
   error,
 });
@@ -466,7 +466,7 @@ const addHookSuccess = (newHook: IMigHook) => ({
   newHook,
 });
 
-const addHookFailure = (error) => ({
+const addHookFailure = (error: any) => ({
   type: PlanActionTypes.ADD_HOOK_FAILURE,
   error,
 });
@@ -475,7 +475,7 @@ const fetchPlanHooksRequest = () => ({
   type: PlanActionTypes.FETCH_PLAN_HOOKS_REQUEST,
 });
 
-const fetchPlanHooksSuccess = (currentPlanHooks: IHook[]) => ({
+const fetchPlanHooksSuccess = (currentPlanHooks: IMigHook[]) => ({
   type: PlanActionTypes.FETCH_PLAN_HOOKS_SUCCESS,
   currentPlanHooks,
 });
@@ -511,33 +511,33 @@ const cancelWatchHookAddEditStatus = () => ({
   type: PlanActionTypes.CANCEL_WATCH_HOOK_ADD_EDIT_STATUS,
 });
 
-const removeHookFromPlanRequest = (name, migrationStep) => ({
+const removeHookFromPlanRequest = (name: string, migrationStep: string) => ({
   type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_REQUEST,
   name,
   migrationStep,
 });
 
-const removeHookFromPlanSuccess = (name) => ({
+const removeHookFromPlanSuccess = (name: string) => ({
   type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_SUCCESS,
   name,
 });
 
-const removeHookFromPlanFailure = (err) => ({
+const removeHookFromPlanFailure = (err: any) => ({
   type: PlanActionTypes.REMOVE_HOOK_FROM_PLAN_FAILURE,
   err,
 });
 
-const removeHookRequest = (name) => ({
+const removeHookRequest = (name: string) => ({
   type: PlanActionTypes.REMOVE_HOOK_REQUEST,
   name,
 });
 
-const removeHookSuccess = (name) => ({
+const removeHookSuccess = (name: string) => ({
   type: PlanActionTypes.REMOVE_HOOK_SUCCESS,
   name,
 });
 
-const removeHookFailure = (err) => ({
+const removeHookFailure = (err: any) => ({
   type: PlanActionTypes.REMOVE_HOOK_FAILURE,
   err,
 });

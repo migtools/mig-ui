@@ -94,7 +94,7 @@ const ConditionsGrid: React.FunctionComponent<IConditionsGridProps> = ({
                               <TextContent>
                                 <Text component={TextVariants.h6}>{namespace.name}</Text>
                               </TextContent>
-                              {namespace.gvks.map((gvk, gvkIndex) => {
+                              {namespace.gvks.map((gvk: any, gvkIndex: number) => {
                                 return (
                                   <TextContent className={spacing.mlSm}>
                                     <Text component={TextVariants.p}>

@@ -47,7 +47,7 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 // true when the form values differ from the initial values. It's possible to have
 // a cluster object exist, but have no initial values (user adds new cluster, then updates
 // while keeping the modal open). props.dirty is not sufficient for this case.
-const valuesHaveUpdate = (values, currentCluster) => {
+const valuesHaveUpdate = (values: IFormValues, currentCluster: ICluster) => {
   if (!currentCluster || currentCluster.MigCluster.spec.isHostCluster) {
     return true;
   }
@@ -96,13 +96,13 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   } = props;
 
   const [isTokenHidden, setIsTokenHidden] = useState(true);
-  const toggleHideToken = (e) => {
+  const toggleHideToken = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsTokenHidden(!isTokenHidden);
   };
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikHandleChange = (_val: any, e: React.FormEvent<HTMLElement>) => handleChange(e);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>
@@ -324,11 +324,11 @@ export interface IFormValues {
   exposedRegistryPath: string;
 }
 interface IOtherProps {
-  onAddEditSubmit: (values) => void;
+  onAddEditSubmit: (values: IFormValues) => void;
   handleClose: () => void;
   addEditStatus: IAddEditStatus;
   currentCluster: ICluster;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   initialClusterValues?: IClusterInfo;
 }
 const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
