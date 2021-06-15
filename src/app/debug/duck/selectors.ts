@@ -421,7 +421,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         (c) =>
           checkListContainsString(c.type, ['InvalidPod', 'InvalidPodRef']) || phase === 'Failed'
       );
-      const hasCompleted = phase === 'Succeeded';
+      const hasCompleted = phase === 'Succeeded' || totalProgressPercentage === '100%';
       const hasRunning = totalProgressPercentage !== '0%' && totalProgressPercentage !== '100%';
       const hasPending = !hasRunning && !hasCompleted;
       const hasTerminating = deletionTimestamp != undefined;
