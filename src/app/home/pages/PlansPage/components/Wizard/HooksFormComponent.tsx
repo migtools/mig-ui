@@ -23,7 +23,7 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
@@ -115,21 +115,17 @@ const HooksFormComponent: React.FunctionComponent<
 
   const initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
-  // const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
   const mappingOptions = initialPhaseOptions.map((phase) => {
     let isExistingPhase = false;
     if (currentPlan?.spec?.hooks) {
       const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
-      // const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
       isExistingPhase = initialPhaseOptions.some((phase) => existingPhases.includes(phase));
-      // initialPhaseOptions = filteredPhases;
     }
     return {
       toString: () => phase,
       value: phase,
       props: {
         isDisabled: isExistingPhase,
-        // className: isExistingPhase ? 'disabled-with-pointer-events' : '',
         children: (
           <ConditionalTooltip
             isTooltipEnabled={!isExistingPhase}
@@ -592,18 +588,6 @@ const HooksFormComponent: React.FunctionComponent<
                 helperTextInvalid={touched.migrationStep && errors.migrationStep}
                 validated={validatedState(touched.migrationStep, errors.migrationStep)}
               >
-                {/* <SimpleSelect
-                  id="migrationStep"
-                  onChange={(value) => {
-                    setTimeout(() => {
-                      setFieldValue('migrationStep', value);
-                      setFieldTouched('migrationStep');
-                    });
-                  }}
-                  options={phaseOptions}
-                  value={values.migrationStep}
-                  placeholderText="Select phase..."
-                /> */}
                 <Select
                   id="migrationPhase"
                   aria-label="Select phase"
@@ -621,18 +605,6 @@ const HooksFormComponent: React.FunctionComponent<
                   {mappingOptions.map((option) => (
                     <SelectOption key={option.toString()} value={option} {...option.props} />
                   ))}
-                  {/* <SelectOption key={newMappingOption.toString()} value={newMappingOption} /> */}
-                  {/* <SelectGroup
-                    label={
-                      mappingOptions.length > 0
-                        ? 'Existing mappings'
-                        : 'No existing mappings match your selected providers'
-                    }
-                  >
-                    {mappingOptions.map((option) => (
-                      <SelectOption key={option.toString()} value={option} {...option.props} />
-                    ))}
-                  </SelectGroup> */}
                 </Select>
               </FormGroup>
             </GridItem>
