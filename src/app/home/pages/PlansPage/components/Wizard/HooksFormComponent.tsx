@@ -27,6 +27,7 @@ import SimpleSelect, { OptionWithValue } from '../../../../../common/components/
 import { validatedState } from '../../../../../common/helpers';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
+import ConditionalTooltip from './ConditionalTooltip';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -112,15 +113,36 @@ const HooksFormComponent: React.FunctionComponent<
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
-  let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
+  const initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
-  if (currentPlan?.spec?.hooks) {
-    const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
-    const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
-    initialPhaseOptions = filteredPhases;
-  }
+  // const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
+  const mappingOptions = initialPhaseOptions.map((phase) => {
+    let isExistingPhase = false;
+    if (currentPlan?.spec?.hooks) {
+      const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
+      // const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
+      isExistingPhase = initialPhaseOptions.some((phase) => existingPhases.includes(phase));
+      // initialPhaseOptions = filteredPhases;
+    }
+    return {
+      toString: () => phase,
+      value: phase,
+      props: {
+        isDisabled: isExistingPhase,
+        // className: isExistingPhase ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={!isExistingPhase}
+            content="This phase cannot be selected because a hook already exists for this phase"
+          >
+            <div>{phase}</div>
+          </ConditionalTooltip>
+        ),
+      },
+    };
+  }) as OptionWithValue<any>[];
 
-  const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
+  const [isPhaseSelectOpen, setIsPhaseSelectOpen] = useState(false);
   const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
 
   const handleFileChange = (value, filename, event) => {
@@ -570,7 +592,7 @@ const HooksFormComponent: React.FunctionComponent<
                 helperTextInvalid={touched.migrationStep && errors.migrationStep}
                 validated={validatedState(touched.migrationStep, errors.migrationStep)}
               >
-                <SimpleSelect
+                {/* <SimpleSelect
                   id="migrationStep"
                   onChange={(value) => {
                     setTimeout(() => {
@@ -581,7 +603,37 @@ const HooksFormComponent: React.FunctionComponent<
                   options={phaseOptions}
                   value={values.migrationStep}
                   placeholderText="Select phase..."
-                />
+                /> */}
+                <Select
+                  id="migrationPhase"
+                  aria-label="Select phase"
+                  placeholderText={`Select a phase`}
+                  isOpen={isPhaseSelectOpen}
+                  onToggle={setIsPhaseSelectOpen}
+                  onSelect={(_event, selection) => {
+                    const sel = selection as OptionWithValue<any | 'new'>;
+                    setTimeout(() => {
+                      setFieldValue('migrationStep', sel.value);
+                      setFieldTouched('migrationStep');
+                    });
+                  }}
+                >
+                  {mappingOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} {...option.props} />
+                  ))}
+                  {/* <SelectOption key={newMappingOption.toString()} value={newMappingOption} /> */}
+                  {/* <SelectGroup
+                    label={
+                      mappingOptions.length > 0
+                        ? 'Existing mappings'
+                        : 'No existing mappings match your selected providers'
+                    }
+                  >
+                    {mappingOptions.map((option) => (
+                      <SelectOption key={option.toString()} value={option} {...option.props} />
+                    ))}
+                  </SelectGroup> */}
+                </Select>
               </FormGroup>
             </GridItem>
           </>
