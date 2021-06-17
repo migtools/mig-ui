@@ -119,7 +119,7 @@ const HooksFormComponent: React.FunctionComponent<
     let isExistingPhase = false;
     if (currentPlan?.spec?.hooks) {
       const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
-      isExistingPhase = initialPhaseOptions.some((phase) => existingPhases.includes(phase));
+      isExistingPhase = !!existingPhases.includes(phase);
     }
     return {
       toString: () => phase,
@@ -128,7 +128,7 @@ const HooksFormComponent: React.FunctionComponent<
         isDisabled: isExistingPhase,
         children: (
           <ConditionalTooltip
-            isTooltipEnabled={!isExistingPhase}
+            isTooltipEnabled={isExistingPhase}
             content="This phase cannot be selected because a hook already exists for this phase"
           >
             <div>{phase}</div>
