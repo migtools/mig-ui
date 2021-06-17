@@ -24,7 +24,6 @@ import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
-import { usePlanContext } from '../../../../context';
 import MigrateModal from '../../components/MigrateModal';
 import RollbackModal from '../../components/RollbackModal';
 import { useOpenModal } from '../../../../duck';
@@ -45,7 +44,9 @@ export const MigrationsPage: React.FunctionComponent = () => {
 
   const migrations = plan?.Migrations;
   const { path, url } = useRouteMatch();
-  const planContext = usePlanContext();
+
+  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
 
   if (!migrations) {
     return <Redirect to="/" />;
@@ -81,7 +82,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          planContext.toggleMigrateModalOpen();
+          toggleMigrateModalOpen();
         }}
         key="migratePlan"
         isDisabled={
@@ -98,7 +99,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          planContext.toggleRollbackModalOpen();
+          toggleRollbackModalOpen();
         }}
         key="rollbackPlan"
         isDisabled={
@@ -171,14 +172,14 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     />
                     <MigrateModal
                       plan={plan}
-                      isOpen={planContext.isMigrateModalOpen}
-                      onHandleClose={planContext.toggleMigrateModalOpen}
+                      isOpen={isMigrateModalOpen}
+                      onHandleClose={toggleMigrateModalOpen}
                     />
 
                     <RollbackModal
                       plan={plan}
-                      isOpen={planContext.isRollbackModalOpen}
-                      onHandleClose={planContext.toggleRollbackModalOpen}
+                      isOpen={isRollbackModalOpen}
+                      onHandleClose={toggleRollbackModalOpen}
                     />
                   </CardBody>
                 </Card>
