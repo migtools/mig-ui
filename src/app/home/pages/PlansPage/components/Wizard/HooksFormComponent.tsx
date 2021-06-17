@@ -28,6 +28,7 @@ import { validatedState } from '../../../../../common/helpers';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
 import ConditionalTooltip from './ConditionalTooltip';
+import '../../../../../common/components/SimpleSelect.css';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -113,6 +114,8 @@ const HooksFormComponent: React.FunctionComponent<
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
+  const styles = require('./HooksFormComponent.module').default;
+
   const initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
   const mappingOptions = initialPhaseOptions.map((phase) => {
@@ -126,6 +129,7 @@ const HooksFormComponent: React.FunctionComponent<
       value: phase,
       props: {
         isDisabled: isExistingPhase,
+        className: isExistingPhase ? 'disabled-with-pointer-events' : '',
         children: (
           <ConditionalTooltip
             isTooltipEnabled={isExistingPhase}
