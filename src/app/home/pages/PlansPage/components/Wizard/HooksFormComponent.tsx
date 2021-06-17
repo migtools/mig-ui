@@ -23,10 +23,12 @@ import {
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { AddEditMode, addEditButtonText } from '../../../../../common/add_edit_state';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { validatedState } from '../../../../../common/helpers';
 import { IHook } from '../../../../../../client/resources/conversions';
 import { IMigHook } from '../../../HooksPage/types';
+import ConditionalTooltip from './ConditionalTooltip';
+import '../../../../../common/components/SimpleSelect.css';
 const classNames = require('classnames');
 
 const componentTypeStr = 'hook';
@@ -112,15 +114,35 @@ const HooksFormComponent: React.FunctionComponent<
   const formikHandleChange = (_val, e) => handleChange(e);
   const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
 
-  let initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
+  const styles = require('./HooksFormComponent.module').default;
 
-  if (currentPlan?.spec?.hooks) {
-    const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
-    const filteredPhases = initialPhaseOptions.filter((phase) => !existingPhases.includes(phase));
-    initialPhaseOptions = filteredPhases;
-  }
+  const initialPhaseOptions = ['PreBackup', 'PostBackup', 'PreRestore', 'PostRestore'];
 
-  const [phaseOptions, setPhaseOptions] = useState(initialPhaseOptions);
+  const mappingOptions = initialPhaseOptions.map((phase) => {
+    let isExistingPhase = false;
+    if (currentPlan?.spec?.hooks) {
+      const existingPhases = currentPlan.spec.hooks.map((hook) => hook.phase);
+      isExistingPhase = !!existingPhases.includes(phase);
+    }
+    return {
+      toString: () => phase,
+      value: phase,
+      props: {
+        isDisabled: isExistingPhase,
+        className: isExistingPhase ? 'disabled-with-pointer-events' : '',
+        children: (
+          <ConditionalTooltip
+            isTooltipEnabled={isExistingPhase}
+            content="This phase cannot be selected because a hook already exists for this phase"
+          >
+            <div>{phase}</div>
+          </ConditionalTooltip>
+        ),
+      },
+    };
+  }) as OptionWithValue<any>[];
+
+  const [isPhaseSelectOpen, setIsPhaseSelectOpen] = useState(false);
   const [isHookSelectOpen, setIsHookSelectOpen] = useState(false);
 
   const handleFileChange = (value, filename, event) => {
@@ -570,18 +592,24 @@ const HooksFormComponent: React.FunctionComponent<
                 helperTextInvalid={touched.migrationStep && errors.migrationStep}
                 validated={validatedState(touched.migrationStep, errors.migrationStep)}
               >
-                <SimpleSelect
-                  id="migrationStep"
-                  onChange={(value) => {
+                <Select
+                  id="migrationPhase"
+                  aria-label="Select phase"
+                  placeholderText={`Select a phase`}
+                  isOpen={isPhaseSelectOpen}
+                  onToggle={setIsPhaseSelectOpen}
+                  onSelect={(_event, selection) => {
+                    const sel = selection as OptionWithValue<any | 'new'>;
                     setTimeout(() => {
-                      setFieldValue('migrationStep', value);
+                      setFieldValue('migrationStep', sel.value);
                       setFieldTouched('migrationStep');
                     });
                   }}
-                  options={phaseOptions}
-                  value={values.migrationStep}
-                  placeholderText="Select phase..."
-                />
+                >
+                  {mappingOptions.map((option) => (
+                    <SelectOption key={option.toString()} value={option} {...option.props} />
+                  ))}
+                </Select>
               </FormGroup>
             </GridItem>
           </>
