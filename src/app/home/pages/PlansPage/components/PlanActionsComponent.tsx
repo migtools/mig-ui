@@ -15,9 +15,8 @@ import { useHistory } from 'react-router-dom';
 import WizardContainer from './Wizard/WizardContainer';
 import ConfirmModal from '../../../../common/components/ConfirmModal';
 import { IPlan } from '../../../../plan/duck/types';
-import { usePlanContext } from '../../../context';
-import { useSelector, DefaultRootState, useDispatch } from 'react-redux';
-import { planSelectors, IPlanReducerState, PlanActions } from '../../../../plan/duck';
+import { useSelector, useDispatch } from 'react-redux';
+import { planSelectors, PlanActions } from '../../../../plan/duck';
 import { clusterSelectors } from '../../../../cluster/duck';
 import { storageSelectors } from '../../../../storage/duck';
 interface IPlanActionsProps {
@@ -29,8 +28,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
   const clusterList = useSelector((state) => clusterSelectors.getAllClusters(state));
   const storageList = useSelector((state) => storageSelectors.getAllStorage(state));
-  // const planState: IPlanReducerState = useSelector((state: DefaultRootState) => state.plan);
-  const planContext = usePlanContext();
+  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const dispatch = useDispatch();
 
   const history = useHistory();
@@ -83,7 +82,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        planContext.toggleMigrateModalOpen();
+        toggleMigrateModalOpen();
       }}
       key="migratePlan"
       isDisabled={
@@ -100,7 +99,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        planContext.toggleRollbackModalOpen();
+        toggleRollbackModalOpen();
       }}
       key="rollbackPlan"
       isDisabled={
@@ -155,14 +154,14 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
 
         <MigrateModal
           plan={plan}
-          isOpen={planContext.isMigrateModalOpen}
-          onHandleClose={planContext.toggleMigrateModalOpen}
+          isOpen={isMigrateModalOpen}
+          onHandleClose={toggleMigrateModalOpen}
         />
 
         <RollbackModal
           plan={plan}
-          isOpen={planContext.isRollbackModalOpen}
-          onHandleClose={planContext.toggleRollbackModalOpen}
+          isOpen={isRollbackModalOpen}
+          onHandleClose={toggleRollbackModalOpen}
         />
 
         <ConfirmModal

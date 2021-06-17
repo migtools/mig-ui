@@ -7,7 +7,6 @@ import { HooksPage } from './pages/HooksPage/HooksPage';
 import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 import { RAW_OBJECT_VIEW_ROUTE } from '../debug/duck/types';
 import NamespacesPage from './pages/PlansPage/pages/NamespacesPage/NamespacesPage';
-import { PlanContextProvider } from './context';
 
 const HomeComponent: React.FunctionComponent = () => {
   return (
@@ -31,14 +30,12 @@ const HomeComponent: React.FunctionComponent = () => {
           </Route>
           <RefreshRoute exact path="/logs/:planId" isLoggedIn component={LogsPage} />
           <RefreshRoute path={RAW_OBJECT_VIEW_ROUTE} isLoggedIn component={RawDebugObjectView} />
-          <PlanContextProvider>
-            <Route exact path="/plans">
-              <PlansPage />
-            </Route>
-            <Route path="/plans/:planName/migrations">
-              <MigrationsPage />
-            </Route>
-          </PlanContextProvider>
+          <Route exact path="/plans">
+            <PlansPage />
+          </Route>
+          <Route path="/plans/:planName/migrations">
+            <MigrationsPage />
+          </Route>
           <Route path="*">
             <Redirect to="/" />
           </Route>
