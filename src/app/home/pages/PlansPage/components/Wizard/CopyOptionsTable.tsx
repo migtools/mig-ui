@@ -21,8 +21,16 @@ import {
   Modal,
   Button,
   BaseSizes,
+  FlexItem,
 } from '@patternfly/react-core';
-import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import {
+  Table,
+  TableVariant,
+  TableHeader,
+  TableBody,
+  sortable,
+  cellWidth,
+} from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
@@ -85,6 +93,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   onVerifyFlagChange,
   onCopyMethodChange,
 }: ICopyOptionsTableProps) => {
+  const styles = require('./CopyOptionsTable.module').default;
+
   if (isFetchingPVList) {
     return (
       <Bullseye>
@@ -106,7 +116,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     { title: 'PV name', transforms: [sortable] },
     { title: 'Claim', transforms: [sortable] },
     { title: 'Namespace', transforms: [sortable] },
-    { title: 'Copy method', transforms: [sortable] },
+    { title: 'Copy method', transforms: [sortable, cellWidth(15)] },
     {
       title: (
         <React.Fragment>
@@ -126,6 +136,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           </Tooltip>
         </React.Fragment>
       ),
+      transforms: [sortable, cellWidth(10)],
     },
     { title: 'Target storage class', transforms: [sortable] },
   ];
@@ -214,32 +225,33 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.project,
         {
           title: (
-            <SimpleSelect
-              aria-label="Select copy method"
-              onChange={(option: OptionWithValue) => onCopyMethodChange(currentPV, option.value)}
-              options={copyMethodOptions}
-              value={copyMethodOptions.find((option) => option.value === currentCopyMethod)}
-              placeholderText="Select a copy method..."
-            />
+            <div className={styles.copySelectContainerStyle}>
+              <SimpleSelect
+                className={styles.copySelectStyle}
+                aria-label="Select copy method"
+                onChange={(option: OptionWithValue) => onCopyMethodChange(currentPV, option.value)}
+                options={copyMethodOptions}
+                value={copyMethodOptions.find((option) => option.value === currentCopyMethod)}
+                placeholderText="Select a copy method..."
+              />
+            </div>
           ),
         },
         {
           title: (
-            <Flex className={flex.justifyContentCenter}>
-              <Checkbox
-                isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
-                isDisabled={!isVerifyCopyAllowed}
-                onChange={(checked) => {
-                  onVerifyFlagChange(currentPV, checked);
-                  if (checked && verifyWarningState === VerifyWarningState.Unread) {
-                    setVerifyWarningState(VerifyWarningState.Open);
-                  }
-                }}
-                aria-label={`Verify copy for PV ${pv.name}`}
-                id={`verify-pv-${pv.name}`}
-                name={`verify-pv-${pv.name}`}
-              />
-            </Flex>
+            <Checkbox
+              isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
+              isDisabled={!isVerifyCopyAllowed}
+              onChange={(checked) => {
+                onVerifyFlagChange(currentPV, checked);
+                if (checked && verifyWarningState === VerifyWarningState.Unread) {
+                  setVerifyWarningState(VerifyWarningState.Open);
+                }
+              }}
+              aria-label={`Verify copy for PV ${pv.name}`}
+              id={`verify-pv-${pv.name}`}
+              name={`verify-pv-${pv.name}`}
+            />
           ),
         },
         {
