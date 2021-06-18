@@ -439,7 +439,7 @@ export function updateMigPlanFromValues(
         if (selectedStorageClassObj) {
           v.selection.storageClass = selectedStorageClassObj.name;
         } else {
-          v.selection.storageClass = '';
+          v.selection.storageClass = v.selection.storageClass || '';
         }
       }
       return v;
