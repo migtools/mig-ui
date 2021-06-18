@@ -52,7 +52,10 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
     case 'Job': {
       const { conditions, startTime, completionTime } = debugRef.value.data.object.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
-      const hasRunning = startTime != undefined && completionTime == undefined;
+      const hasRunning =
+        startTime != undefined &&
+        completionTime == undefined &&
+        !conditions?.some((c) => c.type === 'Failed');
       const hasTerminating = deletionTimestamp != undefined;
       const hasFailure = conditions?.some((c) => c.type === 'Failed');
       const hasCompleted = conditions?.some((c) => c.type === 'Complete');
