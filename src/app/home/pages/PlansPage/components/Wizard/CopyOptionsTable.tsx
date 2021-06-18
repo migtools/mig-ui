@@ -225,7 +225,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.project,
         {
           title: (
-            <div className={styles.copySelectContainerStyle}>
+            <div>
               <SimpleSelect
                 className={styles.copySelectStyle}
                 aria-label="Select copy method"
