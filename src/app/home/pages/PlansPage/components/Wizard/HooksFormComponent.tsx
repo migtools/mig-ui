@@ -598,12 +598,14 @@ const HooksFormComponent: React.FunctionComponent<
                   placeholderText={`Select a phase`}
                   isOpen={isPhaseSelectOpen}
                   onToggle={setIsPhaseSelectOpen}
+                  selections={values.migrationStep}
                   onSelect={(_event, selection) => {
                     const sel = selection as OptionWithValue<any | 'new'>;
                     setTimeout(() => {
                       setFieldValue('migrationStep', sel.value);
                       setFieldTouched('migrationStep');
                     });
+                    setIsPhaseSelectOpen(false);
                   }}
                 >
                   {mappingOptions.map((option) => (
