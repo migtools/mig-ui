@@ -74,12 +74,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
             return false;
           }
         }) ||
-        // If an existing src namespace exists, throw a validation error as long as the user isnt attempting to revert to the old mapped name
         sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName.name)
-        // &&
-        // values.editedNamespaces.length !== 0)
-        // // !values.editedNamespaces.some((ns) => ns.oldName === values.currentTargetName.name) &&
-        // values.currentTargetName.name !== values.currentTargetName.srcName
       ) {
         errors.currentTargetName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
