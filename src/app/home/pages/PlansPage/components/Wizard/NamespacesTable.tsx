@@ -263,9 +263,14 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 >
                                   <TextInput
                                     name={currentTargetNameKey}
-                                    value={values.currentTargetName}
+                                    value={values.currentTargetName.name}
                                     type="text"
-                                    onChange={formikHandleChange}
+                                    onChange={(val, e) => {
+                                      setFieldValue(currentTargetNameKey, {
+                                        name: val,
+                                        srcName: row.cells[0],
+                                      });
+                                    }}
                                     onInput={formikSetFieldTouched(currentTargetNameKey)}
                                     onBlur={handleBlur}
                                     isReadOnly={!isEditable}
@@ -322,7 +327,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                       //check if no changes made
                                       if (
                                         newEditedNamespaces[index].oldName ===
-                                        values.currentTargetName
+                                        values.currentTargetName.name
                                       ) {
                                         if (index > -1) {
                                           newEditedNamespaces.splice(index, 1);
@@ -331,7 +336,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                       } else if (index || index === 0) {
                                         newEditedNamespaces[index] = {
                                           oldName: row.cells[0],
-                                          newName: values.currentTargetName,
+                                          newName: values.currentTargetName.name,
                                         };
                                       }
                                     } else {
@@ -340,7 +345,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                           ...values.editedNamespaces,
                                           {
                                             oldName: row.cells[0],
-                                            newName: values.currentTargetName,
+                                            newName: values.currentTargetName.name,
                                           },
                                         ]),
                                       ];
@@ -377,7 +382,10 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                             size="md"
                             onClick={() => {
                               setEditableRow(rowIndex);
-                              setFieldValue(currentTargetNameKey, row.cells[4]);
+                              setFieldValue(currentTargetNameKey, {
+                                name: row.cells[4],
+                                srcName: row.cells[0],
+                              });
                             }}
                           />
                         </span>

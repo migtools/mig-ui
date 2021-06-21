@@ -56,29 +56,29 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       }
       if (!values.currentTargetName) {
         errors.currentTargetName = 'Required';
-      } else if (!utils.testDNS1123(values.currentTargetName)) {
-        errors.currentTargetName = utils.DNS1123Error(values.currentTargetName);
+      } else if (!utils.testDNS1123(values.currentTargetName.name)) {
+        errors.currentTargetName = utils.DNS1123Error(values.currentTargetName.name);
+      } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
+        errors.currentTargetName =
+          'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
       } else if (
         //check for duplicate ns mappings
         // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
         !!values.editedNamespaces.find((ns) => {
           if (values.editedNamespaces.length > 0) {
             return (
-              ns.newName === values.currentTargetName && ns.oldName !== values.currentTargetName
+              ns.newName === values.currentTargetName.name &&
+              ns.oldName !== values.currentTargetName.name
             );
           } else {
             return false;
           }
         }) ||
-        // If an existing src namespace exists, throw a validation error as long as the user isnt attempting to revert to the old mapped name
-        (sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName) &&
-          values.editedNamespaces.length !== 0 &&
-          !values.editedNamespaces.some((ns) => ns.oldName === values.currentTargetName))
+        sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName.name)
       ) {
         errors.currentTargetName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
       }
-
       return errors;
     }}
     onSubmit={() => {
