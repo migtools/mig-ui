@@ -51,7 +51,10 @@ export interface IFormValues {
   };
   indirectImageMigration?: boolean;
   indirectVolumeMigration?: boolean;
-  currentTargetName?: string;
+  currentTargetName?: {
+    name: string;
+    srcName: string;
+  };
 }
 
 export interface IOtherProps {
