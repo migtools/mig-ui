@@ -155,7 +155,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
               ),
             },
             {
-              title: <PlanStatus plan={plan} isNestedDebugView={false} />,
+              title: <PlanStatus plan={plan} />,
             },
             {
               title: <PlanActionsComponent plan={plan} />,

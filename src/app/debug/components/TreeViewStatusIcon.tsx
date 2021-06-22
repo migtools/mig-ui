@@ -46,7 +46,7 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
   if (debugRef.resourceKind === 'Plan') {
     return (
       <FlexItem>
-        <PlanStatus plan={matchingPlanRef || null} isNestedDebugView={true} />
+        <PlanStatus plan={matchingPlanRef || null} />
       </FlexItem>
     );
   }
