@@ -30,14 +30,13 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
       <Grid hasGutter>
         <form>
           <GridItem>
-            Migrating a migration plan means that all transactions on the source cluster will be
-            halted before the migration begins and will remain halted for the duration of the
-            migration. Persistent volumes associated with the projects being migrated will be moved
-            or copied to the target cluster as specified in the migration plan.
+            By default, the pods on the source cluster are scaled to zero before migration.
+            Persistent volumes are then moved or copied to the target cluster. See the product
+            documentation for more information.
           </GridItem>
           <GridItem className={styles.gridMargin}>
             <Checkbox
-              label="Halt transactions on the source during migration."
+              label="Shut down the pods on the source cluster before migration."
               aria-label="halt-label"
               id="transaction-halt-checkbox"
               isChecked={enableQuiesce}
