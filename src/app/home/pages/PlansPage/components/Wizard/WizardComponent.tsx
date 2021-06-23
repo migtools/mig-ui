@@ -188,6 +188,8 @@ const WizardComponent = (props: IOtherProps) => {
             isAddHooksOpen={isAddHooksOpen}
             setIsAddHooksOpen={setIsAddHooksOpen}
             associateHookToPlan={associateHookToPlan}
+            cancelAddEditWatch={cancelAddEditWatch}
+            resetAddEditState={resetAddEditState}
           />
         </WizardStepContainer>
       ),

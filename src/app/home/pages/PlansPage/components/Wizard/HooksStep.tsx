@@ -37,6 +37,8 @@ interface IHooksStepBaseProps {
   isFetchingHookList: boolean;
   isUpdatingGlobalHookList: boolean;
   isAssociatingHookToPlan: boolean;
+  cancelAddEditWatch: () => void;
+  resetAddEditState: () => void;
   fetchPlanHooksRequest: () => void;
   hookAddEditStatus: IAddEditStatus;
   currentPlan: IMigPlan;
@@ -67,6 +69,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     migMeta,
     allHooks,
     associateHookToPlan,
+    cancelAddEditWatch,
+    resetAddEditState,
   } = props;
 
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
@@ -233,6 +237,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
             setSelectedExistingHook={setSelectedExistingHook}
             isCreateHookSelected={isCreateHookSelected}
             setIsCreateHookSelected={setIsCreateHookSelected}
+            cancelAddEditWatch={cancelAddEditWatch}
+            resetAddEditState={resetAddEditState}
             {...props}
           />
         </GridItem>
