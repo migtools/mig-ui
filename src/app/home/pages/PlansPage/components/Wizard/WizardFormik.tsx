@@ -54,10 +54,11 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
+      const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
       if (!values.currentTargetName) {
         errors.currentTargetName = 'Required';
-      } else if (!utils.testDNS1123(values.currentTargetName.name)) {
-        errors.currentTargetName = utils.DNS1123Error(values.currentTargetName.name);
+      } else if (targetNamespaceNameError !== '') {
+        errors.currentTargetName = targetNamespaceNameError;
       } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
         errors.currentTargetName =
           'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
