@@ -62,6 +62,14 @@ export const PlanDebugPage: React.FunctionComponent = () => {
     };
   }, []);
 
+  useEffect(() => {
+    //Set debug tree to open if linking using a HashLink
+    const { hash } = window.location;
+    if (hash !== '') {
+      setIsOpen(true);
+    }
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [searchText, setSearchText] = useState('');
@@ -92,7 +100,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <PageSection>
+      <PageSection id="debug">
         {debug.errMsg ? (
           <Alert variant="danger" title={`Error loading debug data for plan "${planName}"`}>
             <p>{debug.errMsg}</p>
