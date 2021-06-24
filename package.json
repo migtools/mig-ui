@@ -106,6 +106,7 @@
     "react-json-view": "^1.21.3",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.1.2",
+    "react-router-hash-link": "^2.4.3",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.0.3",
