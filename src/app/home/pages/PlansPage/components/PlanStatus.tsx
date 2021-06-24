@@ -34,16 +34,17 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
     hasWarnCondition ||
     hasSucceededMigration ||
     hasSucceededMigrationWithWarnings;
+  const planName = plan?.MigPlan?.metadata?.name;
+  const latestMigrationName = latestMigration?.metadata?.name;
+
   return (
     <Flex>
       <FlexItem>
         <PlanStatusIcon plan={plan} />
         <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
-        {!isNestedDebugView && showDebugLink && (
+        {!isNestedDebugView && showDebugLink && planName && latestMigrationName && (
           <div>
-            <Link
-              to={`/plans/${plan.MigPlan.metadata.name}/migrations/${latestMigration.metadata.name}`}
-            >
+            <Link to={`/plans/${planName}/migrations/${latestMigrationName}`}>
               View debug page for more info
             </Link>
           </div>
