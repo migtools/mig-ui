@@ -4,7 +4,7 @@ import { Flex, FlexItem } from '@patternfly/react-core';
 import { getPlanStatusText } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 interface IProps {
   plan: IPlan;
@@ -44,9 +44,9 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
         <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
         {!isNestedDebugView && showDebugLink && planName && latestMigrationName && (
           <div>
-            <Link to={`/plans/${planName}/migrations/${latestMigrationName}`}>
+            <HashLink to={`/plans/${planName}/migrations/${latestMigrationName}#debug`}>
               View debug page for more info
-            </Link>
+            </HashLink>
           </div>
         )}
       </FlexItem>
