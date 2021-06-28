@@ -28,6 +28,7 @@ import WizardContainer from './components/Wizard/WizardContainer';
 import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 import { IAddPlanDisabledObjModel } from './types';
 import { DefaultRootState } from '../../../../configureStore';
+import { IPlan } from '../../../plan/duck/types';
 
 export const PlansPage: React.FunctionComponent = () => {
   const planList = useSelector((state: DefaultRootState) =>
@@ -143,8 +144,6 @@ export const PlansPage: React.FunctionComponent = () => {
                     planList={filteredPlanList}
                     addPlanDisabledObj={addPlanDisabledObj}
                     toggleAddWizardOpen={toggleAddWizardOpen}
-                    // refreshAnalyticRequest={refreshAnalyticRequest}
-                    isRefreshingAnalytic={isRefreshingAnalytic}
                   />
                 </CardBody>
               )}
