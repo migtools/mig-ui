@@ -34,7 +34,6 @@ export default function* rootSaga() {
 
     // Configure token expiry behavior
     setTokenExpiryHandler(() => {
-      debugger;
       const LS_KEY_CURRENT_USER = 'currentUser';
       localStorage.removeItem(LS_KEY_CURRENT_USER);
       window.location.href = '/login';
