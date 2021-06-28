@@ -245,24 +245,6 @@ const getPlansWithPlanStatus = createSelector(
     return plansWithStatus;
   }
 );
-// interface IMigrationStatus {
-//   start: string;
-//   end: string;
-//   moved: number;
-//   copied: number;
-//   isPaused: boolean;
-//   isFailed: boolean;
-//   isSucceeded: boolean;
-//   isSucceededWithWarnings: boolean;
-//   isCanceled: boolean;
-//   isCanceling: boolean;
-//   isPostponed: boolean;
-//   migrationState: any;
-//   warnings: Array<string>;
-//   errors: Array<string>;
-//   errorCondition: string;
-//   warnCondition: string;
-// }
 
 const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPlan[] => {
   const getMigrationStatus = (plan: any, migration: IMigration) => {
