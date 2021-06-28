@@ -11,6 +11,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strict": true,
     "noImplicitAny": true,
     "noImplicitReturns": false,
     "removeComments": true,

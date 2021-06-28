@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Dropdown, KebabToggle, DropdownItem } from '@patternfly/react-core';
@@ -45,7 +45,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     );
   };
 
-  const onCopyLogs = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const onCopyLogs = (event: MouseEvent) => {
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
@@ -69,7 +69,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   const describeDropdownButton = (
     <DropdownItem
       key="copy-oc-describe-command"
-      onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+      onClick={(event: any) => {
         onCopyDescribe(event);
         setKebabIsOpen(false);
       }}
@@ -87,7 +87,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   const logsDropdownButton = (
     <DropdownItem
       key="copy-oc-logs-command"
-      onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+      onClick={(event: any) => {
         onCopyLogs(event);
         setKebabIsOpen(false);
       }}

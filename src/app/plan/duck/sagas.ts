@@ -43,7 +43,7 @@ import {
 import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
-import { IMigPlan, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
+import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
 import { useSelector } from 'react-redux';
 import { authSelectors } from '../../common/duck';
 import { IMigHook } from '../../home/pages/HooksPage/types';
@@ -708,7 +708,7 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
-      (s: IMigMigration) => s.metadata.name === createMigRes.data.metadata.name
+      (s: IMigration) => s.metadata.name === createMigRes.data.metadata.name
     );
 
     if (matchingMigration && matchingMigration.status?.conditions) {

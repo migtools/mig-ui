@@ -229,7 +229,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               <SimpleSelect
                 className={styles.copySelectStyle}
                 aria-label="Select copy method"
-                onChange={(option: OptionWithValue) => onCopyMethodChange(currentPV, option.value)}
+                onChange={(option: any) => onCopyMethodChange(currentPV, option.value)}
                 options={copyMethodOptions}
                 value={copyMethodOptions.find((option) => option.value === currentCopyMethod)}
                 placeholderText="Select a copy method..."
@@ -258,7 +258,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           title: (
             <SimpleSelect
               aria-label="Select storage class"
-              onChange={(option: OptionWithValue) => onStorageClassChange(currentPV, option.value)}
+              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
               options={storageClassOptions}
               value={
                 storageClassOptions.find(

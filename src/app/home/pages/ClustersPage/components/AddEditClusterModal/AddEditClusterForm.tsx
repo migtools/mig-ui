@@ -272,7 +272,7 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           <CertificateUpload
             fieldName={caBundleKey}
             value={values[caBundleKey]}
-            onChange={(value) => {
+            onChange={(value: any) => {
               const encodedValue = btoa(value);
               setFieldValue(caBundleKey, encodedValue);
               formikSetFieldTouched(caBundleKey);

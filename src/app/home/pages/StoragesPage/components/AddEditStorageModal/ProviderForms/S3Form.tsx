@@ -243,7 +243,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
                 fieldName={caBundleKey}
                 value={values[caBundleKey]}
                 onChange={(value) => {
-                  const encodedValue = btoa(value);
+                  const encodedValue = btoa(value as string);
                   setFieldValue(caBundleKey, encodedValue);
                   formikSetFieldTouched(caBundleKey);
                 }}
