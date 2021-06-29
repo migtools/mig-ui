@@ -6,7 +6,7 @@ export interface IDiscoveryClient {
   getRaw(path: string): Promise<any>;
   apiRoot(): string;
   rootNamespace(): string;
-  setTokenExpiryHandler: (TokenExpiryHandler, number) => void;
+  setTokenExpiryHandler: (TokenExpiryHandler: any, number: number) => void;
 }
 
 export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
@@ -57,7 +57,7 @@ export class DiscoveryClient extends OAuthClient implements IDiscoveryClient {
     return this._get(path);
   };
 
-  private _get = async (path: string, params?): Promise<any> => {
+  private _get = async (path: string, params?: any): Promise<any> => {
     try {
       return await this._requester.get(path, params);
     } catch (err) {

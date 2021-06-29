@@ -47,7 +47,7 @@ const HookActions = (props: IHookActions) => {
     <DropdownItem
       onClick={() => {
         const matchingHook: IMigHook = allHooks.find(
-          (hook) => hook.metadata.name === migHook.metadata.name
+          (hook: IMigHook) => hook.metadata.name === migHook.metadata.name
         );
 
         const currentHook = planUtils.convertMigHookToUIObject(null, matchingHook);

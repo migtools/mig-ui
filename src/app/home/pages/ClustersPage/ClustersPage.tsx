@@ -121,7 +121,7 @@ const mapStateToProps = (state: DefaultRootState) => ({
   currentCluster: state.cluster.currentCluster,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   watchClusterAddEditStatus: (clusterName: string) => {
     // Push the add edit status into watching state, and start watching
     dispatch(

@@ -1,12 +1,17 @@
 import { createSelector } from 'reselect';
+import { DefaultRootState } from '../../../configureStore';
+import { IStorage } from './types';
+interface IEmptyStorageStatusObject {
+  hasReadyCondition: boolean;
+  hasCriticalCondition: boolean;
+}
 
-const storageSelectorWithStatus = (state) =>
+const storageSelectorWithStatus = (state: DefaultRootState) =>
   state.storage.migStorageList.map((storage) => {
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
-
     if (!storage.MigStorage.status?.conditions) {
-      const emptyStatusObject = {
+      const emptyStatusObject: IEmptyStorageStatusObject = {
         hasReadyCondition,
         hasCriticalCondition,
       };
@@ -24,7 +29,7 @@ const storageSelectorWithStatus = (state) =>
     return { ...storage, StorageStatus: statusObject };
   });
 
-const planSelector = (state) => state.plan.migPlanList.map((p) => p);
+const planSelector = (state: DefaultRootState) => state.plan.migPlanList.map((p) => p);
 
 const getAllStorage = createSelector([storageSelectorWithStatus], (storage) => {
   return storage;
@@ -33,7 +38,7 @@ const getAllStorage = createSelector([storageSelectorWithStatus], (storage) => {
 const getAssociatedPlans = createSelector(
   [storageSelectorWithStatus, planSelector],
   (storageList, plans) => {
-    return storageList.reduce((associatedPlans, storage) => {
+    return storageList.reduce((associatedPlans: any, storage) => {
       const storageName = storage.MigStorage.metadata.name;
       associatedPlans[storageName] = plans.reduce((count, plan) => {
         const hasStorage = !!plan.MigPlan.spec.migStorageRef;

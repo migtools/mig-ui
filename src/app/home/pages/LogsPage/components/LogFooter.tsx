@@ -11,9 +11,9 @@ interface IProps {
   logSource: ILogSource;
   cluster: string;
   isFetchingLogs: boolean;
-  report: IPlanLogSources;
-  requestDownloadLog: (logPath) => void;
-  requestReport: (planName) => void;
+  report: any;
+  requestDownloadLog: (logPath: any) => void;
+  requestReport: (planName: string) => void;
   planName: string;
 }
 
@@ -26,7 +26,7 @@ const LogFooter: FunctionComponent<IProps> = ({
   requestDownloadLog,
   requestReport,
 }) => {
-  const requestDownload = (_) => {
+  const requestDownload = () => {
     requestDownloadLog(
       report[cluster][logSource.podIndex].containers[logSource.containerIndex].log
     );
@@ -62,7 +62,7 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    requestDownloadLog: (logPath) => dispatch(LogActions.requestDownloadLog(logPath)),
-    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
+    requestDownloadLog: (logPath: string) => dispatch(LogActions.requestDownloadLog(logPath)),
+    requestReport: (planName: string) => dispatch(LogActions.reportFetchRequest(planName)),
   })
 )(LogFooter);

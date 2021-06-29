@@ -9,14 +9,15 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
-import { IMigPlan, IMigration, IPlan, IPlanSpecHook, IStep } from './types';
+import { ICondition, IMigPlan, IMigration, IPlan, IPlanSpecHook, IStep } from './types';
 import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { IMigMigration } from '../../../client/resources/conversions';
+import { DefaultRootState } from '../../../configureStore';
 
-const planSelector = (state) => state.plan.migPlanList.map((p) => p);
+const planSelector = (state: DefaultRootState) => state.plan.migPlanList.map((p) => p);
 
-const getCurrentPlan = (state) => state.plan.currentPlan;
+const getCurrentPlan = (state: DefaultRootState) => state.plan.currentPlan;
 
 const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) => {
   if (currentPlan && currentPlan.status?.conditions) {
@@ -56,7 +57,7 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) 
     let incompatibleNamespaces = [];
 
     if (currentPlan.status.incompatibleNamespaces) {
-      incompatibleNamespaces = currentPlan.status.incompatibleNamespaces.map((namespace) => {
+      incompatibleNamespaces = currentPlan.status.incompatibleNamespaces.map((namespace: any) => {
         return {
           namespaceName: namespace.name,
           gvks: namespace.gvks,
@@ -80,13 +81,14 @@ const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) 
   return null;
 });
 
-const getMigMeta = (state) => state.auth.migMeta;
+const getMigMeta = (state: DefaultRootState) => state.auth.migMeta;
 
-const lockedPlansSelector = (state) => state.plan.lockedPlanList;
+const lockedPlansSelector = (state: DefaultRootState) => state.plan.lockedPlanList;
 
-const sourceClusterNamespacesSelector = (state) => state.plan.sourceClusterNamespaces;
+const sourceClusterNamespacesSelector = (state: DefaultRootState) =>
+  state.plan.sourceClusterNamespaces;
 
-const hooksSelector = (state) => state.plan.allHooks.map((h) => h);
+const hooksSelector = (state: DefaultRootState) => state.plan.allHooks.map((h) => h);
 
 const getHooksWithStatus = createSelector(
   [hooksSelector, planSelector],
@@ -132,7 +134,7 @@ const getFilteredNamespaces = createSelector(
 const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
-    const plansWithStatus = plans.map((plan) => {
+    const plansWithStatus = plans.map((plan): IPlan => {
       const isPlanLocked = !!lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
@@ -244,63 +246,10 @@ const getPlansWithPlanStatus = createSelector(
   }
 );
 
-const getCounts = createSelector([planSelector], (plans: any[]) => {
-  const counts = {
-    notStarted: [],
-    inProgress: [],
-    completed: [],
-  };
-
-  plans.filter((plan = []) => {
-    let hasErrorCondition = null;
-    let hasRunningMigrations = null;
-    let hasSucceededMigration = null;
-    let hasCancelCondition = null;
-    if (!plan.MigPlan.status?.conditions) {
-      counts.notStarted.push(plan);
-      return;
-    }
-    hasErrorCondition = !!plan.MigPlan.status.conditions.some((c) => c.category === 'Critical');
-
-    if (plan.Migrations.length) {
-      hasRunningMigrations = !!plan.Migrations.filter((m) => {
-        if (m.status) {
-          return m.status.conditions.some((c) => c.type === 'Running');
-        }
-      }).length;
-
-      hasSucceededMigration = !!plan.Migrations.filter((m) => {
-        if (m.status) {
-          return m.status.conditions.some((c) => c.type === 'Succeeded');
-        }
-      }).length;
-
-      hasCancelCondition = !!plan.Migrations.filter((m) => {
-        if (m.status) {
-          return m.status.conditions.some((c) => c.type === 'Canceling' || c.type === 'Canceled');
-        }
-      }).length;
-
-      if (hasCancelCondition) {
-        counts.notStarted.push(plan);
-      } else if (hasRunningMigrations) {
-        counts.inProgress.push(plan);
-      } else if (hasSucceededMigration) {
-        counts.completed.push(plan);
-      } else {
-        counts.notStarted.push(plan);
-      }
-    } else {
-      counts.notStarted.push(plan);
-    }
-  });
-  return counts;
-});
-
 const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPlan[] => {
-  const getMigrationStatus = (plan, migration) => {
+  const getMigrationStatus = (plan: any, migration: IMigration) => {
     const { MigPlan } = plan;
-    const status = {
+    const status: any = {
       start: 'In progress',
       end: 'In progress',
       moved: 0,
@@ -378,7 +327,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
     // derive number of volumes copied / moved for migration table
     if (MigPlan?.spec?.persistentVolumes && !!succeededCondition) {
       status.copied = MigPlan.spec.persistentVolumes.filter(
-        (p) => p.selection.action === 'copy'
+        (p: any) => p.selection.action === 'copy'
       ).length;
       if (!migration.spec.stage) {
         status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
@@ -433,8 +382,8 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
 
     if (dvmBlockedCondition) {
       const warningMessages = migration?.status?.conditions
-        ?.filter((c) => c.category === 'Warn')
-        .map((c, idx) => c.message);
+        ?.filter((c: ICondition) => c.category === 'Warn')
+        .map((c: ICondition, idx: number) => c.message);
       if (succeededCondition) status.isSucceeded = true;
       status.migrationState = 'paused';
       status.warnings = status.warnings.concat(warningMessages);
@@ -445,7 +394,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
 
     if (warnCondition) {
       const warningMessages = migration?.status?.conditions
-        ?.filter((c) => c.category === 'Warn')
+        ?.filter((c: ICondition) => c.category === 'Warn')
         .map((c, idx) => c.message);
       if (succeededCondition) status.isSucceeded = true;
       status.warnings = status.warnings.concat(warningMessages);
@@ -473,7 +422,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
 
     return status;
   };
-  const plansWithMigrationStatus: IPlan[] = plans.map((plan): IPlan[] => {
+  const plansWithMigrationStatus = plans.map((plan): IPlan => {
     const migrationsWithStatus = plan.Migrations.map((migration: IMigration) => {
       const tableStatus = getMigrationStatus(plan, migration);
       if (migration?.status?.pipeline) {
@@ -505,7 +454,6 @@ export default {
   getCurrentPlanWithStatus,
   getPlansWithStatus,
   getMigMeta,
-  getCounts,
   getFilteredNamespaces,
   getHooksWithStatus,
 };

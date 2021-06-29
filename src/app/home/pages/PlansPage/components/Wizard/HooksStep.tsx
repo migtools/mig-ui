@@ -23,7 +23,6 @@ import HooksFormContainer from './HooksFormContainer';
 import { IMigMeta } from '../../../../../auth/duck/types';
 import { IMigPlan } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
-import { IHook } from '../../../../../../client/resources/conversions';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { DefaultRootState } from '../../../../../../configureStore';
 
@@ -32,8 +31,8 @@ const classNames = require('classnames');
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksStepBaseProps {
   migMeta: IMigMeta;
-  updateHookRequest: (values) => void;
-  addHookRequest: (hook: IMigHook | IHook) => void;
+  updateHookRequest: (values: any) => void;
+  addHookRequest: (hook: IMigHook) => void;
   isFetchingHookList: boolean;
   isUpdatingGlobalHookList: boolean;
   isAssociatingHookToPlan: boolean;
@@ -45,10 +44,10 @@ interface IHooksStepBaseProps {
   removeHookFromPlanRequest: (hookName: string, stepName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
   isAddHooksOpen: boolean;
-  setIsAddHooksOpen: (val) => void;
+  setIsAddHooksOpen: (val: boolean) => void;
   currentPlanHooks: any[];
   allHooks: IMigHook[];
-  associateHookToPlan: (hookValues, migHook) => void;
+  associateHookToPlan: (hookValues: any, migHook: IMigHook) => void;
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
@@ -78,7 +77,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const [selectedExistingHook, setSelectedExistingHook] = useState(null);
   const [isCreateHookSelected, setIsCreateHookSelected] = useState(false);
 
-  const onAddEditHookSubmit = (hookValues, isExistingHook) => {
+  const onAddEditHookSubmit = (hookValues: any, isExistingHook: boolean) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
         updateHookRequest(hookValues);
@@ -117,8 +116,8 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     { title: 'Migration step' },
   ];
 
-  let rows = [];
-  let actions = [];
+  let rows: any = [];
+  let actions: any = [];
   if (currentPlanHooks.length > 0) {
     rows = currentPlanHooks.map((migHook, id) => {
       const type = migHook.custom ? 'Custom container image' : 'Ansible playbook';
@@ -130,7 +129,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
     actions = [
       {
         title: 'Edit',
-        onClick: (event, rowId, rowData, extra) => {
+        onClick: (event: any, rowId: any, rowData: any, extra: any) => {
           const currentHook = currentPlanHooks.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
@@ -139,7 +138,7 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       },
       {
         title: 'Delete',
-        onClick: (event, rowId, rowData, extra) => {
+        onClick: (event: any, rowId: any, rowData: any, extra: any) => {
           removeHookFromPlanRequest(rowData.name.title, rowData['migration-step'].title);
         },
       },

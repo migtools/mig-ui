@@ -40,7 +40,7 @@ export class ExtendedCoreNamespacedResource extends CoreNamespacedResource {
     return this._operation;
   }
 
-  public namedPath(name): string {
+  public namedPath(name: string): string {
     return [this.listPath(), name, this._operation].join('/');
   }
 }

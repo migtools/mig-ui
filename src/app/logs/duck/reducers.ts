@@ -1,6 +1,12 @@
 import { LogActionTypes, LogActions } from './actions';
-
-export const INITIAL_STATE = {
+export interface ILogInitialState {
+  isFetchingLogs: boolean;
+  logErrorMsg: string;
+  report: any;
+  log: Array<any>;
+  archive: string;
+}
+export const INITIAL_STATE: ILogInitialState = {
   isFetchingLogs: true,
   logErrorMsg: null,
   report: {},
@@ -12,7 +18,7 @@ export const reportFetchRequest = (
   state = INITIAL_STATE,
   action: ReturnType<typeof LogActions.reportFetchRequest>
 ) => {
-  return { ...state, isFetchingLogs: true, log: [], logErrorMsg: null, archive: '' };
+  return { ...state, isFetchingLogs: true, archive: '' };
 };
 
 export const reportFetchSuccess = (
@@ -57,7 +63,7 @@ export const createLogArchive = (
   return { ...state, archive: action.url };
 };
 
-const planReducer = (state = INITIAL_STATE, action) => {
+const planReducer = (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case LogActionTypes.REPORT_FETCH_SUCCESS:
       return reportFetchSuccess(state, action);

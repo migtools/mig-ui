@@ -81,7 +81,7 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
   );
 };
 
-const renderStatusIcon = (currentStatus, warningTextArr) => {
+const renderStatusIcon = (currentStatus: any, warningTextArr: any) => {
   switch (currentStatus) {
     case DebugStatusType.Running:
       return (

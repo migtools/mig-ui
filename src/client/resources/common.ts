@@ -14,7 +14,7 @@ export interface IDiscoveryResource {
   discoveryAggregator(): string;
   discoveryType(): string;
   path(): string;
-  parametrized?(IDiscoveryParameters?): { [param: string]: string };
+  parametrized?(params: IDiscoveryParameters): { [param: string]: string };
 }
 
 export interface INamedDiscoveryResource extends IDiscoveryResource {
@@ -35,7 +35,7 @@ export interface IDiscoveryParameters {
 
 export type TokenExpiryHandler = (oldToken: object) => void;
 
-function namedPath(listPath, name) {
+function namedPath(listPath: string, name: string) {
   return [listPath, name].join('/');
 }
 
@@ -60,7 +60,7 @@ export abstract class NamespacedResource implements IKubeResource {
     ].join('/');
   }
 
-  public namedPath(name): string {
+  public namedPath(name: string): string {
     return namedPath(this.listPath(), name);
   }
 }
@@ -70,7 +70,7 @@ export abstract class ClusterResource implements IKubeResource {
   public listPath(): string {
     return ['/apis', this.gvk().group, this.gvk().version, this.gvk().kindPlural].join('/');
   }
-  public namedPath(name): string {
+  public namedPath(name: string): string {
     return namedPath(this.listPath(), name);
   }
 }
@@ -102,7 +102,7 @@ export abstract class DiscoveryResource implements IDiscoveryResource {
   }
 
   public parametrized(params: IDiscoveryParameters = {}) {
-    const merged = {};
+    const merged = {} as any;
     Object.keys(this._discoveryParameters).map(
       (param) => (merged[param] = this._discoveryParameters[param].toString())
     );
@@ -164,7 +164,7 @@ export abstract class OAuthClient {
     this._tokenExpiryTime = tokenExpiryTime;
   }
 
-  public checkExpiry(err) {
+  public checkExpiry(err: any) {
     if (err.response && err.response.status === 401) {
       this._tokenExpiryHandler(this._oldToken());
     }

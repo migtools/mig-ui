@@ -13,19 +13,20 @@ import {
 import { ICluster } from '../../../../../cluster/duck/types';
 import { IClusterInfo } from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { FormikValues } from 'formik';
 
 interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
   initialClusterValues: IClusterInfo;
   isOpen: boolean;
   isPolling: boolean;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   clusterList: ICluster[];
-  addCluster: (cluster) => void;
+  addCluster: (cluster: IFormValues) => void;
   cancelAddEditWatch: () => void;
   onHandleClose: () => void;
   resetAddEditState: () => void;
-  updateCluster: (updatedCluster) => void;
+  updateCluster: (updatedCluster: IFormValues) => void;
   currentCluster: ICluster;
   setCurrentCluster: (currentCluster: ICluster) => void;
   resetClusterPage: () => void;
@@ -45,7 +46,7 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal | any> =
   setCurrentCluster,
   resetClusterPage,
 }: IAddEditClusterModal) => {
-  const onAddEditSubmit = (clusterValues) => {
+  const onAddEditSubmit = (clusterValues: IFormValues) => {
     switch (addEditStatus.mode) {
       case AddEditMode.Edit: {
         updateCluster(clusterValues);
@@ -103,8 +104,9 @@ export default connect(
     };
   },
   (dispatch) => ({
-    addCluster: (clusterValues) => dispatch(ClusterActions.addClusterRequest(clusterValues)),
-    updateCluster: (updatedClusterValues) =>
+    addCluster: (clusterValues: IFormValues) =>
+      dispatch(ClusterActions.addClusterRequest(clusterValues)),
+    updateCluster: (updatedClusterValues: IFormValues) =>
       dispatch(ClusterActions.updateClusterRequest(updatedClusterValues)),
     checkConnection: (clusterName: string) => {
       dispatch(

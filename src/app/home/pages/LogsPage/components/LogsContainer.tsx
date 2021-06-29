@@ -52,7 +52,7 @@ const LogsContainer: FunctionComponent<IProps> = ({
     requestReport(planName);
   }, []);
 
-  const downloadArchive = async (element) => {
+  const downloadArchive = async (element: HTMLElement) => {
     document.body.appendChild(element);
     element.click();
     setDownloadLink(null);
@@ -105,6 +105,6 @@ export default connect(
     archive: state.logs.archive,
   }),
   (dispatch) => ({
-    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
+    requestReport: (planName: string) => dispatch(LogActions.reportFetchRequest(planName)),
   })
 )(LogsContainer);

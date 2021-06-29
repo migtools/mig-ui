@@ -2,6 +2,7 @@ import { ClusterClient } from './client';
 import { DiscoveryClient } from './discoveryClient';
 import { ResponseType } from 'axios';
 import { TokenExpiryHandler } from './resources/common';
+import { DefaultRootState } from '../configureStore';
 
 export class ClientFactoryUnknownClusterError extends Error {
   constructor(clusterName: string) {
@@ -31,7 +32,7 @@ export class ClientFactoryMissingDiscoveryApi extends Error {
   }
 }
 
-let tokenExpiryHandler = null;
+let tokenExpiryHandler: any = null;
 export const ClientFactory = {
   cluster: (state: any, customResponseType: ResponseType = 'json') => {
     if (!state.auth.user) {
@@ -53,7 +54,11 @@ export const ClientFactory = {
 
     return newClient;
   },
-  discovery: (state: any, clusterName?: string, customResponseType: ResponseType = 'json') => {
+  discovery: (
+    state: DefaultRootState,
+    clusterName?: string,
+    customResponseType: ResponseType = 'json'
+  ) => {
     if (!state.auth.user) {
       throw new ClientFactoryMissingUserError();
     }
@@ -61,20 +66,10 @@ export const ClientFactory = {
       throw new ClientFactoryMissingDiscoveryApi();
     }
 
-    let decodedToken = null;
-    if (clusterName) {
-      const matchingToken = state.token.tokenList.find(
-        (token) => token.MigToken.spec.migClusterRef.name === clusterName
-      );
-      if (matchingToken) {
-        const { token } = matchingToken.Secret.data;
-        decodedToken = atob(token);
-      }
-    }
     const discoveryClient = new DiscoveryClient(
       state.auth.migMeta.discoveryApi,
       state.auth.migMeta.namespace,
-      decodedToken ? decodedToken : state.auth.user.access_token,
+      state.auth.user.access_token,
       customResponseType
     );
 

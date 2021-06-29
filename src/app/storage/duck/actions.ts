@@ -36,7 +36,7 @@ const addStorageSuccess = (newStorage: IMigStorage) => ({
   newStorage,
 });
 
-const addStorageFailure = (error) => ({
+const addStorageFailure = (error: any) => ({
   type: StorageActionTypes.ADD_STORAGE_FAILURE,
   error,
 });
@@ -89,7 +89,7 @@ const setStorageAddEditStatus = (status: IAddEditStatus) => ({
   status,
 });
 
-const watchStorageAddEditStatus = (storageName) => ({
+const watchStorageAddEditStatus = (storageName: any) => ({
   type: StorageActionTypes.WATCH_STORAGE_ADD_EDIT_STATUS,
   storageName,
 });
@@ -98,12 +98,12 @@ const cancelWatchStorageAddEditStatus = () => ({
   type: StorageActionTypes.CANCEL_WATCH_STORAGE_ADD_EDIT_STATUS,
 });
 
-const addStorageRequest = (storageValues) => ({
+const addStorageRequest = (storageValues: any) => ({
   type: StorageActionTypes.ADD_STORAGE_REQUEST,
   storageValues,
 });
 
-const updateStorageRequest = (storageValues) => ({
+const updateStorageRequest = (storageValues: any) => ({
   type: StorageActionTypes.UPDATE_STORAGE_REQUEST,
   storageValues,
 });

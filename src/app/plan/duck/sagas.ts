@@ -8,6 +8,7 @@ import {
   delay,
   put,
   take,
+  StrictEffect,
 } from 'redux-saga/effects';
 import { ClientFactory } from '../../../client/client_factory';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
@@ -21,6 +22,7 @@ import {
   createMigHook,
   updateMigHook,
   updatePlanHookList,
+  IMigMigration,
 } from '../../../client/resources/conversions';
 import { PlanActions, PlanActionTypes } from './actions';
 import { CurrentPlanState } from './reducers';
@@ -28,7 +30,6 @@ import { MigResource, MigResourceKind } from '../../../client/resources';
 import utils from '../../common/duck/utils';
 import { NamespaceDiscovery } from '../../../client/resources/discovery';
 import { DiscoveryResource } from '../../../client/resources/common';
-import { push } from 'connected-react-router';
 import planUtils from './utils';
 import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
 import Q from 'q';
@@ -39,8 +40,13 @@ import {
   alertProgressTimeout,
   alertWarn,
 } from '../../common/duck/slice';
-import { certErrorOccurred } from '../../auth/duck/slice';
+import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
+import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
+import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
+import { useSelector } from 'react-redux';
+import { authSelectors } from '../../common/duck';
+import { IMigHook } from '../../home/pages/HooksPage/types';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -51,8 +57,18 @@ const PlanUpdateRetryPeriodSeconds = 5;
 /******************************************************************** */
 /* Plan sagas */
 /******************************************************************** */
-function* fetchPlansGenerator() {
-  const state = yield select();
+interface IListRes {
+  data?: {
+    items: any[];
+  };
+}
+function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
+  const res: DefaultRootState = yield select();
+  return res;
+}
+
+function* fetchPlansGenerator(): Generator<any, any, any> {
+  const state = yield* getState();
   const client: IClusterClient = ClientFactory.cluster(state);
   const planResource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
   const migHookResource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
@@ -65,23 +81,19 @@ function* fetchPlansGenerator() {
     state.auth.migMeta.namespace
   );
   try {
-    let planList = yield client.list(planResource);
-    planList = yield planList.data.items;
+    const planList: IListRes = yield client.list(planResource) as IListRes;
 
-    let hookList = yield client.list(migHookResource);
-    hookList = yield hookList.data.items;
+    const hookList: IListRes = yield client.list(migHookResource) as IListRes;
 
-    let migrationList = yield client.list(migMigrationResource);
-    migrationList = yield migrationList.data.items;
+    const migrationList: IListRes = yield client.list(migMigrationResource) as IListRes;
 
-    let analyticList = yield client.list(migAnalyticResource);
-    analyticList = yield analyticList.data.items;
+    const analyticList: IListRes = yield client.list(migAnalyticResource) as IListRes;
 
-    const groupedPlans = yield planUtils.groupPlans(
-      planList,
-      migrationList,
-      analyticList,
-      hookList
+    const groupedPlans: any = yield planUtils.groupPlans(
+      planList.data.items,
+      migrationList.data.items,
+      analyticList.data.items,
+      hookList.data.items
     );
     return { updatedPlans: groupedPlans };
   } catch (e) {
@@ -89,17 +101,17 @@ function* fetchPlansGenerator() {
   }
 }
 
-function* getPlanSaga(planName) {
-  const state = yield select();
+function* getPlanSaga(planName: string): any {
+  const state = yield* getState();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
-function* deleteAnalyticSaga(action) {
+function* deleteAnalyticSaga(action: any): any {
   try {
     const { analytic } = action;
-    const state = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -111,10 +123,10 @@ function* deleteAnalyticSaga(action) {
   }
 }
 
-function* addAnalyticSaga(action) {
+function* addAnalyticSaga(action: any): any {
   const { planName } = action;
   try {
-    const state = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -130,10 +142,10 @@ function* addAnalyticSaga(action) {
     console.error('Failed to add migAnalytic.');
   }
 }
-function* addPlanSaga(action) {
+function* addPlanSaga(action: any): any {
   const { migPlan } = action;
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
 
@@ -160,8 +172,8 @@ function* addPlanSaga(action) {
   }
 }
 
-function* namespaceFetchRequest(action) {
-  const state: DefaultRootState = yield select();
+function* namespaceFetchRequest(action: any): any {
+  const state = yield* getState();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
@@ -191,9 +203,9 @@ function* namespaceFetchRequest(action) {
   }
 }
 
-function* refreshAnalyticSaga(action) {
+function* refreshAnalyticSaga(action: any): any {
   const { analyticName } = action;
-  const state = yield select();
+  const state = yield* getState();
   const client: IClusterClient = ClientFactory.cluster(state);
   const migMeta = state.auth.migMeta;
   try {
@@ -234,8 +246,8 @@ function* refreshAnalyticSaga(action) {
   }
 }
 
-function* planPatchClose(planValues) {
-  const state: DefaultRootState = yield select();
+function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
+  const state = yield* getState();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   try {
@@ -259,7 +271,7 @@ function* planPatchClose(planValues) {
   }
 }
 
-function* migrationCancel(action) {
+function* migrationCancel(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -289,7 +301,7 @@ function* migrationCancel(action) {
   }
 }
 
-function* validatePlanSaga(action) {
+function* validatePlanSaga(action: any): Generator<any, any, any> {
   try {
     const { planValues } = action;
     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
@@ -304,7 +316,7 @@ function* validatePlanSaga(action) {
         const client: IClusterClient = ClientFactory.cluster(state);
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
-          const getPlanRes = yield call(getPlanSaga, planValues.planName);
+          const getPlanRes: any = yield call(getPlanSaga, planValues.planName);
           const { currentPlan } = state.plan;
           const updatedMigPlan = updateMigPlanFromValues(getPlanRes.data, planValues, currentPlan);
           yield client.patch(
@@ -331,10 +343,10 @@ function* validatePlanSaga(action) {
   }
 }
 
-function* validatePlanPoll(action) {
+function* validatePlanPoll(action: any): any {
   const params = { ...action.params };
   while (true) {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { currentPlan } = state.plan;
     let updatedPlan = null;
     const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
@@ -378,7 +390,7 @@ function* validatePlanPoll(action) {
   }
 }
 
-function* pvDiscoveryRequest(action) {
+function* pvDiscoveryRequest(action: any): Generator {
   try {
     yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
     yield retry(
@@ -419,7 +431,7 @@ function* pvDiscoveryRequest(action) {
   }
 }
 
-function* pvUpdatePoll(action) {
+function* pvUpdatePoll(action: any): any {
   let tries = 0;
   const TicksUntilTimeout = 240;
   const { initialGetPlanRes, planValues } = action.params;
@@ -427,7 +439,7 @@ function* pvUpdatePoll(action) {
   while (true) {
     if (tries < TicksUntilTimeout) {
       tries += 1;
-      const state: DefaultRootState = yield select();
+      const state = yield* getState();
       const { currentPlan } = state.plan;
       if (currentPlan) {
         const getPlanResponse = yield call(getPlanSaga, currentPlan.metadata.name);
@@ -469,12 +481,12 @@ function* pvUpdatePoll(action) {
   }
 }
 
-function* checkClosedStatus(action) {
+function* checkClosedStatus(action: any): any {
   const PollingInterval = 5000;
   const TicksUntilTimeout = 16;
   for (let tries = 0; tries < TicksUntilTimeout; tries++) {
     const getPlanResponse = yield call(getPlanSaga, action.planName);
-    const MigPlan = getPlanResponse.data;
+    const MigPlan: IMigPlan = getPlanResponse.data;
 
     if (MigPlan.status?.conditions) {
       const hasClosedCondition = !!MigPlan.status.conditions.some((c) => c.type === 'Closed');
@@ -491,8 +503,8 @@ function* checkClosedStatus(action) {
   yield put(alertErrorTimeout(`Timed out during plan close ${action.planName}`));
 }
 
-const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
-  const corePlan = (plan) => {
+const isUpdatedPlan = (currMigPlan: IMigPlan, prevMigPlan: IMigPlan) => {
+  const corePlan = (plan: IMigPlan) => {
     const { metadata } = plan;
     if (metadata.annotations || metadata.resourceVersion) {
       delete metadata.annotations;
@@ -509,7 +521,7 @@ const isUpdatedPlan = (currMigPlan, prevMigPlan) => {
   }
 };
 
-function* checkPlanStatus(action) {
+function* checkPlanStatus(action: any): any {
   let planStatusComplete = false;
   let tries = 0;
   const TicksUntilTimeout = 10;
@@ -518,7 +530,7 @@ function* checkPlanStatus(action) {
       yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
       tries += 1;
       const getPlanResponse = yield call(getPlanSaga, action.planName);
-      const updatedPlan = getPlanResponse.data;
+      const updatedPlan: IMigPlan = getPlanResponse.data;
 
       //diff current plan before setting
       const state: DefaultRootState = yield select();
@@ -608,10 +620,15 @@ function* checkPlanStatus(action) {
     yield delay(PollingInterval);
   }
 }
+interface IUpdatedClosedPlanValues {
+  planName: string;
+  planClosed: boolean;
+  persistentVolumes: Array<any>;
+}
 
-function* planCloseSaga(action) {
+function* planCloseSaga(action: any): Generator {
   try {
-    const updatedValues = {
+    const updatedValues: IUpdatedClosedPlanValues = {
       planName: action.planName,
       planClosed: true,
       persistentVolumes: [],
@@ -628,14 +645,14 @@ function* planCloseSaga(action) {
   }
 }
 
-function* planDeleteAfterClose(planName) {
+function* planDeleteAfterClose(planName: string) {
   const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
   const client: IClusterClient = ClientFactory.cluster(state);
   yield client.delete(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
-function* planCloseAndDelete(action) {
+function* planCloseAndDelete(action: any) {
   try {
     yield call(planCloseSaga, action);
     yield call(checkClosedStatus, action);
@@ -649,18 +666,17 @@ function* planCloseAndDelete(action) {
   }
 }
 
-function* getPVResourcesRequest(action) {
+function* getPVResourcesRequest(action: any) {
   const state: DefaultRootState = yield select();
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
   try {
-    const pvResourceRefs = action.pvList.map((pv) => {
+    const pvResourceRefs = action.pvList.map((pv: IPersistentVolumeResource) => {
       const persistentVolume = new PersistentVolumeDiscovery(pv.name, action.clusterName);
       return discoveryClient.get(persistentVolume);
     });
-
-    const pvList = [];
+    const pvList: Array<string> = [];
     yield Q.allSettled(pvResourceRefs).then((results) => {
-      results.forEach((result) => {
+      results.forEach((result: any) => {
         if (result.state === 'fulfilled') {
           pvList.push(result.value.data);
         }
@@ -678,16 +694,21 @@ function* getPVResourcesRequest(action) {
 /******************************************************************** */
 /* Stage sagas */
 /******************************************************************** */
+interface IMigStatusObj {
+  status: string;
+  planName: string;
+  errorMessage: string;
+}
 
-function getStageStatusCondition(updatedPlans, createMigRes) {
-  const matchingPlan = updatedPlans.updatedPlans.find(
-    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
+  const matchingPlan: IPlan = updatedPlans.updatedPlans.find(
+    (p: IPlan) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
-  const statusObj = { status: null, planName: null, errorMessage: null };
+  const statusObj: IMigStatusObj = { status: null, planName: null, errorMessage: null };
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
-      (s) => s.metadata.name === createMigRes.data.metadata.name
+      (s: IMigration) => s.metadata.name === createMigRes.data.metadata.name
     );
 
     if (matchingMigration && matchingMigration.status?.conditions) {
@@ -723,9 +744,9 @@ function getStageStatusCondition(updatedPlans, createMigRes) {
   }
   return statusObj;
 }
-function* runStageSaga(action) {
+function* runStageSaga(action: any): any {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
@@ -764,7 +785,7 @@ function* runStageSaga(action) {
   }
 }
 
-function* stagePoll(action) {
+function* stagePoll(action: any): Generator {
   const params = { ...action.params };
   while (true) {
     const updatedPlans = yield call(params.fetchPlansGenerator);
@@ -797,11 +818,11 @@ function* stagePoll(action) {
 /* Migration sagas */
 /******************************************************************** */
 
-function getMigrationStatusCondition(updatedPlans, createMigRes) {
-  const matchingPlan = updatedPlans.updatedPlans.find(
-    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+function getMigrationStatusCondition(updatedPlans: any, createMigRes: any) {
+  const matchingPlan: IPlan = updatedPlans.updatedPlans.find(
+    (p: IPlan) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
-  const statusObj = { status: null, planName: null, errorMessage: null };
+  const statusObj: IMigStatusObj = { status: null, planName: null, errorMessage: null };
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
@@ -848,10 +869,10 @@ function getMigrationStatusCondition(updatedPlans, createMigRes) {
   return statusObj;
 }
 
-function* runMigrationSaga(action) {
+function* runMigrationSaga(action: any): any {
   try {
     const { plan, enableQuiesce } = action;
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;
@@ -888,7 +909,7 @@ function* runMigrationSaga(action) {
     yield put(PlanActions.migrationFailure(err));
   }
 }
-function* migrationPoll(action) {
+function* migrationPoll(action: any): Generator {
   const params = { ...action.params };
   while (true) {
     const updatedPlans = yield call(params.fetchPlansGenerator);
@@ -925,11 +946,11 @@ function* migrationPoll(action) {
 /******************************************************************** */
 //Rollback sagas
 /******************************************************************** */
-function getRollbackStatusCondition(updatedPlans, createMigRes) {
-  const matchingPlan = updatedPlans.updatedPlans.find(
-    (p) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
+function getRollbackStatusCondition(updatedPlans: any, createMigRes: any) {
+  const matchingPlan: IPlan = updatedPlans.updatedPlans.find(
+    (p: IPlan) => p.MigPlan.metadata.name === createMigRes.data.spec.migPlanRef.name
   );
-  const statusObj = { status: null, planName: null, errorMessage: null };
+  const statusObj: IMigStatusObj = { status: null, planName: null, errorMessage: null };
 
   if (matchingPlan && matchingPlan.Migrations) {
     const matchingMigration = matchingPlan.Migrations.find(
@@ -970,9 +991,9 @@ function getRollbackStatusCondition(updatedPlans, createMigRes) {
   return statusObj;
 }
 
-function* runRollbackSaga(action) {
+function* runRollbackSaga(action: any): any {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { plan } = action;
@@ -1011,7 +1032,7 @@ function* runRollbackSaga(action) {
   }
 }
 
-function* rollbackPoll(action) {
+function* rollbackPoll(action: any): Generator {
   const params = { ...action.params };
   while (true) {
     const updatedPlans = yield call(params.fetchPlansGenerator);
@@ -1049,8 +1070,8 @@ function* rollbackPoll(action) {
 //Hooks sagas
 /******************************************************************** */
 
-function* fetchHooksGenerator() {
-  const state = yield select();
+function* fetchHooksGenerator(): any {
+  const state = yield* getState();
   const client: IClusterClient = ClientFactory.cluster(state);
   const resource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
   try {
@@ -1063,21 +1084,21 @@ function* fetchHooksGenerator() {
   }
 }
 
-function* fetchPlanHooksSaga() {
-  const state: DefaultRootState = yield select();
+function* fetchPlanHooksSaga(): any {
+  const state = yield* getState();
   try {
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
     const { currentPlan } = state.plan;
     const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
-    const currentPlanHooks = getPlanRes.data.spec.hooks;
+    const currentPlanHooks: IPlanSpecHook[] = getPlanRes.data.spec.hooks;
 
     const hookList = yield client.list(migHookResource);
-    const associatedHooks = [];
+    const associatedHooks: Array<any> = [];
     if (currentPlanHooks) {
       currentPlanHooks.forEach((currentPlanHookRef) =>
-        hookList.data.items.forEach((hookRef) => {
+        hookList.data.items.forEach((hookRef: IMigHook) => {
           if (currentPlanHookRef.reference.name === hookRef.metadata.name) {
             const uiHookObject = planUtils.convertMigHookToUIObject(currentPlanHookRef, hookRef);
             associatedHooks.push(uiHookObject);
@@ -1092,8 +1113,8 @@ function* fetchPlanHooksSaga() {
   }
 }
 
-function* updatePlanHookListSaga(action) {
-  const state: DefaultRootState = yield select();
+function* updatePlanHookListSaga(action: any): any {
+  const state = yield* getState();
   const { migMeta } = state.auth;
   const { currentPlan } = state.plan;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -1109,9 +1130,9 @@ function* updatePlanHookListSaga(action) {
   yield put(PlanActions.fetchPlanHooksRequest());
 }
 
-function* associateHookToPlanSaga(action) {
+function* associateHookToPlanSaga(action: any): any {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state);
     const { hookValues, migHook } = action;
@@ -1124,7 +1145,7 @@ function* associateHookToPlanSaga(action) {
     const createHooksSpec = () => {
       const updatedSpec = Object.assign({}, currentPlanSpec);
 
-      const getServiceAccountNamespace = (clusterType) => {
+      const getServiceAccountNamespace = (clusterType: string) => {
         if (clusterType === 'source') {
           return hookValues.srcServiceAccountNamespace;
         }
@@ -1133,7 +1154,7 @@ function* associateHookToPlanSaga(action) {
         }
       };
 
-      const getServiceAccountName = (clusterType) => {
+      const getServiceAccountName = (clusterType: string) => {
         if (clusterType === 'source') {
           return hookValues.srcServiceAccountName;
         }
@@ -1155,7 +1176,7 @@ function* associateHookToPlanSaga(action) {
       };
 
       if (updatedSpec.hooks) {
-        const isExistingPhase = updatedSpec.hooks.some((hook) => {
+        const isExistingPhase = updatedSpec.hooks.some((hook: IPlanSpecHook) => {
           hook.phase === hookValues.migrationStep;
         });
         if (!isExistingPhase) {
@@ -1188,10 +1209,10 @@ function* associateHookToPlanSaga(action) {
   }
 }
 
-function* addHookSaga(action) {
+function* addHookSaga(action: any): any {
   const { migHook } = action;
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const { currentPlan } = state.plan;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1215,9 +1236,9 @@ function* addHookSaga(action) {
   }
 }
 
-function* removeHookFromPlanSaga(action) {
+function* removeHookFromPlanSaga(action: any): any {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1255,9 +1276,9 @@ function* removeHookFromPlanSaga(action) {
   }
 }
 
-function* removeHookSaga(action) {
+function* removeHookSaga(action: any): any {
   try {
-    const state: DefaultRootState = yield select();
+    const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
     const client: IClusterClient = ClientFactory.cluster(state);
@@ -1276,8 +1297,8 @@ function* removeHookSaga(action) {
   }
 }
 
-function* updateHookRequest(action) {
-  const state: DefaultRootState = yield select();
+function* updateHookRequest(action: any): any {
+  const state = yield* getState();
   const { migMeta } = state.auth;
   const { migHook } = action;
   const client: IClusterClient = ClientFactory.cluster(state);
@@ -1359,21 +1380,21 @@ function* watchAddHookRequest() {
   yield takeLatest(PlanActionTypes.ADD_HOOK_REQUEST, addHookSaga);
 }
 
-function* watchStagePolling() {
+function* watchStagePolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.STAGE_POLL_START);
     yield race([call(stagePoll, data), take(PlanActionTypes.STAGE_POLL_STOP)]);
   }
 }
 
-function* watchMigrationPolling() {
+function* watchMigrationPolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.MIGRATION_POLL_START);
     yield race([call(migrationPoll, data), take(PlanActionTypes.MIGRATION_POLL_STOP)]);
   }
 }
 
-function* watchRollbackPolling() {
+function* watchRollbackPolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.ROLLBACK_POLL_START);
     yield race([call(rollbackPoll, data), take(PlanActionTypes.ROLLBACK_POLL_STOP)]);
@@ -1388,7 +1409,7 @@ function* watchPlanCloseAndDelete() {
   yield takeEvery(PlanActionTypes.PLAN_CLOSE_AND_DELETE_REQUEST, planCloseAndDelete);
 }
 
-function* watchPlanStatus() {
+function* watchPlanStatus(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.PLAN_STATUS_POLL_START);
     yield race([call(checkPlanStatus, data), take(PlanActionTypes.PLAN_STATUS_POLL_STOP)]);
@@ -1399,7 +1420,7 @@ function* watchPvDiscoveryRequest() {
   yield takeEvery(PlanActionTypes.PV_DISCOVERY_REQUEST, pvDiscoveryRequest);
 }
 
-function* watchPVUpdatePolling() {
+function* watchPVUpdatePolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.PV_UPDATE_POLL_START);
     yield race([call(pvUpdatePoll, data), take(PlanActionTypes.PV_UPDATE_POLL_STOP)]);
@@ -1438,7 +1459,7 @@ function* watchRunRollbackRequest() {
   yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
 }
 
-function* watchValidatePlanPolling() {
+function* watchValidatePlanPolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
     yield race([call(validatePlanPoll, data), take(PlanActionTypes.VALIDATE_PLAN_POLL_STOP)]);
@@ -1449,7 +1470,7 @@ function* watchValidatePlanRequest() {
   yield takeLatest(PlanActionTypes.VALIDATE_PLAN_REQUEST, validatePlanSaga);
 }
 
-function* watchRefreshAnalyticRequest() {
+function* watchRefreshAnalyticRequest(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.REFRESH_ANALYTIC_REQUEST);
     yield race([

@@ -21,7 +21,7 @@ export const clusterExample1: ICluster = {
       },
     },
     spec: {
-      clusterAuthSecretRef: {
+      serviceAccountSecretRef: {
         name: '',
         namespace: '',
       },
@@ -74,7 +74,7 @@ export const clusterExample2: ICluster = {
       },
     },
     spec: {
-      clusterAuthSecretRef: {
+      serviceAccountSecretRef: {
         name: '',
         namespace: '',
       },

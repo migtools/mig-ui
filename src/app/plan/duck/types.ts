@@ -1,4 +1,5 @@
 import { INameNamespaceRef } from '../../common/duck/types';
+import { MigrationStepsType } from '../../home/pages/PlansPage/types';
 import { ICurrentPlanStatus } from './reducers';
 
 export type PvCopyMethod = 'filesystem' | 'snapshot';
@@ -29,6 +30,9 @@ export interface IMigPlanStorageClass {
 }
 
 export interface IPlanSpecHook {
+  executionNamespace: string;
+  phase: string;
+  serviceAccount: string;
   reference: {
     name: string;
   };
@@ -41,6 +45,8 @@ export interface IMigPlan {
     name: string;
     namespace: string;
     creationTimestamp: string;
+    annotations?: string;
+    resourceVersion?: string;
   };
   spec: {
     persistentVolumes?: IPlanPersistentVolume[];
@@ -74,6 +80,7 @@ export interface IMigration {
     };
     quiescePods: boolean;
     stage: boolean;
+    rollback?: boolean;
   };
   status?: IMigrationStatus;
   tableStatus?: {
@@ -109,8 +116,9 @@ export interface IMigrationStatus extends IStatus {
 }
 
 export interface IStep {
+  currentStep: any;
   message: string;
-  name: string;
+  name: MigrationStepsType;
   phase?: string;
   started?: string;
   completed: string;
@@ -139,38 +147,39 @@ export interface ICondition {
 }
 
 export interface IPlan {
-  MigPlan: IMigPlan;
-  Migrations: IMigration[];
-  Analytics: any[];
-  PlanStatus: {
-    conflictErrorMsg: string;
-    finalMigrationComplete: boolean;
-    hasCanceledCondition: boolean;
-    hasCriticalCondition: boolean;
-    hasCancelingCondition: boolean;
-    hasClosedCondition: boolean;
-    hasErrorCondition: boolean;
-    hasAttemptedMigration: boolean;
-    hasConflictCondition: boolean;
-    hasNotReadyCondition: boolean;
-    hasPODWarnCondition: boolean;
-    hasPVWarnCondition: boolean;
-    hasReadyCondition: boolean;
-    hasRunningMigrations: boolean;
-    hasSucceededMigration: boolean;
-    hasSucceededMigrationWithWarnings: boolean;
-    hasDVMBlockedCondition: boolean;
-    hasSucceededStageWithWarnings: boolean;
-    hasSucceededStage: boolean;
-    hasSucceededRollback: boolean;
-    hasWarnCondition: boolean;
-    isPlanLocked: boolean;
-    latestType: string;
-    latestIsFailed: boolean;
-    namespaces: any[];
-    latestAnalyticTransitionTime: string;
-    latestAnalytic: IAnalytic;
-    analyticPercentComplete: number;
+  MigPlan?: IMigPlan;
+  Migrations?: IMigration[];
+  Analytics?: any[];
+  Hooks?: any[];
+  PlanStatus?: {
+    conflictErrorMsg?: string;
+    finalMigrationComplete?: boolean;
+    hasCanceledCondition?: boolean;
+    hasCriticalCondition?: boolean;
+    hasCancelingCondition?: boolean;
+    hasClosedCondition?: boolean;
+    hasErrorCondition?: boolean;
+    hasAttemptedMigration?: boolean;
+    hasConflictCondition?: boolean;
+    hasNotReadyCondition?: boolean;
+    hasPODWarnCondition?: boolean;
+    hasPVWarnCondition?: boolean;
+    hasReadyCondition?: boolean;
+    hasRunningMigrations?: boolean;
+    hasSucceededMigration?: boolean;
+    hasSucceededMigrationWithWarnings?: boolean;
+    hasDVMBlockedCondition?: boolean;
+    hasSucceededStageWithWarnings?: boolean;
+    hasSucceededStage?: boolean;
+    hasSucceededRollback?: boolean;
+    hasWarnCondition?: boolean;
+    isPlanLocked?: boolean;
+    latestType?: string;
+    latestIsFailed?: boolean;
+    namespaces?: any[];
+    latestAnalyticTransitionTime?: string;
+    latestAnalytic?: IAnalytic;
+    analyticPercentComplete?: number;
   };
 }
 

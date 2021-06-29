@@ -21,6 +21,7 @@ import ConnectionStatusLabel from '../../../../../../common/components/Connectio
 import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 import { validatedState } from '../../../../../../common/helpers';
+import { IStorage } from '../../../../../../storage/duck/types';
 
 /*
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
@@ -32,7 +33,7 @@ const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-const valuesHaveUpdate = (values, currentStorage) => {
+const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
   if (!currentStorage) {
     return true;
   }
@@ -69,7 +70,7 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   initialStorageValues: any;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   currentStorage: any;
   provider: string;
 }
@@ -99,8 +100,8 @@ const InnerAzureForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const azureStorageAccountKey = 'azureStorageAccount';
   const azureBlobKey = 'azureBlob';
 
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikHandleChange = (_val: any, e: any) => handleChange(e);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>

@@ -17,7 +17,7 @@ describe('<NamespacesForm />', () => {
       children: Children,
     };
 
-    const initialNamespaceProps = {
+    const initialNamespaceProps: any = {
       isFetchingNamespaceList: true,
       fetchNamespacesRequest: jest.fn(),
       sourceClusterNamespaces: [],

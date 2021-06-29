@@ -11,7 +11,7 @@ interface IOtherProps {
   onAddEditSubmit: any;
   onClose: any;
   addEditStatus: any;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   storageList: IStorage[];
   currentStorage: IStorage;
 }
@@ -108,7 +108,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
         <FormGroup label="Storage provider type" isRequired fieldId="provider-type-select">
           <SimpleSelect
             aria-label="Select storage provider type"
-            onChange={(option: IProviderOption) => setSelectedProvider(option.value)}
+            onChange={(option: any) => setSelectedProvider(option.value)}
             options={providerOptions}
             value={providerOptions.find((option) => option.value === selectedProvider)}
             placeholderText="Select a type..."

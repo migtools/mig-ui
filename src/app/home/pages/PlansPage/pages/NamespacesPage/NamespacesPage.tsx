@@ -59,7 +59,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
     isRefreshingAnalytic;
 
   const noMigAnlyticFound: boolean = plan?.Analytics?.length === 0;
-  const error = null;
+  const error: any = null;
   return (
     <>
       <PageSection variant="light">

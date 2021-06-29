@@ -18,6 +18,7 @@ import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationStepDetailsTable from './MigrationStepDetailsTable';
 import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IMigrationStepDetailsPageParams {
   planName: string;
@@ -27,7 +28,9 @@ interface IMigrationStepDetailsPageParams {
 
 export const MigrationStepDetailsPage: React.FunctionComponent = () => {
   const { planName, migrationID, stepName } = useParams<IMigrationStepDetailsPageParams>();
-  const planList: IPlan[] = useSelector((state) => planSelectors.getPlansWithStatus(state));
+  const planList: IPlan[] = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
 
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)

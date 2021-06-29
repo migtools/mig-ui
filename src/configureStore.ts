@@ -33,7 +33,6 @@ const persistConfig = {
   key: 'root',
   storage,
   //whitelist: ['cluster', 'storage', 'plan'],
-  whitelist: [],
 };
 export const rootReducer = combineReducers({
   router: connectRouter(history),

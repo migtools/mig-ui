@@ -5,7 +5,7 @@ interface ICertificateUploadProps {
   isDisabled?: boolean;
   onInput: (event: React.FormEvent<HTMLDivElement>) => void;
   fieldName: string;
-  onChange: (value: string) => void;
+  onChange: (value: string | File) => void;
   value: string;
 }
 
@@ -24,7 +24,7 @@ const CertificateUpload: React.FunctionComponent<ICertificateUploadProps> = ({
       type="text"
       value={value}
       filename={filename}
-      onChange={(value: string, filename: string) => {
+      onChange={(value, filename: string) => {
         onChange(value);
         setFilename(filename);
       }}

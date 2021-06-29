@@ -10,9 +10,16 @@ import { setTokenExpiryHandler } from './client/client_factory';
 import { ClusterActions } from './app/cluster/duck/actions';
 import { initFromStorage, initMigMeta } from './app/auth/duck/slice';
 
+declare global {
+  interface Window {
+    _mig_meta: string;
+  }
+}
+
 export default function* rootSaga() {
   function* appStarted() {
     // Some amount of meta data is delivered to the app by the server
+
     const migMeta = JSON.parse(atob(window['_mig_meta']));
 
     // Load the meta into the redux tree if it was found on the window

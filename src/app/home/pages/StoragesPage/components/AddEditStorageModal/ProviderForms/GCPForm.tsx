@@ -13,12 +13,13 @@ import { withFormik, FormikProps } from 'formik';
 import utils from '../../../../../../common/duck/utils';
 import storageUtils from '../../../../../../storage/duck/utils';
 import { validatedState } from '../../../../../../common/helpers';
+import { IStorage } from '../../../../../../storage/duck/types';
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
 const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
-const valuesHaveUpdate = (values, currentStorage) => {
+const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
   if (!currentStorage) {
     return true;
   }
@@ -49,7 +50,7 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   initialStorageValues: any;
-  checkConnection: (name) => void;
+  checkConnection: (name: string) => void;
   currentStorage?: any;
   provider: string;
 }
@@ -75,14 +76,14 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
 
   const [isBlobHidden, setIsBlobHidden] = useState(true);
 
-  const handleBlobHiddenToggle = (e) => {
+  const handleBlobHiddenToggle = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     setIsBlobHidden(!isBlobHidden);
   };
 
-  const formikHandleChange = (_val, e) => handleChange(e);
-  const formikSetFieldTouched = (key) => () => setFieldTouched(key, true, true);
+  const formikHandleChange = (_val: any, e: any) => handleChange(e);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   return (
     <Form onSubmit={handleSubmit} style={{ marginTop: '24px' }}>

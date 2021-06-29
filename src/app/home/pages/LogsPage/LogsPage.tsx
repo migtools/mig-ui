@@ -1,14 +1,14 @@
 import React from 'react';
 import { PageSection, Grid, GridItem } from '@patternfly/react-core';
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import LogsContainer from './components/LogsContainer';
-
-interface IProps {
-  match: any;
+interface ILogsPageParams {
+  planId: string;
 }
 
-export const LogsPage: React.FunctionComponent<IProps> = ({ match }) => {
+export const LogsPage: React.FunctionComponent = () => {
+  const { planId } = useParams<ILogsPageParams>();
   return (
     <>
       <PageSection>
@@ -19,14 +19,14 @@ export const LogsPage: React.FunctionComponent<IProps> = ({ match }) => {
                 <Link to="/plans">plans</Link>
               </BreadcrumbItem>
               <BreadcrumbItem to="#" isActive>
-                {match.params.planId} Logs
+                {planId} Logs
               </BreadcrumbItem>
             </Breadcrumb>
           </GridItem>
         </Grid>
       </PageSection>
       <PageSection>
-        <LogsContainer planName={match.params.planId} />
+        <LogsContainer planName={planId} />
       </PageSection>
     </>
   );

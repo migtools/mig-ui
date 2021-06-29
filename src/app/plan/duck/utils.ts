@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
+import { IMigHook } from '../../home/pages/HooksPage/types';
+import { IMigPlan, IMigration, IPlan, IPlanSpecHook } from './types';
 
-const convertMigHookToUIObject = (currentPlanHookRef, hookRef) => {
+const convertMigHookToUIObject = (currentPlanHookRef: IPlanSpecHook, hookRef: IMigHook) => {
   const hookImageType = hookRef.spec.custom ? 'custom' : 'ansible';
   const customContainerImage = hookRef.spec.custom ? hookRef.spec.image : null;
   const ansibleRuntimeImage = !hookRef.spec.custom ? hookRef.spec.image : null;
@@ -47,14 +49,17 @@ const convertMigHookToUIObject = (currentPlanHookRef, hookRef) => {
 };
 
 export function groupPlans(
-  migPlans: any[],
-  migMigrationRefs: any[],
-  migAnalyticRefs: any[],
-  migHookRefs: any[]
-): any[] {
-  return migPlans.map((mp) => {
-    const fullPlan = {
+  migPlans: Array<any>,
+  migMigrationRefs: Array<any>,
+  migAnalyticRefs: Array<any>,
+  migHookRefs: Array<IMigHook>
+): any {
+  return migPlans.map((mp: IMigPlan) => {
+    const fullPlan: IPlan = {
       MigPlan: mp,
+      Migrations: [],
+      Analytics: [],
+      Hooks: [],
     };
     if (migMigrationRefs.length > 0) {
       const matchingMigrations = migMigrationRefs.filter(
@@ -74,7 +79,7 @@ export function groupPlans(
     }
     if (migHookRefs.length > 0) {
       const currentPlanHooks = mp.spec.hooks;
-      const associatedHooks = [];
+      const associatedHooks: Array<any> = [];
       if (currentPlanHooks) {
         currentPlanHooks.forEach((currentPlanHookRef) =>
           migHookRefs.forEach((hookRef) => {
@@ -94,20 +99,22 @@ export function groupPlans(
   });
 }
 
-const groupPlan: any = (plan, response) => {
-  const fullPlan = {
+const groupPlan: any = (plan: IPlan, response: any) => {
+  const fullPlan: any = {
     MigPlan: plan.MigPlan,
+    Migrations: [],
   };
   if (response.data.items.length > 0) {
-    const sortMigrations = (migrationList) =>
+    const sortMigrations = (migrationList: IMigration[]) =>
       migrationList.sort((left, right) => {
         return dayjs
           .utc(right.metadata.creationTimestamp)
           .diff(dayjs.utc(left.metadata.creationTimestamp));
       });
 
-    const matchingMigrations = response.data.items.filter(
-      (i) => i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
+    const matchingMigrations: IMigration[] = response.data.items.filter(
+      (i: IMigration) =>
+        i.kind === 'MigMigration' && i.spec.migPlanRef.name === plan.MigPlan.metadata.name
     );
 
     fullPlan['Migrations'] = sortMigrations(matchingMigrations);

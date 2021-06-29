@@ -20,6 +20,7 @@ import { IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';
 import { formatGolangTimestamp } from '../../helpers';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IMigrationDetailsPageParams {
   planName: string;
@@ -30,7 +31,9 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
   const { planName, migrationID } = useParams<IMigrationDetailsPageParams>();
   const { path, url } = useRouteMatch();
 
-  const planList = useSelector((state) => planSelectors.getPlansWithStatus(state));
+  const planList = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
   const migration = planList
     .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
     ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);

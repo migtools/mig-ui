@@ -1,5 +1,18 @@
 import { IStatusCondition } from '../../common/duck/types';
-
+export interface IClusterSpec {
+  url: string;
+  serviceAccountSecretRef: {
+    name: string;
+    namespace: string;
+  };
+  isHostCluster: boolean;
+  insecure: boolean;
+  exposedRegistryPath?: string;
+  clusterUrl?: string;
+  azureResourceGroup?: string;
+  caBundle?: string;
+  isAzure?: boolean;
+}
 export interface IMigCluster {
   apiVersion: string;
   kind: string;
@@ -16,19 +29,7 @@ export interface IMigCluster {
     selfLink: string;
     uid: string;
   };
-  spec: {
-    url: string;
-    clusterAuthSecretRef: {
-      name: string;
-      namespace: string;
-    };
-    clusterUrl: string;
-    isHostCluster: boolean;
-    azureResourceGroup: string;
-    insecure: boolean;
-    caBundle: string;
-    exposedRegistryPath?: string;
-  };
+  spec: IClusterSpec;
   status: {
     conditions: IStatusCondition[];
     observedDigest: string;

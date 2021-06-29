@@ -5,6 +5,7 @@ import {
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
 import { IMigPlan } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
+import { IClusterSpec } from '../../app/cluster/duck/types';
 
 export function createMigClusterSecret(
   name: string,
@@ -78,7 +79,7 @@ export function createMigCluster(
   clusterUrl = clusterUrl.trim();
   exposedRegistryPath = exposedRegistryPath.replace(/^https?\:\/\//i, '').trim();
 
-  let specObject;
+  let specObject: IClusterSpec;
   if (isAzure) {
     specObject = {
       azureResourceGroup,
@@ -618,7 +619,7 @@ export function updatePlanHookList(
   };
 }
 export function updateMigHook(currentHook: any, migHook: any) {
-  const getImage = (imageType) => {
+  const getImage = (imageType: string) => {
     if (imageType === HooksImageType.Ansible) {
       return migHook.ansibleRuntimeImage;
     }
@@ -627,7 +628,7 @@ export function updateMigHook(currentHook: any, migHook: any) {
     }
   };
 
-  const getPlaybook = (imageType) => {
+  const getPlaybook = (imageType: string) => {
     if (imageType === HooksImageType.Ansible) {
       const encodedPlaybook = btoa(migHook.ansibleFile);
 
@@ -672,7 +673,7 @@ export function updateMigHook(currentHook: any, migHook: any) {
 }
 
 export function createMigHook(migHook: any, namespace: string) {
-  const getImage = (imageType) => {
+  const getImage = (imageType: string) => {
     if (imageType === HooksImageType.Ansible) {
       return migHook.ansibleRuntimeImage;
     }
@@ -681,7 +682,7 @@ export function createMigHook(migHook: any, namespace: string) {
     }
   };
 
-  const getPlaybook = (imageType) => {
+  const getPlaybook = (imageType: string) => {
     if (imageType === HooksImageType.Ansible) {
       const encodedPlaybook = btoa(migHook.ansibleFile);
 
@@ -759,7 +760,7 @@ export function createMigToken(
   };
 }
 
-export type IHook = ReturnType<typeof createMigHook>;
+// export type IHook = ReturnType<typeof createMigHook>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;
 export type IMigStorage = ReturnType<typeof createMigStorage>;

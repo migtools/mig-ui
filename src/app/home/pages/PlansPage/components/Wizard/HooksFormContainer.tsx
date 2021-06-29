@@ -1,5 +1,4 @@
 import { withFormik, FormikProps } from 'formik';
-import { IHook } from '../../../../../../client/resources/conversions';
 import utils from '../../../../../common/duck/utils';
 import { IMigHook } from '../../../HooksPage/types';
 import HooksFormComponent, { HooksImageType } from './HooksFormComponent';
@@ -27,9 +26,9 @@ interface IHooksFormContainerOtherProps {
   resetAddEditState?: () => void;
   currentPlan: any;
   allHooks: IMigHook[];
-  currentPlanHooks?: IHook[];
+  currentPlanHooks?: IMigHook[];
   selectedExistingHook?: any;
-  setSelectedExistingHook?: (val) => void;
+  setSelectedExistingHook?: (val: any) => void;
   isCreateHookSelected?: boolean;
   setIsCreateHookSelected?: (isCreate: boolean) => void;
 }

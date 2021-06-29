@@ -39,27 +39,27 @@ const addClusterSuccess = (newCluster: IMigCluster) => ({
   type: ClusterActionTypes.ADD_CLUSTER_SUCCESS,
   newCluster,
 });
-const addClusterFailure = (error) => ({
+const addClusterFailure = (error: any) => ({
   type: ClusterActionTypes.ADD_CLUSTER_FAILURE,
   error,
 });
 
-const removeClusterRequest = (name) => ({
+const removeClusterRequest = (name: string) => ({
   type: ClusterActionTypes.REMOVE_CLUSTER_REQUEST,
   name,
 });
 
-const removeClusterSuccess = (name) => ({
+const removeClusterSuccess = (name: string) => ({
   type: ClusterActionTypes.REMOVE_CLUSTER_SUCCESS,
   name,
 });
 
-const removeClusterFailure = (err) => ({
+const removeClusterFailure = (err: any) => ({
   type: ClusterActionTypes.REMOVE_CLUSTER_FAILURE,
   err,
 });
 
-const updateSearchTerm = (searchTerm) => ({
+const updateSearchTerm = (searchTerm: string) => ({
   type: ClusterActionTypes.UPDATE_SERACH_TERM,
   searchTerm,
 });

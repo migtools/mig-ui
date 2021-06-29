@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect';
+import { DefaultRootState } from '../../../configureStore';
+import { IPlan } from '../../plan/duck/types';
 import { ICluster } from './types';
 
-const clusterSelectorWithStatus = (state) =>
+const clusterSelectorWithStatus = (state: DefaultRootState) =>
   state.cluster.clusterList.map((cluster: ICluster) => {
     let hasReadyCondition = null;
     let hasCriticalCondition = null;
@@ -10,7 +12,7 @@ const clusterSelectorWithStatus = (state) =>
     let conditionType = null;
 
     if (!cluster.MigCluster.status || !cluster.MigCluster.status.conditions) {
-      const emptyStatusObject = {
+      const emptyStatusObject: any = {
         hasReadyCondition,
         hasCriticalCondition,
         hasWarnCondition,
@@ -50,7 +52,7 @@ const clusterSelectorWithStatus = (state) =>
     return { ...cluster, ClusterStatus: statusObject };
   });
 
-const planSelector = (state) => state.plan.migPlanList.map((p) => p);
+const planSelector = (state: DefaultRootState) => state.plan.migPlanList.map((p) => p);
 
 const getAllClusters = createSelector([clusterSelectorWithStatus], (clusters) => {
   return clusters;
@@ -59,9 +61,9 @@ const getAllClusters = createSelector([clusterSelectorWithStatus], (clusters) =>
 const getAssociatedPlans = createSelector(
   [clusterSelectorWithStatus, planSelector],
   (clusterList, plans) => {
-    return clusterList.reduce((associatedPlans, cluster: ICluster) => {
+    return clusterList.reduce((associatedPlans: any, cluster: ICluster) => {
       const clusterName = cluster.MigCluster.metadata.name;
-      associatedPlans[clusterName] = plans.reduce((count, plan) => {
+      associatedPlans[clusterName] = plans.reduce((count: number, plan: IPlan) => {
         const isAssociated =
           plan.MigPlan.spec.srcMigClusterRef.name === clusterName ||
           plan.MigPlan.spec.destMigClusterRef.name === clusterName;

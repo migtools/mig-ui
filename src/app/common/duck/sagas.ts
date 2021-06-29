@@ -1,4 +1,4 @@
-import { select, takeLatest, race, call, delay, take, put } from 'redux-saga/effects';
+import { select, takeLatest, race, call, delay, take, put, StrictEffect } from 'redux-saga/effects';
 
 import { PlanActionTypes, PlanActions } from '../../plan/duck/actions';
 import { StorageActionTypes, StorageActions } from '../../storage/duck/actions';
@@ -18,18 +18,23 @@ import { IAlertModalObj } from './types';
 import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 
+function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
+  const res: DefaultRootState = yield select();
+  return res;
+}
+
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
 
-function* poll(action) {
+function* poll(action: any): Generator<any, any, any> {
   const params = { ...action.params };
+  const state = yield* getState();
 
   while (true) {
     try {
       const response = yield call(params.asyncFetch);
       params.callback(response);
     } catch (err) {
-      const state: DefaultRootState = yield select();
       const migMeta = state.auth.migMeta;
       //handle selfSignedCert error & network connectivity error
       if (utils.isSelfSignedCertError(err)) {
@@ -48,35 +53,35 @@ function* poll(action) {
     yield delay(params.delay);
   }
 }
-function* watchPlanPolling() {
+function* watchPlanPolling(): Generator {
   while (true) {
     const action = yield take(PlanActionTypes.PLAN_POLL_START);
     yield race([call(poll, action), take(PlanActionTypes.PLAN_POLL_STOP)]);
   }
 }
 
-function* watchStoragePolling() {
+function* watchStoragePolling(): Generator {
   while (true) {
     const action = yield take(StorageActionTypes.STORAGE_POLL_START);
     yield race([call(poll, action), take(StorageActionTypes.STORAGE_POLL_STOP)]);
   }
 }
 
-function* watchClustersPolling() {
+function* watchClustersPolling(): Generator {
   while (true) {
     const action = yield take(ClusterActionTypes.CLUSTER_POLL_START);
     yield race([call(poll, action), take(ClusterActionTypes.CLUSTER_POLL_STOP)]);
   }
 }
 
-function* watchHookPolling() {
+function* watchHookPolling(): Generator {
   while (true) {
     const action = yield take(PlanActionTypes.HOOK_POLL_START);
     yield race([call(poll, action), take(PlanActionTypes.HOOK_POLL_STOP)]);
   }
 }
 
-export function* progressTimeoutSaga(action) {
+export function* progressTimeoutSaga(action: any) {
   try {
     yield put(alertProgress(action.payload));
     yield delay(5000);
@@ -86,7 +91,7 @@ export function* progressTimeoutSaga(action) {
   }
 }
 
-export function* errorTimeoutSaga(action) {
+export function* errorTimeoutSaga(action: any) {
   try {
     yield put(alertError(action.payload));
     yield delay(ErrorToastTimeout);
@@ -96,7 +101,7 @@ export function* errorTimeoutSaga(action) {
   }
 }
 
-export function* successTimeoutSaga(action) {
+export function* successTimeoutSaga(action: any) {
   try {
     yield put(alertSuccess(action.payload));
     yield delay(5000);

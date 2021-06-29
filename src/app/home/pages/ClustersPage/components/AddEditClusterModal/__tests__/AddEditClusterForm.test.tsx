@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 
 import AddEditClusterForm from '../AddEditClusterForm';
 import { AddEditMode, AddEditState } from '../../../../../../common/add_edit_state';
+import { ICluster } from '../../../../../../cluster/duck/types';
 
 describe('<AddEditClusterModal />', () => {
   it('allows filling form with valid values', () => {
@@ -23,7 +24,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: null,
+      currentCluster: null as ICluster,
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -61,7 +62,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: null,
+      currentCluster: null as ICluster,
     };
 
     render(<AddEditClusterForm {...props} />);
@@ -119,7 +120,7 @@ describe('<AddEditClusterModal />', () => {
       checkConnection: () => {
         return;
       },
-      currentCluster: null,
+      currentCluster: null as ICluster,
     };
 
     render(<AddEditClusterForm {...props} />);

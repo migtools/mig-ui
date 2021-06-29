@@ -10,8 +10,8 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 import { IRow } from '@patternfly/react-table/dist/js/components/Table/TableTypes';
 
-const LogItem = ({ log }) => {
-  const getSortValues = () => {
+const LogItem = ({ log }: any) => {
+  const getSortValues = (): any => {
     return [];
   };
 

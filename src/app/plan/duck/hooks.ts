@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useToggleLoading = (initialState) => {
+export const useToggleLoading = (initialState: boolean) => {
   const [isLoading, setLoading] = useState(initialState);
 
   const toggleLoading = () => {
