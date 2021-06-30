@@ -67,10 +67,7 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 
 function* fetchPlansGenerator(): Generator<any, any, any> {
   const state = yield* getState();
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const planResource = new MigResource(MigResourceKind.MigPlan, state.auth.migMeta.namespace);
   const migHookResource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
   const migMigrationResource = new MigResource(
@@ -105,10 +102,7 @@ function* fetchPlansGenerator(): Generator<any, any, any> {
 function* getPlanSaga(planName: string): any {
   const state = yield* getState();
   const migMeta = state.auth.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   return yield client.get(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
@@ -118,10 +112,7 @@ function* deleteAnalyticSaga(action: any): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
 
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
 
     yield client.delete(new MigResource(MigResourceKind.MigAnalytic, migMeta.namespace), analytic);
 
@@ -136,10 +127,7 @@ function* addAnalyticSaga(action: any): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
 
     const migAnalyticObj = createInitialMigAnalytic(planName, migMeta.namespace);
 
@@ -158,10 +146,7 @@ function* addPlanSaga(action: any): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
 
     const migPlanObj = createInitialMigPlan(
       migPlan.planName,
@@ -191,7 +176,7 @@ function* namespaceFetchRequest(action: any): any {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const namespaces: DiscoveryResource = new NamespaceDiscovery(action.clusterName);
   try {
@@ -224,10 +209,7 @@ function* namespaceFetchRequest(action: any): any {
 function* refreshAnalyticSaga(action: any): any {
   const { analyticName } = action;
   const state = yield* getState();
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const migMeta = state.auth.migMeta;
   try {
     yield put(PlanActions.deleteAnalyticRequest(analyticName));
@@ -270,10 +252,7 @@ function* refreshAnalyticSaga(action: any): any {
 function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
   const state = yield* getState();
   const migMeta = state.auth.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   try {
     const getPlanRes = yield call(getPlanSaga, planValues.planName);
     if (getPlanRes.data.spec.closed) {
@@ -298,10 +277,7 @@ function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
 function* migrationCancel(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   try {
     const migration = yield client.get(
       new MigResource(MigResourceKind.MigMigration, migMeta.namespace),
@@ -340,10 +316,7 @@ function* validatePlanSaga(action: any): Generator<any, any, any> {
       function* (planValues) {
         const state: DefaultRootState = yield select();
         const migMeta = state.auth.migMeta;
-        const client: IClusterClient = ClientFactory.cluster(
-          state.auth.user,
-          state.auth.migMeta.clusterApi
-        );
+        const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes: any = yield call(getPlanSaga, planValues.planName);
@@ -429,10 +402,7 @@ function* pvDiscoveryRequest(action: any): Generator {
       function* (planValues) {
         const state: DefaultRootState = yield select();
         const migMeta = state.auth.migMeta;
-        const client: IClusterClient = ClientFactory.cluster(
-          state.auth.user,
-          state.auth.migMeta.clusterApi
-        );
+        const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
         try {
           yield put(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
           const getPlanRes: any = yield call(getPlanSaga, planValues.planName);
@@ -681,10 +651,7 @@ function* planCloseSaga(action: any): Generator {
 function* planDeleteAfterClose(planName: string) {
   const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   yield client.delete(new MigResource(MigResourceKind.MigPlan, migMeta.namespace), planName);
 }
 
@@ -707,7 +674,7 @@ function* getPVResourcesRequest(action: any) {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   try {
     const pvResourceRefs = action.pvList.map((pv: IPersistentVolumeResource) => {
@@ -788,10 +755,7 @@ function* runStageSaga(action: any): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { plan } = action;
     const migrationName = `stage-${uuidv1().slice(0, 5)}`;
 
@@ -918,10 +882,7 @@ function* runMigrationSaga(action: any): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(alertProgressTimeout('Migration Started'));
 
@@ -1041,10 +1002,7 @@ function* runRollbackSaga(action: any): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { plan } = action;
     const migrationName = `rollback-${uuidv1().slice(0, 5)}`;
 
@@ -1121,7 +1079,7 @@ function* rollbackPoll(action: any): Generator {
 
 function* fetchHooksGenerator(): any {
   const state = yield* getState();
-  const client: IClusterClient = ClientFactory.cluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const resource = new MigResource(MigResourceKind.MigHook, state.auth.migMeta.namespace);
   try {
     let hookList = yield client.list(resource);
@@ -1137,10 +1095,7 @@ function* fetchPlanHooksSaga(): any {
   const state = yield* getState();
   try {
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
     const { currentPlan } = state.plan;
     const getPlanRes = yield call(getPlanSaga, currentPlan.metadata.name);
@@ -1169,7 +1124,7 @@ function* updatePlanHookListSaga(action: any): any {
   const state = yield* getState();
   const { migMeta } = state.auth;
   const { currentPlan } = state.plan;
-  const client: IClusterClient = ClientFactory.cluster(state);
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const { currentPlanHookRefPatch } = action;
   if (currentPlanHookRefPatch) {
     const patchPlanResponse = yield client.patch(
@@ -1186,10 +1141,7 @@ function* associateHookToPlanSaga(action: any): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { hookValues, migHook } = action;
 
     // add hook
@@ -1277,10 +1229,7 @@ function* addHookSaga(action: any): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const { currentPlan } = state.plan;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { name } = action;
 
     const migHookObj = createMigHook(migHook, migMeta.namespace);
@@ -1307,7 +1256,7 @@ function* removeHookFromPlanSaga(action: any): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
-    const client: IClusterClient = ClientFactory.cluster(state);
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
 
     const { currentPlan } = state.plan;
 
@@ -1347,7 +1296,7 @@ function* removeHookSaga(action: any): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const { name } = action;
-    const client: IClusterClient = ClientFactory.cluster(state);
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
 
     const migHookResource = new MigResource(MigResourceKind.MigHook, migMeta.namespace);
 
@@ -1366,10 +1315,7 @@ function* removeHookSaga(action: any): any {
 function* updateHookRequest(action: any): any {
   const state = yield* getState();
   const { migMeta } = state.auth;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const { migHook } = action;
 
   const { currentPlan } = state.plan;

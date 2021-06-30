@@ -77,10 +77,7 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
 
 function* fetchStorageGenerator(): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const resource = new MigResource(MigResourceKind.MigStorage, state.auth.migMeta.namespace);
   try {
     let storageList = yield client.list(resource);
@@ -97,10 +94,7 @@ function* removeStorageSaga(action: any): Generator<any, any, any> {
   try {
     const state: DefaultRootState = yield select();
     const { migMeta } = state.auth;
-    const client: IClusterClient = ClientFactory.cluster(
-      state.auth.user,
-      state.auth.migMeta.clusterApi
-    );
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { name } = action;
 
     const secretResource = new CoreNamespacedResource(
@@ -133,10 +127,7 @@ function* removeStorageSaga(action: any): Generator<any, any, any> {
 function* addStorageRequest(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const { storageValues } = action;
 
   const storageSecret = createStorageSecret(
@@ -253,10 +244,7 @@ function* updateStorageRequest(action: any): Generator<any, any, any> {
   // TODO: Probably need rollback logic here too if any fail
   const state: DefaultRootState = yield select();
   const { migMeta } = state.auth;
-  const client: IClusterClient = ClientFactory.cluster(
-    state.auth.user,
-    state.auth.migMeta.clusterApi
-  );
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
   const { storageValues } = action;
 
   const currentStorage = state.storage.migStorageList.find((c) => {
@@ -442,10 +430,7 @@ function* pollStorageAddEditStatus(action: any): Generator<any, any, any> {
     try {
       const state: DefaultRootState = yield select();
       const { migMeta } = state.auth;
-      const client: IClusterClient = ClientFactory.cluster(
-        state.auth.user,
-        state.auth.migMeta.clusterApi
-      );
+      const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
       const { storageName } = action;
 
       const migStorageResource = new MigResource(MigResourceKind.MigStorage, migMeta.namespace);

@@ -7,7 +7,6 @@ const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 let cachedOAuthMeta = null;
-const { sanitizeMigMeta, getClusterAuth } = require('./oAuthHelpers');
 
 const migMetaFile = process.env['MIGMETA_FILE'] || '/srv/migmeta.json';
 const viewsDir = process.env['VIEWS_DIR'] || '/srv/views';
@@ -41,6 +40,7 @@ let clusterApiProxyOptions = {
     '^/cluster-api/': '/',
   },
   logLevel: process.env.DEBUG ? 'debug' : 'info',
+  secure: false,
 };
 
 let discoveryApiProxyOptions = {
@@ -50,6 +50,7 @@ let discoveryApiProxyOptions = {
     '^/discovery-api/': '/',
   },
   logLevel: process.env.DEBUG ? 'debug' : 'info',
+  secure: false,
 };
 
 /* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled

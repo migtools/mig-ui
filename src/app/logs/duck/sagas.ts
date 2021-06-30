@@ -52,7 +52,7 @@ function* downloadLog(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const logPath: string = action.payload;
   try {
@@ -78,7 +78,7 @@ function* downloadLogs(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const report: IPlanLogSources = action.payload;
   try {
@@ -114,7 +114,7 @@ function* extractLogs(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const logPath = action.payload;
   try {
@@ -138,7 +138,7 @@ function* collectReport(action: PayloadAction<string>) {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const planPodReportDiscovery = new PlanPodReportDiscovery(planName);
   try {

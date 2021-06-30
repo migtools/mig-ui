@@ -453,11 +453,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
 export default {
   getCurrentPlanWithStatus,
   getPlansWithStatus,
-<<<<<<< HEAD
   getMigMeta,
-=======
-  getCounts,
->>>>>>> 5538ee3 (use shared client code & refactor for cors fix)
   getFilteredNamespaces,
   getHooksWithStatus,
 };

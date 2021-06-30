@@ -32,7 +32,7 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const linkRefs: Array<any> = [];
   const eachRecursive = (obj: any) => {
@@ -94,7 +94,7 @@ function* fetchDebugObject(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
 
   try {
@@ -112,7 +112,7 @@ function* fetchDebugTree(action: any): Generator<any, any, any> {
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
   const debugTreeResource: IDebugTreeResource = new DebugTreeDiscoveryResource(
     planName,
