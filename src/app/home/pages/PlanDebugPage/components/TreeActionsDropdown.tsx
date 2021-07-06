@@ -10,6 +10,7 @@ import {
 } from '../../../../debug/duck/types';
 import { alertSuccess } from '../../../../common/duck/slice';
 import { getDebugCommand, hasLogsCommand } from '../helpers';
+import { DefaultRootState } from '../../../../../configureStore';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
@@ -19,6 +20,8 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   rawNode,
 }: ITreeActionsDropdownProps) => {
   const dispatch = useDispatch();
+  const logs: ILogsReducerState = useSelector((state: DefaultRootState) => state.logs);
+
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
