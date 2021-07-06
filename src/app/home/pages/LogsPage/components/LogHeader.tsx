@@ -8,7 +8,6 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { connect } from 'react-redux';
-import { LogActions } from '../../../../logs/duck';
 import { flatten } from 'lodash';
 import {
   IPlanLogSources,
@@ -18,6 +17,7 @@ import {
 import { ILogSource, LogUnselected } from './LogsContainer';
 import SimpleSelect from '../../../../common/components/SimpleSelect';
 import { DefaultRootState } from '../../../../../configureStore';
+import { logsFetchRequest } from '../../../../logs/duck/slice';
 
 interface ISelectItem {
   label: any;
@@ -29,9 +29,9 @@ interface IProps {
   report: any;
   cluster: string;
   logSource: ISelectItem;
-  setCluster: (itemISelectItem: any) => void;
-  setLogSource: (itemISelectItem: any) => void;
-  logFetchRequest: (log: any) => void;
+  setCluster: (itemISelectItem) => void;
+  setLogSource: (itemISelectItem) => void;
+  logsFetchRequest: (string) => void;
 }
 
 const LogHeader: FunctionComponent<IProps> = ({
@@ -41,7 +41,7 @@ const LogHeader: FunctionComponent<IProps> = ({
   logSource,
   setCluster,
   setLogSource,
-  logFetchRequest,
+  logsFetchRequest,
 }) => {
   const clusters = Object.keys(report).map((cl) => cl);
 
@@ -105,7 +105,7 @@ const LogHeader: FunctionComponent<IProps> = ({
                   setLogSource(foundLogSelection);
                   //@ts-ignore
                   const logStore: ILogSource = foundLogSelection.value;
-                  logFetchRequest(
+                  logsFetchRequest(
                     report[cluster][logStore.podIndex].containers[logStore.containerIndex].log
                   );
                 }}
@@ -127,6 +127,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    logFetchRequest: (logPath: any) => dispatch(LogActions.logFetchRequest(logPath)),
+    logsFetchRequest: (logPath) => dispatch(logsFetchRequest(logPath)),
   })
 )(LogHeader);
