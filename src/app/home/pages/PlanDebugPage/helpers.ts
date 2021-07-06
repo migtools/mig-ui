@@ -1,4 +1,5 @@
 import { IDebugTreeNode } from '../../../debug/duck/types';
+import { IClusterLogPodObject } from '../../../logs/duck/slice';
 
 export const getFullKindName = (kind: any) => {
   switch (kind) {
@@ -82,23 +83,38 @@ interface ICommandAndTypeObj {
   ocDescribeCommand: string;
   ocLogsCommand: string;
 }
-export const getDebugCommand = (rawNode: IDebugTreeNode): ICommandAndTypeObj => {
+export const getDebugCommand = (
+  rawNode: IDebugTreeNode,
+  logPodObject: IClusterLogPodObject
+): ICommandAndTypeObj => {
   const { kind, namespace, name } = rawNode;
+  let logPodName;
+  if (rawNode.clusterType === 'source') {
+    logPodName = logPodObject.src.name;
+  } else if (rawNode.clusterType === 'host') {
+    logPodName = logPodObject.dest.name;
+  }
   switch (kind) {
     case 'DirectImageStreamMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dism":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"dism":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dism":"${name}"'`,
       };
     case 'DirectVolumeMigrationProgress':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"dvmp":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
       };
     case 'Hook':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migHook":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"migHook":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migHook":"${name}"'`,
       };
     case 'Job':
       return {

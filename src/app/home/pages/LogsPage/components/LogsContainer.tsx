@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
-import { LogActions } from '../../../../logs/duck';
 import {
   Card,
   EmptyStateVariant,
@@ -15,6 +14,7 @@ import {
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../common/context/PollingContext';
 import { DefaultRootState } from '../../../../../configureStore';
+import { reportFetchRequest } from '../../../../logs/duck/slice';
 
 interface IProps {
   planName: string;
@@ -105,6 +105,6 @@ export default connect(
     archive: state.logs.archive,
   }),
   (dispatch) => ({
-    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
+    requestReport: (planName) => dispatch(reportFetchRequest(planName)),
   })
 )(LogsContainer);
