@@ -144,12 +144,16 @@ export const getDebugCommand = (
     case 'Migration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"migMigration":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
       };
     case 'Plan':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"migPlan":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
       };
     case 'Backup':
       return {
@@ -174,12 +178,16 @@ export const getDebugCommand = (
     case 'DirectVolumeMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvm":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"dvm":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvm":"${name}"'`,
       };
     case 'DirectImageMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
-        ocLogsCommand: `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dim":"${name}"'`,
+        ocLogsCommand: logPodName
+          ? `oc logs ${logPodName} -c plain | grep '"dim":"${name}"'`
+          : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dim":"${name}"'`,
       };
     default:
       return {
