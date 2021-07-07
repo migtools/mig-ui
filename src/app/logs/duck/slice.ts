@@ -4,6 +4,7 @@ import { IPlanReport } from '../../../client/resources/discovery';
 export interface IClusterLogPodObject {
   src: any;
   dest: any;
+  host?: any;
 }
 export interface ILogReducerState {
   isFetchingLogs: boolean;
@@ -56,7 +57,7 @@ const logSlice = createSlice({
     createLogArchive(state, action: PayloadAction<string>) {
       state.archive = action.payload;
     },
-    clusterPodFetchRequest(state, action: PayloadAction<IClusterLogPodObject>) {
+    clusterPodFetchRequest(state, action: PayloadAction<string>) {
       state.isFetchingLogs = true;
       state.logPodObject = action.payload;
     },

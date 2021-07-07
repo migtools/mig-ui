@@ -55,14 +55,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
     const { isPolling } = debug;
     if (!isPolling) {
       dispatch(startDebugPolling({ planName: planName, migrationID: migrationID }));
-      const currentPlan = plans.find((plan) => plan.MigPlan.metadata.name === planName);
-      const clusterObjForPlan = {
-        dest: currentPlan.MigPlan.spec.destMigClusterRef.name,
-        src: currentPlan.MigPlan.spec.srcMigClusterRef.name,
-      };
-      if (clusterObjForPlan) {
-        dispatch(clusterPodFetchRequest(clusterObjForPlan));
-      }
+      dispatch(clusterPodFetchRequest(planName));
     }
     return () => {
       // Cleanup on dismount of Debug component, stop polling

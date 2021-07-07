@@ -34,6 +34,9 @@ import {
   requestDownloadLog,
 } from './slice';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
+import { planSelectors } from '../../plan/duck';
+import { ICluster, IMigCluster } from '../../cluster/duck/types';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -141,17 +144,51 @@ function* collectReport(action: PayloadAction<string>) {
   }
 }
 
-function* fetchPodNames(action: PayloadAction<IClusterLogPodObject>): Generator<any, any, any> {
-  const clusterObjForPlan = action.payload;
+function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
-  //NATODO: add cluster name to request
-
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
+
+  const planName = action.payload;
+  const currentPlan = state.plan.migPlanList.find(
+    (plan) => plan.MigPlan.metadata.name === planName
+  );
+  const nonHostClusters = state.cluster.clusterList.filter(
+    (c: ICluster) => !c.MigCluster.spec.isHostCluster
+  );
+
+  const isSrcNonHost = nonHostClusters.some(
+    (nonHostCluster) =>
+      nonHostCluster.MigCluster.metadata.name === currentPlan.MigPlan.spec.srcMigClusterRef.name
+  );
+  const isDestNonHost = nonHostClusters.some(
+    (nonHostCluster) =>
+      nonHostCluster.MigCluster.metadata.name === currentPlan.MigPlan.spec.destMigClusterRef.name
+  );
+
+  let clusterObjForPlan;
+
+  if (isSrcNonHost && isDestNonHost) {
+    const hostCluster = state.cluster.clusterList.find(
+      (c: ICluster) => c.MigCluster.spec.isHostCluster
+    );
+    clusterObjForPlan = {
+      host: hostCluster.MigCluster.metadata.name,
+      dest: currentPlan.MigPlan.spec.destMigClusterRef.name,
+      src: currentPlan.MigPlan.spec.srcMigClusterRef.name,
+    };
+  } else {
+    clusterObjForPlan = {
+      dest: currentPlan.MigPlan.spec.destMigClusterRef.name,
+      src: currentPlan.MigPlan.spec.srcMigClusterRef.name,
+    };
+  }
 
   const srcPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
     new PodCollectorDiscoveryResource(clusterObjForPlan.src);
   const destPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
     new PodCollectorDiscoveryResource(clusterObjForPlan.dest);
+  const hostPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
+    new PodCollectorDiscoveryResource(clusterObjForPlan?.host);
 
   try {
     const srcPodList = yield discoveryClient.get(srcPodCollectorDiscoveryResource);
@@ -162,11 +199,26 @@ function* fetchPodNames(action: PayloadAction<IClusterLogPodObject>): Generator<
     const destLogPod = destPodList?.data?.resources.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
-    const logPodObject = {
-      src: srcLogPod,
-      dest: destLogPod,
-    };
-    yield put(clusterPodFetchSuccess(logPodObject));
+    if (isSrcNonHost && isDestNonHost) {
+      const hostPodList = yield discoveryClient.get(hostPodCollectorDiscoveryResource);
+      const hostLogPod = hostPodList?.data?.resources.find((resource: any) =>
+        resource.name.includes('migration-log-reader-')
+      );
+      const logPodObject: IClusterLogPodObject = {
+        src: srcLogPod,
+        dest: destLogPod,
+        host: hostLogPod,
+      };
+
+      yield put(clusterPodFetchSuccess(logPodObject));
+    } else {
+      const logPodObject: IClusterLogPodObject = {
+        src: srcLogPod,
+        dest: destLogPod,
+      };
+
+      yield put(clusterPodFetchSuccess(logPodObject));
+    }
   } catch (err) {
     if (utils.isTimeoutError(err)) {
       yield put(alertErrorTimeout('Timed out while fetching cluster pod report'));
