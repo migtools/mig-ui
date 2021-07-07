@@ -114,13 +114,8 @@ function* extractLogs(action: any): Generator<any, any, any> {
   }
 }
 
-<<<<<<< HEAD
-function* collectReport(action: any) {
-  const { planName } = action;
-=======
 function* collectReport(action) {
   const planName = action.payload;
->>>>>>> bafe01a (Begin updating commands with pod name)
   const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
   const discoveryClient: IDiscoveryClient = ClientFactory.discovery(state);
