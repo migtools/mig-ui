@@ -1,3 +1,4 @@
-import logReducer from './reducers';
+import logReducer from './slice';
+export { ILogReducerState } from './slice';
+export { default as logSagas } from './sagas';
 export default logReducer;
-export { LogActionTypes, LogActions } from './actions';
