@@ -56,7 +56,10 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(rawNode);
+    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(
+      rawNode,
+      logs.logPodObject
+    );
     setClusterType(clusterType);
     el.value = ocLogsCommand;
     clipboard.appendChild(el);
