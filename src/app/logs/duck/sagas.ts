@@ -23,6 +23,7 @@ import {
   clusterPodFetchRequest,
   clusterPodFetchSuccess,
   createLogArchive,
+  IClusterLogPodObject,
   logsFetchFailure,
   logsFetchRequest,
   logsFetchSuccess,
@@ -32,6 +33,7 @@ import {
   requestDownloadAll,
   requestDownloadLog,
 } from './slice';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -114,7 +116,7 @@ function* extractLogs(action: any): Generator<any, any, any> {
   }
 }
 
-function* collectReport(action) {
+function* collectReport(action: PayloadAction<string>) {
   const planName = action.payload;
   const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
@@ -139,7 +141,7 @@ function* collectReport(action) {
   }
 }
 
-function* fetchPodNames(action) {
+function* fetchPodNames(action: PayloadAction<IClusterLogPodObject>): Generator<any, any, any> {
   const clusterObjForPlan = action.payload;
   const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
@@ -154,10 +156,10 @@ function* fetchPodNames(action) {
   try {
     const srcPodList = yield discoveryClient.get(srcPodCollectorDiscoveryResource);
     const destPodList = yield discoveryClient.get(destPodCollectorDiscoveryResource);
-    const srcLogPod = srcPodList?.data?.resources.find((resource) =>
+    const srcLogPod = srcPodList?.data?.resources.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
-    const destLogPod = destPodList?.data?.resources.find((resource) =>
+    const destLogPod = destPodList?.data?.resources.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
     const logPodObject = {

@@ -62,7 +62,7 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    requestDownloadLog: (logPath) => dispatch(requestDownloadLog(logPath)),
-    requestReport: (planName) => dispatch(reportFetchRequest(planName)),
+    requestDownloadLog: (logPath: string) => dispatch(requestDownloadLog(logPath)),
+    requestReport: (planName: string) => dispatch(reportFetchRequest(planName)),
   })
 )(LogFooter);

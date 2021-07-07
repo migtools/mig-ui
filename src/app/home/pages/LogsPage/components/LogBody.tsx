@@ -12,7 +12,7 @@ import LogItem from './LogItem';
 import { connect } from 'react-redux';
 import { Spinner } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
-import { IPlanLogSources } from '../../../../../client/resources/discovery';
+import { IPlanLogSources, IPlanReport } from '../../../../../client/resources/discovery';
 import { DefaultRootState } from '../../../../../configureStore';
 import { requestDownloadAll } from '../../../../logs/duck/slice';
 
@@ -68,6 +68,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    requestDownloadAll: (report) => dispatch(requestDownloadAll(report)),
+    requestDownloadAll: (report: any) => dispatch(requestDownloadAll(report)),
   })
 )(LogBody);

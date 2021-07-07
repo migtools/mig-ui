@@ -28,10 +28,10 @@ interface IProps {
   isFetchingLogs: boolean;
   report: any;
   cluster: string;
-  logSource: ISelectItem;
-  setCluster: (itemISelectItem) => void;
-  setLogSource: (itemISelectItem) => void;
-  logsFetchRequest: (string) => void;
+  logSource: any;
+  setCluster: (item: any) => void;
+  setLogSource: (item: any) => void;
+  logsFetchRequest: (logPath: string) => void;
 }
 
 const LogHeader: FunctionComponent<IProps> = ({
@@ -127,6 +127,6 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    logsFetchRequest: (logPath) => dispatch(logsFetchRequest(logPath)),
+    logsFetchRequest: (logPath: string) => dispatch(logsFetchRequest(logPath)),
   })
 )(LogHeader);

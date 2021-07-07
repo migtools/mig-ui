@@ -105,6 +105,6 @@ export default connect(
     archive: state.logs.archive,
   }),
   (dispatch) => ({
-    requestReport: (planName) => dispatch(reportFetchRequest(planName)),
+    requestReport: (planName: string) => dispatch(reportFetchRequest(planName)),
   })
 )(LogsContainer);
