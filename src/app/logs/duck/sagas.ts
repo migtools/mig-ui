@@ -215,6 +215,7 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
       const logPodObject: IClusterLogPodObject = {
         src: srcLogPod,
         dest: destLogPod,
+        host: !isDestNonHost ? destLogPod : srcLogPod,
       };
 
       yield put(clusterPodFetchSuccess(logPodObject));

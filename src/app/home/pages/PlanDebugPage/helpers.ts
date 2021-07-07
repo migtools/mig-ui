@@ -91,8 +91,10 @@ export const getDebugCommand = (
   let logPodName;
   if (rawNode.clusterType === 'source') {
     logPodName = logPodObject.src.name;
-  } else if (rawNode.clusterType === 'host') {
+  } else if (rawNode.clusterType === 'target') {
     logPodName = logPodObject.dest.name;
+  } else if (rawNode.clusterType === 'host') {
+    logPodName = logPodObject.host.name;
   }
   switch (kind) {
     case 'DirectImageStreamMigration':
