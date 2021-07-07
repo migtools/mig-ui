@@ -5,6 +5,12 @@ export interface IKubeResource {
   namedPath(name: string): string;
 }
 
+export interface IPodCollectorDiscoveryResource {
+  discoveryAggregator(): string;
+  discoveryType(): string;
+  path(): string;
+}
+
 export interface IDebugTreeResource {
   discoveryAggregator(): string;
   discoveryType(): string;
@@ -199,5 +205,24 @@ export class DebugTreeDiscoveryResource implements IDebugTreeResource {
 
   public path(): string {
     return [this.discoveryAggregator(), this.discoveryType(), this._aggregatorSpecifier].join('/');
+  }
+}
+
+export class PodCollectorDiscoveryResource implements IPodCollectorDiscoveryResource {
+  private readonly _clusterName: string;
+
+  constructor(clusterName: string) {
+    this._clusterName = clusterName;
+  }
+  public discoveryType() {
+    return 'clusters';
+  }
+
+  public discoveryAggregator() {
+    return 'namespaces/openshift-migration/pods';
+  }
+
+  public path(): string {
+    return [this.discoveryType(), this._clusterName, this.discoveryAggregator()].join('/');
   }
 }

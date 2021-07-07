@@ -2,10 +2,10 @@ import React from 'react';
 import { Button, CardFooter, Grid, GridItem } from '@patternfly/react-core';
 import { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
-import { LogActions } from '../../../../logs/duck';
 import { LogUnselected, ILogSource } from './LogsContainer';
 import { IPlanLogSources } from '../../../../../client/resources/discovery';
 import { DefaultRootState } from '../../../../../configureStore';
+import { reportFetchRequest, requestDownloadLog } from '../../../../logs/duck/slice';
 
 interface IProps {
   logSource: ILogSource;
@@ -62,7 +62,7 @@ export default connect(
     isFetchingLogs: state.logs.isFetchingLogs,
   }),
   (dispatch) => ({
-    requestDownloadLog: (logPath) => dispatch(LogActions.requestDownloadLog(logPath)),
-    requestReport: (planName) => dispatch(LogActions.reportFetchRequest(planName)),
+    requestDownloadLog: (logPath: string) => dispatch(requestDownloadLog(logPath)),
+    requestReport: (planName: string) => dispatch(reportFetchRequest(planName)),
   })
 )(LogFooter);

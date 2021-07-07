@@ -74,6 +74,7 @@ export default function* rootSaga() {
     logSagas.watchLogsPolling(),
     logSagas.watchLogDownload(),
     logSagas.watchLogsDownload(),
+    logSagas.watchClusterPodFetchRequest(),
     clusterSagas.watchRemoveClusterRequest(),
     clusterSagas.watchAddClusterRequest(),
     clusterSagas.watchUpdateClusterRequest(),
