@@ -7,6 +7,10 @@ export enum ClusterKind {
   controller = 'controller',
 }
 
+export interface IClusterObj {
+  dest: string;
+  src: any;
+}
 export interface IPodContainer {
   name: string;
   log: any;
@@ -66,6 +70,17 @@ export class PlanPodReportDiscovery extends DiscoveryResource {
   }
 
   public async get(client: IDiscoveryClient): Promise<IPlanReport> {
+    const report = await client.get(this);
+    return report.data;
+  }
+}
+
+export class ClusterPodReportDiscovery extends DiscoveryResource {
+  constructor(clusterName: string, params: IDiscoveryParameters = {}) {
+    super(clusterName, 'pods', params, 'clusters');
+  }
+
+  public async get(client: IDiscoveryClient): Promise<any> {
     const report = await client.get(this);
     return report.data;
   }

@@ -10,6 +10,8 @@ import {
 } from '../../../../debug/duck/types';
 import { alertSuccess } from '../../../../common/duck/slice';
 import { getDebugCommand, hasLogsCommand } from '../helpers';
+import { DefaultRootState } from '../../../../../configureStore';
+import { ILogReducerState } from '../../../../logs/duck/slice';
 
 interface ITreeActionsDropdownProps {
   rawNode: IDebugTreeNode;
@@ -19,6 +21,8 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
   rawNode,
 }: ITreeActionsDropdownProps) => {
   const dispatch = useDispatch();
+  const logs: ILogReducerState = useSelector((state: DefaultRootState) => state.logs);
+
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [clusterType, setClusterType] = useState('');
 
@@ -30,7 +34,10 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(rawNode);
+    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(
+      rawNode,
+      logs.logPodObject
+    );
     setClusterType(clusterType);
     el.value = ocDescribeCommand;
     clipboard.appendChild(el);
@@ -49,7 +56,10 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     event.preventDefault();
     const clipboard = event.currentTarget.parentElement;
     const el = document.createElement('textarea');
-    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(rawNode);
+    const { ocDescribeCommand: ocDescribeCommand, ocLogsCommand } = getDebugCommand(
+      rawNode,
+      logs.logPodObject
+    );
     setClusterType(clusterType);
     el.value = ocLogsCommand;
     clipboard.appendChild(el);
