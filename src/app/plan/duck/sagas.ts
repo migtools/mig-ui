@@ -660,9 +660,9 @@ function* getPVResourcesRequest(action) {
 
     const pvList = [];
     yield Q.allSettled(pvResourceRefs).then((results) => {
-      results.forEach((result) => {
+      results.forEach((result: any) => {
         if (result.state === 'fulfilled') {
-          pvList.push(result.value.data);
+          pvList.push(result.value?.data);
         }
       });
     });
