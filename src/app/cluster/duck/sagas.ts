@@ -5,7 +5,6 @@ import {
   CoreNamespacedResourceKind,
   DiscoveryResource,
   IClusterClient,
-  IDiscoveryClient,
   NamespaceDiscovery,
 } from '@konveyor/lib-ui';
 import {
@@ -38,6 +37,7 @@ import { DefaultRootState } from '../../../configureStore';
 import { IMigMeta } from '../../auth/duck/types';
 import { ICondition } from '../../plan/duck/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
