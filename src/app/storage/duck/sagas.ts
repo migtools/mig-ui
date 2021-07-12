@@ -42,7 +42,10 @@ import {
 } from '@konveyor/lib-ui';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 
-function fetchMigStorageRefs(client: IClusterClient, migStorages): Array<Promise<any>> {
+function fetchMigStorageRefs(
+  client: IClusterClient,
+  migStorages: Array<IMigStorage>
+): Array<Promise<any>> {
   const refs: Array<Promise<any>> = [];
 
   migStorages.forEach((storage) => {
