@@ -1,1 +1,1 @@
-export * from './useDiscoveryClient';
+export * from './helpers';

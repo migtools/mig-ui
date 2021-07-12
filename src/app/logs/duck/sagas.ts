@@ -1,22 +1,18 @@
 import { select, put, takeEvery, all, StrictEffect } from 'redux-saga/effects';
 import { flatten } from 'lodash';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
   PlanPodReportDiscovery,
   ClusterKind,
   IPlanLogSources,
   IPlanReport,
-  ClusterPodReportDiscovery,
+  IPodCollectorDiscoveryResource,
+  PodCollectorDiscoveryResource,
 } from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
 import { handleCertError } from './utils';
 import { alertErrorTimeout } from '../../common/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
-import {
-  IPodCollectorDiscoveryResource,
-  PodCollectorDiscoveryResource,
-} from '../../../client/resources/common';
 import {
   clusterPodFetchFailure,
   clusterPodFetchRequest,
@@ -37,6 +33,7 @@ import { useSelector } from 'react-redux';
 import { planSelectors } from '../../plan/duck';
 import { ICluster, IMigCluster } from '../../cluster/duck/types';
 import { ClientFactory } from '@konveyor/lib-ui';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();

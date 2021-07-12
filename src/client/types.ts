@@ -1,16 +1,46 @@
 import { ClusterClient } from '@konveyor/lib-ui';
 import { AxiosError } from 'axios';
+export interface IMetaTypeMeta {
+  apiVersion: string;
+  kind: string;
+}
+export interface IObjectReference {
+  name: string;
+  namespace: string;
+  apiVersion?: string;
+  fieldPath?: string;
+  kind?: string;
+  resourceVersion?: string;
+  uid?: string;
+}
+
+export interface IMetaObjectMeta {
+  name: string;
+  namespace: string;
+  selfLink?: string;
+  uid?: string;
+  resourceVersion?: string;
+  generation?: number;
+  creationTimestamp?: string; // ISO timestamp
+  annotations?: Record<string, string | undefined>;
+  labels?: {
+    createdForResourceType?: string;
+    createdForResource?: string;
+  };
+  managedFields?: unknown[];
+  ownerReferences?: IObjectReference[];
+}
 
 export type KubeClientError = AxiosError<{ message: string }>;
 
-// export interface IKubeList<T> extends IMetaTypeMeta {
-//   items: T[];
-//   metadata: {
-//     continue: string;
-//     resourceVersion: string;
-//     selfLink: string;
-//   };
-// }
+export interface IKubeList<T> extends IMetaTypeMeta {
+  items: T[];
+  metadata: {
+    continue: string;
+    resourceVersion: string;
+    selfLink: string;
+  };
+}
 
 export type AuthorizedClusterClient = Pick<
   ClusterClient,
@@ -28,13 +58,13 @@ export interface IKubeResponse<T = unknown> {
   reason?: string;
 }
 
-// export interface IKubeStatus extends IMetaTypeMeta {
-//   status: string;
-//   details: {
-//     group: string;
-//     kind: string;
-//     name: string;
-//     uid: string;
-//   };
-//   metadata: Partial<IMetaObjectMeta>;
-// }
+export interface IKubeStatus extends IMetaTypeMeta {
+  status: string;
+  details: {
+    group: string;
+    kind: string;
+    name: string;
+    uid: string;
+  };
+  metadata: Partial<IMetaObjectMeta>;
+}

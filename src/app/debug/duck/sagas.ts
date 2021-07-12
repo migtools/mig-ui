@@ -15,12 +15,12 @@ import {
 import { alertErrorTimeout } from '../../common/duck/slice';
 import debugReducer from '.';
 import { DefaultRootState } from '../../../configureStore';
+import { ClientFactory } from '@konveyor/lib-ui';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
-  ClientFactory,
   DebugTreeDiscoveryResource,
   IDebugTreeResource,
-  IDiscoveryClient,
-} from '@konveyor/lib-ui';
+} from '../../../client/resources/discovery';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
