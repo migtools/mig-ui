@@ -34,6 +34,7 @@ import { planSelectors } from '../../plan/duck';
 import { ICluster, IMigCluster } from '../../cluster/duck/types';
 import { ClientFactory } from '@konveyor/lib-ui';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { DiscoveryFactory } from '../../../client/discovery_factory';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -46,7 +47,7 @@ const logIndex = 8;
 function* downloadLog(action: any): Generator<any, any, any> {
   const state = yield* getState();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -72,7 +73,7 @@ function* downloadLog(action: any): Generator<any, any, any> {
 function* downloadLogs(action: any): Generator<any, any, any> {
   const state = yield* getState();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -108,7 +109,7 @@ function* downloadLogs(action: any): Generator<any, any, any> {
 function* extractLogs(action: any): Generator<any, any, any> {
   const state = yield* getState();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -132,7 +133,7 @@ function* collectReport(action: PayloadAction<string>) {
   const planName = action.payload;
   const state: DefaultRootState = yield select();
   //NATODO: add cluster name to request
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -159,7 +160,7 @@ function* collectReport(action: PayloadAction<string>) {
 
 function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     state.auth.migMeta.discoveryApi

@@ -44,6 +44,7 @@ import {
   NamespaceDiscovery,
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
+import { DiscoveryFactory } from '../../../client/discovery_factory';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -172,7 +173,7 @@ function* addPlanSaga(action: any): any {
 
 function* namespaceFetchRequest(action: any): any {
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -670,7 +671,7 @@ function* planCloseAndDelete(action: any) {
 
 function* getPVResourcesRequest(action: any) {
   const state: DefaultRootState = yield select();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'

@@ -21,6 +21,7 @@ import {
   DebugTreeDiscoveryResource,
   IDebugTreeResource,
 } from '../../../client/resources/discovery';
+import { DiscoveryFactory } from '../../../client/discovery_factory';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -29,7 +30,7 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 
 function* fetchDebugRefs(action: any): Generator<any, any, any> {
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -91,7 +92,7 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
 
 function* fetchDebugObject(action: any): Generator<any, any, any> {
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
@@ -109,7 +110,7 @@ function* fetchDebugObject(action: any): Generator<any, any, any> {
 function* fetchDebugTree(action: any): Generator<any, any, any> {
   const { planName, migrationID } = action.payload;
   const state = yield* getState();
-  const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+  const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
     '/discovery-api'
