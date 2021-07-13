@@ -37,14 +37,13 @@ import { DefaultRootState } from '../../../configureStore';
 import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
+import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
-  ClientFactory,
   DiscoveryResource,
-  IClusterClient,
-  IDiscoveryClient,
   NamespaceDiscovery,
   PersistentVolumeDiscovery,
-} from '@konveyor/lib-ui';
+} from '../../../client/resources/discovery';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;

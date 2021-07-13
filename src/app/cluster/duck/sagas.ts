@@ -3,9 +3,7 @@ import {
   ClientFactory,
   CoreNamespacedResource,
   CoreNamespacedResourceKind,
-  DiscoveryResource,
   IClusterClient,
-  NamespaceDiscovery,
 } from '@konveyor/lib-ui';
 import {
   createMigClusterSecret,
@@ -38,6 +36,7 @@ import { IMigMeta } from '../../auth/duck/types';
 import { ICondition } from '../../plan/duck/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { DiscoveryResource, NamespaceDiscovery } from '../../../client/resources/discovery';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
