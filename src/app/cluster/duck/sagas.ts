@@ -37,6 +37,7 @@ import { ICondition } from '../../plan/duck/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { DiscoveryResource, NamespaceDiscovery } from '../../../client/resources/discovery';
+import { DiscoveryFactory } from '../../../client/discovery_factory';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -564,7 +565,7 @@ function* initDiscoveryCert() {
       yield delay(CLUSTER_RETRY_PERIOD);
       continue;
     }
-    const discoveryClient: IDiscoveryClient = ClientFactory.discovery(
+    const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
       state.auth.user,
       state.auth.migMeta.namespace,
       '/discovery-api'
