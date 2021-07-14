@@ -566,10 +566,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@konveyor/lib-ui@^4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@konveyor/lib-ui/-/lib-ui-4.0.4.tgz#0a725ea80bd442c3d25f689ac05730c911a8630f"
-  integrity sha512-SDgHJVLOt34xOeYAm3Ek+dXINS+JL06ZkA/xoH2O2TDt5RDX9H4ca2o1Y4pu2SmW5ZzRs/pp0YxGqwFjcaKS6A==
+"@konveyor/lib-ui@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@konveyor/lib-ui/-/lib-ui-5.1.2.tgz#a5e04843fafc13cb4f39de9c2ed97cea0e0a650d"
+  integrity sha512-InWX6LyOoas355qX465JXH+Ey+4TNPoDflWs5MUmZ8zB1oJagLxjiiT1FYubaap9piApG8MjrlZS7+IngCZ66A==
   dependencies:
     fast-deep-equal "^3.1.3"
     yup "^0.32.9"
