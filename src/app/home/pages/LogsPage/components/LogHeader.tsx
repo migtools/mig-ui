@@ -13,7 +13,7 @@ import { ILogSource, LogUnselected } from './LogsContainer';
 import SimpleSelect from '../../../../common/components/SimpleSelect';
 import { DefaultRootState } from '../../../../../configureStore';
 import { logsFetchRequest } from '../../../../logs/duck/slice';
-import { IPodContainer, IPodLogSource } from '@konveyor/lib-ui';
+import { IPodContainer, IPodLogSource } from '../../../../../client/resources/discovery';
 
 interface ISelectItem {
   label: any;
