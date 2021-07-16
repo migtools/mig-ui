@@ -107,6 +107,7 @@ const AddEditStorageForm = (props: IOtherProps) => {
       <Form>
         <FormGroup label="Storage provider type" isRequired fieldId="provider-type-select">
           <SimpleSelect
+            id="select-storage-provider-type"
             aria-label="Select storage provider type"
             onChange={(option: any) => setSelectedProvider(option.value)}
             options={providerOptions}

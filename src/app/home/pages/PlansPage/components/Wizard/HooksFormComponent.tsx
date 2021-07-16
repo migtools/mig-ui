@@ -186,6 +186,7 @@ const HooksFormComponent: React.FunctionComponent<
             >
               <Select
                 id="existingHookSelect"
+                toggleId="existing-hook-select"
                 aria-label="Select an existing hook or create a new one"
                 placeholderText={`Select...`}
                 isGrouped
@@ -594,6 +595,7 @@ const HooksFormComponent: React.FunctionComponent<
               >
                 <Select
                   id="migrationPhase"
+                  toggleId="migration-phase"
                   aria-label="Select phase"
                   placeholderText={`Select a phase`}
                   isOpen={isPhaseSelectOpen}
