@@ -32,7 +32,6 @@ const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('b
  *
  */
 
-//  if (process.env['DATA_SOURCE'] !== 'mock') {
 let clusterApiProxyOptions = {
   target: migMeta.clusterApi,
   changeOrigin: true,
@@ -52,17 +51,6 @@ let discoveryApiProxyOptions = {
   logLevel: process.env.DEBUG ? 'debug' : 'info',
   secure: false,
 };
-
-/* TODO restore this when https://github.com/konveyor/forklift-ui/issues/281 is settled
-  let inventoryPayloadApiProxyOptions = {
-    target: meta.inventoryPayloadApi,
-    changeOrigin: true,
-    pathRewrite: {
-      '^/inventory-payload-api/': '/',
-    },
-    logLevel: process.env.DEBUG ? 'debug' : 'info',
-  };
-  */
 
 if (process.env['NODE_ENV'] === 'development') {
   clusterApiProxyOptions = {
