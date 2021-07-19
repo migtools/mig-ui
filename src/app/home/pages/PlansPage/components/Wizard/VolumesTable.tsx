@@ -126,6 +126,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         {
           title: (
             <SimpleSelect
+              id="select-migration-type"
               aria-label="Select migration type"
               onChange={(option: any) => onTypeChange(pv, option.value)}
               options={migrationTypeOptions}

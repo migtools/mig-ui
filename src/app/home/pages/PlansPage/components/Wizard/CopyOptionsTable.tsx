@@ -227,6 +227,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           title: (
             <div>
               <SimpleSelect
+                id="select-copy-method"
                 className={styles.copySelectStyle}
                 aria-label="Select copy method"
                 onChange={(option: any) => onCopyMethodChange(currentPV, option.value)}
@@ -261,6 +262,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         {
           title: (
             <SimpleSelect
+              id="select-storage-class"
               aria-label="Select storage class"
               onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
               options={storageClassOptions}
