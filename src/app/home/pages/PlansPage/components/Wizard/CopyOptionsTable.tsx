@@ -231,7 +231,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                 aria-label="Select copy method"
                 onChange={(option: any) => onCopyMethodChange(currentPV, option.value)}
                 options={copyMethodOptions}
-                value={copyMethodOptions.find((option) => option.value === currentCopyMethod)}
+                value={
+                  copyMethodOptions?.find((option) => option.value === currentCopyMethod) || {
+                    value: '',
+                  }
+                }
                 placeholderText="Select a copy method..."
               />
             </div>
