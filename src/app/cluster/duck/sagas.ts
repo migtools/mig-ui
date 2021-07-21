@@ -408,7 +408,9 @@ function* updateClusterRequest(action: any): Generator<any, any, any> {
     const newTokenSecret = updateTokenSecret(clusterValues.token, isMigTokenSecret);
     const secretResource = new CoreNamespacedResource(
       CoreNamespacedResourceKind.Secret,
-      migMeta.configNamespace
+      getClusterRes?.data?.spec.serviceAccountSecretRef.namespace
+        ? getClusterRes.data.spec.serviceAccountSecretRef.namespace
+        : migMeta.configNamespace
     );
 
     // Pushing a request fn to delay the call until its yielded in a batch at same time
