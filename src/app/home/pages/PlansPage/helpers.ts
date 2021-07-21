@@ -160,7 +160,7 @@ const convertSItoBytes = (number: string, unit: string): number => {
 };
 
 export const showConsolidatedProgressBar = (step: IStep): boolean => {
-  return step.name == MigrationStepsType.Backup;
+  return step.name == MigrationStepsType.Backup || step.name == MigrationStepsType.Restore;
 };
 
 // getMigrationStepProgress: parses each progress line and returns structured progress information
