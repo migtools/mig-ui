@@ -44,6 +44,7 @@ const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
         setIsOpen(false);
       }}
       selections={value}
+      toggleId={props.id}
       {...props}
     >
       {options.map((option) => (
