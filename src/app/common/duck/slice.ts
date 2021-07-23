@@ -57,6 +57,7 @@ const commonSlice = createSlice({
       state.errorText = null;
       state.warnText = null;
       state.successText = null;
+      state.versionOutOfDateString = null;
     },
     fetchMTCVersionRequest(state, action: PayloadAction<string>) {
       state.errorModalObject = null;
