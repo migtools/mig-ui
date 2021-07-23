@@ -14,9 +14,6 @@ const HomeComponent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchMTCVersionRequest());
-    return () => {
-      console.log('cleanup');
-    };
   }, []);
   return (
     <Switch>
