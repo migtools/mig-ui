@@ -13,10 +13,20 @@ import {
   alertProgressTimeout,
   alertSuccess,
   alertSuccessTimeout,
+  fetchMTCVersionFailure,
+  fetchMTCVersionRequest,
+  fetchMTCVersionSuccess,
 } from './slice';
 import { IAlertModalObj } from './types';
 import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
+import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import {
+  CommonResource,
+  CommonResourceKind,
+  MigResource,
+  MigResourceKind,
+} from '../../../client/helpers';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -25,6 +35,46 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
+
+function* fetchMTCVersion(action: any): Generator<any, any, any> {
+  const state = yield* getState();
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+  const { migMeta } = state.auth;
+
+  const packageManifestResource = new CommonResource(
+    CommonResourceKind.PackageManifest,
+    'openshift-marketplace',
+    'packages.operators.coreos.com',
+    'v1'
+  );
+
+  const csvResource = new CommonResource(
+    CommonResourceKind.ClusterServiceVersion,
+    migMeta.namespace,
+    'operators.coreos.com',
+    'v1alpha1'
+  );
+
+  try {
+    const csvResourceResponse = yield client.get(csvResource, '');
+    const packageManifestResourceResponse = yield client.get(
+      packageManifestResource,
+      'mtc-operator'
+    );
+    const channels = packageManifestResourceResponse.data.status.channels.map(
+      (channel: any) => channel?.currentCSV
+    );
+    yield put(
+      fetchMTCVersionSuccess({
+        currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+        versionList: channels,
+      })
+    );
+  } catch (err) {
+    yield put(fetchMTCVersionFailure(err));
+    yield put(alertErrorTimeout(`Failed to fetch csv: ${err.message}`));
+  }
+}
 
 function* poll(action: any): Generator<any, any, any> {
   const params = { ...action.params };
@@ -117,10 +167,15 @@ function* watchAlerts() {
   yield takeLatest(alertSuccessTimeout, successTimeoutSaga);
 }
 
+function* watchCommonFetches() {
+  yield takeLatest(fetchMTCVersionRequest, fetchMTCVersion);
+}
+
 export default {
   watchStoragePolling,
   watchClustersPolling,
   watchPlanPolling,
   watchHookPolling,
   watchAlerts,
+  watchCommonFetches,
 };

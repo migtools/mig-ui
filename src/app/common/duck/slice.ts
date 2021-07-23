@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IAlertModalObj } from './types';
+import { IAlertModalObj, IVersionObject } from './types';
 
 export interface ICommonReducerState {
   successText: string;
@@ -7,6 +7,8 @@ export interface ICommonReducerState {
   warnText: string;
   progressText: string;
   errorModalObject: IAlertModalObj;
+  versionObject: IVersionObject;
+  versionOutOfDateString: string;
 }
 
 const initialState = {
@@ -15,6 +17,8 @@ const initialState = {
   errorText: null,
   progressText: null,
   errorModalObject: null,
+  versionObject: null,
+  versionOutOfDateString: null,
 } as ICommonReducerState;
 
 const commonSlice = createSlice({
@@ -54,6 +58,29 @@ const commonSlice = createSlice({
       state.warnText = null;
       state.successText = null;
     },
+    fetchMTCVersionRequest(state, action: PayloadAction<string>) {
+      state.errorModalObject = null;
+      state.versionOutOfDateString = null;
+    },
+    fetchMTCVersionSuccess(state, action: PayloadAction<IVersionObject>) {
+      state.versionObject = action.payload;
+      if (
+        action.payload.currentVersion !==
+        action.payload.versionList[action.payload.versionList.length - 1]
+      ) {
+        state.versionOutOfDateString = `${
+          action.payload.currentVersion
+        } is out of date. A newer version of MTC is avaliable ${
+          action.payload.versionList[action.payload.versionList.length - 1]
+        }`;
+      } else {
+        state.versionOutOfDateString = null;
+      }
+    },
+    fetchMTCVersionFailure(state, action: PayloadAction<IVersionObject>) {
+      state.versionObject = null;
+      state.versionOutOfDateString = null;
+    },
   },
 });
 
@@ -68,5 +95,8 @@ export const {
   alertErrorTimeout,
   alertProgressTimeout,
   alertSuccessTimeout,
+  fetchMTCVersionRequest,
+  fetchMTCVersionSuccess,
+  fetchMTCVersionFailure,
 } = commonSlice.actions;
 export default commonSlice.reducer;
