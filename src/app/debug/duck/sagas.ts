@@ -35,14 +35,23 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
     state.auth.migMeta.namespace,
     '/discovery-api'
   );
-  const linkRefs: Array<any> = [];
+  interface IDebugLinkObj {
+    link: string;
+    kind: string;
+    meta?: any;
+  }
+  const linkRefs: Array<IDebugLinkObj> = [];
   const eachRecursive = (obj: any) => {
     for (const k in obj) {
       if (typeof obj[k] == 'object' && obj[k] !== null) {
         eachRecursive(obj[k]);
       } else {
         if (k === 'objectLink') {
-          linkRefs.push({ link: obj[k], kind: obj['kind'] });
+          if (obj['kind'] === 'Hook') {
+            linkRefs.push({ link: obj[k], kind: obj['kind'], meta: obj['children'] });
+          } else {
+            linkRefs.push({ link: obj[k], kind: obj['kind'] });
+          }
         }
       }
     }
@@ -54,6 +63,7 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
       return {
         kind: linkRef.kind,
         value: value,
+        ...(linkRef?.meta && { meta: linkRef.meta }),
       };
     });
   });
@@ -83,7 +93,57 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
       });
     });
 
-    yield put(debugRefsFetchSuccess(eventRefsRes));
+    const debugRefsWithHookStatus = eventRefsRes.map((debugRef: any) => {
+      interface IHookChildren {
+        job?: any;
+        pod?: any;
+        podStatus?: any;
+        jobStatus?: any;
+      }
+      let hookChildren: IHookChildren = null;
+      if (debugRef.meta) {
+        hookChildren = {};
+        debugRef.meta.forEach((meta: any) => {
+          hookChildren.job = eventRefsRes.find(
+            (resItem: any) =>
+              meta.name === resItem?.value?.data?.object?.metadata?.name && resItem.kind == 'Job'
+          );
+          hookChildren.pod = eventRefsRes.find((resItem: any) => {
+            if (meta.children) {
+              return (
+                meta?.children[0]?.name === resItem?.value?.data?.object?.metadata?.name &&
+                resItem.kind == 'Pod'
+              );
+            }
+          });
+          if (hookChildren.pod) {
+            hookChildren.podStatus = {
+              restartCount:
+                hookChildren?.pod?.value?.data?.object?.status?.containerStatuses[0]?.restartCount,
+              waitingMessage:
+                hookChildren?.pod?.value?.data?.object?.status?.containerStatuses[0]?.state?.waiting
+                  ?.message,
+              waitingReason:
+                hookChildren?.pod?.value?.data?.object?.status?.containerStatuses[0]?.state?.waiting
+                  ?.reason,
+            };
+          }
+          if (hookChildren.job) {
+            hookChildren.jobStatus = {
+              backoffLimit: hookChildren?.job?.value?.data?.object?.spec?.backoffLimit,
+            };
+          }
+          // oc get job - o json | jq - r.items[].spec.backoffLimit
+          // oc get pod -l job-name=plan-hook-prebackup-9nwfd -o json | jq -r '.status.containerStatuses[].restartCount'V
+        });
+      }
+      return {
+        ...debugRef,
+        ...(hookChildren && { hookChildren: hookChildren }),
+      };
+    });
+
+    yield put(debugRefsFetchSuccess(debugRefsWithHookStatus));
   } catch (err) {
     yield put(debugRefsFetchFailure(err.message));
     yield put(alertErrorTimeout(`Failed to fetch debug ref: ${err.message}`));

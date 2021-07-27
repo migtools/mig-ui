@@ -12,7 +12,7 @@ interface IProps {
 }
 
 const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }) => {
-  const latestMigration = plan.Migrations.length ? plan.Migrations[0] : null;
+  const latestMigration = plan?.Migrations?.length ? plan.Migrations[0] : null;
   const {
     latestIsFailed,
     hasCriticalCondition,
