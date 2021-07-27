@@ -77,11 +77,12 @@ const getIcon = (debugRef: IDebugRefWithStatus, plans: IPlan[]) => {
   }
   return renderStatusIcon(
     debugRef?.debugResourceStatus?.currentStatus,
-    debugRef?.debugResourceStatus?.warningTextArr
+    debugRef?.debugResourceStatus?.warningTextArr,
+    debugRef?.debugResourceStatus?.failedTextArr
   );
 };
 
-const renderStatusIcon = (currentStatus: any, warningTextArr: any) => {
+const renderStatusIcon = (currentStatus: any, warningTextArr?: any, failedTextArr?: any) => {
   switch (currentStatus) {
     case DebugStatusType.Running:
       return (
@@ -107,10 +108,34 @@ const renderStatusIcon = (currentStatus: any, warningTextArr: any) => {
     case DebugStatusType.Failure:
       return (
         <>
-          <span className="pf-c-icon pf-m-danger">
-            <ExclamationCircleIcon />
-          </span>
-          <span className={spacing.mlSm}>Failed</span>
+          {failedTextArr.length > 0 ? (
+            <Popover
+              position={PopoverPosition.bottom}
+              bodyContent={<TreeWarningsGrid isError={true} textArr={failedTextArr} />}
+              aria-label="failed-details"
+              closeBtnAriaLabel="close--details"
+              maxWidth="30rem"
+            >
+              <>
+                <span className="pf-c-icon pf-m-danger">
+                  <ExclamationCircleIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  />
+                </span>
+                <span className={spacing.mlSm}>Failed</span>
+              </>
+            </Popover>
+          ) : (
+            <>
+              <span className="pf-c-icon pf-m-danger">
+                <ExclamationCircleIcon />
+              </span>
+              <span className={spacing.mlSm}>Failed</span>
+            </>
+          )}
         </>
       );
     case DebugStatusType.Warning:
@@ -119,7 +144,7 @@ const renderStatusIcon = (currentStatus: any, warningTextArr: any) => {
           {warningTextArr.length > 0 ? (
             <Popover
               position={PopoverPosition.bottom}
-              bodyContent={<TreeWarningsGrid warningTextArr={warningTextArr} />}
+              bodyContent={<TreeWarningsGrid textArr={warningTextArr} />}
               aria-label="operator-mismatch-details"
               closeBtnAriaLabel="close--details"
               maxWidth="30rem"

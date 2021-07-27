@@ -131,6 +131,7 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
           if (hookChildren.job) {
             hookChildren.jobStatus = {
               backoffLimit: hookChildren?.job?.value?.data?.object?.spec?.backoffLimit,
+              conditions: hookChildren?.job?.value?.data?.object?.status?.conditions,
             };
           }
           // oc get job - o json | jq - r.items[].spec.backoffLimit

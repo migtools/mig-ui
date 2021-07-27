@@ -36,7 +36,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       return false;
     }
   };
-  const warningTextArr: Array<any> = [];
+  let failedTextArr: Array<any> = [];
+  let warningTextArr: Array<any> = [];
   const hasEventWarning =
     debugRef?.associatedEvents?.resources &&
     debugRef.associatedEvents?.resources.some((event: any) => event?.object?.type === 'Warning');
@@ -80,6 +81,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Pod': {
@@ -108,6 +110,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'PVC': {
@@ -137,6 +140,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'PV': {
@@ -166,6 +170,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Route': {
@@ -198,6 +203,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Backup': {
@@ -228,6 +234,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Restore': {
@@ -258,6 +265,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'PodVolumeBackup': {
@@ -288,6 +296,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'PodVolumeRestore': {
@@ -318,6 +327,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'DirectImageMigration': {
@@ -350,6 +360,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'DirectVolumeMigration': {
@@ -382,6 +393,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'DirectImageStreamMigration': {
@@ -414,6 +426,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'DirectVolumeMigrationProgress': {
@@ -451,6 +464,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Migration': {
@@ -483,6 +497,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Plan': {
@@ -515,6 +530,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           null
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
     case 'Hook': {
@@ -523,13 +539,35 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const hasWarning = conditions?.some((c: ICondition) => c.type === 'Critical');
       const hasReady = conditions?.some((c: ICondition) => c.type === 'Ready');
       const hasTerminating = deletionTimestamp != undefined;
+
+      const hookFailureMessage =
+        debugRef?.hookChildren?.jobStatus &&
+        debugRef?.hookChildren?.jobStatus?.conditions?.find(
+          (condition: any) => condition?.type === 'Failed'
+        )?.message;
+      const hookFailureArr = [...(hookFailureMessage ? [hookFailureMessage] : [])];
+      failedTextArr = failedTextArr.concat(hookFailureArr);
+      const hasFailure = !!hookFailureArr.length;
+      const restartCount = debugRef?.hookChildren?.podStatus?.restartCount;
+      const backoffLimit = debugRef?.hookChildren?.jobStatus?.backoffLimit;
+      const waitingMessage = debugRef?.hookChildren?.podStatus?.waitingMessage;
+      const waitingReason = debugRef?.hookChildren?.podStatus?.waitingReason;
+      const restartWarningText = `On attempt ${restartCount} of ${backoffLimit}`;
+      const restartWarningWaitingMessage = `${waitingReason} - ${waitingMessage}`;
+      const hookWarningArr = [
+        ...(restartCount && backoffLimit ? restartWarningText : []),
+        ...(waitingReason && waitingMessage ? restartWarningWaitingMessage : []),
+      ];
+      warningTextArr = warningTextArr.concat(hookWarningArr);
+
       return {
         hasWarning,
+        hasFailure,
         hasReady,
         hasTerminating,
         currentStatus: calculateCurrentStatus(
           hasWarning || hasEventWarning,
-          null,
+          hasFailure,
           null,
           null,
           hasTerminating,
@@ -539,6 +577,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
           hasReady
         ),
         warningTextArr: warningTextArr,
+        failedTextArr: failedTextArr,
       };
     }
   }
