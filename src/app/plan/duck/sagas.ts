@@ -1144,12 +1144,12 @@ function* associateHookToPlanSaga(action: any): any {
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { hookValues, migHook } = action;
 
-    // add hook
-    const migHookObj = createMigHook(migHook, migMeta.namespace);
-    const createHookRes = yield client.create(
-      new MigResource(MigResourceKind.MigHook, migMeta.namespace),
-      migHookObj
-    );
+    // // add hook
+    // const migHookObj = createMigHook(migHook, migMeta.namespace);
+    // const createHookRes = yield client.create(
+    //   new MigResource(MigResourceKind.MigHook, migMeta.namespace),
+    //   migHookObj
+    // );
 
     // associate  hook to plan
     const { currentPlan } = state.plan;

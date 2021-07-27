@@ -626,6 +626,7 @@ export const fetchPlanHooksSuccess: PlanReducerFn = (
     ...state,
     currentPlanHooks: action.currentPlanHooks,
     isFetchingHookList: false,
+    isAssociatingHookToPlan: false,
   };
 };
 export const fetchPlanHooksFailure: PlanReducerFn = (
