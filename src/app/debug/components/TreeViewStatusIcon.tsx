@@ -151,7 +151,12 @@ const renderStatusIcon = (currentStatus: any, warningTextArr?: any, failedTextAr
             >
               <>
                 <span className="pf-c-icon pf-m-warning">
-                  <ExclamationTriangleIcon />
+                  <ExclamationTriangleIcon
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  ></ExclamationTriangleIcon>
                 </span>
                 <span className={spacing.mlSm}>Warning</span>
               </>

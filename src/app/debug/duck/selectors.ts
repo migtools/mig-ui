@@ -555,8 +555,8 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const restartWarningText = `On attempt ${restartCount} of ${backoffLimit}`;
       const restartWarningWaitingMessage = `${waitingReason} - ${waitingMessage}`;
       const hookWarningArr = [
-        ...(restartCount && backoffLimit ? restartWarningText : []),
-        ...(waitingReason && waitingMessage ? restartWarningWaitingMessage : []),
+        ...(restartCount && backoffLimit ? [restartWarningText] : []),
+        ...(waitingReason && waitingMessage ? [restartWarningWaitingMessage] : []),
       ];
       warningTextArr = warningTextArr.concat(hookWarningArr);
 
@@ -566,7 +566,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasReady,
         hasTerminating,
         currentStatus: calculateCurrentStatus(
-          hasWarning || hasEventWarning,
+          hasWarning || hasEventWarning || !!warningTextArr,
           hasFailure,
           null,
           null,
