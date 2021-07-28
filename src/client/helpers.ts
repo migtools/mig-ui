@@ -27,3 +27,23 @@ export enum MigResourceKind {
   MigToken = 'migtokens',
   MigAnalytic = 'miganalytics',
 }
+export class CommonResource extends NamespacedResource {
+  private _gvk: IGroupVersionKindPlural;
+  constructor(kind: CommonResourceKind, namespace: string, group: string, version: string) {
+    super(namespace);
+
+    this._gvk = {
+      group: group,
+      version: version,
+      kindPlural: kind,
+    };
+  }
+  gvk(): IGroupVersionKindPlural {
+    return this._gvk;
+  }
+}
+
+export enum CommonResourceKind {
+  ClusterServiceVersion = 'clusterserviceversions',
+  PackageManifest = 'packagemanifests',
+}

@@ -22,6 +22,8 @@ export interface IDebugRefRes {
     uid: string;
     resources: any;
   };
+  meta?: any;
+  hookChildren?: any;
 }
 export interface IDebugRefWithStatus {
   apiVersion: string;
@@ -50,6 +52,7 @@ export interface IDerivedDebugStatusObject {
   hasReady?: boolean;
   currentStatus: DebugStatusType;
   warningTextArr: Array<any>;
+  failedTextArr: Array<any>;
 }
 export enum DebugStatusType {
   Warning = 'Warning',
