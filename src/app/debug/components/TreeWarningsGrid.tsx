@@ -21,31 +21,37 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 const styles = require('./TreeWarningsGrid.module').default;
 
 interface ITreeWarningsGridProps {
-  warningTextArr: any[];
+  textArr?: any[];
+  isError?: boolean;
 }
 
 const TreeWarningsGrid: React.FunctionComponent<ITreeWarningsGridProps> = ({
-  warningTextArr,
+  textArr,
+  isError,
 }: ITreeWarningsGridProps) => (
   <>
     <Title headingLevel="h2" size="xl">
-      <span className={spacing.mlMd}>Warning list:</span>
+      <span className={spacing.mlMd}>{isError ? 'Error' : 'Warning'} list:</span>
     </Title>
     <Grid
       hasGutter
       className={`${styles.conditionsGrid} ${spacing.mtMd} ${spacing.mxAuto} ${spacing.mbLg}`}
     >
-      {warningTextArr.map((warningText, warningTextIndex) => (
-        <React.Fragment key={warningTextIndex}>
+      {textArr.map((text, textIndex) => (
+        <React.Fragment key={textIndex}>
           <GridItem span={1} className={alignment.textAlignRight}>
-            <span className="pf-c-icon pf-m-warning">
-              <ExclamationTriangleIcon size={'sm'} />
+            <span className={`pf-c-icon ${isError ? `pf-m-danger` : `pf-m-warning`}`}>
+              {isError ? (
+                <ExclamationCircleIcon size={'sm'} />
+              ) : (
+                <ExclamationTriangleIcon size={'sm'} />
+              )}
             </span>
           </GridItem>
           <GridItem span={11}>
             <Flex>
               <FlexItem>
-                <span id="warning-message">{warningText}</span>
+                <span id="text-message">{text}</span>
               </FlexItem>
             </Flex>
           </GridItem>
