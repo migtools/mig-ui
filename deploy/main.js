@@ -40,6 +40,10 @@ let clusterApiProxyOptions = {
   },
   logLevel: process.env.DEBUG ? 'debug' : 'info',
   secure: false,
+  onProxyRes: (proxyRes, req, res) => {
+    proxyRes.headers['Content-Security-Policy'] = 'sandbox';
+    proxyRes.headers['X-Content-Security-Policy'] = 'sandbox';
+  },
 };
 
 let discoveryApiProxyOptions = {
@@ -50,17 +54,19 @@ let discoveryApiProxyOptions = {
   },
   logLevel: process.env.DEBUG ? 'debug' : 'info',
   secure: false,
+  onProxyRes: (proxyRes, req, res) => {
+    proxyRes.headers['Content-Security-Policy'] = 'sandbox';
+    proxyRes.headers['X-Content-Security-Policy'] = 'sandbox';
+  },
 };
 
 if (process.env['NODE_ENV'] === 'development') {
   clusterApiProxyOptions = {
     ...clusterApiProxyOptions,
-    secure: false,
   };
 
   discoveryApiProxyOptions = {
     ...discoveryApiProxyOptions,
-    secure: false,
   };
 }
 
