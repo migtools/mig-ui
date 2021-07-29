@@ -632,8 +632,8 @@ const HooksFormComponent: React.FunctionComponent<
                 cancelAddEditWatch();
                 resetAddEditState();
                 setInitialHookValues({});
-                setSelectedExistingHook(null);
-                setIsCreateHookSelected(false);
+                currentPlan && setSelectedExistingHook(null);
+                currentPlan && setIsCreateHookSelected(false);
               }}
             >
               Cancel
