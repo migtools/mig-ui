@@ -26,7 +26,6 @@ const AppRoutes: React.FunctionComponent = () => {
         <AlertModal alertMessage={common.errorText} alertType="danger" />
         <AlertModal alertMessage={common.successText} alertType="success" />
         <AlertModal alertMessage={common.warnText} alertType="warning" />
-        <AlertModal alertMessage={common.versionOutOfDateString} alertType="warning" />
 
         {common.errorModalObject && <ErrorModal errorModalObj={common.errorModalObject} isOpen />}
         <ConnectedRouter history={history}>

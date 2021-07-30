@@ -28,4 +28,5 @@ export interface IAlertModalObj {
 export interface IVersionObject {
   versionList: any;
   currentVersion: any;
+  operatorType: string;
 }

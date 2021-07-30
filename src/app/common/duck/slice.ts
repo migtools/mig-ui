@@ -69,16 +69,12 @@ const commonSlice = createSlice({
         action.payload.currentVersion !==
         action.payload.versionList[action.payload.versionList.length - 1]
       ) {
-        state.versionOutOfDateString = `${
-          action.payload.currentVersion
-        } is out of date. A newer version of MTC is avaliable ${
-          action.payload.versionList[action.payload.versionList.length - 1]
-        }`;
+        state.versionOutOfDateString = `The ${action.payload.currentVersion} is out of date. Upgrade to the latest version. `;
       } else {
         state.versionOutOfDateString = null;
       }
     },
-    fetchMTCVersionFailure(state, action: PayloadAction<IVersionObject>) {
+    fetchMTCVersionFailure(state, action: PayloadAction<string>) {
       state.versionObject = null;
       state.versionOutOfDateString = null;
     },

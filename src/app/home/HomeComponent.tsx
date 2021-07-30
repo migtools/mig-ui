@@ -7,14 +7,8 @@ import { HooksPage } from './pages/HooksPage/HooksPage';
 import RawDebugObjectView from '../debug/components/RawDebugObjectView';
 import { RAW_OBJECT_VIEW_ROUTE } from '../debug/duck/types';
 import NamespacesPage from './pages/PlansPage/pages/NamespacesPage/NamespacesPage';
-import { fetchMTCVersionRequest } from '../common/duck/slice';
-import { useDispatch } from 'react-redux';
 
 const HomeComponent: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchMTCVersionRequest());
-  }, []);
   return (
     <Switch>
       <Route exact path="/">

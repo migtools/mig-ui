@@ -61,18 +61,36 @@ function* fetchMTCVersion(action: any): Generator<any, any, any> {
       packageManifestResource,
       'mtc-operator'
     );
-    const channels = packageManifestResourceResponse.data.status.channels.map(
-      (channel: any) => channel?.currentCSV
-    );
-    yield put(
-      fetchMTCVersionSuccess({
-        currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
-        versionList: channels,
-      })
-    );
+    if (packageManifestResourceResponse.data.metadata.name !== 'mtc-operator') {
+      const packageManifestResourceResponse = yield client.get(
+        packageManifestResource,
+        'crane-operator'
+      );
+      const channels = packageManifestResourceResponse.data.status.channels.map(
+        (channel: any) => channel?.currentCSV
+      );
+      yield put(
+        fetchMTCVersionSuccess({
+          currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+          versionList: channels,
+          operatorType: 'crane',
+        })
+      );
+    } else {
+      const channels = packageManifestResourceResponse.data.status.channels.map(
+        (channel: any) => channel?.currentCSV
+      );
+      yield put(
+        fetchMTCVersionSuccess({
+          currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+          versionList: channels,
+          operatorType: 'mtc',
+        })
+      );
+    }
   } catch (err) {
     yield put(fetchMTCVersionFailure(err));
-    yield put(alertErrorTimeout(`Failed to fetch csv: ${err.message}`));
+    // yield put(alertErrorTimeout(`Failed to fetch csv: ${err.message}`));
   }
 }
 
