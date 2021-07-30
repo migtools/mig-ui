@@ -163,7 +163,7 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
   const discoveryClient: IDiscoveryClient = DiscoveryFactory.discovery(
     state.auth.user,
     state.auth.migMeta.namespace,
-    state.auth.migMeta.discoveryApi
+    '/discovery-api'
   );
 
   const planName = action.payload;
