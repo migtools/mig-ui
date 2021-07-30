@@ -29,4 +29,5 @@ export interface IVersionObject {
   versionList: any;
   currentVersion: any;
   operatorType: string;
+  route: string;
 }

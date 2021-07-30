@@ -91,7 +91,13 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
             title="New operator version available"
             actionClose={<AlertActionCloseButton onClose={() => dispatch(alertClear())} />}
           >
-            {common.versionOutOfDateString}
+            {common.versionOutOfDateString} <br />
+            <a
+              href={`https://console-openshift-console.${common?.versionObject.route}/operatorhub/ns/openshift-migration?keyword=${common?.versionObject.operatorType}`}
+              target="_blank"
+            >
+              Update Operator
+            </a>
           </Alert>
         </PageSection>
       )}

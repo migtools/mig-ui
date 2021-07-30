@@ -69,12 +69,32 @@ const commonSlice = createSlice({
         action.payload.currentVersion !==
         action.payload.versionList[action.payload.versionList.length - 1]
       ) {
-        state.versionOutOfDateString = `The ${action.payload.currentVersion} is out of date. Upgrade to the latest version. `;
+        state.versionOutOfDateString = `The ${action.payload.currentVersion} is out of date. Upgrade to the latest version. The upgrade does not affect stored data.`;
       } else {
         state.versionOutOfDateString = null;
       }
     },
     fetchMTCVersionFailure(state, action: PayloadAction<string>) {
+      state.versionObject = null;
+      state.versionOutOfDateString = null;
+    },
+    fetchCraneVersionRequest(state, action: PayloadAction<string>) {
+      state.errorModalObject = null;
+      state.versionOutOfDateString = null;
+    },
+    fetchCraneVersionSuccess(state, action: PayloadAction<IVersionObject>) {
+      state.versionObject = action.payload;
+      if (
+        action.payload.currentVersion !==
+          action.payload.versionList[action.payload.versionList.length - 1] &&
+        action.payload.currentVersion !== 'crane-operator.v99.0.0'
+      ) {
+        state.versionOutOfDateString = `The ${action.payload.currentVersion} is out of date. Upgrade to the latest version. The upgrade does not affect stored data.`;
+      } else {
+        state.versionOutOfDateString = null;
+      }
+    },
+    fetchCraneVersionFailure(state, action: PayloadAction<string>) {
       state.versionObject = null;
       state.versionOutOfDateString = null;
     },
@@ -95,5 +115,8 @@ export const {
   fetchMTCVersionRequest,
   fetchMTCVersionSuccess,
   fetchMTCVersionFailure,
+  fetchCraneVersionRequest,
+  fetchCraneVersionSuccess,
+  fetchCraneVersionFailure,
 } = commonSlice.actions;
 export default commonSlice.reducer;
