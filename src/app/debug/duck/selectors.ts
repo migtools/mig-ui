@@ -40,15 +40,15 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
   let warningTextArr: Array<any> = [];
   const hasEventWarning =
     debugRef?.associatedEvents?.resources &&
-    debugRef.associatedEvents?.resources.some((event: any) => event?.object?.type === 'Warning');
+    debugRef?.associatedEvents?.resources.some((event: any) => event?.object?.type === 'Warning');
 
   const eventWarningList = hasEventWarning
-    ? debugRef.associatedEvents?.resources.filter(
+    ? debugRef?.associatedEvents?.resources.filter(
         (resource: any) => resource?.object?.type === 'Warning'
       )
     : [];
   eventWarningList.forEach((eventWarning: any) => {
-    const eventWarningText = `${eventWarning.object.reason} - ${eventWarning.object.message}`;
+    const eventWarningText = `${eventWarning?.object?.reason} - ${eventWarning?.object?.message}`;
     warningTextArr.push(eventWarningText);
   });
   switch (debugRef.kind) {
@@ -174,11 +174,11 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       };
     }
     case 'Route': {
-      const { ingress } = debugRef.value.data.object.status;
+      const { ingress } = debugRef?.value?.data?.object?.status;
       const { deletionTimestamp } = debugRef.value.data.object.metadata;
 
       let admitted = '';
-      ingress.forEach((ing: any) =>
+      ingress?.forEach((ing: any) =>
         ing.conditions.forEach((cond: ICondition) => (admitted = cond.status))
       );
 
