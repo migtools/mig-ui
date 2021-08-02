@@ -134,8 +134,6 @@ function* fetchDebugRefs(action: any): Generator<any, any, any> {
               conditions: hookChildren?.job?.value?.data?.object?.status?.conditions,
             };
           }
-          // oc get job - o json | jq - r.items[].spec.backoffLimit
-          // oc get pod -l job-name=plan-hook-prebackup-9nwfd -o json | jq -r '.status.containerStatuses[].restartCount'V
         });
       }
       return {
