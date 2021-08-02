@@ -95,6 +95,23 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
+          toggleMigrateModalOpen();
+        }}
+        key="migratePlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked
+        }
+      >
+        Cutover
+      </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
           dispatch(PlanActions.runStageRequest(plan));
         }}
         key="stagePlan"
@@ -112,9 +129,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          toggleMigrateModalOpen();
         }}
-        key="migratePlan"
+        key="stateMigration"
         isDisabled={
           hasClosedCondition ||
           !hasReadyCondition ||
@@ -124,7 +140,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isPlanLocked
         }
       >
-        Migrate
+        State
       </DropdownItem>
       <DropdownItem
         onClick={() => {
