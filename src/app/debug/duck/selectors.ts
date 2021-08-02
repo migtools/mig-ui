@@ -566,7 +566,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
         hasReady,
         hasTerminating,
         currentStatus: calculateCurrentStatus(
-          hasWarning || hasEventWarning || !!warningTextArr,
+          hasWarning || hasEventWarning || !!warningTextArr.length,
           hasFailure,
           null,
           null,

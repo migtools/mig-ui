@@ -29,6 +29,7 @@ import {
   AddEditMode,
   AddEditState,
   createAddEditStatus,
+  defaultAddEditStatus,
   IAddEditStatus,
 } from '../../../common/add_edit_state';
 import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/react-table';
@@ -53,6 +54,7 @@ interface IHooksPageBaseProps {
   currentPlan: IMigPlan;
   removeHookRequest: (hookName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
+  cancelAddEditWatch?: () => void;
 }
 
 const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
@@ -71,6 +73,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
     watchHookAddEditStatus,
     migMeta,
     isFetchingInitialHooks,
+    cancelAddEditWatch,
   } = props;
 
   const defaultHookRunnerImage = migMeta?.hookRunnerImage || fallbackHookRunnerImage;
@@ -248,6 +251,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
                         setInitialHookValues={setInitialHookValues}
                         setIsAddHooksOpen={setIsAddHooksOpen}
                         currentPlan={currentPlan}
+                        cancelAddEditWatch={cancelAddEditWatch}
                         {...props}
                       />
                     </GridItem>
@@ -330,6 +334,10 @@ const mapDispatchToProps = (dispatch: any) => {
     },
     removeHookRequest: (name: string) => dispatch(PlanActions.removeHookRequest(name)),
     updateHookRequest: (migHook: IMigHook) => dispatch(PlanActions.updateHookRequest(migHook)),
+    cancelAddEditWatch: () => dispatch(PlanActions.cancelWatchHookAddEditStatus()),
+    resetAddEditState: () => {
+      dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
+    },
   };
 };
 

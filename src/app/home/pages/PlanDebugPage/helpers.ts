@@ -101,21 +101,21 @@ export const getDebugCommand = (
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"dism":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"dism":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dism":"${name}"'`,
       };
     case 'DirectVolumeMigrationProgress':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"dvmp":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"dvmp":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvmp":"${name}"'`,
       };
     case 'Hook':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"migHook":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"migHook":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migHook":"${name}"'`,
       };
     case 'Job':
@@ -147,14 +147,14 @@ export const getDebugCommand = (
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"migMigration":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"migMigration":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migMigration":"${name}"'`,
       };
     case 'Plan':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"migPlan":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"migPlan":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"migPlan":"${name}"'`,
       };
     case 'Backup':
@@ -181,14 +181,14 @@ export const getDebugCommand = (
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"dvm":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"dvm":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dvm":"${name}"'`,
       };
     case 'DirectImageMigration':
       return {
         ocDescribeCommand: `oc describe ${getFullKindName(kind)} --namespace ${namespace} ${name}`,
         ocLogsCommand: logPodName
-          ? `oc logs ${logPodName} -c plain | grep '"dim":"${name}"'`
+          ? `oc -n ${namespace} logs ${logPodName} -c plain | grep '"dim":"${name}"'`
           : `oc logs --selector control-plane=controller-manager --namespace ${namespace} --container mtc | grep '"dim":"${name}"'`,
       };
     default:
