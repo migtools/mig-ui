@@ -29,7 +29,7 @@ import { IPlanCountByResourceName } from '../../../common/duck/types';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import { DefaultRootState } from '../../../../configureStore';
 import {
-  alertClear,
+  versionAlertClear,
   fetchMTCVersionRequest,
   ICommonReducerState,
 } from '../../../common/duck/slice';
@@ -89,7 +89,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
             isLiveRegion
             variant="info"
             title="New operator version available"
-            actionClose={<AlertActionCloseButton onClose={() => dispatch(alertClear())} />}
+            actionClose={<AlertActionCloseButton onClose={() => dispatch(versionAlertClear())} />}
           >
             {common.versionOutOfDateString} <br />
             <a

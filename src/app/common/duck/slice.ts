@@ -57,6 +57,8 @@ const commonSlice = createSlice({
       state.errorText = null;
       state.warnText = null;
       state.successText = null;
+    },
+    versionAlertClear(state, action: PayloadAction<string>) {
       state.versionOutOfDateString = null;
     },
     fetchMTCVersionRequest(state, action: PayloadAction<string>) {
@@ -118,5 +120,6 @@ export const {
   fetchCraneVersionRequest,
   fetchCraneVersionSuccess,
   fetchCraneVersionFailure,
+  versionAlertClear,
 } = commonSlice.actions;
 export default commonSlice.reducer;
