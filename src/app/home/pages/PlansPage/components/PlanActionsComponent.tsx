@@ -21,13 +21,16 @@ import { planSelectors, PlanActions } from '../../../../plan/duck';
 import { clusterSelectors } from '../../../../cluster/duck';
 import { storageSelectors } from '../../../../storage/duck';
 import { DefaultRootState } from '../../../../../configureStore';
+import StageModal from './StageModal';
 interface IPlanActionsProps {
   plan: IPlan;
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
+  const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
+
   const planList = useSelector((state: DefaultRootState) =>
     planSelectors.getPlansWithStatus(state)
   );
@@ -112,7 +115,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          dispatch(PlanActions.runStageRequest(plan));
+          toggleStageModalOpen();
         }}
         key="stagePlan"
         isDisabled={
@@ -193,6 +196,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isOpen={isRollbackModalOpen}
           onHandleClose={toggleRollbackModalOpen}
         />
+
+        <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
 
         <ConfirmModal
           title="Confirmation"
