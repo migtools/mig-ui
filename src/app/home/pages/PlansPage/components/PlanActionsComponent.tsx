@@ -7,6 +7,7 @@ import {
   KebabToggle,
   Flex,
   FlexItem,
+  DropdownGroup,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../duck';
 import MigrateModal from './MigrateModal';
@@ -57,88 +58,91 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
-    <DropdownItem
-      isDisabled={
-        hasClosedCondition || hasRunningMigrations || finalMigrationComplete || isPlanLocked
-      }
-      onClick={() => {
-        setKebabIsOpen(false);
-        editPlan();
-      }}
-      key="editPlan"
-    >
-      Edit
-    </DropdownItem>,
-
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        dispatch(PlanActions.runStageRequest(plan));
-      }}
-      key="stagePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
-      }
-    >
-      Stage
-    </DropdownItem>,
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleMigrateModalOpen();
-      }}
-      key="migratePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
-      }
-    >
-      Migrate
-    </DropdownItem>,
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleRollbackModalOpen();
-      }}
-      key="rollbackPlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        isPlanLocked
-      }
-    >
-      Rollback
-    </DropdownItem>,
-    <DropdownItem
-      key="showLogs"
-      onClick={() => {
-        setKebabIsOpen(false);
-        history.push('/logs/' + plan.MigPlan.metadata.name);
-      }}
-    >
-      Logs
-    </DropdownItem>,
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleDeleteModalOpen();
-      }}
-      key="deletePlan"
-      isDisabled={hasRunningMigrations || isPlanLocked}
-    >
-      Delete
-    </DropdownItem>,
+    <DropdownGroup>
+      <DropdownItem
+        key="showLogs"
+        onClick={() => {
+          setKebabIsOpen(false);
+          history.push('/logs/' + plan.MigPlan.metadata.name);
+        }}
+      >
+        Logs
+      </DropdownItem>
+      <DropdownItem
+        isDisabled={
+          hasClosedCondition || hasRunningMigrations || finalMigrationComplete || isPlanLocked
+        }
+        onClick={() => {
+          setKebabIsOpen(false);
+          editPlan();
+        }}
+        key="editPlan"
+      >
+        Edit
+      </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleDeleteModalOpen();
+        }}
+        key="deletePlan"
+        isDisabled={hasRunningMigrations || isPlanLocked}
+      >
+        Delete
+      </DropdownItem>
+    </DropdownGroup>,
+    <DropdownGroup label="Migrations" key="migrations">
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          dispatch(PlanActions.runStageRequest(plan));
+        }}
+        key="stagePlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked
+        }
+      >
+        Stage
+      </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleMigrateModalOpen();
+        }}
+        key="migratePlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked
+        }
+      >
+        Migrate
+      </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleRollbackModalOpen();
+        }}
+        key="rollbackPlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          isPlanLocked
+        }
+      >
+        Rollback
+      </DropdownItem>
+    </DropdownGroup>,
   ];
   return (
     <Flex>
@@ -149,6 +153,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isPlain
           dropdownItems={kebabDropdownItems}
           position={DropdownPosition.right}
+          isGrouped
         />
         <WizardContainer
           planList={planList}
