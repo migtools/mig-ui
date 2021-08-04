@@ -3,7 +3,9 @@ import { useDispatch } from 'react-redux';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanActions } from '../../../../plan/duck/actions';
+import { PlanActions } from '../../../../../plan/duck/actions';
+import StateMigrationTable from './StateMigrationTable';
+import StateMigrationFormik from './StateMigrationFormik';
 
 interface IProps {
   onHandleClose: () => void;
@@ -12,38 +14,28 @@ interface IProps {
   plan: any;
 }
 
-const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
+const StateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
   return (
     <Modal
-      variant="small"
+      variant="large"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`Rollback ${plan.MigPlan.metadata.name}`}
+      title={`${plan.MigPlan.metadata.name} - State migration`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
-            Rolling back the migration plan will revert migrated resources and volumes to their
-            original states and locations, including:
             <GridItem>
+              During a state migration, PV data is copied to the target cluster. PV references are
+              not moved, and source pods continue running. Select the persistent volumes you want to
+              migrate and optionally rename the PVC for each on the target cluster.
               <br />
-              Source Cluster:
-              <li>
-                Restoring original replica counts (Un-Quiescing) on Deployments, DeploymentConfigs,
-                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
-              </li>
-              <br />
-              Target Cluster:
-              <li>Deleting migrated resources</li>
-              <br />
-              Source and Target Cluster:
-              <li>Deleting Velero Backups and Restores created during the migration</li>
-              <li>
-                Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
-                namespaces
-              </li>
-              <br />
+            </GridItem>
+            <GridItem>
+              <StateMigrationFormik plan={plan}>
+                <StateMigrationTable plan={plan} />
+              </StateMigrationFormik>
             </GridItem>
           </GridItem>
           <GridItem>
@@ -54,10 +46,10 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    dispatch(PlanActions.runRollbackRequest(plan));
+                    dispatch(PlanActions.runStageRequest(plan));
                   }}
                 >
-                  Rollback
+                  Stage
                 </Button>
                 <Button
                   className={`${spacing.mrMd}`}
@@ -75,4 +67,4 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
     </Modal>
   );
 };
-export default RollbackModal;
+export default StateModal;

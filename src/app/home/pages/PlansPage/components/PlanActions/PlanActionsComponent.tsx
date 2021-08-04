@@ -9,24 +9,26 @@ import {
   FlexItem,
   DropdownGroup,
 } from '@patternfly/react-core';
-import { useOpenModal } from '../../../duck';
+import { useOpenModal } from '../../../../duck';
+import { useHistory } from 'react-router-dom';
+import WizardContainer from '../Wizard/WizardContainer';
+import ConfirmModal from '../../../../../common/components/ConfirmModal';
+import { IPlan } from '../../../../../plan/duck/types';
+import { useSelector, useDispatch } from 'react-redux';
+import { planSelectors, PlanActions } from '../../../../../plan/duck';
+import { clusterSelectors } from '../../../../../cluster/duck';
+import { storageSelectors } from '../../../../../storage/duck';
+import { DefaultRootState } from '../../../../../../configureStore';
+import StateModal from './StateModal';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
-import { useHistory } from 'react-router-dom';
-import WizardContainer from './Wizard/WizardContainer';
-import ConfirmModal from '../../../../common/components/ConfirmModal';
-import { IPlan } from '../../../../plan/duck/types';
-import { useSelector, useDispatch } from 'react-redux';
-import { planSelectors, PlanActions } from '../../../../plan/duck';
-import { clusterSelectors } from '../../../../cluster/duck';
-import { storageSelectors } from '../../../../storage/duck';
-import { DefaultRootState } from '../../../../../configureStore';
 import StageModal from './StageModal';
 interface IPlanActionsProps {
   plan: IPlan;
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
+  const [isStateModalOpen, toggleStateModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
@@ -132,6 +134,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
+          toggleStateModalOpen();
         }}
         key="stateMigration"
         isDisabled={
@@ -198,6 +201,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         />
 
         <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
+        <StateModal plan={plan} isOpen={isStateModalOpen} onHandleClose={toggleStateModalOpen} />
 
         <ConfirmModal
           title="Confirmation"

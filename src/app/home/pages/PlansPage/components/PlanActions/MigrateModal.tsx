@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanActions } from '../../../../plan/duck/actions';
 import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
 const styles = require('./MigrateModal.module').default;
 
 interface IProps {

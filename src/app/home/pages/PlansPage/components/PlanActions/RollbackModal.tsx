@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanActions } from '../../../../plan/duck/actions';
+import { PlanActions } from '../../../../../plan/duck/actions';
 
 interface IProps {
   onHandleClose: () => void;
@@ -12,23 +12,37 @@ interface IProps {
   plan: any;
 }
 
-const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
+const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
   return (
     <Modal
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`${plan.MigPlan.metadata.name} Stage migration`}
+      title={`Rollback ${plan.MigPlan.metadata.name}`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
+            Rolling back the migration plan will revert migrated resources and volumes to their
+            original states and locations, including:
             <GridItem>
-              During a stage migration:
-              <li>PV data is copied to the target cluster.</li>
-              <li>PV references are not moved.</li>
-              <li>Source pods continue running.</li>
+              <br />
+              Source Cluster:
+              <li>
+                Restoring original replica counts (Un-Quiescing) on Deployments, DeploymentConfigs,
+                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
+              </li>
+              <br />
+              Target Cluster:
+              <li>Deleting migrated resources</li>
+              <br />
+              Source and Target Cluster:
+              <li>Deleting Velero Backups and Restores created during the migration</li>
+              <li>
+                Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
+                namespaces
+              </li>
               <br />
             </GridItem>
           </GridItem>
@@ -40,10 +54,10 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    dispatch(PlanActions.runStageRequest(plan));
+                    dispatch(PlanActions.runRollbackRequest(plan));
                   }}
                 >
-                  Stage
+                  Rollback
                 </Button>
                 <Button
                   className={`${spacing.mrMd}`}
@@ -61,4 +75,4 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
     </Modal>
   );
 };
-export default StageModal;
+export default RollbackModal;

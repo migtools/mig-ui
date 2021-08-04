@@ -24,12 +24,12 @@ import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
-import MigrateModal from '../../components/MigrateModal';
-import RollbackModal from '../../components/RollbackModal';
 import { useOpenModal } from '../../../../duck';
 import { access } from 'fs';
 import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
+import MigrateModal from '../../components/PlanActions/MigrateModal';
+import RollbackModal from '../../components/PlanActions/RollbackModal';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {

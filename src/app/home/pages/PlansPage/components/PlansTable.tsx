@@ -23,7 +23,7 @@ import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
-import { PlanActionsComponent } from './PlanActionsComponent';
+import { PlanActionsComponent } from './PlanActions/PlanActionsComponent';
 const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {
