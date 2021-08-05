@@ -46,4 +46,5 @@ export class CommonResource extends NamespacedResource {
 export enum CommonResourceKind {
   ClusterServiceVersion = 'clusterserviceversions',
   PackageManifest = 'packagemanifests',
+  Route = 'routes',
 }

@@ -13,10 +13,23 @@ import {
   alertProgressTimeout,
   alertSuccess,
   alertSuccessTimeout,
+  fetchCraneVersionFailure,
+  fetchCraneVersionRequest,
+  fetchCraneVersionSuccess,
+  fetchMTCVersionFailure,
+  fetchMTCVersionRequest,
+  fetchMTCVersionSuccess,
 } from './slice';
 import { IAlertModalObj } from './types';
 import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
+import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import {
+  CommonResource,
+  CommonResourceKind,
+  MigResource,
+  MigResourceKind,
+} from '../../../client/helpers';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -25,6 +38,110 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 
 export const StatusPollingInterval = 4000;
 const ErrorToastTimeout = 5000;
+
+function* fetchCraneVersion(action: any): Generator<any, any, any> {
+  const state = yield* getState();
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+  const { migMeta } = state.auth;
+
+  const packageManifestResource = new CommonResource(
+    CommonResourceKind.PackageManifest,
+    'openshift-marketplace',
+    'packages.operators.coreos.com',
+    'v1'
+  );
+
+  const csvResource = new CommonResource(
+    CommonResourceKind.ClusterServiceVersion,
+    migMeta.namespace,
+    'operators.coreos.com',
+    'v1alpha1'
+  );
+
+  const routeResource = new CommonResource(
+    CommonResourceKind.Route,
+    migMeta.namespace,
+    'route.openshift.io',
+    'v1'
+  );
+
+  try {
+    const routeResourceResponse = yield client.get(routeResource, 'migration');
+    const route2 = routeResourceResponse?.data.spec.host;
+    const route = routeResourceResponse?.data.status?.ingress[0]?.routerCanonicalHostname;
+    const csvResourceResponse = yield client.get(csvResource, '');
+    const packageManifestResourceResponse = yield client.get(
+      packageManifestResource,
+      'crane-operator'
+    );
+    const channels = packageManifestResourceResponse.data.status.channels.map(
+      (channel: any) => channel?.currentCSV
+    );
+    yield put(
+      fetchCraneVersionSuccess({
+        currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+        versionList: channels,
+        operatorType: 'crane',
+        route: route,
+      })
+    );
+  } catch (err) {
+    yield put(fetchCraneVersionFailure(err));
+  }
+}
+function* fetchMTCVersion(action: any): Generator<any, any, any> {
+  const state = yield* getState();
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+  const { migMeta } = state.auth;
+
+  const packageManifestResource = new CommonResource(
+    CommonResourceKind.PackageManifest,
+    'openshift-marketplace',
+    'packages.operators.coreos.com',
+    'v1'
+  );
+
+  const csvResource = new CommonResource(
+    CommonResourceKind.ClusterServiceVersion,
+    migMeta.namespace,
+    'operators.coreos.com',
+    'v1alpha1'
+  );
+
+  try {
+    const routeResource = new CommonResource(
+      CommonResourceKind.Route,
+      migMeta.namespace,
+      'route.openshift.io',
+      'v1'
+    );
+    const routeResourceResponse = yield client.get(routeResource, 'migration');
+    const route2 = routeResourceResponse?.data.spec.host;
+    const route = routeResourceResponse?.data.status?.ingress[0]?.routerCanonicalHostname;
+
+    const csvResourceResponse = yield client.get(csvResource, '');
+    const packageManifestResourceResponse = yield client.get(
+      packageManifestResource,
+      'mtc-operator'
+    );
+    if (packageManifestResourceResponse.data.metadata.name === 'mtc-operator') {
+      const channels = packageManifestResourceResponse.data.status.channels.map(
+        (channel: any) => channel?.currentCSV
+      );
+      yield put(
+        fetchMTCVersionSuccess({
+          currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+          versionList: channels,
+          operatorType: 'mtc',
+          route,
+        })
+      );
+    }
+  } catch (err) {
+    yield put(fetchCraneVersionRequest());
+    yield put(fetchMTCVersionFailure(err));
+  }
+}
 
 function* poll(action: any): Generator<any, any, any> {
   const params = { ...action.params };
@@ -117,10 +234,16 @@ function* watchAlerts() {
   yield takeLatest(alertSuccessTimeout, successTimeoutSaga);
 }
 
+function* watchCommonFetches() {
+  yield takeLatest(fetchMTCVersionRequest, fetchMTCVersion);
+  yield takeLatest(fetchCraneVersionRequest, fetchCraneVersion);
+}
+
 export default {
   watchStoragePolling,
   watchClustersPolling,
   watchPlanPolling,
   watchHookPolling,
   watchAlerts,
+  watchCommonFetches,
 };

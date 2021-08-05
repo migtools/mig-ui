@@ -24,3 +24,10 @@ export interface IAlertModalObj {
   name: string;
   errorMessage: string;
 }
+
+export interface IVersionObject {
+  versionList: any;
+  currentVersion: any;
+  operatorType: string;
+  route: string;
+}

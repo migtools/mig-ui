@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Card,
   PageSection,
@@ -12,6 +12,8 @@ import {
   Bullseye,
   Spinner,
   Button,
+  AlertActionCloseButton,
+  Alert,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
@@ -26,6 +28,11 @@ import { IMigMeta } from '../../../auth/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import { DefaultRootState } from '../../../../configureStore';
+import {
+  versionAlertClear,
+  fetchMTCVersionRequest,
+  ICommonReducerState,
+} from '../../../common/duck/slice';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -49,6 +56,11 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   currentCluster,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const common: ICommonReducerState = useSelector((state: DefaultRootState) => state.common);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchMTCVersionRequest());
+  }, []);
 
   const renderEmptyState = () => (
     <EmptyState variant="full" className={spacing.my_2xl}>
@@ -71,6 +83,24 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
           </Text>
         </TextContent>
       </PageSection>
+      {common.versionOutOfDateString && (
+        <PageSection>
+          <Alert
+            isLiveRegion
+            variant="info"
+            title="New operator version available"
+            actionClose={<AlertActionCloseButton onClose={() => dispatch(versionAlertClear())} />}
+          >
+            {common.versionOutOfDateString} <br />
+            <a
+              href={`https://console-openshift-console.${common?.versionObject.route}/operatorhub/ns/openshift-migration?keyword=${common?.versionObject.operatorType}`}
+              target="_blank"
+            >
+              Update Operator
+            </a>
+          </Alert>
+        </PageSection>
+      )}
       <PageSection>
         {isFetchingInitialClusters ? (
           <Bullseye>
