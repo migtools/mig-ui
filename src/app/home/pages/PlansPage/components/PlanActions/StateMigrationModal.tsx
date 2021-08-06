@@ -14,7 +14,7 @@ interface IProps {
   plan: any;
 }
 
-const StateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
+const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
   return (
     <Modal
@@ -67,4 +67,4 @@ const StateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
     </Modal>
   );
 };
-export default StateModal;
+export default StateMigrationModal;

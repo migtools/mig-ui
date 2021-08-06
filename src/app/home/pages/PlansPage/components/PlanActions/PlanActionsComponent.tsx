@@ -19,7 +19,7 @@ import { planSelectors, PlanActions } from '../../../../../plan/duck';
 import { clusterSelectors } from '../../../../../cluster/duck';
 import { storageSelectors } from '../../../../../storage/duck';
 import { DefaultRootState } from '../../../../../../configureStore';
-import StateModal from './StateModal';
+import StateMigrationModal from './StateMigrationModal';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
@@ -28,7 +28,7 @@ interface IPlanActionsProps {
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
-  const [isStateModalOpen, toggleStateModalOpen] = useOpenModal(false);
+  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
@@ -134,7 +134,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          toggleStateModalOpen();
+          toggleStateMigrationModalOpen();
         }}
         key="stateMigration"
         isDisabled={
@@ -201,7 +201,11 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         />
 
         <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
-        <StateModal plan={plan} isOpen={isStateModalOpen} onHandleClose={toggleStateModalOpen} />
+        <StateMigrationModal
+          plan={plan}
+          isOpen={isStateMigrationModalOpen}
+          onHandleClose={toggleStateMigrationModalOpen}
+        />
 
         <ConfirmModal
           title="Confirmation"

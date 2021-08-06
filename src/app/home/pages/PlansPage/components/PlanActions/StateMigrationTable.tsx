@@ -21,6 +21,7 @@ import {
   Grid,
 } from '@patternfly/react-core';
 import {
+  cellWidth,
   IRowData,
   sortable,
   TableComposable,
@@ -98,11 +99,11 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   const getSortValues = (pv: any) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
     pv.name,
-    pv.sourcePVc,
-    pv.namespace,
-    pv.storageClass,
-    pv.size,
-    pv.targetPVc,
+    pv.pvc.name,
+    pv.pvc.namespace,
+    pv.selection.storageClass,
+    pv.capacity,
+    'target pvc name',
   ];
 
   const filterCategories: FilterCategory[] = [
@@ -127,10 +128,10 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
     return {
       cells: [
         pvItem.name,
-        pvItem.sourcePVC,
-        pvItem.namespace,
-        pvItem.storageClass,
-        pvItem.size,
+        pvItem.pvc.name,
+        pvItem.pvc.namespace,
+        pvItem.selection.storageClass,
+        pvItem.capacity,
         targetPVC,
       ],
       selected: values.selectedPVs.includes(pvItem.name),
@@ -212,9 +213,9 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                   }}
                 />
                 <Th width={20}>{columns[0].title}</Th>
-                <Th width={10}>{columns[1].title}</Th>
-                <Th width={10}>{columns[2].title}</Th>
-                <Th width={10}>{columns[3].title}</Th>
+                <Th width={20}>{columns[1].title}</Th>
+                <Th width={20}>{columns[2].title}</Th>
+                <Th width={20}>{columns[3].title}</Th>
                 <Th width={30}>
                   {columns[4].title}
                   <Popover
@@ -243,7 +244,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                     </span>
                   </Popover>
                 </Th>
-                <Th width={20}></Th>
+                <Th width={20}>{columns[5].title}</Th>
               </Tr>
             </Thead>
             <Tbody>
