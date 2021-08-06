@@ -123,8 +123,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((pvItem) => {
-    const editedPV = values.editedPVs.find((editedPV: any) => editedPV.name === pvItem.name);
-    const targetPVC = editedPV ? editedPV.newName : pvItem.name;
+    const editedPV = values.editedPVs.find((editedPV: any) => editedPV.oldName === pvItem.pvc.name);
+    const targetPVC = editedPV ? editedPV.newName : pvItem.pvc.name;
     return {
       cells: [
         pvItem.name,
@@ -212,24 +212,24 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                     isSelected: allRowsSelected,
                   }}
                 />
-                <Th width={20}>{columns[0].title}</Th>
-                <Th width={20}>{columns[1].title}</Th>
+                <Th width={15}>{columns[0].title}</Th>
+                <Th width={15}>{columns[1].title}</Th>
                 <Th width={20}>{columns[2].title}</Th>
-                <Th width={20}>{columns[3].title}</Th>
-                <Th width={30}>
-                  {columns[4].title}
+                <Th width={15}>{columns[3].title}</Th>
+                <Th width={10}>{columns[4].title}</Th>
+                <Th width={20}>
+                  {columns[5].title}
                   <Popover
                     position={PopoverPosition.right}
                     bodyContent={
                       <>
-                        holder
-                        {/* <p className={spacing.mtMd}>
-                          By default, a target namespace will have the same name as its
-                          corresponding source namespace.
+                        <p className={spacing.mtMd}>
+                          By default, a target pvc will have the same name as its corresponding
+                          source name.
                           <br></br>
                           <br></br>
-                          To change the name of the target namespace, click the edit icon.
-                        </p> */}
+                          To change the name of the target name, click the edit icon.
+                        </p>
                       </>
                     }
                     aria-label="edit-target-ns-details"
@@ -244,7 +244,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                     </span>
                   </Popover>
                 </Th>
-                <Th width={20}>{columns[5].title}</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -263,7 +262,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                     />
                     {row.cells.map((cell, cellIndex) => {
                       const shiftedIndex = cellIndex + 1;
-                      if (columns[cellIndex].title === 'Target name') {
+                      if (columns[cellIndex].title === 'Target PVC') {
                         return (
                           <>
                             {!isEditable ? (
@@ -341,14 +340,14 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                   onClick={() => {
                                     setEditableRow(null);
                                     const hasEditedValue = values.editedPVs.find(
-                                      (pv: any) => row.cells[0] === pv.oldName
+                                      (pv: any) => row.cells[1] === pv.oldName
                                     );
                                     let newEditedPVs;
                                     if (hasEditedValue) {
                                       newEditedPVs = [...new Set([...values.editedPVs])];
 
                                       const index = values.editedPVs.findIndex(
-                                        (ns) => ns.oldName === row.cells[0]
+                                        (ns) => ns.oldName === row.cells[1]
                                       );
                                       //check if no changes made
                                       if (
@@ -361,7 +360,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                         //replace found edit with current edit
                                       } else if (index || index === 0) {
                                         newEditedPVs[index] = {
-                                          oldName: row.cells[0],
+                                          oldName: row.cells[1],
                                           newName: values.currentTargetName.name,
                                         };
                                       }
@@ -370,7 +369,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                         ...new Set([
                                           ...values.editedPVs,
                                           {
-                                            oldName: row.cells[0],
+                                            oldName: row.cells[1],
                                             newName: values.currentTargetName.name,
                                           },
                                         ]),
@@ -409,8 +408,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                             onClick={() => {
                               setEditableRow(rowIndex);
                               setFieldValue(currentTargetNameKey, {
-                                name: row.cells[4],
-                                srcName: row.cells[0],
+                                name: row.cells[5],
+                                srcName: row.cells[1],
                               });
                             }}
                           />
