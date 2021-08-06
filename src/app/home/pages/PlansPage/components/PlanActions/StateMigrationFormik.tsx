@@ -2,6 +2,7 @@ import React from 'react';
 import { Formik } from 'formik';
 import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
 import utils from '../../../../../common/duck/utils';
+import { IEditedPV } from './StateMigrationTable';
 
 export interface IStateMigrationFormikProps {
   plan?: IPlan;
@@ -9,7 +10,7 @@ export interface IStateMigrationFormikProps {
 }
 
 export interface IStateMigrationFormValues {
-  editedPVs: Array<any>;
+  editedPVs: Array<IEditedPV>;
   selectedPVs: Array<any>;
   currentTargetName?: {
     name: string;
@@ -37,67 +38,38 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
   return (
     <Formik<IStateMigrationFormValues>
       initialValues={initialValues}
-      // validate={(values: IStateMigrationFormValues) => {
-      //   const errors: { [key in keyof IFormValues]?: string } = {}; // TODO figure out why using FormikErrors<IFormValues> here causes type errors below
+      validate={(values: IStateMigrationFormValues) => {
+        const errors: { [key in keyof IStateMigrationFormValues]?: string } = {}; // TODO figure out why using FormikErrors<IFormValues> here causes type errors below
+        const srcPVs: any = [];
 
-      //   if (!values.planName) {
-      //     errors.planName = 'Required';
-      //   } else if (!utils.testDNS1123(values.planName)) {
-      //     errors.planName = utils.DNS1123Error(values.planName);
-      //   } else if (
-      //     !isEdit &&
-      //     planList.some((plan) => plan.MigPlan.metadata.name === values.planName)
-      //   ) {
-      //     errors.planName =
-      //       'A plan with that name already exists. Enter a unique name for the migration plan.';
-      //   }
-
-      //   if (!values.sourceCluster) {
-      //     errors.sourceCluster = 'Required';
-      //   } else if (values.sourceCluster === values.targetCluster) {
-      //     errors.sourceCluster =
-      //       'The selected source cluster must be different than the target cluster.';
-      //   }
-      //   if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
-      //     errors.selectedNamespaces = 'Required';
-      //   }
-      //   if (!values.targetCluster) {
-      //     errors.targetCluster = 'Required';
-      //   } else if (values.sourceCluster === values.targetCluster) {
-      //     errors.targetCluster =
-      //       'The selected target cluster must be different than the source cluster.';
-      //   }
-      //   if (!values.selectedStorage) {
-      //     errors.selectedStorage = 'Required';
-      //   }
-      //   const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
-      //   if (!values.currentTargetName) {
-      //     errors.currentTargetName = 'Required';
-      //   } else if (targetNamespaceNameError !== '') {
-      //     errors.currentTargetName = targetNamespaceNameError;
-      //   } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
-      //     errors.currentTargetName =
-      //       'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
-      //   } else if (
-      //     //check for duplicate ns mappings
-      //     // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
-      //     !!values.editedNamespaces.find((ns) => {
-      //       if (values.editedNamespaces.length > 0) {
-      //         return (
-      //           ns.newName === values.currentTargetName.name &&
-      //           ns.oldName !== values.currentTargetName.name
-      //         );
-      //       } else {
-      //         return false;
-      //       }
-      //     }) ||
-      //     sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName.name)
-      //   ) {
-      //     errors.currentTargetName =
-      //       'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
-      //   }
-      //   return errors;
-      // }}
+        const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
+        if (!values.currentTargetName) {
+          errors.currentTargetName = 'Required';
+        } else if (targetNamespaceNameError !== '') {
+          errors.currentTargetName = targetNamespaceNameError;
+        } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
+          errors.currentTargetName =
+            'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
+        } else if (
+          //check for duplicate ns mappings
+          // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
+          !!values.editedPVs.find((pv) => {
+            if (values.editedPVs.length > 0) {
+              return (
+                pv.newName === values.currentTargetName.name &&
+                pv.oldName !== values.currentTargetName.name
+              );
+            } else {
+              return false;
+            }
+          }) ||
+          srcPVs.some((pv: any) => pv.name === values.currentTargetName.name)
+        ) {
+          errors.currentTargetName =
+            'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
+        }
+        return errors;
+      }}
       onSubmit={() => {
         return null;
       }}

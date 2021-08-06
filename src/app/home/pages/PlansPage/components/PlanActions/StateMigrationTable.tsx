@@ -53,6 +53,11 @@ const styles = require('./StateMigrationTable.module').default;
 interface IStateMigrationTableProps {
   plan: IPlan;
 }
+export interface IEditedPV {
+  oldName: string;
+  newName: string;
+  namespace: string;
+}
 
 const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = ({
   plan,
@@ -123,7 +128,10 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((pvItem) => {
-    const editedPV = values.editedPVs.find((editedPV: any) => editedPV.oldName === pvItem.pvc.name);
+    const editedPV = values.editedPVs.find(
+      (editedPV) =>
+        editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+    );
     const targetPVC = editedPV ? editedPV.newName : pvItem.pvc.name;
     return {
       cells: [
@@ -340,14 +348,17 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                   onClick={() => {
                                     setEditableRow(null);
                                     const hasEditedValue = values.editedPVs.find(
-                                      (pv: any) => row.cells[1] === pv.oldName
+                                      (pv) =>
+                                        row.cells[1] === pv.oldName && row.cells[2] === pv.namespace
                                     );
                                     let newEditedPVs;
                                     if (hasEditedValue) {
                                       newEditedPVs = [...new Set([...values.editedPVs])];
 
                                       const index = values.editedPVs.findIndex(
-                                        (ns) => ns.oldName === row.cells[1]
+                                        (pv) =>
+                                          pv.oldName === row.cells[1] &&
+                                          pv.namespace === row.cells[2]
                                       );
                                       //check if no changes made
                                       if (
@@ -362,6 +373,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                         newEditedPVs[index] = {
                                           oldName: row.cells[1],
                                           newName: values.currentTargetName.name,
+                                          namespace: row.cells[2],
                                         };
                                       }
                                     } else {
@@ -371,6 +383,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                           {
                                             oldName: row.cells[1],
                                             newName: values.currentTargetName.name,
+                                            namespace: row.cells[2],
                                           },
                                         ]),
                                       ];
