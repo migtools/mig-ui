@@ -1,13 +1,15 @@
 import { ICurrentPlanStatus } from './reducers';
 import { IAddEditStatus } from '../../common/add_edit_state';
-import { IMigPlan, IPlan } from './types';
+import { IMigPlan, IPlan, IPlanPersistentVolume } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
+import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   RUN_ROLLBACK_REQUEST: 'RUN_ROLLBACK_REQUEST',
+  RUN_STATE_MIGRATION_REQUEST: 'RUN_STATE_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
   REFRESH_ANALYTIC_REQUEST: 'REFRESH_ANALYTIC_REQUEST',
   REFRESH_ANALYTIC_SUCCESS: 'REFRESH_ANALYTIC_SUCCESS',
@@ -444,6 +446,18 @@ const runRollbackRequest = (plan: IPlan) => ({
   plan,
 });
 
+const runStateMigrationRequest = (
+  plan: IPlan,
+  editedPVs: Array<IEditedPV>,
+  selectedPVs: Array<string>
+) => ({
+  type: PlanActionTypes.RUN_STATE_MIGRATION_REQUEST,
+  plan,
+  editedPVs,
+  selectedPVs,
+});
+export type RunStateMigrationRequest = ReturnType<typeof runStateMigrationRequest>;
+
 /*
 Hook action definitions
 */
@@ -578,7 +592,6 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
   type: PlanActionTypes.UPDATE_HOOKS,
   updatedHooks,
 });
-
 export const PlanActions = {
   runMigrationRequest,
   runStageRequest,
@@ -679,4 +692,5 @@ export const PlanActions = {
   stopHookPolling,
   updateHooks,
   updatePlanHookList,
+  runStateMigrationRequest,
 };

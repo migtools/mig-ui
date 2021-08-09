@@ -1,6 +1,10 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import {
+  IPlan,
+  IPlanPersistentVolume,
+  ISourceClusterNamespace,
+} from '../../../../../plan/duck/types';
 import utils from '../../../../../common/duck/utils';
 import { IEditedPV } from './StateMigrationTable';
 
@@ -11,12 +15,12 @@ export interface IStateMigrationFormikProps {
 
 export interface IStateMigrationFormValues {
   editedPVs: Array<IEditedPV>;
-  selectedPVs: Array<any>;
+  selectedPVs: Array<string>;
   currentTargetName?: {
     name: string;
     srcName: string;
   };
-  persistentVolumes: Array<any>;
+  persistentVolumes: Array<IPlanPersistentVolume>;
 }
 
 const defaultInitialValues: IStateMigrationFormValues = {

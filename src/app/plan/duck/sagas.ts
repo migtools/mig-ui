@@ -19,7 +19,7 @@ import {
   updateMigHook,
   updatePlanHookList,
 } from '../../../client/resources/conversions';
-import { PlanActions, PlanActionTypes } from './actions';
+import { PlanActions, PlanActionTypes, RunStateMigrationRequest } from './actions';
 import { CurrentPlanState } from './reducers';
 import utils from '../../common/duck/utils';
 import planUtils from './utils';
@@ -34,7 +34,14 @@ import {
 } from '../../common/duck/slice';
 import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
-import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
+import {
+  IMigPlan,
+  IMigration,
+  IPersistentVolumeResource,
+  IPlan,
+  IPlanPersistentVolume,
+  IPlanSpecHook,
+} from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
@@ -45,6 +52,7 @@ import {
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
+import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -268,6 +276,32 @@ function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
       getPlanRes.data.metadata.name,
       closedPlanSpecObj
     );
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
+  } catch (err) {
+    throw err;
+  }
+}
+
+function* patchPlanPVs(planName: string, persistentVolumes: Array<IPlanPersistentVolume>): any {
+  const state = yield* getState();
+  const migMeta = state.auth.migMeta;
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+  try {
+    // const getPlanRes = yield call(getPlanSaga,pvValues.persistentVolumes);
+    // // if (getPlanRes.data.spec.closed) {
+    // //   return;
+    // // }
+    const planPVsSpecObj = {
+      spec: {
+        persistentVolumes: persistentVolumes,
+      },
+    };
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      planName,
+      planPVsSpecObj
+    );
+
     yield put(PlanActions.updatePlanList(patchPlanResponse.data));
   } catch (err) {
     throw err;
@@ -629,6 +663,10 @@ interface IUpdatedClosedPlanValues {
   persistentVolumes: Array<any>;
 }
 
+interface IUpdatedPlanPVValues {
+  persistentVolumes: Array<any>;
+}
+
 function* planCloseSaga(action: any): Generator {
   try {
     const updatedValues: IUpdatedClosedPlanValues = {
@@ -750,6 +788,79 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
     }
   }
   return statusObj;
+}
+function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
+  try {
+    const state = yield* getState();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+    const { plan, editedPVs, selectedPVs } = action;
+
+    //loop through plan PVS and mark skipped or copy for selected or unselected pvs
+    // update pvc name for each PV if there is a mapping
+    const updatedPVs: Array<IPlanPersistentVolume> = [];
+    plan.MigPlan.spec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
+      const updatedPV = {
+        ...pvItem,
+      };
+
+      const matchingEditedPV = editedPVs.find((editedPV: IEditedPV) => {
+        if (pvItem.pvc.name === editedPV.oldName && pvItem.pvc.namespace === editedPV.namespace) {
+          return editedPV;
+        }
+      });
+      if (matchingEditedPV) {
+        updatedPV.pvc.name = `${matchingEditedPV.oldName}:${matchingEditedPV.newName}`;
+      }
+      const matchingSelectedPV = selectedPVs.find((selectedPV) => {
+        if (pvItem.name === selectedPV) {
+          return selectedPV;
+        }
+      });
+      if (matchingSelectedPV) {
+        updatedPV.selection.action = 'copy';
+      } else {
+        updatedPV.selection.action = 'skip';
+      }
+      updatedPVs.push(updatedPV);
+    });
+
+    const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
+    // yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
+    yield call(patchPlanPVs, plan.MigPlan.metadata.name, updatedPVs);
+    yield take(PlanActionTypes.UPDATE_PLAN_LIST);
+
+    yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
+    yield put(alertProgressTimeout('State migration Started'));
+
+    const migMigrationObj = createMigMigration(
+      migrationName,
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      true,
+      true,
+      false
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    // //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    const params = {
+      fetchPlansGenerator: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      getMigrationStatusCondition: getMigrationStatusCondition,
+      createMigRes: createMigRes,
+    };
+
+    yield put(PlanActions.startStagePolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(alertErrorTimeout(err));
+    yield put(PlanActions.stagingFailure(err));
+  }
 }
 function* runStageSaga(action: any): any {
   try {
@@ -1468,6 +1579,10 @@ function* watchRunRollbackRequest() {
   yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
 }
 
+function* watchRunStateMigrationRequest() {
+  yield takeLatest(PlanActionTypes.RUN_STATE_MIGRATION_REQUEST, runStateMigrationSaga);
+}
+
 function* watchValidatePlanPolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
@@ -1526,4 +1641,5 @@ export default {
   watchValidatePlanPolling,
   watchAssociateHookToPlan,
   watchUpdatePlanHookList,
+  watchRunStateMigrationRequest,
 };

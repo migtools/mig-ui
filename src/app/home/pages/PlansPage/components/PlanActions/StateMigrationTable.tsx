@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Formik, FormikProps, useFormikContext } from 'formik';
+import { useDispatch } from 'react-redux';
 import {
   GridItem,
   Text,
@@ -48,10 +49,12 @@ import { validatedState } from '../../../../../common/helpers';
 import { IFormValues, IOtherProps } from '../Wizard/WizardContainer';
 import { IPlan } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
+import { PlanActions } from '../../../../../plan/duck/actions';
 const styles = require('./StateMigrationTable.module').default;
 
 interface IStateMigrationTableProps {
   plan: IPlan;
+  onHandleClose: () => void;
 }
 export interface IEditedPV {
   oldName: string;
@@ -61,7 +64,9 @@ export interface IEditedPV {
 
 const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = ({
   plan,
+  onHandleClose,
 }: IStateMigrationTableProps) => {
+  const dispatch = useDispatch();
   const {
     handleBlur,
     handleChange,
@@ -460,6 +465,32 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
             />
           </LevelItem>
         </Level>
+      </GridItem>
+      <GridItem>
+        <Grid hasGutter>
+          <GridItem>
+            <Button
+              className={`${spacing.mrMd}`}
+              variant="primary"
+              onClick={() => {
+                onHandleClose();
+                dispatch(
+                  PlanActions.runStateMigrationRequest(plan, values.editedPVs, values.selectedPVs)
+                );
+              }}
+            >
+              Migrate
+            </Button>
+            <Button
+              className={`${spacing.mrMd}`}
+              key="cancel"
+              variant="secondary"
+              onClick={() => onHandleClose()}
+            >
+              Cancel
+            </Button>
+          </GridItem>
+        </Grid>
       </GridItem>
     </Grid>
   );

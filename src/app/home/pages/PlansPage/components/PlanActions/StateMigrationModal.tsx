@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -15,7 +14,6 @@ interface IProps {
 }
 
 const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
-  const dispatch = useDispatch();
   return (
     <Modal
       variant="large"
@@ -34,11 +32,11 @@ const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, i
             </GridItem>
             <GridItem>
               <StateMigrationFormik plan={plan}>
-                <StateMigrationTable plan={plan} />
+                <StateMigrationTable onHandleClose={onHandleClose} plan={plan} />
               </StateMigrationFormik>
             </GridItem>
           </GridItem>
-          <GridItem>
+          {/* <GridItem>
             <Grid hasGutter>
               <GridItem>
                 <Button
@@ -46,10 +44,10 @@ const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, i
                   variant="primary"
                   onClick={() => {
                     onHandleClose();
-                    dispatch(PlanActions.runStageRequest(plan));
+                    dispatch(PlanActions.runStateMigrationRequest(pvs));
                   }}
                 >
-                  Stage
+                  Migrate
                 </Button>
                 <Button
                   className={`${spacing.mrMd}`}
@@ -61,7 +59,7 @@ const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, i
                 </Button>
               </GridItem>
             </Grid>
-          </GridItem>
+          </GridItem> */}
         </form>
       </Grid>
     </Modal>

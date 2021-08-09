@@ -11,7 +11,10 @@ interface IProps {
 
 const AlertModal: React.FunctionComponent<IProps> = ({ alertMessage, alertType }) => {
   const dispatch = useDispatch();
-  if (!alertMessage) {
+  function isEmpty(obj: any) {
+    return Object.keys(obj).length === 0;
+  }
+  if (!alertMessage || isEmpty(alertMessage)) {
     return null;
   }
 
