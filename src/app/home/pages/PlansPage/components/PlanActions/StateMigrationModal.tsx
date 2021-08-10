@@ -36,30 +36,6 @@ const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, i
               </StateMigrationFormik>
             </GridItem>
           </GridItem>
-          {/* <GridItem>
-            <Grid hasGutter>
-              <GridItem>
-                <Button
-                  className={`${spacing.mrMd}`}
-                  variant="primary"
-                  onClick={() => {
-                    onHandleClose();
-                    dispatch(PlanActions.runStateMigrationRequest(pvs));
-                  }}
-                >
-                  Migrate
-                </Button>
-                <Button
-                  className={`${spacing.mrMd}`}
-                  key="cancel"
-                  variant="secondary"
-                  onClick={() => onHandleClose()}
-                >
-                  Cancel
-                </Button>
-              </GridItem>
-            </Grid>
-          </GridItem> */}
         </form>
       </Grid>
     </Modal>

@@ -34,10 +34,12 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
   plan,
   children,
 }: IStateMigrationFormikProps) => {
-  const planPVs = plan.MigPlan.spec.persistentVolumes;
+  const filteredPlanPVs = plan.MigPlan.spec.persistentVolumes.filter(
+    (pv) => pv.selection.action !== 'move'
+  );
   const initialValues = { ...defaultInitialValues };
-  initialValues.persistentVolumes = planPVs || [];
-  if (planPVs === null) return null;
+  initialValues.persistentVolumes = filteredPlanPVs || [];
+  if (filteredPlanPVs === null) return null;
 
   return (
     <Formik<IStateMigrationFormValues>
