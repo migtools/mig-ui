@@ -78,19 +78,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
     validateForm,
   } = useFormikContext<IStateMigrationFormValues>();
 
-  // const editedNamespaces: IEditedNamespaceMap[] = [];
-  // const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
-  //   const includesMapping = ns.includes(':');
-  //   if (includesMapping) {
-  //     const mappedNsArr = ns.split(':');
-  //     editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
-  //     return mappedNsArr[0];
-  //   } else {
-  //     return ns;
-  //   }
-  // });
-  // }
-
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
@@ -189,11 +176,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   };
   return (
     <Grid>
-      <GridItem>
-        <TextContent className={spacing.mtMd}>
-          {/* <Text component={TextVariants.p}>Select projects to be migrated</Text> */}
-        </TextContent>
-      </GridItem>
       <GridItem>
         <Level>
           <LevelItem>
