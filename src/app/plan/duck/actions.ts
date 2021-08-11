@@ -6,6 +6,9 @@ import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/Wizard
 import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 export const PlanActionTypes = {
+  PATCH_PLAN_PVS_REQUEST: 'RUN_STAGE_REQUEST',
+  PATCH_PLAN_PVS_FAILURE: 'RUN_STAGE_FAILURE',
+  PATCH_PLAN_PVS_SUCCESS: 'RUN_STAGE_SUCCESS',
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   RUN_ROLLBACK_REQUEST: 'RUN_ROLLBACK_REQUEST',
@@ -446,6 +449,16 @@ const runRollbackRequest = (plan: IPlan) => ({
   plan,
 });
 
+const patchPlanPVsRequest = () => ({
+  type: PlanActionTypes.PATCH_PLAN_PVS_REQUEST,
+});
+const patchPlanPVsFailure = (err: any) => ({
+  type: PlanActionTypes.PATCH_PLAN_PVS_FAILURE,
+});
+const patchPlanPVsSuccess = () => ({
+  type: PlanActionTypes.PATCH_PLAN_PVS_SUCCESS,
+});
+
 const runStateMigrationRequest = (
   plan: IPlan,
   editedPVs: Array<IEditedPV>,
@@ -593,6 +606,10 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
   updatedHooks,
 });
 export const PlanActions = {
+  runStateMigrationRequest,
+  patchPlanPVsRequest,
+  patchPlanPVsSuccess,
+  patchPlanPVsFailure,
   runMigrationRequest,
   runStageRequest,
   runRollbackRequest,
@@ -692,5 +709,4 @@ export const PlanActions = {
   stopHookPolling,
   updateHooks,
   updatePlanHookList,
-  runStateMigrationRequest,
 };

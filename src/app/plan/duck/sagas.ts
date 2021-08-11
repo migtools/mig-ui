@@ -282,32 +282,6 @@ function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
   }
 }
 
-function* patchPlanPVs(planName: string, persistentVolumes: Array<IPlanPersistentVolume>): any {
-  const state = yield* getState();
-  const migMeta = state.auth.migMeta;
-  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
-  try {
-    // const getPlanRes = yield call(getPlanSaga,pvValues.persistentVolumes);
-    // // if (getPlanRes.data.spec.closed) {
-    // //   return;
-    // // }
-    const planPVsSpecObj = {
-      spec: {
-        persistentVolumes: persistentVolumes,
-      },
-    };
-    const patchPlanResponse = yield client.patch(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      planName,
-      planPVsSpecObj
-    );
-
-    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
-  } catch (err) {
-    throw err;
-  }
-}
-
 function* migrationCancel(action: any): Generator<any, any, any> {
   const state: DefaultRootState = yield select();
   const migMeta = state.auth.migMeta;
@@ -828,7 +802,18 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
     });
 
     const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
-    yield call(patchPlanPVs, plan.MigPlan.metadata.name, updatedPVs);
+    const planPVsSpecObj = {
+      spec: {
+        persistentVolumes: updatedPVs,
+      },
+    };
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      plan.MigPlan.metadata.name,
+      planPVsSpecObj
+    );
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
+    yield put(PlanActions.patchPlanPVsSuccess());
 
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(alertProgressTimeout('State migration Started'));
