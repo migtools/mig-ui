@@ -8,6 +8,9 @@ import {
   Flex,
   FlexItem,
   DropdownGroup,
+  Popover,
+  PopoverPosition,
+  Tooltip,
 } from '@patternfly/react-core';
 import { useOpenModal } from '../../../../duck';
 import { useHistory } from 'react-router-dom';
@@ -55,11 +58,32 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     hasRunningMigrations,
     finalMigrationComplete,
     isPlanLocked,
+    hasCopyPVs,
   } = plan.PlanStatus;
 
   const editPlan = () => {
     toggleEditWizardOpen();
   };
+  const stateItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleStateMigrationModalOpen();
+      }}
+      key="stateMigration"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked ||
+        !hasCopyPVs
+      }
+    >
+      State
+    </DropdownItem>
+  );
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
@@ -131,23 +155,18 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       >
         Stage
       </DropdownItem>
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleStateMigrationModalOpen();
-        }}
-        key="stateMigration"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        State
-      </DropdownItem>
+      {!hasCopyPVs ? (
+        <Tooltip
+          position={PopoverPosition.bottom}
+          content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
+          aria-label="disabled state details"
+          maxWidth="30rem"
+        >
+          {stateItem}
+        </Tooltip>
+      ) : (
+        stateItem
+      )}
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
