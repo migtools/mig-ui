@@ -222,7 +222,7 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
-      const hasCopyPVs = plan.MigPlan.spec.persistentVolumes.some(
+      const hasCopyPVs = plan.MigPlan.spec.persistentVolumes?.some(
         (pv) => pv.selection.action === 'copy'
       );
 

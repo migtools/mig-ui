@@ -820,15 +820,15 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       if (matchingSelectedPV) {
         updatedPV.selection.action = 'copy';
       } else {
-        updatedPV.selection.action = 'skip';
+        if (updatedPV.selection.action !== 'move') {
+          updatedPV.selection.action = 'skip';
+        }
       }
       updatedPVs.push(updatedPV);
     });
 
     const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
-    // yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield call(patchPlanPVs, plan.MigPlan.metadata.name, updatedPVs);
-    yield take(PlanActionTypes.UPDATE_PLAN_LIST);
 
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(alertProgressTimeout('State migration Started'));
@@ -838,7 +838,7 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       true,
-      true,
+      false,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -855,7 +855,7 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       createMigRes: createMigRes,
     };
 
-    yield put(PlanActions.startStagePolling(params));
+    yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
     yield put(alertErrorTimeout(err));

@@ -16,7 +16,7 @@ interface IProps {
 const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   return (
     <Modal
-      variant="large"
+      variant="default"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
       title={`${plan.MigPlan.metadata.name} - State migration`}
