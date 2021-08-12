@@ -121,7 +121,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
 
   const rows = currentPageItems.map((pvItem) => {
     let targetPVCName = pvItem.pvc.name;
-    // let targetPVCName = editedPV ? editedPV.newName : pvItem.pvc.name;
     let sourcePVCName = pvItem.pvc.name;
     let editedPV = values.editedPVs.find(
       (editedPV) =>
@@ -143,18 +142,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
         targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
       }
     }
-    // const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
-    //   const includesMapping = ns.includes(':');
-    //   if (includesMapping) {
-    //     const mappedNsArr = ns.split(':');
-    //     editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
-    //     return mappedNsArr[0];
-    //   } else {
-    //     return ns;
-    //   }
-    // });
-    // initialValues.selectedNamespaces = mappedNamespaces || [];
-    // initialValues.editedNamespaces = editedNamespaces || [];        pvItem.pvc.name,
 
     return {
       cells: [
