@@ -120,19 +120,50 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((pvItem) => {
-    const editedPV = values.editedPVs.find(
+    let targetPVCName = pvItem.pvc.name;
+    // let targetPVCName = editedPV ? editedPV.newName : pvItem.pvc.name;
+    let sourcePVCName = pvItem.pvc.name;
+    let editedPV = values.editedPVs.find(
       (editedPV) =>
         editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
     );
-    const targetPVC = editedPV ? editedPV.newName : pvItem.pvc.name;
+
+    const includesMapping = sourcePVCName.includes(':');
+    if (includesMapping) {
+      const mappedNsArr = sourcePVCName.split(':');
+      editedPV = values.editedPVs.find(
+        (editedPV) =>
+          editedPV.oldName === mappedNsArr[0] && editedPV.namespace === pvItem.pvc.namespace
+      );
+      if (mappedNsArr[0] === mappedNsArr[1]) {
+        sourcePVCName = mappedNsArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedNsArr[0];
+      } else {
+        sourcePVCName = mappedNsArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
+      }
+    }
+    // const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
+    //   const includesMapping = ns.includes(':');
+    //   if (includesMapping) {
+    //     const mappedNsArr = ns.split(':');
+    //     editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
+    //     return mappedNsArr[0];
+    //   } else {
+    //     return ns;
+    //   }
+    // });
+    // initialValues.selectedNamespaces = mappedNamespaces || [];
+    // initialValues.editedNamespaces = editedNamespaces || [];        pvItem.pvc.name,
+
     return {
       cells: [
         pvItem.name,
-        pvItem.pvc.name,
+        sourcePVCName,
         pvItem.pvc.namespace,
         pvItem.selection.storageClass,
         pvItem.capacity,
-        targetPVC,
+        targetPVCName,
       ],
       selected: values.selectedPVs.includes(pvItem.name),
       meta: {
