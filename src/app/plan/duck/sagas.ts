@@ -778,19 +778,37 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
         ...pvItem,
       };
 
-      const matchingEditedPV = editedPVs.find((editedPV: IEditedPV) => {
-        if (pvItem.pvc.name === editedPV.oldName && pvItem.pvc.namespace === editedPV.namespace) {
-          return editedPV;
+      let targetPVCName = pvItem.pvc.name;
+      let sourcePVCName = pvItem.pvc.name;
+      let editedPV = editedPVs.find(
+        (editedPV) =>
+          editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+      );
+
+      const includesMapping = sourcePVCName.includes(':');
+      if (includesMapping) {
+        const mappedNsArr = sourcePVCName.split(':');
+        editedPV = editedPVs.find(
+          (editedPV) =>
+            editedPV.oldName === mappedNsArr[0] && editedPV.namespace === pvItem.pvc.namespace
+        );
+        if (mappedNsArr[0] === mappedNsArr[1]) {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[0];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
+        } else {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
         }
-      });
-      if (matchingEditedPV) {
-        updatedPV.pvc.name = `${matchingEditedPV.oldName}:${matchingEditedPV.newName}`;
       }
+
       const matchingSelectedPV = selectedPVs.find((selectedPV) => {
         if (pvItem.name === selectedPV) {
           return selectedPV;
         }
       });
+
       if (matchingSelectedPV) {
         updatedPV.selection.action = 'copy';
       } else {

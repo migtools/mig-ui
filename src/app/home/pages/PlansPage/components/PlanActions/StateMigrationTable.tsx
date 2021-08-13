@@ -303,7 +303,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 >
                                   <TextInput
                                     name={currentTargetNameKey}
-                                    value={values.currentTargetName.name}
+                                    value={values?.currentTargetName?.name}
                                     type="text"
                                     onChange={(val, e) => {
                                       setFieldValue(currentTargetNameKey, {
