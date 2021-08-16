@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, FormikProps, useFormikContext } from 'formik';
 import { useDispatch } from 'react-redux';
 import {
@@ -45,7 +45,7 @@ import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { validatedState } from '../../../../../common/helpers';
+import { useDelayValidation, validatedState } from '../../../../../common/helpers';
 import { IFormValues, IOtherProps } from '../Wizard/WizardContainer';
 import { IPlan } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
@@ -192,6 +192,11 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
     }
     setFieldValue('selectedPVs', newSelected);
   };
+  const { setQuery, query } = useDelayValidation(setFieldValue);
+
+  const handleDelayedValidation = (val: string, row: any): any => {
+    setQuery({ name: val, row: row, fieldName: currentTargetNameKey });
+  };
   return (
     <Grid>
       <GridItem>
@@ -303,14 +308,11 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 >
                                   <TextInput
                                     name={currentTargetNameKey}
-                                    value={values?.currentTargetName?.name}
+                                    value={
+                                      query.name ? query.name : values?.currentTargetName?.name
+                                    }
                                     type="text"
-                                    onChange={(val, e) => {
-                                      setFieldValue(currentTargetNameKey, {
-                                        name: val,
-                                        srcName: row.cells[0],
-                                      });
-                                    }}
+                                    onChange={(val, e) => handleDelayedValidation(val, row)}
                                     onInput={formikSetFieldTouched(currentTargetNameKey)}
                                     onBlur={handleBlur}
                                     isReadOnly={!isEditable}
