@@ -80,8 +80,8 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           }
         });
         const hasDuplicateMapping = existingPVCNameMap.find((pv, index) => {
-          const editedPVCName = values.currentTargetName.name;
-          const editedPVCNameAssociatedPVName = values.currentTargetName.srcName;
+          const editedPVCName = values?.currentTargetName?.name;
+          const editedPVCNameAssociatedPVName = values?.currentTargetName?.srcName;
           return (
             (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
             (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName)
@@ -89,11 +89,11 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
         });
 
         const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
-        if (!values.currentTargetName) {
+        if (!values?.currentTargetName) {
           errors.currentTargetName = 'Required';
         } else if (targetNamespaceNameError !== '') {
           errors.currentTargetName = targetNamespaceNameError;
-        } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
+        } else if (values?.currentTargetName?.name === values?.currentTargetName?.srcName) {
           errors.currentTargetName =
             'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
         } else if (hasDuplicateMapping) {

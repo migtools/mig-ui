@@ -842,7 +842,8 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       migMeta.namespace,
       true,
       false,
-      false
+      false,
+      true
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -882,6 +883,7 @@ function* runStageSaga(action: any): any {
       migMeta.namespace,
       true,
       true,
+      false,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -1006,6 +1008,7 @@ function* runMigrationSaga(action: any): any {
       migMeta.namespace,
       false,
       enableQuiesce,
+      false,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -1129,7 +1132,8 @@ function* runRollbackSaga(action: any): any {
       migMeta.namespace,
       false,
       false,
-      true
+      true,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
