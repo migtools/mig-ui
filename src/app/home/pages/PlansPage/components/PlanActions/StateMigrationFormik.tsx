@@ -79,23 +79,12 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
             };
           }
         });
-        //check for duplicates
-        // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
         const hasDuplicateMapping = existingPVCNameMap.find((pv, index) => {
           const editedPVCName = values.currentTargetName.name;
           const editedPVCNameAssociatedPVName = values.currentTargetName.srcName;
           return (
-            // Throw validation for duplicate mapping
-            // if current edited name:
-            // IS saved new mapping within this session &
-            (editedPVCName === pv.targetPVCName &&
-              // IS NOT the same as current edited index
-              editedPVCNameAssociatedPVName !== pv.pvName) ||
-            // OR
-            // IS a dup of current src cluster pvc name &
-            (editedPVCName === pv.sourcePVCName &&
-              // IS NOT the same as current edited index
-              editedPVCNameAssociatedPVName !== pv.pvName)
+            (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+            (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName)
           );
         });
 
