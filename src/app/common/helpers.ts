@@ -20,30 +20,32 @@ interface IDelayedQueryObject {
 }
 
 export const useDelayValidation = (delayedFunction: any) => {
-  const [query, setQuery] = useState<IDelayedQueryObject>({ name: '', row: null, fieldName: null });
+  const [query, setQuery] = useState<IDelayedQueryObject>({
+    name: '',
+    row: null,
+    fieldName: null,
+  });
 
   useEffect(() => {
-    const timeOutId = setTimeout(
-      () =>
+    if ((query.name || query.name === '') && query.row && query.fieldName) {
+      if (query.name === '') {
         delayedFunction(query.fieldName, {
           name: query.name,
           srcName: query.row.cells[0],
-        }),
-      500
-    );
-    return () => clearTimeout(timeOutId);
+        });
+      } else {
+        const timeOutId = setTimeout(
+          () =>
+            delayedFunction(query.fieldName, {
+              name: query.name,
+              srcName: query.row.cells[0],
+            }),
+          500
+        );
+        return () => clearTimeout(timeOutId);
+      }
+    }
   }, [query]);
 
   return { setQuery, query };
-
-  // return (
-  //   <>
-  //     <input
-  //       type="text"
-  //       value={query}
-  //       onChange={event => setQuery(event.target.value)}
-  //     />
-  //     <p>{displayMessage}</p>
-  //   </>
-  // );
 };

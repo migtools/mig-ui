@@ -50,6 +50,7 @@ import { IFormValues, IOtherProps } from '../Wizard/WizardContainer';
 import { IPlan } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
 import { PlanActions } from '../../../../../plan/duck/actions';
+import { current } from '@reduxjs/toolkit';
 const styles = require('./StateMigrationTable.module').default;
 
 interface IStateMigrationTableProps {
@@ -83,6 +84,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
   const currentTargetNameKey = 'currentTargetName';
+  const hasSelectedPVs = !!values.selectedPVs.length;
 
   const columns = [
     { title: 'PV name', transforms: [sortable] },
@@ -195,7 +197,11 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   const { setQuery, query } = useDelayValidation(setFieldValue);
 
   const handleDelayedValidation = (val: string, row: any): any => {
-    setQuery({ name: val, row: row, fieldName: currentTargetNameKey });
+    setQuery({
+      name: val,
+      row: row,
+      fieldName: currentTargetNameKey,
+    });
   };
   return (
     <Grid>
@@ -308,9 +314,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 >
                                   <TextInput
                                     name={currentTargetNameKey}
-                                    value={
-                                      query.name ? query.name : values?.currentTargetName?.name
-                                    }
+                                    value={query.name}
                                     type="text"
                                     onChange={(val, e) => handleDelayedValidation(val, row)}
                                     onInput={formikSetFieldTouched(currentTargetNameKey)}
@@ -411,6 +415,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 className={styles.clickable}
                                 type="button"
                                 onClick={() => {
+                                  // setQuery({ name: '', row: null, fieldName: null });
                                   setEditableRow(null);
                                   setFieldValue(currentTargetNameKey, null);
                                   setFieldTouched(currentTargetNameKey, false);
@@ -427,6 +432,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                             size="md"
                             onClick={() => {
                               setEditableRow(rowIndex);
+                              handleDelayedValidation(row.cells[5], row);
                               setFieldValue(currentTargetNameKey, {
                                 name: row.cells[5],
                                 srcName: row.cells[1],
@@ -474,6 +480,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
             <Button
               className={`${spacing.mrMd}`}
               variant="primary"
+              isDisabled={!hasSelectedPVs}
               onClick={() => {
                 onHandleClose();
                 dispatch(
