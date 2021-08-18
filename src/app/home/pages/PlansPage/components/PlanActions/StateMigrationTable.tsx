@@ -61,6 +61,7 @@ export interface IEditedPV {
   oldName: string;
   newName: string;
   namespace: string;
+  pvName: string;
 }
 
 const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = ({
@@ -131,17 +132,17 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
 
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
-      const mappedNsArr = sourcePVCName.split(':');
+      const mappedPVCNameArr = sourcePVCName.split(':');
       editedPV = values.editedPVs.find(
         (editedPV) =>
-          editedPV.oldName === mappedNsArr[0] && editedPV.namespace === pvItem.pvc.namespace
+          editedPV.oldName === mappedPVCNameArr[0] && editedPV.namespace === pvItem.pvc.namespace
       );
-      if (mappedNsArr[0] === mappedNsArr[1]) {
-        sourcePVCName = mappedNsArr[0];
-        targetPVCName = editedPV ? editedPV.newName : mappedNsArr[0];
+      if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
       } else {
-        sourcePVCName = mappedNsArr[0];
-        targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
       }
     }
 
@@ -385,6 +386,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                           oldName: row.cells[1],
                                           newName: values.currentTargetName.name,
                                           namespace: row.cells[2],
+                                          pvName: row.cells[0],
                                         };
                                       }
                                     } else {
@@ -395,6 +397,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                             oldName: row.cells[1],
                                             newName: values.currentTargetName.name,
                                             namespace: row.cells[2],
+                                            pvName: row.cells[0],
                                           },
                                         ]),
                                       ];

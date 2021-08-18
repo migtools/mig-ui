@@ -46,7 +46,58 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
       initialValues={initialValues}
       validate={(values: IStateMigrationFormValues) => {
         const errors: { [key in keyof IStateMigrationFormValues]?: string } = {}; // TODO figure out why using FormikErrors<IFormValues> here causes type errors below
-        const srcPVs: any = [];
+
+        const existingPVCNameMap = values.persistentVolumes.map((pvItem) => {
+          let targetPVCName = pvItem.pvc.name;
+          let sourcePVCName = pvItem.pvc.name;
+          const pvcNamespace = pvItem.pvc.namespace;
+          const pvName = pvItem.name;
+          let editedPV = values.editedPVs.find(
+            (editedPV) =>
+              editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+          );
+          const includesMapping = sourcePVCName.includes(':');
+          if (includesMapping) {
+            const mappedPVCNameArr = sourcePVCName.split(':');
+            editedPV = values.editedPVs.find(
+              (editedPV) =>
+                editedPV.oldName === mappedPVCNameArr[0] &&
+                editedPV.namespace === pvItem.pvc.namespace
+            );
+            if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+              sourcePVCName = mappedPVCNameArr[0];
+              targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
+            } else {
+              sourcePVCName = mappedPVCNameArr[0];
+              targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
+            }
+            return {
+              sourcePVCName,
+              targetPVCName,
+              pvName,
+              pvcNamespace,
+            };
+          }
+        });
+        //check for duplicates
+        // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
+        const hasDuplicateMapping = existingPVCNameMap.find((pv, index) => {
+          const editedPVCName = values.currentTargetName.name;
+          const editedPVCNameAssociatedPVName = values.currentTargetName.srcName;
+          return (
+            // Throw validation for duplicate mapping
+            // if current edited name:
+            // IS saved new mapping within this session &
+            (editedPVCName === pv.targetPVCName &&
+              // IS NOT the same as current edited index
+              editedPVCNameAssociatedPVName !== pv.pvName) ||
+            // OR
+            // IS a dup of current src cluster pvc name &
+            (editedPVCName === pv.sourcePVCName &&
+              // IS NOT the same as current edited index
+              editedPVCNameAssociatedPVName !== pv.pvName)
+          );
+        });
 
         const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
         if (!values.currentTargetName) {
@@ -56,21 +107,7 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
         } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
           errors.currentTargetName =
             'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
-        } else if (
-          //check for duplicate ns mappings
-          // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
-          !!values.editedPVs.find((pv) => {
-            if (values.editedPVs.length > 0) {
-              return (
-                pv.newName === values.currentTargetName.name &&
-                pv.oldName !== values.currentTargetName.name
-              );
-            } else {
-              return false;
-            }
-          }) ||
-          srcPVs.some((pv: any) => pv.name === values.currentTargetName.name)
-        ) {
+        } else if (hasDuplicateMapping) {
           errors.currentTargetName =
             'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
         }
