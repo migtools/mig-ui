@@ -543,7 +543,6 @@ export function createMigMigration(
     metadata: {
       annotations: {
         'migration.openshift.io/state-transfer': isStateTransfer ? 'true' : undefined,
-        // 'openshift.io/touch': 'eb5e5305-005c-11ec-a267-c69390c6b83e',
       },
       name: migID,
       namespace,
