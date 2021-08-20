@@ -140,10 +140,10 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     },
     { title: 'Target storage class', transforms: [sortable] },
   ];
-  const getSortValues = (pv) => [
+  const getSortValues = (pv: IPlanPersistentVolume) => [
     pv.name,
-    pv.claim,
-    pv.project,
+    pv.pvc.name,
+    pv.pvc.namespace,
     copyMethodToString(pvCopyMethodAssignment[pv.name]),
     pvVerifyFlagAssignment[pv.name],
     storageClassToString(pvStorageClassAssignment[pv.name]),
@@ -193,7 +193,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
-  const rows = currentPageItems.map((pv) => {
+  const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
     const currentPV = currentPlan?.spec?.persistentVolumes?.find(
       (planPV) => planPV.name === pv.name
     );
@@ -210,7 +210,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const noneOption = { value: '', toString: () => 'None' };
     const storageClassOptions: OptionWithValue[] = [
       ...storageClasses.map((storageClass) => ({
-        value: storageClass.name,
+        value: storageClass !== '' && storageClass.name,
         toString: () => storageClassToString(storageClass),
       })),
       noneOption,
@@ -221,8 +221,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     return {
       cells: [
         pv.name,
-        pv.claim,
-        pv.project,
+        pv.pvc.name,
+        pv.pvc.namespace,
         {
           title: (
             <div>
