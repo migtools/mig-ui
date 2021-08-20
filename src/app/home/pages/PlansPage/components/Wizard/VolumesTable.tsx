@@ -112,12 +112,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
     const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
-    const migrationTypeOptions: OptionWithValue[] = pv.supported.actions
-      .map((action: string) => ({
-        value: action,
-        toString: () => capitalize(action),
-      }))
-      .filter((action) => action.value !== 'skip');
+    const migrationTypeOptions: OptionWithValue[] = pv.supported.actions.map((action: string) => ({
+      value: action,
+      toString: () => capitalize(action),
+    }));
     return {
       cells: [
         pv.name,
