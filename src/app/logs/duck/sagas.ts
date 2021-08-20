@@ -187,7 +187,7 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
   try {
     const srcPodList = yield discoveryClient.get(srcPodCollectorDiscoveryResource);
     const destPodList = yield discoveryClient.get(destPodCollectorDiscoveryResource);
-    const srcLogPod = srcPodList?.data?.resources.find((resource: any) =>
+    const srcLogPod = srcPodList?.data?.resources?.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
     const destLogPod = destPodList?.data?.resources.find((resource: any) =>
