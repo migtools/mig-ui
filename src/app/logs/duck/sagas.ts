@@ -7,7 +7,6 @@ import {
   ClusterKind,
   IPlanLogSources,
   IPlanReport,
-  ClusterPodReportDiscovery,
 } from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
