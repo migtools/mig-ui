@@ -63,16 +63,8 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
             }
           }
           return {
-            name: planVolume.name,
-            pvc: {
-              namespace: planVolume.pvc.namespace,
-              name: planVolume.pvc.name,
-            },
+            ...planVolume,
             storageClass: planVolume.storageClass || 'None',
-            capacity: planVolume.capacity,
-            supported: {
-              ...planVolume.supported,
-            },
             selection: {
               ...planVolume.selection,
               action: pvAction,
