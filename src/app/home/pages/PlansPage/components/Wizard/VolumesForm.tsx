@@ -52,7 +52,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
   useEffect(() => {
     if (discoveredPersistentVolumes.length > 0) {
       getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
-      let mappedPVs;
+      let mappedPVs: IPlanPersistentVolume[];
       if (values.persistentVolumes) {
         mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           let pvAction = 'copy'; // Default to copy
@@ -62,44 +62,38 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
               pvAction = planVolume.selection.action;
             }
           }
-          // TODO do we really need to generate these meta-objects and keep them in formik?
-          // currentPlan.spec.persistentVolumes is in global state, so we could just
-          // infer from that everywhere and keep only a mapping of pv id => type selections in formik
           return {
             name: planVolume.name,
-            project: planVolume.pvc.namespace,
+            pvc: {
+              namespace: planVolume.pvc.namespace,
+              name: planVolume.pvc.name,
+            },
             storageClass: planVolume.storageClass || 'None',
-            size: planVolume.capacity,
-            claim: planVolume.pvc.name,
-            type: pvAction,
-            details: '',
-            supportedActions: planVolume.supported.actions,
+            capacity: planVolume.capacity,
+            supported: {
+              ...planVolume.supported,
+            },
+            selection: {
+              ...planVolume.selection,
+              action: pvAction,
+            },
           };
         });
       } else {
         mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           const pvAction = 'copy'; // Default to copy
           return {
-            name: planVolume.name,
-            project: planVolume.pvc.namespace,
-            storageClass: planVolume.storageClass || '',
-            size: planVolume.capacity,
-            claim: planVolume.pvc.name,
-            type: pvAction,
-            details: '',
-            supportedActions: planVolume.supported.actions,
+            ...planVolume,
+            selection: {
+              ...planVolume.selection,
+              action: pvAction,
+            },
           };
         });
       }
       setFieldValue('persistentVolumes', mappedPVs);
     }
   }, [discoveredPersistentVolumes, currentPlanStatus]); // Only re-run the effect if fetching value changes
-
-  //TODO: added this component level error state to handle the case of no PVs
-  // showing up after 3 checks of the interval. When the isPVError flag is checked,
-  // the volumes form will show this error. Need to add redux actions & state to encapsulate
-  // validation so that this error state enables the user to go to next page( that possibly
-  // shows a different set of forms catered to stateless apps)
 
   if (isPVError) {
     return (
@@ -136,29 +130,31 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
     );
   }
 
-  const updatePersistentVolumes = (
-    currentPV: IPlanPersistentVolume,
-    newValues: { type: string }
-  ) => {
+  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, newAction: string) => {
     if (currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
       const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
       const pvIndex = values.persistentVolumes.indexOf(matchingPV);
-      newPVs[pvIndex] = { ...matchingPV, ...newValues };
-      // TODO this should only store selections, we should inherit the rest from currentPlan.spec.persistentVolumes
+      newPVs[pvIndex] = {
+        ...matchingPV,
+        selection: {
+          ...matchingPV.selection,
+          action: newAction,
+        },
+      };
       setFieldValue('persistentVolumes', newPVs);
     }
   };
 
-  const onTypeChange = (currentPV: IPlanPersistentVolume, value: string) =>
-    updatePersistentVolumes(currentPV, { type: value });
+  const onActionTypeChange = (currentPV: IPlanPersistentVolume, actionType: string) =>
+    updatePersistentVolumeAction(currentPV, actionType);
 
   return (
     <VolumesTable
       pvResourceList={pvResourceList}
       isFetchingPVResources={isFetchingPVResources}
       persistentVolumes={values.persistentVolumes}
-      onTypeChange={onTypeChange}
+      onActionTypeChange={onActionTypeChange}
     />
   );
 };
