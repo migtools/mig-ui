@@ -23,7 +23,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
     hasWarnCondition,
     hasSucceededMigration,
     hasSucceededMigrationWithWarnings,
-  } = plan.PlanStatus;
+  } = plan?.PlanStatus;
   const showDebugLink =
     latestIsFailed ||
     hasCriticalCondition ||

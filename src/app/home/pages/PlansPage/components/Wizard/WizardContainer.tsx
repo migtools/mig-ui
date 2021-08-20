@@ -19,6 +19,7 @@ import {
   IPersistentVolumeResource,
   ISourceClusterNamespace,
   IPlan,
+  IMigPlanStorageClass,
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
 import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
@@ -35,12 +36,9 @@ export interface IFormValues {
   selectedStorage: string;
   selectedNamespaces: string[];
   editedNamespaces: IEditedNamespaceMap[];
-  persistentVolumes: any[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
+  persistentVolumes: IPlanPersistentVolume[];
   pvStorageClassAssignment: {
-    [pvName: string]: {
-      name: string;
-      provisioner: string;
-    };
+    [pvName: string]: IMigPlanStorageClass;
   };
   pvVerifyFlagAssignment: {
     [pvName: string]: boolean;

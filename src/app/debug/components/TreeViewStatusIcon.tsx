@@ -108,7 +108,7 @@ const renderStatusIcon = (currentStatus: any, warningTextArr?: any, failedTextAr
     case DebugStatusType.Failure:
       return (
         <>
-          {failedTextArr.length > 0 ? (
+          {failedTextArr?.length > 0 ? (
             <Popover
               position={PopoverPosition.bottom}
               bodyContent={<TreeWarningsGrid isError={true} textArr={failedTextArr} />}

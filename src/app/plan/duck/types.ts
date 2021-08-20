@@ -24,10 +24,11 @@ export interface IPlanPersistentVolume {
   };
 }
 
-export interface IMigPlanStorageClass {
+export type IMigPlanStorageClass = IMigPlanStorageClassPopulated | '';
+type IMigPlanStorageClassPopulated = {
   name: string;
   provisioner: string;
-}
+};
 
 export interface IPlanSpecHook {
   executionNamespace: string;
