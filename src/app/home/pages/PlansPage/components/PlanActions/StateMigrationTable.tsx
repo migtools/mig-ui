@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Formik, FormikProps, useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
+import { useFormikContext } from 'formik';
 import { useDispatch } from 'react-redux';
 import {
   GridItem,
@@ -17,12 +17,10 @@ import {
   Flex,
   Popover,
   PopoverPosition,
-  Title,
   FormGroup,
   Grid,
 } from '@patternfly/react-core';
 import {
-  cellWidth,
   IRowData,
   sortable,
   TableComposable,
@@ -46,11 +44,9 @@ import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
-import { IFormValues, IOtherProps } from '../Wizard/WizardContainer';
 import { IPlan } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
 import { PlanActions } from '../../../../../plan/duck/actions';
-import { current } from '@reduxjs/toolkit';
 const styles = require('./StateMigrationTable.module').default;
 
 interface IStateMigrationTableProps {
@@ -69,16 +65,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   onHandleClose,
 }: IStateMigrationTableProps) => {
   const dispatch = useDispatch();
-  const {
-    handleBlur,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    values,
-    touched,
-    errors,
-    validateForm,
-  } = useFormikContext<IStateMigrationFormValues>();
+  const { handleBlur, handleChange, setFieldTouched, setFieldValue, values, touched, errors } =
+    useFormikContext<IStateMigrationFormValues>();
 
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
@@ -121,7 +109,11 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
-
+  useEffect(() => {
+    setAllRowsSelected(true);
+    const allSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
+    setFieldValue('selectedPVs', allSelected);
+  }, []);
   const rows = currentPageItems.map((pvItem) => {
     let targetPVCName = pvItem.pvc.name;
     let sourcePVCName = pvItem.pvc.name;
@@ -160,7 +152,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
         selectedPVs: values.selectedPVs,
         editedPVs: values.editedPVs,
         editableRow: editableRow,
-      }, // See comments on onSelect
+      },
     };
   });
 
