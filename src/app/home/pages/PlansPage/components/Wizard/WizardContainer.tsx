@@ -36,7 +36,7 @@ export interface IFormValues {
   selectedStorage: string;
   selectedNamespaces: string[];
   editedNamespaces: IEditedNamespaceMap[];
-  persistentVolumes: IPlanPersistentVolume[]; // TODO replace this with selections-only version after https://github.com/konveyor/mig-ui/issues/797
+  persistentVolumes: IPlanPersistentVolume[];
   pvStorageClassAssignment: {
     [pvName: string]: IMigPlanStorageClass;
   };
