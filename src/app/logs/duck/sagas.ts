@@ -7,7 +7,6 @@ import {
   ClusterKind,
   IPlanLogSources,
   IPlanReport,
-  ClusterPodReportDiscovery,
 } from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
@@ -188,15 +187,15 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
   try {
     const srcPodList = yield discoveryClient.get(srcPodCollectorDiscoveryResource);
     const destPodList = yield discoveryClient.get(destPodCollectorDiscoveryResource);
-    const srcLogPod = srcPodList?.data?.resources.find((resource: any) =>
+    const srcLogPod = srcPodList?.data?.resources?.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
-    const destLogPod = destPodList?.data?.resources.find((resource: any) =>
+    const destLogPod = destPodList?.data?.resources?.find((resource: any) =>
       resource.name.includes('migration-log-reader-')
     );
     if (isSrcNonHost && isDestNonHost) {
       const hostPodList = yield discoveryClient.get(hostPodCollectorDiscoveryResource);
-      const hostLogPod = hostPodList?.data?.resources.find((resource: any) =>
+      const hostLogPod = hostPodList?.data?.resources?.find((resource: any) =>
         resource.name.includes('migration-log-reader-')
       );
       const logPodObject: IClusterLogPodObject = {
