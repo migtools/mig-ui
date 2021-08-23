@@ -110,13 +110,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             {
               title: (
                 <>
-                  <Link
-                    to={
-                      migrationCount > 0
-                        ? `/plans/${plan.MigPlan.metadata.name}/migrations`
-                        : '/plans'
-                    }
-                  >
+                  <Link to={`/plans/${plan.MigPlan.metadata.name}/migrations`}>
                     <span className={classNames('pf-c-icon', { 'pf-m-info': migrationCount > 0 })}>
                       <MigrationIcon key="migration-count-icon" /> {migrationCount}
                     </span>
