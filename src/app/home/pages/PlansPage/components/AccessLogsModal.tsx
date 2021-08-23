@@ -1,8 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { Text, Modal, Grid, GridItem, ClipboardCopy } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useDispatch } from 'react-redux';
-const styles = require('./MigrateModal.module').default;
 
 interface IProps {
   onHandleClose: () => void;
@@ -25,7 +23,7 @@ const AccessLogsModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpe
             <li>- registry</li>
           </ul>
         </GridItem>
-        <GridItem className={styles.gridMargin}>
+        <GridItem>
           <Text>To view colorized logs (each pod has a different color):</Text>
           <ClipboardCopy isReadOnly>
             oc logs --follow --selector logreader=mig --namespace openshift-migration --container

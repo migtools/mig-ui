@@ -74,6 +74,9 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       } else {
         mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           const pvAction = 'copy'; // Default to copy
+          const filteredSupportedActions = planVolume.supported.actions.filter(
+            (action) => action !== 'skip'
+          );
           return {
             ...planVolume,
             selection: {

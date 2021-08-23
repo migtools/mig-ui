@@ -222,6 +222,10 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
+      const hasCopyPVs = plan.MigPlan.spec.persistentVolumes?.some(
+        (pv) => pv.selection.action === 'copy'
+      );
+
       const statusObject = {
         hasSucceededMigration,
         hasSucceededMigrationWithWarnings,
@@ -238,6 +242,7 @@ const getPlansWithPlanStatus = createSelector(
         ...filterLatestAnalyticConditions(latestAnalytic?.status?.conditions || []),
         analyticPercentComplete: latestAnalytic?.status?.analytics?.percentComplete || null,
         latestAnalytic: latestAnalytic || null,
+        hasCopyPVs,
       };
       return { ...plan, PlanStatus: statusObject };
     });

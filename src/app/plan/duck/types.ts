@@ -181,6 +181,7 @@ export interface IPlan {
     latestAnalyticTransitionTime?: string;
     latestAnalytic?: IAnalytic;
     analyticPercentComplete?: number;
+    hasCopyPVs: boolean;
   };
 }
 
