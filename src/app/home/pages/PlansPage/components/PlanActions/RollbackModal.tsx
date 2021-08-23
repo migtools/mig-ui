@@ -19,7 +19,7 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`Rollback ${plan.MigPlan.metadata.name}`}
+      title={`${plan.MigPlan.metadata.name} - Rollback`}
     >
       <Grid hasGutter>
         <form>

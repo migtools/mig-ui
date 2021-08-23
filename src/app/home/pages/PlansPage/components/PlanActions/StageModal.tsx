@@ -19,7 +19,7 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`${plan.MigPlan.metadata.name} Stage migration`}
+      title={`${plan.MigPlan.metadata.name} - Stage migration`}
     >
       <Grid hasGutter>
         <form>
