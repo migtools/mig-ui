@@ -124,8 +124,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     if (allRowsSelected) {
       setAllRowsSelected(false);
       const noneSelected = filteredItems.map((pv) => !pv.name); // Select all (filtered)
-      setFieldValue('selectedPVs', noneSelected);
-      return;
+      setFieldValue('selectedNamespaces', noneSelected);
     } else {
       let newSelected;
       if (rowIndex === -1) {
