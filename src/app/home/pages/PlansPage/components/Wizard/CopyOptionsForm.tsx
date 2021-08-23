@@ -26,7 +26,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       if (migPlanPvs) {
         pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
           const suggestedStorageClass = storageClasses.find(
-            (sc) => sc.name === pv.selection.storageClass
+            (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
           );
           return {
             ...assignedScs,
@@ -68,7 +68,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
   }, []);
 
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newSc = storageClasses.find((sc) => sc.name === value) || '';
+    const newSc = storageClasses.find((sc) => sc !== '' && sc.name === value) || '';
     const updatedAssignment = {
       ...values.pvStorageClassAssignment,
       [currentPV.name]: newSc,
@@ -99,7 +99,7 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
       currentPlan={currentPlan}
       persistentVolumes={
         values.persistentVolumes.length
-          ? values.persistentVolumes.filter((v) => v.type === 'copy')
+          ? values.persistentVolumes.filter((v) => v.selection.action === 'copy')
           : []
       }
       pvStorageClassAssignment={values.pvStorageClassAssignment}

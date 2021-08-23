@@ -40,14 +40,14 @@ const styles = require('./VolumesTable.module').default;
 interface IVolumesTableProps
   extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
     Pick<IFormValues, 'persistentVolumes'> {
-  onTypeChange: (currentPV: IPlanPersistentVolume, value: string) => void;
+  onActionTypeChange: (currentPV: IPlanPersistentVolume, actionType: string) => void;
 }
 
 const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   isFetchingPVResources,
   pvResourceList,
   persistentVolumes,
-  onTypeChange,
+  onActionTypeChange,
 }: IVolumesTableProps) => {
   const columns = [
     { title: 'PV name', transforms: [sortable] },
@@ -103,26 +103,26 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map((pv) => {
+  const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
     const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
-    const migrationTypeOptions: OptionWithValue[] = pv.supportedActions.map((action: string) => ({
+    const migrationTypeOptions: OptionWithValue[] = pv.supported.actions.map((action: string) => ({
       value: action,
       toString: () => capitalize(action),
     }));
     return {
       cells: [
         pv.name,
-        pv.claim,
-        pv.project,
+        pv.pvc.name,
+        pv.pvc.namespace,
         pv.storageClass,
-        pv.size,
+        pv.capacity,
         {
           title: (
             <SimpleSelect
               aria-label="Select migration type"
-              onChange={(option: OptionWithValue) => onTypeChange(pv, option.value)}
+              onChange={(option: any) => onActionTypeChange(pv, option.value)}
               options={migrationTypeOptions}
-              value={migrationTypeOptions.find((option) => option.value === pv.type)}
+              value={migrationTypeOptions.find((option) => option.value === pv.selection.action)}
               placeholderText={null}
             />
           ),

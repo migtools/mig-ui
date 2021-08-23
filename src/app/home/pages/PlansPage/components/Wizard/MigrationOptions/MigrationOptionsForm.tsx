@@ -45,7 +45,10 @@ const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> 
   const isDirectVolumeMigrationAvailable = values.persistentVolumes.filter((pv) => {
     const volumeKeys = Object.keys(values.pvCopyMethodAssignment);
     const matchingVolume = volumeKeys.find((key) => pv.name === key);
-    if (values.pvCopyMethodAssignment[matchingVolume] === 'filesystem' && pv.type === 'copy')
+    if (
+      values.pvCopyMethodAssignment[matchingVolume] === 'filesystem' &&
+      pv.selection.action === 'copy'
+    )
       return pv;
   }).length;
 
