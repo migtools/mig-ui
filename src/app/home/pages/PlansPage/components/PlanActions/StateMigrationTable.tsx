@@ -161,7 +161,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
       setAllRowsSelected(false);
       const noneSelected = filteredItems.map((pv) => !pv.name); // Select all (filtered)
       setFieldValue('selectedPVs', noneSelected);
-      return;
     } else {
       let newSelected;
       if (rowIndex === -1) {
