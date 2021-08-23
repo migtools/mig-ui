@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, FunctionComponent } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import LogHeader from './LogHeader';
 import LogBody from './LogBody';
 import LogFooter from './LogFooter';
@@ -14,7 +14,7 @@ import {
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../common/context/PollingContext';
 import { DefaultRootState } from '../../../../../configureStore';
-import { reportFetchRequest } from '../../../../logs/duck/slice';
+import { clusterPodFetchRequest, reportFetchRequest } from '../../../../logs/duck/slice';
 
 interface IProps {
   planName: string;
@@ -47,9 +47,11 @@ const LogsContainer: FunctionComponent<IProps> = ({
   });
 
   const [downloadLink, setDownloadLink] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     requestReport(planName);
+    dispatch(clusterPodFetchRequest(planName));
   }, []);
 
   const downloadArchive = async (element: HTMLElement) => {
