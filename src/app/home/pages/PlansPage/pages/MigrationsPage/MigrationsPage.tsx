@@ -24,12 +24,12 @@ import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
-import MigrateModal from '../../components/MigrateModal';
-import RollbackModal from '../../components/RollbackModal';
 import { useOpenModal } from '../../../../duck';
 import { access } from 'fs';
 import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
+import MigrateModal from '../../components/PlanActions/MigrateModal';
+import RollbackModal from '../../components/PlanActions/RollbackModal';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -53,152 +53,151 @@ export const MigrationsPage: React.FunctionComponent = () => {
 
   if (!migrations) {
     return <Redirect to="/" />;
-  } else {
-    const {
-      hasClosedCondition,
-      hasReadyCondition,
-      hasErrorCondition,
-      hasRunningMigrations,
-      finalMigrationComplete,
-      isPlanLocked,
-    } = plan?.PlanStatus;
-    const [kebabIsOpen, setKebabIsOpen] = useState(false);
-    const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
-    const kebabDropdownItems = [
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          dispatch(PlanActions.runStageRequest(plan));
-        }}
-        key="stagePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Stage
-      </DropdownItem>,
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleMigrateModalOpen();
-        }}
-        key="migratePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Migrate
-      </DropdownItem>,
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleRollbackModalOpen();
-        }}
-        key="rollbackPlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          isPlanLocked
-        }
-      >
-        Rollback
-      </DropdownItem>,
-    ];
-
-    return (
-      <>
-        <Switch>
-          <Route exact path={path}>
-            <PageSection variant="light">
-              <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
-                <BreadcrumbItem>
-                  <Link to="/plans">Plans</Link>
-                </BreadcrumbItem>
-                <BreadcrumbItem to="#" isActive>
-                  {planName}
-                </BreadcrumbItem>
-              </Breadcrumb>
-              <Title headingLevel="h1" size="2xl">
-                Migrations
-              </Title>
-            </PageSection>
-            {!plan ? null : (
-              <PageSection>
-                <Card>
-                  <CardHeader>
-                    <Flex className={styles.flexStyle}>
-                      <FlexItem className={styles.logsButton}>
-                        <Button
-                          variant="secondary"
-                          onClick={() => {
-                            setAccessLogsModalIsOpen();
-                          }}
-                          key={`logs-modal-${plan?.MigPlan.metadata.name}`}
-                        >
-                          View logs
-                        </Button>
-                      </FlexItem>
-                      <FlexItem className={styles.kebabContainer}>
-                        <Dropdown
-                          toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
-                          isOpen={kebabIsOpen}
-                          isPlain
-                          dropdownItems={kebabDropdownItems}
-                          position={DropdownPosition.right}
-                        />
-                      </FlexItem>
-                    </Flex>
-                  </CardHeader>
-                  <CardBody>
-                    <MigrationsTable
-                      type="Migrations"
-                      planName={planName}
-                      migrations={migrations}
-                      isPlanLocked={plan.PlanStatus.isPlanLocked}
-                      id="migrations-history-expansion-table"
-                    />
-                    <AccessLogsModal
-                      isOpen={accessLogsModalIsOpen}
-                      onHandleClose={setAccessLogsModalIsOpen}
-                    />
-                    <MigrateModal
-                      plan={plan}
-                      isOpen={isMigrateModalOpen}
-                      onHandleClose={toggleMigrateModalOpen}
-                    />
-
-                    <RollbackModal
-                      plan={plan}
-                      isOpen={isRollbackModalOpen}
-                      onHandleClose={toggleRollbackModalOpen}
-                    />
-                  </CardBody>
-                </Card>
-              </PageSection>
-            )}
-          </Route>
-          <Route exact path={`${path}/:migrationID`}>
-            <MigrationDetailsPage />
-            <PlanDebugPage />
-          </Route>
-          <Route exact path={`${path}/:migrationID/:stepName`}>
-            <MigrationStepDetailsPage />
-            <PlanDebugPage />
-          </Route>
-        </Switch>
-      </>
-    );
   }
+  const {
+    hasClosedCondition,
+    hasReadyCondition,
+    hasErrorCondition,
+    hasRunningMigrations,
+    finalMigrationComplete,
+    isPlanLocked,
+  } = plan?.PlanStatus;
+  const [kebabIsOpen, setKebabIsOpen] = useState(false);
+  const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
+  const kebabDropdownItems = [
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        dispatch(PlanActions.runStageRequest(plan));
+      }}
+      key="stagePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
+    >
+      Stage
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleMigrateModalOpen();
+      }}
+      key="migratePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
+    >
+      Migrate
+    </DropdownItem>,
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleRollbackModalOpen();
+      }}
+      key="rollbackPlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        isPlanLocked
+      }
+    >
+      Rollback
+    </DropdownItem>,
+  ];
+
+  return (
+    <>
+      <Switch>
+        <Route exact path={path}>
+          <PageSection variant="light">
+            <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
+              <BreadcrumbItem>
+                <Link to="/plans">Plans</Link>
+              </BreadcrumbItem>
+              <BreadcrumbItem to="#" isActive>
+                {planName}
+              </BreadcrumbItem>
+            </Breadcrumb>
+            <Title headingLevel="h1" size="2xl">
+              Migrations
+            </Title>
+          </PageSection>
+          {!plan ? null : (
+            <PageSection>
+              <Card>
+                <CardHeader>
+                  <Flex className={styles.flexStyle}>
+                    <FlexItem className={styles.logsButton}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setAccessLogsModalIsOpen();
+                        }}
+                        key={`logs-modal-${plan?.MigPlan.metadata.name}`}
+                      >
+                        View logs
+                      </Button>
+                    </FlexItem>
+                    <FlexItem className={styles.kebabContainer}>
+                      <Dropdown
+                        toggle={<KebabToggle onToggle={() => setKebabIsOpen(!kebabIsOpen)} />}
+                        isOpen={kebabIsOpen}
+                        isPlain
+                        dropdownItems={kebabDropdownItems}
+                        position={DropdownPosition.right}
+                      />
+                    </FlexItem>
+                  </Flex>
+                </CardHeader>
+                <CardBody>
+                  <MigrationsTable
+                    type="Migrations"
+                    planName={planName}
+                    migrations={migrations}
+                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    id="migrations-history-expansion-table"
+                  />
+                  <AccessLogsModal
+                    isOpen={accessLogsModalIsOpen}
+                    onHandleClose={setAccessLogsModalIsOpen}
+                  />
+                  <MigrateModal
+                    plan={plan}
+                    isOpen={isMigrateModalOpen}
+                    onHandleClose={toggleMigrateModalOpen}
+                  />
+
+                  <RollbackModal
+                    plan={plan}
+                    isOpen={isRollbackModalOpen}
+                    onHandleClose={toggleRollbackModalOpen}
+                  />
+                </CardBody>
+              </Card>
+            </PageSection>
+          )}
+        </Route>
+        <Route exact path={`${path}/:migrationID`}>
+          <MigrationDetailsPage />
+          <PlanDebugPage />
+        </Route>
+        <Route exact path={`${path}/:migrationID/:stepName`}>
+          <MigrationStepDetailsPage />
+          <PlanDebugPage />
+        </Route>
+      </Switch>
+    </>
+  );
 };

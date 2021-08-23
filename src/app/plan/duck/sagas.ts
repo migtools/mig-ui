@@ -19,7 +19,7 @@ import {
   updateMigHook,
   updatePlanHookList,
 } from '../../../client/resources/conversions';
-import { PlanActions, PlanActionTypes } from './actions';
+import { PlanActions, PlanActionTypes, RunStateMigrationRequest } from './actions';
 import { CurrentPlanState } from './reducers';
 import utils from '../../common/duck/utils';
 import planUtils from './utils';
@@ -34,7 +34,14 @@ import {
 } from '../../common/duck/slice';
 import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
-import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
+import {
+  IMigPlan,
+  IMigration,
+  IPersistentVolumeResource,
+  IPlan,
+  IPlanPersistentVolume,
+  IPlanSpecHook,
+} from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
@@ -45,6 +52,7 @@ import {
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
+import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -629,6 +637,10 @@ interface IUpdatedClosedPlanValues {
   persistentVolumes: Array<any>;
 }
 
+interface IUpdatedPlanPVValues {
+  persistentVolumes: Array<any>;
+}
+
 function* planCloseSaga(action: any): Generator {
   try {
     const updatedValues: IUpdatedClosedPlanValues = {
@@ -751,6 +763,109 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
   }
   return statusObj;
 }
+function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
+  try {
+    const state = yield* getState();
+    const { migMeta } = state.auth;
+    const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+    const { plan, editedPVs, selectedPVs } = action;
+
+    //loop through plan PVS and mark skipped or copy for selected or unselected pvs
+    // update pvc name for each PV if there is a mapping
+    const updatedPVs: Array<IPlanPersistentVolume> = [];
+    plan.MigPlan.spec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
+      const updatedPV = {
+        ...pvItem,
+      };
+
+      let targetPVCName = pvItem.pvc.name;
+      let sourcePVCName = pvItem.pvc.name;
+      let editedPV = editedPVs.find(
+        (editedPV) =>
+          editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+      );
+
+      const includesMapping = sourcePVCName.includes(':');
+      if (includesMapping) {
+        const mappedNsArr = sourcePVCName.split(':');
+        editedPV = editedPVs.find(
+          (editedPV) =>
+            editedPV.oldName === mappedNsArr[0] && editedPV.namespace === pvItem.pvc.namespace
+        );
+        if (mappedNsArr[0] === mappedNsArr[1]) {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[0];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
+        } else {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
+        }
+      }
+
+      const matchingSelectedPV = selectedPVs.find((selectedPV) => {
+        if (pvItem.name === selectedPV) {
+          return selectedPV;
+        }
+      });
+
+      if (matchingSelectedPV) {
+        updatedPV.selection.action = 'copy';
+      } else {
+        if (updatedPV.selection.action !== 'move') {
+          updatedPV.selection.action = 'skip';
+        }
+      }
+      updatedPVs.push(updatedPV);
+    });
+
+    const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
+    const planPVsSpecObj = {
+      spec: {
+        persistentVolumes: updatedPVs,
+      },
+    };
+    const patchPlanResponse = yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      plan.MigPlan.metadata.name,
+      planPVsSpecObj
+    );
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
+    yield put(PlanActions.patchPlanPVsSuccess());
+
+    yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
+    yield put(alertProgressTimeout('State migration Started'));
+
+    const migMigrationObj = createMigMigration(
+      migrationName,
+      plan.MigPlan.metadata.name,
+      migMeta.namespace,
+      true,
+      false,
+      false,
+      true
+    );
+    const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
+
+    // //created migration response object
+    const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
+    const migrationListResponse = yield client.list(migMigrationResource);
+    const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
+
+    const params = {
+      fetchPlansGenerator: fetchPlansGenerator,
+      delay: PlanMigrationPollingInterval,
+      getMigrationStatusCondition: getMigrationStatusCondition,
+      createMigRes: createMigRes,
+    };
+
+    yield put(PlanActions.startMigrationPolling(params));
+    yield put(PlanActions.updatePlanMigrations(groupedPlan));
+  } catch (err) {
+    yield put(alertErrorTimeout(err));
+    yield put(PlanActions.stagingFailure(err));
+  }
+}
 function* runStageSaga(action: any): any {
   try {
     const state = yield* getState();
@@ -768,6 +883,7 @@ function* runStageSaga(action: any): any {
       migMeta.namespace,
       true,
       true,
+      false,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -892,6 +1008,7 @@ function* runMigrationSaga(action: any): any {
       migMeta.namespace,
       false,
       enableQuiesce,
+      false,
       false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
@@ -1015,7 +1132,8 @@ function* runRollbackSaga(action: any): any {
       migMeta.namespace,
       false,
       false,
-      true
+      true,
+      false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -1468,6 +1586,10 @@ function* watchRunRollbackRequest() {
   yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
 }
 
+function* watchRunStateMigrationRequest() {
+  yield takeLatest(PlanActionTypes.RUN_STATE_MIGRATION_REQUEST, runStateMigrationSaga);
+}
+
 function* watchValidatePlanPolling(): Generator {
   while (true) {
     const data = yield take(PlanActionTypes.VALIDATE_PLAN_POLL_START);
@@ -1526,4 +1648,5 @@ export default {
   watchValidatePlanPolling,
   watchAssociateHookToPlan,
   watchUpdatePlanHookList,
+  watchRunStateMigrationRequest,
 };

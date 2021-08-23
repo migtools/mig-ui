@@ -534,12 +534,16 @@ export function createMigMigration(
   namespace: string,
   isStage: boolean,
   enableQuiesce: boolean,
-  isRollback: boolean
+  isRollback: boolean,
+  isStateTransfer: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
     metadata: {
+      annotations: {
+        'migration.openshift.io/state-transfer': isStateTransfer ? 'true' : undefined,
+      },
       name: migID,
       namespace,
     },

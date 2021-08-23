@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanActions } from '../../../../plan/duck/actions';
 import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
 const styles = require('./MigrateModal.module').default;
 
 interface IProps {
@@ -25,18 +25,21 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`Migrate ${plan.MigPlan.metadata.name}`}
+      title={`${plan.MigPlan.metadata.name} - Cutover migration`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
-            By default, the pods on the source cluster are scaled to zero before migration.
-            Persistent volumes are then moved or copied to the target cluster. See the product
-            documentation for more information.
+            By default, a cutover migration halts all transactions on the source cluster before the
+            migration begins and they remain halted for the duration of the migration.
+            <br />
+            <br />
+            Persistent volumes associated with the projects being migrates will be moved or copied
+            to the target cluster as specified in the migration plan.
           </GridItem>
           <GridItem className={styles.gridMargin}>
             <Checkbox
-              label="Shut down the pods on the source cluster before migration."
+              label="Halt transactions on the source cluster during migration."
               aria-label="halt-label"
               id="transaction-halt-checkbox"
               isChecked={enableQuiesce}
