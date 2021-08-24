@@ -132,17 +132,18 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     const editedNamespaces: IEditedNamespaceMap[] = [];
-    const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
-      const includesMapping = ns.includes(':');
-      if (includesMapping) {
-        const mappedNsArr = ns.split(':');
-        editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
-        return mappedNsArr[0];
-      } else {
-        return ns;
-      }
-    });
-    initialValues.selectedNamespaces = mappedNamespaces || [];
+    // const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
+    //   const includesMapping = ns.includes(':');
+    //   if (includesMapping) {
+    //     const mappedNsArr = ns.split(':');
+    //     editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
+    //     return mappedNsArr[0];
+    //   } else {
+    //     return ns;
+    //   }
+    // });
+    // initialValues.selectedNamespaces = mappedNamespaces || [];
+    initialValues.selectedNamespaces = editPlanObj?.spec?.namespaces || [];
     initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;

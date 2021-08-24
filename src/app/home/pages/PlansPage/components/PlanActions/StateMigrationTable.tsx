@@ -44,7 +44,7 @@ import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
-import { IPlan } from '../../../../../plan/duck/types';
+import { IPlan, IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
 import { PlanActions } from '../../../../../plan/duck/actions';
 const styles = require('./StateMigrationTable.module').default;
@@ -114,7 +114,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
     const allSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
     setFieldValue('selectedPVs', allSelected);
   }, []);
-  const rows = currentPageItems.map((pvItem) => {
+  const rows = currentPageItems.map((pvItem: IPlanPersistentVolume) => {
     let targetPVCName = pvItem.pvc.name;
     let sourcePVCName = pvItem.pvc.name;
     let editedPV = values.editedPVs.find(
@@ -410,7 +410,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 className={styles.clickable}
                                 type="button"
                                 onClick={() => {
-                                  // setQuery({ name: '', row: null, fieldName: null });
                                   setEditableRow(null);
                                   setFieldValue(currentTargetNameKey, null);
                                   setFieldTouched(currentTargetNameKey, false);
