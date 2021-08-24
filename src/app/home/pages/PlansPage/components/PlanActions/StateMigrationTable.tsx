@@ -72,7 +72,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
-  const currentTargetNameKey = 'currentTargetName';
+  const currentTargetPVCNameKey = 'currentTargetPVCName';
   const hasSelectedPVs = !!values.selectedPVs.length;
 
   const columns = [
@@ -193,7 +193,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
     setQuery({
       name: val,
       row: row,
-      fieldName: currentTargetNameKey,
+      fieldName: currentTargetPVCNameKey,
+      functionArgs: [currentTargetPVCNameKey, { name: val, srcPVName: row.cells[0] }],
     });
   };
   return (
@@ -296,26 +297,26 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                               >
                                 <FormGroup
                                   isRequired
-                                  fieldId={currentTargetNameKey}
+                                  fieldId={currentTargetPVCNameKey}
                                   helperTextInvalid={
-                                    touched.currentTargetName && errors.currentTargetName
+                                    touched.currentTargetPVCName && errors.currentTargetPVCName
                                   }
                                   validated={validatedState(
-                                    touched.currentTargetName,
-                                    errors.currentTargetName
+                                    touched.currentTargetPVCName,
+                                    errors.currentTargetPVCName
                                   )}
                                 >
                                   <TextInput
-                                    name={currentTargetNameKey}
+                                    name={currentTargetPVCNameKey}
                                     value={query.name}
                                     type="text"
                                     onChange={(val, e) => handleDelayedValidation(val, row)}
-                                    onInput={formikSetFieldTouched(currentTargetNameKey)}
+                                    onInput={formikSetFieldTouched(currentTargetPVCNameKey)}
                                     onBlur={handleBlur}
                                     isReadOnly={!isEditable}
                                     validated={validatedState(
-                                      touched.currentTargetName,
-                                      errors.currentTargetName
+                                      touched.currentTargetPVCName,
+                                      errors.currentTargetPVCName
                                     )}
                                   />
                                 </FormGroup>
@@ -343,7 +344,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                       {isEditable ? (
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
                           <FlexItem flex={{ default: 'flex_1' }}>
-                            {!errors.currentTargetName && (
+                            {!errors.currentTargetPVCName && (
                               <span id="save-edit-icon" className="pf-c-icon pf-m-info">
                                 <CheckIcon
                                   size="md"
@@ -367,7 +368,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                       //check if no changes made
                                       if (
                                         newEditedPVs[index].oldName ===
-                                        values.currentTargetName.name
+                                        values.currentTargetPVCName.name
                                       ) {
                                         if (index > -1) {
                                           newEditedPVs.splice(index, 1);
@@ -376,7 +377,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                       } else if (index || index === 0) {
                                         newEditedPVs[index] = {
                                           oldName: row.cells[1],
-                                          newName: values.currentTargetName.name,
+                                          newName: values.currentTargetPVCName.name,
                                           namespace: row.cells[2],
                                           pvName: row.cells[0],
                                         };
@@ -387,7 +388,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                           ...values.editedPVs,
                                           {
                                             oldName: row.cells[1],
-                                            newName: values.currentTargetName.name,
+                                            newName: values.currentTargetPVCName.name,
                                             namespace: row.cells[2],
                                             pvName: row.cells[0],
                                           },
@@ -395,8 +396,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                       ];
                                     }
                                     setFieldValue('editedPVs', newEditedPVs);
-                                    setFieldValue(currentTargetNameKey, null);
-                                    setFieldTouched(currentTargetNameKey, false);
+                                    setFieldValue(currentTargetPVCNameKey, null);
+                                    setFieldTouched(currentTargetPVCNameKey, false);
                                   }}
                                 />
                               </span>
@@ -411,8 +412,8 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
-                                  setFieldValue(currentTargetNameKey, null);
-                                  setFieldTouched(currentTargetNameKey, false);
+                                  setFieldValue(currentTargetPVCNameKey, null);
+                                  setFieldTouched(currentTargetPVCNameKey, false);
                                 }}
                               />
                             </span>
@@ -427,9 +428,9 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                             onClick={() => {
                               setEditableRow(rowIndex);
                               handleDelayedValidation(row.cells[5], row);
-                              setFieldValue(currentTargetNameKey, {
+                              setFieldValue(currentTargetPVCNameKey, {
                                 name: row.cells[5],
-                                srcName: row.cells[1],
+                                srcPVName: row.cells[1],
                               });
                             }}
                           />

@@ -54,43 +54,21 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
-
-      //
-      const existingNSNameMap = values.selectedNamespaces.map((nsItem: string) => {
-        let targetNSName = nsItem;
-        let sourceNSName = nsItem;
-        // const pvcNamespace = pvItem.pvc.namespace;
-        // const pvName = pvItem.name;
-        let editedNamespace = values.editedNamespaces.find(
-          (editedNS) => editedNS.oldName === nsItem
+      const existingNSNameMap = values.editedNamespaces.map((nsItem, selectedIndex: number) => {
+        const sourceNSName = nsItem.name;
+        const editedNamespace = values.editedNamespaces.find(
+          (editedNS) => editedNS.oldName === nsItem.name
           // && editedNS.namespace === pvItem.pvc.namespace
         );
-        const includesMapping = sourceNSName.includes(':');
-        if (includesMapping) {
-          const mappedNSNameArr = sourceNSName.split(':');
-          editedNamespace = values.editedNamespaces.find(
-            (editedNS) => editedNS.oldName === mappedNSNameArr[0]
-            // &&
-            // editedNS.namespace === pvItem.pvc.namespace
-          );
-          if (mappedNSNameArr[0] === mappedNSNameArr[1]) {
-            sourceNSName = mappedNSNameArr[0];
-            targetNSName = editedNamespace ? editedNamespace.newName : mappedNSNameArr[0];
-          } else {
-            sourceNSName = mappedNSNameArr[0];
-            targetNSName = editedNamespace ? editedNamespace.newName : mappedNSNameArr[1];
-          }
-          return {
-            sourceNSName,
-            targetNSName,
-            // pvName,
-            // pvcNamespace,
-          };
-        }
+        const targetNSName = editedNamespace ? editedNamespace.newName : nsItem.name;
+        return {
+          sourceNSName,
+          targetNSName,
+        };
       });
       const hasDuplicateMapping = existingNSNameMap.find((ns, index) => {
-        const editedNSName = values?.currentTargetName?.name;
-        // const editedNSNameAssociatedPVName = values?.currentTargetName?.srcName;
+        const editedNSName = values?.currentTargetNamespaceName?.name;
+        // const editedNSNameAssociatedPVName = values?.currentTargetNamespaceName?.srcName;
         return (
           editedNSName === ns.targetNSName ||
           // && editedPVCNameAssociatedPVName !== pv.pvName
@@ -99,38 +77,17 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         );
       });
 
-      //
-
-      const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
-      if (!values.currentTargetName) {
-        errors.currentTargetName = 'Required';
+      const targetNamespaceNameError = utils.testTargetNSName(
+        values?.currentTargetNamespaceName?.name
+      );
+      if (!values.currentTargetNamespaceName) {
+        errors.currentTargetNamespaceName = 'Required';
       } else if (targetNamespaceNameError !== '') {
-        errors.currentTargetName = targetNamespaceNameError;
-      } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
-        errors.currentTargetName =
-          'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
+        errors.currentTargetNamespaceName = targetNamespaceNameError;
       } else if (hasDuplicateMapping) {
-        errors.currentTargetName =
+        errors.currentTargetNamespaceName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespaec.';
       }
-      // } else if (
-      //   //check for duplicate ns mappings
-      //   // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
-      //   !!values.editedNamespaces.find((ns) => {
-      //     if (values.editedNamespaces.length > 0) {
-      //       return (
-      //         ns.newName === values.currentTargetName.name &&
-      //         ns.oldName !== values.currentTargetName.name
-      //       );
-      //     } else {
-      //       return false;
-      //     }
-      //   }) ||
-      //   sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName.name)
-      // ) {
-      //   errors.currentTargetName =
-      //     'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
-      // }
       return errors;
     }}
     onSubmit={() => {
