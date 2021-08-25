@@ -28,6 +28,8 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.planName = 'Required';
       } else if (!utils.testDNS1123(values.planName)) {
         errors.planName = utils.DNS1123Error(values.planName);
+      } else if (values.planName.length < 3 || values.planName.length > 63) {
+        errors.planName = 'The plan name can be between 3 and 63 characters long.';
       } else if (
         !isEdit &&
         planList.some((plan) => plan.MigPlan.metadata.name === values.planName)
