@@ -116,10 +116,17 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       value: action,
       toString: () => capitalize(action),
     }));
+    let sourcePVCName = pv.pvc.name;
+    const includesMapping = sourcePVCName.includes(':');
+    if (includesMapping) {
+      const mappedPVCNameArr = sourcePVCName.split(':');
+      sourcePVCName = mappedPVCNameArr[0];
+    }
+
     return {
       cells: [
         pv.name,
-        pv.pvc.name,
+        sourcePVCName,
         pv.pvc.namespace,
         pv.storageClass,
         pv.capacity,
