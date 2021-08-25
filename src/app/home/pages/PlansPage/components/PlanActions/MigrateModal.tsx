@@ -1,5 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { Modal, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Modal,
+  Grid,
+  GridItem,
+  TextContent,
+  TextList,
+  TextListItem,
+  Title,
+} from '@patternfly/react-core';
 import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useDispatch } from 'react-redux';
@@ -25,17 +33,23 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`${plan.MigPlan.metadata.name} - Cutover migration`}
+      title={`Cutover migration`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
-            By default, a cutover migration halts all transactions on the source cluster before the
-            migration begins and they remain halted for the duration of the migration.
-            <br />
-            <br />
-            Persistent volumes associated with the projects being migrates will be moved or copied
-            to the target cluster as specified in the migration plan.
+            <TextContent>
+              <Title headingLevel="h6">
+                By default, a cutover migration halts all transactions on the source cluster before
+                the migration begins and they remain halted for the duration of the migration.
+              </Title>
+              <TextList>
+                <TextListItem>
+                  Persistent volumes associated with the projects being migrated will be moved or
+                  copied to the target cluster as specified in the migration plan.
+                </TextListItem>
+              </TextList>
+            </TextContent>
           </GridItem>
           <GridItem className={styles.gridMargin}>
             <Checkbox
