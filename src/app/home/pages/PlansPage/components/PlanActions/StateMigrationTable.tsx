@@ -47,6 +47,7 @@ import { useDelayValidation, validatedState } from '../../../../../common/helper
 import { IPlan } from '../../../../../plan/duck/types';
 import { IStateMigrationFormValues } from './StateMigrationFormik';
 import { PlanActions } from '../../../../../plan/duck/actions';
+import { usePausedPollingEffect } from '../../../../../common/context';
 const styles = require('./StateMigrationTable.module').default;
 
 interface IStateMigrationTableProps {
@@ -64,8 +65,9 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   plan,
   onHandleClose,
 }: IStateMigrationTableProps) => {
+  usePausedPollingEffect();
   const dispatch = useDispatch();
-  const { handleBlur, handleChange, setFieldTouched, setFieldValue, values, touched, errors } =
+  const { handleBlur, setFieldTouched, setFieldValue, values, touched, errors } =
     useFormikContext<IStateMigrationFormValues>();
 
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
@@ -219,22 +221,33 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <TableComposable aria-label="Selectable Table">
-            <Thead>
-              <Tr>
+          <TableComposable key="table-container" aria-label="Selectable Table">
+            <Thead key="table-header">
+              <Tr key="table-row">
                 <Th
+                  key="select-row"
                   width={10}
                   select={{
                     onSelect: onSelectAll,
                     isSelected: allRowsSelected,
                   }}
                 />
-                <Th width={15}>{columns[0].title}</Th>
-                <Th width={15}>{columns[1].title}</Th>
-                <Th width={20}>{columns[2].title}</Th>
-                <Th width={15}>{columns[3].title}</Th>
-                <Th width={10}>{columns[4].title}</Th>
-                <Th width={20}>
+                <Th key="row-1" width={15}>
+                  {columns[0].title}
+                </Th>
+                <Th key="row-2" width={15}>
+                  {columns[1].title}
+                </Th>
+                <Th key="row-3" width={20}>
+                  {columns[2].title}
+                </Th>
+                <Th key="row-4" width={15}>
+                  {columns[3].title}
+                </Th>
+                <Th key="row-5" width={10}>
+                  {columns[4].title}
+                </Th>
+                <Th key="row-6" width={20}>
                   {columns[5].title}
                   <Popover
                     position={PopoverPosition.right}
@@ -263,7 +276,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
                 </Th>
               </Tr>
             </Thead>
-            <Tbody>
+            <Tbody key="table-row-body">
               {rows.map((row, rowIndex) => {
                 const isEditable = row.meta.editableRow === rowIndex;
                 return (
