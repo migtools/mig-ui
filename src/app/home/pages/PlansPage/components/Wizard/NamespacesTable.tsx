@@ -102,29 +102,10 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   const rows = currentPageItems.map((namespace: ISourceClusterNamespace) => {
-    let sourceNamespaceName = namespace.name;
-    let editedNamespace = values.editedNamespaces.find(
-      (editedNS) => editedNS.oldName === namespace.name
-      // && editedNS.someIndex === namespace.someIndex
+    const editedNamespace = values.editedNamespaces.find(
+      (editedNS) => editedNS.id === namespace.id
     );
-    let targetNamespaceName = editedNamespace ? editedNamespace.newName : namespace.name;
-    const includesMapping = sourceNamespaceName.includes(':');
-    if (includesMapping) {
-      const mappedNamespaceNameArr = sourceNamespaceName.split(':');
-      editedNamespace = values.editedNamespaces.find(
-        (editedNS) => editedNS.oldName === mappedNamespaceNameArr[0]
-        // && editedNS.someIndex === namespace.someIndex
-        // && editedNS.namespace === pvItem.pvc.namespace
-      );
-      if (mappedNamespaceNameArr[0] === mappedNamespaceNameArr[1]) {
-        sourceNamespaceName = mappedNamespaceNameArr[0];
-        targetNamespaceName = editedNamespace ? editedNamespace.newName : mappedNamespaceNameArr[0];
-      } else {
-        sourceNamespaceName = mappedNamespaceNameArr[0];
-        targetNamespaceName = editedNamespace ? editedNamespace.newName : mappedNamespaceNameArr[1];
-      }
-    }
-
+    const targetNamespaceName = editedNamespace ? editedNamespace.newName : namespace.name;
     return {
       cells: [
         namespace.name,

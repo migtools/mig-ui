@@ -86,7 +86,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.currentTargetNamespaceName = targetNamespaceNameError;
       } else if (hasDuplicateMapping) {
         errors.currentTargetNamespaceName =
-          'A mapped target namespace with that name already exists. Enter a unique name for this target namespaec.';
+          'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
       }
       return errors;
     }}

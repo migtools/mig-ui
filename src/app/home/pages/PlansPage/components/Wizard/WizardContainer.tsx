@@ -133,7 +133,24 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     const editedNamespaces: IEditedNamespaceMap[] = [];
-    initialValues.selectedNamespaces = editPlanObj?.spec?.namespaces || [];
+    const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
+      const includesMapping = ns.includes(':');
+      if (includesMapping) {
+        const mappedNsArr = ns.split(':');
+        const associatedSrcNamespace = sourceClusterNamespaces.find(
+          (srcNS) => mappedNsArr[0] === srcNS.name
+        );
+        editedNamespaces.push({
+          oldName: mappedNsArr[0],
+          newName: mappedNsArr[1],
+          id: associatedSrcNamespace?.id || '',
+        });
+        return mappedNsArr[0];
+      } else {
+        return ns;
+      }
+    });
+    initialValues.selectedNamespaces = mappedNamespaces || [];
     initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
