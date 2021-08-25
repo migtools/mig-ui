@@ -93,7 +93,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
           >
             {common.versionOutOfDateString} <br />
             <a
-              href={`https://console-openshift-console.${common?.versionObject.route}/operatorhub/ns/openshift-migration?keyword=${common?.versionObject.operatorType}`}
+              href={`https://${common?.versionObject.route}/operatorhub/ns/openshift-migration?keyword=${common?.versionObject.operatorType}`}
               target="_blank"
             >
               Update Operator
