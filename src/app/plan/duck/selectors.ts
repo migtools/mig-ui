@@ -12,9 +12,7 @@ import {
 import { ICondition, IMigPlan, IMigration, IPlan, IPlanSpecHook, IStep } from './types';
 import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 import { IMigHook } from '../../home/pages/HooksPage/types';
-import { IMigMigration } from '../../../client/resources/conversions';
 import { DefaultRootState } from '../../../configureStore';
-const uuidv1 = require('uuid/v1');
 
 const planSelector = (state: DefaultRootState) => state.plan.migPlanList.map((p) => p);
 
@@ -88,7 +86,7 @@ const lockedPlansSelector = (state: DefaultRootState) => state.plan.lockedPlanLi
 
 const sourceClusterNamespacesSelector = (state: DefaultRootState) =>
   state.plan.sourceClusterNamespaces.map((ns, index) => {
-    return { ...ns, id: uuidv1() + index };
+    return { ...ns, id: index };
   });
 
 const hooksSelector = (state: DefaultRootState) => state.plan.allHooks.map((h) => h);
