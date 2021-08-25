@@ -1,8 +1,5 @@
 import React from 'react';
 import { Modal, Grid, GridItem } from '@patternfly/react-core';
-import { Button } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { PlanActions } from '../../../../../plan/duck/actions';
 import StateMigrationTable from './StateMigrationTable';
 import StateMigrationFormik from './StateMigrationFormik';
 
