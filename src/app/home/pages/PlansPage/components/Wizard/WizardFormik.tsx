@@ -48,30 +48,38 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
-      const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
-      if (!values.currentTargetName) {
-        errors.currentTargetName = 'Required';
+      const existingNSNameMap = sourceClusterNamespaces.map((nsItem, selectedIndex: number) => {
+        const sourceNSName = nsItem.name;
+        const nsID = nsItem.id;
+        const editedNamespace = values.editedNamespaces.find(
+          (editedNS) => editedNS.id === nsItem.id
+        );
+
+        const targetNSName = editedNamespace ? editedNamespace.newName : nsItem.name;
+        return {
+          sourceNSName,
+          targetNSName,
+          nsID,
+        };
+      });
+      const hasDuplicateMapping = existingNSNameMap.find((ns, index) => {
+        const editedNSName = values?.currentTargetNamespaceName?.name;
+        const editedNSNameID = values?.currentTargetNamespaceName?.id;
+        return (
+          (editedNSName === ns.targetNSName && editedNSNameID !== ns.nsID) ||
+          (editedNSName === ns.sourceNSName && editedNSNameID !== ns.nsID)
+        );
+      });
+
+      const targetNamespaceNameError = utils.testTargetNSName(
+        values?.currentTargetNamespaceName?.name
+      );
+      if (!values.currentTargetNamespaceName) {
+        errors.currentTargetNamespaceName = 'Required';
       } else if (targetNamespaceNameError !== '') {
-        errors.currentTargetName = targetNamespaceNameError;
-      } else if (values.currentTargetName.name === values.currentTargetName.srcName) {
-        errors.currentTargetName =
-          'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
-      } else if (
-        //check for duplicate ns mappings
-        // Do not allow multiple mappings to the same namespace name. Allow reverting to the old namespace name.
-        !!values.editedNamespaces.find((ns) => {
-          if (values.editedNamespaces.length > 0) {
-            return (
-              ns.newName === values.currentTargetName.name &&
-              ns.oldName !== values.currentTargetName.name
-            );
-          } else {
-            return false;
-          }
-        }) ||
-        sourceClusterNamespaces.some((ns) => ns.name === values.currentTargetName.name)
-      ) {
-        errors.currentTargetName =
+        errors.currentTargetNamespaceName = targetNamespaceNameError;
+      } else if (hasDuplicateMapping) {
+        errors.currentTargetNamespaceName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
       }
       return errors;

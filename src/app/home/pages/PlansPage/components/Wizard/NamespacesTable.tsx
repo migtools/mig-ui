@@ -43,7 +43,8 @@ import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
 import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
 import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { validatedState } from '../../../../../common/helpers';
+import { useDelayValidation, validatedState } from '../../../../../common/helpers';
+import { ISourceClusterNamespace } from '../../../../../plan/duck/types';
 const styles = require('./NamespacesTable.module').default;
 
 type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
@@ -65,7 +66,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
-  const currentTargetNameKey = 'currentTargetName';
+  const currentTargetNamespaceNameKey = 'currentTargetNamespaceName';
 
   if (values.sourceCluster === null) return null;
 
@@ -100,22 +101,25 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
-  const rows = currentPageItems.map((namespace) => {
-    const editedNamespace = values.editedNamespaces.find((ns) => ns.oldName === namespace.name);
-    const targetName = editedNamespace ? editedNamespace.newName : namespace.name;
+  const rows = currentPageItems.map((namespace: ISourceClusterNamespace) => {
+    const editedNamespace = values.editedNamespaces.find(
+      (editedNS) => editedNS.id === namespace.id
+    );
+    const targetNamespaceName = editedNamespace ? editedNamespace.newName : namespace.name;
     return {
       cells: [
         namespace.name,
         namespace.podCount,
         namespace.pvcCount,
         namespace.serviceCount,
-        targetName,
+        targetNamespaceName,
       ],
       selected: values.selectedNamespaces.includes(namespace.name),
       meta: {
         selectedNamespaces: values.selectedNamespaces,
         editedNamespaces: values.editedNamespaces,
         editableRow: editableRow,
+        id: namespace.id,
       }, // See comments on onSelect
     };
   });
@@ -157,6 +161,19 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+  const { setQuery, query } = useDelayValidation(setFieldValue);
+  const handleDelayedValidation = (val: string, row: any, rowIndex: any): any => {
+    setQuery({
+      name: val,
+      row: row,
+      fieldName: currentTargetNamespaceNameKey,
+      functionArgs: [
+        currentTargetNamespaceNameKey,
+        { name: val, srcName: row.cells[0], index: rowIndex, id: row.meta.id },
+      ],
+    });
+  };
+
   return (
     <React.Fragment>
       <GridItem>
@@ -262,31 +279,29 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                               >
                                 <FormGroup
                                   isRequired
-                                  fieldId={currentTargetNameKey}
+                                  fieldId={currentTargetNamespaceNameKey}
                                   helperTextInvalid={
-                                    touched.currentTargetName && errors.currentTargetName
+                                    touched.currentTargetNamespaceName &&
+                                    errors.currentTargetNamespaceName
                                   }
                                   validated={validatedState(
-                                    touched.currentTargetName,
-                                    errors.currentTargetName
+                                    touched.currentTargetNamespaceName,
+                                    errors.currentTargetNamespaceName
                                   )}
                                 >
                                   <TextInput
-                                    name={currentTargetNameKey}
-                                    value={values.currentTargetName.name}
+                                    name={currentTargetNamespaceNameKey}
+                                    value={query.name}
                                     type="text"
-                                    onChange={(val, e) => {
-                                      setFieldValue(currentTargetNameKey, {
-                                        name: val,
-                                        srcName: row.cells[0],
-                                      });
-                                    }}
-                                    onInput={formikSetFieldTouched(currentTargetNameKey)}
+                                    onChange={(val, e) =>
+                                      handleDelayedValidation(val, row, rowIndex)
+                                    }
+                                    onInput={formikSetFieldTouched(currentTargetNamespaceNameKey)}
                                     onBlur={handleBlur}
                                     isReadOnly={!isEditable}
                                     validated={validatedState(
-                                      touched.currentTargetName,
-                                      errors.currentTargetName
+                                      touched.currentTargetNamespaceName,
+                                      errors.currentTargetNamespaceName
                                     )}
                                   />
                                 </FormGroup>
@@ -314,7 +329,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                       {isEditable ? (
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
                           <FlexItem flex={{ default: 'flex_1' }}>
-                            {!errors.currentTargetName && (
+                            {!errors.currentTargetNamespaceName && (
                               <span id="save-edit-icon" className="pf-c-icon pf-m-info">
                                 <CheckIcon
                                   size="md"
@@ -337,7 +352,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                       //check if no changes made
                                       if (
                                         newEditedNamespaces[index].oldName ===
-                                        values.currentTargetName.name
+                                        values.currentTargetNamespaceName.name
                                       ) {
                                         if (index > -1) {
                                           newEditedNamespaces.splice(index, 1);
@@ -345,8 +360,10 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                         //replace found edit with current edit
                                       } else if (index || index === 0) {
                                         newEditedNamespaces[index] = {
-                                          oldName: row.cells[0],
-                                          newName: values.currentTargetName.name,
+                                          oldName:
+                                            typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                          newName: values.currentTargetNamespaceName.name,
+                                          id: row.meta.id,
                                         };
                                       }
                                     } else {
@@ -355,14 +372,15 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                           ...values.editedNamespaces,
                                           {
                                             oldName: row.cells[0],
-                                            newName: values.currentTargetName.name,
+                                            newName: values.currentTargetNamespaceName.name,
+                                            id: row.meta.id,
                                           },
                                         ]),
                                       ];
                                     }
                                     setFieldValue('editedNamespaces', newEditedNamespaces);
-                                    setFieldValue(currentTargetNameKey, null);
-                                    setFieldTouched(currentTargetNameKey, false);
+                                    setFieldValue(currentTargetNamespaceNameKey, null);
+                                    setFieldTouched(currentTargetNamespaceNameKey, false);
                                   }}
                                 />
                               </span>
@@ -377,8 +395,8 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setEditableRow(null);
-                                  setFieldValue(currentTargetNameKey, null);
-                                  setFieldTouched(currentTargetNameKey, false);
+                                  setFieldValue(currentTargetNamespaceNameKey, null);
+                                  setFieldTouched(currentTargetNamespaceNameKey, false);
                                 }}
                               />
                             </span>
@@ -392,7 +410,12 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                             size="md"
                             onClick={() => {
                               setEditableRow(rowIndex);
-                              setFieldValue(currentTargetNameKey, {
+                              handleDelayedValidation(
+                                typeof row.cells[4] === 'string' ? row.cells[4] : '',
+                                row,
+                                rowIndex
+                              );
+                              setFieldValue(currentTargetNamespaceNameKey, {
                                 name: row.cells[4],
                                 srcName: row.cells[0],
                               });
