@@ -194,6 +194,7 @@ export interface ISourceClusterNamespace {
   podCount: number;
   pvcCount: number;
   serviceCount: number;
+  id: string;
 }
 
 export interface IAnalytic {

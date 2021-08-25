@@ -17,6 +17,7 @@ interface IDelayedQueryObject {
   name: string;
   row: any;
   fieldName: string;
+  functionArgs: Array<any>;
 }
 
 export const useDelayValidation = (delayedFunction: any) => {
@@ -24,24 +25,15 @@ export const useDelayValidation = (delayedFunction: any) => {
     name: '',
     row: null,
     fieldName: null,
+    functionArgs: null,
   });
 
   useEffect(() => {
     if ((query.name || query.name === '') && query.row && query.fieldName) {
       if (query.name === '') {
-        delayedFunction(query.fieldName, {
-          name: query.name,
-          srcName: query.row.cells[0],
-        });
+        delayedFunction(...query.functionArgs);
       } else {
-        const timeOutId = setTimeout(
-          () =>
-            delayedFunction(query.fieldName, {
-              name: query.name,
-              srcName: query.row.cells[0],
-            }),
-          500
-        );
+        const timeOutId = setTimeout(() => delayedFunction(...query.functionArgs), 500);
         return () => clearTimeout(timeOutId);
       }
     }

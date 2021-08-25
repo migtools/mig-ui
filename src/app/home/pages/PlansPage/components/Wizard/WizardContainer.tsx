@@ -48,9 +48,10 @@ export interface IFormValues {
   };
   indirectImageMigration?: boolean;
   indirectVolumeMigration?: boolean;
-  currentTargetName?: {
+  currentTargetNamespaceName?: {
     name: string;
     srcName: string;
+    id: string;
   };
 }
 
@@ -132,16 +133,25 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     const editedNamespaces: IEditedNamespaceMap[] = [];
-    const mappedNamespaces = editPlanObj.spec.namespaces.map((ns) => {
-      const includesMapping = ns.includes(':');
-      if (includesMapping) {
-        const mappedNsArr = ns.split(':');
-        editedNamespaces.push({ oldName: mappedNsArr[0], newName: mappedNsArr[1] });
-        return mappedNsArr[0];
-      } else {
-        return ns;
-      }
-    });
+    const mappedNamespaces = editPlanObj?.spec?.namespaces
+      ? editPlanObj.spec.namespaces.map((ns) => {
+          const includesMapping = ns.includes(':');
+          if (includesMapping) {
+            const mappedNsArr = ns.split(':');
+            const associatedSrcNamespace = sourceClusterNamespaces.find(
+              (srcNS) => mappedNsArr[0] === srcNS.name
+            );
+            editedNamespaces.push({
+              oldName: mappedNsArr[0],
+              newName: mappedNsArr[1],
+              id: associatedSrcNamespace?.id || '',
+            });
+            return mappedNsArr[0];
+          } else {
+            return ns;
+          }
+        })
+      : [];
     initialValues.selectedNamespaces = mappedNamespaces || [];
     initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;

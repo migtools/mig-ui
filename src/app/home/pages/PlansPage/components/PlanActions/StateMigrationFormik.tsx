@@ -16,9 +16,9 @@ export interface IStateMigrationFormikProps {
 export interface IStateMigrationFormValues {
   editedPVs: Array<IEditedPV>;
   selectedPVs: Array<string>;
-  currentTargetName?: {
+  currentTargetPVCName?: {
     name: string;
-    srcName: string;
+    srcPVName: string;
   };
   persistentVolumes: Array<IPlanPersistentVolume>;
 }
@@ -26,7 +26,7 @@ export interface IStateMigrationFormValues {
 const defaultInitialValues: IStateMigrationFormValues = {
   editedPVs: [],
   selectedPVs: [],
-  currentTargetName: null,
+  currentTargetPVCName: null,
   persistentVolumes: [],
 };
 
@@ -80,24 +80,24 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           }
         });
         const hasDuplicateMapping = existingPVCNameMap.find((pv, index) => {
-          const editedPVCName = values?.currentTargetName?.name;
-          const editedPVCNameAssociatedPVName = values?.currentTargetName?.srcName;
+          const editedPVCName = values?.currentTargetPVCName?.name;
+          const editedPVCNameAssociatedPVName = values?.currentTargetPVCName?.srcPVName;
           return (
             (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
             (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName)
           );
         });
 
-        const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetName?.name);
-        if (!values?.currentTargetName) {
-          errors.currentTargetName = 'Required';
+        const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetPVCName?.name);
+        if (!values?.currentTargetPVCName) {
+          errors.currentTargetPVCName = 'Required';
         } else if (targetNamespaceNameError !== '') {
-          errors.currentTargetName = targetNamespaceNameError;
-        } else if (values?.currentTargetName?.name === values?.currentTargetName?.srcName) {
-          errors.currentTargetName =
+          errors.currentTargetPVCName = targetNamespaceNameError;
+        } else if (values?.currentTargetPVCName?.name === values?.currentTargetPVCName?.srcPVName) {
+          errors.currentTargetPVCName =
             'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
         } else if (hasDuplicateMapping) {
-          errors.currentTargetName =
+          errors.currentTargetPVCName =
             'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
         }
         return errors;
