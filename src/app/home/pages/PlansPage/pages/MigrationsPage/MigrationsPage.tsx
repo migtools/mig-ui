@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useParams, useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  useParams,
+  useRouteMatch,
+  Link,
+  Switch,
+  Route,
+  useHistory,
+  Redirect,
+} from 'react-router-dom';
 import {
   PageSection,
   Title,
@@ -17,6 +25,8 @@ import {
   DropdownPosition,
   KebabToggle,
   DropdownItem,
+  DropdownMenuItem,
+  DropdownItemProps,
 } from '@patternfly/react-core';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
@@ -25,7 +35,6 @@ import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
 import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 import { useOpenModal } from '../../../../duck';
-import { access } from 'fs';
 import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
 import MigrateModal from '../../components/PlanActions/MigrateModal';
@@ -36,8 +45,7 @@ interface IMigrationsPageParams {
   planName: string;
 }
 export const MigrationsPage: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
-  const { planName } = useParams<IMigrationsPageParams>();
+  const { planName = null } = useParams<IMigrationsPageParams>();
   const planList: IPlan[] = useSelector((state: DefaultRootState) =>
     planSelectors.getPlansWithStatus(state)
   );
@@ -46,77 +54,80 @@ export const MigrationsPage: React.FunctionComponent = () => {
   );
 
   const migrations = plan?.Migrations;
+  const dispatch = useDispatch();
   const { path, url } = useRouteMatch();
 
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
-
-  if (!migrations) {
-    return <Redirect to="/" />;
-  }
-  const {
-    hasClosedCondition,
-    hasReadyCondition,
-    hasErrorCondition,
-    hasRunningMigrations,
-    finalMigrationComplete,
-    isPlanLocked,
-  } = plan?.PlanStatus;
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
-  const kebabDropdownItems = [
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        dispatch(PlanActions.runStageRequest(plan));
-      }}
-      key="stagePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
-      }
-    >
-      Stage
-    </DropdownItem>,
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleMigrateModalOpen();
-      }}
-      key="migratePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
-      }
-    >
-      Migrate
-    </DropdownItem>,
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleRollbackModalOpen();
-      }}
-      key="rollbackPlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        isPlanLocked
-      }
-    >
-      Rollback
-    </DropdownItem>,
-  ];
 
+  const planStatus = plan?.PlanStatus;
+  let kebabDropdownItems: Array<any> = [];
+  if (planStatus) {
+    const {
+      hasClosedCondition = null,
+      hasReadyCondition = null,
+      hasErrorCondition = null,
+      hasRunningMigrations = null,
+      finalMigrationComplete = null,
+      isPlanLocked = null,
+    } = planStatus;
+    kebabDropdownItems = [
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          dispatch(PlanActions.runStageRequest(plan));
+        }}
+        key="stagePlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked
+        }
+      >
+        Stage
+      </DropdownItem>,
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleMigrateModalOpen();
+        }}
+        key="migratePlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked
+        }
+      >
+        Migrate
+      </DropdownItem>,
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleRollbackModalOpen();
+        }}
+        key="rollbackPlan"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          isPlanLocked
+        }
+      >
+        Rollback
+      </DropdownItem>,
+    ];
+  } else {
+    kebabDropdownItems = [];
+  }
   return (
     <>
       <Switch>
@@ -134,7 +145,9 @@ export const MigrationsPage: React.FunctionComponent = () => {
               Migrations
             </Title>
           </PageSection>
-          {!plan ? null : (
+          {!plan ? (
+            <Redirect to="/" />
+          ) : (
             <PageSection>
               <Card>
                 <CardHeader>
@@ -189,13 +202,26 @@ export const MigrationsPage: React.FunctionComponent = () => {
             </PageSection>
           )}
         </Route>
-        <Route exact path={`${path}/:migrationID`}>
-          <MigrationDetailsPage />
-          <PlanDebugPage />
+
+        <Route path={`${path}/:migrationID`}>
+          {!plan ? (
+            <Redirect to="/" />
+          ) : (
+            <>
+              <MigrationDetailsPage />
+              <PlanDebugPage />
+            </>
+          )}
         </Route>
-        <Route exact path={`${path}/:migrationID/:stepName`}>
-          <MigrationStepDetailsPage />
-          <PlanDebugPage />
+        <Route path={`${path}/:migrationID/:stepName`}>
+          {!plan ? (
+            <Redirect to="/" />
+          ) : (
+            <>
+              <MigrationStepDetailsPage />
+              <PlanDebugPage />
+            </>
+          )}
         </Route>
       </Switch>
     </>
