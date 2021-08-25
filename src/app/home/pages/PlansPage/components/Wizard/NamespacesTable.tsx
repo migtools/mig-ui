@@ -125,28 +125,30 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   });
 
   const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
-    // Because of a bug in Table where a shouldComponentUpdate method is too strict,
-    // when onSelect is called it may not be the one from the scope of the latest render.
-    // So, it is not safe to reference the current selection state directly from the outer scope.
-    // This is why we use rowData.meta.selectedNamespaces instead of values.selectedNamespaces.
-    let newSelected;
-    if (rowIndex === -1) {
-      if (isSelected) {
-        newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
-      } else {
-        newSelected = []; // Deselect all
-      }
+    if (allRowsSelected) {
+      setAllRowsSelected(false);
+      const noneSelected = filteredItems.map((pv) => !pv.name); // Select all (filtered)
+      setFieldValue('selectedNamespaces', noneSelected);
     } else {
-      const { props } = rowData;
-      if (isSelected) {
-        newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
+      let newSelected;
+      if (rowIndex === -1) {
+        if (isSelected) {
+          newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+        } else {
+          newSelected = []; // Deselect all
+        }
       } else {
-        newSelected = props.meta.selectedNamespaces.filter(
-          (selected: string) => selected !== props.cells[0]
-        );
+        const { props } = rowData;
+        if (isSelected) {
+          newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
+        } else {
+          newSelected = props.meta.selectedNamespaces.filter(
+            (selected: string) => selected !== props.cells[0]
+          );
+        }
       }
+      setFieldValue('selectedNamespaces', newSelected);
     }
-    setFieldValue('selectedNamespaces', newSelected);
   };
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     setAllRowsSelected(isSelected);
