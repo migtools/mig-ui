@@ -51,12 +51,14 @@ describe('<NamespacesForm />', () => {
           podCount: 3,
           pvcCount: 4,
           serviceCount: 5,
+          id: '0',
         },
         {
           name: 'namespace2',
           podCount: 4,
           pvcCount: 5,
           serviceCount: 6,
+          id: '1',
         },
       ],
     };
