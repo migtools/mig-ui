@@ -1,6 +1,14 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Modal, Grid, GridItem } from '@patternfly/react-core';
+import {
+  Modal,
+  Grid,
+  GridItem,
+  TextList,
+  TextListItem,
+  Title,
+  TextContent,
+} from '@patternfly/react-core';
 import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanActions } from '../../../../../plan/duck/actions';
@@ -19,35 +27,42 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
       variant="small"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`${plan.MigPlan.metadata.name} - Rollback`}
+      title={`Rollback migration`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
-            Rolling back the migration plan will revert migrated resources and volumes to their
-            original states and locations, including:
-            <GridItem>
-              <br />
-              Source Cluster:
-              <li>
-                Restoring original replica counts (Un-Quiescing) on Deployments, DeploymentConfigs,
-                StatefulSets, StatefulSets, ReplicaSets, DaemonSets, CronJobs, and Jobs
-              </li>
-              <br />
-              Target Cluster:
-              <li>Deleting migrated resources</li>
-              <br />
-              Source and Target Cluster:
-              <li>Deleting Velero Backups and Restores created during the migration</li>
-              <li>
-                Removing migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
-                namespaces
-              </li>
-              <br />
-            </GridItem>
+            <TextContent>
+              <Title headingLevel="h5">
+                Rolling back the migration plan will revert migrated resources and volumes to their
+                original states and locations, including:
+              </Title>
+              <TextList>
+                <Title headingLevel="h6">Source cluster:</Title>
+                <TextList>
+                  <TextListItem>
+                    Restoring original replica counts (Un-Quiescing) on Deployments,
+                    DeploymentConfigs, StatefulSets, StatefulSets, ReplicaSets, DaemonSets,
+                    CronJobs, and Jobs
+                  </TextListItem>
+                </TextList>
+                <Title headingLevel="h6">Target cluster:</Title>
+                <TextList>
+                  <TextListItem>Deleting migrated resources.</TextListItem>
+                </TextList>
+                <Title headingLevel="h6">Source and Target cluster:</Title>
+                <TextList>
+                  <TextListItem>
+                    Deleting Velero Backups and Restores created during the migration Removing
+                    migration annotations and labels from PVs, PVCs, Pods, ImageStreams, and
+                    namespaces
+                  </TextListItem>
+                </TextList>
+              </TextList>
+            </TextContent>
           </GridItem>
           <GridItem>
-            <Grid hasGutter>
+            <Grid hasGutter className={spacing.mtXl}>
               <GridItem>
                 <Button
                   className={`${spacing.mrMd}`}
