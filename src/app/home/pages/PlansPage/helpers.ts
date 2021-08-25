@@ -62,10 +62,14 @@ export const getPlanInfo = (plan: IPlan) => {
   return {
     planName: plan.MigPlan.metadata.name,
     migrationCount: plan.Migrations.length || 0,
-    sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name,
-    targetClusterName: plan.MigPlan.spec.destMigClusterRef.name,
+    sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name
+      ? plan.MigPlan.spec?.srcMigClusterRef?.name
+      : '',
+    targetClusterName: plan.MigPlan.spec.destMigClusterRef.name
+      ? plan.MigPlan.spec.destMigClusterRef.name
+      : '',
     storageName: plan.MigPlan.spec.migStorageRef ? plan.MigPlan.spec.migStorageRef.name : 'N/A',
-    namespaceCount: plan.MigPlan.spec.namespaces.length,
+    namespaceCount: plan.MigPlan.spec?.namespaces?.length || 0,
     isMaxResourcesLimitReached,
     statusText: getPlanStatusText(plan),
   };
