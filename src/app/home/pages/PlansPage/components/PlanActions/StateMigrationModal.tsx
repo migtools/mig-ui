@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Grid, GridItem } from '@patternfly/react-core';
+import { Modal, Grid, GridItem, Title } from '@patternfly/react-core';
 import StateMigrationTable from './StateMigrationTable';
 import StateMigrationFormik from './StateMigrationFormik';
 
@@ -16,16 +16,17 @@ const StateMigrationModal: React.FunctionComponent<IProps> = ({ onHandleClose, i
       variant="default"
       isOpen={isOpen}
       onClose={() => onHandleClose()}
-      title={`${plan.MigPlan.metadata.name} - State migration`}
+      title={`State migration`}
     >
       <Grid hasGutter>
         <form>
           <GridItem>
             <GridItem>
-              During a state migration, PV data is copied to the target cluster. PV references are
-              not moved, and source pods continue running. Select the persistent volumes you want to
-              migrate and optionally rename the PVC for each on the target cluster.
-              <br />
+              <Title headingLevel="h6">
+                During a state migration, PV data is copied to the target cluster. PV references are
+                not moved, and source pods continue running. Select the persistent volumes you want
+                to migrate and optionally rename the PVC for each on the target cluster.
+              </Title>
             </GridItem>
             <GridItem>
               <StateMigrationFormik plan={plan}>
