@@ -14,6 +14,7 @@ import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { IMigMigration } from '../../../client/resources/conversions';
 import { DefaultRootState } from '../../../configureStore';
+const uuidv1 = require('uuid/v1');
 
 const planSelector = (state: DefaultRootState) => state.plan.migPlanList.map((p) => p);
 
@@ -86,7 +87,9 @@ const getMigMeta = (state: DefaultRootState) => state.auth.migMeta;
 const lockedPlansSelector = (state: DefaultRootState) => state.plan.lockedPlanList;
 
 const sourceClusterNamespacesSelector = (state: DefaultRootState) =>
-  state.plan.sourceClusterNamespaces;
+  state.plan.sourceClusterNamespaces.map((ns, index) => {
+    return { ...ns, id: uuidv1() + index };
+  });
 
 const hooksSelector = (state: DefaultRootState) => state.plan.allHooks.map((h) => h);
 

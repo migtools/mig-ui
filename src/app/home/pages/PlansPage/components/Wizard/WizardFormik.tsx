@@ -54,26 +54,26 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
-      const existingNSNameMap = values.editedNamespaces.map((nsItem, selectedIndex: number) => {
+      const existingNSNameMap = sourceClusterNamespaces.map((nsItem, selectedIndex: number) => {
         const sourceNSName = nsItem.name;
+        const nsID = nsItem.id;
         const editedNamespace = values.editedNamespaces.find(
-          (editedNS) => editedNS.oldName === nsItem.name
-          // && editedNS.namespace === pvItem.pvc.namespace
+          (editedNS) => editedNS.id === nsItem.id
         );
+
         const targetNSName = editedNamespace ? editedNamespace.newName : nsItem.name;
         return {
           sourceNSName,
           targetNSName,
+          nsID,
         };
       });
       const hasDuplicateMapping = existingNSNameMap.find((ns, index) => {
         const editedNSName = values?.currentTargetNamespaceName?.name;
-        // const editedNSNameAssociatedPVName = values?.currentTargetNamespaceName?.srcName;
+        const editedNSNameID = values?.currentTargetNamespaceName?.id;
         return (
-          editedNSName === ns.targetNSName ||
-          // && editedPVCNameAssociatedPVName !== pv.pvName
-          editedNSName === ns.sourceNSName
-          // && editedPVCNameAssociatedPVName !== pv.pvName
+          (editedNSName === ns.targetNSName && editedNSNameID !== ns.nsID) ||
+          (editedNSName === ns.sourceNSName && editedNSNameID !== ns.nsID)
         );
       });
 

@@ -51,6 +51,7 @@ export interface IFormValues {
   currentTargetNamespaceName?: {
     name: string;
     srcName: string;
+    id: string;
   };
 }
 

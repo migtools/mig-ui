@@ -138,6 +138,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
         selectedNamespaces: values.selectedNamespaces,
         editedNamespaces: values.editedNamespaces,
         editableRow: editableRow,
+        id: namespace.id,
       }, // See comments on onSelect
     };
   });
@@ -185,7 +186,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
       fieldName: currentTargetNamespaceNameKey,
       functionArgs: [
         currentTargetNamespaceNameKey,
-        { name: val, srcName: row.cells[0], index: rowIndex },
+        { name: val, srcName: row.cells[0], index: rowIndex, id: row.meta.id },
       ],
     });
   };
@@ -379,6 +380,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                           oldName:
                                             typeof row.cells[0] === 'string' ? row.cells[0] : '',
                                           newName: values.currentTargetNamespaceName.name,
+                                          id: row.meta.id,
                                         };
                                       }
                                     } else {
@@ -388,6 +390,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                           {
                                             oldName: row.cells[0],
                                             newName: values.currentTargetNamespaceName.name,
+                                            id: row.meta.id,
                                           },
                                         ]),
                                       ];
