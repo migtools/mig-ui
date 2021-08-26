@@ -41,13 +41,12 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
     <Flex>
       <FlexItem>
         <PlanStatusIcon plan={plan} />
-        <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
-        {!isNestedDebugView && showDebugLink && planName && latestMigrationName && (
-          <div>
-            <HashLink to={`/plans/${planName}/migrations/${latestMigrationName}#debug`}>
-              View debug page for more info
-            </HashLink>
-          </div>
+        {!isNestedDebugView && showDebugLink && planName && latestMigrationName ? (
+          <HashLink to={`/plans/${planName}/migrations/${latestMigrationName}#debug`}>
+            <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
+          </HashLink>
+        ) : (
+          <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
         )}
       </FlexItem>
     </Flex>
