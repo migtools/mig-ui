@@ -60,15 +60,14 @@ function* fetchCraneVersion(action: any): Generator<any, any, any> {
 
   const routeResource = new CommonResource(
     CommonResourceKind.Route,
-    migMeta.namespace,
+    'openshift-console',
     'route.openshift.io',
     'v1'
   );
 
   try {
-    const routeResourceResponse = yield client.get(routeResource, 'migration');
-    const route2 = routeResourceResponse?.data.spec.host;
-    const route = routeResourceResponse?.data.status?.ingress[0]?.routerCanonicalHostname;
+    const routeResourceResponse = yield client.get(routeResource, 'console');
+    const route = routeResourceResponse?.data.spec.host;
     const csvResourceResponse = yield client.get(csvResource, '');
     const packageManifestResourceResponse = yield client.get(
       packageManifestResource,
@@ -111,13 +110,12 @@ function* fetchMTCVersion(action: any): Generator<any, any, any> {
   try {
     const routeResource = new CommonResource(
       CommonResourceKind.Route,
-      migMeta.namespace,
+      'openshift-console',
       'route.openshift.io',
       'v1'
     );
-    const routeResourceResponse = yield client.get(routeResource, 'migration');
-    const route2 = routeResourceResponse?.data.spec.host;
-    const route = routeResourceResponse?.data.status?.ingress[0]?.routerCanonicalHostname;
+    const routeResourceResponse = yield client.get(routeResource, 'console');
+    const route = routeResourceResponse?.data.spec.host;
 
     const csvResourceResponse = yield client.get(csvResource, '');
     const packageManifestResourceResponse = yield client.get(
