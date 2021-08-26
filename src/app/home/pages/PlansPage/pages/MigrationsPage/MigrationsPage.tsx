@@ -203,7 +203,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
           )}
         </Route>
 
-        <Route path={`${path}/:migrationID`}>
+        <Route exact path={`${path}/:migrationID`}>
           {!plan ? (
             <Redirect to="/" />
           ) : (
@@ -213,7 +213,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
             </>
           )}
         </Route>
-        <Route path={`${path}/:migrationID/:stepName`}>
+        <Route exact path={`${path}/:migrationID/:stepName`}>
           {!plan ? (
             <Redirect to="/" />
           ) : (
