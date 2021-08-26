@@ -18,12 +18,17 @@ import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/excla
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
 
 import PlanStatus from './PlanStatus';
-import { useSortState } from '../../../../common/duck/hooks';
+import { useFilterState, useSortState } from '../../../../common/duck/hooks';
 import { getPlanInfo } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 import { PlanActionsComponent } from './PlanActions/PlanActionsComponent';
+import {
+  FilterCategory,
+  FilterToolbar,
+  FilterType,
+} from '../../../../common/components/FilterToolbar/FilterToolbar';
 const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {
@@ -60,6 +65,58 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     '',
   ];
 
+  const filterCategories: FilterCategory[] = [
+    {
+      key: 'planName',
+      title: 'Plan name',
+      type: FilterType.search,
+      placeholderText: 'Filter by plan name...',
+      getItemValue: (plan) => getPlanInfo(plan).planName,
+    },
+    {
+      key: 'migrationCount',
+      title: 'Migration count',
+      type: FilterType.search,
+      placeholderText: 'Filter by migration count...',
+      getItemValue: (plan) => getPlanInfo(plan).migrationCount,
+    },
+    {
+      key: 'sourceClusterName',
+      title: 'Source cluster name',
+      type: FilterType.search,
+      placeholderText: 'Filter by source cluster name...',
+      getItemValue: (plan) => getPlanInfo(plan).sourceClusterName,
+    },
+    {
+      key: 'targetClusterName',
+      title: 'Target cluster name',
+      type: FilterType.search,
+      placeholderText: 'Filter by target cluster name...',
+      getItemValue: (plan) => getPlanInfo(plan).targetClusterName,
+    },
+    {
+      key: 'storageName',
+      title: 'Storage name',
+      type: FilterType.search,
+      placeholderText: 'Filter by storage name...',
+      getItemValue: (plan) => getPlanInfo(plan).storageName,
+    },
+    {
+      key: 'namespaceCount',
+      title: 'Namespace count',
+      type: FilterType.search,
+      placeholderText: 'Filter by namespace count...',
+      getItemValue: (plan) => getPlanInfo(plan).namespaceCount,
+    },
+    {
+      key: 'statusText',
+      title: 'Status',
+      type: FilterType.search,
+      placeholderText: 'Filter by Status...',
+      getItemValue: (plan) => getPlanInfo(plan).statusText,
+    },
+  ];
+
   const getSortValues = (plan: IPlan) => {
     const {
       planName,
@@ -81,8 +138,12 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       '',
     ];
   };
+  const { filterValues, setFilterValues, filteredItems } = useFilterState(
+    planList,
+    filterCategories
+  );
 
-  const { sortBy, onSort, sortedItems } = useSortState(planList, getSortValues);
+  const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [sortBy]);
 
@@ -184,16 +245,11 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     <>
       <Level>
         <LevelItem>
-          <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-            <Button
-              id="add-plan-btn"
-              onClick={toggleAddWizardOpen}
-              isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-              variant="secondary"
-            >
-              Add migration plan
-            </Button>
-          </AddPlanDisabledTooltip>
+          <FilterToolbar
+            filterCategories={filterCategories}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+          />
         </LevelItem>
         <LevelItem>
           <Pagination
@@ -218,16 +274,32 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         <TableHeader />
         <TableBody />
       </Table>
-      <Pagination
-        widgetId="plans-table-pagination-bottom"
-        variant="bottom"
-        className={spacing.mtMd}
-        itemCount={paginationProps.itemCount}
-        perPage={paginationProps.perPage}
-        page={paginationProps.page}
-        onSetPage={paginationProps.onSetPage}
-        onPerPageSelect={paginationProps.onPerPageSelect}
-      />
+      <Level>
+        <LevelItem>
+          <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
+            <Button
+              id="add-plan-btn"
+              onClick={toggleAddWizardOpen}
+              isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+              variant="secondary"
+            >
+              Add migration plan
+            </Button>
+          </AddPlanDisabledTooltip>
+        </LevelItem>
+        <LevelItem>
+          <Pagination
+            widgetId="plans-table-pagination-bottom"
+            variant="bottom"
+            className={spacing.mtMd}
+            itemCount={paginationProps.itemCount}
+            perPage={paginationProps.perPage}
+            page={paginationProps.page}
+            onSetPage={paginationProps.onSetPage}
+            onPerPageSelect={paginationProps.onPerPageSelect}
+          />
+        </LevelItem>
+      </Level>
     </>
   );
 };

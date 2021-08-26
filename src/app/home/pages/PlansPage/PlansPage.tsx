@@ -43,21 +43,6 @@ export const PlansPage: React.FunctionComponent = () => {
   const planState: IPlanReducerState = useSelector((state: DefaultRootState) => state.plan);
 
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
-  const [searchText, setSearchText] = useState('');
-  const filterPlanList = (items: IPlan[]): IPlan[] =>
-    items
-      .map((item) => {
-        const nameMatches = (item.MigPlan.metadata.name as string)
-          .toLowerCase()
-          .includes(searchText.toLowerCase());
-        return nameMatches ? item : null;
-      })
-      .filter((item) => !!item) as IPlan[];
-
-  let filteredPlanList = planList;
-  if (searchText && planList) {
-    filteredPlanList = filterPlanList(planList);
-  }
 
   const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
     isAddPlanDisabled: true,
@@ -129,19 +114,8 @@ export const PlansPage: React.FunctionComponent = () => {
                 </EmptyState>
               ) : (
                 <CardBody>
-                  <Split hasGutter>
-                    <SplitItem isFilled>
-                      <SearchInput
-                        placeholder="Type to search"
-                        value={searchText}
-                        onChange={setSearchText}
-                        onClear={() => setSearchText('')}
-                        className={`${spacing.mbMd}`}
-                      />
-                    </SplitItem>
-                  </Split>
                   <PlansTable
-                    planList={filteredPlanList}
+                    planList={planList}
                     addPlanDisabledObj={addPlanDisabledObj}
                     toggleAddWizardOpen={toggleAddWizardOpen}
                   />
