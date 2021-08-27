@@ -13,27 +13,33 @@ interface IProps {
 
 const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }) => {
   const latestMigration = plan?.Migrations?.length ? plan?.Migrations[0] : null;
-  const {
-    latestIsFailed,
-    hasCriticalCondition,
-    hasNotReadyCondition,
-    hasClosedCondition,
-    hasCancelingCondition,
-    hasDVMBlockedCondition,
-    hasWarnCondition,
-    hasSucceededMigration,
-    hasSucceededMigrationWithWarnings,
-  } = plan?.PlanStatus;
-  const showDebugLink =
-    latestIsFailed ||
-    hasCriticalCondition ||
-    hasNotReadyCondition ||
-    hasClosedCondition ||
-    hasCancelingCondition ||
-    hasDVMBlockedCondition ||
-    hasWarnCondition ||
-    hasSucceededMigration ||
-    hasSucceededMigrationWithWarnings;
+  const planStatus = plan?.PlanStatus;
+  let showDebugLink;
+  if (planStatus) {
+    const {
+      latestIsFailed,
+      hasCriticalCondition,
+      hasNotReadyCondition,
+      hasClosedCondition,
+      hasCancelingCondition,
+      hasDVMBlockedCondition,
+      hasWarnCondition,
+      hasSucceededMigration,
+      hasSucceededMigrationWithWarnings,
+    } = plan?.PlanStatus;
+    showDebugLink =
+      latestIsFailed ||
+      hasCriticalCondition ||
+      hasNotReadyCondition ||
+      hasClosedCondition ||
+      hasCancelingCondition ||
+      hasDVMBlockedCondition ||
+      hasWarnCondition ||
+      hasSucceededMigration ||
+      hasSucceededMigrationWithWarnings;
+  } else {
+    showDebugLink = false;
+  }
   const planName = plan?.MigPlan?.metadata?.name;
   const latestMigrationName = latestMigration?.metadata?.name;
 
