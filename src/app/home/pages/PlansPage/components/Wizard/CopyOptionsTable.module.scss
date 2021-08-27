@@ -1,3 +1,7 @@
+@import 'src/layout/include-media';
+
 .copySelectStyle {
-  width: 13em;
+  @include media('>=769px', '<=1200px') {
+    width: 10em;
+  }
 }
