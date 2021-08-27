@@ -15,13 +15,11 @@ import {
   Pagination,
   PaginationVariant,
   Checkbox,
-  Flex,
   Tooltip,
   TooltipPosition,
   Modal,
   Button,
   BaseSizes,
-  FlexItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -29,14 +27,13 @@ import {
   TableHeader,
   TableBody,
   sortable,
-  cellWidth,
+  truncate,
 } from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import { IFormValues, IOtherProps } from './WizardContainer';
 import { capitalize } from '../../../../../common/duck/utils';
@@ -113,10 +110,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
 
   const columns = [
-    { title: 'PV name', transforms: [sortable] },
-    { title: 'Claim', transforms: [sortable] },
-    { title: 'Namespace', transforms: [sortable] },
-    { title: 'Copy method', transforms: [sortable, cellWidth(15)] },
+    { title: 'PV name', transforms: [sortable, truncate] },
+    { title: 'Claim', transforms: [sortable, truncate] },
+    { title: 'Namespace', transforms: [sortable, truncate] },
+    { title: 'Copy method', transforms: [sortable, truncate] },
+    { title: 'Target storage class', transforms: [sortable, truncate] },
     {
       title: (
         <React.Fragment>
@@ -136,9 +134,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           </Tooltip>
         </React.Fragment>
       ),
-      transforms: [sortable, cellWidth(10)],
+      transforms: [sortable, truncate],
     },
-    { title: 'Target storage class', transforms: [sortable] },
   ];
   const getSortValues = (pv: IPlanPersistentVolume) => [
     pv.name,
@@ -168,6 +165,13 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       placeholderText: 'Filter by namespace...',
     },
     {
+      key: 'targetStorageClass',
+      title: 'Target storage class',
+      type: FilterType.search,
+      placeholderText: 'Filter by target storage class...',
+      getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
+    },
+    {
       key: 'copyMethod',
       title: 'Copy method',
       type: FilterType.select,
@@ -176,13 +180,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         { key: 'snapshot', value: 'Volume snapshot' },
       ],
       getItemValue: (pv) => copyMethodToString(pvCopyMethodAssignment[pv.name]),
-    },
-    {
-      key: 'targetStorageClass',
-      title: 'Target storage class',
-      type: FilterType.search,
-      placeholderText: 'Filter by target storage class...',
-      getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
     },
   ];
 
@@ -217,11 +214,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     ];
 
     const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
+    let sourcePVCName = pv.pvc.name;
+    const includesMapping = sourcePVCName.includes(':');
+    if (includesMapping) {
+      const mappedPVCNameArr = sourcePVCName.split(':');
+      sourcePVCName = mappedPVCNameArr[0];
+    }
 
     return {
       cells: [
         pv.name,
-        pv.pvc.name,
+        sourcePVCName,
         pv.pvc.namespace,
         {
           title: (
@@ -244,6 +247,23 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         },
         {
           title: (
+            <SimpleSelect
+              id="select-storage-class"
+              aria-label="Select storage class"
+              className={styles.copySelectStyle}
+              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
+              options={storageClassOptions}
+              value={
+                storageClassOptions.find(
+                  (option) => currentStorageClass && option.value === currentStorageClass.name
+                ) || noneOption
+              }
+              placeholderText="Select a storage class..."
+            />
+          ),
+        },
+        {
+          title: (
             <Checkbox
               isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
               isDisabled={!isVerifyCopyAllowed}
@@ -256,22 +276,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               aria-label={`Verify copy for PV ${pv.name}`}
               id={`verify-pv-${pv.name}`}
               name={`verify-pv-${pv.name}`}
-            />
-          ),
-        },
-        {
-          title: (
-            <SimpleSelect
-              id="select-storage-class"
-              aria-label="Select storage class"
-              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
-              options={storageClassOptions}
-              value={
-                storageClassOptions.find(
-                  (option) => currentStorageClass && option.value === currentStorageClass.name
-                ) || noneOption
-              }
-              placeholderText="Select a storage class..."
             />
           ),
         },
