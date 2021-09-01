@@ -127,28 +127,25 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
   const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     if (allRowsSelected) {
       setAllRowsSelected(false);
-      const noneSelected = filteredItems.map((pv) => !pv.name); // Select all (filtered)
-      setFieldValue('selectedNamespaces', noneSelected);
-    } else {
-      let newSelected;
-      if (rowIndex === -1) {
-        if (isSelected) {
-          newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
-        } else {
-          newSelected = []; // Deselect all
-        }
-      } else {
-        const { props } = rowData;
-        if (isSelected) {
-          newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
-        } else {
-          newSelected = props.meta.selectedNamespaces.filter(
-            (selected: string) => selected !== props.cells[0]
-          );
-        }
-      }
-      setFieldValue('selectedNamespaces', newSelected);
     }
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+      } else {
+        newSelected = []; // Deselect all
+      }
+    } else {
+      const { props } = rowData;
+      if (isSelected) {
+        newSelected = [...new Set([...props.meta.selectedNamespaces, props.cells[0]])];
+      } else {
+        newSelected = props.meta.selectedNamespaces.filter(
+          (selected: string) => selected !== props.cells[0]
+        );
+      }
+    }
+    setFieldValue('selectedNamespaces', newSelected);
   };
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     setAllRowsSelected(isSelected);
