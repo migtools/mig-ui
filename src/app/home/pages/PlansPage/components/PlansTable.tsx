@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import { Level, LevelItem, Button, Pagination } from '@patternfly/react-core';
+import { Level, LevelItem, Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IAddPlanDisabledObjModel } from '../types';
 import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
@@ -243,15 +243,31 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
 
   return (
     <>
-      <Level>
-        <LevelItem>
+      <Flex>
+        <FlexItem>
           <FilterToolbar
             filterCategories={filterCategories}
             filterValues={filterValues}
             setFilterValues={setFilterValues}
           />
-        </LevelItem>
-        <LevelItem>
+        </FlexItem>
+        <FlexItem>
+          <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
+            <Button
+              id="add-plan-btn"
+              onClick={toggleAddWizardOpen}
+              isDisabled={addPlanDisabledObj.isAddPlanDisabled}
+              variant="secondary"
+            >
+              Add migration plan
+            </Button>
+          </AddPlanDisabledTooltip>
+        </FlexItem>
+        <FlexItem
+          className={`${spacing.mrLg}`}
+          alignSelf={{ default: 'alignSelfFlexEnd' }}
+          flex={{ default: 'flex_1' }}
+        >
           <Pagination
             widgetId="clusters-table-pagination-top"
             itemCount={paginationProps.itemCount}
@@ -260,8 +276,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             onSetPage={paginationProps.onSetPage}
             onPerPageSelect={paginationProps.onPerPageSelect}
           />
-        </LevelItem>
-      </Level>
+        </FlexItem>
+      </Flex>
       <Table
         aria-label="Migration plans table"
         cells={columns}
@@ -274,20 +290,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
         <TableHeader />
         <TableBody />
       </Table>
-      <Level>
-        <LevelItem>
-          <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-            <Button
-              id="add-plan-btn"
-              onClick={toggleAddWizardOpen}
-              isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-              variant="secondary"
-            >
-              Add migration plan
-            </Button>
-          </AddPlanDisabledTooltip>
-        </LevelItem>
-        <LevelItem>
+      <Flex>
+        <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flex_1' }}>
           <Pagination
             widgetId="plans-table-pagination-bottom"
             variant="bottom"
@@ -298,8 +302,8 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             onSetPage={paginationProps.onSetPage}
             onPerPageSelect={paginationProps.onPerPageSelect}
           />
-        </LevelItem>
-      </Level>
+        </FlexItem>
+      </Flex>
     </>
   );
 };
