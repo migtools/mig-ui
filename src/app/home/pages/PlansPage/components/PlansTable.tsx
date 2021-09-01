@@ -262,18 +262,6 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           />
         </LevelItem>
       </Level>
-      <Table
-        aria-label="Migration plans table"
-        cells={columns}
-        rows={rows}
-        onExpand={onExpand}
-        sortBy={sortBy}
-        onSort={onSort}
-        className={`${spacing.mtMd} ${spacing.mbMd}`}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
       <Level>
         <LevelItem>
           <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
@@ -287,6 +275,20 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
             </Button>
           </AddPlanDisabledTooltip>
         </LevelItem>
+      </Level>
+      <Table
+        aria-label="Migration plans table"
+        cells={columns}
+        rows={rows}
+        onExpand={onExpand}
+        sortBy={sortBy}
+        onSort={onSort}
+        className={`${spacing.mtMd} ${spacing.mbMd}`}
+      >
+        <TableHeader />
+        <TableBody />
+      </Table>
+      <Level>
         <LevelItem>
           <Pagination
             widgetId="plans-table-pagination-bottom"
