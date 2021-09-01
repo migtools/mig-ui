@@ -27,6 +27,9 @@ import {
   DropdownItem,
   DropdownMenuItem,
   DropdownItemProps,
+  DropdownGroup,
+  Tooltip,
+  PopoverPosition,
 } from '@patternfly/react-core';
 import { IPlan } from '../../../../../plan/duck/types';
 import { PlanActions, planSelectors } from '../../../../../plan/duck';
@@ -39,6 +42,8 @@ import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
 import MigrateModal from '../../components/PlanActions/MigrateModal';
 import RollbackModal from '../../components/PlanActions/RollbackModal';
+import StageModal from '../../components/PlanActions/StageModal';
+import StateMigrationModal from '../../components/PlanActions/StateMigrationModal';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -58,6 +63,8 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const { path, url } = useRouteMatch();
 
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
+  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
+  const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
@@ -72,58 +79,95 @@ export const MigrationsPage: React.FunctionComponent = () => {
       hasRunningMigrations = null,
       finalMigrationComplete = null,
       isPlanLocked = null,
+      hasCopyPVs = null,
     } = planStatus;
+
+    const stateItem = (
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleStateMigrationModalOpen();
+        }}
+        key="stateMigration"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          !hasCopyPVs
+        }
+      >
+        State
+      </DropdownItem>
+    );
+
     kebabDropdownItems = [
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          dispatch(PlanActions.runStageRequest(plan));
-        }}
-        key="stagePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Stage
-      </DropdownItem>,
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleMigrateModalOpen();
-        }}
-        key="migratePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Migrate
-      </DropdownItem>,
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleRollbackModalOpen();
-        }}
-        key="rollbackPlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          isPlanLocked
-        }
-      >
-        Rollback
-      </DropdownItem>,
+      <DropdownGroup label="Migrations" key="migrations">
+        <DropdownItem
+          onClick={() => {
+            setKebabIsOpen(false);
+            toggleMigrateModalOpen();
+          }}
+          key="migratePlan"
+          isDisabled={
+            hasClosedCondition ||
+            !hasReadyCondition ||
+            hasErrorCondition ||
+            hasRunningMigrations ||
+            finalMigrationComplete ||
+            isPlanLocked
+          }
+        >
+          Cutover
+        </DropdownItem>
+        <DropdownItem
+          onClick={() => {
+            setKebabIsOpen(false);
+            toggleStageModalOpen();
+          }}
+          key="stagePlan"
+          isDisabled={
+            hasClosedCondition ||
+            !hasReadyCondition ||
+            hasErrorCondition ||
+            hasRunningMigrations ||
+            finalMigrationComplete ||
+            isPlanLocked
+          }
+        >
+          Stage
+        </DropdownItem>
+        {!hasCopyPVs ? (
+          <Tooltip
+            position={PopoverPosition.bottom}
+            content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
+            aria-label="disabled state details"
+            maxWidth="30rem"
+          >
+            {stateItem}
+          </Tooltip>
+        ) : (
+          stateItem
+        )}
+        <DropdownItem
+          onClick={() => {
+            setKebabIsOpen(false);
+            toggleRollbackModalOpen();
+          }}
+          key="rollbackPlan"
+          isDisabled={
+            hasClosedCondition ||
+            !hasReadyCondition ||
+            hasErrorCondition ||
+            hasRunningMigrations ||
+            isPlanLocked
+          }
+        >
+          Rollback
+        </DropdownItem>
+      </DropdownGroup>,
     ];
   } else {
     kebabDropdownItems = [];
@@ -191,11 +235,21 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     isOpen={isMigrateModalOpen}
                     onHandleClose={toggleMigrateModalOpen}
                   />
-
                   <RollbackModal
                     plan={plan}
                     isOpen={isRollbackModalOpen}
                     onHandleClose={toggleRollbackModalOpen}
+                  />
+
+                  <StageModal
+                    plan={plan}
+                    isOpen={isStageModalOpen}
+                    onHandleClose={toggleStageModalOpen}
+                  />
+                  <StateMigrationModal
+                    plan={plan}
+                    isOpen={isStateMigrationModalOpen}
+                    onHandleClose={toggleStateMigrationModalOpen}
                   />
                 </CardBody>
               </Card>
