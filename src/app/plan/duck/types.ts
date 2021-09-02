@@ -168,9 +168,8 @@ export interface IPlan {
     hasReadyCondition?: boolean;
     hasRunningMigrations?: boolean;
     hasSucceededMigration?: boolean;
-    hasSucceededMigrationWithWarnings?: boolean;
+    hasSucceededWithWarningsCondition?: boolean;
     hasDVMBlockedCondition?: boolean;
-    hasSucceededStageWithWarnings?: boolean;
     hasSucceededStage?: boolean;
     hasSucceededRollback?: boolean;
     hasWarnCondition?: boolean;
