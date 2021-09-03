@@ -52,14 +52,14 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const history = useHistory();
 
   const {
-    hasClosedCondition,
-    hasReadyCondition,
-    hasErrorCondition,
-    hasRunningMigrations,
-    finalMigrationComplete,
-    isPlanLocked,
-    hasCopyPVs,
-  } = plan.PlanStatus;
+    hasClosedCondition = null,
+    hasReadyCondition = null,
+    hasErrorCondition = null,
+    hasRunningMigrations = null,
+    finalMigrationComplete = null,
+    isPlanLocked = null,
+    hasCopyPVs = null,
+  } = plan?.PlanStatus;
 
   const editPlan = () => {
     toggleEditWizardOpen();
