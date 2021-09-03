@@ -15,43 +15,46 @@ export const getPlanStatusText = (plan: IPlan) => {
     return '';
   }
   const {
-    hasClosedCondition,
-    hasReadyCondition,
-    hasNotReadyCondition,
-    hasRunningMigrations,
-    hasSucceededMigration,
-    hasSucceededMigrationWithWarnings,
-    hasSucceededStageWithWarnings,
-    hasSucceededStage,
-    hasSucceededRollback,
-    hasCanceledCondition,
-    hasCancelingCondition,
-    hasCriticalCondition,
-    latestType,
-    latestIsFailed,
-    hasConflictCondition,
-    conflictErrorMsg,
-    isPlanLocked,
-    hasWarnCondition,
-    hasDVMBlockedCondition,
+    hasClosedCondition = null,
+    hasReadyCondition = null,
+    hasNotReadyCondition = null,
+    hasRunningMigrations = null,
+    hasSucceededMigration = null,
+    hasSucceededWithWarningsCondition = null,
+    hasSucceededStage = null,
+    hasSucceededRollback = null,
+    hasCanceledCondition = null,
+    hasCancelingCondition = null,
+    hasCriticalCondition = null,
+    latestType = null,
+    latestIsFailed = null,
+    hasConflictCondition = null,
+    conflictErrorMsg = null,
+    isPlanLocked = null,
+    hasWarnCondition = null,
+    hasDVMBlockedCondition = null,
   } = plan?.PlanStatus;
   if (latestIsFailed) return `${latestType} Failed`;
   if (hasCriticalCondition) return `${latestType} Failed`;
   if (hasConflictCondition) return conflictErrorMsg;
-  if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasClosedCondition) return 'Closed';
   if (hasCancelingCondition) return `Canceling ${latestType}`;
   if (hasRunningMigrations) return `${latestType} Running`;
   if (hasCanceledCondition) return `${latestType} canceled`;
+  if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
+  if (isPlanLocked) return 'Pending';
   if (hasSucceededRollback) return 'Rollback succeeded';
   if (hasDVMBlockedCondition) return 'Running';
   if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
-  if (hasSucceededStageWithWarnings) return 'Stage completed with warnings';
-  if (hasSucceededMigrationWithWarnings) return 'Migration completed with warnings';
+  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Stage')
+    return 'Stage completed with warnings';
+  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Migration')
+    return 'Migration completed with warnings';
+  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Rollback')
+    return 'Rollback completed with warnings';
   if (hasSucceededMigration) return 'Migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
-  if (isPlanLocked) return 'Pending';
   return 'Waiting for status...';
 };
 
