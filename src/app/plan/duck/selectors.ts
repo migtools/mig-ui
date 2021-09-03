@@ -136,7 +136,7 @@ const getPlansWithPlanStatus = createSelector(
   [planSelector, lockedPlansSelector],
   (plans, lockedPlans) => {
     const plansWithStatus = plans.map((plan): IPlan => {
-      const isPlanLocked = !!lockedPlans.some(
+      const isPlanLocked = lockedPlans.some(
         (lockedPlan) => lockedPlan === plan.MigPlan.metadata.name
       );
 
@@ -182,18 +182,6 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
-      const hasSucceededMigrationWithWarnings = !!planMigrations.filter((m) => {
-        if (m.status?.conditions && !m.spec.stage && !m.spec.rollback) {
-          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
-        }
-      }).length;
-
-      const hasSucceededStageWithWarnings = !!planMigrations.filter((m) => {
-        if (m.status?.conditions && m.spec.stage && !m.spec.rollback) {
-          return m.status.conditions.some((c) => c.type === 'SucceededWithWarnings');
-        }
-      }).length;
-
       const hasSucceededRollback = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.rollback) {
           return (
@@ -229,8 +217,6 @@ const getPlansWithPlanStatus = createSelector(
 
       const statusObject = {
         hasSucceededMigration,
-        hasSucceededMigrationWithWarnings,
-        hasSucceededStageWithWarnings,
         hasSucceededStage,
         hasSucceededRollback,
         hasAttemptedMigration,

@@ -19,19 +19,18 @@ interface IProps {
 
 const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   const {
-    hasRunningMigrations,
-    hasNotReadyCondition,
-    hasSucceededStage,
-    hasSucceededMigration,
-    hasSucceededMigrationWithWarnings,
-    hasSucceededStageWithWarnings,
-    isPlanLocked,
-    hasConflictCondition,
-    latestIsFailed,
-    hasCriticalCondition,
-    hasWarnCondition,
-    hasDVMBlockedCondition,
-  } = plan.PlanStatus;
+    hasRunningMigrations = null,
+    hasNotReadyCondition = null,
+    hasSucceededStage = null,
+    hasSucceededMigration = null,
+    hasSucceededWithWarningsCondition = null,
+    isPlanLocked = null,
+    hasConflictCondition = null,
+    latestIsFailed = null,
+    hasCriticalCondition = null,
+    hasWarnCondition = null,
+    hasDVMBlockedCondition = null,
+  } = plan?.PlanStatus;
 
   if (latestIsFailed || hasCriticalCondition) {
     return (
@@ -64,8 +63,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   } else if (
     (hasSucceededMigration && hasWarnCondition) ||
     (hasSucceededStage && hasWarnCondition) ||
-    hasSucceededMigrationWithWarnings ||
-    hasSucceededStageWithWarnings
+    hasSucceededWithWarningsCondition
   ) {
     return (
       <span className={`pf-c-icon pf-m-warning`}>
