@@ -35,6 +35,7 @@ import { planSelectors } from '../../../plan/duck';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons/outlined-question-circle-icon';
 import { TreeContainer } from './components/TreeContainer';
 import { DefaultRootState } from '../../../../configureStore';
+import { clusterPodFetchRequest } from '../../../logs/duck/slice';
 
 export const PlanDebugPage: React.FunctionComponent = () => {
   interface IPlanDebugPageParams {
@@ -54,6 +55,7 @@ export const PlanDebugPage: React.FunctionComponent = () => {
     const { isPolling } = debug;
     if (!isPolling) {
       dispatch(startDebugPolling({ planName: planName, migrationID: migrationID }));
+      dispatch(clusterPodFetchRequest(planName));
     }
     return () => {
       // Cleanup on dismount of Debug component, stop polling
