@@ -50,26 +50,12 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedStorage) {
         errors.selectedStorage = 'Required';
       }
-      const existingNSNameMap = sourceClusterNamespaces.map((nsItem, selectedIndex: number) => {
-        const sourceNSName = nsItem.name;
-        const nsID = nsItem.id;
-        const editedNamespace = values.editedNamespaces.find(
-          (editedNS) => editedNS.id === nsItem.id
-        );
-
-        const targetNSName = editedNamespace ? editedNamespace.newName : nsItem.name;
-        return {
-          sourceNSName,
-          targetNSName,
-          nsID,
-        };
-      });
-      const hasDuplicateMapping = existingNSNameMap.find((ns, index) => {
+      const hasDuplicateMapping = values.editedNamespaces.find((ns, index) => {
         const editedNSName = values?.currentTargetNamespaceName?.name;
         const editedNSNameID = values?.currentTargetNamespaceName?.id;
         return (
-          (editedNSName === ns.targetNSName && editedNSNameID !== ns.nsID) ||
-          (editedNSName === ns.sourceNSName && editedNSNameID !== ns.nsID)
+          (editedNSName === ns.newName && editedNSNameID !== ns.id) ||
+          (editedNSName === ns.oldName && editedNSNameID !== ns.id)
         );
       });
 
