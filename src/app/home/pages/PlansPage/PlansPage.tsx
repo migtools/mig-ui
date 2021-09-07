@@ -50,13 +50,7 @@ export const PlansPage: React.FunctionComponent = () => {
   });
 
   useEffect(() => {
-    if (clusterList.length < 2) {
-      setAddPlanDisabledObj({
-        isAddPlanDisabled: true,
-        disabledText: 'A minimum of 2 clusters is required to create a plan.',
-      });
-      return;
-    } else if (storageList.length < 1) {
+    if (storageList.length < 1) {
       setAddPlanDisabledObj({
         isAddPlanDisabled: true,
         disabledText: 'A minimum of 1 replication repository is required to create a plan.',
