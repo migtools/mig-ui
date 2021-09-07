@@ -73,6 +73,7 @@ export interface IMigration {
     name: string;
     namespace: string;
     creationTimestamp?: string;
+    annotations?: Record<string, string | undefined>;
   };
   spec: {
     migPlanRef: {
@@ -171,6 +172,7 @@ export interface IPlan {
     hasSucceededWithWarningsCondition?: boolean;
     hasDVMBlockedCondition?: boolean;
     hasSucceededStage?: boolean;
+    hasSucceededState?: boolean;
     hasSucceededRollback?: boolean;
     hasWarnCondition?: boolean;
     isPlanLocked?: boolean;

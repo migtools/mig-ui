@@ -23,6 +23,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasSucceededWithWarningsCondition = null,
     hasSucceededStage = null,
     hasSucceededRollback = null,
+    hasSucceededState = null,
     hasCanceledCondition = null,
     hasCancelingCondition = null,
     hasCriticalCondition = null,
@@ -34,25 +35,28 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasWarnCondition = null,
     hasDVMBlockedCondition = null,
   } = plan?.PlanStatus;
-  if (latestIsFailed) return `${latestType} Failed`;
-  if (hasCriticalCondition) return `${latestType} Failed`;
+  if (isPlanLocked) return 'Pending';
+  if (latestIsFailed) return `${latestType} failed`;
+  if (hasCriticalCondition) return `${latestType} failed`;
   if (hasConflictCondition) return conflictErrorMsg;
   if (hasClosedCondition) return 'Closed';
   if (hasCancelingCondition) return `Canceling ${latestType}`;
-  if (hasRunningMigrations) return `${latestType} Running`;
+  if (hasRunningMigrations) return `${latestType} in progress`;
   if (hasCanceledCondition) return `${latestType} canceled`;
   if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
-  if (isPlanLocked) return 'Pending';
   if (hasSucceededRollback) return 'Rollback succeeded';
-  if (hasDVMBlockedCondition) return 'Running';
+  if (hasDVMBlockedCondition) return 'In progress';
   if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
   if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Stage')
     return 'Stage completed with warnings';
+  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'State migration')
+    return 'State migration completed with warnings';
   if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Migration')
     return 'Migration completed with warnings';
   if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Rollback')
     return 'Rollback completed with warnings';
   if (hasSucceededMigration) return 'Migration succeeded';
+  if (hasSucceededState) return 'State migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
   return 'Waiting for status...';
