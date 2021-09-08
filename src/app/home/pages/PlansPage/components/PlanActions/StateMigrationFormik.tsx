@@ -40,6 +40,8 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
   const initialValues = { ...defaultInitialValues };
   initialValues.persistentVolumes = filteredPlanPVs || [];
   if (filteredPlanPVs === null) return null;
+  const isIntraClusterPlan =
+    plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
 
   return (
     <Formik<IStateMigrationFormValues>
@@ -84,7 +86,8 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           const editedPVCNameAssociatedPVName = values?.currentTargetPVCName?.srcPVName;
           return (
             (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
-            (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName)
+            (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+            (editedPVCName === pv.sourcePVCName && isIntraClusterPlan)
           );
         });
 
@@ -93,9 +96,6 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           errors.currentTargetPVCName = 'Required';
         } else if (targetNamespaceNameError !== '') {
           errors.currentTargetPVCName = targetNamespaceNameError;
-        } else if (values?.currentTargetPVCName?.name === values?.currentTargetPVCName?.srcPVName) {
-          errors.currentTargetPVCName =
-            'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
         } else if (hasDuplicateMapping) {
           errors.currentTargetPVCName =
             'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
