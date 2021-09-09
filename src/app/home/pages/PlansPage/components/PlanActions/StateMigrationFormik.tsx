@@ -7,6 +7,7 @@ import {
 } from '../../../../../plan/duck/types';
 import utils from '../../../../../common/duck/utils';
 import { IEditedPV } from './StateMigrationTable';
+const _ = require('lodash');
 
 export interface IStateMigrationFormikProps {
   plan?: IPlan;
@@ -41,6 +42,28 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
   initialValues.persistentVolumes = filteredPlanPVs || [];
   if (filteredPlanPVs === null) return null;
 
+  const isIntraClusterPlan =
+    plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
+
+  if (isIntraClusterPlan) {
+    const newEditedPVs = filteredPlanPVs.map((pv, index) => {
+      const sourcePVCName = pv.pvc.name;
+      const includesMapping = sourcePVCName?.includes(':');
+      const mappedPVCNameArr = includesMapping && sourcePVCName?.split(':');
+
+      return {
+        oldName: includesMapping ? mappedPVCNameArr[0] : pv.pvc.name,
+        newName: includesMapping
+          ? `${mappedPVCNameArr[0]}-${_.uniqueId()}`
+          : `${pv.pvc.name}-${_.uniqueID()}`,
+        namespace: pv.pvc.namespace,
+        pvName: pv.name,
+      };
+    });
+    initialValues.editedPVs = newEditedPVs;
+  }
+  const allSelected = filteredPlanPVs.map((pv) => pv.name); // Select all (filtered)
+  initialValues.selectedPVs = allSelected || [];
   return (
     <Formik<IStateMigrationFormValues>
       initialValues={initialValues}
@@ -84,7 +107,8 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           const editedPVCNameAssociatedPVName = values?.currentTargetPVCName?.srcPVName;
           return (
             (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
-            (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName)
+            (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+            (editedPVCName === pv.sourcePVCName && isIntraClusterPlan)
           );
         });
 
@@ -93,9 +117,6 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           errors.currentTargetPVCName = 'Required';
         } else if (targetNamespaceNameError !== '') {
           errors.currentTargetPVCName = targetNamespaceNameError;
-        } else if (values?.currentTargetPVCName?.name === values?.currentTargetPVCName?.srcPVName) {
-          errors.currentTargetPVCName =
-            'This matches the current name for this namespace. Enter a new unique name for this target namespace.';
         } else if (hasDuplicateMapping) {
           errors.currentTargetPVCName =
             'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
