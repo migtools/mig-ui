@@ -40,7 +40,15 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
   const isPausedCondition = migration?.tableStatus.migrationState === 'paused';
   const isWarningCondition = migration?.tableStatus.migrationState === 'warn';
   const isErrorCondition = migration?.tableStatus.migrationState === 'error';
-  const type = migration?.spec?.stage ? 'Stage' : 'Final';
+  const stateMigrationAnnotation =
+    migration?.metadata?.annotations &&
+    migration.metadata.annotations['migration.openshift.io/state-transfer'];
+
+  const type = stateMigrationAnnotation
+    ? 'State migration'
+    : migration?.spec?.stage
+    ? 'Stage'
+    : 'Final';
 
   return (
     <>
