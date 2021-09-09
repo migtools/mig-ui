@@ -223,7 +223,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     type="Migrations"
                     planName={planName}
                     migrations={migrations}
-                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    isPlanLocked={plan?.PlanStatus?.isPlanLocked}
                     id="migrations-history-expansion-table"
                   />
                   <AccessLogsModal
