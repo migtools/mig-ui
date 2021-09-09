@@ -52,9 +52,9 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   }
   const isLoadingAnalytic: boolean =
     // initial loading state to show when a miganalytic is first started or updated.
-    !!(plan?.PlanStatus?.analyticPercentComplete !== 100 && plan.PlanStatus.latestAnalytic) ||
+    !!(plan?.PlanStatus?.analyticPercentComplete !== 100 && plan?.PlanStatus?.latestAnalytic) ||
     // Plan is currenlty being Closed/Deleted
-    plan.PlanStatus.isPlanLocked ||
+    plan?.PlanStatus?.isPlanLocked ||
     // Analytic is being manually refreshed
     isRefreshingAnalytic;
 
@@ -75,7 +75,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
           Namespaces page
         </Title>
       </PageSection>
-      {plan.PlanStatus.hasNotReadyCondition ? (
+      {plan?.PlanStatus?.hasNotReadyCondition ? (
         <PageSection>
           <Bullseye>
             <EmptyState variant="small">
@@ -121,7 +121,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
                         {!isLoadingAnalytic && (
                           <Text component={TextVariants.small}>
                             Last updated:{` `}
-                            {dayjs(plan.PlanStatus.latestAnalyticTransitionTime)
+                            {dayjs(plan?.PlanStatus?.latestAnalyticTransitionTime)
                               .local()
                               .format('YYYY-MM-DD HH:mm:ss')}
                           </Text>
@@ -131,10 +131,10 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
                   </Flex>
                   <AnalyticsTable
                     type="Migrations"
-                    analyticPercentComplete={plan.PlanStatus.analyticPercentComplete}
-                    latestAnalytic={plan.PlanStatus.latestAnalytic}
+                    analyticPercentComplete={plan?.PlanStatus?.analyticPercentComplete}
+                    latestAnalytic={plan?.PlanStatus?.latestAnalytic}
                     migAnalytics={plan.Analytics}
-                    isPlanLocked={plan.PlanStatus.isPlanLocked}
+                    isPlanLocked={plan?.PlanStatus?.isPlanLocked}
                     isRefreshingAnalytic={isRefreshingAnalytic}
                     id="migrations-history-expansion-table"
                   />

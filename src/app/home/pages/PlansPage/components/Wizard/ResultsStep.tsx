@@ -113,8 +113,8 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
       </Bullseye>
       {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
         <ConditionsGrid
-          conditions={currentPlan.PlanStatus.displayedConditions}
-          incompatibleNamespaces={currentPlan.status.incompatibleNamespaces}
+          conditions={currentPlan?.PlanStatus?.displayedConditions}
+          incompatibleNamespaces={currentPlan?.status.incompatibleNamespaces}
         />
       )}
       <Flex className={(spacing.mtMd, flex.justifyContentCenter)}>
