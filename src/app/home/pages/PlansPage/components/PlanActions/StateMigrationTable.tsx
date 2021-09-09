@@ -72,7 +72,7 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
 
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
 
-  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [allRowsSelected, setAllRowsSelected] = React.useState(true);
   const [editableRow, setEditableRow] = React.useState(null);
   const currentTargetPVCNameKey = 'currentTargetPVCName';
   const hasSelectedPVs = !!values.selectedPVs.length;
@@ -111,11 +111,6 @@ const StateMigrationTable: React.FunctionComponent<IStateMigrationTableProps> = 
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
-  useEffect(() => {
-    setAllRowsSelected(true);
-    const allSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
-    setFieldValue('selectedPVs', allSelected);
-  }, []);
   const rows = currentPageItems.map((pvItem: IPlanPersistentVolume) => {
     let targetPVCName = pvItem.pvc.name;
     let sourcePVCName = pvItem.pvc.name;
