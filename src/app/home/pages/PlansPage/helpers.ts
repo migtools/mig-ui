@@ -47,13 +47,13 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasSucceededRollback) return 'Rollback succeeded';
   if (hasDVMBlockedCondition) return 'In progress';
   if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Stage')
+  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Stage')
     return 'Stage completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'State migration')
+  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'State migration')
     return 'State migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Migration')
+  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Migration')
     return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Rollback')
+  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Rollback')
     return 'Rollback completed with warnings';
   if (hasSucceededMigration) return 'Migration succeeded';
   if (hasSucceededState) return 'State migration succeeded';
