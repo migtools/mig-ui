@@ -157,12 +157,30 @@ const getPlansWithPlanStatus = createSelector(
 
       const latestMigration = planMigrations.length ? planMigrations[0] : null;
       const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
-      // latestType will be one of: 'Rollback', 'Stage', 'Migration'
-      const latestType = latestMigration?.spec?.rollback
+      // latestType will be one of: 'State', 'Rollback', 'Stage', 'Migration'
+      const stateMigrationAnnotation =
+        latestMigration?.metadata?.annotations &&
+        latestMigration.metadata.annotations['migration.openshift.io/state-transfer'];
+
+      const latestType = stateMigrationAnnotation
+        ? 'State migration'
+        : latestMigration?.spec?.rollback
         ? 'Rollback'
         : latestMigration?.spec?.stage
         ? 'Stage'
-        : 'Migration';
+        : 'Cutover';
+      const hasSucceededState = !!planMigrations.filter((m) => {
+        const stateMigrationAnnotation =
+          m?.metadata?.annotations &&
+          m.metadata.annotations['migration.openshift.io/state-transfer'];
+
+        if (m.status?.conditions && m.spec.stage && stateMigrationAnnotation) {
+          return (
+            m.status.conditions.some((c) => c.type === 'Succeeded') &&
+            !m.status.conditions.some((c) => c.type === 'Canceled')
+          );
+        }
+      }).length;
 
       const hasSucceededStage = !!planMigrations.filter((m) => {
         if (m.status?.conditions && m.spec.stage) {
@@ -218,6 +236,7 @@ const getPlansWithPlanStatus = createSelector(
       const statusObject = {
         hasSucceededMigration,
         hasSucceededStage,
+        hasSucceededState,
         hasSucceededRollback,
         hasAttemptedMigration,
         finalMigrationComplete,

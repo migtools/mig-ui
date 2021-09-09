@@ -31,8 +31,19 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   isPlanLocked,
   planName,
 }) => {
-  const getSortValues = (migration: any) => {
-    const type = migration.spec.stage ? 'Stage' : 'Migration';
+  const getSortValues = (migration: IMigration) => {
+    const stateMigrationAnnotation =
+      migration.metadata.annotations &&
+      migration.metadata.annotations['migration.openshift.io/state-transfer'];
+
+    const type = stateMigrationAnnotation
+      ? 'State migration'
+      : migration?.spec?.rollback
+      ? 'Rollback'
+      : migration?.spec?.stage
+      ? 'Stage'
+      : 'Cutover';
+
     const { tableStatus } = migration;
     return [type, tableStatus.start, tableStatus.end, ''];
   };
@@ -54,8 +65,17 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
     // Type should be rollback if spec.rollback=true, else use value in spec.stage
-    const nonRollbackMigrationType = migration.spec.stage ? 'Stage' : 'Migration';
-    const type = migration.spec.rollback ? 'Rollback' : nonRollbackMigrationType;
+    const stateMigrationAnnotation =
+      migration.metadata.annotations &&
+      migration.metadata.annotations['migration.openshift.io/state-transfer'];
+
+    const type = stateMigrationAnnotation
+      ? 'State migration'
+      : migration?.spec?.rollback
+      ? 'Rollback'
+      : migration?.spec?.stage
+      ? 'Stage'
+      : 'Cutover';
 
     rows.push({
       cells: [
