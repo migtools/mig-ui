@@ -60,6 +60,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     isPlanLocked = null,
     hasCopyPVs = null,
   } = plan?.PlanStatus;
+  const isIntraClusterPlan =
+    plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
 
   const editPlan = () => {
     toggleEditWizardOpen();
@@ -82,6 +84,46 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       }
     >
       State
+    </DropdownItem>
+  );
+  const stageItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleStageModalOpen();
+      }}
+      key="stagePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked ||
+        isIntraClusterPlan
+      }
+    >
+      Stage
+    </DropdownItem>
+  );
+  const cutoverItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleMigrateModalOpen();
+      }}
+      key="migratePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked ||
+        isIntraClusterPlan
+      }
+    >
+      Cutover
     </DropdownItem>
   );
 
@@ -121,40 +163,41 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       </DropdownItem>
     </DropdownGroup>,
     <DropdownGroup label="Migrations" key="migrations">
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleMigrateModalOpen();
-        }}
-        key="migratePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Cutover
-      </DropdownItem>
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleStageModalOpen();
-        }}
-        key="stagePlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked
-        }
-      >
-        Stage
-      </DropdownItem>
+      {isIntraClusterPlan ? (
+        <Tooltip
+          position={PopoverPosition.bottom}
+          content={
+            <div>
+              Stage is not supported for intra-cluster migrations. Please use the State migration
+              option.
+            </div>
+          }
+          aria-label="disabled state details"
+          maxWidth="30rem"
+        >
+          {stageItem}
+        </Tooltip>
+      ) : (
+        stageItem
+      )}
+      {isIntraClusterPlan ? (
+        <Tooltip
+          position={PopoverPosition.bottom}
+          content={
+            <div>
+              Cutover is not supported for intra-cluster migrations. Please use the State migration
+              option.
+            </div>
+          }
+          aria-label="disabled state details"
+          maxWidth="30rem"
+        >
+          {cutoverItem}
+        </Tooltip>
+      ) : (
+        cutoverItem
+      )}
+
       {!hasCopyPVs ? (
         <Tooltip
           position={PopoverPosition.bottom}
