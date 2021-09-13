@@ -26,6 +26,7 @@ import {
   MigResource,
   MigResourceKind,
 } from '../../../client/helpers';
+import { IPollingParams } from '../context';
 
 function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState> {
   const res: DefaultRootState = yield select();
@@ -138,7 +139,7 @@ function* fetchMTCVersion(action: any): Generator<any, any, any> {
 }
 
 function* poll(action: any): Generator<any, any, any> {
-  const params = { ...action.params };
+  const params: IPollingParams = { ...action.params };
   const state = yield* getState();
 
   while (true) {
@@ -146,8 +147,11 @@ function* poll(action: any): Generator<any, any, any> {
       const response = yield call(params.asyncFetch);
       params.callback(response);
     } catch (err) {
-      //handle generic errors here
-      console.log('error', err);
+      yield put(
+        alertErrorTimeout(
+          `${params.pollName} polling failed. Check your network connection and try again.`
+        )
+      );
     }
     yield delay(params.delay);
   }
@@ -193,8 +197,8 @@ export function* progressTimeoutSaga(action: any) {
 export function* errorTimeoutSaga(action: any) {
   try {
     yield put(alertError(action.payload));
-    yield delay(ErrorToastTimeout);
-    yield put(alertClear());
+    // yield delay(ErrorToastTimeout);
+    // yield put(alertClear());
   } catch (error) {
     put(alertClear());
   }

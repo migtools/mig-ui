@@ -6,8 +6,8 @@ import { PlanActions, planSagas } from '../../plan/duck';
 import { storageSagas } from '../../storage/duck';
 import { StorageActions } from '../../storage/duck/actions';
 import { StatusPollingInterval } from '../duck/sagas';
-interface IPollingParams {
-  asyncFetch: (action: any) => void;
+export interface IPollingParams {
+  asyncFetch: any;
   callback: (response: any) => boolean;
   delay: number;
   retryOnFailure: boolean;
@@ -95,7 +95,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'plan',
+      pollName: 'Plan',
     };
     dispatch(PlanActions.startPlanPolling(planPollParams));
   };
@@ -108,7 +108,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'cluster',
+      pollName: 'Cluster',
     };
     dispatch(ClusterActions.startClusterPolling(clusterPollParams));
   };
@@ -121,7 +121,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'storage',
+      pollName: 'Storage',
     };
     dispatch(StorageActions.startStoragePolling(storagePollParams));
   };
@@ -134,7 +134,7 @@ export const PollingContextProvider: React.FunctionComponent<IPollingContextProv
       retryOnFailure: true,
       retryAfter: 5,
       stopAfterRetries: 2,
-      pollName: 'hook',
+      pollName: 'Hook',
     };
     dispatch(PlanActions.startHookPolling(hookPollParams));
   };

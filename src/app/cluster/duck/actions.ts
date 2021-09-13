@@ -1,6 +1,7 @@
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigCluster } from '../../../client/resources/conversions';
 import { ICluster } from './types';
+import { IPollingParams } from '../../common/context';
 
 export const ClusterActionTypes = {
   UPDATE_CLUSTERS: 'UPDATE_CLUSTERS',
@@ -101,7 +102,7 @@ const updateClusterRequest = (clusterValues: any) => ({
   clusterValues,
 });
 
-const startClusterPolling = (params?: any) => ({
+const startClusterPolling = (params?: IPollingParams) => ({
   type: ClusterActionTypes.CLUSTER_POLL_START,
   params,
 });

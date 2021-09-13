@@ -1,6 +1,7 @@
 import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigStorage } from '../../../client/resources/conversions';
 import { IStorage } from './types';
+import { IPollingParams } from '../../common/context/PollingContext';
 
 export const StorageActionTypes = {
   MIG_STORAGE_FETCH_REQUEST: 'MIG_STORAGE_FETCH_REQUEST',
@@ -108,7 +109,7 @@ const updateStorageRequest = (storageValues: any) => ({
   storageValues,
 });
 
-const startStoragePolling = (params?: any) => ({
+const startStoragePolling = (params?: IPollingParams) => ({
   type: StorageActionTypes.STORAGE_POLL_START,
   params,
 });

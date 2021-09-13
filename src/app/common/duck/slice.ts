@@ -38,7 +38,9 @@ const commonSlice = createSlice({
       //Trigger saga
     },
     alertError(state, action: PayloadAction<string>) {
-      state.errorText = action.payload;
+      if (state.errorText === null) {
+        state.errorText = action.payload;
+      }
     },
     alertErrorTimeout(state, action: PayloadAction<string>) {
       //Trigger saga
