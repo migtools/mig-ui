@@ -21,6 +21,7 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';
 import { formatGolangTimestamp } from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
+import GlobalPageHeader from '../../../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 interface IMigrationDetailsPageParams {
   planName: string;
@@ -52,7 +53,7 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <PageSection variant="light">
+      <GlobalPageHeader title="Migration details">
         <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
@@ -66,10 +67,7 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
             </BreadcrumbItem>
           )}
         </Breadcrumb>
-        <Title headingLevel="h1" size="2xl">
-          Migration details
-        </Title>
-      </PageSection>
+      </GlobalPageHeader>
       {isPausedCondition && (
         <PageSection>
           <Alert variant="warning" isInline title="Migration may be stuck.">

@@ -33,6 +33,7 @@ import {
   fetchMTCVersionRequest,
   ICommonReducerState,
 } from '../../../common/duck/slice';
+import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -76,13 +77,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
 
   return (
     <>
-      <PageSection variant="light">
-        <TextContent>
-          <Text component="h1" className={spacing.mbAuto}>
-            Clusters
-          </Text>
-        </TextContent>
-      </PageSection>
+      <GlobalPageHeader title="Clusters"></GlobalPageHeader>
       {common.versionOutOfDateString && (
         <PageSection>
           <Alert

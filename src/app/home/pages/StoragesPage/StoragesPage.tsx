@@ -25,6 +25,7 @@ import AddEditStorageModal from './components/AddEditStorageModal';
 import { IStorage } from '../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 import { DefaultRootState } from '../../../../configureStore';
+import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 interface IStoragesPageBaseProps {
   currentStorage: IStorage;
@@ -48,13 +49,7 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   return (
     <>
-      <PageSection variant="light">
-        <TextContent>
-          <Text component="h1" className={spacing.mbAuto}>
-            Replication repositories
-          </Text>
-        </TextContent>
-      </PageSection>
+      <GlobalPageHeader title="Replication repositories"></GlobalPageHeader>
       <PageSection>
         {isFetchingInitialStorages ? (
           <Bullseye>

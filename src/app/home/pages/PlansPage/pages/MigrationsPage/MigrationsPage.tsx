@@ -44,6 +44,7 @@ import MigrateModal from '../../components/PlanActions/MigrateModal';
 import RollbackModal from '../../components/PlanActions/RollbackModal';
 import StageModal from '../../components/PlanActions/StageModal';
 import StateMigrationModal from '../../components/PlanActions/StateMigrationModal';
+import GlobalPageHeader from '../../../../../common/components/GlobalPageHeader/GlobalPageHeader';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -176,7 +177,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
     <>
       <Switch>
         <Route exact path={path}>
-          <PageSection variant="light">
+          <GlobalPageHeader title="Migrations">
             <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
               <BreadcrumbItem>
                 <Link to="/plans">Plans</Link>
@@ -185,10 +186,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                 {planName}
               </BreadcrumbItem>
             </Breadcrumb>
-            <Title headingLevel="h1" size="2xl">
-              Migrations
-            </Title>
-          </PageSection>
+          </GlobalPageHeader>
           {!plan ? (
             <Redirect to="/" />
           ) : (

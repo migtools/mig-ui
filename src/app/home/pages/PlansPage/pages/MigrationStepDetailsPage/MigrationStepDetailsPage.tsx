@@ -19,6 +19,7 @@ import { planSelectors } from '../../../../../plan/duck';
 import MigrationStepDetailsTable from './MigrationStepDetailsTable';
 import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
+import GlobalPageHeader from '../../../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 interface IMigrationStepDetailsPageParams {
   planName: string;
@@ -42,7 +43,7 @@ export const MigrationStepDetailsPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <PageSection variant="light">
+      <GlobalPageHeader title={step ? getStepPageTitle(step) : 'Step details'}>
         <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
@@ -63,12 +64,7 @@ export const MigrationStepDetailsPage: React.FunctionComponent = () => {
             </BreadcrumbItem>
           )}
         </Breadcrumb>
-        {step && (
-          <Title headingLevel="h1" size="2xl">
-            {getStepPageTitle(step)}
-          </Title>
-        )}
-      </PageSection>
+      </GlobalPageHeader>
       {step && migration && (
         <PageSection>
           <Card>

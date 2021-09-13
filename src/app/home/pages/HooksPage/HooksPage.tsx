@@ -38,6 +38,7 @@ import HooksFormContainer from '../PlansPage/components/Wizard/HooksFormContaine
 import { IMigHook } from './types';
 import HookActions from './HookActions';
 import { DefaultRootState } from '../../../../configureStore';
+import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 const styles = require('./HooksPage.module').default;
 const classNames = require('classnames');
@@ -206,15 +207,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
   );
   return (
     <>
-      <PageSection variant="light">
-        <TextContent>
-          <Text component="h1" className={spacing.mbAuto}>
-            Hooks
-          </Text>
-        </TextContent>
-      </PageSection>
+      <GlobalPageHeader title="Hooks"></GlobalPageHeader>
       <PageSection>
-        {/* TODO: isFetchingInitialHooks */}
         {isUpdatingGlobalHookList || isFetchingInitialHooks ? (
           <Bullseye>
             <EmptyState variant="large">

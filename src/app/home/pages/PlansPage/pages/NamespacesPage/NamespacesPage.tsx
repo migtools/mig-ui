@@ -28,6 +28,7 @@ import AnalyticsTable from '../../components/AnalyticsTable';
 import dayjs from 'dayjs';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { DefaultRootState } from '../../../../../../configureStore';
+import GlobalPageHeader from '../../../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 interface INamespacesPageProps {
   planList: IPlan[];
@@ -62,7 +63,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
   const error: any = null;
   return (
     <>
-      <PageSection variant="light">
+      <GlobalPageHeader title="Namespaces page">
         <Breadcrumb className={`${spacing.mbLg} ${spacing.prLg}`}>
           <BreadcrumbItem>
             <Link to="/plans">Plans</Link>
@@ -71,10 +72,7 @@ const NamespacesPage: React.FunctionComponent<INamespacesPageProps> = ({
             {planName}
           </BreadcrumbItem>
         </Breadcrumb>
-        <Title headingLevel="h1" size="2xl">
-          Namespaces page
-        </Title>
-      </PageSection>
+      </GlobalPageHeader>
       {plan?.PlanStatus?.hasNotReadyCondition ? (
         <PageSection>
           <Bullseye>

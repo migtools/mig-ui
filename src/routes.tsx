@@ -23,7 +23,7 @@ const AppRoutes: React.FunctionComponent = () => {
     <React.Fragment>
       <PollingContextProvider>
         <AlertModal alertMessage={common.progressText} alertType="info" />
-        <AlertModal alertMessage={common.errorText} alertType="danger" />
+        {/* <AlertModal alertMessage={common.errorText} alertType="danger" /> */}
         <AlertModal alertMessage={common.successText} alertType="success" />
         <AlertModal alertMessage={common.warnText} alertType="warning" />
 
