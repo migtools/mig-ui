@@ -32,7 +32,6 @@ import {
   alertProgressTimeout,
   alertWarn,
 } from '../../common/duck/slice';
-import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 import {
   IMigPlan,
@@ -199,14 +198,6 @@ function* namespaceFetchRequest(action: any): any {
   } catch (err) {
     if (utils.isTimeoutError(err)) {
       yield put(alertErrorTimeout('Timed out while fetching namespaces'));
-    } else if (utils.isSelfSignedCertError(err)) {
-      const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
-      const alertModalObj = {
-        name: 'SSL cert error',
-        errorMessage: '',
-      };
-      yield put(alertErrorModal(alertModalObj));
-      yield put(certErrorOccurred(failedUrl));
       return;
     }
     yield put(PlanActions.namespaceFetchFailure(err));
@@ -861,7 +852,7 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
 
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
@@ -902,7 +893,7 @@ function* runStageSaga(action: any): any {
 
     yield put(PlanActions.startStagePolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
@@ -1028,7 +1019,7 @@ function* runMigrationSaga(action: any): any {
 
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.migrationFailure(err));
   }
@@ -1151,7 +1142,7 @@ function* runRollbackSaga(action: any): any {
 
     yield put(PlanActions.startRollbackPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.stagingFailure(err));
   }
@@ -1396,7 +1387,7 @@ function* removeHookFromPlanSaga(action: any): any {
     yield put(PlanActions.removeHookFromPlanSuccess(name));
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.removeHookFromPlanFailure(err));
   }
@@ -1417,7 +1408,7 @@ function* removeHookSaga(action: any): any {
     yield put(PlanActions.updateHooks(updatedHooks.updatedHooks));
     yield put(alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
     yield put(PlanActions.removeHookFailure(err));
   }

@@ -30,7 +30,6 @@ import utils from '../../common/duck/utils';
 import { ICluster, IMigCluster } from './types';
 import Q from 'q';
 import { alertSuccessTimeout, alertErrorTimeout, alertErrorModal } from '../../common/duck/slice';
-import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 import { IMigMeta } from '../../auth/duck/types';
 import { ICondition } from '../../plan/duck/types';
@@ -130,7 +129,6 @@ function* removeClusterSaga(action: any): Generator<any, any, any> {
     yield put(ClusterActions.removeClusterSuccess(name));
     yield put(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
     yield put(ClusterActions.removeClusterFailure(err));
   }
 }
@@ -199,7 +197,7 @@ function* addClusterRequest(action: any): Generator<any, any, any> {
         }, 'Some cluster objects already exist ')
       );
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err.message);
     yield put(
       ClusterActions.setClusterAddEditStatus(
@@ -583,15 +581,6 @@ function* initDiscoveryCert() {
     } catch (err) {
       if (utils.isTimeoutError(err)) {
         yield put(alertErrorTimeout('Timed out while fetching namespaces'));
-        break;
-      } else if (utils.isSelfSignedCertError(err)) {
-        const failedUrl = `${discoveryClient.apiRoot()}/${namespaces.path()}`;
-        const alertModalObj = {
-          name: 'Discovery service cert',
-          errorMessage: '',
-        };
-        yield put(alertErrorModal(alertModalObj));
-        yield put(certErrorOccurred(failedUrl));
         break;
       }
       yield put(PlanActions.namespaceFetchFailure(err));

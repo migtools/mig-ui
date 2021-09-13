@@ -10,7 +10,6 @@ import {
 } from '../../../client/resources/discovery';
 import JSZip from 'jszip';
 import utils from '../../common/duck/utils';
-import { handleCertError } from './utils';
 import { alertErrorTimeout } from '../../common/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
 import {
@@ -65,7 +64,7 @@ function* downloadLog(action: any): Generator<any, any, any> {
     const file = new Blob([content], { type: 'application/zip' });
     const url = URL.createObjectURL(file);
     yield put(createLogArchive(url));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err.message));
   }
 }
@@ -101,7 +100,7 @@ function* downloadLogs(action: any): Generator<any, any, any> {
     const file = new Blob([content], { type: 'application/zip' });
     const url = URL.createObjectURL(file);
     yield put(createLogArchive(url));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err.message));
   }
 }
@@ -118,12 +117,7 @@ function* extractLogs(action: any): Generator<any, any, any> {
   try {
     const log = yield discoveryClient.getRaw(logPath);
     yield put(logsFetchSuccess(log.data));
-  } catch (err) {
-    if (utils.isSelfSignedCertError(err)) {
-      const failedUrl = `${discoveryClient.apiRoot()}`;
-      yield handleCertError(failedUrl);
-      return;
-    }
+  } catch (err: any) {
     yield put(alertErrorTimeout(err.message));
     yield put(logsFetchFailure(err));
   }
@@ -145,13 +139,9 @@ function* collectReport(action: PayloadAction<string>) {
     delete planReport.name;
     delete planReport.namespace;
     yield put(reportFetchSuccess(planReport));
-  } catch (err) {
+  } catch (err: any) {
     if (utils.isTimeoutError(err)) {
       yield put(alertErrorTimeout('Timed out while fetching plan report'));
-    } else if (utils.isSelfSignedCertError(err)) {
-      const failedUrl = `${discoveryClient.apiRoot()}`;
-      yield handleCertError(failedUrl);
-      return;
     }
     yield put(alertErrorTimeout(err.message));
     yield put(reportFetchFailure(err));
@@ -238,13 +228,9 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
 
       yield put(clusterPodFetchSuccess(logPodObject));
     }
-  } catch (err) {
+  } catch (err: any) {
     if (utils.isTimeoutError(err)) {
       yield put(alertErrorTimeout('Timed out while fetching cluster pod report'));
-    } else if (utils.isSelfSignedCertError(err)) {
-      const failedUrl = `${discoveryClient.apiRoot()}`;
-      yield handleCertError(failedUrl);
-      return;
     }
     yield put(alertErrorTimeout(err.message));
     yield put(clusterPodFetchFailure(err));

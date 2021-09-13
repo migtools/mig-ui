@@ -4,15 +4,11 @@ import { ILoginParams, IMigMeta } from './types';
 export interface IAuthReducerState {
   user: ILoginParams;
   authError: string;
-  certError: {
-    failedUrl: string;
-  };
   migMeta: IMigMeta;
 }
 
 const initialState = {
   user: null,
-  certError: null,
   authError: null,
   migMeta: {},
 } as IAuthReducerState;
@@ -26,9 +22,6 @@ const authSlice = createSlice({
     },
     loginFailure(state, action: PayloadAction<ILoginParams>) {
       state.user = null;
-    },
-    certErrorOccurred(state, action: PayloadAction<any>) {
-      state.certError = { failedUrl: action.payload };
     },
     authErrorOccurred(state, action: PayloadAction<string>) {
       state.authError = action.payload;
@@ -51,7 +44,6 @@ const authSlice = createSlice({
 export const {
   loginSuccess,
   loginFailure,
-  certErrorOccurred,
   authErrorOccurred,
   initMigMeta,
   storeLoginToken,

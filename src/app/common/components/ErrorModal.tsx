@@ -16,7 +16,6 @@ interface IProps {
 
 const ErrorModal: React.FunctionComponent<IProps> = (props) => {
   const dispatch = useDispatch();
-  const certError = useSelector((state: DefaultRootState) => state.auth.certError);
 
   usePausedPollingEffect();
   const history = useHistory();
@@ -54,39 +53,6 @@ const ErrorModal: React.FunctionComponent<IProps> = (props) => {
               </>
             )}
           </GridItem>
-          {certError && (
-            <>
-              <br />
-              <div>
-                A network error has occurred. The likely cause of the error is one of the following
-                issues:
-                <br />
-                <br />
-                <ul>
-                  <li>
-                    1) The cluster is using self-signed certificates and you have not installed the
-                    certificate authority so that it is trusted. To bypass the certificate check,
-                    navigate to the following URL to accept the certificate:
-                    <br />
-                    <br />
-                    <a target="_blank" href={certError.failedUrl}>
-                      {certError.failedUrl}
-                    </a>
-                    <br />
-                    <br />
-                    The best practice is to install the certificate authority in the browser's trust
-                    store.
-                  </li>
-                  <br />
-                  <li>
-                    2) Cross-origin resource sharing has not yet been configured. This process can
-                    take at least 10 minutes. Wait for the process to complete and then refresh your
-                    browser.
-                  </li>
-                </ul>
-              </div>
-            </>
-          )}
           <GridItem className={styles.gridMargin}></GridItem>
           <GridItem className={styles.actionButtons}>
             <Grid hasGutter>
