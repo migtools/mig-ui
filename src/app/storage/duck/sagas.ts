@@ -87,8 +87,10 @@ function* fetchStorageGenerator(): Generator<any, any, any> {
     storageList = yield storageList.data.items;
     const refs = yield Promise.all(fetchMigStorageRefs(client, storageList as IMigStorage[]));
     const groupedStorages = groupStorages(storageList, refs);
+    yield put(StorageActions.migStorageFetchSuccess());
     return { updatedStorages: groupedStorages };
   } catch (e) {
+    yield put(StorageActions.migStorageFetchFailure());
     throw e;
   }
 }
@@ -122,7 +124,7 @@ function* removeStorageSaga(action: any): Generator<any, any, any> {
 
     yield put(StorageActions.removeStorageSuccess(name));
     yield put(alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
-  } catch (err) {
+  } catch (err: any) {
     yield put(alertErrorTimeout(err));
   }
 }
@@ -178,7 +180,7 @@ function* addStorageRequest(action: any): Generator<any, any, any> {
       );
       return;
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err.message);
   }
 

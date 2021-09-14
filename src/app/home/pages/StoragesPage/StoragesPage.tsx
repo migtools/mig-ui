@@ -12,9 +12,10 @@ import {
   Button,
   Bullseye,
   Spinner,
+  EmptyStateVariant,
+  EmptyStateBody,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { StorageContext } from '../../duck/context';
 import storageSelectors from '../../../storage/duck/selectors';
 import { StorageActions } from '../../../storage/duck/actions';
@@ -26,6 +27,7 @@ import { IStorage } from '../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../common/duck/types';
 import { DefaultRootState } from '../../../../configureStore';
 import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 interface IStoragesPageBaseProps {
   currentStorage: IStorage;
@@ -35,6 +37,7 @@ interface IStoragesPageBaseProps {
   removeStorage: (storageName: string) => void;
   setCurrentStorage: (storage: IStorage) => void;
   isFetchingInitialStorages: boolean;
+  isError: boolean;
 }
 
 const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
@@ -45,13 +48,24 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
   watchStorageAddEditStatus,
   removeStorage,
   isFetchingInitialStorages,
+  isError,
 }: IStoragesPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
+  const renderErrorState = () => (
+    <EmptyState variant={EmptyStateVariant.small}>
+      <EmptyStateIcon icon={ExclamationTriangleIcon} />
+      <Title headingLevel="h5" size="lg">
+        Failed to fetch replication repositories.
+      </Title>
+      <EmptyStateBody>Please try your request again.</EmptyStateBody>
+    </EmptyState>
+  );
+
   return (
     <>
       <GlobalPageHeader title="Replication repositories"></GlobalPageHeader>
       <PageSection>
-        {isFetchingInitialStorages ? (
+        {isFetchingInitialStorages && !isError ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -76,6 +90,8 @@ const StoragesPageBase: React.FunctionComponent<IStoragesPageBaseProps> = ({
                       Add replication repository
                     </Button>
                   </EmptyState>
+                ) : isError ? (
+                  renderErrorState()
                 ) : (
                   <StoragesTable
                     storageList={storageList}
@@ -106,6 +122,7 @@ const mapStateToProps = (state: DefaultRootState) => ({
   storageAssociatedPlans: storageSelectors.getAssociatedPlans(state),
   isFetchingInitialStorages: state.storage.isFetchingInitialStorages,
   currentStorage: state.storage.currentStorage,
+  isError: state.storage.isError,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

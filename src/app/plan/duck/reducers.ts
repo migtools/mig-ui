@@ -36,6 +36,7 @@ export interface IPlanReducerState {
   isFetchingPVResources: boolean;
   isCheckingPlanStatus: boolean;
   isError: boolean;
+  isHookFetchError: boolean;
   isFetching: boolean;
   migPlanList: IPlan[];
   planSearchText: string;
@@ -67,6 +68,7 @@ export const INITIAL_STATE: IPlanReducerState = {
   isFetchingPVResources: false,
   isCheckingPlanStatus: false,
   isError: false,
+  isHookFetchError: false,
   isFetching: false,
   migPlanList: [],
   planSearchText: '',
@@ -116,8 +118,7 @@ export const migPlanFetchSuccess: PlanReducerFn = (
   state = INITIAL_STATE,
   action: ReturnType<typeof PlanActions.migPlanFetchSuccess>
 ) => {
-  const sortedList = sortPlans(action.migPlanList);
-  return { ...state, migPlanList: sortedList, isFetching: false };
+  return { ...state, isError: false, isFetching: false };
 };
 export const migPlanFetchFailure: PlanReducerFn = (
   state = INITIAL_STATE,
@@ -616,6 +617,7 @@ export const fetchPlanHooksRequest: PlanReducerFn = (
     ...state,
     currentPlanHooks: [],
     isFetchingHookList: true,
+    isHookFetchError: false,
   };
 };
 export const fetchPlanHooksSuccess: PlanReducerFn = (
@@ -626,6 +628,7 @@ export const fetchPlanHooksSuccess: PlanReducerFn = (
     ...state,
     currentPlanHooks: action.currentPlanHooks,
     isFetchingHookList: false,
+    isHookFetchError: false,
   };
 };
 export const fetchPlanHooksFailure: PlanReducerFn = (
@@ -636,6 +639,7 @@ export const fetchPlanHooksFailure: PlanReducerFn = (
     ...state,
     currentPlanHooks: [],
     isFetchingHookList: false,
+    isHookFetchError: true,
   };
 };
 
@@ -653,6 +657,7 @@ export const updateHookRequest: PlanReducerFn = (
   return {
     ...state,
     hookAddEditStatus: fetchingAddEditStatus(),
+    isHookFetchError: false,
     isUpdatingGlobalHookList: true,
   };
 };
@@ -663,6 +668,7 @@ export const updateHookSuccess: PlanReducerFn = (
   return {
     ...state,
     isUpdatingGlobalHookList: false,
+    isHookFetchError: false,
   };
 };
 
@@ -673,6 +679,7 @@ export const updateHookFailure: PlanReducerFn = (
   return {
     ...state,
     isFetchingHookList: false,
+    isHookFetchError: true,
   };
 };
 

@@ -36,7 +36,11 @@ export const setCurrentCluster: ClusterReducerFn = (state = INITIAL_STATE, actio
 };
 
 export const clusterFetchSuccess: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return { ...state, clusterList: action.clusterList, isFetchingInitialClusters: false };
+  return {
+    ...state,
+    isFetchingInitialClusters: false,
+    isError: false,
+  };
 };
 
 export const clusterFetchFailure: ClusterReducerFn = (state = INITIAL_STATE, action) => {
@@ -44,7 +48,7 @@ export const clusterFetchFailure: ClusterReducerFn = (state = INITIAL_STATE, act
 };
 
 export const clusterFetchRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
-  return { ...state, isFetchingInitialClusters: true };
+  return { ...state, isFetchingInitialClusters: true, isError: false };
 };
 
 export const addClusterRequest: ClusterReducerFn = (state = INITIAL_STATE, action) => {
@@ -93,6 +97,7 @@ export const startClusterPolling: ClusterReducerFn = (state = INITIAL_STATE, act
   return {
     ...state,
     isPolling: true,
+    isFetchingInitialClusters: true,
   };
 };
 

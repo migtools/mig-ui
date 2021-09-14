@@ -92,8 +92,10 @@ function* fetchClustersGenerator(): Generator<any, any, any> {
       fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters)
     );
     const groupedClusters = groupClusters(clusterList, refs);
+    yield put(ClusterActions.clusterFetchSuccess());
     return { updatedClusters: groupedClusters };
   } catch (e) {
+    yield put(ClusterActions.clusterFetchFailure());
     throw e;
   }
 }

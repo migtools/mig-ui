@@ -79,9 +79,8 @@ const cancelWatchClusterAddEditStatus = () => ({
   type: ClusterActionTypes.CANCEL_WATCH_CLUSTER_ADD_EDIT_STATUS,
 });
 
-const clusterFetchSuccess = (clusterList: IMigCluster[]) => ({
+const clusterFetchSuccess = () => ({
   type: ClusterActionTypes.CLUSTER_FETCH_SUCCESS,
-  clusterList,
 });
 
 const clusterFetchRequest = () => ({

@@ -173,9 +173,8 @@ const migPlanFetchRequest = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_REQUEST,
 });
 
-const migPlanFetchSuccess = (migPlanList: IPlan[]) => ({
+const migPlanFetchSuccess = () => ({
   type: PlanActionTypes.MIG_PLAN_FETCH_SUCCESS,
-  migPlanList,
 });
 
 const migPlanFetchFailure = () => ({

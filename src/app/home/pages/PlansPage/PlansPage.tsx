@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Card,
   PageSection,
@@ -12,23 +12,23 @@ import {
   Button,
   Bullseye,
   Spinner,
-  SearchInput,
-  Split,
-  SplitItem,
+  EmptyStateVariant,
+  EmptyStateBody,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import planSelectors from '../../../plan/duck/selectors';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import storageSelectors from '../../../storage/duck/selectors';
-import { IPlanReducerState, PlanActions } from '../../../plan/duck';
+import { IPlanReducerState } from '../../../plan/duck';
 import PlansTable from './components/PlansTable';
 import { useOpenModal } from '../../duck';
 import WizardContainer from './components/Wizard/WizardContainer';
 import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
 import { IAddPlanDisabledObjModel } from './types';
 import { DefaultRootState } from '../../../../configureStore';
-import { IPlan } from '../../../plan/duck/types';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
+import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
 
 export const PlansPage: React.FunctionComponent = () => {
   const planList = useSelector((state: DefaultRootState) =>
@@ -49,6 +49,16 @@ export const PlansPage: React.FunctionComponent = () => {
     disabledText: '',
   });
 
+  const renderErrorState = () => (
+    <EmptyState variant={EmptyStateVariant.small}>
+      <EmptyStateIcon icon={ExclamationTriangleIcon} />
+      <Title headingLevel="h5" size="lg">
+        Failed to fetch plans.
+      </Title>
+      <EmptyStateBody>Please try your request again.</EmptyStateBody>
+    </EmptyState>
+  );
+
   useEffect(() => {
     if (storageList.length < 1) {
       setAddPlanDisabledObj({
@@ -66,15 +76,9 @@ export const PlansPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <PageSection variant="light">
-        <TextContent>
-          <Text component="h1" className={spacing.mbAuto}>
-            Migration plans
-          </Text>
-        </TextContent>
-      </PageSection>
+      <GlobalPageHeader title="Migration plans"></GlobalPageHeader>
       <PageSection>
-        {planState.isFetchingInitialPlans ? (
+        {planState.isFetchingInitialPlans && !planState.isError ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -106,6 +110,8 @@ export const PlansPage: React.FunctionComponent = () => {
                     </div>
                   </AddPlanDisabledTooltip>
                 </EmptyState>
+              ) : planState.isError ? (
+                renderErrorState()
               ) : (
                 <CardBody>
                   <PlansTable

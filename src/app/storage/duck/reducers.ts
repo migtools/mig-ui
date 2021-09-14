@@ -43,9 +43,9 @@ export const migStorageFetchRequest: StorageReducerFn = (state = INITIAL_STATE, 
 export const migStorageFetchSuccess: StorageReducerFn = (state = INITIAL_STATE, action) => {
   return {
     ...state,
-    migStorageList: action.migStorageList,
     isFetching: false,
     isFetchingInitialStorages: false,
+    isError: false,
   };
 };
 export const migStorageFetchFailure: StorageReducerFn = (state = INITIAL_STATE, action) => {

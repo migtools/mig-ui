@@ -20,6 +20,7 @@ import {
   TextVariants,
   Popover,
   PopoverPosition,
+  EmptyStateVariant,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -39,6 +40,7 @@ import { IMigHook } from './types';
 import HookActions from './HookActions';
 import { DefaultRootState } from '../../../../configureStore';
 import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 const styles = require('./HooksPage.module').default;
 const classNames = require('classnames');
@@ -56,6 +58,7 @@ interface IHooksPageBaseProps {
   removeHookRequest: (hookName: string) => void;
   watchHookAddEditStatus: (name: string) => void;
   cancelAddEditWatch?: () => void;
+  isError: boolean;
 }
 
 const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
@@ -75,6 +78,7 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
     migMeta,
     isFetchingInitialHooks,
     cancelAddEditWatch,
+    isError,
   } = props;
 
   const defaultHookRunnerImage = migMeta?.hookRunnerImage || fallbackHookRunnerImage;
@@ -205,6 +209,20 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
       </Button>
     </EmptyState>
   );
+  const renderErrorState = () => (
+    <Card>
+      <CardBody>
+        <EmptyState variant={EmptyStateVariant.small}>
+          <EmptyStateIcon icon={ExclamationTriangleIcon} />
+          <Title headingLevel="h5" size="lg">
+            Failed to fetch hooks.
+          </Title>
+          <EmptyStateBody>Please try your request again.</EmptyStateBody>
+        </EmptyState>
+      </CardBody>
+    </Card>
+  );
+
   return (
     <>
       <GlobalPageHeader title="Hooks"></GlobalPageHeader>
@@ -220,6 +238,8 @@ const HooksPageBase: React.FunctionComponent<IHooksPageBaseProps | any> = (
               </Title>
             </EmptyState>
           </Bullseye>
+        ) : isError ? (
+          renderErrorState()
         ) : (
           <Card>
             <CardBody>
@@ -311,12 +331,12 @@ const mapStateToProps = (state: DefaultRootState) => {
     hookAddEditStatus: state.plan.hookAddEditStatus,
     isFetchingInitialHooks: state.plan.isFetchingInitialHooks,
     migMeta: state.auth.migMeta,
+    isError: state.plan.isHookFetchError,
   };
 };
 const mapDispatchToProps = (dispatch: any) => {
   return {
     addHookRequest: (migHook: IMigHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
     watchHookAddEditStatus: (hookName: string) => {
       // Push the add edit status into watching state, and start watching
       dispatch(

@@ -87,21 +87,19 @@ function* fetchPlansGenerator(): Generator<any, any, any> {
   );
   try {
     const planList: IListRes = yield client.list(planResource) as IListRes;
-
     const hookList: IListRes = yield client.list(migHookResource) as IListRes;
-
     const migrationList: IListRes = yield client.list(migMigrationResource) as IListRes;
-
     const analyticList: IListRes = yield client.list(migAnalyticResource) as IListRes;
-
     const groupedPlans: any = yield planUtils.groupPlans(
       planList.data.items,
       migrationList.data.items,
       analyticList.data.items,
       hookList.data.items
     );
+    yield put(PlanActions.migPlanFetchSuccess());
     return { updatedPlans: groupedPlans };
   } catch (e) {
+    yield put(PlanActions.migPlanFetchFailure());
     throw e;
   }
 }
@@ -1193,9 +1191,11 @@ function* fetchHooksGenerator(): any {
   try {
     let hookList = yield client.list(resource);
     hookList = yield hookList.data.items;
+    yield put(PlanActions.updateHookSuccess());
 
     return { updatedHooks: hookList };
   } catch (e) {
+    yield put(PlanActions.updateHookFailure());
     throw e;
   }
 }

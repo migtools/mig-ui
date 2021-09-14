@@ -3,8 +3,6 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Card,
   PageSection,
-  TextContent,
-  Text,
   CardBody,
   EmptyState,
   EmptyStateIcon,
@@ -14,6 +12,8 @@ import {
   Button,
   AlertActionCloseButton,
   Alert,
+  EmptyStateVariant,
+  EmptyStateBody,
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { ClusterContext } from '../../duck/context';
@@ -34,6 +34,7 @@ import {
   ICommonReducerState,
 } from '../../../common/duck/slice';
 import GlobalPageHeader from '../../../common/components/GlobalPageHeader/GlobalPageHeader';
+import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 interface IClustersPageBaseProps {
   clusterList: ICluster[];
@@ -44,6 +45,7 @@ interface IClustersPageBaseProps {
   isFetchingInitialClusters: boolean;
   setCurrentCluster: (currentCluster: ICluster) => void;
   currentCluster: ICluster;
+  isError: boolean;
 }
 
 const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
@@ -55,6 +57,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
   isFetchingInitialClusters,
   setCurrentCluster,
   currentCluster,
+  isError,
 }: IClustersPageBaseProps) => {
   const [isAddEditModalOpen, toggleAddEditModal] = useOpenModal(false);
   const common: ICommonReducerState = useSelector((state: DefaultRootState) => state.common);
@@ -72,6 +75,16 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
       <Button onClick={toggleAddEditModal} variant="primary">
         Add cluster
       </Button>
+    </EmptyState>
+  );
+
+  const renderErrorState = () => (
+    <EmptyState variant={EmptyStateVariant.small}>
+      <EmptyStateIcon icon={ExclamationTriangleIcon} />
+      <Title headingLevel="h5" size="lg">
+        Failed to fetch clusters.
+      </Title>
+      <EmptyStateBody>Please try your request again.</EmptyStateBody>
     </EmptyState>
   );
 
@@ -97,7 +110,7 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
         </PageSection>
       )}
       <PageSection>
-        {isFetchingInitialClusters ? (
+        {isFetchingInitialClusters && !isError ? (
           <Bullseye>
             <EmptyState variant="large">
               <div className="pf-c-empty-state__icon">
@@ -114,6 +127,8 @@ const ClustersPageBase: React.FunctionComponent<IClustersPageBaseProps> = ({
               <ClusterContext.Provider value={{ watchClusterAddEditStatus }}>
                 {!clusterList ? null : clusterList.length === 0 ? (
                   renderEmptyState()
+                ) : isError ? (
+                  renderErrorState()
                 ) : (
                   <ClustersTable
                     clusterList={clusterList}
@@ -144,6 +159,7 @@ const mapStateToProps = (state: DefaultRootState) => ({
   isFetchingInitialClusters: state.cluster.isFetchingInitialClusters,
   migMeta: state.auth.migMeta,
   currentCluster: state.cluster.currentCluster,
+  isError: state.cluster.isError,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

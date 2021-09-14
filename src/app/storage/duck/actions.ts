@@ -71,9 +71,8 @@ const migStorageFetchRequest = () => ({
   type: StorageActionTypes.MIG_STORAGE_FETCH_REQUEST,
 });
 
-const migStorageFetchSuccess = (migStorageList: IMigStorage[]) => ({
+const migStorageFetchSuccess = () => ({
   type: StorageActionTypes.MIG_STORAGE_FETCH_SUCCESS,
-  migStorageList,
 });
 
 const migStorageFetchFailure = () => ({
