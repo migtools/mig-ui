@@ -51,7 +51,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     return 'Stage completed with warnings';
   if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'State migration')
     return 'State migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Migration')
+  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Cutover')
     return 'Migration completed with warnings';
   if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Rollback')
     return 'Rollback completed with warnings';
