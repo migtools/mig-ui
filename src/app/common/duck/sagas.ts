@@ -126,9 +126,16 @@ function* fetchMTCVersion(action: any): Generator<any, any, any> {
       const channels = packageManifestResourceResponse.data.status.channels.map(
         (channel: any) => channel?.currentCSV
       );
+      const currentVersionList =
+        csvResourceResponse?.data?.items.filter((csvListItem: any) => {
+          return csvListItem.metadata.name.includes('mtc-operator');
+        }) || [];
+
       yield put(
         fetchMTCVersionSuccess({
-          currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+          currentVersion: currentVersionList.length
+            ? currentVersionList[0].metadata.name
+            : 'current operator version',
           versionList: channels,
           operatorType: 'mtc',
           route,
