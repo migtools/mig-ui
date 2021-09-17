@@ -552,7 +552,7 @@ const getResourceStatus = (debugRef: IDebugRefRes): IDerivedDebugStatusObject =>
       const backoffLimit = debugRef?.hookChildren?.jobStatus?.backoffLimit;
       const waitingMessage = debugRef?.hookChildren?.podStatus?.waitingMessage;
       const waitingReason = debugRef?.hookChildren?.podStatus?.waitingReason;
-      const restartWarningText = `On attempt ${restartCount} of ${backoffLimit}`;
+      const restartWarningText = `Pod restarted. Retry attempt ${restartCount} of ${backoffLimit}`;
       const restartWarningWaitingMessage = `${waitingReason} - ${waitingMessage}`;
       const hookWarningArr = [
         ...(restartCount && backoffLimit ? [restartWarningText] : []),
