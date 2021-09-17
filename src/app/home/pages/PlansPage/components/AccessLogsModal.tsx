@@ -66,7 +66,6 @@ const AccessLogsModal: React.FunctionComponent<IProps> = ({ planName, onHandleCl
         <FlexItem
           className={`${spacing.mlSm} ${styles.selectBoxStyle}`}
           alignSelf={{ default: 'alignSelfFlexEnd' }}
-          // flex={{ default: 'flex_1' }}
         >
           <SimpleSelect
             id="selectCluster"
@@ -91,8 +90,6 @@ const AccessLogsModal: React.FunctionComponent<IProps> = ({ planName, onHandleCl
             <Text>To view plain logs (for grepping or other processing):</Text>
             <ClipboardCopy isReadOnly>
               {`oc logs ${cluster.value.podName} --namespace openshift-migration -c plain`}
-              {/* oc logs --follow --selector logreader=mig --namespace openshift-migration --container
-            plain */}
             </ClipboardCopy>
           </GridItem>
         </>
