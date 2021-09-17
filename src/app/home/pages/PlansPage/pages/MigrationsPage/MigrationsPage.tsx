@@ -227,6 +227,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     id="migrations-history-expansion-table"
                   />
                   <AccessLogsModal
+                    planName={planName}
                     isOpen={accessLogsModalIsOpen}
                     onHandleClose={setAccessLogsModalIsOpen}
                   />
