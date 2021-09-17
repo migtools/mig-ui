@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, Modal, Grid, GridItem, ClipboardCopy, Flex, FlexItem } from '@patternfly/react-core';
-import { useDispatch, useSelector } from 'react-redux';
-import { clusterPodFetchRequest, ILogReducerState } from '../../../../logs/duck/slice';
+import { useSelector } from 'react-redux';
+import { ILogReducerState } from '../../../../logs/duck/slice';
 import { DefaultRootState } from '../../../../../configureStore';
 import SimpleSelect from '../../../../common/components/SimpleSelect';
 import { usePausedPollingEffect } from '../../../../common/context';
@@ -17,38 +17,37 @@ interface IProps {
 
 const AccessLogsModal: React.FunctionComponent<IProps> = ({ planName, onHandleClose, isOpen }) => {
   usePausedPollingEffect();
-  const dispatch = useDispatch();
   const [clusterList, setClusterList] = useState([]);
   const [cluster, setCluster] = useState(null);
   const logs: ILogReducerState = useSelector((state: DefaultRootState) => state.logs);
   useEffect(() => {
-    dispatch(clusterPodFetchRequest(planName));
-    if (logs.logPodObject) {
-      setClusterList([
-        {
-          toString: () => 'Host cluster',
-          value: {
-            name: 'Host cluster',
-            podName: logs.logPodObject.host.name,
-          },
+    setClusterList([
+      {
+        toString: () => 'Host cluster',
+        value: {
+          name: 'Host cluster',
+          podName: logs?.logPodObject?.host.name || 'N/A',
         },
-        {
-          toString: () => 'Source cluster',
-          value: {
-            name: 'Source cluster',
-            podName: logs.logPodObject.src.name,
-          },
+      },
+      {
+        toString: () => 'Source cluster',
+        value: {
+          name: 'Source cluster',
+          podName: logs?.logPodObject?.src.name || 'N/A',
         },
-        {
-          toString: () => 'Target cluster',
-          value: {
-            name: 'Target cluster',
-            podName: logs.logPodObject.dest.name,
-          },
+      },
+      {
+        toString: () => 'Target cluster',
+        value: {
+          name: 'Target cluster',
+          podName: logs?.logPodObject?.dest.name || 'N/A',
         },
-      ]);
-    }
-  }, []);
+      },
+    ]);
+    return () => {
+      setClusterList([]);
+    };
+  }, [logs.logPodObject]);
   return (
     <Modal variant="large" isOpen={isOpen} onClose={() => onHandleClose()} title={`View logs`}>
       <Flex>

@@ -44,12 +44,16 @@ import MigrateModal from '../../components/PlanActions/MigrateModal';
 import RollbackModal from '../../components/PlanActions/RollbackModal';
 import StageModal from '../../components/PlanActions/StageModal';
 import StateMigrationModal from '../../components/PlanActions/StateMigrationModal';
+import { clusterPodFetchRequest } from '../../../../../logs/duck/slice';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
   planName: string;
 }
 export const MigrationsPage: React.FunctionComponent = () => {
+  useEffect(() => {
+    dispatch(clusterPodFetchRequest(planName));
+  }, []);
   const { planName = null } = useParams<IMigrationsPageParams>();
   const planList: IPlan[] = useSelector((state: DefaultRootState) =>
     planSelectors.getPlansWithStatus(state)
