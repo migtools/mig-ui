@@ -28,12 +28,15 @@ const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
 
+const internalDiscoSvcUrl = 'http://discovery.openshift-migration.svc.cluster.local';
+const internalClusterApiUrl = 'https://kubernetes.default.svc.cluster.local';
+
 /** reverse proxy middleware configuration
  *
  */
 
 let clusterApiProxyOptions = {
-  target: migMeta.clusterApi,
+  target: internalClusterApiUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
@@ -47,7 +50,7 @@ let clusterApiProxyOptions = {
 };
 
 let discoveryApiProxyOptions = {
-  target: migMeta.discoveryApi,
+  target: internalDiscoSvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/discovery-api/': '/',
@@ -77,28 +80,6 @@ const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
  *
  */
 
-//Set proxy string if it exists
-const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
-let bypassProxy = false;
-if (noProxyArr && noProxyArr.length) {
-  bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
-}
-let httpOptions = {};
-let axios;
-if (proxyString && !bypassProxy) {
-  httpOptions = {
-    agent: new HttpsProxyAgent(proxyString),
-  };
-  const axiosProxyConfig = {
-    proxy: false,
-    httpsAgent: new HttpsProxyAgent(proxyString),
-  };
-  axios = require('axios').create(axiosProxyConfig);
-} else {
-  axios = require('axios');
-}
-
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
 console.log('staticDir: ', staticDir);
@@ -109,7 +90,6 @@ app.use(compression());
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
-//** proxy configuration */
 app.use('/cluster-api/', clusterApiProxy);
 app.use('/discovery-api/', discoveryApiProxy);
 
@@ -176,6 +156,24 @@ const getOAuthMeta = async () => {
     return cachedOAuthMeta;
   }
   const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+
+  //Proxy OAuth request if configured within the env
+  const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+  let httpOptions = {};
+  let axios;
+  if (proxyString) {
+    httpOptions = {
+      agent: new HttpsProxyAgent(proxyString),
+    };
+    const axiosProxyConfig = {
+      proxy: false,
+      httpsAgent: new HttpsProxyAgent(proxyString),
+    };
+    axios = require('axios').create(axiosProxyConfig);
+  } else {
+    axios = require('axios');
+  }
+
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
   return cachedOAuthMeta;
