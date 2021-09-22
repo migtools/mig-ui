@@ -16,7 +16,7 @@
     "prettier:fix": "yarn prettier . --write",
     "start": "DEVMODE=local webpack serve --hot --color --progress --info=true --config config/webpack.dev.js",
     "start:prod-server": "./scripts/prod-server.sh",
-    "start:remote": " DEPRECATED_CORS=false ./scripts/remote-dev.sh",
+    "start:remote": " DEPRECATED_CORS=false NODE_ENV=dev ./scripts/remote-dev.sh",
     "start:remote:localprod": " DEPRECATED_CORS=false ./scripts/remote-dev-localprod.sh",
     "start:remote:3": "ORIGIN3_HOST=true ./scripts/remote-dev.sh",
     "prep-remote": "./scripts/prep-remote.sh",
