@@ -26,7 +26,6 @@ const getLocalConfig = () => {
     },
     namespace: localConfig.namespace,
     configNamespace: localConfig.configNamespace,
-    discoveryApi: localConfig.discoveryApi,
     hookRunnerImage: localConfig.hookRunnerImage,
   };
   return { localConfig, migMeta };

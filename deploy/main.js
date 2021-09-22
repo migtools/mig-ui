@@ -30,15 +30,33 @@ const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('b
 
 const internalDiscoSvcUrl =
   process.env['DISCOVERY_SVC_URL'] || 'http://discovery.openshift-migration.svc.cluster.local';
-const internalClusterApiUrl =
-  process.env['CLUSTER_API_URL'] || 'https://kubernetes.default.svc.cluster.local';
+console.log('internal disc', internalDiscoSvcUrl);
+// const internalClusterApiUrl =
+//   process.env['CLUSTER_API_URL'] || 'https://kubernetes.default.svc.cluster.local';
+
+//Proxy OAuth request if configured within the env
+const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+let httpOptions = {};
+let axios;
+if (proxyString) {
+  httpOptions = {
+    agent: new HttpsProxyAgent(proxyString),
+  };
+  const axiosProxyConfig = {
+    proxy: false,
+    httpsAgent: new HttpsProxyAgent(proxyString),
+  };
+  axios = require('axios').create(axiosProxyConfig);
+} else {
+  axios = require('axios');
+}
 
 /** reverse proxy middleware configuration
  *
  */
 
 let clusterApiProxyOptions = {
-  target: internalClusterApiUrl,
+  target: migMeta.clusterApi,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
@@ -158,23 +176,6 @@ const getOAuthMeta = async () => {
     return cachedOAuthMeta;
   }
   const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
-
-  //Proxy OAuth request if configured within the env
-  const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-  let httpOptions = {};
-  let axios;
-  if (proxyString) {
-    httpOptions = {
-      agent: new HttpsProxyAgent(proxyString),
-    };
-    const axiosProxyConfig = {
-      proxy: false,
-      httpsAgent: new HttpsProxyAgent(proxyString),
-    };
-    axios = require('axios').create(axiosProxyConfig);
-  } else {
-    axios = require('axios');
-  }
 
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
