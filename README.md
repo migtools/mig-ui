@@ -41,19 +41,19 @@ server so the UI can be hacked on as easily as possible.
 
 If you would like to run the console locally, but communicate with real clusters
 on the backend, you must first configure the remote cluster acting as the UI's
-host. To do this, login to your host cluster via CLI using `oc login` & run:
-
-```
-yarn start:remote # start the UI development server, backed by remote cluster
-```
-
-from the project root.
-
+host. To do this, update the `clusterApi` in `config/config.dev.json`.
 The UI will use this cluster for oauth login and effectively run as if it were
 served from that cluster.
 
 Additionally, the remote scripts expect the OpenShift client tool `oc` to be in
 your PATH (available as "client tools" [here](https://github.com/openshift/origin/releases)).
+You should also have logged into the cluster you expect to use using `oc login`.
+
+To start the remote cluster backed dev server, run:
+
+```
+yarn start:remote # start the UI development server, backed by remote cluster
+```
 
 ## Contributing
 
