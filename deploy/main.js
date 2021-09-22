@@ -27,13 +27,33 @@ const sanitizeMigMeta = (migMeta) => {
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
+
+const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
+const clusterSvcUrl = isDevelopmentMode ? migMeta.clusterApi : process.env['CLUSTER_API_URL'];
+
+const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+let httpOptions = {};
+let axios;
+if (proxyString) {
+  httpOptions = {
+    agent: new HttpsProxyAgent(proxyString),
+  };
+  const axiosProxyConfig = {
+    proxy: false,
+    httpsAgent: new HttpsProxyAgent(proxyString),
+  };
+  axios = require('axios').create(axiosProxyConfig);
+} else {
+  axios = require('axios');
+}
 
 /** reverse proxy middleware configuration
  *
  */
 
 let clusterApiProxyOptions = {
-  target: migMeta.clusterApi,
+  target: clusterSvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
@@ -47,7 +67,7 @@ let clusterApiProxyOptions = {
 };
 
 let discoveryApiProxyOptions = {
-  target: migMeta.discoveryApi,
+  target: discoverySvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/discovery-api/': '/',
@@ -73,32 +93,6 @@ if (process.env['NODE_ENV'] === 'development') {
 const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
 const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
 
-/** proxy middleware configuration
- *
- */
-
-//Set proxy string if it exists
-const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
-let bypassProxy = false;
-if (noProxyArr && noProxyArr.length) {
-  bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
-}
-let httpOptions = {};
-let axios;
-if (proxyString && !bypassProxy) {
-  httpOptions = {
-    agent: new HttpsProxyAgent(proxyString),
-  };
-  const axiosProxyConfig = {
-    proxy: false,
-    httpsAgent: new HttpsProxyAgent(proxyString),
-  };
-  axios = require('axios').create(axiosProxyConfig);
-} else {
-  axios = require('axios');
-}
-
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
 console.log('staticDir: ', staticDir);
@@ -109,7 +103,6 @@ app.use(compression());
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
-//** proxy configuration */
 app.use('/cluster-api/', clusterApiProxy);
 app.use('/discovery-api/', discoveryApiProxy);
 
@@ -175,7 +168,8 @@ const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
+
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
   return cachedOAuthMeta;
