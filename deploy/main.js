@@ -27,14 +27,10 @@ const sanitizeMigMeta = (migMeta) => {
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+const isDevelopmentMode = process.env.NODE_ENV !== 'production';
 
-const internalDiscoSvcUrl =
-  process.env['DISCOVERY_SVC_URL'] || 'http://discovery.openshift-migration.svc.cluster.local';
-console.log('internal disc', internalDiscoSvcUrl);
-// const internalClusterApiUrl =
-//   process.env['CLUSTER_API_URL'] || 'https://kubernetes.default.svc.cluster.local';
+const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
 
-//Proxy OAuth request if configured within the env
 const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
 let httpOptions = {};
 let axios;
@@ -70,7 +66,7 @@ let clusterApiProxyOptions = {
 };
 
 let discoveryApiProxyOptions = {
-  target: internalDiscoSvcUrl,
+  target: discoverySvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/discovery-api/': '/',
@@ -95,10 +91,6 @@ if (process.env['NODE_ENV'] === 'development') {
 
 const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
 const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
-
-/** proxy middleware configuration
- *
- */
 
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
