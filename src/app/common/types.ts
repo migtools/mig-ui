@@ -7,5 +7,6 @@ export interface IMigMetaVars {
   namespace: string;
   configNamespace: string;
   oauthClientSecret: string;
+  discoveryApi: string;
   hookRunnerImage: string;
 }
