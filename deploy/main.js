@@ -27,7 +27,7 @@ const sanitizeMigMeta = (migMeta) => {
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
-const isDevelopmentMode = process.env.NODE_ENV !== 'production';
+const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
 
 const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
 
