@@ -28,8 +28,10 @@ const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
 
-const internalDiscoSvcUrl = 'http://discovery.openshift-migration.svc.cluster.local';
-const internalClusterApiUrl = 'https://kubernetes.default.svc.cluster.local';
+const internalDiscoSvcUrl =
+  process.env['DISCOVERY_SVC_URL'] || 'http://discovery.openshift-migration.svc.cluster.local';
+const internalClusterApiUrl =
+  process.env['CLUSTER_API_URL'] || 'https://kubernetes.default.svc.cluster.local';
 
 /** reverse proxy middleware configuration
  *
