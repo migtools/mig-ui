@@ -26,17 +26,15 @@ const sanitizeMigMeta = (migMeta) => {
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
 
-//Set proxy string if it exists
+const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
+const clusterSvcUrl = isDevelopmentMode ? migMeta.clusterApi : process.env['CLUSTER_API_URL'];
+
 const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
-let bypassProxy = false;
-if (noProxyArr && noProxyArr.length) {
-  bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
-}
 let httpOptions = {};
 let axios;
-if (proxyString && !bypassProxy) {
+if (proxyString) {
   httpOptions = {
     agent: new HttpsProxyAgent(proxyString),
   };
@@ -49,6 +47,51 @@ if (proxyString && !bypassProxy) {
   axios = require('axios');
 }
 
+/** reverse proxy middleware configuration
+ *
+ */
+
+let clusterApiProxyOptions = {
+  target: clusterSvcUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/cluster-api/': '/',
+  },
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
+  secure: false,
+  onProxyRes: (proxyRes, req, res) => {
+    proxyRes.headers['Content-Security-Policy'] = 'sandbox';
+    proxyRes.headers['X-Content-Security-Policy'] = 'sandbox';
+  },
+};
+
+let discoveryApiProxyOptions = {
+  target: discoverySvcUrl,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/discovery-api/': '/',
+  },
+  logLevel: process.env.DEBUG ? 'debug' : 'info',
+  secure: false,
+  onProxyRes: (proxyRes, req, res) => {
+    proxyRes.headers['Content-Security-Policy'] = 'sandbox';
+    proxyRes.headers['X-Content-Security-Policy'] = 'sandbox';
+  },
+};
+
+if (process.env['NODE_ENV'] === 'development') {
+  clusterApiProxyOptions = {
+    ...clusterApiProxyOptions,
+  };
+
+  discoveryApiProxyOptions = {
+    ...discoveryApiProxyOptions,
+  };
+}
+
+const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
+const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
+
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
 console.log('staticDir: ', staticDir);
@@ -59,6 +102,8 @@ app.use(compression());
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
+app.use('/cluster-api/', clusterApiProxy);
+app.use('/discovery-api/', discoveryApiProxy);
 
 // NOTE: Any future backend-only routes here need to also be proxied by webpack dev server (Now `webpack serve` as of webpack version 5).
 //       Add them to config/webpack.dev.js in the array under devServer.proxy.context.
@@ -122,7 +167,8 @@ const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
+
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
   return cachedOAuthMeta;
