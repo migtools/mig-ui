@@ -30,6 +30,7 @@ const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('b
 const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
 
 const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
+const clusterSvcUrl = isDevelopmentMode ? migMeta.clusterApi : process.env['CLUSTER_API_URL'];
 
 const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
 let httpOptions = {};
@@ -52,7 +53,7 @@ if (proxyString) {
  */
 
 let clusterApiProxyOptions = {
-  target: migMeta.clusterApi,
+  target: clusterSvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
@@ -167,7 +168,7 @@ const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
 
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
