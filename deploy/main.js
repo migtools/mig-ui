@@ -5,6 +5,7 @@ const compression = require('compression');
 const HttpsProxyAgent = require('https-proxy-agent');
 const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const axios = require('axios');
 
 let cachedOAuthMeta = null;
 
@@ -31,22 +32,6 @@ const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
 
 const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
 const clusterSvcUrl = isDevelopmentMode ? migMeta.clusterApi : process.env['CLUSTER_API_URL'];
-
-const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-let httpOptions = {};
-let axios;
-if (proxyString) {
-  httpOptions = {
-    agent: new HttpsProxyAgent(proxyString),
-  };
-  const axiosProxyConfig = {
-    proxy: false,
-    httpsAgent: new HttpsProxyAgent(proxyString),
-  };
-  axios = require('axios').create(axiosProxyConfig);
-} else {
-  axios = require('axios');
-}
 
 /** reverse proxy middleware configuration
  *
@@ -138,6 +123,20 @@ app.get('/login/callback', async (req, res, next) => {
   };
   try {
     const clusterAuth = await getClusterAuth();
+
+    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+    let httpOptions = {};
+    if (proxyString) {
+      httpOptions = {
+        agent: new HttpsProxyAgent(proxyString),
+      };
+    }
+
+    // If your authorization_endpoint or token_endpoint values retrieved from oauthMeta are listed in the NO_PROXY variable & a proxy is present,
+    // you may experience issues.
+    // Example endpoint values:
+    // "authorization_endpoint": "https://oauth-openshift.apps.cam-tgt-25871.qe.devcluster.openshift.com/oauth/authorize",
+    // "token_endpoint": "https://oauth-openshift.apps.cam-tgt-25871.qe.devcluster.openshift.com/oauth/token",
     const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
     const user = {
@@ -163,12 +162,11 @@ app.listen(port, () => {
 });
 
 //Helpers
-
 const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
 
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
