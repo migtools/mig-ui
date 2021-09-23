@@ -168,7 +168,7 @@ const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
 
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
