@@ -12,7 +12,7 @@ import GCPForm from '../ProviderForms/GCPForm';
 import AzureForm from '../ProviderForms/AzureForm';
 import { rootReducer } from '../../../../../../../configureStore';
 
-const store = createStore(rootReducer, {});
+const store = createStore(rootReducer);
 
 describe('<AddEditStorageModal />', () => {
   it('allows filling a S3 form with valid values', () => {
