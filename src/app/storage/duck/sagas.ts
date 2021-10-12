@@ -123,7 +123,7 @@ function* removeStorageSaga(action: any): Generator<any, any, any> {
     yield put(StorageActions.removeStorageSuccess(name));
     yield put(alertSuccessTimeout(`Successfully removed replication repository "${name}"!`));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
   }
 }
 
