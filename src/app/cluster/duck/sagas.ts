@@ -130,7 +130,7 @@ function* removeClusterSaga(action: any): Generator<any, any, any> {
     yield put(ClusterActions.removeClusterSuccess(name));
     yield put(alertSuccessTimeout(`Successfully removed cluster "${name}"!`));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(ClusterActions.removeClusterFailure(err));
   }
 }
@@ -200,7 +200,6 @@ function* addClusterRequest(action: any): Generator<any, any, any> {
       );
     }
   } catch (err) {
-    console.error(err.message);
     yield put(
       ClusterActions.setClusterAddEditStatus(
         createAddEditStatusWithMeta(AddEditState.Critical, AddEditMode.Add, err.message, '')
