@@ -125,8 +125,13 @@ app.get('/login/callback', async (req, res, next) => {
     const clusterAuth = await getClusterAuth();
 
     const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+    const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
+    let bypassProxy = false;
+    if (noProxyArr && noProxyArr.length) {
+      bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
+    }
     let httpOptions = {};
-    if (proxyString) {
+    if (proxyString && !bypassProxy) {
       httpOptions = {
         agent: new HttpsProxyAgent(proxyString),
       };
