@@ -128,7 +128,7 @@ app.get('/login/callback', async (req, res, next) => {
     const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
     let bypassProxy = false;
     if (noProxyArr && noProxyArr.length) {
-      bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
+      bypassProxy = noProxyArr.some((s) => cachedOAuthMeta?.token_endpoint?.includes(s));
     }
     let httpOptions = {};
     if (proxyString && !bypassProxy) {
