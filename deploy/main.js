@@ -126,7 +126,7 @@ app.get('/login/callback', async (req, res, next) => {
     const clusterAuth = await getClusterAuth();
     const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
     let httpOptions = {};
-    if (proxyString && !noProxy(cachedOAuthMeta?.token_endpoint)) {
+    if (proxyString && !tokenEndpointMatchesNoProxy(cachedOAuthMeta?.token_endpoint)) {
       httpOptions = {
         agent: new HttpsProxyAgent(proxyString),
       };
@@ -192,10 +192,10 @@ const noProxyDomains = (process.env.no_proxy || process.env.NO_PROXY || '')
   .map((domain) => domain.trim())
   .filter((domain) => !!domain);
 
-function noProxy(url) {
+function tokenEndpointMatchesNoProxy(url) {
   const { protocol, hostname, host } = parseUrl(url);
   // If invalid url, just return true
-  if (!protocol || !host || !hostname) {
+  if (!host || !hostname) {
     return true;
   }
   return noProxyDomains.some((domain) => host.endsWith(domain) || hostname.endsWith(domain));
