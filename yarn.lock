@@ -2096,6 +2096,13 @@ ci-info@^2.0.0:
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
 
+cidr-regex@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/cidr-regex/-/cidr-regex-3.1.1.tgz#ba1972c57c66f61875f18fd7dd487469770b571d"
+  integrity sha512-RBqYd32aDwbCMFJRL6wHOlDNYJsPNTt8vC82ErHF5vKt8QQzxm1FrkW8s/R5pVrXMf17sba09Uoy91PKiddAsw==
+  dependencies:
+    ip-regex "^4.1.0"
+
 cjs-module-lexer@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/cjs-module-lexer/-/cjs-module-lexer-0.6.0.tgz#4186fcca0eae175970aee870b9fe2d6cf8d5655f"
@@ -4238,17 +4245,29 @@ interpret@^2.2.0:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-2.2.0.tgz#1a78a0b5965c40a5416d007ad6f50ad27c417df9"
   integrity sha512-Ju0Bz/cEia55xDwUWEa8+olFpCiQoypjnQySseKtmjNrnps3P+xfpUmGr90T7yjlVJmOtybRvPXhKMbHr+fWnw==
 
+ip-range-check@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.2.0.tgz#e67f126c8fb36c8f11d4c07d7924b7e364365157"
+  integrity sha512-oaM3l/3gHbLlt/tCWLvt0mj1qUaI+STuRFnUvARGCujK9vvU61+2JsDpmkMzR4VsJhuFXWWgeKKVnwwoFfzCqw==
+  dependencies:
+    ipaddr.js "^1.0.1"
+
 ip-regex@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-2.1.0.tgz#fa78bf5d2e6913c911ce9f819ee5146bb6d844e9"
   integrity sha1-+ni/XS5pE8kRzp+BnuUUa7bYROk=
+
+ip-regex@^4.0.0, ip-regex@^4.1.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-4.3.0.tgz#687275ab0f57fa76978ff8f4dddc8a23d5990db5"
+  integrity sha512-B9ZWJxHHOHUhUjCPrMpLD4xEq35bUTClHM1S6CBU5ixQnkZmwipwgc96vAd7AAGM9TGHvJR+Uss+/Ak6UphK+Q==
 
 ip@^1.1.0, ip@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/ip/-/ip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
   integrity sha1-vd7XARQpCCjAoDnnLvJfWq7ENUo=
 
-ipaddr.js@1.9.1, ipaddr.js@^1.9.0:
+ipaddr.js@1.9.1, ipaddr.js@^1.0.1, ipaddr.js@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
@@ -4309,6 +4328,13 @@ is-ci@^2.0.0:
   integrity sha512-YfJT7rkpQB0updsdHLGWrvhBJfcfzNNawYDNIyQXJz0IViGf75O8EBPKSdvw2rF+LGCsX4FZ8tcr3b19LcZq4w==
   dependencies:
     ci-info "^2.0.0"
+
+is-cidr@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/is-cidr/-/is-cidr-4.0.2.tgz#94c7585e4c6c77ceabf920f8cde51b8c0fda8814"
+  integrity sha512-z4a1ENUajDbEl/Q6/pVBpTR1nBjjEE1X7qb7bmWYanNnPoKAvUCPFKeXV6Fe4mgTkWKBqiHIcwsI3SndiO5FeA==
+  dependencies:
+    cidr-regex "^3.1.1"
 
 is-core-module@^2.2.0:
   version "2.4.0"
@@ -4424,6 +4450,13 @@ is-installed-globally@^0.3.1:
   dependencies:
     global-dirs "^2.0.1"
     is-path-inside "^3.0.1"
+
+is-ip@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/is-ip/-/is-ip-3.1.0.tgz#2ae5ddfafaf05cb8008a62093cf29734f657c5d8"
+  integrity sha512-35vd5necO7IitFPjd/YBeqwWnyDWbuLH9ZXQdMfDA8TEo7pv5X8yfrvVO3xbJbLUlERCMvf6X0hTUamQxCYJ9Q==
+  dependencies:
+    ip-regex "^4.0.0"
 
 is-npm@^4.0.0:
   version "4.0.0"
