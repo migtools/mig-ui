@@ -205,11 +205,11 @@ function tokenEndpointMatchesNoProxy(url) {
     // token endpoint is an ip address, then we need to check to see if the
     // ip address lies within the pattern's CIDR rage
     const patternIsCidr = isCidr(pattern);
-    const hostIsIp = isIp(host);
+    const hostIsIp = isIp(hostname);
     const mustCheckRange = patternIsCidr && hostIsIp;
 
     if (mustCheckRange) {
-      return ipRangeCheck(host, pattern);
+      return ipRangeCheck(hostname, pattern);
     }
 
     // We aren't dealing with an IP range, so we can just check to see if the
