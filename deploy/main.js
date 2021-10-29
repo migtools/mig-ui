@@ -6,6 +6,7 @@ const HttpsProxyAgent = require('https-proxy-agent');
 const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const axios = require('axios');
+const { URL } = require('url');
 
 let cachedOAuthMeta = null;
 
@@ -123,15 +124,9 @@ app.get('/login/callback', async (req, res, next) => {
   };
   try {
     const clusterAuth = await getClusterAuth();
-
     const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-    const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
-    let bypassProxy = false;
-    if (noProxyArr && noProxyArr.length) {
-      bypassProxy = noProxyArr.some((s) => cachedOAuthMeta?.token_endpoint?.includes(s));
-    }
     let httpOptions = {};
-    if (proxyString && !bypassProxy) {
+    if (proxyString && !noProxy(cachedOAuthMeta?.token_endpoint)) {
       httpOptions = {
         agent: new HttpsProxyAgent(proxyString),
       };
@@ -191,3 +186,25 @@ const getClusterAuth = async () => {
     },
   });
 };
+
+const noProxyDomains = (process.env.no_proxy || process.env.NO_PROXY || '')
+  .split(',')
+  .map((domain) => domain.trim())
+  .filter((domain) => !!domain);
+
+function noProxy(url) {
+  const { protocol, hostname, host } = parseUrl(url);
+  // If invalid url, just return true
+  if (!protocol || !host || !hostname) {
+    return true;
+  }
+  return noProxyDomains.some((domain) => host.endsWith(domain) || hostname.endsWith(domain));
+}
+
+function parseUrl(value) {
+  try {
+    return new URL(value);
+  } catch (err) {
+    return new URL('');
+  }
+}
