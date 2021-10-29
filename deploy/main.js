@@ -6,6 +6,10 @@ const HttpsProxyAgent = require('https-proxy-agent');
 const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const axios = require('axios');
+const { URL } = require('url');
+const ipRangeCheck = require('ip-range-check');
+const isIp = require('is-ip');
+const isCidr = require('is-cidr');
 
 let cachedOAuthMeta = null;
 
@@ -123,10 +127,9 @@ app.get('/login/callback', async (req, res, next) => {
   };
   try {
     const clusterAuth = await getClusterAuth();
-
     const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
     let httpOptions = {};
-    if (proxyString) {
+    if (proxyString && !tokenEndpointMatchesNoProxy(cachedOAuthMeta?.token_endpoint)) {
       httpOptions = {
         agent: new HttpsProxyAgent(proxyString),
       };
@@ -186,3 +189,45 @@ const getClusterAuth = async () => {
     },
   });
 };
+
+const noProxyPatterns = (process.env.no_proxy || process.env.NO_PROXY || '')
+  .split(',')
+  .map((pattern) => pattern.trim())
+  .filter((pattern) => !!pattern);
+
+function tokenEndpointMatchesNoProxy(url) {
+  const { hostname } = parseUrl(url);
+  if (!hostname) {
+    return false;
+  }
+  const doesNoProxyMatch = noProxyPatterns.some((pattern) => {
+    // Check if the no proxy pattern is a CIDR. If it is, and the host of the
+    // token endpoint is an ip address, then we need to check to see if the
+    // ip address lies within the pattern's CIDR rage
+    const patternIsCidr = isCidr(pattern);
+    const hostIsIp = isIp(hostname);
+    const mustCheckRange = patternIsCidr && hostIsIp;
+
+    if (mustCheckRange) {
+      return ipRangeCheck(hostname, pattern);
+    }
+
+    // We aren't dealing with an IP range, so we can just check to see if the
+    // hostname of the token endpoint is concretely specified in the NO_PROXY
+    // pattern list. This should cover all three non-CIDR potential values:
+    // * Domain names: "oauth-server.apps.mycorp.com"
+    // * Domains: ".apps.mycorp.com"
+    // * Concrete IP addresses: 192.168.1.2
+    return hostname.endsWith(pattern);
+  });
+
+  return doesNoProxyMatch;
+}
+
+function parseUrl(value) {
+  try {
+    return new URL(value);
+  } catch (err) {
+    return new URL('');
+  }
+}
