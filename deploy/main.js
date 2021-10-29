@@ -7,6 +7,9 @@ const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const axios = require('axios');
 const { URL } = require('url');
+const ipRangeCheck = require('ip-range-check');
+const isIp = require('is-ip');
+const isCidr = require('is-cidr');
 
 let cachedOAuthMeta = null;
 
@@ -187,17 +190,38 @@ const getClusterAuth = async () => {
   });
 };
 
-const noProxyDomains = (process.env.no_proxy || process.env.NO_PROXY || '')
+const noProxyPatterns = (process.env.no_proxy || process.env.NO_PROXY || '')
   .split(',')
-  .map((domain) => domain.trim())
-  .filter((domain) => !!domain);
+  .map((pattern) => pattern.trim())
+  .filter((pattern) => !!pattern);
 
 function tokenEndpointMatchesNoProxy(url) {
-  const { hostname, host } = parseUrl(url);
-  if (!host || !hostname) {
+  const { hostname } = parseUrl(url);
+  if (!hostname) {
     return false;
   }
-  return noProxyDomains.some((domain) => host.endsWith(domain) || hostname.endsWith(domain));
+  const doesNoProxyMatch = noProxyPatterns.some((pattern) => {
+    // Check if the no proxy pattern is a CIDR. If it is, and the host of the
+    // token endpoint is an ip address, then we need to check to see if the
+    // ip address lies within the pattern's CIDR rage
+    const patternIsCidr = isCidr(pattern);
+    const hostIsIp = isIp(host);
+    const mustCheckRange = patternIsCidr && hostIsIp;
+
+    if (mustCheckRange) {
+      return ipRangeCheck(host, pattern);
+    }
+
+    // We aren't dealing with an IP range, so we can just check to see if the
+    // hostname of the token endpoint is concretely specified in the NO_PROXY
+    // pattern list. This should cover all three non-CIDR potential values:
+    // * Domain names: "oauth-server.apps.mycorp.com"
+    // * Domains: ".apps.mycorp.com"
+    // * Concrete IP addresses: 192.168.1.2
+    return hostname.endsWith(pattern);
+  });
+
+  return doesNoProxyMatch;
 }
 
 function parseUrl(value) {
