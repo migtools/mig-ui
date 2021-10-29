@@ -194,9 +194,8 @@ const noProxyDomains = (process.env.no_proxy || process.env.NO_PROXY || '')
 
 function tokenEndpointMatchesNoProxy(url) {
   const { hostname, host } = parseUrl(url);
-  // If invalid url, just return true
   if (!host || !hostname) {
-    return true;
+    return false;
   }
   return noProxyDomains.some((domain) => host.endsWith(domain) || hostname.endsWith(domain));
 }
