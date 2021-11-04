@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState }from 'react';
 import {
   Button,
   Radio,
@@ -7,41 +7,46 @@ import {
   WizardContextConsumer,
   Alert,
 } from '@patternfly/react-core';
-import SampleForm from './examples/SampleForm';
-import FinishedStep from './examples/FinishedStep';
+// import SampleForm from './examples/SampleForm';
+// import FinishedStep from './examples/FinishedStep';
 import { IOtherProps } from './WizardContainer';
 
-const ProgressiveWizardComponent = (props: IOtherProps)=> {
-    this.state = {
-      showCreateStep: false,
-      showUpdateStep: false,
-      showOptionsStep: false,
-      showReviewStep: false,
-      getStartedStepRadio: 'Create',
-      createStepRadio: 'Quick',
-      updateStepRadio: 'Quick',
-    };
-    this.closeWizard = () => {
+const ProgressiveWizardComponent = (props: IOtherProps) => {
+  const [migrationType, setMigrationType] = useState(null);
+  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
+
+    // this.state = {
+    //   showCreateStep: false,
+    //   showUpdateStep: false,
+    //   showOptionsStep: false,
+    //   showReviewStep: false,
+    //   getStartedStepRadio: 'Create',
+    //   createStepRadio: 'Quick',
+    //   updateStepRadio: 'Quick',
+    // };
+
+    const closeWizard = () => {
       console.log('close wizard');
     };
-    this.onGoToStep = ({ id, name }, { prevId, prevName }) => {
+
+    const onGoToStep = ({ id, name }, { prevId, prevName }) => {
       // Remove steps after the currently clicked step
       if (name === 'Get started') {
-        this.setState({
-          showReviewStep: false,
-          showOptionsStep: false,
-          showCreateStep: false,
-          showUpdateStep: false,
-        });
+        // setState({
+        //   showReviewStep: false,
+        //   showOptionsStep: false,
+        //   showCreateStep: false,
+        //   showUpdateStep: false,
+        // });
       } else if (name === 'Create options' || name === 'Update options') {
-        this.setState({
-          showReviewStep: false,
-          showOptionsStep: false,
-        });
+        // setState({
+        //   showReviewStep: false,
+        //   showOptionsStep: false,
+        // });
       } else if (name.indexOf('Substep') > -1) {
-        this.setState({
-          showReviewStep: false,
-        });
+        // setState({
+        //   showReviewStep: false,
+        // });
       }
     };
     this.getNextStep = (activeStep, callback) => {
