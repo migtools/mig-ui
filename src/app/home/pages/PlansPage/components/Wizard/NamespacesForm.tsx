@@ -19,7 +19,6 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
   usePausedPollingEffect();
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
-
   useEffect(() => {
     fetchNamespacesRequest(values.sourceCluster);
   }, []);

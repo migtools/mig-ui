@@ -36,7 +36,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   useEffect(() => {
     planNameInputRef.current.focus();
   }, []);
-  const [isFullMigration, setIsFullMigration] = useState(false);
 
   const onHandleChange = (val: any, e: any) => handleChange(e);
 
@@ -62,67 +61,83 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     },
   ];
 
-  const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
-    const clusterName = cluster.MigCluster.metadata.name;
-    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
-    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
-    const errorMessage = cluster.ClusterStatus.errorMessage;
-    return {
-      value: cluster,
-      toString: () => clusterName,
-      props: {
-        isDisabled: hasCriticalCondition,
-        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
-        children: (
-          <div>
-            {hasCriticalCondition || hasWarnCondition ? (
-              <>
-                <span className={spacing.mrSm}>{clusterName}</span>
-                <Tooltip content={<div>{errorMessage}</div>}>
-                  <span className="pf-c-icon pf-m-warning">
-                    <ExclamationTriangleIcon />
-                  </span>
-                </Tooltip>
-              </>
-            ) : (
-              <div>{clusterName}</div>
-            )}
-          </div>
-        ),
-      },
-    };
-  });
+  const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList
+    .map((cluster) => {
+      const clusterName = cluster.MigCluster.metadata.name;
+      const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+      const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
+      const errorMessage = cluster.ClusterStatus.errorMessage;
+      return {
+        value: cluster,
+        toString: () => clusterName,
+        props: {
+          isDisabled: hasCriticalCondition,
+          className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+          children: (
+            <div>
+              {hasCriticalCondition || hasWarnCondition ? (
+                <>
+                  <span className={spacing.mrSm}>{clusterName}</span>
+                  <Tooltip content={<div>{errorMessage}</div>}>
+                    <span className="pf-c-icon pf-m-warning">
+                      <ExclamationTriangleIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <div>{clusterName}</div>
+              )}
+            </div>
+          ),
+        },
+      };
+    })
+    .filter((cluster) => {
+      if (values.migrationType.value === 'full' && values.targetCluster) {
+        return cluster.value.MigCluster.metadata.name !== values.targetCluster;
+      } else {
+        return cluster;
+      }
+    });
 
-  const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
-    const clusterName = cluster.MigCluster.metadata.name;
-    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
-    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
-    const errorMessage = cluster.ClusterStatus.errorMessage;
-    return {
-      value: cluster,
-      toString: () => clusterName,
-      props: {
-        isDisabled: hasCriticalCondition,
-        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
-        children: (
-          <div>
-            {hasCriticalCondition || hasWarnCondition ? (
-              <>
-                <span className={spacing.mrSm}>{clusterName}</span>
-                <Tooltip content={<div>{errorMessage}</div>}>
-                  <span className="pf-c-icon pf-m-warning">
-                    <ExclamationTriangleIcon />
-                  </span>
-                </Tooltip>
-              </>
-            ) : (
-              <div>{clusterName}</div>
-            )}
-          </div>
-        ),
-      },
-    };
-  });
+  const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList
+    .map((cluster) => {
+      const clusterName = cluster.MigCluster.metadata.name;
+      const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+      const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
+      const errorMessage = cluster.ClusterStatus.errorMessage;
+      return {
+        value: cluster,
+        toString: () => clusterName,
+        props: {
+          isDisabled: hasCriticalCondition,
+          className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+          children: (
+            <div>
+              {hasCriticalCondition || hasWarnCondition ? (
+                <>
+                  <span className={spacing.mrSm}>{clusterName}</span>
+                  <Tooltip content={<div>{errorMessage}</div>}>
+                    <span className="pf-c-icon pf-m-warning">
+                      <ExclamationTriangleIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <div>{clusterName}</div>
+              )}
+            </div>
+          ),
+        },
+      };
+    })
+    .filter((cluster) => {
+      if (values.migrationType.value === 'full' && values.sourceCluster) {
+        return cluster.value.MigCluster.metadata.name !== values.sourceCluster;
+      } else {
+        return cluster;
+      }
+    });
 
   if (storageList.length) {
     storageOptions = storageList
@@ -224,7 +239,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </GridItem>
       </Grid>
 
-      {values.migrationType.value === 'full' && (
+      {(values.migrationType.value === 'full' || values.migrationType.value === 'state') && (
         <>
           <Grid md={6} hasGutter className={spacing.mbMd}>
             <GridItem>

@@ -22,7 +22,6 @@ import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
-  const [isFullMigration, setIsFullMigration] = useState(true);
 
   const { values, touched, errors, resetForm } = useFormikContext<IFormValues>();
 
@@ -221,7 +220,7 @@ const WizardComponent = (props: IOtherProps) => {
     ...(showResultsStep ? [resultsStep] : []),
   ];
 
-  const onGoToStep: WizardStepFunctionType = ({ id, name }, { prevId, prevName }) => {
+  const onMove: WizardStepFunctionType = ({ id, name }, { prevId, prevName }) => {
     pvUpdatePollStop();
     //
     if (stepIdReached < id) {
@@ -259,22 +258,6 @@ const WizardComponent = (props: IOtherProps) => {
     if (prevId === stepId.Hooks && id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
     }
-
-    // Remove steps after the currently clicked step
-    // if (name === 'General') {
-    //   //set migration type here
-    //   setIsFirstStep(true);
-    // }
-    // else if (name === 'Create options' || name === 'Update options') {
-    //   // setState({
-    //   //   showReviewStep: false,
-    //   //   showOptionsStep: false,
-    //   // });
-    // } else if (name.indexOf('Substep') > -1) {
-    //   // setState({
-    //   //   showReviewStep: false,
-    //   // });
-    // }
   };
 
   const getNextStep = (activeStep: any, callback?: any) => {
@@ -290,7 +273,10 @@ const WizardComponent = (props: IOtherProps) => {
         //using set timeout instead of a setState callback. Is there a react friendly way to do this?
         callback();
       });
-    } else if (activeStep.name === 'General' && values.migrationType.value === 'state') {
+    } else if (
+      activeStep.name === 'General' &&
+      (values.migrationType.value === 'scc' || values.migrationType.value === 'state')
+    ) {
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
       setShowStorageClassStep(true);
@@ -301,13 +287,19 @@ const WizardComponent = (props: IOtherProps) => {
         //using set timeout instead of a setState callback. Is there a react friendly way to do this?
         callback();
       });
+    } else {
+      setTimeout(() => {
+        //using set timeout instead of a setState callback. Is there a react friendly way to do this?
+        callback();
+      });
     }
   };
 
   const getPreviousStep = (activeStep: any, callback: any) => {
-    if (activeStep.name === 'General') {
-      console.log('activeStep is general');
-    }
+    setTimeout(() => {
+      //using set timeout instead of a setState callback. Is there a react friendly way to do this?
+      callback();
+    });
   };
 
   const CustomFooter = (
@@ -317,12 +309,22 @@ const WizardComponent = (props: IOtherProps) => {
           const isNextEnabled = () => {
             switch (activeStep.name) {
               case 'General':
-                return areFieldsTouchedAndValid([
-                  'planName',
-                  'sourceCluster',
-                  'targetCluster',
-                  'selectedStorage',
-                ]);
+                {
+                  if (values.migrationType.value === 'full') {
+                    return areFieldsTouchedAndValid([
+                      'planName',
+                      'sourceCluster',
+                      'targetCluster',
+                      'selectedStorage',
+                    ]);
+                  } else if (
+                    values.migrationType.value === 'state' ||
+                    values.migrationType.value === 'scc'
+                  ) {
+                    return areFieldsTouchedAndValid(['planName', 'sourceCluster']);
+                  }
+                }
+                break;
               case 'Namespaces':
                 return !errors.selectedNamespaces && !isFetchingNamespaceList;
               case 'Persistent Volumes':
@@ -344,7 +346,6 @@ const WizardComponent = (props: IOtherProps) => {
                 onClick={(event) => {
                   getNextStep(activeStep, onNext);
                 }}
-                // onClick={() => getNextStep(activeStep, onNext)}
                 isDisabled={!isNextEnabled()}
               >
                 {activeStep.name === 'Review' ? 'Finish' : 'Next'}
@@ -377,14 +378,13 @@ const WizardComponent = (props: IOtherProps) => {
           aria-label="wizard-modal-wrapper-id"
         >
           <Wizard
-            // onNext={onMove}
-            // onBack={onMove}
+            onNext={onMove}
+            onBack={onMove}
             title="Create a migration plan"
             onClose={handleClose}
-            steps={steps}
-            onSubmit={(event) => event.preventDefault()}
             footer={CustomFooter}
-            onGoToStep={onGoToStep}
+            steps={steps}
+            height={900}
           />
         </Modal>
       )}

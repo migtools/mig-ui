@@ -105,7 +105,9 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     const editedNamespace = values.editedNamespaces.find(
       (editedNS) => editedNS.id === namespace.id
     );
-    const targetNamespaceName = editedNamespace ? editedNamespace.newName : namespace.name;
+    const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
+    const initialTargetName = isIntraClusterMigration ? `${namespace.name}_new` : namespace.name;
+    const targetNamespaceName = editedNamespace ? editedNamespace.newName : initialTargetName;
     return {
       cells: [
         namespace.name,
