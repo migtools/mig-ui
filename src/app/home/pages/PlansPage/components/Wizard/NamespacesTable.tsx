@@ -402,25 +402,27 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                           </FlexItem>
                         </Flex>
                       ) : (
-                        <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
-                          <PencilAltIcon
-                            className={styles.clickable}
-                            type="button"
-                            size="md"
-                            onClick={() => {
-                              setEditableRow(rowIndex);
-                              handleDelayedValidation(
-                                typeof row.cells[4] === 'string' ? row.cells[4] : '',
-                                row,
-                                rowIndex
-                              );
-                              setFieldValue(currentTargetNamespaceNameKey, {
-                                name: row.cells[4],
-                                srcName: row.cells[0],
-                              });
-                            }}
-                          />
-                        </span>
+                        row.selected && (
+                          <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
+                            <PencilAltIcon
+                              className={styles.clickable}
+                              type="button"
+                              size="md"
+                              onClick={() => {
+                                setEditableRow(rowIndex);
+                                handleDelayedValidation(
+                                  typeof row.cells[4] === 'string' ? row.cells[4] : '',
+                                  row,
+                                  rowIndex
+                                );
+                                setFieldValue(currentTargetNamespaceNameKey, {
+                                  name: row.cells[4],
+                                  srcName: row.cells[0],
+                                });
+                              }}
+                            />
+                          </span>
+                        )
                       )}
                     </Td>
                   </Tr>
