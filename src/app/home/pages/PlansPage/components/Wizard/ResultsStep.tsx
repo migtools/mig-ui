@@ -14,7 +14,6 @@ import { usePausedPollingEffect } from '../../../../../common/context';
 
 interface IProps {
   startPlanStatusPolling: (planName: string) => void;
-  onClose: () => void;
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
   isPollingStatus: boolean;
@@ -25,7 +24,6 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   currentPlanStatus,
   isPollingStatus,
   startPlanStatusPolling,
-  onClose,
 }: IProps) => {
   usePausedPollingEffect();
 
@@ -88,14 +86,19 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
           <Button onClick={handlePollRestart} disabled={isPollingStatus} variant="primary">
             Retry validation
           </Button>
-          <Button onClick={onClose} variant="secondary">
+          {/* <Button onClick={onClose} variant="secondary">
             Close
-          </Button>
+          </Button> */}
         </>
       );
     }
     return (
-      <Button onClick={onClose} variant="primary">
+      <Button
+        onClick={() => {
+          console.log('handleClose');
+        }}
+        variant="primary"
+      >
         Close
       </Button>
     );

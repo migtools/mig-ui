@@ -21,7 +21,6 @@ import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
 
 const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
-  const [isFirstStep, setIsFirstStep] = useState(false);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
   const [isFullMigration, setIsFullMigration] = useState(true);
 
@@ -95,19 +94,12 @@ const WizardComponent = (props: IOtherProps) => {
 
   const generalStep = {
     id: stepId.General,
-
     name: 'General',
     component: (
       <WizardStepContainer title="General">
         <GeneralForm clusterList={clusterList} storageList={storageList} isEdit={isEdit} />
       </WizardStepContainer>
     ),
-    enableNext: areFieldsTouchedAndValid([
-      'planName',
-      'sourceCluster',
-      'targetCluster',
-      'selectedStorage',
-    ]),
   };
   const namespacesStep = {
     id: stepId.Namespaces,
@@ -121,7 +113,6 @@ const WizardComponent = (props: IOtherProps) => {
         />
       </WizardStepContainer>
     ),
-    enableNext: !errors.selectedNamespaces && !isFetchingNamespaceList,
     canJumpTo: stepIdReached >= stepId.Namespaces,
   };
   const persistentVolumesStep = {
@@ -141,10 +132,6 @@ const WizardComponent = (props: IOtherProps) => {
         />
       </WizardStepContainer>
     ),
-    enableNext:
-      !isFetchingPVList &&
-      currentPlanStatus.state !== 'Pending' &&
-      currentPlanStatus.state !== 'Critical',
     canJumpTo: stepIdReached >= stepId.PersistentVolumes,
   };
   const storageClassStep = {
@@ -198,7 +185,6 @@ const WizardComponent = (props: IOtherProps) => {
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.Hooks,
-    enableNext: !isAddHooksOpen,
     hideBackButton: isAddHooksOpen,
     hideCancelButton: isAddHooksOpen,
     nextButtonText: 'Finish',
@@ -213,53 +199,40 @@ const WizardComponent = (props: IOtherProps) => {
         currentPlanStatus={currentPlanStatus}
         isPollingStatus={isPollingStatus}
         startPlanStatusPolling={startPlanStatusPolling}
-        onClose={handleClose}
+        // onClose={handleClose}
       />
     ),
   };
 
+  const [showNamespacesStep, setShowNamespacesStep] = useState(false);
+  const [showPersistentVolumesStep, setShowPersistentVolumesStep] = useState(false);
+  const [showStorageClassStep, setShowStorageClassStep] = useState(false);
+  const [showMigrationOptionsStep, setShowMigrationOptionsStep] = useState(false);
+  const [showHooksStep, setShowHooksStep] = useState(false);
+  const [showResultsStep, setShowResultsStep] = useState(false);
+
+  const steps = [
+    generalStep,
+    ...(showNamespacesStep ? [namespacesStep] : []),
+    ...(showPersistentVolumesStep ? [persistentVolumesStep] : []),
+    ...(showStorageClassStep ? [storageClassStep] : []),
+    ...(showMigrationOptionsStep ? [migrationOptionsStep] : []),
+    ...(showHooksStep ? [hooksStep] : []),
+    ...(showResultsStep ? [resultsStep] : []),
+  ];
+
   const onGoToStep: WizardStepFunctionType = ({ id, name }, { prevId, prevName }) => {
-    // Remove steps after the currently clicked step
-    if (name === 'General') {
-      //set migration type here
-      setIsFirstStep(true);
-    }
-    // else if (name === 'Create options' || name === 'Update options') {
-    //   // setState({
-    //   //   showReviewStep: false,
-    //   //   showOptionsStep: false,
-    //   // });
-    // } else if (name.indexOf('Substep') > -1) {
-    //   // setState({
-    //   //   showReviewStep: false,
-    //   // });
-    // }
-  };
-
-  const steps = [generalStep];
-  // const steps = [
-  //   generalStep,
-  //   namespacesStep,
-  //   persistentVolumesStep,
-  //   storageClassStep,
-  //   ...(isFullMigration ? [migrationOptionsStep] : []),
-  //   ...(isFullMigration ? [hooksStep] : []),
-  //   resultsStep,
-  // ];
-
-  const onMove: WizardStepFunctionType = (newStep, prevStep) => {
-    //stop pv polling when navigating
     pvUpdatePollStop();
     //
-    if (stepIdReached < newStep.id) {
-      setStepIdReached(newStep.id as number);
+    if (stepIdReached < id) {
+      setStepIdReached(id as number);
     }
 
-    if (newStep.id === stepId.Namespaces && isEdit) {
+    if (id === stepId.Namespaces && isEdit) {
       setCurrentPlan(editPlanObj);
     }
 
-    if (prevStep.prevId === stepId.Namespaces && newStep.id !== stepId.General) {
+    if (prevId === stepId.Namespaces && id !== stepId.General) {
       // We must create the plan here so that the controller can evaluate the
       // requested namespaces and discover related PVs
 
@@ -274,109 +247,66 @@ const WizardComponent = (props: IOtherProps) => {
         addAnalyticRequest(values.planName);
       }
     }
-    if (newStep.id === stepId.Results) {
+    if (id === stepId.Results) {
       updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
       //update plan & start status polling on results page
       validatePlanRequest(values);
     }
-    if (newStep.id === stepId.Hooks) {
+    if (id === stepId.Hooks) {
       fetchPlanHooksRequest();
     }
 
-    if (prevStep.prevId === stepId.Hooks && newStep.id === stepId.StorageClass) {
+    if (prevId === stepId.Hooks && id === stepId.StorageClass) {
       setIsAddHooksOpen(false);
     }
+
+    // Remove steps after the currently clicked step
+    // if (name === 'General') {
+    //   //set migration type here
+    //   setIsFirstStep(true);
+    // }
+    // else if (name === 'Create options' || name === 'Update options') {
+    //   // setState({
+    //   //   showReviewStep: false,
+    //   //   showOptionsStep: false,
+    //   // });
+    // } else if (name.indexOf('Substep') > -1) {
+    //   // setState({
+    //   //   showReviewStep: false,
+    //   // });
+    // }
   };
-  const getNextStep = (activeStep: any, callback: any) => {
-    if (activeStep.name === 'Get started') {
-      if (getStartedStepRadio === 'Create') {
-        this.setState(
-          {
-            showCreateStep: true,
-            showUpdateStep: false,
-            showOptionsStep: false,
-            showReviewStep: false,
-          },
-          () => {
-            callback();
-          }
-        );
-      } else {
-        this.setState(
-          {
-            showCreateStep: false,
-            showUpdateStep: true,
-            showOptionsStep: false,
-            showReviewStep: false,
-          },
-          () => {
-            callback();
-          }
-        );
-      }
-    } else if (activeStep.name === 'Create options' || activeStep.name === 'Update options') {
-      this.setState(
-        {
-          showOptionsStep: true,
-          showReviewStep: false,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else if (activeStep.name === 'Substep 3') {
-      this.setState(
-        {
-          showReviewStep: true,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else {
-      callback();
+
+  const getNextStep = (activeStep: any, callback?: any) => {
+    if (activeStep.name === 'General' && values.migrationType.value === 'full') {
+      console.log('activeStep is general');
+      setShowNamespacesStep(true);
+      setShowPersistentVolumesStep(true);
+      setShowResultsStep(true);
+      setShowStorageClassStep(true);
+      setShowMigrationOptionsStep(true);
+      setShowHooksStep(true);
+      setTimeout(() => {
+        //using set timeout instead of a setState callback. Is there a react friendly way to do this?
+        callback();
+      });
+    } else if (activeStep.name === 'General' && values.migrationType.value === 'state') {
+      setShowNamespacesStep(true);
+      setShowPersistentVolumesStep(true);
+      setShowStorageClassStep(true);
+      setShowMigrationOptionsStep(false);
+      setShowHooksStep(false);
+      setShowResultsStep(false);
+      setTimeout(() => {
+        //using set timeout instead of a setState callback. Is there a react friendly way to do this?
+        callback();
+      });
     }
   };
 
-  const getPreviousStep = (activeStep, callback) => {
-    if (activeStep.name === 'Review') {
-      this.setState(
-        {
-          showReviewStep: false,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else if (activeStep.name === 'Substep 1') {
-      this.setState(
-        {
-          showOptionsStep: false,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else if (activeStep.name === 'Create options') {
-      this.setState(
-        {
-          showCreateStep: false,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else if (activeStep.name === 'Update options') {
-      this.setState(
-        {
-          showUpdateStep: false,
-        },
-        () => {
-          callback();
-        }
-      );
-    } else {
-      callback();
+  const getPreviousStep = (activeStep: any, callback: any) => {
+    if (activeStep.name === 'General') {
+      console.log('activeStep is general');
     }
   };
 
@@ -384,18 +314,44 @@ const WizardComponent = (props: IOtherProps) => {
     <WizardFooter>
       <WizardContextConsumer>
         {({ activeStep, goToStepByName, goToStepById, onNext, onBack, onClose }) => {
+          const isNextEnabled = () => {
+            switch (activeStep.name) {
+              case 'General':
+                return areFieldsTouchedAndValid([
+                  'planName',
+                  'sourceCluster',
+                  'targetCluster',
+                  'selectedStorage',
+                ]);
+              case 'Namespaces':
+                return !errors.selectedNamespaces && !isFetchingNamespaceList;
+              case 'Persistent Volumes':
+                return (
+                  !isFetchingPVList &&
+                  currentPlanStatus.state !== 'Pending' &&
+                  currentPlanStatus.state !== 'Critical'
+                );
+              case 'Hooks':
+                return !isAddHooksOpen;
+            }
+          };
+
           return (
             <>
               <Button
                 variant="primary"
                 type="submit"
-                onClick={() => getNextStep(activeStep, onNext)}
+                onClick={(event) => {
+                  getNextStep(activeStep, onNext);
+                }}
+                // onClick={() => getNextStep(activeStep, onNext)}
+                isDisabled={!isNextEnabled()}
               >
                 {activeStep.name === 'Review' ? 'Finish' : 'Next'}
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => this.getPreviousStep(activeStep, onBack)}
+                onClick={() => getPreviousStep(activeStep, onBack)}
                 className={activeStep.name === 'Get Started' ? 'pf-m-disabled' : ''}
               >
                 Back

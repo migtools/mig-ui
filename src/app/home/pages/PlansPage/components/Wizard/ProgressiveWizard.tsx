@@ -49,9 +49,9 @@ const ProgressiveWizardComponent = (props: IOtherProps) => {
         // });
       }
     };
-    this.getNextStep = (activeStep, callback) => {
+    const getNextStep = (activeStep:any, callback:any) => {
       if (activeStep.name === 'Get started') {
-        if (this.state.getStartedStepRadio === 'Create') {
+        if (getStartedStepRadio === 'Create') {
           this.setState(
             {
               showCreateStep: true,
@@ -295,6 +295,7 @@ const ProgressiveWizardComponent = (props: IOtherProps) => {
         </WizardContextConsumer>
       </WizardFooter>
     );
+
     const title = 'Progressive wizard';
     return (
       <Wizard

@@ -36,10 +36,31 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   useEffect(() => {
     planNameInputRef.current.focus();
   }, []);
+  const [isFullMigration, setIsFullMigration] = useState(false);
 
   const onHandleChange = (val: any, e: any) => handleChange(e);
 
   let storageOptions: string[] = ['No valid storage found'];
+  interface IMigrationTypeOption extends OptionWithValue {
+    value: 'full' | 'state' | 'scc';
+  }
+  const migrationTypeOptions: IMigrationTypeOption[] = [
+    {
+      value: 'full',
+      toString: () =>
+        'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
+    },
+    {
+      value: 'state',
+      toString: () =>
+        'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+    },
+    {
+      value: 'scc',
+      toString: () =>
+        'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
+    },
+  ];
 
   const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
     const clusterName = cluster.MigCluster.metadata.name;
@@ -140,10 +161,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   return (
     <Form>
-      <Title headingLevel="h1" size="md" className={styles.fieldGridTitle}>
-        Give your plan a name
-      </Title>
-
       <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
@@ -169,10 +186,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </GridItem>
       </Grid>
 
-      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
-        Select source and target clusters
-      </Title>
-
       <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
@@ -190,49 +203,67 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             />
           </FormGroup>
         </GridItem>
+      </Grid>
 
+      <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
-            label="Target cluster"
+            label="Migration type"
             isRequired
-            fieldId="targetCluster"
-            helperTextInvalid={touched.targetCluster && errors.targetCluster}
-            validated={validatedState(touched.targetCluster, errors.targetCluster)}
+            fieldId="migrationType"
+            className={spacing.mbMd}
           >
             <SimpleSelect
-              id="targetCluster"
-              onChange={handleTargetChange}
-              options={targetClusterOptions}
-              value={values.targetCluster}
-              placeholderText="Select target..."
+              id="migrationType"
+              onChange={(option) => setFieldValue('migrationType', option)}
+              value={values.migrationType.toString()}
+              placeholderText="Select..."
+              options={migrationTypeOptions}
             />
           </FormGroup>
         </GridItem>
       </Grid>
 
-      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
-        Select a replication repository
-      </Title>
-
-      <Grid md={6} hasGutter>
-        <GridItem>
-          <FormGroup
-            label="Repository"
-            isRequired
-            fieldId="selectedStorage"
-            helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
-            validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
-          >
-            <SimpleSelect
-              id="selectedStorage"
-              onChange={handleStorageChange}
-              options={storageOptions}
-              value={values.selectedStorage}
-              placeholderText="Select repository..."
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
+      {values.migrationType.value === 'full' && (
+        <>
+          <Grid md={6} hasGutter className={spacing.mbMd}>
+            <GridItem>
+              <FormGroup
+                label="Target cluster"
+                isRequired
+                fieldId="targetCluster"
+                helperTextInvalid={touched.targetCluster && errors.targetCluster}
+                validated={validatedState(touched.targetCluster, errors.targetCluster)}
+              >
+                <SimpleSelect
+                  id="targetCluster"
+                  onChange={handleTargetChange}
+                  options={targetClusterOptions}
+                  value={values.targetCluster}
+                  placeholderText="Select target..."
+                />
+              </FormGroup>
+            </GridItem>
+            <GridItem>
+              <FormGroup
+                label="Repository"
+                isRequired
+                fieldId="selectedStorage"
+                helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
+                validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
+              >
+                <SimpleSelect
+                  id="selectedStorage"
+                  onChange={handleStorageChange}
+                  options={storageOptions}
+                  value={values.selectedStorage}
+                  placeholderText="Select repository..."
+                />
+              </FormGroup>
+            </GridItem>
+          </Grid>
+        </>
+      )}
     </Form>
   );
 };

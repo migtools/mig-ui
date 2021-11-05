@@ -26,9 +26,11 @@ import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/du
 import WizardFormik from './WizardFormik';
 import { IMigHook } from '../../../HooksPage/types';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 
 export interface IFormValues {
   planName: string;
+  migrationType: OptionWithValue;
   sourceCluster: string;
   sourceTokenRef: INameNamespaceRef;
   targetCluster: string;
@@ -122,6 +124,7 @@ export const defaultInitialValues: IFormValues = {
   pvStorageClassAssignment: {},
   pvVerifyFlagAssignment: {},
   pvCopyMethodAssignment: {},
+  migrationType: { value: '', toString: () => '' },
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
