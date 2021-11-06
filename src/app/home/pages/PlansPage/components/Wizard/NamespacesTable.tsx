@@ -268,6 +268,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                               <Td
                                 key={`${rowIndex}_${shiftedIndex}`}
                                 dataLabel={columns[cellIndex].title}
+                                className={!row.selected && styles.disabledText}
                               >
                                 {cell}
                               </Td>
