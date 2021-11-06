@@ -327,7 +327,7 @@ const WizardComponent = (props: IOtherProps) => {
                 break;
               case 'Namespaces':
                 return !errors.selectedNamespaces && !isFetchingNamespaceList;
-              case 'Persistent Volumes':
+              case 'Persistent volumes':
                 return (
                   !isFetchingPVList &&
                   currentPlanStatus.state !== 'Pending' &&
