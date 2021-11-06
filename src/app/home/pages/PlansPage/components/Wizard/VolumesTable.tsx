@@ -32,7 +32,11 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import { IPersistentVolumeResource, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import {
+  IPersistentVolumeResource,
+  IPlanPersistentVolume,
+  PvCopyMethod,
+} from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 
 const styles = require('./VolumesTable.module').default;
@@ -40,7 +44,7 @@ const styles = require('./VolumesTable.module').default;
 interface IVolumesTableProps
   extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
     Pick<IFormValues, 'persistentVolumes'> {
-  onActionTypeChange: (currentPV: IPlanPersistentVolume, actionType: string) => void;
+  onActionTypeChange: (currentPV: IPlanPersistentVolume, option: OptionWithValue) => void;
 }
 
 const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
@@ -93,11 +97,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
     {
       key: 'type',
-      title: 'Migration type',
+      title: 'PV migration type',
       type: FilterType.select,
       selectOptions: [
-        { key: 'copy', value: 'Copy' },
+        { key: 'filesystem', value: 'Filesystem copy' },
         { key: 'move', value: 'Move' },
+        { key: 'snapshot', value: 'Snapshot copy' },
       ],
     },
   ];
@@ -112,10 +117,35 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
     const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
-    const migrationTypeOptions: OptionWithValue[] = pv.supported.actions.map((action: string) => ({
+
+    const copyMethodToString = (copyMethod: PvCopyMethod) => {
+      if (copyMethod === 'filesystem') return 'Filesystem copy';
+      if (copyMethod === 'snapshot') return 'Volume snapshot';
+      return copyMethod && capitalize(copyMethod);
+    };
+
+    const copyMethodOptions: OptionWithValue<any>[] = pv?.supported?.copyMethods.map(
+      (copyMethod: PvCopyMethod) => ({
+        value: copyMethod,
+        toString: () => copyMethodToString(copyMethod),
+        type: 'copyMethod',
+      })
+    );
+
+    const migrationTypeOptions: OptionWithValue[] = pv?.supported?.actions.map((action) => ({
       value: action,
       toString: () => capitalize(action),
+      type: 'action',
     }));
+
+    const combinedCopyOptions = migrationTypeOptions
+      .concat(copyMethodOptions)
+      .filter((option) => option.value !== 'copy');
+
+    const currentSelectedCopyOption = combinedCopyOptions.find(
+      (option) => option.value === pv.selection.action || option.value === pv.selection.copyMethod
+    );
+
     let sourcePVCName = pv.pvc.name;
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
@@ -135,9 +165,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <SimpleSelect
               id="select-migration-type"
               aria-label="Select migration type"
-              onChange={(option: any) => onActionTypeChange(pv, option.value)}
-              options={migrationTypeOptions}
-              value={migrationTypeOptions.find((option) => option.value === pv.selection.action)}
+              onChange={(option: any) => onActionTypeChange(pv, option)}
+              options={combinedCopyOptions}
+              value={currentSelectedCopyOption}
               placeholderText={null}
             />
           ),

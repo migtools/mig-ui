@@ -14,6 +14,7 @@ import {
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { OptionLike, OptionWithValue } from '../../../../../common/components/SimpleSelect';
 
 const styles = require('./VolumesTable.module').default;
 
@@ -125,24 +126,29 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
     );
   }
 
-  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, newAction: string) => {
+  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
     if (currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
       const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
       const pvIndex = values.persistentVolumes.indexOf(matchingPV);
+
       newPVs[pvIndex] = {
         ...matchingPV,
         selection: {
           ...matchingPV.selection,
-          action: newAction,
+          ...(option.type === 'action' && { action: option.value }),
+          ...(option.type === 'copyMethod' && {
+            copyMethod: option.value,
+            action: 'copy',
+          }),
         },
       };
       setFieldValue('persistentVolumes', newPVs);
     }
   };
 
-  const onActionTypeChange = (currentPV: IPlanPersistentVolume, actionType: string) =>
-    updatePersistentVolumeAction(currentPV, actionType);
+  const onActionTypeChange = (currentPV: IPlanPersistentVolume, option: OptionWithValue) =>
+    updatePersistentVolumeAction(currentPV, option);
 
   return (
     <VolumesTable
