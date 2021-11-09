@@ -86,6 +86,11 @@ const WizardComponent = (props: IOtherProps) => {
     stopPlanStatusPolling(values.planName);
     validatePlanPollStop();
     pvUpdatePollStop();
+    setShowHooksStep(false);
+    setShowMigrationOptionsStep(false);
+    setShowNamespacesStep(false);
+    setShowPersistentVolumesStep(false);
+    setShowStorageClassStep(false);
   };
 
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
@@ -310,17 +315,17 @@ const WizardComponent = (props: IOtherProps) => {
             switch (activeStep.name) {
               case 'General':
                 {
-                  if (values.migrationType.value === 'full') {
+                  if (
+                    values.migrationType.value === 'full' ||
+                    values.migrationType.value == 'state'
+                  ) {
                     return areFieldsTouchedAndValid([
                       'planName',
                       'sourceCluster',
                       'targetCluster',
                       'selectedStorage',
                     ]);
-                  } else if (
-                    values.migrationType.value === 'state' ||
-                    values.migrationType.value === 'scc'
-                  ) {
+                  } else if (values.migrationType.value === 'scc') {
                     return areFieldsTouchedAndValid(['planName', 'sourceCluster']);
                   }
                 }
@@ -353,7 +358,7 @@ const WizardComponent = (props: IOtherProps) => {
               <Button
                 variant="secondary"
                 onClick={() => getPreviousStep(activeStep, onBack)}
-                className={activeStep.name === 'Get Started' ? 'pf-m-disabled' : ''}
+                className={activeStep.name === 'General' ? 'pf-m-disabled' : ''}
               >
                 Back
               </Button>
