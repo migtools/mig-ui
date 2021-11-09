@@ -59,7 +59,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     { title: 'Namespace', transforms: [sortable] },
     { title: 'Storage class', transforms: [sortable] },
     { title: 'Size', transforms: [sortable] },
-    { title: 'Migration type', transforms: [sortable] },
+    { title: 'PV migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
   const getSortValues = (pv: any) => [
@@ -164,11 +164,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           title: (
             <SimpleSelect
               id="select-migration-type"
-              aria-label="Select migration type"
+              aria-label="Select pv migration type"
               onChange={(option: any) => onActionTypeChange(pv, option)}
               options={combinedCopyOptions}
               value={currentSelectedCopyOption}
               placeholderText={null}
+              isDisabled={}
             />
           ),
         },
