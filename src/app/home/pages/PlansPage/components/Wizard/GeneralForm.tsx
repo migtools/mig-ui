@@ -230,7 +230,11 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           >
             <SimpleSelect
               id="migrationType"
-              onChange={(option) => setFieldValue('migrationType', option)}
+              onChange={(option) => {
+                setFieldValue('migrationType', option);
+                setFieldValue('sourceCluster', null);
+                setFieldValue('targetCluster', null);
+              }}
               value={values.migrationType.toString()}
               placeholderText="Select..."
               options={migrationTypeOptions}
