@@ -204,29 +204,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
-            label="Source cluster"
-            isRequired
-            fieldId="sourceCluster"
-            className={spacing.mbMd}
-          >
-            <SimpleSelect
-              id="sourceCluster"
-              onChange={handleSourceChange}
-              value={values.sourceCluster}
-              placeholderText="Select source..."
-              options={srcClusterOptions}
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
-
-      <Grid md={6} hasGutter className={spacing.mbMd}>
-        <GridItem>
-          <FormGroup
             label="Migration type"
             isRequired
             fieldId="migrationType"
             className={spacing.mbMd}
+            helperTextInvalid={touched.migrationType && errors.migrationType}
+            validated={validatedState(touched.migrationType, errors.migrationType)}
           >
             <SimpleSelect
               id="migrationType"
@@ -238,6 +221,27 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               value={values.migrationType.toString()}
               placeholderText="Select..."
               options={migrationTypeOptions}
+            />
+          </FormGroup>
+        </GridItem>
+      </Grid>
+
+      <Grid md={6} hasGutter className={spacing.mbMd}>
+        <GridItem>
+          <FormGroup
+            label="Source cluster"
+            isRequired
+            fieldId="sourceCluster"
+            className={spacing.mbMd}
+            helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
+            validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
+          >
+            <SimpleSelect
+              id="sourceCluster"
+              onChange={handleSourceChange}
+              value={values.sourceCluster}
+              placeholderText="Select source..."
+              options={srcClusterOptions}
             />
           </FormGroup>
         </GridItem>
@@ -263,6 +267,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
                 />
               </FormGroup>
             </GridItem>
+          </Grid>
+          <Grid md={6} hasGutter className={spacing.mbMd}>
             <GridItem>
               <FormGroup
                 label="Repository"
