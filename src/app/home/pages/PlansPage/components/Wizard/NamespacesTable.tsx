@@ -160,6 +160,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+
   const { setQuery, query } = useDelayValidation(setFieldValue);
   const handleDelayedValidation = (val: string, row: any, rowIndex: any): any => {
     setQuery({
