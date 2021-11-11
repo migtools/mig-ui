@@ -23,7 +23,7 @@ const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
-  const { values, touched, errors, resetForm } = useFormikContext<IFormValues>();
+  const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
 
   const {
     clusterList,
@@ -249,6 +249,35 @@ const WizardComponent = (props: IOtherProps) => {
           namespaces: values.selectedNamespaces,
         });
         addAnalyticRequest(values.planName);
+      }
+    }
+    if (prevId === stepId.PersistentVolumes) {
+      //SKIP ALL UNSELECTED PVS
+      if (currentPlan !== null && values.persistentVolumes) {
+        const newPVs = values.persistentVolumes.map((currentPV, index) => {
+          const isSelected = values.selectedPVs.find((selectedPV) => selectedPV === currentPV.name);
+          if (!isSelected) {
+            return {
+              ...currentPV,
+              selection: {
+                ...currentPV.selection,
+                action: 'skip',
+              },
+            };
+          } else {
+            //If the PV is selected and the action is not set to move, the PV needs to have a copy action set
+            return {
+              ...currentPV,
+              selection: {
+                ...currentPV.selection,
+                ...(currentPV.selection.action !== 'move' && {
+                  action: 'copy',
+                }),
+              },
+            };
+          }
+        });
+        setFieldValue('persistentVolumes', newPVs);
       }
     }
     if (id === stepId.Results) {

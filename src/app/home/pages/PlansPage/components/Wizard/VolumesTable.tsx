@@ -218,7 +218,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
     const combinedCopyOptions = migrationTypeOptions
       .concat(copyMethodOptions)
-      .filter((option) => option.value !== 'copy');
+      .filter((option) => option.value !== 'copy' && option.value !== 'skip');
 
     const currentSelectedCopyOption = combinedCopyOptions.find(
       (option) => option.value === pv.selection.action || option.value === pv.selection.copyMethod

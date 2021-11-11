@@ -136,7 +136,6 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
         ...matchingPV,
         selection: {
           ...matchingPV.selection,
-          ...(option.type === 'action' && { action: option.value }),
           ...(option.type === 'copyMethod' && {
             copyMethod: option.value,
             action: 'copy',

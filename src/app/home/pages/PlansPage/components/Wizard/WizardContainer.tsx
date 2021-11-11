@@ -159,7 +159,11 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
       : [];
     initialValues.selectedNamespaces = mappedNamespaces || [];
 
-    const mappedPVs = editPlanObj?.spec?.persistentVolumes;
+    //Initial selected PVs are set those with copy or move actions set
+    const mappedPVs = editPlanObj?.spec?.persistentVolumes
+      .filter((pv) => pv.selection.action === 'copy' || pv.selection.action === 'move')
+      .map((pv) => pv.name);
+
     initialValues.selectedPVs = mappedPVs || [];
 
     initialValues.editedNamespaces = editedNamespaces || [];
