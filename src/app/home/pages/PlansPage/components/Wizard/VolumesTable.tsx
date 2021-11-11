@@ -162,11 +162,11 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
     let newSelected;
     if (isSelected) {
-      newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+      newSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
     } else {
       newSelected = []; // Deselect all
     }
-    setFieldValue('selectedNamespaces', newSelected);
+    setFieldValue('selectedPVs', newSelected);
   };
 
   const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
@@ -190,7 +190,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         );
       }
     }
-    setFieldValue('selectedNamespaces', newSelected);
+    setFieldValue('selectedPVs', newSelected);
   };
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
