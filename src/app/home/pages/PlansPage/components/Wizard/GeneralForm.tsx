@@ -161,6 +161,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
+      setFieldValue('selectedPVs', []);
     }
   };
 

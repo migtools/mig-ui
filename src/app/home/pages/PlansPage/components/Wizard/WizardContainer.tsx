@@ -37,6 +37,7 @@ export interface IFormValues {
   targetTokenRef: INameNamespaceRef;
   selectedStorage: string;
   selectedNamespaces: string[];
+  selectedPVs: any[];
   editedNamespaces: IEditedNamespaceMap[];
   persistentVolumes: IPlanPersistentVolume[];
   pvStorageClassAssignment: {
@@ -119,6 +120,7 @@ export const defaultInitialValues: IFormValues = {
   targetTokenRef: null,
   editedNamespaces: [],
   selectedNamespaces: [],
+  selectedPVs: [],
   selectedStorage: null,
   persistentVolumes: [],
   pvStorageClassAssignment: {},
@@ -156,6 +158,10 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         })
       : [];
     initialValues.selectedNamespaces = mappedNamespaces || [];
+
+    const mappedPVs = editPlanObj?.spec?.persistentVolumes;
+    initialValues.selectedPVs = mappedPVs || [];
+
     initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
     initialValues.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
@@ -192,6 +198,7 @@ const mapStateToProps = (state: DefaultRootState): any => {
     targetCluster: null,
     editedNamespaces: [],
     selectedNamespaces: [],
+    selectedPVs: [],
     selectedStorage: '',
     persistentVolumes: [],
     isPVPolling: state.plan.isPVPolling,

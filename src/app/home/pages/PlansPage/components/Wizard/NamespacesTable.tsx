@@ -149,6 +149,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     setAllRowsSelected(isSelected);
 

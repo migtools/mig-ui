@@ -17,8 +17,25 @@ import {
   PaginationVariant,
   Level,
   LevelItem,
+  Flex,
+  FlexItem,
+  FormGroup,
+  TextInput,
 } from '@patternfly/react-core';
-import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import {
+  Table,
+  TableVariant,
+  TableHeader,
+  TableBody,
+  sortable,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  IRowData,
+} from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -38,6 +55,15 @@ import {
   PvCopyMethod,
 } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import {
+  OutlinedQuestionCircleIcon,
+  CheckIcon,
+  TimesIcon,
+  PencilAltIcon,
+} from '@patternfly/react-icons';
+import { values } from 'lodash';
+import { validatedState } from '../../../../../common/helpers';
+import { useFormikContext } from 'formik';
 
 const styles = require('./VolumesTable.module').default;
 
@@ -53,6 +79,19 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   persistentVolumes,
   onActionTypeChange,
 }: IVolumesTableProps) => {
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
+
+  const {
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    values,
+    touched,
+    errors,
+    validateForm,
+  } = useFormikContext<IFormValues>();
+
   const columns = [
     { title: 'PV name', transforms: [sortable] },
     { title: 'Claim', transforms: [sortable] },
@@ -111,9 +150,48 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     persistentVolumes,
     filterCategories
   );
+
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
+
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+
+  const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
+    setAllRowsSelected(isSelected);
+
+    let newSelected;
+    if (isSelected) {
+      newSelected = filteredItems.map((namespace) => namespace.name); // Select all (filtered)
+    } else {
+      newSelected = []; // Deselect all
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
+
+  const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
+    if (allRowsSelected) {
+      setAllRowsSelected(false);
+    }
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
+      } else {
+        newSelected = []; // Deselect all
+      }
+    } else {
+      const { props } = rowData;
+      if (isSelected) {
+        newSelected = [...new Set([...props.meta.selectedPVs, props.cells[0]])];
+      } else {
+        newSelected = props.meta.selectedPVs.filter(
+          (selected: string) => selected !== props.cells[0]
+        );
+      }
+    }
+    setFieldValue('selectedNamespaces', newSelected);
+  };
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
     const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
@@ -169,7 +247,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               options={combinedCopyOptions}
               value={currentSelectedCopyOption}
               placeholderText={null}
-              isDisabled={}
             />
           ),
         },
@@ -202,6 +279,11 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           ),
         },
       ],
+      selected: values.selectedPVs.includes(pv.name),
+      meta: {
+        selectedPVs: values.selectedPVs,
+        id: pv.name,
+      },
     };
   });
 
@@ -235,17 +317,67 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Persistent volumes table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          // <Table
+          //   aria-label="Persistent volumes table"
+          //   variant={TableVariant.compact}
+          //   cells={columns}
+          //   rows={rows}
+          //   sortBy={sortBy}
+          //   onSort={onSort}
+          // >
+          //   <TableHeader />
+          //   <TableBody />
+          // </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th
+                  width={10}
+                  select={{
+                    onSelect: onSelectAll,
+                    isSelected: allRowsSelected,
+                  }}
+                />
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={10}>{columns[3].title}</Th>
+                <Th width={10}>{columns[4].title}</Th>
+                <Th width={10}>{columns[5].title}</Th>
+                <Th width={10}>{columns[6].title}</Th>
+                <Th width={20}></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                return (
+                  <Tr key={rowIndex}>
+                    <Td
+                      key={`${rowIndex}_0`}
+                      select={{
+                        rowIndex,
+                        onSelect,
+                        isSelected: row.selected,
+                        props: row,
+                      }}
+                    />
+                    {row.cells.map((cell, cellIndex) => {
+                      const shiftedIndex = cellIndex + 1;
+                      console.log('cell', cell);
+                      return (
+                        <Td
+                          key={`${rowIndex}_${shiftedIndex}`}
+                          dataLabel={columns[cellIndex].title}
+                        >
+                          {typeof cell !== 'string' ? cell.title : cell}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
           <TableEmptyState
             onClearFiltersClick={() => setFilterValues({})}
