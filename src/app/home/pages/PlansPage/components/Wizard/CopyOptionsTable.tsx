@@ -280,7 +280,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       cells: [
         pv.name,
         sourcePVCName,
-        pv.pvc.namespace,
+        pv.storageClass,
+        targetPVCName,
         {
           title: (
             <SimpleSelect
@@ -298,7 +299,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             />
           ),
         },
-        targetPVCName,
         {
           title: (
             <Checkbox
@@ -410,7 +410,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                     </span>
                   </Popover>
                 </Th>
-                <Th width={20}></Th>
+                <Th width={20}>{columns[5].title}</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -418,7 +418,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                 const isEditable = row.meta.editableRow === rowIndex;
                 return (
                   <Tr key={rowIndex}>
-                    <Td key={`${rowIndex}_0`} />
                     {row.cells.map((cell, cellIndex) => {
                       const shiftedIndex = cellIndex + 1;
                       if (columns[cellIndex].title === 'Target PVC') {
@@ -427,14 +426,14 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                             {!isEditable ? (
                               <Td
                                 key={`${rowIndex}_${shiftedIndex}`}
-                                // dataLabel={columns[cellIndex].title}
+                                dataLabel={typeof cell === 'string' ? cell : 'target-pvc'}
                               >
                                 {typeof cell !== 'string' ? cell.title : cell}
                               </Td>
                             ) : (
                               <Td
                                 key={`${rowIndex}_${shiftedIndex}`}
-                                // dataLabel={columns[cellIndex].title}
+                                dataLabel={typeof cell === 'string' ? cell : 'editable-target-pvc'}
                               >
                                 <FormGroup
                                   isRequired
@@ -469,7 +468,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                         return (
                           <Td
                             key={`${rowIndex}_${shiftedIndex}`}
-                            // dataLabel={columns[cellIndex].title}
+                            dataLabel={typeof cell === 'string' ? cell : 'row-cell-id'}
                           >
                             {typeof cell !== 'string' ? cell.title : cell}
                           </Td>
@@ -590,17 +589,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             </Tbody>
           </TableComposable>
         ) : (
-          // <Table
-          //   aria-label="Storage class selections table"
-          //   variant={TableVariant.compact}
-          //   cells={columns}
-          //   rows={rows}
-          //   sortBy={sortBy}
-          //   onSort={onSort}
-          // >
-          //   <TableHeader />
-          //   <TableBody />
-          // </Table>
           tableEmptyState
         )}
         <Pagination
