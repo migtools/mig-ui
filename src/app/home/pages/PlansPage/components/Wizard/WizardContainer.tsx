@@ -22,11 +22,16 @@ import {
   IMigPlanStorageClass,
 } from '../../../../../plan/duck/types';
 import { IStorage } from '../../../../../storage/duck/types';
-import { IEditedNamespaceMap, INameNamespaceRef } from '../../../../../common/duck/types';
+import {
+  IEditedNamespaceMap,
+  IEditedPVsMap,
+  INameNamespaceRef,
+} from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
 import { IMigHook } from '../../../HooksPage/types';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+const _ = require('lodash');
 
 export interface IFormValues {
   planName: string;
@@ -39,6 +44,7 @@ export interface IFormValues {
   selectedNamespaces: string[];
   selectedPVs: any[];
   editedNamespaces: IEditedNamespaceMap[];
+  editedPVs: IEditedPVsMap[];
   persistentVolumes: IPlanPersistentVolume[];
   pvStorageClassAssignment: {
     [pvName: string]: IMigPlanStorageClass;
@@ -55,6 +61,10 @@ export interface IFormValues {
     name: string;
     srcName: string;
     id: string;
+  };
+  currentTargetPVCName?: {
+    name: string;
+    srcPVName: string;
   };
 }
 
@@ -123,10 +133,12 @@ export const defaultInitialValues: IFormValues = {
   selectedPVs: [],
   selectedStorage: null,
   persistentVolumes: [],
+  editedPVs: [],
   pvStorageClassAssignment: {},
   pvVerifyFlagAssignment: {},
   pvCopyMethodAssignment: {},
   migrationType: { value: '', toString: () => '' },
+  currentTargetPVCName: null,
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
@@ -138,6 +150,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
     const editedNamespaces: IEditedNamespaceMap[] = [];
+    const editedPVs: IEditedPVsMap[] = [];
     const mappedNamespaces = editPlanObj?.spec?.namespaces
       ? editPlanObj.spec.namespaces.map((ns) => {
           const includesMapping = ns.includes(':');
@@ -160,11 +173,38 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     initialValues.selectedNamespaces = mappedNamespaces || [];
 
     //Initial selected PVs are set those with copy or move actions set
-    const mappedPVs = editPlanObj?.spec?.persistentVolumes
-      .filter((pv) => pv.selection.action === 'copy' || pv.selection.action === 'move')
-      .map((pv) => pv.name);
+    const mappedPVs =
+      editPlanObj?.spec?.persistentVolumes &&
+      editPlanObj?.spec?.persistentVolumes
+        .filter((pv) => pv.selection.action === 'copy' || pv.selection.action === 'move')
+        .map((pv) => pv.name);
 
     initialValues.selectedPVs = mappedPVs || [];
+    const isIntraClusterPlan =
+      editPlanObj.spec.destMigClusterRef.name === editPlanObj.spec.srcMigClusterRef.name;
+
+    const filteredPlanPVs = editPlanObj.spec.persistentVolumes.filter(
+      (pv) => pv.selection.action !== 'move'
+    );
+    if (isIntraClusterPlan) {
+      const newEditedPVs = filteredPlanPVs.map((pv, index) => {
+        const sourcePVCName = pv.pvc.name;
+        const includesMapping = sourcePVCName?.includes(':');
+        const mappedPVCNameArr = includesMapping && sourcePVCName?.split(':');
+
+        return {
+          oldName: includesMapping ? mappedPVCNameArr[0] : pv.pvc.name,
+          newName: includesMapping
+            ? `${mappedPVCNameArr[0]}-${_.uniqueId()}`
+            : `${pv.pvc.name}-${_.uniqueID()}`,
+          namespace: pv.pvc.namespace,
+          pvName: pv.name,
+        };
+      });
+      initialValues.editedPVs = newEditedPVs;
+    }
+
+    initialValues.editedPVs = editedPVs || [];
 
     initialValues.editedNamespaces = editedNamespaces || [];
     initialValues.selectedStorage = editPlanObj.spec.migStorageRef.name || null;

@@ -112,11 +112,11 @@ const StateMigrationFormik: React.FunctionComponent<IStateMigrationFormikProps> 
           );
         });
 
-        const targetNamespaceNameError = utils.testTargetNSName(values?.currentTargetPVCName?.name);
+        const targetPVCNameError = utils.testTargetName(values?.currentTargetPVCName?.name);
         if (!values?.currentTargetPVCName) {
           errors.currentTargetPVCName = 'Required';
-        } else if (targetNamespaceNameError !== '') {
-          errors.currentTargetPVCName = targetNamespaceNameError;
+        } else if (targetPVCNameError !== '') {
+          errors.currentTargetPVCName = targetPVCNameError;
         } else if (hasDuplicateMapping) {
           errors.currentTargetPVCName =
             'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';

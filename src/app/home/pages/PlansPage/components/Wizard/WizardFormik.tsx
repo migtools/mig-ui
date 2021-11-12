@@ -63,7 +63,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         );
       });
 
-      const targetNamespaceNameError = utils.testTargetNSName(
+      const targetNamespaceNameError = utils.testTargetName(
         values?.currentTargetNamespaceName?.name
       );
       if (!values.currentTargetNamespaceName) {
@@ -74,6 +74,61 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.currentTargetNamespaceName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
       }
+
+      const existingPVCNameMap = values.persistentVolumes.map((pvItem) => {
+        let targetPVCName = pvItem.pvc.name;
+        let sourcePVCName = pvItem.pvc.name;
+        const pvcNamespace = pvItem.pvc.namespace;
+        const pvName = pvItem.name;
+        let editedPV = values.editedPVs.find(
+          (editedPV) =>
+            editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+        );
+        const includesMapping = sourcePVCName.includes(':');
+        if (includesMapping) {
+          const mappedPVCNameArr = sourcePVCName.split(':');
+          editedPV = values.editedPVs.find(
+            (editedPV) =>
+              editedPV.oldName === mappedPVCNameArr[0] &&
+              editedPV.namespace === pvItem.pvc.namespace
+          );
+          if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+            sourcePVCName = mappedPVCNameArr[0];
+            targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
+          } else {
+            sourcePVCName = mappedPVCNameArr[0];
+            targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
+          }
+          return {
+            sourcePVCName,
+            targetPVCName,
+            pvName,
+            pvcNamespace,
+          };
+        }
+      });
+      const hasDuplicatePVMapping = existingPVCNameMap.find((pv, index) => {
+        const editedPVCName = values?.currentTargetPVCName?.name;
+        const editedPVCNameAssociatedPVName = values?.currentTargetPVCName?.srcPVName;
+        const isIntraClusterPlan = values.sourceCluster === values.targetCluster;
+
+        return (
+          (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv.sourcePVCName && isIntraClusterPlan)
+        );
+      });
+
+      const targetPVCNameError = utils.testTargetName(values?.currentTargetPVCName?.name);
+      if (!values?.currentTargetPVCName) {
+        errors.currentTargetPVCName = 'Required';
+      } else if (targetPVCNameError !== '') {
+        errors.currentTargetPVCName = targetPVCNameError;
+      } else if (hasDuplicateMapping) {
+        errors.currentTargetPVCName =
+          'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
+      }
+
       return errors;
     }}
     onSubmit={() => {

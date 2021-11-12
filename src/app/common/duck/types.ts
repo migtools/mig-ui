@@ -20,6 +20,12 @@ export interface IEditedNamespaceMap {
   newName: string;
   id: string;
 }
+export interface IEditedPVsMap {
+  oldName: string;
+  newName: string;
+  namespace: string;
+  pvName?: string;
+}
 
 export interface IAlertModalObj {
   name: string;

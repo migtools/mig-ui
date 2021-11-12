@@ -20,6 +20,12 @@ import {
   Modal,
   Button,
   BaseSizes,
+  Flex,
+  FlexItem,
+  FormGroup,
+  Popover,
+  PopoverPosition,
+  TextInput,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -28,6 +34,12 @@ import {
   TableBody,
   sortable,
   truncate,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
@@ -47,6 +59,14 @@ import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
 import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import {
+  OutlinedQuestionCircleIcon,
+  CheckIcon,
+  TimesIcon,
+  PencilAltIcon,
+} from '@patternfly/react-icons';
+import { useDelayValidation, validatedState } from '../../../../../common/helpers';
+import { useFormikContext } from 'formik';
 
 interface ICopyOptionsTableProps
   extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
@@ -72,12 +92,6 @@ enum VerifyWarningState {
 const storageClassToString = (storageClass: IMigPlanStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
-const copyMethodToString = (copyMethod: PvCopyMethod) => {
-  if (copyMethod === 'filesystem') return 'Filesystem copy';
-  if (copyMethod === 'snapshot') return 'Volume snapshot';
-  return copyMethod && capitalize(copyMethod);
-};
-
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   isFetchingPVList,
   currentPlan,
@@ -88,9 +102,20 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   storageClasses,
   onStorageClassChange,
   onVerifyFlagChange,
-  onCopyMethodChange,
 }: ICopyOptionsTableProps) => {
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const styles = require('./CopyOptionsTable.module').default;
+
+  const {
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    values,
+    touched,
+    errors,
+    validateForm,
+  } = useFormikContext<IFormValues>();
 
   if (isFetchingPVList) {
     return (
@@ -108,12 +133,28 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   }
 
   const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
+  const [editableRow, setEditableRow] = React.useState(null);
+  const currentTargetPVCNameKey = 'currentTargetPVCName';
 
   const columns = [
     { title: 'PV name', transforms: [sortable, truncate] },
-    { title: 'Claim', transforms: [sortable, truncate] },
-    { title: 'Namespace', transforms: [sortable, truncate] },
-    { title: 'Copy method', transforms: [sortable, truncate] },
+    { title: 'Source PVC', transforms: [sortable, truncate] },
+    { title: 'Source storage class', transforms: [sortable, truncate] },
+    {
+      title: (
+        <React.Fragment>
+          Target PVC{' '}
+          <Tooltip
+            position={TooltipPosition.top}
+            isContentLeftAligned
+            content={<div>Target PVC</div>}
+          >
+            <QuestionCircleIcon />
+          </Tooltip>
+        </React.Fragment>
+      ),
+      transforms: [sortable, truncate],
+    },
     { title: 'Target storage class', transforms: [sortable, truncate] },
     {
       title: (
@@ -140,10 +181,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const getSortValues = (pv: IPlanPersistentVolume) => [
     pv.name,
     pv.pvc.name,
-    pv.pvc.namespace,
-    copyMethodToString(pvCopyMethodAssignment[pv.name]),
-    pvVerifyFlagAssignment[pv.name],
+    pv.storageClass,
+    'targetPVCName',
+    // targetPVCToString(targetPVCName[pv.name]),
     storageClassToString(pvStorageClassAssignment[pv.name]),
+    pvVerifyFlagAssignment[pv.name],
   ];
   const filterCategories: FilterCategory[] = [
     {
@@ -153,16 +195,22 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       placeholderText: 'Filter by PV name...',
     },
     {
-      key: 'claim',
-      title: 'Claim',
+      key: 'sourcePVC',
+      title: 'Source PVC',
       type: FilterType.search,
-      placeholderText: 'Filter by claim...',
+      placeholderText: 'Filter by source PVC name...',
     },
     {
-      key: 'project',
-      title: 'Namespace',
+      key: 'sourceSC',
+      title: 'Source storage class',
       type: FilterType.search,
-      placeholderText: 'Filter by namespace...',
+      placeholderText: 'Filter by source storage class...',
+    },
+    {
+      key: 'targetPVC',
+      title: 'Target PVC',
+      type: FilterType.search,
+      placeholderText: 'Filter by target PVC name...',
     },
     {
       key: 'targetStorageClass',
@@ -170,16 +218,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
       getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
-    },
-    {
-      key: 'copyMethod',
-      title: 'Copy method',
-      type: FilterType.select,
-      selectOptions: [
-        { key: 'filesystem', value: 'Filesystem copy' },
-        { key: 'snapshot', value: 'Volume snapshot' },
-      ],
-      getItemValue: (pv) => copyMethodToString(pvCopyMethodAssignment[pv.name]),
     },
   ];
 
@@ -194,15 +232,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentPV = currentPlan?.spec?.persistentVolumes?.find(
       (planPV) => planPV.name === pv.name
     );
-    const currentCopyMethod = pvCopyMethodAssignment[pv.name];
     const currentStorageClass = pvStorageClassAssignment[pv.name];
-
-    const copyMethodOptions: OptionWithValue[] = currentPV?.supported?.copyMethods.map(
-      (copyMethod: PvCopyMethod) => ({
-        value: copyMethod,
-        toString: () => copyMethodToString(copyMethod),
-      })
-    );
 
     const noneOption = { value: '', toString: () => 'None' };
     const storageClassOptions: OptionWithValue[] = [
@@ -213,12 +243,37 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       noneOption,
     ];
 
+    // const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
+    // const initialTargetPVCName = isIntraClusterMigration ? `${pv.name}_new` : pv.name;
+    // const editedPVCs = values.editedPVCs.find((editedPVC) => editedPVC.name === pv.pvc.name);
+
+    // const targetPVCName = editedPVC ? editedPVC.newName : initialTargetPVCName;
     const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
+    // const includesMapping = sourcePVCName.includes(':');
+    // if (includesMapping) {
+    //   const mappedPVCNameArr = sourcePVCName.split(':');
+    //   sourcePVCName = mappedPVCNameArr[0];
+    // }
+    let targetPVCName = pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
+    let editedPV = values.editedPVs.find(
+      (editedPV) => editedPV.oldName === pv.pvc.name && editedPV.namespace === pv.pvc.namespace
+    );
+
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
       const mappedPVCNameArr = sourcePVCName.split(':');
-      sourcePVCName = mappedPVCNameArr[0];
+      editedPV = values.editedPVs.find(
+        (editedPV) =>
+          editedPV.oldName === mappedPVCNameArr[0] && editedPV.namespace === pv.pvc.namespace
+      );
+      if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
+      } else {
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
+      }
     }
 
     return {
@@ -226,25 +281,6 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.name,
         sourcePVCName,
         pv.pvc.namespace,
-        {
-          title: (
-            <div>
-              <SimpleSelect
-                id="select-copy-method"
-                className={styles.copySelectStyle}
-                aria-label="Select copy method"
-                onChange={(option: any) => onCopyMethodChange(currentPV, option.value)}
-                options={copyMethodOptions}
-                value={
-                  copyMethodOptions?.find((option) => option.value === currentCopyMethod) || {
-                    value: '',
-                  }
-                }
-                placeholderText="Select a copy method..."
-              />
-            </div>
-          ),
-        },
         {
           title: (
             <SimpleSelect
@@ -262,6 +298,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
             />
           ),
         },
+        targetPVCName,
         {
           title: (
             <Checkbox
@@ -280,6 +317,10 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           ),
         },
       ],
+      meta: {
+        editedPVs: values.editedPVs,
+        editableRow: editableRow,
+      },
     };
   });
 
@@ -293,6 +334,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         bodyText="Select Next to continue."
       />
     );
+
+  const { setQuery, query } = useDelayValidation(setFieldValue);
+
+  const handleDelayedValidation = (val: string, row: any): any => {
+    setQuery({
+      name: val,
+      row: row,
+      fieldName: currentTargetPVCNameKey,
+      functionArgs: [currentTargetPVCNameKey, { name: val, srcPVName: row.cells[0] }],
+    });
+  };
 
   return (
     <Grid hasGutter>
@@ -324,18 +376,231 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Storage class selections table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={10}>{columns[3].title}</Th>
+                <Th width={30}>
+                  {columns[4].title}
+                  <Popover
+                    position={PopoverPosition.right}
+                    bodyContent={
+                      <>
+                        <p className={spacing.mtMd}>
+                          By default, a target namespace will have the same name as its
+                          corresponding source namespace.
+                          <br></br>
+                          <br></br>
+                          To change the name of the target namespace, click the edit icon.
+                        </p>
+                      </>
+                    }
+                    aria-label="edit-target-ns-details"
+                    closeBtnAriaLabel="close--details"
+                    maxWidth="30rem"
+                  >
+                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                      <OutlinedQuestionCircleIcon
+                        className="pf-c-icon pf-m-default"
+                        size="sm"
+                      ></OutlinedQuestionCircleIcon>
+                    </span>
+                  </Popover>
+                </Th>
+                <Th width={20}></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                const isEditable = row.meta.editableRow === rowIndex;
+                return (
+                  <Tr key={rowIndex}>
+                    <Td key={`${rowIndex}_0`} />
+                    {row.cells.map((cell, cellIndex) => {
+                      const shiftedIndex = cellIndex + 1;
+                      if (columns[cellIndex].title === 'Target PVC') {
+                        return (
+                          <>
+                            {!isEditable ? (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                // dataLabel={columns[cellIndex].title}
+                              >
+                                {typeof cell !== 'string' ? cell.title : cell}
+                              </Td>
+                            ) : (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                // dataLabel={columns[cellIndex].title}
+                              >
+                                <FormGroup
+                                  isRequired
+                                  fieldId={currentTargetPVCNameKey}
+                                  helperTextInvalid={
+                                    touched.currentTargetPVCName && errors.currentTargetPVCName
+                                  }
+                                  validated={validatedState(
+                                    touched.currentTargetPVCName,
+                                    errors.currentTargetPVCName
+                                  )}
+                                >
+                                  <TextInput
+                                    name={currentTargetPVCNameKey}
+                                    value={query.name}
+                                    type="text"
+                                    onChange={(val, e) => handleDelayedValidation(val, row)}
+                                    onInput={formikSetFieldTouched(currentTargetPVCNameKey)}
+                                    onBlur={handleBlur}
+                                    isReadOnly={!isEditable}
+                                    validated={validatedState(
+                                      touched.currentTargetPVCName,
+                                      errors.currentTargetPVCName
+                                    )}
+                                  />
+                                </FormGroup>
+                              </Td>
+                            )}
+                          </>
+                        );
+                      } else {
+                        return (
+                          <Td
+                            key={`${rowIndex}_${shiftedIndex}`}
+                            // dataLabel={columns[cellIndex].title}
+                          >
+                            {typeof cell !== 'string' ? cell.title : cell}
+                          </Td>
+                        );
+                      }
+                    })}
+                    <Td
+                      key={`${rowIndex}_5`}
+                      className="pf-c-table__inline-edit-action"
+                      role="cell"
+                      width={10}
+                    >
+                      {isEditable ? (
+                        <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
+                          <FlexItem flex={{ default: 'flex_1' }}>
+                            {!errors.currentTargetPVCName && (
+                              <span id="save-edit-icon" className="pf-c-icon pf-m-info">
+                                <CheckIcon
+                                  size="md"
+                                  type="button"
+                                  className={styles.clickable}
+                                  onClick={() => {
+                                    setEditableRow(null);
+                                    const hasEditedValue = values.editedPVs.find(
+                                      (pv) =>
+                                        row.cells[1] === pv.oldName && row.cells[2] === pv.namespace
+                                    );
+                                    let newEditedPVs;
+                                    if (hasEditedValue) {
+                                      newEditedPVs = [...new Set([...values.editedPVs])];
+
+                                      const index = values.editedPVs.findIndex(
+                                        (pv) =>
+                                          pv.oldName === row.cells[1] &&
+                                          pv.namespace === row.cells[2]
+                                      );
+                                      //check if no changes made
+                                      if (
+                                        newEditedPVs[index].oldName ===
+                                        values.currentTargetPVCName.name
+                                      ) {
+                                        if (index > -1) {
+                                          newEditedPVs.splice(index, 1);
+                                        }
+                                        //replace found edit with current edit
+                                      } else if (index || index === 0) {
+                                        newEditedPVs[index] = {
+                                          oldName:
+                                            typeof row.cells[1] === 'string' ? row.cells[1] : '',
+                                          newName: values.currentTargetPVCName.name,
+                                          namespace:
+                                            typeof row.cells[2] === 'string' ? row.cells[2] : '',
+                                          pvName:
+                                            typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                        };
+                                      }
+                                    } else {
+                                      newEditedPVs = [
+                                        ...new Set([
+                                          ...values.editedPVs,
+                                          {
+                                            oldName: row.cells[1],
+                                            newName: values.currentTargetPVCName.name,
+                                            namespace: row.cells[2],
+                                            pvName: row.cells[0],
+                                          },
+                                        ]),
+                                      ];
+                                    }
+                                    setFieldValue('editedPVs', newEditedPVs);
+                                    setFieldValue(currentTargetPVCNameKey, null);
+                                    setFieldTouched(currentTargetPVCNameKey, false);
+                                  }}
+                                />
+                              </span>
+                            )}
+                            <span
+                              id="inline-edit-icon"
+                              className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
+                            >
+                              <TimesIcon
+                                size="md"
+                                className={styles.clickable}
+                                type="button"
+                                onClick={() => {
+                                  setEditableRow(null);
+                                  setFieldValue(currentTargetPVCNameKey, null);
+                                  setFieldTouched(currentTargetPVCNameKey, false);
+                                }}
+                              />
+                            </span>
+                          </FlexItem>
+                        </Flex>
+                      ) : (
+                        <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
+                          <PencilAltIcon
+                            className={styles.clickable}
+                            type="button"
+                            size="md"
+                            onClick={() => {
+                              setEditableRow(rowIndex);
+                              handleDelayedValidation(
+                                typeof row.cells[5] === 'string' && row.cells[5],
+                                row
+                              );
+                              setFieldValue(currentTargetPVCNameKey, {
+                                name: row.cells[5],
+                                srcPVName: row.cells[1],
+                              });
+                            }}
+                          />
+                        </span>
+                      )}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
+          // <Table
+          //   aria-label="Storage class selections table"
+          //   variant={TableVariant.compact}
+          //   cells={columns}
+          //   rows={rows}
+          //   sortBy={sortBy}
+          //   onSort={onSort}
+          // >
+          //   <TableHeader />
+          //   <TableBody />
+          // </Table>
           tableEmptyState
         )}
         <Pagination
