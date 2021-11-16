@@ -608,14 +608,7 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
   updatedHooks,
 });
 
-const updateMigrationType = (migrationType: string, currentPlan: any) => ({
-  type: PlanActionTypes.UPDATE_MIGRATION_TYPE,
-  migrationType,
-  currentPlan,
-});
-
 export const PlanActions = {
-  updateMigrationType,
   runStateMigrationRequest,
   patchPlanPVsRequest,
   patchPlanPVsSuccess,

@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import WizardComponent from './WizardComponent';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { ICurrentPlanStatus, setCurrentPlan } from '../../../../../plan/duck/reducers';
 import {
   defaultAddEditStatus,
@@ -121,7 +120,6 @@ export interface IOtherProps {
   cancelAddEditWatch?: () => void;
   resetAddEditState?: () => void;
   validatePlanPollStop?: () => void;
-  updateMigrationType?: (type: any, currentPlan: any) => void;
 }
 
 export const defaultInitialValues: IFormValues = {
@@ -156,19 +154,19 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
 
   const getMigrationType = (type: string): OptionWithValue<string> => {
     switch (type) {
-      case '1':
+      case 'full':
         return {
           value: 'full',
           toString: () =>
             'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
         };
-      case '2':
+      case 'state':
         return {
           value: 'state',
           toString: () =>
             'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
         };
-      case '3':
+      case 'scc':
         return {
           value: 'scc',
           toString: () =>
@@ -180,9 +178,9 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     }
   };
   const initialValues = { ...defaultInitialValues };
-  if (editPlanObj && isEdit) {
+  if (editPlanObj && isEdit && isOpen) {
     initialValues.migrationType = getMigrationType(
-      editPlanObj.metadata.annotations['migration.openshift.io/selected-migplan-type']
+      editPlanObj.metadata?.annotations['migration.openshift.io/selected-migplan-type'] || 'full'
     );
     initialValues.planName = editPlanObj.metadata.name || '';
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
@@ -221,9 +219,8 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     const isIntraClusterPlan =
       editPlanObj.spec.destMigClusterRef.name === editPlanObj.spec.srcMigClusterRef.name;
 
-    const filteredPlanPVs = editPlanObj.spec.persistentVolumes.filter(
-      (pv) => pv.selection.action !== 'move'
-    );
+    const filteredPlanPVs =
+      editPlanObj.spec?.persistentVolumes?.filter((pv) => pv.selection.action !== 'move') || [];
     if (isIntraClusterPlan) {
       const newEditedPVs = filteredPlanPVs.map((pv, index) => {
         const sourcePVCName = pv.pvc.name;
@@ -342,8 +339,6 @@ const mapDispatchToProps = (dispatch: any) => {
     associateHookToPlan: (hookValues: any, migHook: IMigHook) =>
       dispatch(PlanActions.associateHookToPlan(hookValues, migHook)),
     validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
-    updateMigrationType: (migrationType: any, currentPlan: any) =>
-      dispatch(PlanActions.updateMigrationType(migrationType, currentPlan)),
   };
 };
 

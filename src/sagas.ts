@@ -80,7 +80,6 @@ export default function* rootSaga() {
     planSagas.watchValidatePlanPolling(),
     planSagas.watchAssociateHookToPlan(),
     planSagas.watchUpdatePlanHookList(),
-    planSagas.watchUpdateMigrationTypeRequest(),
     logSagas.watchReportPolling(),
     logSagas.watchLogsPolling(),
     logSagas.watchLogDownload(),

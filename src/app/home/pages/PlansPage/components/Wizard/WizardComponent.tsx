@@ -67,7 +67,6 @@ const WizardComponent = (props: IOtherProps) => {
     resetAddEditState,
     removeHookFromPlanRequest,
     validatePlanPollStop,
-    updateMigrationType,
   } = props;
 
   enum stepId {
@@ -80,7 +79,6 @@ const WizardComponent = (props: IOtherProps) => {
     Results,
   }
   const handleClose = () => {
-    updateMigrationType(values.migrationType, currentPlan);
     onHandleWizardModalClose();
     setStepIdReached(stepId.General);
     resetForm();
@@ -249,6 +247,7 @@ const WizardComponent = (props: IOtherProps) => {
           targetCluster: values.targetCluster,
           selectedStorage: values.selectedStorage,
           namespaces: values.selectedNamespaces,
+          migrationType: values.migrationType.value,
         });
         addAnalyticRequest(values.planName);
       }
@@ -298,7 +297,6 @@ const WizardComponent = (props: IOtherProps) => {
 
   const getNextStep = (activeStep: any, callback?: any) => {
     if (activeStep.name === 'General' && values.migrationType.value === 'full') {
-      console.log('activeStep is general');
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
       setShowResultsStep(true);

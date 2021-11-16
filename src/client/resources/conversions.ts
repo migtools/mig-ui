@@ -496,7 +496,8 @@ export function createInitialMigPlan(
   destinationClusterObj: any,
   destinationTokenRef: INameNamespaceRef,
   storageObj: any,
-  namespaces: string[]
+  namespaces: string[],
+  migrationType: string
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -504,6 +505,9 @@ export function createInitialMigPlan(
     metadata: {
       name,
       namespace,
+      annotations: {
+        'migration.openshift.io/selected-migplan-type': migrationType,
+      },
     },
     spec: {
       srcMigClusterRef: {
@@ -762,43 +766,6 @@ export function createMigToken(
       },
     },
   };
-}
-
-export function updateMigrationType(type: string) {
-  switch (type) {
-    case 'full':
-      return {
-        metadata: {
-          annotations: {
-            'migration.openshift.io/selected-migplan-type': '1',
-          },
-        },
-      };
-    case 'state':
-      return {
-        metadata: {
-          annotations: {
-            'migration.openshift.io/selected-migplan-type': '2',
-          },
-        },
-      };
-    case 'scc':
-      return {
-        metadata: {
-          annotations: {
-            'migration.openshift.io/selected-migplan-type': '3',
-          },
-        },
-      };
-    default:
-      return {
-        metadata: {
-          annotations: {
-            'migration.openshift.io/selected-migplan-type': '',
-          },
-        },
-      };
-  }
 }
 
 // export type IHook = ReturnType<typeof createMigHook>;

@@ -222,6 +222,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
               value={values.migrationType.toString()}
               placeholderText="Select..."
               options={migrationTypeOptions}
+              isDisabled={isEdit}
             />
           </FormGroup>
         </GridItem>
