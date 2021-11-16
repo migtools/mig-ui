@@ -46,7 +46,9 @@ export interface IMigPlan {
     name: string;
     namespace: string;
     creationTimestamp: string;
-    annotations?: string;
+    annotations?: {
+      'migration.openshift.io/selected-migplan-type': string;
+    };
     resourceVersion?: string;
   };
   spec: {

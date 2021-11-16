@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import WizardComponent from './WizardComponent';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
 import { connect } from 'react-redux';
-import { ICurrentPlanStatus } from '../../../../../plan/duck/reducers';
+import { useDispatch } from 'react-redux';
+import { ICurrentPlanStatus, setCurrentPlan } from '../../../../../plan/duck/reducers';
 import {
   defaultAddEditStatus,
   createAddEditStatus,
@@ -120,6 +121,7 @@ export interface IOtherProps {
   cancelAddEditWatch?: () => void;
   resetAddEditState?: () => void;
   validatePlanPollStop?: () => void;
+  updateMigrationType?: (type: any, currentPlan: any) => void;
 }
 
 export const defaultInitialValues: IFormValues = {
@@ -142,10 +144,46 @@ export const defaultInitialValues: IFormValues = {
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
-  //TODO: remove explicit any once we convert to redux hooks api
-  const { editPlanObj, isEdit, planList, sourceClusterNamespaces } = props;
+  const { editPlanObj, isEdit, planList, sourceClusterNamespaces, isOpen } = props;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    //Set current plan on edit wizard open
+    if (editPlanObj && isEdit && isOpen) {
+      dispatch(PlanActions.setCurrentPlan(editPlanObj));
+    }
+  }, [editPlanObj, isOpen]);
+
+  const getMigrationType = (type: string): OptionWithValue<string> => {
+    switch (type) {
+      case '1':
+        return {
+          value: 'full',
+          toString: () =>
+            'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
+        };
+      case '2':
+        return {
+          value: 'state',
+          toString: () =>
+            'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+        };
+      case '3':
+        return {
+          value: 'scc',
+          toString: () =>
+            'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
+        };
+
+      default:
+        return;
+    }
+  };
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit) {
+    initialValues.migrationType = getMigrationType(
+      editPlanObj.metadata.annotations['migration.openshift.io/selected-migplan-type']
+    );
     initialValues.planName = editPlanObj.metadata.name || '';
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
@@ -304,6 +342,8 @@ const mapDispatchToProps = (dispatch: any) => {
     associateHookToPlan: (hookValues: any, migHook: IMigHook) =>
       dispatch(PlanActions.associateHookToPlan(hookValues, migHook)),
     validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
+    updateMigrationType: (migrationType: any, currentPlan: any) =>
+      dispatch(PlanActions.updateMigrationType(migrationType, currentPlan)),
   };
 };
 

@@ -116,6 +116,8 @@ export const PlanActionTypes = {
   HOOK_POLL_START: 'HOOK_POLL_START',
   HOOK_POLL_STOP: 'HOOK_POLL_STOP',
   UPDATE_PLAN_HOOK_LIST: 'UPDATE_PLAN_HOOK_LIST',
+  /** Other */
+  UPDATE_MIGRATION_TYPE: 'UPDATE_MIGRATION_TYPE',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -605,7 +607,15 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
   type: PlanActionTypes.UPDATE_HOOKS,
   updatedHooks,
 });
+
+const updateMigrationType = (migrationType: string, currentPlan: any) => ({
+  type: PlanActionTypes.UPDATE_MIGRATION_TYPE,
+  migrationType,
+  currentPlan,
+});
+
 export const PlanActions = {
+  updateMigrationType,
   runStateMigrationRequest,
   patchPlanPVsRequest,
   patchPlanPVsSuccess,

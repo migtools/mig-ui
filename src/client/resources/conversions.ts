@@ -764,6 +764,43 @@ export function createMigToken(
   };
 }
 
+export function updateMigrationType(type: string) {
+  switch (type) {
+    case 'full':
+      return {
+        metadata: {
+          annotations: {
+            'migration.openshift.io/selected-migplan-type': '1',
+          },
+        },
+      };
+    case 'state':
+      return {
+        metadata: {
+          annotations: {
+            'migration.openshift.io/selected-migplan-type': '2',
+          },
+        },
+      };
+    case 'scc':
+      return {
+        metadata: {
+          annotations: {
+            'migration.openshift.io/selected-migplan-type': '3',
+          },
+        },
+      };
+    default:
+      return {
+        metadata: {
+          annotations: {
+            'migration.openshift.io/selected-migplan-type': '',
+          },
+        },
+      };
+  }
+}
+
 // export type IHook = ReturnType<typeof createMigHook>;
 export type IMigCluster = ReturnType<typeof createMigCluster>;
 export type IMigMigration = ReturnType<typeof createMigMigration>;

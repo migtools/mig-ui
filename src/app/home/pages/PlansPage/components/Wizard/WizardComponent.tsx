@@ -67,6 +67,7 @@ const WizardComponent = (props: IOtherProps) => {
     resetAddEditState,
     removeHookFromPlanRequest,
     validatePlanPollStop,
+    updateMigrationType,
   } = props;
 
   enum stepId {
@@ -79,6 +80,7 @@ const WizardComponent = (props: IOtherProps) => {
     Results,
   }
   const handleClose = () => {
+    updateMigrationType(values.migrationType, currentPlan);
     onHandleWizardModalClose();
     setStepIdReached(stepId.General);
     resetForm();

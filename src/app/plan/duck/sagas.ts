@@ -18,6 +18,7 @@ import {
   createMigHook,
   updateMigHook,
   updatePlanHookList,
+  updateMigrationType,
 } from '../../../client/resources/conversions';
 import { PlanActions, PlanActionTypes, RunStateMigrationRequest } from './actions';
 import { CurrentPlanState } from './reducers';
@@ -1483,6 +1484,27 @@ function* updateHookRequest(action: any): any {
   }
 }
 
+function* updateMigrationTypeSaga(action: any): any {
+  console.log('migtypeupdate action', action);
+  const { currentPlan, migrationType } = action;
+  const migType = migrationType.value;
+  const state = yield* getState();
+  const { migMeta } = state.auth;
+  const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
+  try {
+    const migrationTypePatch = updateMigrationType(migType);
+    yield client.patch(
+      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
+      currentPlan.metadata.name,
+      migrationTypePatch
+    );
+  } catch (err) {
+    // yield put(PlanActions.updateHookFailure());
+    yield put(alertErrorTimeout('Failed to update plan migration type.'));
+    throw err;
+  }
+}
+
 /******************************************************************** */
 /* Saga watchers */
 /******************************************************************** */
@@ -1619,6 +1641,10 @@ function* watchUpdatePlanHookList() {
   yield takeLatest(PlanActionTypes.UPDATE_PLAN_HOOK_LIST, updatePlanHookListSaga);
 }
 
+function* watchUpdateMigrationTypeRequest() {
+  yield takeLatest(PlanActionTypes.UPDATE_MIGRATION_TYPE, updateMigrationTypeSaga);
+}
+
 export default {
   watchStagePolling,
   watchMigrationPolling,
@@ -1649,4 +1675,5 @@ export default {
   watchAssociateHookToPlan,
   watchUpdatePlanHookList,
   watchRunStateMigrationRequest,
+  watchUpdateMigrationTypeRequest,
 };
