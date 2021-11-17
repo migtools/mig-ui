@@ -433,27 +433,12 @@ export function updateMigPlanFromValues(
         ...pvItem,
       };
 
-      let targetPVCName = pvItem.pvc.name;
-      let sourcePVCName = pvItem.pvc.name;
-      let editedPV = planValues.editedPVs.find(
+      const matchingEditedPV = planValues.editedPVs.find(
         (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
       );
 
-      const includesMapping = sourcePVCName.includes(':');
-      if (includesMapping) {
-        const mappedNsArr = sourcePVCName.split(':');
-        editedPV = planValues.editedPVs.find(
-          (editedPV) => editedPV.oldPVCName === mappedNsArr[0] && editedPV.pvName === pvItem.name
-        );
-        if (mappedNsArr[0] === mappedNsArr[1]) {
-          sourcePVCName = mappedNsArr[0];
-          targetPVCName = editedPV ? editedPV.newPVCName : mappedNsArr[0];
-          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
-        } else {
-          sourcePVCName = mappedNsArr[0];
-          targetPVCName = editedPV ? editedPV.newPVCName : mappedNsArr[1];
-          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
-        }
+      if (matchingEditedPV) {
+        updatedPV.pvc.name = `${matchingEditedPV.oldPVCName}:${matchingEditedPV.newPVCName}`;
       }
 
       const matchingSelectedPV = planValues.selectedPVs.find((selectedPV) => {

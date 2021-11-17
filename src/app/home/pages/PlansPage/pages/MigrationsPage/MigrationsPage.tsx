@@ -85,7 +85,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
     } = planStatus;
 
     const migrationType =
-      'full' ||
       plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
 
     const stateItem = (
@@ -253,11 +252,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     plan={plan}
                     isOpen={isStageModalOpen}
                     onHandleClose={toggleStageModalOpen}
-                  />
-                  <StateMigrationModal
-                    plan={plan}
-                    isOpen={isStateMigrationModalOpen}
-                    onHandleClose={toggleStateMigrationModalOpen}
                   />
                 </CardBody>
               </Card>

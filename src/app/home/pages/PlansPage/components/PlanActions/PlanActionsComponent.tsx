@@ -22,7 +22,6 @@ import { planSelectors, PlanActions } from '../../../../../plan/duck';
 import { clusterSelectors } from '../../../../../cluster/duck';
 import { storageSelectors } from '../../../../../storage/duck';
 import { DefaultRootState } from '../../../../../../configureStore';
-import StateMigrationModal from './StateMigrationModal';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
@@ -63,7 +62,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const isIntraClusterPlan =
     plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
   const migrationType =
-    'full' || plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+    plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
 
   const editPlan = () => {
     toggleEditWizardOpen();
