@@ -222,11 +222,10 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         const mappedPVCNameArr = includesMapping && sourcePVCName?.split(':');
 
         return {
-          oldName: includesMapping ? mappedPVCNameArr[0] : pv.pvc.name,
-          newName: includesMapping
+          oldPVCName: includesMapping ? mappedPVCNameArr[0] : pv.pvc.name,
+          newPVCName: includesMapping
             ? `${mappedPVCNameArr[0]}-${_.uniqueId()}`
             : `${pv.pvc.name}-${_.uniqueID()}`,
-          namespace: pv.pvc.namespace,
           pvName: pv.name,
         };
       });

@@ -243,22 +243,21 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     let targetPVCName = pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
     let editedPV = values.editedPVs.find(
-      (editedPV) => editedPV.oldName === pv.pvc.name && editedPV.namespace === pv.pvc.namespace
+      (editedPV) => editedPV.oldPVCName === pv.pvc.name && editedPV.pvName === pv.name
     );
 
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
       const mappedPVCNameArr = sourcePVCName.split(':');
       editedPV = values.editedPVs.find(
-        (editedPV) =>
-          editedPV.oldName === mappedPVCNameArr[0] && editedPV.namespace === pv.pvc.namespace
+        (editedPV) => editedPV.oldPVCName === mappedPVCNameArr[0] && editedPV.pvName === pv.name
       );
       if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
         sourcePVCName = mappedPVCNameArr[0];
-        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[0];
       } else {
         sourcePVCName = mappedPVCNameArr[0];
-        targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
+        targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[1];
       }
     }
 
@@ -481,7 +480,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                                     setEditableRow(null);
                                     const hasEditedValue = values.editedPVs.find(
                                       (pv) =>
-                                        row.cells[1] === pv.oldName && row.cells[2] === pv.namespace
+                                        row.cells[1] === pv.oldPVCName && row.cells[0] === pv.pvName
                                     );
                                     let newEditedPVs;
                                     if (hasEditedValue) {
@@ -489,12 +488,12 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
 
                                       const index = values.editedPVs.findIndex(
                                         (pv) =>
-                                          pv.oldName === row.cells[1] &&
-                                          pv.namespace === row.cells[2]
+                                          pv.oldPVCName === row.cells[1] &&
+                                          pv.pvName === row.cells[0]
                                       );
                                       //check if no changes made
                                       if (
-                                        newEditedPVs[index].oldName ===
+                                        newEditedPVs[index].oldPVCName ===
                                         values.currentTargetPVCName.name
                                       ) {
                                         if (index > -1) {
@@ -503,11 +502,9 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                                         //replace found edit with current edit
                                       } else if (index || index === 0) {
                                         newEditedPVs[index] = {
-                                          oldName:
+                                          oldPVCName:
                                             typeof row.cells[1] === 'string' ? row.cells[1] : '',
-                                          newName: values.currentTargetPVCName.name,
-                                          namespace:
-                                            typeof row.cells[2] === 'string' ? row.cells[2] : '',
+                                          newPVCName: values.currentTargetPVCName.name,
                                           pvName:
                                             typeof row.cells[0] === 'string' ? row.cells[0] : '',
                                         };
@@ -517,9 +514,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                                         ...new Set([
                                           ...values.editedPVs,
                                           {
-                                            oldName: row.cells[1],
-                                            newName: values.currentTargetPVCName.name,
-                                            namespace: row.cells[2],
+                                            oldPVCName: row.cells[1],
+                                            newPVCName: values.currentTargetPVCName.name,
                                             pvName: row.cells[0],
                                           },
                                         ]),

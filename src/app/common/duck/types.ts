@@ -21,9 +21,8 @@ export interface IEditedNamespaceMap {
   id: string;
 }
 export interface IEditedPVsMap {
-  oldName: string;
-  newName: string;
-  namespace: string;
+  oldPVCName: string;
+  newPVCName: string;
   pvName?: string;
 }
 
