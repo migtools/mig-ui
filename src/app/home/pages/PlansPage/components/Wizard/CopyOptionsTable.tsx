@@ -140,21 +140,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     { title: 'PV name', transforms: [sortable, truncate] },
     { title: 'Source PVC', transforms: [sortable, truncate] },
     { title: 'Source storage class', transforms: [sortable, truncate] },
-    {
-      title: (
-        <React.Fragment>
-          Target PVC{' '}
-          <Tooltip
-            position={TooltipPosition.top}
-            isContentLeftAligned
-            content={<div>Target PVC</div>}
-          >
-            <QuestionCircleIcon />
-          </Tooltip>
-        </React.Fragment>
-      ),
-      transforms: [sortable, truncate],
-    },
+    { title: 'Target PVC', transforms: [sortable, truncate] },
     { title: 'Target storage class', transforms: [sortable, truncate] },
     {
       title: (
@@ -351,7 +337,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
-            For each persistent volume to be copied, select a copy method and target storage class.
+            For each persistent volume to be copied, you can optionally change the target PVC and
+            target storage class.
           </Text>
         </TextContent>
       </GridItem>
@@ -382,19 +369,18 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                 <Th width={20}>{columns[0].title}</Th>
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
-                <Th width={10}>{columns[3].title}</Th>
-                <Th width={30}>
-                  {columns[4].title}
+                <Th width={20}>
+                  {columns[3].title}
                   <Popover
                     position={PopoverPosition.right}
                     bodyContent={
                       <>
                         <p className={spacing.mtMd}>
-                          By default, a target namespace will have the same name as its
-                          corresponding source namespace.
+                          By default, a target PVC will have the same name as its corresponding
+                          source PVC.
                           <br></br>
                           <br></br>
-                          To change the name of the target namespace, click the edit icon.
+                          To change the name of the target PVC, click the edit icon.
                         </p>
                       </>
                     }
@@ -410,7 +396,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                     </span>
                   </Popover>
                 </Th>
-                <Th width={20}>{columns[5].title}</Th>
+                <Th width={10}>{columns[4].title}</Th>
+                <Th width={10}>{columns[5].title}</Th>
               </Tr>
             </Thead>
             <Tbody>
