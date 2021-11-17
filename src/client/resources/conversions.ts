@@ -3,7 +3,7 @@ import {
   HooksClusterType,
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
-import { IMigPlan } from '../../app/plan/duck/types';
+import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
 import { IClusterSpec } from '../../app/cluster/duck/types';
 import { select } from 'redux-saga/effects';
@@ -425,25 +425,66 @@ export function updateMigPlanFromValues(
     updatedSpec.namespaces = selectedNamespacesMapped;
   }
   if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
-      const userPv = planValues.persistentVolumes.find((upv) => upv.name === v.name);
-      if (userPv) {
-        v.selection.action = userPv.selection.action;
-        const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
-        if (selectedCopyMethod) {
-          v.selection.copyMethod = selectedCopyMethod;
-        }
+    //loop through plan PVS and mark skipped or copy for selected or unselected pvs
+    // update pvc name for each PV if there is a mapping
+    const updatedPVs: Array<IPlanPersistentVolume> = [];
+    updatedSpec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
+      const updatedPV = {
+        ...pvItem,
+      };
 
-        v.selection.verify =
-          selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
+      let targetPVCName = pvItem.pvc.name;
+      let sourcePVCName = pvItem.pvc.name;
+      let editedPV = planValues.editedPVs.find(
+        (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
+      );
 
-        const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
-        if (selectedStorageClassObj || selectedStorageClassObj === '') {
-          v.selection.storageClass =
-            selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
+      const includesMapping = sourcePVCName.includes(':');
+      if (includesMapping) {
+        const mappedNsArr = sourcePVCName.split(':');
+        editedPV = planValues.editedPVs.find(
+          (editedPV) => editedPV.oldPVCName === mappedNsArr[0] && editedPV.pvName === pvItem.name
+        );
+        if (mappedNsArr[0] === mappedNsArr[1]) {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newPVCName : mappedNsArr[0];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
+        } else {
+          sourcePVCName = mappedNsArr[0];
+          targetPVCName = editedPV ? editedPV.newPVCName : mappedNsArr[1];
+          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
         }
       }
-      return v;
+
+      const matchingSelectedPV = planValues.selectedPVs.find((selectedPV) => {
+        if (pvItem.name === selectedPV) {
+          return selectedPV;
+        }
+      });
+
+      if (matchingSelectedPV) {
+        updatedPV.selection.action = 'copy';
+      } else {
+        if (updatedPV.selection.action !== 'move') {
+          updatedPV.selection.action = 'skip';
+        }
+      }
+
+      const selectedCopyMethod = planValues.pvCopyMethodAssignment[updatedPV.name];
+      if (selectedCopyMethod) {
+        updatedPV.selection.copyMethod = selectedCopyMethod;
+      }
+
+      updatedPV.selection.verify =
+        selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[updatedPV.name];
+
+      const selectedStorageClassObj = planValues.pvStorageClassAssignment[updatedPV.name];
+      if (selectedStorageClassObj || selectedStorageClassObj === '') {
+        updatedPV.selection.storageClass =
+          selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
+      }
+
+      updatedPVs.push(updatedPV);
     });
   }
   if (planValues.planClosed) {

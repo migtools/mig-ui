@@ -103,6 +103,13 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
             pvName,
             pvcNamespace,
           };
+        } else {
+          return {
+            sourcePVCName,
+            targetPVCName,
+            pvName,
+            pvcNamespace,
+          };
         }
       });
       const hasDuplicatePVMapping = existingPVCNameMap.find((pv, index) => {

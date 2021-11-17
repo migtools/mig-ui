@@ -43,7 +43,6 @@ import { DefaultRootState } from '../../../../../../configureStore';
 import MigrateModal from '../../components/PlanActions/MigrateModal';
 import RollbackModal from '../../components/PlanActions/RollbackModal';
 import StageModal from '../../components/PlanActions/StageModal';
-import StateMigrationModal from '../../components/PlanActions/StateMigrationModal';
 import { clusterPodFetchRequest } from '../../../../../logs/duck/slice';
 const styles = require('./MigrationsPage.module').default;
 
@@ -67,7 +66,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const { path, url } = useRouteMatch();
 
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
-  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
@@ -86,11 +84,15 @@ export const MigrationsPage: React.FunctionComponent = () => {
       hasCopyPVs = null,
     } = planStatus;
 
+    const migrationType =
+      'full' ||
+      plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+
     const stateItem = (
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          toggleStateMigrationModalOpen();
+          dispatch(PlanActions.runStateMigrationRequest(plan));
         }}
         key="stateMigration"
         isDisabled={
@@ -100,7 +102,8 @@ export const MigrationsPage: React.FunctionComponent = () => {
           hasRunningMigrations ||
           finalMigrationComplete ||
           isPlanLocked ||
-          !hasCopyPVs
+          !hasCopyPVs ||
+          migrationType !== 'state'
         }
       >
         State

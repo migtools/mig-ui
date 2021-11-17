@@ -17,6 +17,7 @@ interface IProps {
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
   isPollingStatus: boolean;
+  onClose: () => void;
 }
 
 const ResultsStep: React.FunctionComponent<IProps> = ({
@@ -24,6 +25,7 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   currentPlanStatus,
   isPollingStatus,
   startPlanStatusPolling,
+  onClose,
 }: IProps) => {
   usePausedPollingEffect();
 
@@ -86,19 +88,14 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
           <Button onClick={handlePollRestart} disabled={isPollingStatus} variant="primary">
             Retry validation
           </Button>
-          {/* <Button onClick={onClose} variant="secondary">
+          <Button onClick={onClose} variant="secondary">
             Close
-          </Button> */}
+          </Button>
         </>
       );
     }
     return (
-      <Button
-        onClick={() => {
-          console.log('handleClose');
-        }}
-        variant="primary"
-      >
+      <Button onClick={onClose} variant="primary">
         Close
       </Button>
     );

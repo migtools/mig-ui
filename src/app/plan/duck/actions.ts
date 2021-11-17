@@ -461,15 +461,9 @@ const patchPlanPVsSuccess = () => ({
   type: PlanActionTypes.PATCH_PLAN_PVS_SUCCESS,
 });
 
-const runStateMigrationRequest = (
-  plan: IPlan,
-  editedPVs: Array<IEditedPV>,
-  selectedPVs: Array<string>
-) => ({
+const runStateMigrationRequest = (plan: IPlan) => ({
   type: PlanActionTypes.RUN_STATE_MIGRATION_REQUEST,
   plan,
-  editedPVs,
-  selectedPVs,
 });
 export type RunStateMigrationRequest = ReturnType<typeof runStateMigrationRequest>;
 

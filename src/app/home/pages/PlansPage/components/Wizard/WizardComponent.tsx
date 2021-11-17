@@ -105,6 +105,7 @@ const WizardComponent = (props: IOtherProps) => {
         <GeneralForm clusterList={clusterList} storageList={storageList} isEdit={isEdit} />
       </WizardStepContainer>
     ),
+    canJumpTo: stepIdReached >= stepId.General,
   };
   const namespacesStep = {
     id: stepId.Namespaces,
@@ -205,7 +206,7 @@ const WizardComponent = (props: IOtherProps) => {
         currentPlanStatus={currentPlanStatus}
         isPollingStatus={isPollingStatus}
         startPlanStatusPolling={startPlanStatusPolling}
-        // onClose={handleClose}
+        onClose={handleClose}
       />
     ),
   };
@@ -301,10 +302,10 @@ const WizardComponent = (props: IOtherProps) => {
     if (activeStep.name === 'General' && values.migrationType.value === 'full') {
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
-      setShowResultsStep(true);
       setShowCopyOptionsStep(true);
       setShowMigrationOptionsStep(true);
       setShowHooksStep(true);
+      setShowResultsStep(true);
       setTimeout(() => {
         //using set timeout instead of a setState callback. Is there a react friendly way to do this?
         callback();
@@ -317,8 +318,8 @@ const WizardComponent = (props: IOtherProps) => {
       setShowPersistentVolumesStep(true);
       setShowCopyOptionsStep(true);
       setShowMigrationOptionsStep(false);
+      setShowResultsStep(true);
       setShowHooksStep(false);
-      setShowResultsStep(false);
       setTimeout(() => {
         //using set timeout instead of a setState callback. Is there a react friendly way to do this?
         callback();
@@ -374,6 +375,8 @@ const WizardComponent = (props: IOtherProps) => {
                 );
               case 'Hooks':
                 return !isAddHooksOpen;
+              case 'Migration options':
+                return true;
               default:
                 true;
             }
@@ -389,7 +392,7 @@ const WizardComponent = (props: IOtherProps) => {
                 }}
                 isDisabled={!isNextEnabled()}
               >
-                {activeStep.name === 'Review' ? 'Finish' : 'Next'}
+                {activeStep.name === 'Results' ? 'Finish' : 'Next'}
               </Button>
               <Button
                 variant="secondary"

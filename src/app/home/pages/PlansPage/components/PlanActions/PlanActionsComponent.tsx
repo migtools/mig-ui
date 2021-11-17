@@ -31,7 +31,7 @@ interface IPlanActionsProps {
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
-  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
+  // const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
@@ -62,6 +62,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   } = plan?.PlanStatus;
   const isIntraClusterPlan =
     plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
+  const migrationType =
+    'full' || plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
 
   const editPlan = () => {
     toggleEditWizardOpen();
@@ -70,7 +72,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleStateMigrationModalOpen();
+        dispatch(PlanActions.runStateMigrationRequest(plan));
       }}
       key="stateMigration"
       isDisabled={
@@ -80,7 +82,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         hasRunningMigrations ||
         finalMigrationComplete ||
         isPlanLocked ||
-        !hasCopyPVs
+        !hasCopyPVs ||
+        migrationType !== 'state'
       }
     >
       State
@@ -263,11 +266,6 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         />
 
         <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
-        <StateMigrationModal
-          plan={plan}
-          isOpen={isStateMigrationModalOpen}
-          onHandleClose={toggleStateMigrationModalOpen}
-        />
 
         <ConfirmModal
           title="Confirmation"
