@@ -558,12 +558,12 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                             onClick={() => {
                               setEditableRow(rowIndex);
                               handleDelayedValidation(
-                                typeof row.cells[5] === 'string' && row.cells[5],
+                                typeof row.cells[3] === 'string' && row.cells[3],
                                 row
                               );
                               setFieldValue(currentTargetPVCNameKey, {
-                                name: row.cells[5],
-                                srcPVName: row.cells[1],
+                                name: row.cells[3],
+                                srcPVName: row.cells[0],
                               });
                             }}
                           />

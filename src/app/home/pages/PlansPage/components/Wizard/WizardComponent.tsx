@@ -365,6 +365,7 @@ const WizardComponent = (props: IOtherProps) => {
                 return !errors.selectedNamespaces && !isFetchingNamespaceList;
               case 'Persistent volumes':
                 return (
+                  !isFetchingPVResources &&
                   !isFetchingPVList &&
                   currentPlanStatus.state !== 'Pending' &&
                   currentPlanStatus.state !== 'Critical'
