@@ -74,7 +74,7 @@ const WizardComponent = (props: IOtherProps) => {
     General = 1,
     Namespaces,
     PersistentVolumes,
-    StorageClass,
+    CopyOptions,
     MigrationOptions,
     Hooks,
     Results,
@@ -91,7 +91,7 @@ const WizardComponent = (props: IOtherProps) => {
     setShowMigrationOptionsStep(false);
     setShowNamespacesStep(false);
     setShowPersistentVolumesStep(false);
-    setShowStorageClassStep(false);
+    setShowCopyOptionsStep(false);
   };
 
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
@@ -140,8 +140,8 @@ const WizardComponent = (props: IOtherProps) => {
     ),
     canJumpTo: stepIdReached >= stepId.PersistentVolumes,
   };
-  const storageClassStep = {
-    id: stepId.StorageClass,
+  const copyOptionsStep = {
+    id: stepId.CopyOptions,
     name: 'Copy options',
     component: (
       <WizardStepContainer title="Copy options">
@@ -152,7 +152,7 @@ const WizardComponent = (props: IOtherProps) => {
         />
       </WizardStepContainer>
     ),
-    canJumpTo: stepIdReached >= stepId.StorageClass,
+    canJumpTo: stepIdReached >= stepId.CopyOptions,
   };
   const migrationOptionsStep = {
     id: stepId.MigrationOptions,
@@ -212,7 +212,7 @@ const WizardComponent = (props: IOtherProps) => {
 
   const [showNamespacesStep, setShowNamespacesStep] = useState(false);
   const [showPersistentVolumesStep, setShowPersistentVolumesStep] = useState(false);
-  const [showStorageClassStep, setShowStorageClassStep] = useState(false);
+  const [showCopyOptionsStep, setShowCopyOptionsStep] = useState(false);
   const [showMigrationOptionsStep, setShowMigrationOptionsStep] = useState(false);
   const [showHooksStep, setShowHooksStep] = useState(false);
   const [showResultsStep, setShowResultsStep] = useState(false);
@@ -221,7 +221,7 @@ const WizardComponent = (props: IOtherProps) => {
     generalStep,
     ...(showNamespacesStep ? [namespacesStep] : []),
     ...(showPersistentVolumesStep ? [persistentVolumesStep] : []),
-    ...(showStorageClassStep ? [storageClassStep] : []),
+    ...(showCopyOptionsStep ? [copyOptionsStep] : []),
     ...(showMigrationOptionsStep ? [migrationOptionsStep] : []),
     ...(showHooksStep ? [hooksStep] : []),
     ...(showResultsStep ? [resultsStep] : []),
@@ -292,7 +292,7 @@ const WizardComponent = (props: IOtherProps) => {
       fetchPlanHooksRequest();
     }
 
-    if (prevId === stepId.Hooks && id === stepId.StorageClass) {
+    if (prevId === stepId.Hooks && id === stepId.CopyOptions) {
       setIsAddHooksOpen(false);
     }
   };
@@ -302,7 +302,7 @@ const WizardComponent = (props: IOtherProps) => {
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
       setShowResultsStep(true);
-      setShowStorageClassStep(true);
+      setShowCopyOptionsStep(true);
       setShowMigrationOptionsStep(true);
       setShowHooksStep(true);
       setTimeout(() => {
@@ -315,7 +315,7 @@ const WizardComponent = (props: IOtherProps) => {
     ) {
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
-      setShowStorageClassStep(true);
+      setShowCopyOptionsStep(true);
       setShowMigrationOptionsStep(false);
       setShowHooksStep(false);
       setShowResultsStep(false);
@@ -363,6 +363,8 @@ const WizardComponent = (props: IOtherProps) => {
                 break;
               case 'Namespaces':
                 return !errors.selectedNamespaces && !isFetchingNamespaceList;
+              case 'Copy options':
+                return !errors.currentTargetPVCName;
               case 'Persistent volumes':
                 return (
                   !isFetchingPVResources &&

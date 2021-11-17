@@ -81,23 +81,21 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         const pvcNamespace = pvItem.pvc.namespace;
         const pvName = pvItem.name;
         let editedPV = values.editedPVs.find(
-          (editedPV) =>
-            editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
+          (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
         );
         const includesMapping = sourcePVCName.includes(':');
         if (includesMapping) {
           const mappedPVCNameArr = sourcePVCName.split(':');
           editedPV = values.editedPVs.find(
             (editedPV) =>
-              editedPV.oldName === mappedPVCNameArr[0] &&
-              editedPV.namespace === pvItem.pvc.namespace
+              editedPV.oldPVCName === mappedPVCNameArr[0] && editedPV.pvName === pvItem.name
           );
           if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
             sourcePVCName = mappedPVCNameArr[0];
-            targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[0];
+            targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[0];
           } else {
             sourcePVCName = mappedPVCNameArr[0];
-            targetPVCName = editedPV ? editedPV.newName : mappedPVCNameArr[1];
+            targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[1];
           }
           return {
             sourcePVCName,
@@ -120,7 +118,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       });
 
       const targetPVCNameError = utils.testTargetName(values?.currentTargetPVCName?.name);
-      if (!values?.currentTargetPVCName) {
+      if (!values?.currentTargetPVCName && values.editedPVs.length) {
         errors.currentTargetPVCName = 'Required';
       } else if (targetPVCNameError !== '') {
         errors.currentTargetPVCName = targetPVCNameError;
