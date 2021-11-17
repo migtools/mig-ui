@@ -68,19 +68,10 @@ import {
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
 import { useFormikContext } from 'formik';
 
-interface ICopyOptionsTableProps
-  extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
-    Pick<
-      IFormValues,
-      | 'persistentVolumes'
-      | 'pvStorageClassAssignment'
-      | 'pvVerifyFlagAssignment'
-      | 'pvCopyMethodAssignment'
-    > {
+interface ICopyOptionsTableProps extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'> {
   storageClasses: IMigPlanStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
-  onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
 
 enum VerifyWarningState {
@@ -95,10 +86,6 @@ const storageClassToString = (storageClass: IMigPlanStorageClass) =>
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   isFetchingPVList,
   currentPlan,
-  persistentVolumes,
-  pvStorageClassAssignment,
-  pvVerifyFlagAssignment,
-  pvCopyMethodAssignment,
   storageClasses,
   onStorageClassChange,
   onVerifyFlagChange,
@@ -116,6 +103,9 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     errors,
     validateForm,
   } = useFormikContext<IFormValues>();
+  const filteredPersistentVolumes = values.persistentVolumes.length
+    ? values.persistentVolumes.filter((v) => v.selection.action === 'copy')
+    : [];
 
   if (isFetchingPVList) {
     return (
@@ -170,8 +160,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.storageClass,
     'targetPVCName',
     // targetPVCToString(targetPVCName[pv.name]),
-    storageClassToString(pvStorageClassAssignment[pv.name]),
-    pvVerifyFlagAssignment[pv.name],
+    storageClassToString(values.pvStorageClassAssignment[pv.name]),
+    values.pvVerifyFlagAssignment[pv.name],
   ];
   const filterCategories: FilterCategory[] = [
     {
@@ -203,12 +193,12 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-      getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
+      getItemValue: (pv) => storageClassToString(values.pvStorageClassAssignment[pv.name]),
     },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    persistentVolumes,
+    filteredPersistentVolumes,
     filterCategories
   );
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
@@ -218,7 +208,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentPV = currentPlan?.spec?.persistentVolumes?.find(
       (planPV) => planPV.name === pv.name
     );
-    const currentStorageClass = pvStorageClassAssignment[pv.name];
+    const currentStorageClass = values.pvStorageClassAssignment[pv.name];
 
     const noneOption = { value: '', toString: () => 'None' };
     const storageClassOptions: OptionWithValue[] = [
@@ -234,7 +224,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     // const editedPVCs = values.editedPVCs.find((editedPVC) => editedPVC.name === pv.pvc.name);
 
     // const targetPVCName = editedPVC ? editedPVC.newName : initialTargetPVCName;
-    const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
+    const isVerifyCopyAllowed = values.pvCopyMethodAssignment[pv.name] === 'filesystem';
     // const includesMapping = sourcePVCName.includes(':');
     // if (includesMapping) {
     //   const mappedPVCNameArr = sourcePVCName.split(':');
@@ -278,7 +268,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               value={
                 storageClassOptions.find(
                   (option) => currentStorageClass && option.value === currentStorageClass.name
-                ) || noneOption
+                ) || pv.storageClass
               }
               placeholderText="Select a storage class..."
             />
@@ -287,7 +277,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         {
           title: (
             <Checkbox
-              isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
+              isChecked={isVerifyCopyAllowed && values.pvVerifyFlagAssignment[pv.name]}
               isDisabled={!isVerifyCopyAllowed}
               onChange={(checked) => {
                 onVerifyFlagChange(currentPV, checked);
@@ -310,7 +300,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   });
 
   const tableEmptyState =
-    persistentVolumes.length > 0 ? (
+    filteredPersistentVolumes.length > 0 ? (
       <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
     ) : (
       <TableEmptyState

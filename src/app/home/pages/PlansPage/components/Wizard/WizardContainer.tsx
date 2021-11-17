@@ -171,6 +171,22 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   };
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit && isOpen) {
+    let pvStorageClassAssignment = {};
+    const migPlanPvs = editPlanObj.spec.persistentVolumes;
+    if (migPlanPvs) {
+      const storageClasses = editPlanObj?.status?.destStorageClasses || [];
+      pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
+        const suggestedStorageClass = storageClasses.find(
+          (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
+        );
+        return {
+          ...assignedScs,
+          [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+        };
+      }, {});
+      initialValues.pvStorageClassAssignment = pvStorageClassAssignment;
+    }
+
     initialValues.migrationType =
       editPlanObj.metadata.annotations &&
       getMigrationType(
