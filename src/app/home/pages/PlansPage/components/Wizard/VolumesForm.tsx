@@ -26,6 +26,7 @@ type IVolumesFormProps = Pick<
   | 'getPVResourcesRequest'
   | 'pvResourceList'
   | 'isFetchingPVResources'
+  | 'isFetchingPVList'
   | 'pvDiscoveryRequest'
   | 'isPollingStatus'
 >;
@@ -102,7 +103,7 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       </Grid>
     );
   }
-  if (isPollingStatus || currentPlanStatus.state === 'Pending') {
+  if (isFetchingPVResources || isPollingStatus || currentPlanStatus.state === 'Pending') {
     return (
       <Bullseye>
         <EmptyState variant="large">

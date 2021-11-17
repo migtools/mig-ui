@@ -143,14 +143,6 @@ export const defaultInitialValues: IFormValues = {
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
   const { editPlanObj, isEdit, planList, sourceClusterNamespaces, isOpen } = props;
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    //Set current plan on edit wizard open
-    if (editPlanObj && isEdit && isOpen) {
-      dispatch(PlanActions.setCurrentPlan(editPlanObj));
-    }
-  }, [editPlanObj, isOpen]);
 
   const getMigrationType = (type: string): OptionWithValue<string> => {
     switch (type) {
@@ -179,9 +171,11 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   };
   const initialValues = { ...defaultInitialValues };
   if (editPlanObj && isEdit && isOpen) {
-    initialValues.migrationType = getMigrationType(
-      editPlanObj.metadata?.annotations['migration.openshift.io/selected-migplan-type'] || 'full'
-    );
+    initialValues.migrationType =
+      editPlanObj.metadata.annotations &&
+      getMigrationType(
+        editPlanObj.metadata.annotations['migration.openshift.io/selected-migplan-type']
+      );
     initialValues.planName = editPlanObj.metadata.name || '';
     initialValues.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
     initialValues.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
@@ -256,7 +250,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
 
     // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
     // See https://github.com/konveyor/mig-ui/issues/797
-    // initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
+    initialValues.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
   }
   return (
     <WizardFormik

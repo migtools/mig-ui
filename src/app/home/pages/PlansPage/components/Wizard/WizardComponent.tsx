@@ -67,6 +67,7 @@ const WizardComponent = (props: IOtherProps) => {
     resetAddEditState,
     removeHookFromPlanRequest,
     validatePlanPollStop,
+    isFetchingPVResources,
   } = props;
 
   enum stepId {
@@ -129,7 +130,8 @@ const WizardComponent = (props: IOtherProps) => {
           isPVError={isPVError}
           getPVResourcesRequest={getPVResourcesRequest}
           pvResourceList={pvResourceList}
-          isFetchingPVResources={isFetchingPVList}
+          isFetchingPVResources={isFetchingPVResources}
+          isFetchingPVList={isFetchingPVList}
           isPollingStatus={isPollingStatus}
           pvDiscoveryRequest={pvDiscoveryRequest}
           currentPlanStatus={currentPlanStatus}
@@ -369,6 +371,8 @@ const WizardComponent = (props: IOtherProps) => {
                 );
               case 'Hooks':
                 return !isAddHooksOpen;
+              default:
+                true;
             }
           };
 

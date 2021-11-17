@@ -113,9 +113,9 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         const isIntraClusterPlan = values.sourceCluster === values.targetCluster;
 
         return (
-          (editedPVCName === pv.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
-          (editedPVCName === pv.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
-          (editedPVCName === pv.sourcePVCName && isIntraClusterPlan)
+          (editedPVCName === pv?.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv?.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv?.sourcePVCName && isIntraClusterPlan)
         );
       });
 
@@ -124,7 +124,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.currentTargetPVCName = 'Required';
       } else if (targetPVCNameError !== '') {
         errors.currentTargetPVCName = targetPVCNameError;
-      } else if (hasDuplicateMapping) {
+      } else if (hasDuplicatePVMapping) {
         errors.currentTargetPVCName =
           'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
       }
