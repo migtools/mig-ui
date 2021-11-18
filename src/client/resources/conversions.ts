@@ -427,7 +427,7 @@ export function updateMigPlanFromValues(
   if (updatedSpec.persistentVolumes) {
     //loop through plan PVS and mark skipped or copy for selected or unselected pvs
     // update pvc name for each PV if there is a mapping
-    const updatedPVs: Array<IPlanPersistentVolume> = [];
+    // const updatedPVs: Array<IPlanPersistentVolume> = [];
     updatedSpec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
       const updatedPV = {
         ...pvItem,
@@ -436,24 +436,29 @@ export function updateMigPlanFromValues(
       const matchingEditedPV = planValues.editedPVs.find(
         (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
       );
-
+      const isIntraClusterPlan = planValues.sourceCluster === planValues.targetCluster;
+      const mappedPVCNameArr = updatedPV.pvc.name.split(':');
       if (matchingEditedPV) {
         updatedPV.pvc.name = `${matchingEditedPV.oldPVCName}:${matchingEditedPV.newPVCName}`;
       }
+      // else if (isIntraClusterPlan && mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+      //   //if the user did not update their pvc name, apply -new to the pvc name if intra cluster plan
+      //   updatedPV.pvc.name = `${updatedPV.pvc.name}-new`;
+      // }
 
-      const matchingSelectedPV = planValues.selectedPVs.find((selectedPV) => {
-        if (pvItem.name === selectedPV) {
-          return selectedPV;
-        }
-      });
+      // const matchingSelectedPV = planValues.selectedPVs.find((selectedPV) => {
+      //   if (pvItem.name === selectedPV) {
+      //     return selectedPV;
+      //   }
+      // });
 
-      if (matchingSelectedPV) {
-        updatedPV.selection.action = 'copy';
-      } else {
-        if (updatedPV.selection.action !== 'move') {
-          updatedPV.selection.action = 'skip';
-        }
-      }
+      // if (matchingSelectedPV) {
+      //   updatedPV.selection.action = 'copy';
+      // } else {
+      //   if (updatedPV.selection.action !== 'move') {
+      //     updatedPV.selection.action = 'skip';
+      //   }
+      // }
 
       const selectedCopyMethod = planValues.pvCopyMethodAssignment[updatedPV.name];
       if (selectedCopyMethod) {
@@ -468,8 +473,9 @@ export function updateMigPlanFromValues(
         updatedPV.selection.storageClass =
           selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
       }
-
-      updatedPVs.push(updatedPV);
+      const isSelected = planValues.selectedPVs.some((pv) => pv.name === updatedPV.name);
+      if (isSelected) return updatedPV;
+      // updatedPVs.push(updatedPV);
     });
   }
   if (planValues.planClosed) {

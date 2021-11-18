@@ -89,14 +89,9 @@ export interface IOtherProps {
   stopPlanStatusPolling?: (planName: string) => void;
   pvUpdatePollStop?: () => void;
   validatePlanRequest?: (values: any) => void;
-  pvDiscoveryRequest?: (values: any) => void;
   resetCurrentPlan?: () => void;
   setCurrentPlan?: (plan: IMigPlan) => void;
   fetchNamespacesRequest?: (clusterName: string) => void;
-  getPVResourcesRequest?: (
-    persistentVolumes: IPlanPersistentVolume[],
-    sourceClusterName: IFormValues['sourceCluster']
-  ) => void;
   fetchPlanHooksRequest?: () => void;
   addPlanRequest?: (migPlan: any) => void;
   addAnalyticRequest?: (planName: string) => void;
@@ -315,8 +310,6 @@ const mapDispatchToProps = (dispatch: any) => {
     addAnalyticRequest: (planName: string) => dispatch(PlanActions.addAnalyticRequest(planName)),
     fetchNamespacesRequest: (clusterName: string) =>
       dispatch(PlanActions.namespaceFetchRequest(clusterName)),
-    getPVResourcesRequest: (pvList: any, clusterName: string) =>
-      dispatch(PlanActions.getPVResourcesRequest(pvList, clusterName)),
     startPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.startPlanStatusPolling(planName)),
     stopPlanStatusPolling: (planName: string) =>
@@ -324,7 +317,6 @@ const mapDispatchToProps = (dispatch: any) => {
     addHookRequest: (migHook: IMigHook) => dispatch(PlanActions.addHookRequest(migHook)),
     fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
     validatePlanRequest: (values: any) => dispatch(PlanActions.validatePlanRequest(values)),
-    pvDiscoveryRequest: (values: any) => dispatch(PlanActions.pvDiscoveryRequest(values)),
     resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
     setCurrentPlan: (plan: IMigPlan) => dispatch(PlanActions.setCurrentPlan(plan)),
     updateCurrentPlanStatus: (status: any) => dispatch(PlanActions.updateCurrentPlanStatus(status)),

@@ -33,7 +33,6 @@ const WizardComponent = (props: IOtherProps) => {
     isOpen,
     isFetchingPVList,
     isFetchingNamespaceList,
-    isPVError,
     isPollingStatus,
     fetchNamespacesRequest,
     sourceClusterNamespaces,
@@ -43,12 +42,9 @@ const WizardComponent = (props: IOtherProps) => {
     isFetchingHookList,
     isUpdatingGlobalHookList,
     isAssociatingHookToPlan,
-    getPVResourcesRequest,
     startPlanStatusPolling,
     stopPlanStatusPolling,
-    pvDiscoveryRequest,
     validatePlanRequest,
-    pvResourceList,
     addPlanRequest,
     addAnalyticRequest,
     setCurrentPlan,
@@ -126,17 +122,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Persistent volumes',
     component: (
       <WizardStepContainer title="Persistent volumes">
-        <VolumesForm
-          currentPlan={currentPlan}
-          isPVError={isPVError}
-          getPVResourcesRequest={getPVResourcesRequest}
-          pvResourceList={pvResourceList}
-          isFetchingPVResources={isFetchingPVResources}
-          isFetchingPVList={isFetchingPVList}
-          isPollingStatus={isPollingStatus}
-          pvDiscoveryRequest={pvDiscoveryRequest}
-          currentPlanStatus={currentPlanStatus}
-        />
+        <VolumesForm />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.PersistentVolumes,
@@ -256,7 +242,7 @@ const WizardComponent = (props: IOtherProps) => {
       }
     }
     if (prevId === stepId.PersistentVolumes) {
-      //SKIP ALL UNSELECTED PVS
+      //Set action to SKIP for unselected PVs when navigating past the pv selection step in wizard
       if (currentPlan !== null && values.persistentVolumes) {
         const newPVs = values.persistentVolumes.map((currentPV, index) => {
           const isSelected = values.selectedPVs.find((selectedPV) => selectedPV === currentPV.name);

@@ -17,16 +17,8 @@ import {
   PaginationVariant,
   Level,
   LevelItem,
-  Flex,
-  FlexItem,
-  FormGroup,
-  TextInput,
 } from '@patternfly/react-core';
 import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
   sortable,
   TableComposable,
   Tbody,
@@ -49,48 +41,40 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import {
-  IPersistentVolumeResource,
-  IPlanPersistentVolume,
-  PvCopyMethod,
-} from '../../../../../plan/duck/types';
+import { IPlanPersistentVolume, PvCopyMethod } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import {
-  OutlinedQuestionCircleIcon,
-  CheckIcon,
-  TimesIcon,
-  PencilAltIcon,
-} from '@patternfly/react-icons';
-import { values } from 'lodash';
-import { validatedState } from '../../../../../common/helpers';
 import { useFormikContext } from 'formik';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 const styles = require('./VolumesTable.module').default;
 
-interface IVolumesTableProps
-  extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
-    Pick<IFormValues, 'persistentVolumes'> {
-  onActionTypeChange: (currentPV: IPlanPersistentVolume, option: OptionWithValue) => void;
-}
+const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
+  const planState = useSelector((state: DefaultRootState) => state.plan);
 
-const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
-  isFetchingPVResources,
-  pvResourceList,
-  persistentVolumes,
-  onActionTypeChange,
-}: IVolumesTableProps) => {
-  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
+  const { setFieldValue, values } = useFormikContext<IFormValues>();
 
-  const {
-    handleBlur,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    values,
-    touched,
-    errors,
-    validateForm,
-  } = useFormikContext<IFormValues>();
+  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
+    if (planState.currentPlan !== null && values.persistentVolumes) {
+      const newPVs = [...values.persistentVolumes];
+      const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
+      const pvIndex = values.persistentVolumes.indexOf(matchingPV);
+
+      newPVs[pvIndex] = {
+        ...matchingPV,
+        selection: {
+          ...matchingPV.selection,
+          //if updating the copy method, then assume the action will be set to copy
+          ...(option.type === 'copyMethod' && {
+            copyMethod: option.value,
+            action: 'copy',
+          }),
+        },
+      };
+      // update copy method and action in one shot when changing dropdown value for copy method
+      setFieldValue('persistentVolumes', newPVs);
+    }
+  };
 
   const columns = [
     { title: 'PV name', transforms: [sortable] },
@@ -147,7 +131,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    persistentVolumes,
+    values.persistentVolumes,
     filterCategories
   );
 
@@ -194,7 +178,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   };
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
-    const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
+    const matchingPVResource = planState.pvResourceList.find(
+      (pvResource) => pvResource.name === pv.name
+    );
 
     const copyMethodToString = (copyMethod: PvCopyMethod) => {
       if (copyMethod === 'filesystem') return 'Filesystem copy';
@@ -243,7 +229,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <SimpleSelect
               id="select-migration-type"
               aria-label="Select pv migration type"
-              onChange={(option: any) => onActionTypeChange(pv, option)}
+              onChange={(option: any) => updatePersistentVolumeAction(pv, option)}
               options={combinedCopyOptions}
               value={currentSelectedCopyOption}
               placeholderText={null}
@@ -272,7 +258,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               closeBtnAriaLabel="close-pv-details"
               maxWidth="200rem"
             >
-              <Button isDisabled={isFetchingPVResources} variant="link">
+              <Button isDisabled={planState.isFetchingPVResources} variant="link">
                 View JSON
               </Button>
             </Popover>
@@ -317,17 +303,6 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          // <Table
-          //   aria-label="Persistent volumes table"
-          //   variant={TableVariant.compact}
-          //   cells={columns}
-          //   rows={rows}
-          //   sortBy={sortBy}
-          //   onSort={onSort}
-          // >
-          //   <TableHeader />
-          //   <TableBody />
-          // </Table>
           <TableComposable aria-label="Selectable Table">
             <Thead>
               <Tr>
@@ -381,10 +356,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         ) : (
           <TableEmptyState
             onClearFiltersClick={() => setFilterValues({})}
-            isHiddenActions={persistentVolumes.length === 0}
-            titleText={persistentVolumes.length === 0 && 'No persistent volumes found'}
+            isHiddenActions={values.persistentVolumes.length === 0}
+            titleText={values.persistentVolumes.length === 0 && 'No persistent volumes found'}
             bodyText={
-              persistentVolumes.length === 0 &&
+              values.persistentVolumes.length === 0 &&
               'No persistent volumes are attached to the selected projects. Click Next to continue.'
             }
           />
