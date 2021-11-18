@@ -437,9 +437,17 @@ export function updateMigPlanFromValues(
         ...pvItem,
       };
 
-      const matchingEditedPV = planValues.editedPVs.find(
-        (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
-      );
+      const matchingEditedPV = planValues.editedPVs.find((editedPV) => {
+        const includesMapping = pvItem.pvc.name.includes(':');
+        if (includesMapping) {
+          const currentMappedPVCNameArr = pvItem.pvc.name.split(':');
+          return (
+            editedPV.oldPVCName === currentMappedPVCNameArr[0] && editedPV.pvName === pvItem.name
+          );
+        } else {
+          return editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name;
+        }
+      });
       const isIntraClusterPlan = planValues.sourceCluster === planValues.targetCluster;
       const mappedPVCNameArr = updatedPV.pvc.name.split(':');
       if (matchingEditedPV) {

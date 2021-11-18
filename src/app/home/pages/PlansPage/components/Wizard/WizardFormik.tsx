@@ -66,9 +66,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       const targetNamespaceNameError = utils.testTargetName(
         values?.currentTargetNamespaceName?.name
       );
-      if (!values.currentTargetNamespaceName) {
-        errors.currentTargetNamespaceName = 'Required';
-      } else if (targetNamespaceNameError !== '') {
+      if (targetNamespaceNameError !== '') {
         errors.currentTargetNamespaceName = targetNamespaceNameError;
       } else if (hasDuplicateMapping) {
         errors.currentTargetNamespaceName =
@@ -125,9 +123,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       });
 
       const targetPVCNameError = utils.testTargetName(values?.currentTargetPVCName?.name);
-      if (!values?.currentTargetPVCName && values.editedPVs.length) {
-        errors.currentTargetPVCName = 'Required';
-      } else if (targetPVCNameError !== '') {
+      if (targetPVCNameError !== '') {
         errors.currentTargetPVCName = targetPVCNameError;
       } else if (hasDuplicatePVMapping) {
         errors.currentTargetPVCName =
