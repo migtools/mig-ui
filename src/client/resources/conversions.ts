@@ -429,10 +429,7 @@ export function updateMigPlanFromValues(
     updatedSpec.namespaces = selectedNamespacesMapped;
   }
   if (updatedSpec.persistentVolumes) {
-    //loop through plan PVS and mark skipped or copy for selected or unselected pvs
-    // update pvc name for each PV if there is a mapping
-    // const updatedPVs: Array<IPlanPersistentVolume> = [];
-    updatedSpec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
+    planValues.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
       const updatedPV = {
         ...pvItem,
       };
@@ -466,9 +463,10 @@ export function updateMigPlanFromValues(
         updatedPV.selection.storageClass =
           selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
       }
-      const isSelected = planValues.selectedPVs.some((pv) => pv.name === updatedPV.name);
-      if (isSelected) return updatedPV;
+
+      return updatedPV;
     });
+    updatedSpec.persistentVolumes = planValues.persistentVolumes;
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;

@@ -142,6 +142,13 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
+  useEffect(() => {
+    //select all pvs on load
+    setAllRowsSelected(true);
+    const newSelected = filteredItems.map((pv) => pv.name);
+    setFieldValue('selectedPVs', newSelected);
+  }, []);
+
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
 
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
