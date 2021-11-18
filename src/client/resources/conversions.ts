@@ -410,6 +410,7 @@ export function updateMigPlanFromValues(
     };
   }
   if (updatedSpec.namespaces) {
+    const isIntraClusterPlan = planValues.sourceCluster === planValues.targetCluster;
     const selectedNamespacesMapped = planValues.selectedNamespaces.map((selectedNs, i) => {
       const editedNamespace = planValues.editedNamespaces.find(
         (editedNs, index) => selectedNs === editedNs.oldName
@@ -417,6 +418,9 @@ export function updateMigPlanFromValues(
       if (editedNamespace) {
         const mappedNS = `${selectedNs}:${editedNamespace.newName}`;
         return mappedNS;
+      } else if (isIntraClusterPlan) {
+        //if not edited and intracluster plan, force a remap
+        return `${selectedNs}:${selectedNs}-new`;
       } else {
         return selectedNs;
       }
