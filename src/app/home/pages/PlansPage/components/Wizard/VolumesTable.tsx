@@ -65,10 +65,14 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
         selection: {
           ...matchingPV.selection,
           //if updating the copy method, then assume the action will be set to copy
-          ...(option.type === 'copyMethod' && {
-            copyMethod: option.value,
-            action: 'copy',
-          }),
+          ...(option.type === 'copyMethod'
+            ? {
+                copyMethod: option.value,
+                action: 'copy',
+              }
+            : option.value === 'move' && {
+                action: 'move',
+              }),
         },
       };
       // update copy method and action in one shot when changing dropdown value for copy method
