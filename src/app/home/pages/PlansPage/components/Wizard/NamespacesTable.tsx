@@ -45,13 +45,15 @@ import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
 import { ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import { useSelector } from 'react-redux';
+import { planSelectors } from '../../../../../plan/duck';
+import { DefaultRootState } from '../../../../../../configureStore';
 const styles = require('./NamespacesTable.module').default;
 
-type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
-
-const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
-  sourceClusterNamespaces,
-}: INamespacesTableProps) => {
+const NamespacesTable: React.FunctionComponent<IOtherProps> = () => {
+  const sourceClusterNamespaces = useSelector((state: DefaultRootState) =>
+    planSelectors.getFilteredNamespaces(state)
+  );
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const {
     handleBlur,

@@ -11,9 +11,10 @@ import { useFormikContext } from 'formik';
 import { IFormValues } from './WizardContainer';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
 
 interface IProps {
-  startPlanStatusPolling: (planName: string) => void;
   currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
   isPollingStatus: boolean;
@@ -24,15 +25,15 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
   currentPlan,
   currentPlanStatus,
   isPollingStatus,
-  startPlanStatusPolling,
   onClose,
 }: IProps) => {
+  const dispatch = useDispatch();
   usePausedPollingEffect();
 
   const { values } = useFormikContext<IFormValues>();
 
   const handlePollRestart = () => {
-    startPlanStatusPolling(values.planName);
+    dispatch(PlanActions.startPlanStatusPolling(values.planName));
   };
 
   const HeaderIcon: React.FunctionComponent<{ state: CurrentPlanState }> = ({ state }) => {

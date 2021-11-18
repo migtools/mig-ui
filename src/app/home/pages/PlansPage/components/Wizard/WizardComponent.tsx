@@ -18,53 +18,44 @@ import { IOtherProps, IFormValues } from './WizardContainer';
 import { CurrentPlanState } from '../../../../../plan/duck/reducers';
 import WizardStepContainer from './WizardStepContainer';
 import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { clusterSelectors } from '../../../../../cluster/duck';
+import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import { storageSelectors } from '../../../../../storage/duck';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 const WizardComponent = (props: IOtherProps) => {
-  const [stepIdReached, setStepIdReached] = useState(1);
-  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
-
-  const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
-
+  const dispatch = useDispatch();
+  const planList = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
+  const clusterList = useSelector((state: DefaultRootState) =>
+    clusterSelectors.getAllClusters(state)
+  );
+  const storageList = useSelector((state: DefaultRootState) =>
+    storageSelectors.getAllStorage(state)
+  );
   const {
-    clusterList,
     currentPlan,
     currentPlanStatus,
-    storageList,
-    isOpen,
     isFetchingPVList,
     isFetchingNamespaceList,
     isPollingStatus,
-    fetchNamespacesRequest,
-    sourceClusterNamespaces,
-    fetchPlanHooksRequest,
     allHooks,
     currentPlanHooks,
     isFetchingHookList,
     isUpdatingGlobalHookList,
     isAssociatingHookToPlan,
-    startPlanStatusPolling,
-    stopPlanStatusPolling,
-    validatePlanRequest,
-    addPlanRequest,
-    addAnalyticRequest,
-    setCurrentPlan,
-    resetCurrentPlan,
-    onHandleWizardModalClose,
-    isEdit,
-    editPlanObj,
-    updateCurrentPlanStatus,
-    pvUpdatePollStop,
-    addHookRequest,
-    updateHookRequest,
-    associateHookToPlan,
-    watchHookAddEditStatus,
     hookAddEditStatus,
-    cancelAddEditWatch,
-    resetAddEditState,
-    removeHookFromPlanRequest,
-    validatePlanPollStop,
     isFetchingPVResources,
-  } = props;
+  } = useSelector((state: DefaultRootState) => state.plan);
+
+  const [stepIdReached, setStepIdReached] = useState(1);
+  const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
+
+  const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
+
+  const { isOpen, isEdit, editPlanObj, onHandleWizardModalClose } = props;
 
   enum stepId {
     General = 1,
@@ -79,10 +70,10 @@ const WizardComponent = (props: IOtherProps) => {
     onHandleWizardModalClose();
     setStepIdReached(stepId.General);
     resetForm();
-    resetCurrentPlan();
-    stopPlanStatusPolling(values.planName);
-    validatePlanPollStop();
-    pvUpdatePollStop();
+    dispatch(PlanActions.resetCurrentPlan());
+    dispatch(PlanActions.stopPlanStatusPolling(values.planName));
+    dispatch(PlanActions.validatePlanPollStop());
+    dispatch(PlanActions.pvUpdatePollStop());
     setShowHooksStep(false);
     setShowMigrationOptionsStep(false);
     setShowNamespacesStep(false);
@@ -108,11 +99,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Namespaces',
     component: (
       <WizardStepContainer title="Namespaces">
-        <NamespacesForm
-          isFetchingNamespaceList={isFetchingNamespaceList}
-          fetchNamespacesRequest={fetchNamespacesRequest}
-          sourceClusterNamespaces={sourceClusterNamespaces}
-        />
+        <NamespacesForm isFetchingNamespaceList={isFetchingNamespaceList} />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.Namespaces,
@@ -156,25 +143,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Hooks',
     component: (
       <WizardStepContainer title="Hooks">
-        <HooksStep
-          removeHookFromPlanRequest={removeHookFromPlanRequest}
-          addHookRequest={addHookRequest}
-          updateHookRequest={updateHookRequest}
-          isFetchingHookList={isFetchingHookList}
-          isUpdatingGlobalHookList={isUpdatingGlobalHookList}
-          isAssociatingHookToPlan={isAssociatingHookToPlan}
-          currentPlanHooks={currentPlanHooks}
-          allHooks={allHooks}
-          fetchPlanHooksRequest={fetchPlanHooksRequest}
-          watchHookAddEditStatus={watchHookAddEditStatus}
-          hookAddEditStatus={hookAddEditStatus}
-          currentPlan={currentPlan}
-          isAddHooksOpen={isAddHooksOpen}
-          setIsAddHooksOpen={setIsAddHooksOpen}
-          associateHookToPlan={associateHookToPlan}
-          cancelAddEditWatch={cancelAddEditWatch}
-          resetAddEditState={resetAddEditState}
-        />
+        <HooksStep isAddHooksOpen={isAddHooksOpen} setIsAddHooksOpen={setIsAddHooksOpen} />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.Hooks,
@@ -191,7 +160,6 @@ const WizardComponent = (props: IOtherProps) => {
         currentPlan={currentPlan}
         currentPlanStatus={currentPlanStatus}
         isPollingStatus={isPollingStatus}
-        startPlanStatusPolling={startPlanStatusPolling}
         onClose={handleClose}
       />
     ),
@@ -215,14 +183,13 @@ const WizardComponent = (props: IOtherProps) => {
   ];
 
   const onMove: WizardStepFunctionType = ({ id, name }, { prevId, prevName }) => {
-    pvUpdatePollStop();
-    //
+    dispatch(PlanActions.pvUpdatePollStop());
     if (stepIdReached < id) {
       setStepIdReached(id as number);
     }
 
     if (id === stepId.Namespaces && isEdit) {
-      setCurrentPlan(editPlanObj);
+      dispatch(PlanActions.setCurrentPlan(editPlanObj));
     }
 
     if (prevId === stepId.Namespaces && id !== stepId.General) {
@@ -230,15 +197,17 @@ const WizardComponent = (props: IOtherProps) => {
       // requested namespaces and discover related PVs
 
       if (!currentPlan && !isEdit) {
-        addPlanRequest({
-          planName: values.planName,
-          sourceCluster: values.sourceCluster,
-          targetCluster: values.targetCluster,
-          selectedStorage: values.selectedStorage,
-          namespaces: values.selectedNamespaces,
-          migrationType: values.migrationType.value,
-        });
-        addAnalyticRequest(values.planName);
+        dispatch(
+          PlanActions.addPlanRequest({
+            planName: values.planName,
+            sourceCluster: values.sourceCluster,
+            targetCluster: values.targetCluster,
+            selectedStorage: values.selectedStorage,
+            namespaces: values.selectedNamespaces,
+            migrationType: values.migrationType.value,
+          })
+        );
+        dispatch(PlanActions.addAnalyticRequest(values.planName));
       }
     }
     if (prevId === stepId.PersistentVolumes) {
@@ -271,12 +240,12 @@ const WizardComponent = (props: IOtherProps) => {
       }
     }
     if (id === stepId.Results) {
-      updateCurrentPlanStatus({ state: CurrentPlanState.Pending });
+      dispatch(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
       //update plan & start status polling on results page
-      validatePlanRequest(values);
+      dispatch(PlanActions.validatePlanRequest(values));
     }
     if (id === stepId.Hooks) {
-      fetchPlanHooksRequest();
+      dispatch(PlanActions.fetchPlanHooksRequest());
     }
 
     if (prevId === stepId.Hooks && id === stepId.CopyOptions) {

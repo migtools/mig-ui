@@ -17,11 +17,8 @@ import { useHistory } from 'react-router-dom';
 import WizardContainer from '../Wizard/WizardContainer';
 import ConfirmModal from '../../../../../common/components/ConfirmModal';
 import { IPlan } from '../../../../../plan/duck/types';
-import { useSelector, useDispatch } from 'react-redux';
-import { planSelectors, PlanActions } from '../../../../../plan/duck';
-import { clusterSelectors } from '../../../../../cluster/duck';
-import { storageSelectors } from '../../../../../storage/duck';
-import { DefaultRootState } from '../../../../../../configureStore';
+import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
@@ -35,15 +32,6 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
 
-  const planList = useSelector((state: DefaultRootState) =>
-    planSelectors.getPlansWithStatus(state)
-  );
-  const clusterList = useSelector((state: DefaultRootState) =>
-    clusterSelectors.getAllClusters(state)
-  );
-  const storageList = useSelector((state: DefaultRootState) =>
-    storageSelectors.getAllStorage(state)
-  );
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const dispatch = useDispatch();
@@ -242,14 +230,10 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isGrouped
         />
         <WizardContainer
-          planList={planList}
-          clusterList={clusterList}
-          storageList={storageList}
           isOpen={isEditWizardOpen}
           onHandleWizardModalClose={toggleEditWizardOpen}
           editPlanObj={plan.MigPlan}
           isEdit={true}
-          {...props}
         />
 
         <MigrateModal

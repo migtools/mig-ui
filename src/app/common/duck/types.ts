@@ -18,7 +18,7 @@ export interface INameNamespaceRef {
 export interface IEditedNamespaceMap {
   oldName: string;
   newName: string;
-  id: string;
+  id: string | number;
 }
 export interface IEditedPVsMap {
   oldPVCName: string;

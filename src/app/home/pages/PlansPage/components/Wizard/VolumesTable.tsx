@@ -75,7 +75,6 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
               }),
         },
       };
-      // update copy method and action in one shot when changing dropdown value for copy method
       setFieldValue('persistentVolumes', newPVs);
     }
   };

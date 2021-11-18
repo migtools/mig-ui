@@ -16,6 +16,7 @@ interface IHooksFormContainerValues {
   migrationStep: string;
 }
 interface IHooksFormContainerOtherProps {
+  isAddHooksOpen?: boolean;
   initialHookValues?: any;
   defaultHookRunnerImage: string;
   onAddEditHookSubmit: any;

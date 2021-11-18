@@ -220,8 +220,9 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     ];
 
     const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
-    const isVerifyCopyAllowed = values.pvCopyMethodAssignment[pv.name] === 'filesystem';
-    let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
+    const isVerifyCopyAllowed = pv.selection.copyMethod === 'filesystem';
+    // let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
+    let targetPVCName = pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
     let editedPV = values.editedPVs.find(
       (editedPV) => editedPV.oldPVCName === pv.pvc.name && editedPV.pvName === pv.name
@@ -235,11 +236,12 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       );
       if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
         sourcePVCName = mappedPVCNameArr[0];
-        targetPVCName = editedPV
-          ? editedPV.newPVCName
-          : isIntraClusterMigration
-          ? `${mappedPVCNameArr[0]}-new`
-          : mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[0];
+        // targetPVCName = editedPV
+        //   ? editedPV.newPVCName
+        //   : isIntraClusterMigration
+        //   ? `${mappedPVCNameArr[0]}-new`
+        //   : mappedPVCNameArr[0];
       } else {
         sourcePVCName = mappedPVCNameArr[0];
         targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[1];

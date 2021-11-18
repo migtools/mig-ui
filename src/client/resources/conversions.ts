@@ -440,33 +440,14 @@ export function updateMigPlanFromValues(
       const mappedPVCNameArr = updatedPV.pvc.name.split(':');
       if (matchingEditedPV) {
         updatedPV.pvc.name = `${matchingEditedPV.oldPVCName}:${matchingEditedPV.newPVCName}`;
-      }
-      // else if (isIntraClusterPlan && mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
-      //   //if the user did not update their pvc name, apply -new to the pvc name if intra cluster plan
-      //   updatedPV.pvc.name = `${updatedPV.pvc.name}-new`;
-      // }
-
-      // const matchingSelectedPV = planValues.selectedPVs.find((selectedPV) => {
-      //   if (pvItem.name === selectedPV) {
-      //     return selectedPV;
-      //   }
-      // });
-
-      // if (matchingSelectedPV) {
-      //   updatedPV.selection.action = 'copy';
-      // } else {
-      //   if (updatedPV.selection.action !== 'move') {
-      //     updatedPV.selection.action = 'skip';
-      //   }
-      // }
-
-      const selectedCopyMethod = planValues.pvCopyMethodAssignment[updatedPV.name];
-      if (selectedCopyMethod) {
-        updatedPV.selection.copyMethod = selectedCopyMethod;
+      } else if (isIntraClusterPlan && mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+        //if the user did not update their pvc name, apply -new to the pvc name if intra cluster plan
+        updatedPV.pvc.name = `${updatedPV.pvc.name}-new`;
       }
 
       updatedPV.selection.verify =
-        selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[updatedPV.name];
+        updatedPV.selection.copyMethod === 'filesystem' &&
+        planValues.pvVerifyFlagAssignment[updatedPV.name];
 
       const selectedStorageClassObj = planValues.pvStorageClassAssignment[updatedPV.name];
       if (selectedStorageClassObj || selectedStorageClassObj === '') {
@@ -475,7 +456,6 @@ export function updateMigPlanFromValues(
       }
       const isSelected = planValues.selectedPVs.some((pv) => pv.name === updatedPV.name);
       if (isSelected) return updatedPV;
-      // updatedPVs.push(updatedPV);
     });
   }
   if (planValues.planClosed) {

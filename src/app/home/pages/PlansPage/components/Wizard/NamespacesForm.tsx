@@ -5,22 +5,20 @@ import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-c
 import { Spinner } from '@patternfly/react-core';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import NamespacesTable from './NamespacesTable';
+import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
 
-type INamespacesFormProps = Pick<
-  IOtherProps,
-  'fetchNamespacesRequest' | 'isFetchingNamespaceList' | 'sourceClusterNamespaces'
->;
+type INamespacesFormProps = Pick<IOtherProps, 'isFetchingNamespaceList'>;
 
 const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
-  fetchNamespacesRequest,
   isFetchingNamespaceList,
-  sourceClusterNamespaces,
 }: INamespacesFormProps) => {
   usePausedPollingEffect();
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
+  const dispatch = useDispatch();
   useEffect(() => {
-    fetchNamespacesRequest(values.sourceCluster);
+    dispatch(PlanActions.namespaceFetchRequest(values.sourceCluster));
   }, []);
   return (
     <Grid hasGutter>
@@ -38,7 +36,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespacesTable sourceClusterNamespaces={sourceClusterNamespaces} />
+        <NamespacesTable />
       )}
     </Grid>
   );

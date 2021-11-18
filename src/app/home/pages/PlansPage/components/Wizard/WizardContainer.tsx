@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import WizardComponent from './WizardComponent';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { ICurrentPlanStatus, setCurrentPlan } from '../../../../../plan/duck/reducers';
 import {
   defaultAddEditStatus,
@@ -52,9 +52,6 @@ export interface IFormValues {
   pvVerifyFlagAssignment: {
     [pvName: string]: boolean;
   };
-  pvCopyMethodAssignment: {
-    [pvName: string]: PvCopyMethod;
-  };
   indirectImageMigration?: boolean;
   indirectVolumeMigration?: boolean;
   currentTargetNamespaceName?: {
@@ -91,11 +88,9 @@ export interface IOtherProps {
   validatePlanRequest?: (values: any) => void;
   resetCurrentPlan?: () => void;
   setCurrentPlan?: (plan: IMigPlan) => void;
-  fetchNamespacesRequest?: (clusterName: string) => void;
   fetchPlanHooksRequest?: () => void;
   addPlanRequest?: (migPlan: any) => void;
   addAnalyticRequest?: (planName: string) => void;
-  sourceClusterNamespaces?: ISourceClusterNamespace[];
   pvResourceList?: IPersistentVolumeResource[];
   onHandleWizardModalClose?: () => void;
   editPlanObj?: IMigPlan;
@@ -131,13 +126,19 @@ export const defaultInitialValues: IFormValues = {
   editedPVs: [],
   pvStorageClassAssignment: {},
   pvVerifyFlagAssignment: {},
-  pvCopyMethodAssignment: {},
   migrationType: { value: '', toString: () => '' },
   currentTargetPVCName: null,
 };
 
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
-  const { editPlanObj, isEdit, planList, sourceClusterNamespaces, isOpen } = props;
+  const { editPlanObj, isEdit, isOpen } = props;
+  const sourceClusterNamespaces = useSelector((state: DefaultRootState) =>
+    planSelectors.getFilteredNamespaces(state)
+  );
+
+  const planList = useSelector((state: DefaultRootState) =>
+    planSelectors.getPlansWithStatus(state)
+  );
 
   const getMigrationType = (type: string): OptionWithValue<string> => {
     switch (type) {
@@ -290,7 +291,6 @@ const mapStateToProps = (state: DefaultRootState): any => {
     isPollingStorage: state.storage.isPolling,
     isPollingStatus: state.plan.isPollingStatus,
     isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
-    sourceClusterNamespaces: planSelectors.getFilteredNamespaces(state),
     isFetchingPVResources: state.plan.isFetchingPVResources,
     isPVError: state.plan.isPVError,
     currentPlan: planSelectors.getCurrentPlanWithStatus(state),
@@ -308,8 +308,6 @@ const mapDispatchToProps = (dispatch: any) => {
   return {
     addPlanRequest: (migPlan: IPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
     addAnalyticRequest: (planName: string) => dispatch(PlanActions.addAnalyticRequest(planName)),
-    fetchNamespacesRequest: (clusterName: string) =>
-      dispatch(PlanActions.namespaceFetchRequest(clusterName)),
     startPlanStatusPolling: (planName: string) =>
       dispatch(PlanActions.startPlanStatusPolling(planName)),
     stopPlanStatusPolling: (planName: string) =>
