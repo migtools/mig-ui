@@ -50,7 +50,7 @@ import { planSelectors } from '../../../../../plan/duck';
 import { DefaultRootState } from '../../../../../../configureStore';
 const styles = require('./NamespacesTable.module').default;
 
-const NamespacesTable: React.FunctionComponent<IOtherProps> = () => {
+const NamespacesTable: React.FunctionComponent = () => {
   const sourceClusterNamespaces = useSelector((state: DefaultRootState) =>
     planSelectors.getFilteredNamespaces(state)
   );

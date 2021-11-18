@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import WizardComponent from './WizardComponent';
 import planSelectors from '../../../../../plan/duck/selectors';
 import { useSelector } from 'react-redux';
@@ -54,27 +54,29 @@ export interface IOtherProps {
   isOpen: boolean;
   editPlanObj?: IMigPlan;
   onHandleWizardModalClose?: () => void;
+  setInitialValues?: Dispatch<SetStateAction<IFormValues>>;
+  defaultInitialValues?: IFormValues;
 }
 
-export const defaultInitialValues: IFormValues = {
-  planName: '',
-  sourceCluster: null,
-  sourceTokenRef: null,
-  targetCluster: null,
-  targetTokenRef: null,
-  editedNamespaces: [],
-  selectedNamespaces: [],
-  selectedPVs: [],
-  selectedStorage: null,
-  persistentVolumes: [],
-  editedPVs: [],
-  pvStorageClassAssignment: {},
-  pvVerifyFlagAssignment: {},
-  migrationType: { value: '', toString: () => '' },
-  currentTargetPVCName: null,
-};
-
 const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProps) => {
+  const defaultInitialValues: IFormValues = {
+    planName: '',
+    sourceCluster: null,
+    sourceTokenRef: null,
+    targetCluster: null,
+    targetTokenRef: null,
+    editedNamespaces: [],
+    selectedNamespaces: [],
+    selectedPVs: [],
+    selectedStorage: null,
+    persistentVolumes: [],
+    editedPVs: [],
+    pvStorageClassAssignment: {},
+    pvVerifyFlagAssignment: {},
+    migrationType: { value: '', toString: () => '' },
+    currentTargetPVCName: null,
+  };
+
   const { editPlanObj, isEdit, isOpen } = props;
   const sourceClusterNamespaces = useSelector((state: DefaultRootState) =>
     planSelectors.getFilteredNamespaces(state)
@@ -219,7 +221,11 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
       planList={planList}
       sourceClusterNamespaces={sourceClusterNamespaces}
     >
-      <WizardComponent {...props} />
+      <WizardComponent
+        defaultInitialValues={defaultInitialValues}
+        setInitialValues={setInitialValues}
+        {...props}
+      />
     </WizardFormik>
   );
 };

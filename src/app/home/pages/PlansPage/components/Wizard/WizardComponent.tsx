@@ -26,9 +26,6 @@ import { DefaultRootState } from '../../../../../../configureStore';
 
 const WizardComponent = (props: IOtherProps) => {
   const dispatch = useDispatch();
-  const planList = useSelector((state: DefaultRootState) =>
-    planSelectors.getPlansWithStatus(state)
-  );
   const clusterList = useSelector((state: DefaultRootState) =>
     clusterSelectors.getAllClusters(state)
   );
@@ -49,7 +46,14 @@ const WizardComponent = (props: IOtherProps) => {
 
   const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
 
-  const { isOpen, isEdit, editPlanObj, onHandleWizardModalClose } = props;
+  const {
+    isOpen,
+    isEdit,
+    editPlanObj,
+    onHandleWizardModalClose,
+    setInitialValues,
+    defaultInitialValues,
+  } = props;
 
   enum stepId {
     General = 1,
@@ -73,6 +77,7 @@ const WizardComponent = (props: IOtherProps) => {
     setShowNamespacesStep(false);
     setShowPersistentVolumesStep(false);
     setShowCopyOptionsStep(false);
+    setInitialValues(defaultInitialValues);
   };
 
   const areFieldsTouchedAndValid = (fieldKeys: (keyof IFormValues)[]) =>
@@ -93,7 +98,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Namespaces',
     component: (
       <WizardStepContainer title="Namespaces">
-        <NamespacesForm isFetchingNamespaceList={isFetchingNamespaceList} />
+        <NamespacesForm />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.Namespaces,

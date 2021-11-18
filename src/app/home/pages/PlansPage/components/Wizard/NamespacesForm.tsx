@@ -5,14 +5,12 @@ import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-c
 import { Spinner } from '@patternfly/react-core';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import NamespacesTable from './NamespacesTable';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
+import { DefaultRootState } from '../../../../../../configureStore';
 
-type INamespacesFormProps = Pick<IOtherProps, 'isFetchingNamespaceList'>;
-
-const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
-  isFetchingNamespaceList,
-}: INamespacesFormProps) => {
+const NamespacesForm: React.FunctionComponent = () => {
+  const { isFetchingNamespaceList } = useSelector((state: DefaultRootState) => state.plan);
   usePausedPollingEffect();
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
