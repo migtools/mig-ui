@@ -91,7 +91,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          dispatch(PlanActions.runStateMigrationRequest(plan));
+          dispatch(PlanActions.runStateMigrationRequest(plan, false));
         }}
         key="stateMigration"
         isDisabled={
@@ -113,7 +113,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
-          dispatch(PlanActions.runStateMigrationRequest(plan));
+          dispatch(PlanActions.runStateMigrationRequest(plan, true));
         }}
         key="sccConversion"
         isDisabled={

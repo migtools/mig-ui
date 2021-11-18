@@ -5,18 +5,17 @@ import { IFormValues, IOtherProps } from './WizardContainer';
 import CopyOptionsTable from './CopyOptionsTable';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
-type ICopyOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isFetchingPVList'>;
-
-const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
-  currentPlan,
-  isFetchingPVList,
-}: ICopyOptionsFormProps) => {
+const CopyOptionsForm: React.FunctionComponent = () => {
+  const planState = useSelector((state: DefaultRootState) => state.plan);
   usePausedPollingEffect();
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
-  const migPlanPvs = currentPlan.spec.persistentVolumes;
-  const storageClasses = (currentPlan && currentPlan.status.destStorageClasses) || [];
+  const migPlanPvs = planState.currentPlan.spec.persistentVolumes;
+  const storageClasses =
+    (planState.currentPlan && planState.currentPlan.status.destStorageClasses) || [];
 
   useEffect(() => {
     if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
@@ -53,8 +52,6 @@ const CopyOptionsForm: React.FunctionComponent<ICopyOptionsFormProps> = ({
 
   return (
     <CopyOptionsTable
-      isFetchingPVList={isFetchingPVList}
-      currentPlan={currentPlan}
       storageClasses={storageClasses}
       onStorageClassChange={onStorageClassChange}
       onVerifyFlagChange={onVerifyFlagChange}

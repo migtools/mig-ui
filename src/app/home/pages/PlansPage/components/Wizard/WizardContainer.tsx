@@ -50,8 +50,8 @@ export interface IFormValues {
 }
 
 export interface IOtherProps {
-  isEdit: boolean;
-  isOpen: boolean;
+  isEdit?: boolean;
+  isOpen?: boolean;
   editPlanObj?: IMigPlan;
   onHandleWizardModalClose?: () => void;
   setInitialValues?: Dispatch<SetStateAction<IFormValues>>;

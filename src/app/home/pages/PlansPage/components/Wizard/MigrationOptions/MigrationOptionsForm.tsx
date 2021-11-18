@@ -19,14 +19,14 @@ import { IFormValues, IOtherProps } from '../WizardContainer';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { QuestionCircleIcon } from '@patternfly/react-icons/dist/js/icons';
 import { usePausedPollingEffect } from '../../../../../../common/context';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../../configureStore';
+import { clusterSelectors } from '../../../../../../cluster/duck';
 
-type IMigrationOptionsFormProps = Pick<IOtherProps, 'clusterList' | 'currentPlan' | 'isEdit'>;
-
-const MigrationOptionsForm: React.FunctionComponent<IMigrationOptionsFormProps> = ({
-  clusterList,
-  currentPlan,
-  isEdit,
-}: IMigrationOptionsFormProps) => {
+const MigrationOptionsForm: React.FunctionComponent<IOtherProps> = ({ isEdit }: IOtherProps) => {
+  const clusterList = useSelector((state: DefaultRootState) =>
+    clusterSelectors.getAllClusters(state)
+  );
   usePausedPollingEffect();
 
   const indirectImageMigrationKey = 'indirectImageMigration';

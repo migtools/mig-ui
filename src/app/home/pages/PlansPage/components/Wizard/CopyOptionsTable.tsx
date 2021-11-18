@@ -67,8 +67,10 @@ import {
 } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
 import { useFormikContext } from 'formik';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
-interface ICopyOptionsTableProps extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'> {
+interface ICopyOptionsTableProps {
   storageClasses: IMigPlanStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
@@ -84,12 +86,11 @@ const storageClassToString = (storageClass: IMigPlanStorageClass) =>
   storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
-  isFetchingPVList,
-  currentPlan,
   storageClasses,
   onStorageClassChange,
   onVerifyFlagChange,
 }: ICopyOptionsTableProps) => {
+  const planState = useSelector((state: DefaultRootState) => state.plan);
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const styles = require('./CopyOptionsTable.module').default;
 
@@ -107,7 +108,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     ? values.persistentVolumes.filter((v) => v.selection.action === 'copy')
     : [];
 
-  if (isFetchingPVList) {
+  if (planState.isFetchingPVList) {
     return (
       <Bullseye>
         <EmptyState variant={EmptyStateVariant.small}>
@@ -205,8 +206,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
-    const currentPV = currentPlan?.spec?.persistentVolumes?.find(
-      (planPV) => planPV.name === pv.name
+    const currentPV = planState.currentPlan?.spec?.persistentVolumes?.find(
+      (planPV: any) => planPV.name === pv.name
     );
     const currentStorageClass = values.pvStorageClassAssignment[pv.name];
 

@@ -118,11 +118,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Copy options',
     component: (
       <WizardStepContainer title="Copy options">
-        <CopyOptionsForm
-          currentPlan={currentPlan}
-          isFetchingPVList={isFetchingPVList}
-          clusterList={clusterList}
-        />
+        <CopyOptionsForm />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.CopyOptions,
@@ -132,7 +128,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Migration options',
     component: (
       <WizardStepContainer title="Migration options">
-        <MigrationOptionsForm isEdit={isEdit} currentPlan={currentPlan} clusterList={clusterList} />
+        <MigrationOptionsForm isEdit={isEdit} />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.MigrationOptions,
