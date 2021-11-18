@@ -103,7 +103,7 @@ const WizardComponent = (props: IOtherProps) => {
     name: 'Persistent volumes',
     component: (
       <WizardStepContainer title="Persistent volumes">
-        <VolumesForm />
+        <VolumesForm isEdit={isEdit} isOpen={isOpen} editPlanObj={editPlanObj} />
       </WizardStepContainer>
     ),
     canJumpTo: stepIdReached >= stepId.PersistentVolumes,

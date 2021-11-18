@@ -21,7 +21,7 @@ import { DefaultRootState } from '../../../../../../configureStore';
 
 const styles = require('./VolumesTable.module').default;
 
-const VolumesForm: React.FunctionComponent<IOtherProps> = () => {
+const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
   usePausedPollingEffect();
   const dispatch = useDispatch();
   const planState = useSelector((state: DefaultRootState) => state.plan);
@@ -117,6 +117,6 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = () => {
     );
   }
 
-  return <VolumesTable />;
+  return <VolumesTable isEdit={props.isEdit} isOpen={props.isOpen} />;
 };
 export default VolumesForm;
