@@ -1,34 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import WizardComponent from './WizardComponent';
-import { PlanActions } from '../../../../../plan/duck/actions';
 import planSelectors from '../../../../../plan/duck/selectors';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { ICurrentPlanStatus, setCurrentPlan } from '../../../../../plan/duck/reducers';
+import { useSelector } from 'react-redux';
 import {
-  defaultAddEditStatus,
-  createAddEditStatus,
-  AddEditState,
-  AddEditMode,
-  IAddEditStatus,
-} from '../../../../../common/add_edit_state';
-import { ICluster } from '../../../../../cluster/duck/types';
-import {
-  PvCopyMethod,
   IPlanPersistentVolume,
   IMigPlan,
-  IPersistentVolumeResource,
-  ISourceClusterNamespace,
-  IPlan,
   IMigPlanStorageClass,
 } from '../../../../../plan/duck/types';
-import { IStorage } from '../../../../../storage/duck/types';
 import {
   IEditedNamespaceMap,
   IEditedPVsMap,
   INameNamespaceRef,
 } from '../../../../../common/duck/types';
 import WizardFormik from './WizardFormik';
-import { IMigHook } from '../../../HooksPage/types';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 const _ = require('lodash');
@@ -66,50 +50,9 @@ export interface IFormValues {
 }
 
 export interface IOtherProps {
-  clusterList?: ICluster[];
-  planList?: IPlan[];
-  storageList?: IStorage[];
-  isFetchingPVList?: boolean;
-  isPVPolling?: boolean;
-  isPollingStatus?: boolean;
-  isPVError?: boolean;
-  isCheckingPlanStatus?: boolean;
-  isFetchingPVResources?: boolean;
-  isFetchingNamespaceList?: boolean;
-  isOpen?: boolean;
-  isPollingStorage?: boolean;
-  isPollingClusters?: boolean;
-  isPollingPlans?: boolean;
-  currentPlan?: IMigPlan;
-  currentPlanStatus?: ICurrentPlanStatus;
-  startPlanStatusPolling?: (planName: string) => void;
-  stopPlanStatusPolling?: (planName: string) => void;
-  pvUpdatePollStop?: () => void;
-  validatePlanRequest?: (values: any) => void;
-  resetCurrentPlan?: () => void;
-  setCurrentPlan?: (plan: IMigPlan) => void;
-  fetchPlanHooksRequest?: () => void;
-  addPlanRequest?: (migPlan: any) => void;
-  addAnalyticRequest?: (planName: string) => void;
-  pvResourceList?: IPersistentVolumeResource[];
-  onHandleWizardModalClose?: () => void;
-  editPlanObj?: IMigPlan;
-  isEdit?: boolean;
-  updateCurrentPlanStatus?: (currentPlanStatus: ICurrentPlanStatus) => void;
-  addHookRequest?: (migHook: IMigHook) => void;
-  updateHookRequest?: (migHook: IMigHook) => void;
-  removeHookFromPlanRequest?: (hookName: string, migrationStep: any) => void;
-  associateHookToPlan?: (hookvalues: any, migHook: IMigHook) => void;
-  currentPlanHooks?: IMigHook[];
-  allHooks?: IMigHook[];
-  isFetchingHookList?: boolean;
-  isUpdatingGlobalHookList?: boolean;
-  isAssociatingHookToPlan?: boolean;
-  watchHookAddEditStatus?: () => void;
-  hookAddEditStatus?: IAddEditStatus;
-  cancelAddEditWatch?: () => void;
-  resetAddEditState?: () => void;
-  validatePlanPollStop?: () => void;
+  isEdit: boolean;
+  isOpen: boolean;
+  editPlanObj: IMigPlan;
 }
 
 export const defaultInitialValues: IFormValues = {
@@ -275,70 +218,4 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   );
 };
 
-const mapStateToProps = (state: DefaultRootState): any => {
-  return {
-    planName: '',
-    sourceCluster: null,
-    targetCluster: null,
-    editedNamespaces: [],
-    selectedNamespaces: [],
-    selectedPVs: [],
-    selectedStorage: '',
-    persistentVolumes: [],
-    isPVPolling: state.plan.isPVPolling,
-    isPollingPlans: state.plan.isPolling,
-    isPollingClusters: state.cluster.isPolling,
-    isPollingStorage: state.storage.isPolling,
-    isPollingStatus: state.plan.isPollingStatus,
-    isFetchingNamespaceList: state.plan.isFetchingNamespaceList,
-    isFetchingPVResources: state.plan.isFetchingPVResources,
-    isPVError: state.plan.isPVError,
-    currentPlan: planSelectors.getCurrentPlanWithStatus(state),
-    currentPlanStatus: state.plan.currentPlanStatus,
-    pvResourceList: state.plan.pvResourceList,
-    allHooks: planSelectors.getHooksWithStatus(state),
-    currentPlanHooks: state.plan.currentPlanHooks,
-    isFetchingHookList: state.plan.isFetchingHookList,
-    isUpdatingGlobalHookList: state.plan.isUpdatingGlobalHookList,
-    isAssociatingHookToPlan: state.plan.isAssociatingHookToPlan,
-    hookAddEditStatus: state.plan.hookAddEditStatus,
-  };
-};
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    addPlanRequest: (migPlan: IPlan) => dispatch(PlanActions.addPlanRequest(migPlan)),
-    addAnalyticRequest: (planName: string) => dispatch(PlanActions.addAnalyticRequest(planName)),
-    startPlanStatusPolling: (planName: string) =>
-      dispatch(PlanActions.startPlanStatusPolling(planName)),
-    stopPlanStatusPolling: (planName: string) =>
-      dispatch(PlanActions.stopPlanStatusPolling(planName)),
-    addHookRequest: (migHook: IMigHook) => dispatch(PlanActions.addHookRequest(migHook)),
-    fetchPlanHooksRequest: () => dispatch(PlanActions.fetchPlanHooksRequest()),
-    validatePlanRequest: (values: any) => dispatch(PlanActions.validatePlanRequest(values)),
-    resetCurrentPlan: () => dispatch(PlanActions.resetCurrentPlan()),
-    setCurrentPlan: (plan: IMigPlan) => dispatch(PlanActions.setCurrentPlan(plan)),
-    updateCurrentPlanStatus: (status: any) => dispatch(PlanActions.updateCurrentPlanStatus(status)),
-    pvUpdatePollStop: () => dispatch(PlanActions.pvUpdatePollStop()),
-    watchHookAddEditStatus: (hookName: string) => {
-      // Push the add edit status into watching state, and start watching
-      dispatch(
-        PlanActions.setHookAddEditStatus(
-          createAddEditStatus(AddEditState.Watching, AddEditMode.Edit)
-        )
-      );
-      dispatch(PlanActions.watchHookAddEditStatus(hookName));
-    },
-    cancelAddEditWatch: () => dispatch(PlanActions.cancelWatchHookAddEditStatus()),
-    resetAddEditState: () => {
-      dispatch(PlanActions.setHookAddEditStatus(defaultAddEditStatus()));
-    },
-    removeHookFromPlanRequest: (name: string, migrationStep: any) =>
-      dispatch(PlanActions.removeHookFromPlanRequest(name, migrationStep)),
-    updateHookRequest: (migHook: IMigHook) => dispatch(PlanActions.updateHookRequest(migHook)),
-    associateHookToPlan: (hookValues: any, migHook: IMigHook) =>
-      dispatch(PlanActions.associateHookToPlan(hookValues, migHook)),
-    validatePlanPollStop: () => dispatch(PlanActions.validatePlanPollStop()),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(WizardContainer);
+export default WizardContainer;

@@ -41,12 +41,6 @@ const WizardComponent = (props: IOtherProps) => {
     isFetchingPVList,
     isFetchingNamespaceList,
     isPollingStatus,
-    allHooks,
-    currentPlanHooks,
-    isFetchingHookList,
-    isUpdatingGlobalHookList,
-    isAssociatingHookToPlan,
-    hookAddEditStatus,
     isFetchingPVResources,
   } = useSelector((state: DefaultRootState) => state.plan);
 
