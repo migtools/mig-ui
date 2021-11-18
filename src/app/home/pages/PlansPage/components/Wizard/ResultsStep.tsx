@@ -11,24 +11,28 @@ import { useFormikContext } from 'formik';
 import { IFormValues } from './WizardContainer';
 import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import { usePausedPollingEffect } from '../../../../../common/context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
+import { IMigPlan, IPlan } from '../../../../../plan/duck/types';
+import { planSelectors } from '../../../../../plan/duck';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IProps {
-  currentPlan: any;
   currentPlanStatus: ICurrentPlanStatus;
   isPollingStatus: boolean;
   onClose: () => void;
 }
 
 const ResultsStep: React.FunctionComponent<IProps> = ({
-  currentPlan,
   currentPlanStatus,
   isPollingStatus,
   onClose,
 }: IProps) => {
   const dispatch = useDispatch();
   usePausedPollingEffect();
+  const currentPlanWithStatus = useSelector((state: DefaultRootState) =>
+    planSelectors.getCurrentPlanWithStatus(state)
+  );
 
   const { values } = useFormikContext<IFormValues>();
 
@@ -112,10 +116,10 @@ const ResultsStep: React.FunctionComponent<IProps> = ({
           {getHeaderText(currentPlanStatus.state)}
         </Title>
       </Bullseye>
-      {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlan && (
+      {currentPlanStatus.state !== CurrentPlanState.Pending && currentPlanWithStatus && (
         <ConditionsGrid
-          conditions={currentPlan?.PlanStatus?.displayedConditions}
-          incompatibleNamespaces={currentPlan?.status.incompatibleNamespaces}
+          conditions={currentPlanWithStatus?.PlanStatus?.displayedConditions}
+          incompatibleNamespaces={currentPlanWithStatus?.status.incompatibleNamespaces}
         />
       )}
       <Flex className={(spacing.mtMd, flex.justifyContentCenter)}>

@@ -151,7 +151,6 @@ const WizardComponent = (props: IOtherProps) => {
     isFinishedStep: true,
     component: (
       <ResultsStep
-        currentPlan={currentPlan}
         currentPlanStatus={currentPlanStatus}
         isPollingStatus={isPollingStatus}
         onClose={handleClose}
