@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { FormikProps, useFormikContext } from 'formik';
-import { IFormValues, IOtherProps } from './WizardContainer';
+import { useFormikContext } from 'formik';
+import { IFormValues } from './WizardContainer';
 import {
   GridItem,
   Text,
@@ -12,12 +12,10 @@ import {
   PaginationVariant,
   DropdownDirection,
   TextInput,
-  Button,
   FlexItem,
   Flex,
   Popover,
   PopoverPosition,
-  Title,
   FormGroup,
 } from '@patternfly/react-core';
 import {
@@ -55,16 +53,8 @@ const NamespacesTable: React.FunctionComponent = () => {
     planSelectors.getFilteredNamespaces(state)
   );
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
-  const {
-    handleBlur,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    values,
-    touched,
-    errors,
-    validateForm,
-  } = useFormikContext<IFormValues>();
+  const { handleBlur, setFieldTouched, setFieldValue, values, touched, errors } =
+    useFormikContext<IFormValues>();
 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
@@ -77,7 +67,7 @@ const NamespacesTable: React.FunctionComponent = () => {
     { title: 'Pods', transforms: [sortable] },
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
-    { title: 'Target name', transforms: [sortable] },
+    values.migrationType.value !== 'scc' && { title: 'Target name', transforms: [sortable] },
   ];
   const getSortValues = (namespace: any) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
@@ -116,7 +106,7 @@ const NamespacesTable: React.FunctionComponent = () => {
         namespace.podCount,
         namespace.pvcCount,
         namespace.serviceCount,
-        targetNamespaceName,
+        values.migrationType.value !== 'scc' && targetNamespaceName,
       ],
       selected: values.selectedNamespaces.includes(namespace.name),
       meta: {
@@ -219,34 +209,38 @@ const NamespacesTable: React.FunctionComponent = () => {
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
                 <Th width={10}>{columns[3].title}</Th>
-                <Th width={30}>
-                  {columns[4].title}
-                  <Popover
-                    position={PopoverPosition.right}
-                    bodyContent={
-                      <>
-                        <p className={spacing.mtMd}>
-                          By default, a target namespace will have the same name as its
-                          corresponding source namespace.
-                          <br></br>
-                          <br></br>
-                          To change the name of the target namespace, click the edit icon.
-                        </p>
-                      </>
-                    }
-                    aria-label="edit-target-ns-details"
-                    closeBtnAriaLabel="close--details"
-                    maxWidth="30rem"
-                  >
-                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
-                      <OutlinedQuestionCircleIcon
-                        className="pf-c-icon pf-m-default"
-                        size="sm"
-                      ></OutlinedQuestionCircleIcon>
-                    </span>
-                  </Popover>
-                </Th>
-                <Th width={20}></Th>
+                {values.migrationType.value !== 'scc' && (
+                  <>
+                    <Th width={30}>
+                      {columns[4].title}
+                      <Popover
+                        position={PopoverPosition.right}
+                        bodyContent={
+                          <>
+                            <p className={spacing.mtMd}>
+                              By default, a target namespace will have the same name as its
+                              corresponding source namespace.
+                              <br></br>
+                              <br></br>
+                              To change the name of the target namespace, click the edit icon.
+                            </p>
+                          </>
+                        }
+                        aria-label="edit-target-ns-details"
+                        closeBtnAriaLabel="close--details"
+                        maxWidth="30rem"
+                      >
+                        <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                          <OutlinedQuestionCircleIcon
+                            className="pf-c-icon pf-m-default"
+                            size="sm"
+                          ></OutlinedQuestionCircleIcon>
+                        </span>
+                      </Popover>
+                    </Th>
+                    <Th width={20}></Th>
+                  </>
+                )}
               </Tr>
             </Thead>
             <Tbody>

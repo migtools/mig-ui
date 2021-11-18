@@ -418,7 +418,7 @@ export function updateMigPlanFromValues(
       if (editedNamespace) {
         const mappedNS = `${selectedNs}:${editedNamespace.newName}`;
         return mappedNS;
-      } else if (isIntraClusterPlan) {
+      } else if (isIntraClusterPlan && planValues.migrationType.value !== 'scc') {
         //if not edited and intracluster plan, force a remap
         return `${selectedNs}:${selectedNs}-new`;
       } else {

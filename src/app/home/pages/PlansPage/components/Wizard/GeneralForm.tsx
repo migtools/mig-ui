@@ -168,6 +168,12 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('selectedNamespaces', []);
       setFieldValue('selectedPVs', []);
     }
+    if (values.migrationType.value === 'scc') {
+      setFieldValue('targetCluster', matchingCluster.MigCluster.metadata.name);
+      setFieldTouched('targetCluster', true, true);
+      setFieldValue('selectedNamespaces', []);
+      setFieldValue('selectedPVs', []);
+    }
   };
 
   const handleTargetChange = (clusterOption: any) => {

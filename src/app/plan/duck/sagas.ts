@@ -277,7 +277,7 @@ function* planPatchClose(planValues: IUpdatedClosedPlanValues): any {
       getPlanRes.data.metadata.name,
       closedPlanSpecObj
     );
-    // yield put(PlanActions.updatePlanList(patchPlanResponse.data));
+    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
   } catch (err) {
     throw err;
   }
