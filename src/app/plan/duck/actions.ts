@@ -461,9 +461,10 @@ const patchPlanPVsSuccess = () => ({
   type: PlanActionTypes.PATCH_PLAN_PVS_SUCCESS,
 });
 
-const runStateMigrationRequest = (plan: IPlan) => ({
+const runStateMigrationRequest = (plan: IPlan, isStorageClassConversion: boolean) => ({
   type: PlanActionTypes.RUN_STATE_MIGRATION_REQUEST,
   plan,
+  isStorageClassConversion,
 });
 export type RunStateMigrationRequest = ReturnType<typeof runStateMigrationRequest>;
 

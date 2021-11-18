@@ -109,6 +109,28 @@ export const MigrationsPage: React.FunctionComponent = () => {
       </DropdownItem>
     );
 
+    const sccItem = (
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          dispatch(PlanActions.runStateMigrationRequest(plan));
+        }}
+        key="sccConversion"
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          !hasCopyPVs ||
+          migrationType !== 'scc'
+        }
+      >
+        Storage class conversion
+      </DropdownItem>
+    );
+
     kebabDropdownItems = [
       <DropdownGroup label="Migrations" key="migrations">
         <DropdownItem
@@ -157,6 +179,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
         ) : (
           stateItem
         )}
+        {sccItem}
         <DropdownItem
           onClick={() => {
             setKebabIsOpen(false);

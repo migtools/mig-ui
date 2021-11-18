@@ -449,7 +449,11 @@ export function updateMigPlanFromValues(
       const mappedPVCNameArr = updatedPV.pvc.name.split(':');
       if (matchingEditedPV) {
         updatedPV.pvc.name = `${matchingEditedPV.oldPVCName}:${matchingEditedPV.newPVCName}`;
-      } else if (isIntraClusterPlan && mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+      } else if (
+        isIntraClusterPlan &&
+        planValues.migrationType.value !== 'scc' &&
+        mappedPVCNameArr[0] === mappedPVCNameArr[1]
+      ) {
         //if the user did not update their pvc name, apply -new to the pvc name if intra cluster plan
         updatedPV.pvc.name = `${updatedPV.pvc.name}-new`;
       }
@@ -561,14 +565,18 @@ export function createMigMigration(
   isStage: boolean,
   enableQuiesce: boolean,
   isRollback: boolean,
-  isStateTransfer: boolean
+  isStateTransfer: boolean,
+  isStorageClassConversion?: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
     metadata: {
       annotations: {
-        'migration.openshift.io/state-transfer': isStateTransfer ? 'true' : undefined,
+        'migration.openshift.io/state-transfer':
+          isStateTransfer && !isStorageClassConversion ? 'true' : undefined,
+        'migration.openshift.io/storage-class-conversion':
+          isStateTransfer && isStorageClassConversion ? 'true' : undefined,
       },
       name: migID,
       namespace,
@@ -581,6 +589,7 @@ export function createMigMigration(
       quiescePods: !isStage && enableQuiesce,
       stage: isStage,
       rollback: isRollback,
+      migrateState: isStateTransfer,
     },
   };
 }

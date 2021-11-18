@@ -58,7 +58,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        dispatch(PlanActions.runStateMigrationRequest(plan));
+        dispatch(PlanActions.runStateMigrationRequest(plan, false));
       }}
       key="stateMigration"
       isDisabled={
@@ -73,6 +73,28 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       }
     >
       State
+    </DropdownItem>
+  );
+
+  const sccItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        dispatch(PlanActions.runStateMigrationRequest(plan, true));
+      }}
+      key="scc"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked ||
+        !hasCopyPVs ||
+        migrationType !== 'scc'
+      }
+    >
+      Storage class conversion
     </DropdownItem>
   );
   const stageItem = (
@@ -199,6 +221,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       ) : (
         stateItem
       )}
+      {sccItem}
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);

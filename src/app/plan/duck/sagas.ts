@@ -768,9 +768,13 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
-    const { plan } = action;
-
-    const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
+    const { plan, isStorageClassConversion } = action;
+    let migrationName;
+    if (isStorageClassConversion) {
+      migrationName = `storage-class-conversion-${uuidv1().slice(0, 5)}`;
+    } else {
+      migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
+    }
 
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(alertProgressTimeout('State migration Started'));
@@ -779,14 +783,15 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
+      isStorageClassConversion ? false : true,
+      false,
+      false,
       true,
-      false,
-      false,
-      true
+      isStorageClassConversion ? true : false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-    // //created migration response object
+    //created migration response object
     const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
