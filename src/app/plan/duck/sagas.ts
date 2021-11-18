@@ -52,7 +52,6 @@ import {
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
-import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;

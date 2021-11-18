@@ -3,7 +3,6 @@ import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigPlan, IPlan, IPlanPersistentVolume } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
-import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 export const PlanActionTypes = {
   PATCH_PLAN_PVS_REQUEST: 'RUN_STAGE_REQUEST',
