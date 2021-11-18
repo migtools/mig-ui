@@ -173,6 +173,15 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldTouched('targetCluster', true, true);
       setFieldValue('selectedNamespaces', []);
       setFieldValue('selectedPVs', []);
+
+      //TEMP WORKAROUND
+      const matchingStorage = storageList.find(
+        (storage) => storage.StorageStatus.hasReadyCondition
+      );
+      if (matchingStorage) {
+        setFieldValue('selectedStorage', matchingStorage.MigStorage.metadata.name);
+        setFieldTouched('selectedStorage', true, true);
+      }
     }
   };
 
