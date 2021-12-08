@@ -3,7 +3,7 @@ import { cellWidth, Table, TableBody, TableHeader, truncate } from '@patternfly/
 import { Spinner } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import PlusCircleIcon from '@patternfly/react-icons/dist/js/icons/plus-circle-icon';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import {
   Grid,
@@ -25,52 +25,31 @@ import { IMigPlan } from '../../../../../plan/duck/types';
 import { IMigHook } from '../../../HooksPage/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { PlanActions } from '../../../../../plan/duck/actions';
 
 const classNames = require('classnames');
 
 const fallbackHookRunnerImage = 'quay.io/konveyor/hook-runner:latest';
 interface IHooksStepBaseProps {
-  migMeta: IMigMeta;
-  updateHookRequest: (values: any) => void;
-  addHookRequest: (hook: IMigHook) => void;
-  isFetchingHookList: boolean;
-  isUpdatingGlobalHookList: boolean;
-  isAssociatingHookToPlan: boolean;
-  cancelAddEditWatch: () => void;
-  resetAddEditState: () => void;
-  fetchPlanHooksRequest: () => void;
-  hookAddEditStatus: IAddEditStatus;
-  currentPlan: IMigPlan;
-  removeHookFromPlanRequest: (hookName: string, stepName: string) => void;
-  watchHookAddEditStatus: (name: string) => void;
   isAddHooksOpen: boolean;
   setIsAddHooksOpen: (val: boolean) => void;
-  currentPlanHooks: any[];
-  allHooks: IMigHook[];
-  associateHookToPlan: (hookValues: any, migHook: IMigHook) => void;
 }
 
 const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
-  usePausedPollingEffect();
-
+  const { migMeta } = useSelector((state: DefaultRootState) => state.auth);
   const {
-    updateHookRequest,
-    addHookRequest,
+    hookAddEditStatus,
+    currentPlanHooks,
     isFetchingHookList,
     isUpdatingGlobalHookList,
     isAssociatingHookToPlan,
-    currentPlanHooks,
-    hookAddEditStatus,
-    removeHookFromPlanRequest,
-    watchHookAddEditStatus,
-    isAddHooksOpen,
-    setIsAddHooksOpen,
-    migMeta,
+    currentPlan,
     allHooks,
-    associateHookToPlan,
-    cancelAddEditWatch,
-    resetAddEditState,
-  } = props;
+  } = useSelector((state: DefaultRootState) => state.plan);
+  const dispatch = useDispatch();
+  usePausedPollingEffect();
+
+  const { isAddHooksOpen, setIsAddHooksOpen } = props;
 
   const defaultHookRunnerImage = migMeta.hookRunnerImage || fallbackHookRunnerImage;
   const [initialHookValues, setInitialHookValues] = useState({});
@@ -80,18 +59,18 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
   const onAddEditHookSubmit = (hookValues: any, isExistingHook: boolean) => {
     switch (hookAddEditStatus.mode) {
       case AddEditMode.Edit: {
-        updateHookRequest(hookValues);
+        dispatch(PlanActions.updateHookRequest(hookValues));
         setIsAddHooksOpen(false);
         break;
       }
       case AddEditMode.Add: {
         if (selectedExistingHook) {
-          associateHookToPlan(hookValues, selectedExistingHook);
+          dispatch(PlanActions.associateHookToPlan(hookValues, selectedExistingHook));
           setIsAddHooksOpen(false);
           //only associate to plan, dont create new hook
           break;
         } else {
-          addHookRequest(hookValues);
+          dispatch(PlanActions.addHookRequest(hookValues));
           setIsAddHooksOpen(false);
           break;
         }
@@ -133,13 +112,18 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
           const currentHook = currentPlanHooks.find((hook) => hook.hookName === rowData.name.title);
           setInitialHookValues(currentHook);
           setIsAddHooksOpen(true);
-          watchHookAddEditStatus(rowData.name.title);
+          dispatch(PlanActions.watchHookAddEditStatus(rowData.name.title));
         },
       },
       {
         title: 'Delete',
         onClick: (event: any, rowId: any, rowData: any, extra: any) => {
-          removeHookFromPlanRequest(rowData.name.title, rowData['migration-step'].title);
+          dispatch(
+            PlanActions.removeHookFromPlanRequest(
+              rowData.name.title,
+              rowData['migration-step'].title
+            )
+          );
         },
       },
     ];
@@ -224,21 +208,20 @@ const HooksStep: React.FunctionComponent<IHooksStepBaseProps> = (props) => {
       ) : (
         <GridItem className={hooksFormContainerStyles}>
           <HooksFormContainer
+            allHooks={allHooks}
+            currentPlan={currentPlan}
+            hookAddEditStatus={hookAddEditStatus}
             defaultHookRunnerImage={defaultHookRunnerImage}
             onAddEditHookSubmit={onAddEditHookSubmit}
             initialHookValues={initialHookValues}
             setInitialHookValues={setInitialHookValues}
             setIsAddHooksOpen={setIsAddHooksOpen}
             isAddHooksOpen={isAddHooksOpen}
-            allHooks={allHooks}
             currentPlanHooks={currentPlanHooks}
             selectedExistingHook={selectedExistingHook}
             setSelectedExistingHook={setSelectedExistingHook}
             isCreateHookSelected={isCreateHookSelected}
             setIsCreateHookSelected={setIsCreateHookSelected}
-            cancelAddEditWatch={cancelAddEditWatch}
-            resetAddEditState={resetAddEditState}
-            {...props}
           />
         </GridItem>
       )}

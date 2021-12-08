@@ -17,12 +17,8 @@ import { useHistory } from 'react-router-dom';
 import WizardContainer from '../Wizard/WizardContainer';
 import ConfirmModal from '../../../../../common/components/ConfirmModal';
 import { IPlan } from '../../../../../plan/duck/types';
-import { useSelector, useDispatch } from 'react-redux';
-import { planSelectors, PlanActions } from '../../../../../plan/duck';
-import { clusterSelectors } from '../../../../../cluster/duck';
-import { storageSelectors } from '../../../../../storage/duck';
-import { DefaultRootState } from '../../../../../../configureStore';
-import StateMigrationModal from './StateMigrationModal';
+import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
@@ -31,20 +27,10 @@ interface IPlanActionsProps {
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
-  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
 
-  const planList = useSelector((state: DefaultRootState) =>
-    planSelectors.getPlansWithStatus(state)
-  );
-  const clusterList = useSelector((state: DefaultRootState) =>
-    clusterSelectors.getAllClusters(state)
-  );
-  const storageList = useSelector((state: DefaultRootState) =>
-    storageSelectors.getAllStorage(state)
-  );
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const dispatch = useDispatch();
@@ -62,6 +48,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   } = plan?.PlanStatus;
   const isIntraClusterPlan =
     plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
+  const migrationType =
+    plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
 
   const editPlan = () => {
     toggleEditWizardOpen();
@@ -70,7 +58,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleStateMigrationModalOpen();
+        dispatch(PlanActions.runStateMigrationRequest(plan, false));
       }}
       key="stateMigration"
       isDisabled={
@@ -80,10 +68,33 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         hasRunningMigrations ||
         finalMigrationComplete ||
         isPlanLocked ||
-        !hasCopyPVs
+        !hasCopyPVs ||
+        migrationType !== 'state'
       }
     >
       State
+    </DropdownItem>
+  );
+
+  const sccItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        dispatch(PlanActions.runStateMigrationRequest(plan, true));
+      }}
+      key="scc"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked ||
+        !hasCopyPVs ||
+        migrationType !== 'scc'
+      }
+    >
+      Storage class conversion
     </DropdownItem>
   );
   const stageItem = (
@@ -210,6 +221,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       ) : (
         stateItem
       )}
+      {sccItem}
       <DropdownItem
         onClick={() => {
           setKebabIsOpen(false);
@@ -240,14 +252,10 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isGrouped
         />
         <WizardContainer
-          planList={planList}
-          clusterList={clusterList}
-          storageList={storageList}
           isOpen={isEditWizardOpen}
           onHandleWizardModalClose={toggleEditWizardOpen}
           editPlanObj={plan.MigPlan}
           isEdit={true}
-          {...props}
         />
 
         <MigrateModal
@@ -263,11 +271,6 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         />
 
         <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
-        <StateMigrationModal
-          plan={plan}
-          isOpen={isStateMigrationModalOpen}
-          onHandleClose={toggleStateMigrationModalOpen}
-        />
 
         <ConfirmModal
           title="Confirmation"

@@ -46,7 +46,9 @@ export interface IMigPlan {
     name: string;
     namespace: string;
     creationTimestamp: string;
-    annotations?: string;
+    annotations?: {
+      'migration.openshift.io/selected-migplan-type': string;
+    };
     resourceVersion?: string;
   };
   spec: {
@@ -195,7 +197,7 @@ export interface ISourceClusterNamespace {
   podCount: number;
   pvcCount: number;
   serviceCount: number;
-  id: string;
+  id: string | number;
 }
 
 export interface IAnalytic {

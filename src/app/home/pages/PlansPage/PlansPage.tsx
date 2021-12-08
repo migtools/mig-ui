@@ -116,9 +116,6 @@ export const PlansPage: React.FunctionComponent = () => {
                 </CardBody>
               )}
               <WizardContainer
-                planList={planList}
-                clusterList={clusterList}
-                storageList={storageList}
                 isEdit={false}
                 isOpen={isAddWizardOpen}
                 onHandleWizardModalClose={toggleAddWizardOpen}

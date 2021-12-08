@@ -20,7 +20,7 @@ const getCurrentPlan = (state: DefaultRootState) => state.plan.currentPlan;
 
 const getCurrentPlanWithStatus = createSelector([getCurrentPlan], (currentPlan) => {
   if (currentPlan && currentPlan.status?.conditions) {
-    let statusObject = {};
+    let statusObject: any = {};
     let displayedConditions = currentPlan.status?.conditions
       .filter(
         (condition) =>

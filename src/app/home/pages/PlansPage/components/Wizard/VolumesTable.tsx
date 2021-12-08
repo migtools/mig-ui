@@ -18,7 +18,16 @@ import {
   Level,
   LevelItem,
 } from '@patternfly/react-core';
-import { Table, TableVariant, TableHeader, TableBody, sortable } from '@patternfly/react-table';
+import {
+  sortable,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  IRowData,
+} from '@patternfly/react-table';
 import ReactJson from 'react-json-view';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
@@ -32,30 +41,51 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import { IPersistentVolumeResource, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { IPlanPersistentVolume, PvCopyMethod } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import { useFormikContext } from 'formik';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 const styles = require('./VolumesTable.module').default;
 
-interface IVolumesTableProps
-  extends Pick<IOtherProps, 'isFetchingPVResources' | 'pvResourceList'>,
-    Pick<IFormValues, 'persistentVolumes'> {
-  onActionTypeChange: (currentPV: IPlanPersistentVolume, actionType: string) => void;
-}
+const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
+  const planState = useSelector((state: DefaultRootState) => state.plan);
 
-const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
-  isFetchingPVResources,
-  pvResourceList,
-  persistentVolumes,
-  onActionTypeChange,
-}: IVolumesTableProps) => {
+  const { setFieldValue, values } = useFormikContext<IFormValues>();
+
+  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
+    if (planState.currentPlan !== null && values.persistentVolumes) {
+      const newPVs = [...values.persistentVolumes];
+      const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
+      const pvIndex = values.persistentVolumes.indexOf(matchingPV);
+
+      newPVs[pvIndex] = {
+        ...matchingPV,
+        selection: {
+          ...matchingPV.selection,
+          //if updating the copy method, then assume the action will be set to copy
+          ...(option.type === 'copyMethod'
+            ? {
+                copyMethod: option.value,
+                action: 'copy',
+              }
+            : option.value === 'move' && {
+                action: 'move',
+              }),
+        },
+      };
+      setFieldValue('persistentVolumes', newPVs);
+    }
+  };
+
   const columns = [
     { title: 'PV name', transforms: [sortable] },
     { title: 'Claim', transforms: [sortable] },
     { title: 'Namespace', transforms: [sortable] },
     { title: 'Storage class', transforms: [sortable] },
     { title: 'Size', transforms: [sortable] },
-    { title: 'Migration type', transforms: [sortable] },
+    { title: 'PV migration type', transforms: [sortable] },
     { title: 'Details' },
   ];
   const getSortValues = (pv: any) => [
@@ -93,29 +123,103 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     },
     {
       key: 'type',
-      title: 'Migration type',
+      title: 'PV migration type',
       type: FilterType.select,
       selectOptions: [
-        { key: 'copy', value: 'Copy' },
+        { key: 'filesystem', value: 'Filesystem copy' },
         { key: 'move', value: 'Move' },
+        { key: 'snapshot', value: 'Snapshot copy' },
       ],
     },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    persistentVolumes,
+    values.persistentVolumes,
     filterCategories
   );
+
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
+  useEffect(() => {
+    //select all pvs on load
+    setAllRowsSelected(true);
+    const newSelected = filteredItems.map((pv) => pv.name);
+    setFieldValue('selectedPVs', newSelected);
+  }, []);
+
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+
+  const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
+    setAllRowsSelected(isSelected);
+
+    let newSelected;
+    if (isSelected) {
+      newSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
+    } else {
+      newSelected = []; // Deselect all
+    }
+    setFieldValue('selectedPVs', newSelected);
+  };
+
+  const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
+    if (allRowsSelected) {
+      setAllRowsSelected(false);
+    }
+    let newSelected;
+    if (rowIndex === -1) {
+      if (isSelected) {
+        newSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
+      } else {
+        newSelected = []; // Deselect all
+      }
+    } else {
+      const { props } = rowData;
+      if (isSelected) {
+        newSelected = [...new Set([...props.meta.selectedPVs, props.cells[0]])];
+      } else {
+        newSelected = props.meta.selectedPVs.filter(
+          (selected: string) => selected !== props.cells[0]
+        );
+      }
+    }
+    setFieldValue('selectedPVs', newSelected);
+  };
+
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
-    const matchingPVResource = pvResourceList.find((pvResource) => pvResource.name === pv.name);
-    const migrationTypeOptions: OptionWithValue[] = pv.supported.actions.map((action: string) => ({
+    const matchingPVResource = planState.pvResourceList.find(
+      (pvResource) => pvResource.name === pv.name
+    );
+
+    const copyMethodToString = (copyMethod: PvCopyMethod) => {
+      if (copyMethod === 'filesystem') return 'Filesystem copy';
+      if (copyMethod === 'snapshot') return 'Volume snapshot';
+      return copyMethod && capitalize(copyMethod);
+    };
+
+    const copyMethodOptions: OptionWithValue<any>[] = pv?.supported?.copyMethods.map(
+      (copyMethod: PvCopyMethod) => ({
+        value: copyMethod,
+        toString: () => copyMethodToString(copyMethod),
+        type: 'copyMethod',
+      })
+    );
+
+    const migrationTypeOptions: OptionWithValue[] = pv?.supported?.actions.map((action) => ({
       value: action,
       toString: () => capitalize(action),
+      type: 'action',
     }));
+
+    const combinedCopyOptions = migrationTypeOptions
+      .concat(copyMethodOptions)
+      .filter((option) => option.value !== 'copy' && option.value !== 'skip');
+
+    const currentSelectedCopyOption = combinedCopyOptions.find(
+      (option) => option.value === pv.selection.action || option.value === pv.selection.copyMethod
+    );
+
     let sourcePVCName = pv.pvc.name;
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
@@ -134,10 +238,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           title: (
             <SimpleSelect
               id="select-migration-type"
-              aria-label="Select migration type"
-              onChange={(option: any) => onActionTypeChange(pv, option.value)}
-              options={migrationTypeOptions}
-              value={migrationTypeOptions.find((option) => option.value === pv.selection.action)}
+              aria-label="Select pv migration type"
+              onChange={(option: any) => updatePersistentVolumeAction(pv, option)}
+              options={combinedCopyOptions}
+              value={currentSelectedCopyOption}
               placeholderText={null}
             />
           ),
@@ -164,13 +268,18 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               closeBtnAriaLabel="close-pv-details"
               maxWidth="200rem"
             >
-              <Button isDisabled={isFetchingPVResources} variant="link">
+              <Button isDisabled={planState.isFetchingPVResources} variant="link">
                 View JSON
               </Button>
             </Popover>
           ),
         },
       ],
+      selected: values.selectedPVs.includes(pv.name),
+      meta: {
+        selectedPVs: values.selectedPVs,
+        id: pv.name,
+      },
     };
   });
 
@@ -204,24 +313,63 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Persistent volumes table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th
+                  width={10}
+                  select={{
+                    onSelect: onSelectAll,
+                    isSelected: allRowsSelected,
+                  }}
+                />
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={10}>{columns[3].title}</Th>
+                <Th width={10}>{columns[4].title}</Th>
+                <Th width={10}>{columns[5].title}</Th>
+                <Th width={10}>{columns[6].title}</Th>
+                <Th width={20}></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                return (
+                  <Tr key={rowIndex}>
+                    <Td
+                      key={`${rowIndex}_0`}
+                      select={{
+                        rowIndex,
+                        onSelect,
+                        isSelected: row.selected,
+                        props: row,
+                      }}
+                    />
+                    {row.cells.map((cell, cellIndex) => {
+                      const shiftedIndex = cellIndex + 1;
+                      console.log('cell', cell);
+                      return (
+                        <Td
+                          key={`${rowIndex}_${shiftedIndex}`}
+                          dataLabel={columns[cellIndex].title}
+                        >
+                          {typeof cell !== 'string' ? cell.title : cell}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
           <TableEmptyState
             onClearFiltersClick={() => setFilterValues({})}
-            isHiddenActions={persistentVolumes.length === 0}
-            titleText={persistentVolumes.length === 0 && 'No persistent volumes found'}
+            isHiddenActions={values.persistentVolumes.length === 0}
+            titleText={values.persistentVolumes.length === 0 && 'No persistent volumes found'}
             bodyText={
-              persistentVolumes.length === 0 &&
+              values.persistentVolumes.length === 0 &&
               'No persistent volumes are attached to the selected projects. Click Next to continue.'
             }
           />

@@ -14,51 +14,41 @@ import {
 import { StatusIcon, StatusType } from '@konveyor/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { OptionLike, OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { useDispatch, useSelector } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 const styles = require('./VolumesTable.module').default;
 
-type IVolumesFormProps = Pick<
-  IOtherProps,
-  | 'isPVError'
-  | 'currentPlan'
-  | 'currentPlanStatus'
-  | 'getPVResourcesRequest'
-  | 'pvResourceList'
-  | 'isFetchingPVResources'
-  | 'pvDiscoveryRequest'
-  | 'isPollingStatus'
->;
-
-const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
-  isPVError,
-  currentPlan,
-  currentPlanStatus,
-  getPVResourcesRequest,
-  pvResourceList,
-  isFetchingPVResources,
-  pvDiscoveryRequest,
-  isPollingStatus,
-}: IVolumesFormProps) => {
+const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
   usePausedPollingEffect();
+  const dispatch = useDispatch();
+  const planState = useSelector((state: DefaultRootState) => state.plan);
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
 
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
-    pvDiscoveryRequest(values);
+    dispatch(PlanActions.pvDiscoveryRequest(values));
   }, []);
 
-  const discoveredPersistentVolumes = (currentPlan && currentPlan.spec.persistentVolumes) || [];
+  const discoveredPersistentVolumes =
+    (planState.currentPlan && planState.currentPlan.spec.persistentVolumes) || [];
   useEffect(() => {
     if (discoveredPersistentVolumes.length > 0) {
-      getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '');
+      dispatch(
+        PlanActions.getPVResourcesRequest(discoveredPersistentVolumes, values.sourceCluster || '')
+      );
       let mappedPVs: IPlanPersistentVolume[];
       if (values.persistentVolumes) {
+        //set initial pvs inside wizard
         mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           let pvAction = 'copy'; // Default to copy
           if (values.persistentVolumes.length !== 0) {
-            const rowVal = values.persistentVolumes.find((v) => v.name === planVolume.name);
-            if (rowVal && planVolume.selection.action) {
+            const matchingPV = values.persistentVolumes.find((v) => v.name === planVolume.name);
+            if (matchingPV && planVolume.selection.action) {
+              //set initial value for pv action
               pvAction = planVolume.selection.action;
             }
           }
@@ -74,9 +64,6 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       } else {
         mappedPVs = discoveredPersistentVolumes.map((planVolume) => {
           const pvAction = 'copy'; // Default to copy
-          const filteredSupportedActions = planVolume.supported.actions.filter(
-            (action) => action !== 'skip'
-          );
           return {
             ...planVolume,
             selection: {
@@ -86,11 +73,12 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
           };
         });
       }
+      //Set initial PVs from pv discovery
       setFieldValue('persistentVolumes', mappedPVs);
     }
-  }, [discoveredPersistentVolumes, currentPlanStatus]); // Only re-run the effect if fetching value changes
+  }, [discoveredPersistentVolumes, planState.currentPlanStatus]); // Only re-run the effect if fetching value changes
 
-  if (isPVError) {
+  if (planState.isPVError) {
     return (
       <Grid hasGutter className={styles.centerAlign}>
         <GridItem>
@@ -101,7 +89,11 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       </Grid>
     );
   }
-  if (isPollingStatus || currentPlanStatus.state === 'Pending') {
+  if (
+    planState.isFetchingPVResources ||
+    planState.isPollingStatus ||
+    planState.currentPlanStatus.state === 'Pending'
+  ) {
     return (
       <Bullseye>
         <EmptyState variant="large">
@@ -115,42 +107,16 @@ const VolumesForm: React.FunctionComponent<IVolumesFormProps> = ({
       </Bullseye>
     );
   }
-  if (currentPlanStatus.state === 'Critical') {
+  if (planState.currentPlanStatus.state === 'Critical') {
     return (
       <Bullseye>
         <EmptyState variant="large">
-          <Alert variant="danger" isInline title={currentPlanStatus.errorMessage} />
+          <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
         </EmptyState>
       </Bullseye>
     );
   }
 
-  const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, newAction: string) => {
-    if (currentPlan !== null && values.persistentVolumes) {
-      const newPVs = [...values.persistentVolumes];
-      const matchingPV = values.persistentVolumes.find((pv) => pv === currentPV);
-      const pvIndex = values.persistentVolumes.indexOf(matchingPV);
-      newPVs[pvIndex] = {
-        ...matchingPV,
-        selection: {
-          ...matchingPV.selection,
-          action: newAction,
-        },
-      };
-      setFieldValue('persistentVolumes', newPVs);
-    }
-  };
-
-  const onActionTypeChange = (currentPV: IPlanPersistentVolume, actionType: string) =>
-    updatePersistentVolumeAction(currentPV, actionType);
-
-  return (
-    <VolumesTable
-      pvResourceList={pvResourceList}
-      isFetchingPVResources={isFetchingPVResources}
-      persistentVolumes={values.persistentVolumes}
-      onActionTypeChange={onActionTypeChange}
-    />
-  );
+  return <VolumesTable isEdit={props.isEdit} isOpen={props.isOpen} />;
 };
 export default VolumesForm;
