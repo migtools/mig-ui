@@ -28,10 +28,6 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
   sortable,
   truncate,
   TableComposable,
@@ -43,12 +39,10 @@ import {
 } from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
-import { IFormValues, IOtherProps } from './WizardContainer';
-import { capitalize } from '../../../../../common/duck/utils';
+import { IFormValues } from './WizardContainer';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import {
   FilterCategory,
@@ -57,7 +51,7 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
-import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 import {
   OutlinedQuestionCircleIcon,
@@ -69,17 +63,12 @@ import { useDelayValidation, validatedState } from '../../../../../common/helper
 import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
 
 interface ICopyOptionsTableProps {
   storageClasses: IMigPlanStorageClass[];
   onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
   onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
-}
-
-enum VerifyWarningState {
-  Unread = 'Unread',
-  Open = 'Open',
-  Dismissed = 'Dismissed',
 }
 
 const storageClassToString = (storageClass: IMigPlanStorageClass) =>
@@ -123,7 +112,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     );
   }
 
-  const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
+  const [verifyWarningState, setVerifyWarningState] = useState<VerifyWarningState>('Unread');
   const [editableRow, setEditableRow] = React.useState(null);
   const currentTargetPVCNameKey = 'currentTargetPVCName';
 
@@ -279,8 +268,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
               isDisabled={!isVerifyCopyAllowed}
               onChange={(checked) => {
                 onVerifyFlagChange(currentPV, checked);
-                if (checked && verifyWarningState === VerifyWarningState.Unread) {
-                  setVerifyWarningState(VerifyWarningState.Open);
+                if (checked && verifyWarningState === 'Unread') {
+                  setVerifyWarningState('Open');
                 }
               }}
               aria-label={`Verify copy for PV ${pv.name}`}
@@ -572,37 +561,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           onSetPage={paginationProps.onSetPage}
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
-        <Modal
-          aria-label="copy-options-modal"
-          variant="small"
-          title="Copy performance warning"
-          header={
-            <Title headingLevel="h1" size={BaseSizes['2xl']}>
-              <ExclamationTriangleIcon
-                color="var(--pf-global--warning-color--100)"
-                className={spacing.mrMd}
-              />
-              Copy performance warning
-            </Title>
-          }
-          isOpen={verifyWarningState === VerifyWarningState.Open}
-          onClose={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-          actions={[
-            <Button
-              key="close"
-              variant="primary"
-              onClick={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-            >
-              Close
-            </Button>,
-          ]}
-        >
-          Selecting checksum verification for a PV that will be copied using a filesystem copy
-          method will severely impact the copy performance. Enabling verification will essentially
-          remove any time savings from incremental restore. <br />
-          <br />
-          See the product documentation for more information.
-        </Modal>
+        <VerifyCopyWarningModal {...{ verifyWarningState, setVerifyWarningState }} />
       </GridItem>
     </Grid>
   );
