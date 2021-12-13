@@ -1,5 +1,5 @@
 import { INameNamespaceRef } from '../../common/duck/types';
-import { MigrationStepsType } from '../../home/pages/PlansPage/types';
+import { MigrationStepsType, MigrationType } from '../../home/pages/PlansPage/types';
 import { ICurrentPlanStatus } from './reducers';
 
 export type PvCopyMethod = 'filesystem' | 'snapshot';
@@ -47,7 +47,7 @@ export interface IMigPlan {
     namespace: string;
     creationTimestamp: string;
     annotations?: {
-      'migration.openshift.io/selected-migplan-type': string;
+      'migration.openshift.io/selected-migplan-type': MigrationType;
     };
     resourceVersion?: string;
   };

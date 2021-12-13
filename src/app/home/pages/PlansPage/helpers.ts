@@ -7,7 +7,13 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
-import { IMigration, IPlan, IStep } from '../../../plan/duck/types';
+import {
+  IMigPlanStorageClass,
+  IMigration,
+  IPlan,
+  IPlanPersistentVolume,
+  IStep,
+} from '../../../plan/duck/types';
 import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
@@ -355,3 +361,14 @@ export const getElapsedTime = (step: IStep, migration: IMigration): string => {
 };
 
 export type IPlanInfo = ReturnType<typeof getPlanInfo>;
+
+export const targetStorageClassToString = (storageClass: IMigPlanStorageClass) =>
+  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
+
+export const pvcNameToString = (pvc: IPlanPersistentVolume['pvc']) => {
+  const includesMapping = pvc.name.includes(':');
+  if (includesMapping) {
+    return pvc.name.split(':')[0];
+  }
+  return pvc.name;
+};

@@ -265,7 +265,11 @@ const WizardComponent = (props: IOtherProps) => {
     ) {
       setShowNamespacesStep(true);
       setShowPersistentVolumesStep(true);
-      setShowCopyOptionsStep(true);
+      if (values.migrationType.value === 'scc') {
+        setShowCopyOptionsStep(false);
+      } else {
+        setShowCopyOptionsStep(true);
+      }
       setShowMigrationOptionsStep(false);
       setShowResultsStep(true);
       setShowHooksStep(false);

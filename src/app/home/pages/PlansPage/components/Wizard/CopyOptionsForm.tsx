@@ -33,29 +33,6 @@ const CopyOptionsForm: React.FunctionComponent = () => {
     }
   }, []);
 
-  const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newSc = storageClasses.find((sc) => sc !== '' && sc.name === value) || '';
-    const updatedAssignment = {
-      ...values.pvStorageClassAssignment,
-      [currentPV.name]: newSc,
-    };
-    setFieldValue('pvStorageClassAssignment', updatedAssignment);
-  };
-
-  const onVerifyFlagChange = (currentPV: IPlanPersistentVolume, value: boolean) => {
-    const updatedAssignment = {
-      ...values.pvVerifyFlagAssignment,
-      [currentPV.name]: value,
-    };
-    setFieldValue('pvVerifyFlagAssignment', updatedAssignment);
-  };
-
-  return (
-    <CopyOptionsTable
-      storageClasses={storageClasses}
-      onStorageClassChange={onStorageClassChange}
-      onVerifyFlagChange={onVerifyFlagChange}
-    />
-  );
+  return <CopyOptionsTable storageClasses={storageClasses} />;
 };
 export default CopyOptionsForm;

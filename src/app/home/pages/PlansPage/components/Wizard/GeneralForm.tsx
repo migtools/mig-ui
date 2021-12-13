@@ -10,6 +10,7 @@ import { ICluster } from '../../../../../cluster/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { IStorage } from '../../../../../storage/duck/types';
+import { MigrationType } from '../../types';
 const styles = require('./GeneralForm.module').default;
 
 export type IGeneralFormProps = {
@@ -45,10 +46,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const onHandleChange = (val: any, e: any) => handleChange(e);
 
   let storageOptions: string[] = ['No valid storage found'];
-  interface IMigrationTypeOption extends OptionWithValue {
-    value: 'full' | 'state' | 'scc';
-  }
-  const migrationTypeOptions: IMigrationTypeOption[] = [
+
+  const migrationTypeOptions: OptionWithValue<MigrationType>[] = [
     {
       value: 'full',
       toString: () =>

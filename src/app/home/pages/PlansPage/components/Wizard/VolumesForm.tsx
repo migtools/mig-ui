@@ -18,6 +18,7 @@ import { OptionLike, OptionWithValue } from '../../../../../common/components/Si
 import { useDispatch, useSelector } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { isEmpty } from 'lodash';
 
 const styles = require('./VolumesTable.module').default;
 
@@ -31,6 +32,23 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
   useEffect(() => {
     //kick off pv discovery once volumes form is reached with current selected namespaces
     dispatch(PlanActions.pvDiscoveryRequest(values));
+  }, []);
+
+  const migPlanPvs = planState.currentPlan.spec.persistentVolumes;
+  useEffect(() => {
+    if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
+      let pvVerifyFlagAssignment = {};
+      if (migPlanPvs) {
+        pvVerifyFlagAssignment = migPlanPvs.reduce(
+          (assignedVerifyFlags, pv) => ({
+            ...assignedVerifyFlags,
+            [pv.name]: !!pv.selection.verify,
+          }),
+          {}
+        );
+      }
+      setFieldValue('pvVerifyFlagAssignment', pvVerifyFlagAssignment);
+    }
   }, []);
 
   const discoveredPersistentVolumes =
@@ -117,6 +135,14 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
     );
   }
 
-  return <VolumesTable isEdit={props.isEdit} isOpen={props.isOpen} />;
+  return (
+    <VolumesTable
+      isEdit={props.isEdit}
+      isOpen={props.isOpen}
+      storageClasses={
+        (planState.currentPlan && planState.currentPlan.status.destStorageClasses) || []
+      }
+    />
+  );
 };
 export default VolumesForm;

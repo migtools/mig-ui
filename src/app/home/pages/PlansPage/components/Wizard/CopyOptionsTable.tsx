@@ -14,12 +14,8 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
-  Checkbox,
   Tooltip,
   TooltipPosition,
-  Modal,
-  Button,
-  BaseSizes,
   Flex,
   FlexItem,
   FormGroup,
@@ -43,7 +39,6 @@ import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-c
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import { IFormValues } from './WizardContainer';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import {
   FilterCategory,
   FilterType,
@@ -64,20 +59,16 @@ import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
+import { targetStorageClassToString } from '../../helpers';
+import { PVStorageClassSelect } from './PVStorageClassSelect';
+import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
 
 interface ICopyOptionsTableProps {
   storageClasses: IMigPlanStorageClass[];
-  onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-  onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
 }
-
-const storageClassToString = (storageClass: IMigPlanStorageClass) =>
-  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   storageClasses,
-  onStorageClassChange,
-  onVerifyFlagChange,
 }: ICopyOptionsTableProps) => {
   const planState = useSelector((state: DefaultRootState) => state.plan);
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
@@ -150,7 +141,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.storageClass,
     'targetPVCName',
     // targetPVCToString(targetPVCName[pv.name]),
-    storageClassToString(values.pvStorageClassAssignment[pv.name]),
+    targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
     values.pvVerifyFlagAssignment[pv.name],
   ];
   const filterCategories: FilterCategory[] = [
@@ -183,7 +174,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-      getItemValue: (pv) => storageClassToString(values.pvStorageClassAssignment[pv.name]),
+      getItemValue: (pv) => targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
     },
   ];
 
@@ -198,19 +189,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentPV = planState.currentPlan?.spec?.persistentVolumes?.find(
       (planPV: any) => planPV.name === pv.name
     );
-    const currentStorageClass = values.pvStorageClassAssignment[pv.name];
-
-    const noneOption = { value: '', toString: () => 'None' };
-    const storageClassOptions: OptionWithValue[] = [
-      ...storageClasses.map((storageClass) => ({
-        value: storageClass !== '' && storageClass.name,
-        toString: () => storageClassToString(storageClass),
-      })),
-      noneOption,
-    ];
 
     const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
-    const isVerifyCopyAllowed = pv.selection.copyMethod === 'filesystem';
     // let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
     let targetPVCName = pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
@@ -245,36 +225,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.storageClass,
         targetPVCName,
         {
-          title: (
-            <SimpleSelect
-              id="select-storage-class"
-              aria-label="Select storage class"
-              className={styles.copySelectStyle}
-              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
-              options={storageClassOptions}
-              value={
-                storageClassOptions.find(
-                  (option) => currentStorageClass && option.value === currentStorageClass.name
-                ) || pv.storageClass
-              }
-              placeholderText="Select a storage class..."
-            />
-          ),
+          title: <PVStorageClassSelect {...{ pv, currentPV, storageClasses }} />,
         },
         {
           title: (
-            <Checkbox
-              isChecked={isVerifyCopyAllowed && values.pvVerifyFlagAssignment[pv.name]}
-              isDisabled={!isVerifyCopyAllowed}
-              onChange={(checked) => {
-                onVerifyFlagChange(currentPV, checked);
-                if (checked && verifyWarningState === 'Unread') {
-                  setVerifyWarningState('Open');
-                }
+            <VerifyCopyCheckbox
+              {...{
+                verifyWarningState,
+                setVerifyWarningState,
+                pv,
+                currentPV,
               }}
-              aria-label={`Verify copy for PV ${pv.name}`}
-              id={`verify-pv-${pv.name}`}
-              name={`verify-pv-${pv.name}`}
             />
           ),
         },

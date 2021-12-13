@@ -15,11 +15,12 @@ import {
 import WizardFormik from './WizardFormik';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { MigrationType } from '../../types';
 const _ = require('lodash');
 
 export interface IFormValues {
   planName: string;
-  migrationType: OptionWithValue;
+  migrationType: OptionWithValue<'' | MigrationType>;
   sourceCluster: string;
   sourceTokenRef: INameNamespaceRef;
   targetCluster: string;
@@ -89,7 +90,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
   useEffect(() => {
     const initialValuesCopy = initialValues;
 
-    const getMigrationType = (type: string): OptionWithValue<string> => {
+    const getMigrationType = (type: MigrationType): OptionWithValue<MigrationType> => {
       switch (type) {
         case 'full':
           return {

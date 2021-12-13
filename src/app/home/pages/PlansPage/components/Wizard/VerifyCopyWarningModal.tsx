@@ -5,14 +5,16 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 export type VerifyWarningState = 'Unread' | 'Open' | 'Dismissed';
 
-export interface IVerifyCopyWarningModalProps {
+interface IVerifyCopyWarningModalProps {
   verifyWarningState: VerifyWarningState;
   setVerifyWarningState: (value: VerifyWarningState) => void;
+  isSCC?: boolean;
 }
 
 export const VerifyCopyWarningModal: React.FunctionComponent<IVerifyCopyWarningModalProps> = ({
   verifyWarningState,
   setVerifyWarningState,
+  isSCC = false,
 }: IVerifyCopyWarningModalProps) => (
   <Modal
     aria-label="copy-options-modal"
@@ -36,8 +38,11 @@ export const VerifyCopyWarningModal: React.FunctionComponent<IVerifyCopyWarningM
     ]}
   >
     Selecting checksum verification for a PV that will be copied using a filesystem copy method will
-    severely impact the copy performance. Enabling verification will essentially remove any time
-    savings from incremental restore. <br />
+    severely impact the copy performance.
+    {!isSCC ? (
+      <>Enabling verification will essentially remove any time savings from incremental restore.</>
+    ) : null}
+    <br />
     <br />
     See the product documentation for more information.
   </Modal>
