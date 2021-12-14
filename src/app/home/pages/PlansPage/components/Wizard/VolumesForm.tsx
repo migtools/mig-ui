@@ -34,9 +34,12 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
     dispatch(PlanActions.pvDiscoveryRequest(values));
   }, []);
 
-  const migPlanPvs = planState.currentPlan.spec.persistentVolumes;
+  const migPlanPvs = planState.currentPlan?.spec.persistentVolumes || null;
   useEffect(() => {
-    if (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment)) {
+    if (
+      values.migrationType.value === 'scc' &&
+      (!values.pvVerifyFlagAssignment || isEmpty(values.pvVerifyFlagAssignment))
+    ) {
       let pvVerifyFlagAssignment = {};
       if (migPlanPvs) {
         pvVerifyFlagAssignment = migPlanPvs.reduce(
