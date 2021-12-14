@@ -171,7 +171,11 @@ const NamespacesTable: React.FunctionComponent = () => {
     <React.Fragment>
       <GridItem>
         <TextContent className={spacing.mtMd}>
-          <Text component={TextVariants.p}>Select projects to be migrated</Text>
+          <Text component={TextVariants.p}>
+            {values.migrationType.value === 'scc'
+              ? 'Select projects containing the PVs to be converted.'
+              : 'Select projects to be migrated.'}
+          </Text>
         </TextContent>
       </GridItem>
       <GridItem>

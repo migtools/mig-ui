@@ -394,7 +394,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
-            Choose to move or copy persistent volumes associated with selected namespaces.
+            {isSCC
+              ? 'Select the persistent volumes you want to convert and for each select the new storage class.'
+              : 'Choose to move or copy persistent volumes associated with selected namespaces.'}
           </Text>
         </TextContent>
       </GridItem>
