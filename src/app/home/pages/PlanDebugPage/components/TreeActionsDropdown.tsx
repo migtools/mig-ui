@@ -8,7 +8,7 @@ import {
   IDebugTreeNode,
   RAW_OBJECT_VIEW_ROUTE,
 } from '../../../../debug/duck/types';
-import { alertSuccess } from '../../../../common/duck/slice';
+import { alertSuccessTimeout } from '../../../../common/duck/slice';
 import { getDebugCommand, hasLogsCommand } from '../helpers';
 import { DefaultRootState } from '../../../../../configureStore';
 import { ILogReducerState } from '../../../../logs/duck/slice';
@@ -45,7 +45,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     document.execCommand('copy');
     clipboard.removeChild(el);
     dispatch(
-      alertSuccess(
+      alertSuccessTimeout(
         `Command copied to clipboard. Run 'oc describe' on the 
       ${rawNode.clusterType} cluster to view resource details.`
       )
@@ -67,7 +67,7 @@ const TreeActionsDropdown: React.FunctionComponent<ITreeActionsDropdownProps> = 
     document.execCommand('copy');
     clipboard.removeChild(el);
     dispatch(
-      alertSuccess(
+      alertSuccessTimeout(
         `Command copied to clipboard. Run 'oc logs' on the 
       ${rawNode.clusterType} cluster to view resource details.`
       )
