@@ -22,6 +22,7 @@ import { PlanActions } from '../../../../../plan/duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
+import ConditionalTooltip from '../Wizard/ConditionalTooltip';
 interface IPlanActionsProps {
   plan: IPlan;
 }
@@ -46,34 +47,80 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     isPlanLocked = null,
     hasCopyPVs = null,
   } = plan?.PlanStatus;
-  const isIntraClusterPlan =
-    plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
   const migrationType =
     plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
 
   const editPlan = () => {
     toggleEditWizardOpen();
   };
-  const stateItem = (
+
+  const stageItem = (
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        dispatch(PlanActions.runStateMigrationRequest(plan, false));
+        toggleStageModalOpen();
       }}
-      key="stateMigration"
+      key="stagePlan"
       isDisabled={
         hasClosedCondition ||
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
         finalMigrationComplete ||
-        isPlanLocked ||
-        !hasCopyPVs ||
-        migrationType !== 'state'
+        isPlanLocked
       }
     >
-      State
+      Stage
     </DropdownItem>
+  );
+
+  const cutoverItem = (
+    <DropdownItem
+      onClick={() => {
+        setKebabIsOpen(false);
+        toggleMigrateModalOpen();
+      }}
+      key="migratePlan"
+      isDisabled={
+        hasClosedCondition ||
+        !hasReadyCondition ||
+        hasErrorCondition ||
+        hasRunningMigrations ||
+        finalMigrationComplete ||
+        isPlanLocked
+      }
+    >
+      Cutover
+    </DropdownItem>
+  );
+
+  const stateItem = (
+    <ConditionalTooltip
+      isTooltipEnabled={!hasCopyPVs}
+      position={PopoverPosition.bottom}
+      content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      key="stateMigration"
+    >
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          dispatch(PlanActions.runStateMigrationRequest(plan, false));
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          !hasCopyPVs
+        }
+      >
+        State
+      </DropdownItem>
+    </ConditionalTooltip>
   );
 
   const sccItem = (
@@ -90,51 +137,29 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         hasRunningMigrations ||
         finalMigrationComplete ||
         isPlanLocked ||
-        !hasCopyPVs ||
-        migrationType !== 'scc'
+        !hasCopyPVs
       }
     >
       Storage class conversion
     </DropdownItem>
   );
-  const stageItem = (
+
+  const rollbackItem = (
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleStageModalOpen();
+        toggleRollbackModalOpen();
       }}
-      key="stagePlan"
+      key="rollbackPlan"
       isDisabled={
         hasClosedCondition ||
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked ||
-        isIntraClusterPlan
+        isPlanLocked
       }
     >
-      Stage
-    </DropdownItem>
-  );
-  const cutoverItem = (
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleMigrateModalOpen();
-      }}
-      key="migratePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked ||
-        isIntraClusterPlan
-      }
-    >
-      Cutover
+      Rollback
     </DropdownItem>
   );
 
@@ -174,70 +199,17 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       </DropdownItem>
     </DropdownGroup>,
     <DropdownGroup label="Migrations" key="migrations">
-      {isIntraClusterPlan ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={
-            <div>
-              Stage is not supported for intra-cluster migrations. Please use the State migration
-              option.
-            </div>
-          }
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
+      {migrationType === 'full' ? (
+        <>
           {stageItem}
-        </Tooltip>
-      ) : (
-        stageItem
-      )}
-      {isIntraClusterPlan ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={
-            <div>
-              Cutover is not supported for intra-cluster migrations. Please use the State migration
-              option.
-            </div>
-          }
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
           {cutoverItem}
-        </Tooltip>
-      ) : (
-        cutoverItem
-      )}
-
-      {!hasCopyPVs ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
-          {stateItem}
-        </Tooltip>
-      ) : (
+        </>
+      ) : migrationType === 'state' ? (
         stateItem
-      )}
-      {sccItem}
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleRollbackModalOpen();
-        }}
-        key="rollbackPlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          isPlanLocked
-        }
-      >
-        Rollback
-      </DropdownItem>
+      ) : migrationType === 'scc' ? (
+        sccItem
+      ) : null}
+      {rollbackItem}
     </DropdownGroup>,
   ];
   return (
