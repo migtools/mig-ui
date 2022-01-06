@@ -11,6 +11,8 @@ import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/e
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { IStorage } from '../../../../../storage/duck/types';
 import { MigrationType } from '../../types';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 export type IGeneralFormProps = {
   isEdit: boolean;
@@ -34,6 +36,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     errors,
     validateForm,
   } = useFormikContext<IFormValues>();
+
+  const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
 
   useForcedValidationOnChange<IFormValues>(values, isEdit, validateForm);
 
@@ -215,7 +219,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
           type="text"
           validated={validatedState(touched?.planName, errors?.planName)}
           id="planName"
-          isDisabled={isEdit}
+          isDisabled={isEdit || !!currentPlan}
         />
       </FormGroup>
       <FormGroup
