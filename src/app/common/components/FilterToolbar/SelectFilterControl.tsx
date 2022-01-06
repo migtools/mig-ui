@@ -57,6 +57,7 @@ const SelectFilterControl: React.FunctionComponent<ISelectFilterControlProps> = 
           onFilterSelect(value);
           setIsFilterDropdownOpen(false);
         }}
+        isOpen={isFilterDropdownOpen}
         placeholderText="Any"
         toggleId={`id-${category.key}`}
       >

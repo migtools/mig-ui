@@ -14,7 +14,7 @@ import {
   IPlanPersistentVolume,
   IStep,
 } from '../../../plan/duck/types';
-import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo } from './types';
+import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo, MigrationType } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
   if (!plan || !plan?.PlanStatus) {
@@ -74,6 +74,8 @@ export const getPlanInfo = (plan: IPlan) => {
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
   return {
     planName: plan.MigPlan.metadata.name,
+    migrationType:
+      plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'],
     migrationCount: plan.Migrations.length || 0,
     sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name
       ? plan.MigPlan.spec?.srcMigClusterRef?.name
@@ -372,3 +374,12 @@ export const pvcNameToString = (pvc: IPlanPersistentVolume['pvc']) => {
   }
   return pvc.name;
 };
+
+export const migrationTypeToString = (migrationType: MigrationType) =>
+  migrationType === 'full'
+    ? 'Full migration'
+    : migrationType === 'state'
+    ? 'State migration'
+    : migrationType === 'scc'
+    ? 'Storage class conversion'
+    : '';
