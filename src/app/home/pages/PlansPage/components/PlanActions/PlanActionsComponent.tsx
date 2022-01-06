@@ -42,6 +42,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     hasClosedCondition = null,
     hasReadyCondition = null,
     hasErrorCondition = null,
+    hasAttemptedMigration = null,
     hasRunningMigrations = null,
     finalMigrationComplete = null,
     isPlanLocked = null,
@@ -156,7 +157,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
-        isPlanLocked
+        isPlanLocked ||
+        !hasAttemptedMigration
       }
     >
       Rollback
