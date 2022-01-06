@@ -1,22 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextContent,
   Text,
   TextVariants,
-  Popover,
-  PopoverPosition,
-  Title,
-  Button,
-  EmptyState,
-  EmptyStateVariant,
-  EmptyStateIcon,
-  EmptyStateBody,
   Grid,
   GridItem,
   Pagination,
   PaginationVariant,
   Level,
   LevelItem,
+  Tooltip,
+  Popover,
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateVariant,
+  PopoverPosition,
+  Title,
 } from '@patternfly/react-core';
 import {
   sortable,
@@ -28,8 +29,6 @@ import {
   Tr,
   IRowData,
 } from '@patternfly/react-table';
-import ReactJson from 'react-json-view';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
@@ -41,18 +40,35 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import { capitalize } from '../../../../../common/duck/utils';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
-import { IPlanPersistentVolume, PvCopyMethod } from '../../../../../plan/duck/types';
+import {
+  IMigPlanStorageClass,
+  IPlanPersistentVolume,
+  PvCopyMethod,
+} from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { pvcNameToString, targetStorageClassToString } from '../../helpers';
+import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
+import { ExclamationTriangleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
+import { PVStorageClassSelect } from './PVStorageClassSelect';
+import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
+import ReactJson from 'react-json-view';
 
 const styles = require('./VolumesTable.module').default;
 
-const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
+interface IVolumesTableProps extends IOtherProps {
+  storageClasses: IMigPlanStorageClass[];
+}
+
+const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
+  storageClasses,
+}: IVolumesTableProps) => {
   const planState = useSelector((state: DefaultRootState) => state.plan);
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
+  const isSCC = values.migrationType.value === 'scc';
 
   const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
     if (planState.currentPlan !== null && values.persistentVolumes) {
@@ -79,24 +95,72 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
     }
   };
 
-  const columns = [
-    { title: 'PV name', transforms: [sortable] },
-    { title: 'Claim', transforms: [sortable] },
-    { title: 'Namespace', transforms: [sortable] },
-    { title: 'Storage class', transforms: [sortable] },
-    { title: 'Size', transforms: [sortable] },
-    { title: 'PV migration type', transforms: [sortable] },
-    { title: 'Details' },
-  ];
-  const getSortValues = (pv: any) => [
-    pv.name,
-    pv.claim,
-    pv.project,
-    pv.storageClass,
-    pv.size,
-    pv.type,
-  ];
-  const filterCategories: FilterCategory[] = [
+  const [verifyWarningState, setVerifyWarningState] = useState<VerifyWarningState>('Unread');
+
+  const columns = isSCC
+    ? [
+        // Columns for storage class conversion
+        { title: 'PV name', transforms: [sortable] },
+        { title: 'Claim', transforms: [sortable] }, // TODO should this be renamed PVC? if so, just here or everywhere?
+        { title: 'Namespace', transforms: [sortable] }, // TODO should namespace come before Claim? here or everywhere?
+        { title: 'Source storage class', transforms: [sortable] },
+        { title: 'Size', transforms: [sortable] },
+        { title: 'Target storage class', transforms: [sortable] },
+        {
+          title: (
+            <React.Fragment>
+              Verify copy{' '}
+              <Tooltip
+                position="top"
+                isContentLeftAligned
+                content={
+                  <div>
+                    Checksum verification is available for PVs that will be copied using a
+                    filesystem copy method. Each file is verified with a checksum, which
+                    significantly reduces performance. See the product documentation for more
+                    information.
+                  </div>
+                }
+              >
+                <QuestionCircleIcon />
+              </Tooltip>
+            </React.Fragment>
+          ),
+          transforms: [sortable],
+        },
+        { title: 'Details' },
+      ]
+    : [
+        // Columns for all other migration types
+        { title: 'PV name', transforms: [sortable] },
+        { title: 'Claim', transforms: [sortable] },
+        { title: 'Namespace', transforms: [sortable] },
+        { title: 'Storage class', transforms: [sortable] },
+        { title: 'Size', transforms: [sortable] },
+        { title: 'PV migration type', transforms: [sortable] },
+        { title: 'Details' },
+      ];
+
+  const getSortValues = (pv: IPlanPersistentVolume) =>
+    isSCC
+      ? [
+          pv.name,
+          pvcNameToString(pv.pvc),
+          pv.pvc.namespace,
+          pv.storageClass,
+          pv.capacity,
+          pv.selection.storageClass,
+          pv.selection.verify,
+        ]
+      : [
+          pv.name,
+          pvcNameToString(pv.pvc),
+          pv.pvc.namespace,
+          pv.storageClass,
+          pv.capacity,
+          pv.selection.copyMethod,
+        ];
+  const commonFilterCategories: FilterCategory[] = [
     {
       key: 'name',
       title: 'PV name',
@@ -117,21 +181,36 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
     },
     {
       key: 'storageClass',
-      title: 'Storage class',
+      title: isSCC ? 'Source storage class' : 'Storage class',
       type: FilterType.search,
-      placeholderText: 'Filter by storage class...',
-    },
-    {
-      key: 'type',
-      title: 'PV migration type',
-      type: FilterType.select,
-      selectOptions: [
-        { key: 'filesystem', value: 'Filesystem copy' },
-        { key: 'move', value: 'Move' },
-        { key: 'snapshot', value: 'Snapshot copy' },
-      ],
+      placeholderText: isSCC ? 'Filter by source storage class...' : 'Filter by storage class...',
     },
   ];
+  const filterCategories: FilterCategory[] = isSCC
+    ? [
+        ...commonFilterCategories,
+        {
+          key: 'targetStorageClass',
+          title: 'Target storage class',
+          type: FilterType.search,
+          placeholderText: 'Filter by target storage class...',
+          getItemValue: (pv) =>
+            targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
+        },
+      ]
+    : [
+        ...commonFilterCategories,
+        {
+          key: 'type',
+          title: 'PV migration type',
+          type: FilterType.select,
+          selectOptions: [
+            { key: 'filesystem', value: 'Filesystem copy' },
+            { key: 'move', value: 'Move' },
+            { key: 'snapshot', value: 'Snapshot copy' },
+          ],
+        },
+      ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
     values.persistentVolumes,
@@ -220,61 +299,88 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
       (option) => option.value === pv.selection.action || option.value === pv.selection.copyMethod
     );
 
-    let sourcePVCName = pv.pvc.name;
-    const includesMapping = sourcePVCName.includes(':');
-    if (includesMapping) {
-      const mappedPVCNameArr = sourcePVCName.split(':');
-      sourcePVCName = mappedPVCNameArr[0];
-    }
+    const currentPV = planState.currentPlan?.spec?.persistentVolumes?.find(
+      (planPV: any) => planPV.name === pv.name
+    );
+    const currentStorageClass = values.pvStorageClassAssignment[pv.name];
+
+    const detailsCell = {
+      title: (
+        <Popover
+          className={styles.jsonPopover}
+          position={PopoverPosition.bottom}
+          bodyContent={
+            matchingPVResource ? (
+              <ReactJson src={matchingPVResource} enableClipboard={false} />
+            ) : (
+              <EmptyState variant={EmptyStateVariant.small}>
+                <EmptyStateIcon icon={ExclamationTriangleIcon} />
+                <Title headingLevel="h5" size="md">
+                  No PV data found
+                </Title>
+                <EmptyStateBody>Unable to retrieve PV data</EmptyStateBody>
+              </EmptyState>
+            )
+          }
+          aria-label="pv-details"
+          closeBtnAriaLabel="close-pv-details"
+          maxWidth="200rem"
+        >
+          <Button isDisabled={planState.isFetchingPVResources} variant="link">
+            View JSON
+          </Button>
+        </Popover>
+      ),
+    };
+    const cells = isSCC
+      ? [
+          pv.name,
+          pvcNameToString(pv.pvc),
+          pv.pvc.namespace,
+          pv.storageClass,
+          pv.capacity,
+          {
+            title: (
+              <PVStorageClassSelect {...{ pv, currentPV, storageClasses, currentStorageClass }} />
+            ),
+          },
+          {
+            title: (
+              <VerifyCopyCheckbox
+                {...{
+                  verifyWarningState,
+                  setVerifyWarningState,
+                  pv,
+                  currentPV,
+                }}
+              />
+            ),
+          },
+          detailsCell,
+        ]
+      : [
+          pv.name,
+          pvcNameToString(pv.pvc),
+          pv.pvc.namespace,
+          pv.storageClass,
+          pv.capacity,
+          {
+            title: (
+              <SimpleSelect
+                id="select-migration-type"
+                aria-label="Select pv migration type"
+                onChange={(option: any) => updatePersistentVolumeAction(pv, option)}
+                options={combinedCopyOptions}
+                value={currentSelectedCopyOption}
+                placeholderText={null}
+              />
+            ),
+          },
+          detailsCell,
+        ];
 
     return {
-      cells: [
-        pv.name,
-        sourcePVCName,
-        pv.pvc.namespace,
-        pv.storageClass,
-        pv.capacity,
-        {
-          title: (
-            <SimpleSelect
-              id="select-migration-type"
-              aria-label="Select pv migration type"
-              onChange={(option: any) => updatePersistentVolumeAction(pv, option)}
-              options={combinedCopyOptions}
-              value={currentSelectedCopyOption}
-              placeholderText={null}
-            />
-          ),
-        },
-        {
-          title: (
-            <Popover
-              className={styles.jsonPopover}
-              position={PopoverPosition.bottom}
-              bodyContent={
-                matchingPVResource ? (
-                  <ReactJson src={matchingPVResource} enableClipboard={false} />
-                ) : (
-                  <EmptyState variant={EmptyStateVariant.small}>
-                    <EmptyStateIcon icon={ExclamationTriangleIcon} />
-                    <Title headingLevel="h5" size="md">
-                      No PV data found
-                    </Title>
-                    <EmptyStateBody>Unable to retrieve PV data</EmptyStateBody>
-                  </EmptyState>
-                )
-              }
-              aria-label="pv-details"
-              closeBtnAriaLabel="close-pv-details"
-              maxWidth="200rem"
-            >
-              <Button isDisabled={planState.isFetchingPVResources} variant="link">
-                View JSON
-              </Button>
-            </Popover>
-          ),
-        },
-      ],
+      cells,
       selected: values.selectedPVs.includes(pv.name),
       meta: {
         selectedPVs: values.selectedPVs,
@@ -288,7 +394,9 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
-            Choose to move or copy persistent volumes associated with selected namespaces.
+            {isSCC
+              ? 'Select the persistent volumes you want to convert and for each select the new storage class.'
+              : 'Choose to move or copy persistent volumes associated with selected namespaces.'}
           </Text>
         </TextContent>
       </GridItem>
@@ -323,13 +431,11 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
                     isSelected: allRowsSelected,
                   }}
                 />
-                <Th width={20}>{columns[0].title}</Th>
-                <Th width={10}>{columns[1].title}</Th>
-                <Th width={10}>{columns[2].title}</Th>
-                <Th width={10}>{columns[3].title}</Th>
-                <Th width={10}>{columns[4].title}</Th>
-                <Th width={10}>{columns[5].title}</Th>
-                <Th width={10}>{columns[6].title}</Th>
+                {columns.map((column, columnIndex) => (
+                  <Th key={columnIndex} width={columnIndex === 0 ? 20 : 10}>
+                    {column.title}
+                  </Th>
+                ))}
                 <Th width={20}></Th>
               </Tr>
             </Thead>
@@ -352,7 +458,11 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
                       return (
                         <Td
                           key={`${rowIndex}_${shiftedIndex}`}
-                          dataLabel={columns[cellIndex].title}
+                          dataLabel={
+                            typeof columns[cellIndex].title === 'string'
+                              ? (columns[cellIndex].title as string)
+                              : undefined
+                          }
                         >
                           {typeof cell !== 'string' ? cell.title : cell}
                         </Td>
@@ -384,6 +494,9 @@ const VolumesTable: React.FunctionComponent<IOtherProps> = () => {
           onSetPage={paginationProps.onSetPage}
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
+        {isSCC ? (
+          <VerifyCopyWarningModal {...{ verifyWarningState, setVerifyWarningState, isSCC }} />
+        ) : null}
       </GridItem>
     </Grid>
   );

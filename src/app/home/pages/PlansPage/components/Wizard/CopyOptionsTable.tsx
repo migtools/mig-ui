@@ -14,12 +14,8 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
-  Checkbox,
   Tooltip,
   TooltipPosition,
-  Modal,
-  Button,
-  BaseSizes,
   Flex,
   FlexItem,
   FormGroup,
@@ -28,10 +24,6 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
   sortable,
   truncate,
   TableComposable,
@@ -43,13 +35,10 @@ import {
 } from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
-import { IFormValues, IOtherProps } from './WizardContainer';
-import { capitalize } from '../../../../../common/duck/utils';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { IFormValues } from './WizardContainer';
 import {
   FilterCategory,
   FilterType,
@@ -57,7 +46,7 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
-import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
 import {
   OutlinedQuestionCircleIcon,
@@ -69,26 +58,17 @@ import { useDelayValidation, validatedState } from '../../../../../common/helper
 import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
+import { targetStorageClassToString } from '../../helpers';
+import { PVStorageClassSelect } from './PVStorageClassSelect';
+import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
 
 interface ICopyOptionsTableProps {
   storageClasses: IMigPlanStorageClass[];
-  onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-  onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
 }
-
-enum VerifyWarningState {
-  Unread = 'Unread',
-  Open = 'Open',
-  Dismissed = 'Dismissed',
-}
-
-const storageClassToString = (storageClass: IMigPlanStorageClass) =>
-  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
 
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   storageClasses,
-  onStorageClassChange,
-  onVerifyFlagChange,
 }: ICopyOptionsTableProps) => {
   const planState = useSelector((state: DefaultRootState) => state.plan);
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
@@ -123,7 +103,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     );
   }
 
-  const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
+  const [verifyWarningState, setVerifyWarningState] = useState<VerifyWarningState>('Unread');
   const [editableRow, setEditableRow] = React.useState(null);
   const currentTargetPVCNameKey = 'currentTargetPVCName';
 
@@ -161,7 +141,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     pv.storageClass,
     'targetPVCName',
     // targetPVCToString(targetPVCName[pv.name]),
-    storageClassToString(values.pvStorageClassAssignment[pv.name]),
+    targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
     values.pvVerifyFlagAssignment[pv.name],
   ];
   const filterCategories: FilterCategory[] = [
@@ -194,7 +174,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-      getItemValue: (pv) => storageClassToString(values.pvStorageClassAssignment[pv.name]),
+      getItemValue: (pv) => targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
     },
   ];
 
@@ -209,19 +189,8 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     const currentPV = planState.currentPlan?.spec?.persistentVolumes?.find(
       (planPV: any) => planPV.name === pv.name
     );
-    const currentStorageClass = values.pvStorageClassAssignment[pv.name];
-
-    const noneOption = { value: '', toString: () => 'None' };
-    const storageClassOptions: OptionWithValue[] = [
-      ...storageClasses.map((storageClass) => ({
-        value: storageClass !== '' && storageClass.name,
-        toString: () => storageClassToString(storageClass),
-      })),
-      noneOption,
-    ];
 
     const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
-    const isVerifyCopyAllowed = pv.selection.copyMethod === 'filesystem';
     // let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
     let targetPVCName = pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
@@ -256,36 +225,17 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
         pv.storageClass,
         targetPVCName,
         {
-          title: (
-            <SimpleSelect
-              id="select-storage-class"
-              aria-label="Select storage class"
-              className={styles.copySelectStyle}
-              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
-              options={storageClassOptions}
-              value={
-                storageClassOptions.find(
-                  (option) => currentStorageClass && option.value === currentStorageClass.name
-                ) || pv.storageClass
-              }
-              placeholderText="Select a storage class..."
-            />
-          ),
+          title: <PVStorageClassSelect {...{ pv, currentPV, storageClasses }} />,
         },
         {
           title: (
-            <Checkbox
-              isChecked={isVerifyCopyAllowed && values.pvVerifyFlagAssignment[pv.name]}
-              isDisabled={!isVerifyCopyAllowed}
-              onChange={(checked) => {
-                onVerifyFlagChange(currentPV, checked);
-                if (checked && verifyWarningState === VerifyWarningState.Unread) {
-                  setVerifyWarningState(VerifyWarningState.Open);
-                }
+            <VerifyCopyCheckbox
+              {...{
+                verifyWarningState,
+                setVerifyWarningState,
+                pv,
+                currentPV,
               }}
-              aria-label={`Verify copy for PV ${pv.name}`}
-              id={`verify-pv-${pv.name}`}
-              name={`verify-pv-${pv.name}`}
             />
           ),
         },
@@ -572,37 +522,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           onSetPage={paginationProps.onSetPage}
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
-        <Modal
-          aria-label="copy-options-modal"
-          variant="small"
-          title="Copy performance warning"
-          header={
-            <Title headingLevel="h1" size={BaseSizes['2xl']}>
-              <ExclamationTriangleIcon
-                color="var(--pf-global--warning-color--100)"
-                className={spacing.mrMd}
-              />
-              Copy performance warning
-            </Title>
-          }
-          isOpen={verifyWarningState === VerifyWarningState.Open}
-          onClose={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-          actions={[
-            <Button
-              key="close"
-              variant="primary"
-              onClick={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-            >
-              Close
-            </Button>,
-          ]}
-        >
-          Selecting checksum verification for a PV that will be copied using a filesystem copy
-          method will severely impact the copy performance. Enabling verification will essentially
-          remove any time savings from incremental restore. <br />
-          <br />
-          See the product documentation for more information.
-        </Modal>
+        <VerifyCopyWarningModal {...{ verifyWarningState, setVerifyWarningState }} />
       </GridItem>
     </Grid>
   );
