@@ -50,49 +50,79 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   } = plan?.PlanStatus;
   const migrationType =
     plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+  const isIntraClusterPlan =
+    plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
 
   const editPlan = () => {
     toggleEditWizardOpen();
   };
 
   const stageItem = (
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleStageModalOpen();
-      }}
+    <ConditionalTooltip
+      position={PopoverPosition.bottom}
       key="stagePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
+      content={
+        <div>
+          Stage is not supported for intra-cluster migrations. Please use the State migration
+          option.
+        </div>
       }
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      isTooltipEnabled={isIntraClusterPlan}
     >
-      Stage
-    </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleStageModalOpen();
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          isIntraClusterPlan
+        }
+      >
+        Stage
+      </DropdownItem>
+    </ConditionalTooltip>
   );
 
   const cutoverItem = (
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleMigrateModalOpen();
-      }}
+    <ConditionalTooltip
+      position={PopoverPosition.bottom}
       key="migratePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked
+      content={
+        <div>
+          Cutover is not supported for intra-cluster migrations. Please use the State migration
+          option.
+        </div>
       }
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      isTooltipEnabled={isIntraClusterPlan}
     >
-      Cutover
-    </DropdownItem>
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleMigrateModalOpen();
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          isIntraClusterPlan
+        }
+      >
+        Cutover
+      </DropdownItem>
+    </ConditionalTooltip>
   );
 
   const stateItem = (
