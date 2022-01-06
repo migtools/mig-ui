@@ -118,7 +118,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           !hasCopyPVs
         }
       >
-        State
+        Start
       </DropdownItem>
     </ConditionalTooltip>
   );
@@ -140,7 +140,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         !hasCopyPVs
       }
     >
-      Storage class conversion
+      Start
     </DropdownItem>
   );
 
