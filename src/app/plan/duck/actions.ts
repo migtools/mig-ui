@@ -11,7 +11,6 @@ export const PlanActionTypes = {
   RUN_STAGE_REQUEST: 'RUN_STAGE_REQUEST',
   RUN_MIGRATION_REQUEST: 'RUN_MIGRATION_REQUEST',
   RUN_ROLLBACK_REQUEST: 'RUN_ROLLBACK_REQUEST',
-  RUN_STATE_MIGRATION_REQUEST: 'RUN_STATE_MIGRATION_REQUEST',
   UPDATE_PLANS: 'UPDATE_PLANS',
   REFRESH_ANALYTIC_REQUEST: 'REFRESH_ANALYTIC_REQUEST',
   REFRESH_ANALYTIC_SUCCESS: 'REFRESH_ANALYTIC_SUCCESS',
@@ -460,13 +459,6 @@ const patchPlanPVsSuccess = () => ({
   type: PlanActionTypes.PATCH_PLAN_PVS_SUCCESS,
 });
 
-const runStateMigrationRequest = (plan: IPlan, isStorageClassConversion: boolean) => ({
-  type: PlanActionTypes.RUN_STATE_MIGRATION_REQUEST,
-  plan,
-  isStorageClassConversion,
-});
-export type RunStateMigrationRequest = ReturnType<typeof runStateMigrationRequest>;
-
 /*
 Hook action definitions
 */
@@ -603,7 +595,6 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
 });
 
 export const PlanActions = {
-  runStateMigrationRequest,
   patchPlanPVsRequest,
   patchPlanPVsSuccess,
   patchPlanPVsFailure,

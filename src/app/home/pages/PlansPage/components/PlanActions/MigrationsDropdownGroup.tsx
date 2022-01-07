@@ -1,26 +1,22 @@
-import { DropdownGroup, DropdownItem } from '@patternfly/react-core';
 import React from 'react';
+import { DropdownGroup, DropdownItem } from '@patternfly/react-core';
 import { IPlan } from '../../../../../plan/duck/types';
-import { useOpenModal } from '../../../../duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
+import { MigrationConfirmModalState } from './MigrationConfirmModals';
 
 interface IMigrationsDropdownGroupProps {
   plan: IPlan;
   setKebabIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  modalState: MigrationConfirmModalState;
 }
-
-// TODO need to eliminate runStateMigrationRequest, RUN_STATE_MIGRATION_REQUEST and related saga?
 
 export const MigrationsDropdownGroup: React.FunctionComponent<IMigrationsDropdownGroupProps> = ({
   plan,
   setKebabIsOpen,
+  modalState: { toggleStageModalOpen, toggleMigrateModalOpen, toggleRollbackModalOpen },
 }: IMigrationsDropdownGroupProps) => {
-  const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
-  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
-  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
-
   const {
     hasClosedCondition = null,
     hasReadyCondition = null,
@@ -84,18 +80,6 @@ export const MigrationsDropdownGroup: React.FunctionComponent<IMigrationsDropdow
       >
         Rollback
       </DropdownItem>
-
-      <MigrateModal
-        plan={plan}
-        isOpen={isMigrateModalOpen}
-        onHandleClose={toggleMigrateModalOpen}
-      />
-      <RollbackModal
-        plan={plan}
-        isOpen={isRollbackModalOpen}
-        onHandleClose={toggleRollbackModalOpen}
-      />
-      <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
     </DropdownGroup>
   );
 };

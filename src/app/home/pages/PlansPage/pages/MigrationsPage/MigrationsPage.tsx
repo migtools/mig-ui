@@ -28,6 +28,10 @@ import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { clusterPodFetchRequest } from '../../../../../logs/duck/slice';
 import { MigrationsDropdownGroup } from '../../components/PlanActions/MigrationsDropdownGroup';
+import {
+  MigrationConfirmModals,
+  useMigrationConfirmModalState,
+} from '../../components/PlanActions/MigrationConfirmModals';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -52,9 +56,17 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
 
+  const migrationModalState = useMigrationConfirmModalState();
+
   const planStatus = plan?.PlanStatus;
   const kebabDropdownItems = planStatus
-    ? [<MigrationsDropdownGroup plan={plan} setKebabIsOpen={setKebabIsOpen} />]
+    ? [
+        <MigrationsDropdownGroup
+          plan={plan}
+          setKebabIsOpen={setKebabIsOpen}
+          modalState={migrationModalState}
+        />,
+      ]
     : [];
 
   return (
@@ -100,6 +112,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                         dropdownItems={kebabDropdownItems}
                         position={DropdownPosition.right}
                       />
+                      <MigrationConfirmModals plan={plan} modalState={migrationModalState} />
                     </FlexItem>
                   </Flex>
                 </CardHeader>

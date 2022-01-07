@@ -17,6 +17,7 @@ import { IPlan } from '../../../../../plan/duck/types';
 import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck';
 import { MigrationsDropdownGroup } from './MigrationsDropdownGroup';
+import { MigrationConfirmModals, useMigrationConfirmModalState } from './MigrationConfirmModals';
 interface IPlanActionsProps {
   plan: IPlan;
 }
@@ -24,6 +25,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const { plan } = props;
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
+
+  const migrationModalState = useMigrationConfirmModalState();
 
   const dispatch = useDispatch();
 
@@ -39,8 +42,6 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const editPlan = () => {
     toggleEditWizardOpen();
   };
-
-  // TODO need to eliminate runStateMigrationRequest, RUN_STATE_MIGRATION_REQUEST and related saga?
 
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const kebabDropdownItems = [
@@ -77,7 +78,11 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         Delete
       </DropdownItem>
     </DropdownGroup>,
-    <MigrationsDropdownGroup plan={plan} setKebabIsOpen={setKebabIsOpen} />,
+    <MigrationsDropdownGroup
+      plan={plan}
+      setKebabIsOpen={setKebabIsOpen}
+      modalState={migrationModalState}
+    />,
   ];
   return (
     <Flex>
@@ -109,6 +114,8 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           }}
           id="confirm-plan-removal"
         />
+
+        <MigrationConfirmModals plan={plan} modalState={migrationModalState} />
       </FlexItem>
     </Flex>
   );
