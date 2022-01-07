@@ -13,6 +13,7 @@ import {
   sortable,
   truncate,
   cellWidth,
+  fitContent,
 } from '@patternfly/react-table';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
@@ -52,17 +53,17 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     { title: 'Name', transforms: [sortable, cellWidth(15)] },
     {
       title: 'Migrations',
-      transforms: [sortable, cellWidth(10)],
+      transforms: [sortable, fitContent],
     },
-    { title: 'Type', transforms: [sortable, cellWidth(10)], cellTransforms: [truncate] },
-    { title: 'Source', transforms: [sortable, cellWidth(10)] },
-    { title: 'Target', transforms: [sortable, cellWidth(10)] },
-    { title: 'Repository', transforms: [sortable, cellWidth(10)] },
+    { title: 'Type', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Source', transforms: [sortable] },
+    { title: 'Target', transforms: [sortable] },
+    { title: 'Repository', transforms: [sortable] },
     {
       title: 'Namespaces',
-      transforms: [sortable, cellWidth(10)],
+      transforms: [sortable, fitContent],
     },
-    { title: 'Last state', transforms: [sortable, cellWidth(25)], cellTransforms: [truncate] },
+    { title: 'Last state', transforms: [sortable, cellWidth(20)], cellTransforms: [truncate] },
     '',
   ];
 
