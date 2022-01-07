@@ -5,6 +5,11 @@ const compression = require('compression');
 const HttpsProxyAgent = require('https-proxy-agent');
 const { AuthorizationCode } = require('simple-oauth2');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const axios = require('axios');
+const { URL } = require('url');
+const ipRangeCheck = require('ip-range-check');
+const isIp = require('is-ip');
+const isCidr = require('is-cidr');
 
 let cachedOAuthMeta = null;
 
@@ -27,13 +32,17 @@ const sanitizeMigMeta = (migMeta) => {
 const sanitizedMigMeta = sanitizeMigMeta(migMeta);
 
 const encodedMigMeta = Buffer.from(JSON.stringify(sanitizedMigMeta)).toString('base64');
+const isDevelopmentMode = process.env['NODE_ENV'] === 'dev';
+
+const discoverySvcUrl = isDevelopmentMode ? migMeta.discoveryApi : process.env['DISCOVERY_SVC_URL'];
+const clusterSvcUrl = isDevelopmentMode ? migMeta.clusterApi : process.env['CLUSTER_API_URL'];
 
 /** reverse proxy middleware configuration
  *
  */
 
 let clusterApiProxyOptions = {
-  target: migMeta.clusterApi,
+  target: clusterSvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/cluster-api/': '/',
@@ -47,7 +56,7 @@ let clusterApiProxyOptions = {
 };
 
 let discoveryApiProxyOptions = {
-  target: migMeta.discoveryApi,
+  target: discoverySvcUrl,
   changeOrigin: true,
   pathRewrite: {
     '^/discovery-api/': '/',
@@ -73,32 +82,6 @@ if (process.env['NODE_ENV'] === 'development') {
 const clusterApiProxy = createProxyMiddleware(clusterApiProxyOptions);
 const discoveryApiProxy = createProxyMiddleware(discoveryApiProxyOptions);
 
-/** proxy middleware configuration
- *
- */
-
-//Set proxy string if it exists
-const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
-const noProxyArr = process.env['NO_PROXY'] && process.env['NO_PROXY'].split(',');
-let bypassProxy = false;
-if (noProxyArr && noProxyArr.length) {
-  bypassProxy = noProxyArr.some((s) => migMeta.clusterApi.includes(s));
-}
-let httpOptions = {};
-let axios;
-if (proxyString && !bypassProxy) {
-  httpOptions = {
-    agent: new HttpsProxyAgent(proxyString),
-  };
-  const axiosProxyConfig = {
-    proxy: false,
-    httpsAgent: new HttpsProxyAgent(proxyString),
-  };
-  axios = require('axios').create(axiosProxyConfig);
-} else {
-  axios = require('axios');
-}
-
 console.log('migMetaFile: ', migMetaFile);
 console.log('viewsDir: ', viewsDir);
 console.log('staticDir: ', staticDir);
@@ -109,7 +92,6 @@ app.use(compression());
 app.engine('ejs', require('ejs').renderFile);
 app.set('views', viewsDir);
 app.use(express.static(staticDir));
-//** proxy configuration */
 app.use('/cluster-api/', clusterApiProxy);
 app.use('/discovery-api/', discoveryApiProxy);
 
@@ -145,6 +127,19 @@ app.get('/login/callback', async (req, res, next) => {
   };
   try {
     const clusterAuth = await getClusterAuth();
+    const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
+    let httpOptions = {};
+    if (proxyString && !tokenEndpointMatchesNoProxy(cachedOAuthMeta.token_endpoint)) {
+      httpOptions = {
+        agent: new HttpsProxyAgent(proxyString),
+      };
+    }
+
+    // If your authorization_endpoint or token_endpoint values retrieved from oauthMeta are listed in the NO_PROXY variable & a proxy is present,
+    // you may experience issues.
+    // Example endpoint values:
+    // "authorization_endpoint": "https://oauth-openshift.apps.cam-tgt-25871.qe.devcluster.openshift.com/oauth/authorize",
+    // "token_endpoint": "https://oauth-openshift.apps.cam-tgt-25871.qe.devcluster.openshift.com/oauth/token",
     const accessToken = await clusterAuth.getToken(options, httpOptions);
     const currentUnixTime = dayjs().unix();
     const user = {
@@ -170,12 +165,12 @@ app.listen(port, () => {
 });
 
 //Helpers
-
 const getOAuthMeta = async () => {
   if (cachedOAuthMeta) {
     return cachedOAuthMeta;
   }
-  const oAuthMetaUrl = `${migMeta.clusterApi}/.well-known/oauth-authorization-server`;
+  const oAuthMetaUrl = `${clusterSvcUrl}/.well-known/oauth-authorization-server`;
+
   const res = await axios.get(oAuthMetaUrl);
   cachedOAuthMeta = res.data;
   return cachedOAuthMeta;
@@ -194,3 +189,45 @@ const getClusterAuth = async () => {
     },
   });
 };
+
+const noProxyPatterns = (process.env.no_proxy || process.env.NO_PROXY || '')
+  .split(',')
+  .map((pattern) => pattern.trim())
+  .filter((pattern) => !!pattern);
+
+function tokenEndpointMatchesNoProxy(url) {
+  const { hostname } = parseUrl(url);
+  if (!hostname) {
+    return false;
+  }
+  const doesNoProxyMatch = noProxyPatterns.some((pattern) => {
+    // Check if the no proxy pattern is a CIDR. If it is, and the host of the
+    // token endpoint is an ip address, then we need to check to see if the
+    // ip address lies within the pattern's CIDR rage
+    const patternIsCidr = isCidr(pattern);
+    const hostIsIp = isIp(hostname);
+    const mustCheckRange = patternIsCidr && hostIsIp;
+
+    if (mustCheckRange) {
+      return ipRangeCheck(hostname, pattern);
+    }
+
+    // We aren't dealing with an IP range, so we can just check to see if the
+    // hostname of the token endpoint is concretely specified in the NO_PROXY
+    // pattern list. This should cover all three non-CIDR potential values:
+    // * Domain names: "oauth-server.apps.mycorp.com"
+    // * Domains: ".apps.mycorp.com"
+    // * Concrete IP addresses: 192.168.1.2
+    return hostname.endsWith(pattern);
+  });
+
+  return doesNoProxyMatch;
+}
+
+function parseUrl(value) {
+  try {
+    return new URL(value);
+  } catch (err) {
+    return new URL('');
+  }
+}

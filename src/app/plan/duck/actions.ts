@@ -3,7 +3,6 @@ import { IAddEditStatus } from '../../common/add_edit_state';
 import { IMigPlan, IPlan, IPlanPersistentVolume } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { IFormValues } from '../../home/pages/PlansPage/components/Wizard/WizardContainer';
-import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 export const PlanActionTypes = {
   PATCH_PLAN_PVS_REQUEST: 'RUN_STAGE_REQUEST',
@@ -116,6 +115,8 @@ export const PlanActionTypes = {
   HOOK_POLL_START: 'HOOK_POLL_START',
   HOOK_POLL_STOP: 'HOOK_POLL_STOP',
   UPDATE_PLAN_HOOK_LIST: 'UPDATE_PLAN_HOOK_LIST',
+  /** Other */
+  UPDATE_MIGRATION_TYPE: 'UPDATE_MIGRATION_TYPE',
 };
 
 const updateCurrentPlanStatus = (currentPlanStatus: ICurrentPlanStatus) => ({
@@ -459,15 +460,10 @@ const patchPlanPVsSuccess = () => ({
   type: PlanActionTypes.PATCH_PLAN_PVS_SUCCESS,
 });
 
-const runStateMigrationRequest = (
-  plan: IPlan,
-  editedPVs: Array<IEditedPV>,
-  selectedPVs: Array<string>
-) => ({
+const runStateMigrationRequest = (plan: IPlan, isStorageClassConversion: boolean) => ({
   type: PlanActionTypes.RUN_STATE_MIGRATION_REQUEST,
   plan,
-  editedPVs,
-  selectedPVs,
+  isStorageClassConversion,
 });
 export type RunStateMigrationRequest = ReturnType<typeof runStateMigrationRequest>;
 
@@ -605,6 +601,7 @@ const updateHooks = (updatedHooks: IMigHook[]) => ({
   type: PlanActionTypes.UPDATE_HOOKS,
   updatedHooks,
 });
+
 export const PlanActions = {
   runStateMigrationRequest,
   patchPlanPVsRequest,

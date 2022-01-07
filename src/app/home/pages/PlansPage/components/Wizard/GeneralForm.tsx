@@ -9,9 +9,15 @@ import { validatedState } from '../../../../../common/helpers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import { usePausedPollingEffect } from '../../../../../common/context';
+import { IStorage } from '../../../../../storage/duck/types';
+import { MigrationType } from '../../types';
 const styles = require('./GeneralForm.module').default;
 
-export type IGeneralFormProps = Pick<IOtherProps, 'clusterList' | 'storageList' | 'isEdit'>;
+export type IGeneralFormProps = {
+  isEdit: boolean;
+  clusterList: ICluster[];
+  storageList: IStorage[];
+};
 
 const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   clusterList,
@@ -41,67 +47,101 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   let storageOptions: string[] = ['No valid storage found'];
 
-  const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
-    const clusterName = cluster.MigCluster.metadata.name;
-    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
-    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
-    const errorMessage = cluster.ClusterStatus.errorMessage;
-    return {
-      value: cluster,
-      toString: () => clusterName,
-      props: {
-        isDisabled: hasCriticalCondition,
-        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
-        children: (
-          <div>
-            {hasCriticalCondition || hasWarnCondition ? (
-              <>
-                <span className={spacing.mrSm}>{clusterName}</span>
-                <Tooltip content={<div>{errorMessage}</div>}>
-                  <span className="pf-c-icon pf-m-warning">
-                    <ExclamationTriangleIcon />
-                  </span>
-                </Tooltip>
-              </>
-            ) : (
-              <div>{clusterName}</div>
-            )}
-          </div>
-        ),
-      },
-    };
-  });
+  const migrationTypeOptions: OptionWithValue<MigrationType>[] = [
+    {
+      value: 'full',
+      toString: () =>
+        'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
+    },
+    {
+      value: 'state',
+      toString: () =>
+        'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+    },
+    {
+      value: 'scc',
+      toString: () =>
+        'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
+    },
+  ];
 
-  const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList.map((cluster) => {
-    const clusterName = cluster.MigCluster.metadata.name;
-    const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
-    const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
-    const errorMessage = cluster.ClusterStatus.errorMessage;
-    return {
-      value: cluster,
-      toString: () => clusterName,
-      props: {
-        isDisabled: hasCriticalCondition,
-        className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
-        children: (
-          <div>
-            {hasCriticalCondition || hasWarnCondition ? (
-              <>
-                <span className={spacing.mrSm}>{clusterName}</span>
-                <Tooltip content={<div>{errorMessage}</div>}>
-                  <span className="pf-c-icon pf-m-warning">
-                    <ExclamationTriangleIcon />
-                  </span>
-                </Tooltip>
-              </>
-            ) : (
-              <div>{clusterName}</div>
-            )}
-          </div>
-        ),
-      },
-    };
-  });
+  const srcClusterOptions: OptionWithValue<ICluster>[] = clusterList
+    .map((cluster) => {
+      const clusterName = cluster.MigCluster.metadata.name;
+      const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+      const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
+      const errorMessage = cluster.ClusterStatus.errorMessage;
+      return {
+        value: cluster,
+        toString: () => clusterName,
+        props: {
+          isDisabled: hasCriticalCondition,
+          className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+          children: (
+            <div>
+              {hasCriticalCondition || hasWarnCondition ? (
+                <>
+                  <span className={spacing.mrSm}>{clusterName}</span>
+                  <Tooltip content={<div>{errorMessage}</div>}>
+                    <span className="pf-c-icon pf-m-warning">
+                      <ExclamationTriangleIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <div>{clusterName}</div>
+              )}
+            </div>
+          ),
+        },
+      };
+    })
+    .filter((cluster) => {
+      if (values.migrationType.value === 'full' && values.targetCluster) {
+        return cluster.value.MigCluster.metadata.name !== values.targetCluster;
+      } else {
+        return cluster;
+      }
+    });
+
+  const targetClusterOptions: OptionWithValue<ICluster>[] = clusterList
+    .map((cluster) => {
+      const clusterName = cluster.MigCluster.metadata.name;
+      const hasCriticalCondition = cluster.ClusterStatus.hasCriticalCondition;
+      const hasWarnCondition = cluster.ClusterStatus.hasWarnCondition;
+      const errorMessage = cluster.ClusterStatus.errorMessage;
+      return {
+        value: cluster,
+        toString: () => clusterName,
+        props: {
+          isDisabled: hasCriticalCondition,
+          className: hasCriticalCondition ? 'disabled-with-pointer-events' : '',
+          children: (
+            <div>
+              {hasCriticalCondition || hasWarnCondition ? (
+                <>
+                  <span className={spacing.mrSm}>{clusterName}</span>
+                  <Tooltip content={<div>{errorMessage}</div>}>
+                    <span className="pf-c-icon pf-m-warning">
+                      <ExclamationTriangleIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <div>{clusterName}</div>
+              )}
+            </div>
+          ),
+        },
+      };
+    })
+    .filter((cluster) => {
+      if (values.migrationType.value === 'full' && values.sourceCluster) {
+        return cluster.value.MigCluster.metadata.name !== values.sourceCluster;
+      } else {
+        return cluster;
+      }
+    });
 
   if (storageList.length) {
     storageOptions = storageList
@@ -125,6 +165,22 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
       setFieldValue('sourceCluster', matchingCluster.MigCluster.metadata.name);
       setFieldTouched('sourceCluster', true, true);
       setFieldValue('selectedNamespaces', []);
+      setFieldValue('selectedPVs', []);
+    }
+    if (values.migrationType.value === 'scc') {
+      setFieldValue('targetCluster', matchingCluster.MigCluster.metadata.name);
+      setFieldTouched('targetCluster', true, true);
+      setFieldValue('selectedNamespaces', []);
+      setFieldValue('selectedPVs', []);
+
+      //TEMP WORKAROUND
+      const matchingStorage = storageList.find(
+        (storage) => storage.StorageStatus.hasReadyCondition
+      );
+      if (matchingStorage) {
+        setFieldValue('selectedStorage', matchingStorage.MigStorage.metadata.name);
+        setFieldTouched('selectedStorage', true, true);
+      }
     }
   };
 
@@ -140,10 +196,6 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   return (
     <Form>
-      <Title headingLevel="h1" size="md" className={styles.fieldGridTitle}>
-        Give your plan a name
-      </Title>
-
       <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
           <FormGroup
@@ -169,9 +221,31 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
         </GridItem>
       </Grid>
 
-      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
-        Select source and target clusters
-      </Title>
+      <Grid md={6} hasGutter className={spacing.mbMd}>
+        <GridItem>
+          <FormGroup
+            label="Migration type"
+            isRequired
+            fieldId="migrationType"
+            className={spacing.mbMd}
+            helperTextInvalid={touched.migrationType && errors.migrationType}
+            validated={validatedState(touched.migrationType, errors.migrationType)}
+          >
+            <SimpleSelect
+              id="migrationType"
+              onChange={(option) => {
+                setFieldValue('migrationType', option);
+                setFieldValue('sourceCluster', null);
+                setFieldValue('targetCluster', null);
+              }}
+              value={values.migrationType.toString()}
+              placeholderText="Select..."
+              options={migrationTypeOptions}
+              isDisabled={isEdit}
+            />
+          </FormGroup>
+        </GridItem>
+      </Grid>
 
       <Grid md={6} hasGutter className={spacing.mbMd}>
         <GridItem>
@@ -180,6 +254,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             isRequired
             fieldId="sourceCluster"
             className={spacing.mbMd}
+            helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
+            validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
           >
             <SimpleSelect
               id="sourceCluster"
@@ -190,49 +266,50 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
             />
           </FormGroup>
         </GridItem>
-
-        <GridItem>
-          <FormGroup
-            label="Target cluster"
-            isRequired
-            fieldId="targetCluster"
-            helperTextInvalid={touched.targetCluster && errors.targetCluster}
-            validated={validatedState(touched.targetCluster, errors.targetCluster)}
-          >
-            <SimpleSelect
-              id="targetCluster"
-              onChange={handleTargetChange}
-              options={targetClusterOptions}
-              value={values.targetCluster}
-              placeholderText="Select target..."
-            />
-          </FormGroup>
-        </GridItem>
       </Grid>
 
-      <Title headingLevel="h3" size="md" className={styles.fieldGridTitle}>
-        Select a replication repository
-      </Title>
-
-      <Grid md={6} hasGutter>
-        <GridItem>
-          <FormGroup
-            label="Repository"
-            isRequired
-            fieldId="selectedStorage"
-            helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
-            validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
-          >
-            <SimpleSelect
-              id="selectedStorage"
-              onChange={handleStorageChange}
-              options={storageOptions}
-              value={values.selectedStorage}
-              placeholderText="Select repository..."
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
+      {(values.migrationType.value === 'full' || values.migrationType.value === 'state') && (
+        <>
+          <Grid md={6} hasGutter className={spacing.mbMd}>
+            <GridItem>
+              <FormGroup
+                label="Target cluster"
+                isRequired
+                fieldId="targetCluster"
+                helperTextInvalid={touched.targetCluster && errors.targetCluster}
+                validated={validatedState(touched.targetCluster, errors.targetCluster)}
+              >
+                <SimpleSelect
+                  id="targetCluster"
+                  onChange={handleTargetChange}
+                  options={targetClusterOptions}
+                  value={values.targetCluster}
+                  placeholderText="Select target..."
+                />
+              </FormGroup>
+            </GridItem>
+          </Grid>
+          <Grid md={6} hasGutter className={spacing.mbMd}>
+            <GridItem>
+              <FormGroup
+                label="Repository"
+                isRequired
+                fieldId="selectedStorage"
+                helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
+                validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
+              >
+                <SimpleSelect
+                  id="selectedStorage"
+                  onChange={handleStorageChange}
+                  options={storageOptions}
+                  value={values.selectedStorage}
+                  placeholderText="Select repository..."
+                />
+              </FormGroup>
+            </GridItem>
+          </Grid>
+        </>
+      )}
     </Form>
   );
 };

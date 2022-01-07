@@ -27,4 +27,8 @@ export interface IMigHook {
   id: string;
   HookStatus?: any;
   hookName?: string;
+  custom?: boolean;
+  image?: string;
+  clusterTypeText?: string;
+  phase?: string;
 }

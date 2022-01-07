@@ -16,7 +16,6 @@ interface IProps {
 }
 
 const AccessLogsModal: React.FunctionComponent<IProps> = ({ planName, onHandleClose, isOpen }) => {
-  usePausedPollingEffect();
   const [clusterList, setClusterList] = useState([]);
   const [cluster, setCluster] = useState(null);
   const logs: ILogReducerState = useSelector((state: DefaultRootState) => state.logs);

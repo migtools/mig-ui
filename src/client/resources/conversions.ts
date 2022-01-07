@@ -3,7 +3,7 @@ import {
   HooksClusterType,
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
-import { IMigPlan } from '../../app/plan/duck/types';
+import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
 import { IClusterSpec } from '../../app/cluster/duck/types';
 import { select } from 'redux-saga/effects';
@@ -410,6 +410,7 @@ export function updateMigPlanFromValues(
     };
   }
   if (updatedSpec.namespaces) {
+    const isIntraClusterPlan = planValues.sourceCluster === planValues.targetCluster;
     const selectedNamespacesMapped = planValues.selectedNamespaces.map((selectedNs, i) => {
       const editedNamespace = planValues.editedNamespaces.find(
         (editedNs, index) => selectedNs === editedNs.oldName
@@ -417,6 +418,9 @@ export function updateMigPlanFromValues(
       if (editedNamespace) {
         const mappedNS = `${selectedNs}:${editedNamespace.newName}`;
         return mappedNS;
+      } else if (isIntraClusterPlan && planValues.migrationType.value !== 'scc') {
+        //if not edited and intracluster plan, force a remap
+        return `${selectedNs}:${selectedNs}-new`;
       } else {
         return selectedNs;
       }
@@ -425,26 +429,48 @@ export function updateMigPlanFromValues(
     updatedSpec.namespaces = selectedNamespacesMapped;
   }
   if (updatedSpec.persistentVolumes) {
-    updatedSpec.persistentVolumes = updatedSpec.persistentVolumes.map((v) => {
-      const userPv = planValues.persistentVolumes.find((upv) => upv.name === v.name);
-      if (userPv) {
-        v.selection.action = userPv.selection.action;
-        const selectedCopyMethod = planValues.pvCopyMethodAssignment[v.name];
-        if (selectedCopyMethod) {
-          v.selection.copyMethod = selectedCopyMethod;
-        }
+    planValues.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
+      const updatedPV = {
+        ...pvItem,
+      };
 
-        v.selection.verify =
-          selectedCopyMethod === 'filesystem' && planValues.pvVerifyFlagAssignment[v.name];
-
-        const selectedStorageClassObj = planValues.pvStorageClassAssignment[v.name];
-        if (selectedStorageClassObj || selectedStorageClassObj === '') {
-          v.selection.storageClass =
-            selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
+      const matchingEditedPV = planValues.editedPVs.find((editedPV) => {
+        const includesMapping = pvItem.pvc.name.includes(':');
+        if (includesMapping) {
+          const currentMappedPVCNameArr = pvItem.pvc.name.split(':');
+          return (
+            editedPV.oldPVCName === currentMappedPVCNameArr[0] && editedPV.pvName === pvItem.name
+          );
+        } else {
+          return editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name;
         }
+      });
+      const isIntraClusterPlan = planValues.sourceCluster === planValues.targetCluster;
+      const mappedPVCNameArr = updatedPV.pvc.name.split(':');
+      if (matchingEditedPV) {
+        updatedPV.pvc.name = `${matchingEditedPV.oldPVCName}:${matchingEditedPV.newPVCName}`;
+      } else if (
+        isIntraClusterPlan &&
+        planValues.migrationType.value !== 'scc' &&
+        mappedPVCNameArr[0] === mappedPVCNameArr[1]
+      ) {
+        //if the user did not update their pvc name, apply -new to the pvc name if intra cluster plan
+        updatedPV.pvc.name = `${updatedPV.pvc.name}-new`;
       }
-      return v;
+
+      updatedPV.selection.verify =
+        updatedPV.selection.copyMethod === 'filesystem' &&
+        planValues.pvVerifyFlagAssignment[updatedPV.name];
+
+      const selectedStorageClassObj = planValues.pvStorageClassAssignment[updatedPV.name];
+      if (selectedStorageClassObj || selectedStorageClassObj === '') {
+        updatedPV.selection.storageClass =
+          selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
+      }
+
+      return updatedPV;
     });
+    updatedSpec.persistentVolumes = planValues.persistentVolumes;
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;
@@ -496,7 +522,8 @@ export function createInitialMigPlan(
   destinationClusterObj: any,
   destinationTokenRef: INameNamespaceRef,
   storageObj: any,
-  namespaces: string[]
+  namespaces: string[],
+  migrationType: string
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
@@ -504,6 +531,9 @@ export function createInitialMigPlan(
     metadata: {
       name,
       namespace,
+      annotations: {
+        'migration.openshift.io/selected-migplan-type': migrationType,
+      },
     },
     spec: {
       srcMigClusterRef: {
@@ -535,14 +565,18 @@ export function createMigMigration(
   isStage: boolean,
   enableQuiesce: boolean,
   isRollback: boolean,
-  isStateTransfer: boolean
+  isStateTransfer: boolean,
+  isStorageClassConversion?: boolean
 ) {
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
     metadata: {
       annotations: {
-        'migration.openshift.io/state-transfer': isStateTransfer ? 'true' : undefined,
+        'migration.openshift.io/state-transfer':
+          isStateTransfer && !isStorageClassConversion ? 'true' : undefined,
+        'migration.openshift.io/storage-class-conversion':
+          isStateTransfer && isStorageClassConversion ? 'true' : undefined,
       },
       name: migID,
       namespace,
@@ -555,6 +589,7 @@ export function createMigMigration(
       quiescePods: !isStage && enableQuiesce,
       stage: isStage,
       rollback: isRollback,
+      migrateState: isStateTransfer,
     },
   };
 }

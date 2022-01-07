@@ -1,6 +1,7 @@
 import { IMigMigration } from '../../../../client/resources/conversions';
 import { ProgressVariant } from '@patternfly/react-core';
 
+export type MigrationType = 'full' | 'state' | 'scc';
 export interface IAddPlanDisabledObjModel {
   isAddPlanDisabled: boolean;
   disabledText: string;

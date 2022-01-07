@@ -5,23 +5,18 @@ import { Bullseye, EmptyState, Grid, GridItem, Title } from '@patternfly/react-c
 import { Spinner } from '@patternfly/react-core';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import NamespacesTable from './NamespacesTable';
+import { useDispatch, useSelector } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck/actions';
+import { DefaultRootState } from '../../../../../../configureStore';
 
-type INamespacesFormProps = Pick<
-  IOtherProps,
-  'fetchNamespacesRequest' | 'isFetchingNamespaceList' | 'sourceClusterNamespaces'
->;
-
-const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
-  fetchNamespacesRequest,
-  isFetchingNamespaceList,
-  sourceClusterNamespaces,
-}: INamespacesFormProps) => {
+const NamespacesForm: React.FunctionComponent = () => {
+  const { isFetchingNamespaceList } = useSelector((state: DefaultRootState) => state.plan);
   usePausedPollingEffect();
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    fetchNamespacesRequest(values.sourceCluster);
+    dispatch(PlanActions.namespaceFetchRequest(values.sourceCluster));
   }, []);
   return (
     <Grid hasGutter>
@@ -39,7 +34,7 @@ const NamespacesForm: React.FunctionComponent<INamespacesFormProps> = ({
           </Bullseye>
         </GridItem>
       ) : (
-        <NamespacesTable sourceClusterNamespaces={sourceClusterNamespaces} />
+        <NamespacesTable />
       )}
     </Grid>
   );

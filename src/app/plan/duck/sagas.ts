@@ -52,7 +52,6 @@ import {
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
-import { IEditedPV } from '../../home/pages/PlansPage/components/PlanActions/StateMigrationTable';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -164,7 +163,8 @@ function* addPlanSaga(action: any): any {
       migPlan.targetCluster,
       migPlan.targetTokenRef,
       migPlan.selectedStorage,
-      migPlan.namespaces
+      migPlan.namespaces,
+      migPlan.migrationType
     );
 
     const createPlanRes = yield client.create(
@@ -517,8 +517,7 @@ function* checkClosedStatus(action: any): any {
 const isUpdatedPlan = (currMigPlan: IMigPlan, prevMigPlan: IMigPlan) => {
   const corePlan = (plan: IMigPlan) => {
     const { metadata } = plan;
-    if (metadata.annotations || metadata.resourceVersion) {
-      delete metadata.annotations;
+    if (metadata.resourceVersion) {
       delete metadata.resourceVersion;
     }
   };
@@ -768,70 +767,13 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
-    const { plan, editedPVs, selectedPVs } = action;
-
-    //loop through plan PVS and mark skipped or copy for selected or unselected pvs
-    // update pvc name for each PV if there is a mapping
-    const updatedPVs: Array<IPlanPersistentVolume> = [];
-    plan.MigPlan.spec.persistentVolumes.forEach((pvItem: IPlanPersistentVolume) => {
-      const updatedPV = {
-        ...pvItem,
-      };
-
-      let targetPVCName = pvItem.pvc.name;
-      let sourcePVCName = pvItem.pvc.name;
-      let editedPV = editedPVs.find(
-        (editedPV) =>
-          editedPV.oldName === pvItem.pvc.name && editedPV.namespace === pvItem.pvc.namespace
-      );
-
-      const includesMapping = sourcePVCName.includes(':');
-      if (includesMapping) {
-        const mappedNsArr = sourcePVCName.split(':');
-        editedPV = editedPVs.find(
-          (editedPV) =>
-            editedPV.oldName === mappedNsArr[0] && editedPV.namespace === pvItem.pvc.namespace
-        );
-        if (mappedNsArr[0] === mappedNsArr[1]) {
-          sourcePVCName = mappedNsArr[0];
-          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[0];
-          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
-        } else {
-          sourcePVCName = mappedNsArr[0];
-          targetPVCName = editedPV ? editedPV.newName : mappedNsArr[1];
-          updatedPV.pvc.name = `${sourcePVCName}:${targetPVCName}`;
-        }
-      }
-
-      const matchingSelectedPV = selectedPVs.find((selectedPV) => {
-        if (pvItem.name === selectedPV) {
-          return selectedPV;
-        }
-      });
-
-      if (matchingSelectedPV) {
-        updatedPV.selection.action = 'copy';
-      } else {
-        if (updatedPV.selection.action !== 'move') {
-          updatedPV.selection.action = 'skip';
-        }
-      }
-      updatedPVs.push(updatedPV);
-    });
-
-    const migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
-    const planPVsSpecObj = {
-      spec: {
-        persistentVolumes: updatedPVs,
-      },
-    };
-    const patchPlanResponse = yield client.patch(
-      new MigResource(MigResourceKind.MigPlan, migMeta.namespace),
-      plan.MigPlan.metadata.name,
-      planPVsSpecObj
-    );
-    yield put(PlanActions.updatePlanList(patchPlanResponse.data));
-    yield put(PlanActions.patchPlanPVsSuccess());
+    const { plan, isStorageClassConversion } = action;
+    let migrationName;
+    if (isStorageClassConversion) {
+      migrationName = `storage-class-conversion-${uuidv1().slice(0, 5)}`;
+    } else {
+      migrationName = `state-migration-${uuidv1().slice(0, 5)}`;
+    }
 
     yield put(PlanActions.initMigration(plan.MigPlan.metadata.name));
     yield put(alertProgressTimeout('State migration Started'));
@@ -840,14 +782,15 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
+      isStorageClassConversion ? false : true,
+      false,
+      false,
       true,
-      false,
-      false,
-      true
+      isStorageClassConversion ? true : false
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
-    // //created migration response object
+    //created migration response object
     const createMigRes = yield client.create(migMigrationResource, migMigrationObj);
     const migrationListResponse = yield client.list(migMigrationResource);
     const groupedPlan = planUtils.groupPlan(plan, migrationListResponse);
@@ -862,7 +805,7 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err?.message));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -903,7 +846,7 @@ function* runStageSaga(action: any): any {
     yield put(PlanActions.startStagePolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -1029,7 +972,7 @@ function* runMigrationSaga(action: any): any {
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(PlanActions.migrationFailure(err));
   }
 }
@@ -1152,7 +1095,7 @@ function* runRollbackSaga(action: any): any {
     yield put(PlanActions.startRollbackPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -1397,7 +1340,7 @@ function* removeHookFromPlanSaga(action: any): any {
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(PlanActions.removeHookFromPlanFailure(err));
   }
 }
@@ -1418,7 +1361,7 @@ function* removeHookSaga(action: any): any {
     yield put(alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
   } catch (err) {
-    yield put(alertErrorTimeout(err));
+    yield put(alertErrorTimeout(err.message));
     yield put(PlanActions.removeHookFailure(err));
   }
 }

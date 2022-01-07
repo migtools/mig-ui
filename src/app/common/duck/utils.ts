@@ -47,7 +47,7 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
   dispatch(certErrorOccurred(failedUrl));
 };
 
-const testTargetNSName = (value: string) => {
+const testTargetName = (value: string) => {
   if (value?.length < 3 || value?.length > 63) {
     return 'The namespace name should be between 3 and 63 characters long.';
   } else if (!DNS1123Validator.test(value)) {
@@ -87,5 +87,5 @@ export default {
   testURL,
   testRouteHost,
   capitalize,
-  testTargetNSName,
+  testTargetName,
 };

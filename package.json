@@ -16,7 +16,7 @@
     "prettier:fix": "yarn prettier . --write",
     "start": "DEVMODE=local webpack serve --hot --color --progress --info=true --config config/webpack.dev.js",
     "start:prod-server": "./scripts/prod-server.sh",
-    "start:remote": " DEPRECATED_CORS=false ./scripts/remote-dev.sh",
+    "start:remote": " DEPRECATED_CORS=false NODE_ENV=dev ./scripts/remote-dev.sh",
     "start:remote:localprod": " DEPRECATED_CORS=false ./scripts/remote-dev-localprod.sh",
     "start:remote:3": "ORIGIN3_HOST=true ./scripts/remote-dev.sh",
     "prep-remote": "./scripts/prep-remote.sh",
@@ -82,7 +82,7 @@
     "@patternfly/react-icons": "^4.9.5",
     "@patternfly/react-styles": "^4.8.5",
     "@patternfly/react-table": "^4.27.5",
-    "@reduxjs/toolkit": "^1.5.1",
+    "@reduxjs/toolkit": "^1.6.1",
     "@testing-library/dom": "^7.19.0",
     "@testing-library/user-event": "^12.0.11",
     "@types/q": "^1.5.4",
@@ -97,6 +97,9 @@
     "formik": "^2.1.4",
     "history": "^4.9.0",
     "http-proxy-middleware": "^2.0.0",
+    "ip-range-check": "^0.2.0",
+    "is-cidr": "^4.0.2",
+    "is-ip": "^3.1.0",
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",
     "process": "^0.11.10",
@@ -117,6 +120,7 @@
     "simple-oauth2": "^4.1.0",
     "stream": "^0.0.2",
     "tree-crawl": "^1.0.5",
+    "url": "^0.11.0",
     "uuid": "^3.3.2"
   }
 }

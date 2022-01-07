@@ -17,34 +17,21 @@ import { useHistory } from 'react-router-dom';
 import WizardContainer from '../Wizard/WizardContainer';
 import ConfirmModal from '../../../../../common/components/ConfirmModal';
 import { IPlan } from '../../../../../plan/duck/types';
-import { useSelector, useDispatch } from 'react-redux';
-import { planSelectors, PlanActions } from '../../../../../plan/duck';
-import { clusterSelectors } from '../../../../../cluster/duck';
-import { storageSelectors } from '../../../../../storage/duck';
-import { DefaultRootState } from '../../../../../../configureStore';
-import StateMigrationModal from './StateMigrationModal';
+import { useDispatch } from 'react-redux';
+import { PlanActions } from '../../../../../plan/duck';
 import MigrateModal from './MigrateModal';
 import RollbackModal from './RollbackModal';
 import StageModal from './StageModal';
+import ConditionalTooltip from '../Wizard/ConditionalTooltip';
 interface IPlanActionsProps {
   plan: IPlan;
 }
 export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = (props) => {
   const { plan } = props;
-  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
   const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
   const [isDeleteModalOpen, toggleDeleteModalOpen] = useOpenModal(false);
   const [isEditWizardOpen, toggleEditWizardOpen] = useOpenModal(false);
 
-  const planList = useSelector((state: DefaultRootState) =>
-    planSelectors.getPlansWithStatus(state)
-  );
-  const clusterList = useSelector((state: DefaultRootState) =>
-    clusterSelectors.getAllClusters(state)
-  );
-  const storageList = useSelector((state: DefaultRootState) =>
-    storageSelectors.getAllStorage(state)
-  );
   const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
   const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const dispatch = useDispatch();
@@ -55,24 +42,125 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     hasClosedCondition = null,
     hasReadyCondition = null,
     hasErrorCondition = null,
+    hasAttemptedMigration = null,
     hasRunningMigrations = null,
     finalMigrationComplete = null,
     isPlanLocked = null,
     hasCopyPVs = null,
   } = plan?.PlanStatus;
+  const migrationType =
+    plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
   const isIntraClusterPlan =
     plan.MigPlan.spec.destMigClusterRef.name === plan.MigPlan.spec.srcMigClusterRef.name;
 
   const editPlan = () => {
     toggleEditWizardOpen();
   };
+
+  const stageItem = (
+    <ConditionalTooltip
+      position={PopoverPosition.bottom}
+      key="stagePlan"
+      content={
+        <div>
+          Stage is not supported for intra-cluster migrations. Please use the State migration
+          option.
+        </div>
+      }
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      isTooltipEnabled={isIntraClusterPlan}
+    >
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleStageModalOpen();
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          isIntraClusterPlan
+        }
+      >
+        Stage
+      </DropdownItem>
+    </ConditionalTooltip>
+  );
+
+  const cutoverItem = (
+    <ConditionalTooltip
+      position={PopoverPosition.bottom}
+      key="migratePlan"
+      content={
+        <div>
+          Cutover is not supported for intra-cluster migrations. Please use the State migration
+          option.
+        </div>
+      }
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      isTooltipEnabled={isIntraClusterPlan}
+    >
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          toggleMigrateModalOpen();
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          isIntraClusterPlan
+        }
+      >
+        Cutover
+      </DropdownItem>
+    </ConditionalTooltip>
+  );
+
   const stateItem = (
+    <ConditionalTooltip
+      isTooltipEnabled={!hasCopyPVs}
+      position={PopoverPosition.bottom}
+      content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
+      aria-label="disabled state details"
+      maxWidth="30rem"
+      key="stateMigration"
+    >
+      <DropdownItem
+        onClick={() => {
+          setKebabIsOpen(false);
+          dispatch(PlanActions.runStateMigrationRequest(plan, false));
+        }}
+        isDisabled={
+          hasClosedCondition ||
+          !hasReadyCondition ||
+          hasErrorCondition ||
+          hasRunningMigrations ||
+          finalMigrationComplete ||
+          isPlanLocked ||
+          !hasCopyPVs
+        }
+      >
+        Start
+      </DropdownItem>
+    </ConditionalTooltip>
+  );
+
+  const sccItem = (
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleStateMigrationModalOpen();
+        dispatch(PlanActions.runStateMigrationRequest(plan, true));
       }}
-      key="stateMigration"
+      key="scc"
       isDisabled={
         hasClosedCondition ||
         !hasReadyCondition ||
@@ -83,47 +171,27 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         !hasCopyPVs
       }
     >
-      State
+      Start
     </DropdownItem>
   );
-  const stageItem = (
+
+  const rollbackItem = (
     <DropdownItem
       onClick={() => {
         setKebabIsOpen(false);
-        toggleStageModalOpen();
+        toggleRollbackModalOpen();
       }}
-      key="stagePlan"
+      key="rollbackPlan"
       isDisabled={
         hasClosedCondition ||
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
-        finalMigrationComplete ||
         isPlanLocked ||
-        isIntraClusterPlan
+        !hasAttemptedMigration
       }
     >
-      Stage
-    </DropdownItem>
-  );
-  const cutoverItem = (
-    <DropdownItem
-      onClick={() => {
-        setKebabIsOpen(false);
-        toggleMigrateModalOpen();
-      }}
-      key="migratePlan"
-      isDisabled={
-        hasClosedCondition ||
-        !hasReadyCondition ||
-        hasErrorCondition ||
-        hasRunningMigrations ||
-        finalMigrationComplete ||
-        isPlanLocked ||
-        isIntraClusterPlan
-      }
-    >
-      Cutover
+      Rollback
     </DropdownItem>
   );
 
@@ -163,69 +231,17 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       </DropdownItem>
     </DropdownGroup>,
     <DropdownGroup label="Migrations" key="migrations">
-      {isIntraClusterPlan ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={
-            <div>
-              Stage is not supported for intra-cluster migrations. Please use the State migration
-              option.
-            </div>
-          }
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
+      {migrationType === 'full' ? (
+        <>
           {stageItem}
-        </Tooltip>
-      ) : (
-        stageItem
-      )}
-      {isIntraClusterPlan ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={
-            <div>
-              Cutover is not supported for intra-cluster migrations. Please use the State migration
-              option.
-            </div>
-          }
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
           {cutoverItem}
-        </Tooltip>
-      ) : (
-        cutoverItem
-      )}
-
-      {!hasCopyPVs ? (
-        <Tooltip
-          position={PopoverPosition.bottom}
-          content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
-          aria-label="disabled state details"
-          maxWidth="30rem"
-        >
-          {stateItem}
-        </Tooltip>
-      ) : (
+        </>
+      ) : migrationType === 'state' ? (
         stateItem
-      )}
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleRollbackModalOpen();
-        }}
-        key="rollbackPlan"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          isPlanLocked
-        }
-      >
-        Rollback
-      </DropdownItem>
+      ) : migrationType === 'scc' ? (
+        sccItem
+      ) : null}
+      {rollbackItem}
     </DropdownGroup>,
   ];
   return (
@@ -240,14 +256,10 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
           isGrouped
         />
         <WizardContainer
-          planList={planList}
-          clusterList={clusterList}
-          storageList={storageList}
           isOpen={isEditWizardOpen}
           onHandleWizardModalClose={toggleEditWizardOpen}
           editPlanObj={plan.MigPlan}
           isEdit={true}
-          {...props}
         />
 
         <MigrateModal
@@ -263,11 +275,6 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         />
 
         <StageModal plan={plan} isOpen={isStageModalOpen} onHandleClose={toggleStageModalOpen} />
-        <StateMigrationModal
-          plan={plan}
-          isOpen={isStateMigrationModalOpen}
-          onHandleClose={toggleStateMigrationModalOpen}
-        />
 
         <ConfirmModal
           title="Confirmation"
