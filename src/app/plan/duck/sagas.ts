@@ -762,6 +762,8 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
   }
   return statusObj;
 }
+
+// TODO are we removing this?
 function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
   try {
     const state = yield* getState();
@@ -809,6 +811,7 @@ function* runStateMigrationSaga(action: RunStateMigrationRequest): any {
     yield put(PlanActions.stagingFailure(err));
   }
 }
+
 function* runStageSaga(action: any): any {
   try {
     const state = yield* getState();
@@ -1529,6 +1532,7 @@ function* watchRunRollbackRequest() {
   yield takeLatest(PlanActionTypes.RUN_ROLLBACK_REQUEST, runRollbackSaga);
 }
 
+// TODO are we removing this?
 function* watchRunStateMigrationRequest() {
   yield takeLatest(PlanActionTypes.RUN_STATE_MIGRATION_REQUEST, runStateMigrationSaga);
 }
