@@ -52,6 +52,7 @@ import {
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
+import { getPlanInfo } from '../../home/pages/PlansPage/helpers';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -763,12 +764,14 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
   return statusObj;
 }
 
-function* runStageSaga(action: any): any {
+function* runStageSaga(action: ReturnType<typeof PlanActions.runStageRequest>): any {
   try {
     const state = yield* getState();
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { plan } = action;
+    const { migrationType } = getPlanInfo(plan);
+    // TODO use the right migration CR properties per migration type
     const migrationName = `stage-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
@@ -889,9 +892,11 @@ function getMigrationStatusCondition(updatedPlans: any, createMigRes: any) {
   return statusObj;
 }
 
-function* runMigrationSaga(action: any): any {
+function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationRequest>): any {
   try {
     const { plan, enableQuiesce } = action;
+    const { migrationType } = getPlanInfo(plan);
+    // TODO use the right migration CR properties per migration type
     const state = yield* getState();
     const { migMeta } = state.auth;
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;

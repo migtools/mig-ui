@@ -12,7 +12,7 @@ import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
-const styles = require('./MigrateModal.module').default;
+import { getPlanInfo } from '../../helpers';
 
 interface IProps {
   onHandleClose: () => void;
@@ -27,6 +27,10 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
   const handleChange = (checked: boolean, _event: React.FormEvent<HTMLElement>) => {
     toggleQuiesce(!!checked);
   };
+
+  const { migrationType } = getPlanInfo(plan);
+
+  // TODO alter text by migration type
 
   return (
     <Modal
@@ -51,16 +55,18 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
               </TextList>
             </TextContent>
           </GridItem>
-          <GridItem className={styles.gridMargin}>
-            <Checkbox
-              label="Halt transactions on the source cluster during migration."
-              aria-label="halt-label"
-              id="transaction-halt-checkbox"
-              isChecked={enableQuiesce}
-              onChange={handleChange}
-            />
-          </GridItem>
-          <GridItem>
+          {migrationType !== 'scc' ? (
+            <GridItem className={spacing.mtMd}>
+              <Checkbox
+                label="Halt transactions on the source cluster during migration."
+                aria-label="halt-label"
+                id="transaction-halt-checkbox"
+                isChecked={enableQuiesce}
+                onChange={handleChange}
+              />
+            </GridItem>
+          ) : null}
+          <GridItem className={spacing.mtMd}>
             <Grid hasGutter>
               <GridItem>
                 <Button

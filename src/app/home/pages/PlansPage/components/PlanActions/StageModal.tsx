@@ -13,6 +13,7 @@ import {
 import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanActions } from '../../../../../plan/duck/actions';
+import { getPlanInfo } from '../../helpers';
 
 interface IProps {
   onHandleClose: () => void;
@@ -23,6 +24,11 @@ interface IProps {
 
 const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
+
+  const { migrationType } = getPlanInfo(plan);
+
+  // TODO alter text by migration type
+
   return (
     <Modal
       variant="small"
