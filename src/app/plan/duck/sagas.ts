@@ -771,7 +771,6 @@ function* runStageSaga(action: ReturnType<typeof PlanActions.runStageRequest>): 
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { plan } = action;
     const { migrationType } = getPlanInfo(plan);
-    // TODO use the right migration CR properties per migration type
     const migrationName = `stage-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
@@ -781,10 +780,11 @@ function* runStageSaga(action: ReturnType<typeof PlanActions.runStageRequest>): 
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      true,
-      true,
-      false,
-      false
+      migrationType === 'full', // stage property is legacy, only used for full migrations
+      migrationType === 'full', // enableQuiesce
+      false, // isRollback
+      migrationType !== 'full', // isStateTransfer
+      migrationType === 'scc'
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -896,7 +896,6 @@ function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationReq
   try {
     const { plan, enableQuiesce } = action;
     const { migrationType } = getPlanInfo(plan);
-    // TODO use the right migration CR properties per migration type
     const state = yield* getState();
     const { migMeta } = state.auth;
     const migrationName = `migration-${uuidv1().slice(0, 5)}`;
@@ -908,10 +907,11 @@ function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationReq
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      false,
-      enableQuiesce,
-      false,
-      false
+      false, // isStage
+      enableQuiesce || migrationType === 'scc',
+      false, // isRollback
+      migrationType === 'scc', // isStateTransfer
+      migrationType === 'scc'
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -1032,10 +1032,10 @@ function* runRollbackSaga(action: any): any {
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      false,
-      false,
-      true,
-      false
+      false, // isStage
+      false, // enableQuiesce
+      true, // isRollback
+      false // isStateTransfer
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 

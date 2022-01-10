@@ -552,8 +552,8 @@ export function createInitialMigPlan(
       /** Set the initial value for indirect migration to true until the user navigates to the selection screen 
         where the spec fields will be updated to represent availablility/user selection.
       **/
-      indirectVolumeMigration: true,
-      indirectImageMigration: true,
+      indirectVolumeMigration: migrationType === 'full',
+      indirectImageMigration: migrationType === 'full',
     },
   };
 }
