@@ -17,6 +17,7 @@ import {
   Popover,
   PopoverPosition,
   FormGroup,
+  Button,
 } from '@patternfly/react-core';
 import {
   IRowData,
@@ -332,99 +333,94 @@ const NamespacesTable: React.FunctionComponent = () => {
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
                           <FlexItem flex={{ default: 'flex_1' }}>
                             {!errors.currentTargetNamespaceName && (
-                              <span id="save-edit-icon" className="pf-c-icon pf-m-info">
-                                <CheckIcon
-                                  size="md"
-                                  type="button"
-                                  className={styles.clickable}
-                                  onClick={() => {
-                                    setEditableRow(null);
-                                    const hasEditedValue = values.editedNamespaces.find(
-                                      (ns) => row.cells[0] === ns.oldName
-                                    );
-                                    let newEditedNamespaces;
-                                    if (hasEditedValue) {
-                                      newEditedNamespaces = [
-                                        ...new Set([...values.editedNamespaces]),
-                                      ];
-
-                                      const index = values.editedNamespaces.findIndex(
-                                        (ns) => ns.oldName === row.cells[0]
-                                      );
-                                      //check if no changes made
-                                      if (
-                                        newEditedNamespaces[index].oldName ===
-                                        values.currentTargetNamespaceName.name
-                                      ) {
-                                        if (index > -1) {
-                                          newEditedNamespaces.splice(index, 1);
-                                        }
-                                        //replace found edit with current edit
-                                      } else if (index || index === 0) {
-                                        newEditedNamespaces[index] = {
-                                          oldName:
-                                            typeof row.cells[0] === 'string' ? row.cells[0] : '',
-                                          newName: values.currentTargetNamespaceName.name,
-                                          id: row.meta.id,
-                                        };
-                                      }
-                                    } else {
-                                      newEditedNamespaces = [
-                                        ...new Set([
-                                          ...values.editedNamespaces,
-                                          {
-                                            oldName: row.cells[0],
-                                            newName: values.currentTargetNamespaceName.name,
-                                            id: row.meta.id,
-                                          },
-                                        ]),
-                                      ];
-                                    }
-                                    setFieldValue('editedNamespaces', newEditedNamespaces);
-                                    setFieldValue(currentTargetNamespaceNameKey, null);
-                                    setFieldTouched(currentTargetNamespaceNameKey, false);
-                                  }}
-                                />
-                              </span>
-                            )}
-                            <span
-                              id="inline-edit-icon"
-                              className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
-                            >
-                              <TimesIcon
-                                size="md"
-                                className={styles.clickable}
-                                type="button"
+                              <Button
+                                variant="plain"
+                                aria-label={`Save edits to row ${rowIndex}`}
                                 onClick={() => {
                                   setEditableRow(null);
+                                  const hasEditedValue = values.editedNamespaces.find(
+                                    (ns) => row.cells[0] === ns.oldName
+                                  );
+                                  let newEditedNamespaces;
+                                  if (hasEditedValue) {
+                                    newEditedNamespaces = [
+                                      ...new Set([...values.editedNamespaces]),
+                                    ];
+
+                                    const index = values.editedNamespaces.findIndex(
+                                      (ns) => ns.oldName === row.cells[0]
+                                    );
+                                    //check if no changes made
+                                    if (
+                                      newEditedNamespaces[index].oldName ===
+                                      values.currentTargetNamespaceName.name
+                                    ) {
+                                      if (index > -1) {
+                                        newEditedNamespaces.splice(index, 1);
+                                      }
+                                      //replace found edit with current edit
+                                    } else if (index || index === 0) {
+                                      newEditedNamespaces[index] = {
+                                        oldName:
+                                          typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                        newName: values.currentTargetNamespaceName.name,
+                                        id: row.meta.id,
+                                      };
+                                    }
+                                  } else {
+                                    newEditedNamespaces = [
+                                      ...new Set([
+                                        ...values.editedNamespaces,
+                                        {
+                                          oldName: row.cells[0],
+                                          newName: values.currentTargetNamespaceName.name,
+                                          id: row.meta.id,
+                                        },
+                                      ]),
+                                    ];
+                                  }
+                                  setFieldValue('editedNamespaces', newEditedNamespaces);
                                   setFieldValue(currentTargetNamespaceNameKey, null);
                                   setFieldTouched(currentTargetNamespaceNameKey, false);
                                 }}
-                              />
-                            </span>
+                              >
+                                <CheckIcon />
+                              </Button>
+                            )}
+                            <Button
+                              variant="plain"
+                              aria-label={`Cancel editing row ${rowIndex}`}
+                              onClick={() => {
+                                setEditableRow(null);
+                                setFieldValue(currentTargetNamespaceNameKey, null);
+                                setFieldTouched(currentTargetNamespaceNameKey, false);
+                              }}
+                            >
+                              <TimesIcon />
+                            </Button>
                           </FlexItem>
                         </Flex>
                       ) : (
-                        row.selected && (
-                          <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
-                            <PencilAltIcon
-                              className={styles.clickable}
-                              type="button"
-                              size="md"
-                              onClick={() => {
-                                setEditableRow(rowIndex);
-                                handleDelayedValidation(
-                                  typeof row.cells[4] === 'string' ? row.cells[4] : '',
-                                  row,
-                                  rowIndex
-                                );
-                                setFieldValue(currentTargetNamespaceNameKey, {
-                                  name: row.cells[4],
-                                  srcName: row.cells[0],
-                                });
-                              }}
-                            />
-                          </span>
+                        row.selected &&
+                        values.migrationType.value !== 'scc' && (
+                          <Button
+                            variant="plain"
+                            aria-label={`Edit row ${rowIndex}`}
+                            onClick={() => {
+                              setEditableRow(rowIndex);
+                              handleDelayedValidation(
+                                typeof row.cells[4] === 'string' ? row.cells[4] : '',
+                                row,
+                                rowIndex
+                              );
+                              setFieldValue(currentTargetNamespaceNameKey, {
+                                name: row.cells[4],
+                                srcName: row.cells[0],
+                              });
+                            }}
+                          >
+                            <PencilAltIcon />
+                          </Button>
                         )
                       )}
                     </Td>
