@@ -193,11 +193,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
 
     const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
     // let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
-    let targetPVCName = pv.pvc.name;
-    let sourcePVCName = pv.pvc.name;
     let editedPV = values.editedPVs.find(
       (editedPV) => editedPV.oldPVCName === pv.pvc.name && editedPV.pvName === pv.name
     );
+    let targetPVCName = editedPV ? editedPV.newPVCName : pv.pvc.name;
+    let sourcePVCName = pv.pvc.name;
 
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
