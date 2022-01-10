@@ -27,8 +27,6 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
 
   const { migrationType } = getPlanInfo(plan);
 
-  // TODO alter text by migration type
-
   return (
     <Modal
       variant="small"
@@ -42,11 +40,26 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
             <GridItem>
               <TextContent>
                 <Title headingLevel="h6">During a stage migration:</Title>
-                <TextList>
-                  <TextListItem>PV data is copied to the target cluster.</TextListItem>
-                  <TextListItem>PV references are not moved.</TextListItem>
-                  <TextListItem>Source pods continue running.</TextListItem>
-                </TextList>
+                {migrationType === 'full' ? (
+                  <TextList>
+                    <TextListItem>PV data is copied to the target cluster.</TextListItem>
+                    <TextListItem>PV references are not moved.</TextListItem>
+                    <TextListItem>Source pods continue running.</TextListItem>
+                  </TextList>
+                ) : migrationType === 'state' ? (
+                  <TextList>
+                    <TextListItem>PV data is copied to the target PVs.</TextListItem>
+                    <TextListItem>PV references are moved.</TextListItem>
+                    <TextListItem>Source pods continue running.</TextListItem>
+                  </TextList>
+                ) : migrationType === 'scc' ? (
+                  <TextList>
+                    <TextListItem>PV data is copied to the converted PVs.</TextListItem>
+                    <TextListItem>
+                      PVC references in the applications are not updated to new PVCs.
+                    </TextListItem>
+                  </TextList>
+                ) : null}
               </TextContent>
               <br />
             </GridItem>

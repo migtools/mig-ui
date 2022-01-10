@@ -30,8 +30,6 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
 
   const { migrationType } = getPlanInfo(plan);
 
-  // TODO alter text by migration type
-
   return (
     <Modal
       variant="small"
@@ -43,19 +41,40 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
         <form>
           <GridItem>
             <TextContent>
-              <Title headingLevel="h6">
-                By default, a cutover migration halts all transactions on the source cluster before
-                the migration begins and they remain halted for the duration of the migration.
-              </Title>
-              <TextList>
-                <TextListItem>
-                  Persistent volumes associated with the projects being migrated will be moved or
-                  copied to the target cluster as specified in the migration plan.
-                </TextListItem>
-              </TextList>
+              <Title headingLevel="h6">During a cutover migration:</Title>
+              {migrationType === 'full' ? (
+                <TextList>
+                  <TextListItem>
+                    By default, all transactions on the source cluster are halted for the duration
+                    of the migration.
+                  </TextListItem>
+                  <TextListItem>
+                    Persistent volumes associated with the projects being migrated are moved or
+                    copied to the target cluster as specified in the migration plan.
+                  </TextListItem>
+                </TextList>
+              ) : migrationType === 'state' ? (
+                <TextList>
+                  <TextListItem>PV data is copied to the target PVs.</TextListItem>
+                  <TextListItem>
+                    Kubernetes resources on the Migration Plan are migrated to the target cluster.
+                  </TextListItem>
+                </TextList>
+              ) : migrationType === 'scc' ? (
+                <TextList>
+                  <TextListItem>
+                    All transactions on source applications are halted for the duration of the
+                    migration.
+                  </TextListItem>
+                  <TextListItem>
+                    PVC references in the applications are updated to new PVCs before restarting the
+                    applications.
+                  </TextListItem>
+                </TextList>
+              ) : null}
             </TextContent>
           </GridItem>
-          {migrationType !== 'scc' ? (
+          {migrationType === 'full' ? (
             <GridItem className={spacing.mtMd}>
               <Checkbox
                 label="Halt transactions on the source cluster during migration."
