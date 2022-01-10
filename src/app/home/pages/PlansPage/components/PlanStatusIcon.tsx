@@ -11,7 +11,7 @@ import { Popover, PopoverPosition } from '@patternfly/react-core';
 import { Spinner } from '@patternfly/react-core';
 import { ICondition, IPlan } from '../../../../plan/duck/types';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+const styles = require('./PlanStatus.module').default;
 
 interface IProps {
   plan: IPlan;
@@ -34,7 +34,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
 
   if (latestIsFailed || hasCriticalCondition) {
     return (
-      <span className="pf-c-icon pf-m-danger">
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-danger`}>
         <ExclamationCircleIcon />
       </span>
     );
@@ -47,44 +47,44 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
         closeBtnAriaLabel="close-warning-details"
         maxWidth="200rem"
       >
-        <span className={`pf-c-icon pf-m-warning`}>
+        <span className={`${styles.planStatusIcon} pf-c-icon pf-m-warning`}>
           <ExclamationTriangleIcon />
         </span>
       </Popover>
     );
   } else if (hasNotReadyCondition || hasDVMBlockedCondition) {
     return (
-      <span className={`pf-c-icon pf-m-warning`}>
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-warning`}>
         <ExclamationTriangleIcon />
       </span>
     );
   } else if (hasRunningMigrations || isPlanLocked) {
-    return <Spinner size="md" />;
+    return <Spinner className={styles.planStatusIcon} size="md" />;
   } else if (
     (hasSucceededMigration && hasWarnCondition) ||
     (hasSucceededStage && hasWarnCondition) ||
     hasSucceededWithWarningsCondition
   ) {
     return (
-      <span className={`pf-c-icon pf-m-warning`}>
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-warning`}>
         <ExclamationTriangleIcon />
       </span>
     );
   } else if (hasSucceededMigration) {
     return (
-      <span className="pf-c-icon pf-m-success">
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-success`}>
         <ResourcesFullIcon />
       </span>
     );
   } else if (hasSucceededStage) {
     return (
-      <span className="pf-c-icon pf-m-success">
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-success`}>
         <ResourcesAlmostEmptyIcon />
       </span>
     );
   } else {
     return (
-      <span className="pf-c-icon pf-m-info">
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-info`}>
         <OutlinedCircleIcon />
       </span>
     );
