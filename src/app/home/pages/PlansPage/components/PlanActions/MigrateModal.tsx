@@ -40,8 +40,9 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
           <GridItem>
             <TextContent>
               <Title headingLevel="h6">
-                By default, a cutover migration halts all transactions on the source cluster before
-                the migration begins and they remain halted for the duration of the migration.
+                By default, a cutover migration halts all transactions on the source namespaces
+                included in the plan before the migration begins and they remain halted for the
+                duration of the migration.
               </Title>
               <TextList>
                 <TextListItem>
