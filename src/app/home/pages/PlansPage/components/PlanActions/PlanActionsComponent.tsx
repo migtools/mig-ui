@@ -16,7 +16,7 @@ import ConfirmModal from '../../../../../common/components/ConfirmModal';
 import { IPlan } from '../../../../../plan/duck/types';
 import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck';
-import { MigrationsDropdownGroup } from './MigrationsDropdownGroup';
+import { MigrationActionsDropdownGroup } from './MigrationActionsDropdownGroup';
 import { MigrationConfirmModals, useMigrationConfirmModalState } from './MigrationConfirmModals';
 interface IPlanActionsProps {
   plan: IPlan;
@@ -78,7 +78,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         Delete
       </DropdownItem>
     </DropdownGroup>,
-    <MigrationsDropdownGroup
+    <MigrationActionsDropdownGroup
       plan={plan}
       setKebabIsOpen={setKebabIsOpen}
       modalState={migrationModalState}

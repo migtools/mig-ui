@@ -27,7 +27,7 @@ import { useOpenModal } from '../../../../duck';
 import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { clusterPodFetchRequest } from '../../../../../logs/duck/slice';
-import { MigrationsDropdownGroup } from '../../components/PlanActions/MigrationsDropdownGroup';
+import { MigrationActionsDropdownGroup } from '../../components/PlanActions/MigrationActionsDropdownGroup';
 import {
   MigrationConfirmModals,
   useMigrationConfirmModalState,
@@ -61,7 +61,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const planStatus = plan?.PlanStatus;
   const kebabDropdownItems = planStatus
     ? [
-        <MigrationsDropdownGroup
+        <MigrationActionsDropdownGroup
           plan={plan}
           setKebabIsOpen={setKebabIsOpen}
           modalState={migrationModalState}
