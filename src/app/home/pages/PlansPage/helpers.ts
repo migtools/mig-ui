@@ -435,12 +435,12 @@ export const migSpecToAction = (
   spec?: IMigration['spec']
 ): MigrationAction | undefined => {
   if (!spec) return undefined;
-  MIGRATION_ACTIONS.find((action) => {
+  return MIGRATION_ACTIONS.find((action) => {
     const possibleSpec = migSpecByAction[type][action];
     const fieldsToCompare =
       type === 'full'
         ? MIG_SPEC_ACTION_FIELDS.filter((field) => field !== 'quiescePods')
         : MIG_SPEC_ACTION_FIELDS;
-    return fieldsToCompare.every((field) => possibleSpec[field] === spec[field]);
+    return fieldsToCompare.every((field) => possibleSpec[field] === (spec[field] || false));
   });
 };
