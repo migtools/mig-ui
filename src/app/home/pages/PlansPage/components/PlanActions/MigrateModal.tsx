@@ -45,8 +45,8 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
               {migrationType === 'full' ? (
                 <TextList>
                   <TextListItem>
-                    By default, all transactions on the source cluster are halted for the duration
-                    of the migration.
+                    By default, all applications on the source namespaces included in the plan are
+                    halted for the duration of the migration.
                   </TextListItem>
                   <TextListItem>
                     Persistent volumes associated with the projects being migrated are moved or
