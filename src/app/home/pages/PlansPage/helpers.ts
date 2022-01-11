@@ -14,12 +14,21 @@ import {
   IPlanPersistentVolume,
   IStep,
 } from '../../../plan/duck/types';
-import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo, MigrationType } from './types';
+import {
+  MigrationStepsType,
+  IProgressInfoObj,
+  IStepProgressInfo,
+  MigrationType,
+  MigrationAction,
+  MIGRATION_ACTIONS,
+} from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
   if (!plan || !plan?.PlanStatus) {
     return '';
   }
+
+  /// TODO we need a way to derive latestType based on the matrix of fields from Pranav and the migration type on the plan
   const {
     hasClosedCondition = null,
     hasReadyCondition = null,
@@ -383,3 +392,51 @@ export const migrationTypeToString = (migrationType: MigrationType) =>
     : migrationType === 'scc'
     ? 'Storage class conversion'
     : '';
+
+// Booleans in the Migration spec are unintuitive, we'll try to keep the logic mapping those to type/action centralized here
+const MIG_SPEC_ACTION_FIELDS = ['migrateState', 'stage', 'quiescePods', 'rollback'] as const;
+type MigSpecActionField = typeof MIG_SPEC_ACTION_FIELDS[number];
+type MigSpecActionFields = Pick<IMigration['spec'], MigSpecActionField>;
+
+const migSpecByAction: Record<MigrationType, Record<MigrationAction, MigSpecActionFields>> = {
+  full: {
+    stage: { migrateState: false, stage: true, quiescePods: false, rollback: false },
+    cutover: { migrateState: false, stage: false, quiescePods: false, rollback: false }, // quiescePods is a user selection here
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+  state: {
+    stage: { migrateState: true, stage: false, quiescePods: false, rollback: false },
+    cutover: { migrateState: false, stage: false, quiescePods: false, rollback: false },
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+  scc: {
+    stage: { migrateState: true, stage: false, quiescePods: false, rollback: false },
+    cutover: { migrateState: true, stage: false, quiescePods: true, rollback: false },
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+};
+
+export const actionToMigSpec = (
+  type: MigrationType,
+  action: MigrationAction,
+  quiescePodsOnFullMigCutover: boolean
+): MigSpecActionFields => {
+  const specFields = migSpecByAction[type][action];
+  if (type === 'full' && action === 'cutover') {
+    specFields.quiescePods = quiescePodsOnFullMigCutover;
+  }
+  return specFields;
+};
+
+export const migSpecToAction = (
+  type: MigrationType,
+  spec: IMigration['spec']
+): MigrationAction | undefined =>
+  MIGRATION_ACTIONS.find((action) => {
+    const possibleSpec = migSpecByAction[type][action];
+    const fieldsToCompare =
+      type === 'full'
+        ? MIG_SPEC_ACTION_FIELDS.filter((field) => field !== 'quiescePods')
+        : MIG_SPEC_ACTION_FIELDS;
+    return fieldsToCompare.every((field) => possibleSpec[field] === spec[field]);
+  });

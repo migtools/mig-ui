@@ -85,6 +85,7 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
     rollback?: boolean;
+    migrateState?: boolean;
   };
   status?: IMigrationStatus;
   tableStatus?: {

@@ -780,11 +780,8 @@ function* runStageSaga(action: ReturnType<typeof PlanActions.runStageRequest>): 
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      migrationType === 'full', // stage property is legacy, only used for full migrations
-      migrationType === 'full', // enableQuiesce
-      false, // isRollback
-      migrationType !== 'full', // isStateTransfer
-      migrationType === 'scc'
+      migrationType,
+      'stage'
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -907,11 +904,8 @@ function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationReq
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      false, // isStage
-      enableQuiesce || migrationType === 'scc',
-      false, // isRollback
-      migrationType === 'scc', // isStateTransfer
-      migrationType === 'scc'
+      migrationType,
+      'cutover'
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
@@ -1023,6 +1017,7 @@ function* runRollbackSaga(action: any): any {
     const { migMeta } = state.auth;
     const client: IClusterClient = ClientFactory.cluster(state.auth.user, '/cluster-api');
     const { plan } = action;
+    const { migrationType } = getPlanInfo(plan);
     const migrationName = `rollback-${uuidv1().slice(0, 5)}`;
 
     yield put(PlanActions.initStage(plan.MigPlan.metadata.name));
@@ -1032,10 +1027,8 @@ function* runRollbackSaga(action: any): any {
       migrationName,
       plan.MigPlan.metadata.name,
       migMeta.namespace,
-      false, // isStage
-      false, // enableQuiesce
-      true, // isRollback
-      false // isStateTransfer
+      migrationType,
+      'rollback'
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 

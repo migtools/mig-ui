@@ -25,6 +25,15 @@ export const MigrationActionsDropdownGroup: React.FunctionComponent<IMigrationAc
       isPlanLocked = null,
     } = plan?.PlanStatus;
 
+    console.log({
+      hasClosedCondition,
+      hasReadyCondition,
+      hasErrorCondition,
+      hasRunningMigrations,
+      finalMigrationComplete,
+      isPlanLocked,
+    });
+
     return (
       <DropdownGroup label="Migrations" key="migrations">
         <DropdownItem

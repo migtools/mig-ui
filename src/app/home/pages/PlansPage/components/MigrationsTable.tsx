@@ -69,6 +69,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
       migration.metadata.annotations &&
       migration.metadata.annotations['migration.openshift.io/state-transfer'];
 
+    // TODO this needs to do a better job with types for SCC/state migrations
     const type = stateMigrationAnnotation
       ? 'State migration'
       : migration?.spec?.rollback

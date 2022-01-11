@@ -7,6 +7,8 @@ import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
 import { IClusterSpec } from '../../app/cluster/duck/types';
 import { select } from 'redux-saga/effects';
+import { MigrationAction, MigrationType } from '../../app/home/pages/PlansPage/types';
+import { actionToMigSpec } from '../../app/home/pages/PlansPage/helpers';
 
 export function createMigClusterSecret(
   name: string,
@@ -562,21 +564,20 @@ export function createMigMigration(
   migID: string,
   planName: string,
   namespace: string,
-  isStage: boolean,
-  enableQuiesce: boolean,
-  isRollback: boolean,
-  isStateTransfer: boolean,
-  isStorageClassConversion?: boolean
+  migrationType: MigrationType,
+  migrationAction: MigrationAction,
+  quiescePodsOnFullMigCutover = true
 ) {
+  const specFields = actionToMigSpec(migrationType, migrationAction, quiescePodsOnFullMigCutover);
   return {
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
     metadata: {
       annotations: {
         'migration.openshift.io/state-transfer':
-          isStateTransfer && !isStorageClassConversion ? 'true' : undefined,
+          specFields.migrateState && migrationType !== 'scc' ? 'true' : undefined,
         'migration.openshift.io/storage-class-conversion':
-          isStateTransfer && isStorageClassConversion ? 'true' : undefined,
+          specFields.migrateState && migrationType === 'scc' ? 'true' : undefined,
       },
       name: migID,
       namespace,
@@ -586,10 +587,7 @@ export function createMigMigration(
         name: planName,
         namespace,
       },
-      quiescePods: !isStage && enableQuiesce,
-      stage: isStage,
-      rollback: isRollback,
-      migrateState: isStateTransfer,
+      ...specFields,
     },
   };
 }
