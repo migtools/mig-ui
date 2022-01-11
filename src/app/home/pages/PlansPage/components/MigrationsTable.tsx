@@ -13,39 +13,27 @@ import {
 } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
-import { IMigration } from '../../../../plan/duck/types';
+import { IMigration, IPlan } from '../../../../plan/duck/types';
 import { useSortState } from '../../../../common/duck/hooks';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
 import PipelineSummary from './PipelineSummary/PipelineSummary';
+import { getPlanInfo, migrationActionToString, migSpecToAction } from '../helpers';
 
 interface IProps {
   migrations: IMigration[];
   id: string;
-  type: string;
   isPlanLocked: boolean;
-  planName: string;
+  plan: IPlan;
 }
 
-const MigrationsTable: React.FunctionComponent<IProps> = ({
-  migrations,
-  isPlanLocked,
-  planName,
-}) => {
+const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLocked, plan }) => {
+  const planName = plan.MigPlan.metadata.name;
+  const { migrationType } = getPlanInfo(plan);
+
   const getSortValues = (migration: IMigration) => {
-    const stateMigrationAnnotation =
-      migration.metadata.annotations &&
-      migration.metadata.annotations['migration.openshift.io/state-transfer'];
-
-    const type = stateMigrationAnnotation
-      ? 'State migration'
-      : migration?.spec?.rollback
-      ? 'Rollback'
-      : migration?.spec?.stage
-      ? 'Stage'
-      : 'Cutover';
-
+    const action = migSpecToAction(migrationType, migration.spec);
     const { tableStatus } = migration;
-    return [type, tableStatus.start, tableStatus.end, ''];
+    return [migrationActionToString(action), tableStatus.start, tableStatus.end, ''];
   };
 
   const columns = [
@@ -64,26 +52,16 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({
   useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
-    // Type should be rollback if spec.rollback=true, else use value in spec.stage
-    const stateMigrationAnnotation =
-      migration.metadata.annotations &&
-      migration.metadata.annotations['migration.openshift.io/state-transfer'];
-
-    // TODO this needs to do a better job with types for SCC/state migrations
-    const type = stateMigrationAnnotation
-      ? 'State migration'
-      : migration?.spec?.rollback
-      ? 'Rollback'
-      : migration?.spec?.stage
-      ? 'Stage'
-      : 'Cutover';
+    const action = migSpecToAction(migrationType, migration.spec);
 
     rows.push({
       cells: [
         {
           title: (
             <>
-              <Link to={`/plans/${planName}/migrations/${migration.metadata.name}`}>{type}</Link>
+              <Link to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
+                {migrationActionToString(action)}
+              </Link>
             </>
           ),
         },

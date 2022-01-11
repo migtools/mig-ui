@@ -35,7 +35,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
   const {
     hasClosedCondition = null,
     hasRunningMigrations = null,
-    finalMigrationComplete = null,
+    hasSucceededCutover = null,
     isPlanLocked = null,
   } = plan?.PlanStatus;
 
@@ -57,7 +57,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       </DropdownItem>
       <DropdownItem
         isDisabled={
-          hasClosedCondition || hasRunningMigrations || finalMigrationComplete || isPlanLocked
+          hasClosedCondition || hasRunningMigrations || hasSucceededCutover || isPlanLocked
         }
         onClick={() => {
           setKebabIsOpen(false);

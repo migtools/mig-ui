@@ -26,7 +26,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
       hasCancelingCondition = null,
       hasDVMBlockedCondition = null,
       hasWarnCondition = null,
-      hasSucceededMigration = null,
+      hasSucceededCutover = null,
       hasSucceededWithWarningsCondition = null,
     } = plan?.PlanStatus;
     showDebugLink =
@@ -37,7 +37,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
       hasCancelingCondition ||
       hasDVMBlockedCondition ||
       hasWarnCondition ||
-      hasSucceededMigration ||
+      hasSucceededCutover ||
       hasSucceededWithWarningsCondition;
   } else {
     showDebugLink = false;

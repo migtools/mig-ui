@@ -21,18 +21,9 @@ export const MigrationActionsDropdownGroup: React.FunctionComponent<IMigrationAc
       hasErrorCondition = null,
       hasAttemptedMigration = null,
       hasRunningMigrations = null,
-      finalMigrationComplete = null,
+      hasSucceededCutover = null,
       isPlanLocked = null,
     } = plan?.PlanStatus;
-
-    console.log({
-      hasClosedCondition,
-      hasReadyCondition,
-      hasErrorCondition,
-      hasRunningMigrations,
-      finalMigrationComplete,
-      isPlanLocked,
-    });
 
     return (
       <DropdownGroup label="Migrations" key="migrations">
@@ -47,7 +38,7 @@ export const MigrationActionsDropdownGroup: React.FunctionComponent<IMigrationAc
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            finalMigrationComplete ||
+            hasSucceededCutover ||
             isPlanLocked
           }
         >
@@ -64,7 +55,7 @@ export const MigrationActionsDropdownGroup: React.FunctionComponent<IMigrationAc
             !hasReadyCondition ||
             hasErrorCondition ||
             hasRunningMigrations ||
-            finalMigrationComplete ||
+            hasSucceededCutover ||
             isPlanLocked
           }
         >

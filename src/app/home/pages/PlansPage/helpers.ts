@@ -28,21 +28,19 @@ export const getPlanStatusText = (plan: IPlan) => {
     return '';
   }
 
-  /// TODO we need a way to derive latestType based on the matrix of fields from Pranav and the migration type on the plan
   const {
     hasClosedCondition = null,
     hasReadyCondition = null,
     hasNotReadyCondition = null,
     hasRunningMigrations = null,
-    hasSucceededMigration = null,
+    hasSucceededCutover = null,
     hasSucceededWithWarningsCondition = null,
     hasSucceededStage = null,
     hasSucceededRollback = null,
-    hasSucceededState = null,
     hasCanceledCondition = null,
     hasCancelingCondition = null,
     hasCriticalCondition = null,
-    latestType = null,
+    latestAction = null,
     latestIsFailed = null,
     hasConflictCondition = null,
     conflictErrorMsg = null,
@@ -50,28 +48,23 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasWarnCondition = null,
     hasDVMBlockedCondition = null,
   } = plan?.PlanStatus;
+
+  const latestActionStr = migrationActionToString(latestAction);
+
   if (isPlanLocked) return 'Pending';
-  if (latestIsFailed) return `${latestType} failed`;
-  if (hasCriticalCondition) return `${latestType} failed`;
+  if (latestIsFailed) return `${latestActionStr} failed`;
+  if (hasCriticalCondition) return `${latestActionStr} failed`;
   if (hasConflictCondition) return conflictErrorMsg;
   if (hasClosedCondition) return 'Closed';
-  if (hasCancelingCondition) return `Canceling ${latestType}`;
-  if (hasRunningMigrations) return `${latestType} in progress`;
-  if (hasCanceledCondition) return `${latestType} canceled`;
+  if (hasCancelingCondition) return `Canceling ${latestActionStr}`;
+  if (hasRunningMigrations) return `${latestActionStr} in progress`;
+  if (hasCanceledCondition) return `${latestActionStr} canceled`;
   if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasSucceededRollback) return 'Rollback succeeded';
   if (hasDVMBlockedCondition) return 'In progress';
-  if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Stage')
-    return 'Stage completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'State migration')
-    return 'State migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Cutover')
-    return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan?.PlanStatus?.latestType === 'Rollback')
-    return 'Rollback completed with warnings';
-  if (hasSucceededMigration) return 'Migration succeeded';
-  if (hasSucceededState) return 'State migration succeeded';
+  if (hasSucceededCutover && hasWarnCondition) return 'Migration completed with warnings';
+  if (hasSucceededWithWarningsCondition) return `${latestActionStr} completed with warnings`;
+  if (hasSucceededCutover) return 'Migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
   return 'Waiting for status...';
@@ -393,6 +386,15 @@ export const migrationTypeToString = (migrationType: MigrationType) =>
     ? 'Storage class conversion'
     : '';
 
+export const migrationActionToString = (action?: MigrationAction) =>
+  action === 'stage'
+    ? 'Stage'
+    : action === 'cutover'
+    ? 'Cutover'
+    : action === 'rollback'
+    ? 'Rollback'
+    : '';
+
 // Booleans in the Migration spec are unintuitive, we'll try to keep the logic mapping those to type/action centralized here
 const MIG_SPEC_ACTION_FIELDS = ['migrateState', 'stage', 'quiescePods', 'rollback'] as const;
 type MigSpecActionField = typeof MIG_SPEC_ACTION_FIELDS[number];
@@ -430,8 +432,9 @@ export const actionToMigSpec = (
 
 export const migSpecToAction = (
   type: MigrationType,
-  spec: IMigration['spec']
-): MigrationAction | undefined =>
+  spec?: IMigration['spec']
+): MigrationAction | undefined => {
+  if (!spec) return undefined;
   MIGRATION_ACTIONS.find((action) => {
     const possibleSpec = migSpecByAction[type][action];
     const fieldsToCompare =
@@ -440,3 +443,4 @@ export const migSpecToAction = (
         : MIG_SPEC_ACTION_FIELDS;
     return fieldsToCompare.every((field) => possibleSpec[field] === spec[field]);
   });
+};

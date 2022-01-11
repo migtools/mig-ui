@@ -118,8 +118,7 @@ export const MigrationsPage: React.FunctionComponent = () => {
                 </CardHeader>
                 <CardBody>
                   <MigrationsTable
-                    type="Migrations"
-                    planName={planName}
+                    plan={plan}
                     migrations={migrations}
                     isPlanLocked={plan?.PlanStatus?.isPlanLocked}
                     id="migrations-history-expansion-table"

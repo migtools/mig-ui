@@ -22,7 +22,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasRunningMigrations = null,
     hasNotReadyCondition = null,
     hasSucceededStage = null,
-    hasSucceededMigration = null,
+    hasSucceededCutover = null,
     hasSucceededWithWarningsCondition = null,
     isPlanLocked = null,
     hasConflictCondition = null,
@@ -61,7 +61,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
   } else if (hasRunningMigrations || isPlanLocked) {
     return <Spinner className={styles.planStatusIcon} size="md" />;
   } else if (
-    (hasSucceededMigration && hasWarnCondition) ||
+    (hasSucceededCutover && hasWarnCondition) ||
     (hasSucceededStage && hasWarnCondition) ||
     hasSucceededWithWarningsCondition
   ) {
@@ -70,7 +70,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
         <ExclamationTriangleIcon />
       </span>
     );
-  } else if (hasSucceededMigration) {
+  } else if (hasSucceededCutover) {
     return (
       <span className={`${styles.planStatusIcon} pf-c-icon pf-m-success`}>
         <ResourcesFullIcon />
