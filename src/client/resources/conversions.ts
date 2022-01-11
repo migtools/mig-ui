@@ -573,12 +573,6 @@ export function createMigMigration(
     apiVersion: 'migration.openshift.io/v1alpha1',
     kind: 'MigMigration',
     metadata: {
-      annotations: {
-        'migration.openshift.io/state-transfer':
-          specFields.migrateState && migrationType !== 'scc' ? 'true' : undefined,
-        'migration.openshift.io/storage-class-conversion':
-          specFields.migrateState && migrationType === 'scc' ? 'true' : undefined,
-      },
       name: migID,
       namespace,
     },
