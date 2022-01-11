@@ -905,7 +905,8 @@ function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationReq
       plan.MigPlan.metadata.name,
       migMeta.namespace,
       migrationType,
-      'cutover'
+      'cutover',
+      enableQuiesce
     );
     const migMigrationResource = new MigResource(MigResourceKind.MigMigration, migMeta.namespace);
 
