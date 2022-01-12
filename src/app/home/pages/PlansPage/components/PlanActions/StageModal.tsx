@@ -14,12 +14,13 @@ import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import { getPlanInfo } from '../../helpers';
+import { IPlan } from '../../../../../plan/duck/types';
 
 interface IProps {
   onHandleClose: () => void;
   id?: string;
   isOpen: boolean;
-  plan: any;
+  plan: IPlan;
 }
 
 const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
