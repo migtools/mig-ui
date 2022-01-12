@@ -12,18 +12,21 @@ import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
-const styles = require('./MigrateModal.module').default;
+import { getPlanInfo } from '../../helpers';
+import { IPlan } from '../../../../../plan/duck/types';
 
 interface IProps {
   onHandleClose: () => void;
   id?: string;
   isOpen: boolean;
-  plan: any;
+  plan: IPlan;
 }
 
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
-  const [enableQuiesce, toggleQuiesce] = useState(true);
+  const { migrationType } = getPlanInfo(plan);
+
+  const [enableQuiesce, toggleQuiesce] = useState(migrationType === 'full');
   const handleChange = (checked: boolean, _event: React.FormEvent<HTMLElement>) => {
     toggleQuiesce(!!checked);
   };
@@ -39,28 +42,51 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
         <form>
           <GridItem>
             <TextContent>
-              <Title headingLevel="h6">
-                By default, a cutover migration halts all transactions on the source cluster before
-                the migration begins and they remain halted for the duration of the migration.
-              </Title>
-              <TextList>
-                <TextListItem>
-                  Persistent volumes associated with the projects being migrated will be moved or
-                  copied to the target cluster as specified in the migration plan.
-                </TextListItem>
-              </TextList>
+              <Title headingLevel="h6">During a cutover migration:</Title>
+              {migrationType === 'full' ? (
+                <TextList>
+                  <TextListItem>
+                    By default, all applications on the source namespaces included in the plan are
+                    halted for the duration of the migration.
+                  </TextListItem>
+                  <TextListItem>
+                    Persistent volumes associated with the projects being migrated are moved or
+                    copied to the target cluster as specified in the migration plan.
+                  </TextListItem>
+                </TextList>
+              ) : migrationType === 'state' ? (
+                <TextList>
+                  <TextListItem>PV data is copied to the target PVs.</TextListItem>
+                  <TextListItem>
+                    Kubernetes resources on the Migration Plan are migrated to the target cluster.
+                  </TextListItem>
+                </TextList>
+              ) : migrationType === 'scc' ? (
+                <TextList>
+                  <TextListItem>
+                    All transactions on source applications are halted for the duration of the
+                    migration.
+                  </TextListItem>
+                  <TextListItem>
+                    PVC references in the applications are updated to new PVCs before restarting the
+                    applications.
+                  </TextListItem>
+                </TextList>
+              ) : null}
             </TextContent>
           </GridItem>
-          <GridItem className={styles.gridMargin}>
-            <Checkbox
-              label="Halt transactions on the source cluster during migration."
-              aria-label="halt-label"
-              id="transaction-halt-checkbox"
-              isChecked={enableQuiesce}
-              onChange={handleChange}
-            />
-          </GridItem>
-          <GridItem>
+          {migrationType === 'full' ? (
+            <GridItem className={spacing.mtMd}>
+              <Checkbox
+                label="Halt applications on the source namespaces during migration."
+                aria-label="halt-label"
+                id="transaction-halt-checkbox"
+                isChecked={enableQuiesce}
+                onChange={handleChange}
+              />
+            </GridItem>
+          ) : null}
+          <GridItem className={spacing.mtMd}>
             <Grid hasGutter>
               <GridItem>
                 <Button
