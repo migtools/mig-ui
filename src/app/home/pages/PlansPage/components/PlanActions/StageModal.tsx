@@ -44,7 +44,9 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
                 {migrationType === 'full' ? (
                   <TextList>
                     <TextListItem>PV data is copied to the target cluster.</TextListItem>
-                    <TextListItem>PV references are not moved.</TextListItem>
+                    <TextListItem>
+                      PV references are <strong>not</strong> moved.
+                    </TextListItem>
                     <TextListItem>Source pods continue running.</TextListItem>
                   </TextList>
                 ) : migrationType === 'state' ? (
@@ -57,7 +59,8 @@ const StageModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, pl
                   <TextList>
                     <TextListItem>PV data is copied to the converted PVs.</TextListItem>
                     <TextListItem>
-                      PVC references in the applications are not updated to new PVCs.
+                      PVC references in the applications are <strong>not</strong> updated to new
+                      PVCs.
                     </TextListItem>
                   </TextList>
                 ) : null}
