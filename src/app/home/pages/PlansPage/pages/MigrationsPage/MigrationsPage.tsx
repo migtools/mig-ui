@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import {
-  useParams,
-  useRouteMatch,
-  Link,
-  Switch,
-  Route,
-  useHistory,
-  Redirect,
-} from 'react-router-dom';
+import { useParams, useRouteMatch, Link, Switch, Route, Redirect } from 'react-router-dom';
 import {
   PageSection,
   Title,
@@ -24,15 +16,9 @@ import {
   Dropdown,
   DropdownPosition,
   KebabToggle,
-  DropdownItem,
-  DropdownMenuItem,
-  DropdownItemProps,
-  DropdownGroup,
-  Tooltip,
-  PopoverPosition,
 } from '@patternfly/react-core';
 import { IPlan } from '../../../../../plan/duck/types';
-import { PlanActions, planSelectors } from '../../../../../plan/duck';
+import { planSelectors } from '../../../../../plan/duck';
 import MigrationsTable from '../../components/MigrationsTable';
 import { MigrationStepDetailsPage } from '../MigrationStepDetailsPage';
 import { MigrationDetailsPage } from '../MigrationDetailsPage';
@@ -40,11 +26,12 @@ import { PlanDebugPage } from '../../../PlanDebugPage/PlanDebugPage';
 import { useOpenModal } from '../../../../duck';
 import AccessLogsModal from '../../components/AccessLogsModal';
 import { DefaultRootState } from '../../../../../../configureStore';
-import MigrateModal from '../../components/PlanActions/MigrateModal';
-import RollbackModal from '../../components/PlanActions/RollbackModal';
-import StageModal from '../../components/PlanActions/StageModal';
-import StateMigrationModal from '../../components/PlanActions/StateMigrationModal';
 import { clusterPodFetchRequest } from '../../../../../logs/duck/slice';
+import { MigrationActionsDropdownGroup } from '../../components/PlanActions/MigrationActionsDropdownGroup';
+import {
+  MigrationConfirmModals,
+  useMigrationConfirmModalState,
+} from '../../components/PlanActions/MigrationConfirmModals';
 const styles = require('./MigrationsPage.module').default;
 
 interface IMigrationsPageParams {
@@ -66,116 +53,22 @@ export const MigrationsPage: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { path, url } = useRouteMatch();
 
-  const [isMigrateModalOpen, toggleMigrateModalOpen] = useOpenModal(false);
-  const [isStateMigrationModalOpen, toggleStateMigrationModalOpen] = useOpenModal(false);
-  const [isStageModalOpen, toggleStageModalOpen] = useOpenModal(false);
-  const [isRollbackModalOpen, toggleRollbackModalOpen] = useOpenModal(false);
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [accessLogsModalIsOpen, setAccessLogsModalIsOpen] = useOpenModal(false);
 
+  const migrationModalState = useMigrationConfirmModalState();
+
   const planStatus = plan?.PlanStatus;
-  let kebabDropdownItems: Array<any> = [];
-  if (planStatus) {
-    const {
-      hasClosedCondition = null,
-      hasReadyCondition = null,
-      hasErrorCondition = null,
-      hasRunningMigrations = null,
-      finalMigrationComplete = null,
-      isPlanLocked = null,
-      hasCopyPVs = null,
-    } = planStatus;
+  const kebabDropdownItems = planStatus
+    ? [
+        <MigrationActionsDropdownGroup
+          plan={plan}
+          setKebabIsOpen={setKebabIsOpen}
+          modalState={migrationModalState}
+        />,
+      ]
+    : [];
 
-    const stateItem = (
-      <DropdownItem
-        onClick={() => {
-          setKebabIsOpen(false);
-          toggleStateMigrationModalOpen();
-        }}
-        key="stateMigration"
-        isDisabled={
-          hasClosedCondition ||
-          !hasReadyCondition ||
-          hasErrorCondition ||
-          hasRunningMigrations ||
-          finalMigrationComplete ||
-          isPlanLocked ||
-          !hasCopyPVs
-        }
-      >
-        State
-      </DropdownItem>
-    );
-
-    kebabDropdownItems = [
-      <DropdownGroup label="Migrations" key="migrations">
-        <DropdownItem
-          onClick={() => {
-            setKebabIsOpen(false);
-            toggleMigrateModalOpen();
-          }}
-          key="migratePlan"
-          isDisabled={
-            hasClosedCondition ||
-            !hasReadyCondition ||
-            hasErrorCondition ||
-            hasRunningMigrations ||
-            finalMigrationComplete ||
-            isPlanLocked
-          }
-        >
-          Cutover
-        </DropdownItem>
-        <DropdownItem
-          onClick={() => {
-            setKebabIsOpen(false);
-            toggleStageModalOpen();
-          }}
-          key="stagePlan"
-          isDisabled={
-            hasClosedCondition ||
-            !hasReadyCondition ||
-            hasErrorCondition ||
-            hasRunningMigrations ||
-            finalMigrationComplete ||
-            isPlanLocked
-          }
-        >
-          Stage
-        </DropdownItem>
-        {!hasCopyPVs ? (
-          <Tooltip
-            position={PopoverPosition.bottom}
-            content={<div>Only plans with PVs selected for Copy can be state migrated.</div>}
-            aria-label="disabled state details"
-            maxWidth="30rem"
-          >
-            {stateItem}
-          </Tooltip>
-        ) : (
-          stateItem
-        )}
-        <DropdownItem
-          onClick={() => {
-            setKebabIsOpen(false);
-            toggleRollbackModalOpen();
-          }}
-          key="rollbackPlan"
-          isDisabled={
-            hasClosedCondition ||
-            !hasReadyCondition ||
-            hasErrorCondition ||
-            hasRunningMigrations ||
-            isPlanLocked
-          }
-        >
-          Rollback
-        </DropdownItem>
-      </DropdownGroup>,
-    ];
-  } else {
-    kebabDropdownItems = [];
-  }
   return (
     <>
       <Switch>
@@ -219,13 +112,13 @@ export const MigrationsPage: React.FunctionComponent = () => {
                         dropdownItems={kebabDropdownItems}
                         position={DropdownPosition.right}
                       />
+                      <MigrationConfirmModals plan={plan} modalState={migrationModalState} />
                     </FlexItem>
                   </Flex>
                 </CardHeader>
                 <CardBody>
                   <MigrationsTable
-                    type="Migrations"
-                    planName={planName}
+                    plan={plan}
                     migrations={migrations}
                     isPlanLocked={plan?.PlanStatus?.isPlanLocked}
                     id="migrations-history-expansion-table"
@@ -234,27 +127,6 @@ export const MigrationsPage: React.FunctionComponent = () => {
                     planName={planName}
                     isOpen={accessLogsModalIsOpen}
                     onHandleClose={setAccessLogsModalIsOpen}
-                  />
-                  <MigrateModal
-                    plan={plan}
-                    isOpen={isMigrateModalOpen}
-                    onHandleClose={toggleMigrateModalOpen}
-                  />
-                  <RollbackModal
-                    plan={plan}
-                    isOpen={isRollbackModalOpen}
-                    onHandleClose={toggleRollbackModalOpen}
-                  />
-
-                  <StageModal
-                    plan={plan}
-                    isOpen={isStageModalOpen}
-                    onHandleClose={toggleStageModalOpen}
-                  />
-                  <StateMigrationModal
-                    plan={plan}
-                    isOpen={isStateMigrationModalOpen}
-                    onHandleClose={toggleStateMigrationModalOpen}
                   />
                 </CardBody>
               </Card>

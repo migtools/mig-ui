@@ -1,5 +1,9 @@
 import { INameNamespaceRef } from '../../common/duck/types';
-import { MigrationStepsType } from '../../home/pages/PlansPage/types';
+import {
+  MigrationAction,
+  MigrationStepsType,
+  MigrationType,
+} from '../../home/pages/PlansPage/types';
 import { ICurrentPlanStatus } from './reducers';
 
 export type PvCopyMethod = 'filesystem' | 'snapshot';
@@ -46,7 +50,9 @@ export interface IMigPlan {
     name: string;
     namespace: string;
     creationTimestamp: string;
-    annotations?: string;
+    annotations?: {
+      'migration.openshift.io/selected-migplan-type': MigrationType;
+    };
     resourceVersion?: string;
   };
   spec: {
@@ -83,6 +89,7 @@ export interface IMigration {
     quiescePods: boolean;
     stage: boolean;
     rollback?: boolean;
+    migrateState?: boolean;
   };
   status?: IMigrationStatus;
   tableStatus?: {
@@ -155,7 +162,6 @@ export interface IPlan {
   Hooks?: any[];
   PlanStatus?: {
     conflictErrorMsg?: string;
-    finalMigrationComplete?: boolean;
     hasCanceledCondition?: boolean;
     hasCriticalCondition?: boolean;
     hasCancelingCondition?: boolean;
@@ -168,15 +174,14 @@ export interface IPlan {
     hasPVWarnCondition?: boolean;
     hasReadyCondition?: boolean;
     hasRunningMigrations?: boolean;
-    hasSucceededMigration?: boolean;
+    hasSucceededCutover?: boolean;
     hasSucceededWithWarningsCondition?: boolean;
     hasDVMBlockedCondition?: boolean;
     hasSucceededStage?: boolean;
-    hasSucceededState?: boolean;
     hasSucceededRollback?: boolean;
     hasWarnCondition?: boolean;
     isPlanLocked?: boolean;
-    latestType?: string;
+    latestAction?: MigrationAction;
     latestIsFailed?: boolean;
     namespaces?: any[];
     latestAnalyticTransitionTime?: string;
@@ -195,7 +200,7 @@ export interface ISourceClusterNamespace {
   podCount: number;
   pvcCount: number;
   serviceCount: number;
-  id: string;
+  id: string | number;
 }
 
 export interface IAnalytic {

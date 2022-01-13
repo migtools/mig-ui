@@ -129,7 +129,7 @@ app.get('/login/callback', async (req, res, next) => {
     const clusterAuth = await getClusterAuth();
     const proxyString = process.env['HTTPS_PROXY'] || process.env['HTTP_PROXY'];
     let httpOptions = {};
-    if (proxyString && !tokenEndpointMatchesNoProxy(cachedOAuthMeta?.token_endpoint)) {
+    if (proxyString && !tokenEndpointMatchesNoProxy(cachedOAuthMeta.token_endpoint)) {
       httpOptions = {
         agent: new HttpsProxyAgent(proxyString),
       };

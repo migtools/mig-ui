@@ -1,12 +1,13 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import { IMigPlan, IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
 import { IFormValues } from './WizardContainer';
 import utils from '../../../../../common/duck/utils';
 
 export interface IWizardFormikProps {
   initialValues: IFormValues;
   isEdit?: boolean;
+  currentPlan?: IMigPlan;
   planList?: IPlan[];
   sourceClusterNamespaces: ISourceClusterNamespace[];
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export interface IWizardFormikProps {
 const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
   initialValues,
   isEdit = false,
+  currentPlan = null,
   planList = [],
   sourceClusterNamespaces,
   children,
@@ -32,6 +34,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.planName = 'The plan name should be between 3 and 63 characters long.';
       } else if (
         !isEdit &&
+        !currentPlan &&
         planList.some((plan) => plan.MigPlan.metadata.name === values.planName)
       ) {
         errors.planName =
@@ -44,6 +47,10 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
       if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
         errors.selectedNamespaces = 'Required';
       }
+      if (!values.selectedPVs || values.selectedPVs.length === 0) {
+        errors.selectedPVs = 'Required';
+      }
+
       if (!values.targetCluster) {
         errors.targetCluster = 'Required';
       }
@@ -59,17 +66,73 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         );
       });
 
-      const targetNamespaceNameError = utils.testTargetNSName(
+      const targetNamespaceNameError = utils.testTargetName(
         values?.currentTargetNamespaceName?.name
       );
-      if (!values.currentTargetNamespaceName) {
-        errors.currentTargetNamespaceName = 'Required';
-      } else if (targetNamespaceNameError !== '') {
+      if (targetNamespaceNameError !== '') {
         errors.currentTargetNamespaceName = targetNamespaceNameError;
       } else if (hasDuplicateMapping) {
         errors.currentTargetNamespaceName =
           'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
       }
+
+      const existingPVCNameMap = values.persistentVolumes.map((pvItem) => {
+        let targetPVCName = pvItem.pvc.name;
+        let sourcePVCName = pvItem.pvc.name;
+        const pvcNamespace = pvItem.pvc.namespace;
+        const pvName = pvItem.name;
+        let editedPV = values.editedPVs.find(
+          (editedPV) => editedPV.oldPVCName === pvItem.pvc.name && editedPV.pvName === pvItem.name
+        );
+        const includesMapping = sourcePVCName.includes(':');
+        if (includesMapping) {
+          const mappedPVCNameArr = sourcePVCName.split(':');
+          editedPV = values.editedPVs.find(
+            (editedPV) =>
+              editedPV.oldPVCName === mappedPVCNameArr[0] && editedPV.pvName === pvItem.name
+          );
+          if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+            sourcePVCName = mappedPVCNameArr[0];
+            targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[0];
+          } else {
+            sourcePVCName = mappedPVCNameArr[0];
+            targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[1];
+          }
+          return {
+            sourcePVCName,
+            targetPVCName,
+            pvName,
+            pvcNamespace,
+          };
+        } else {
+          return {
+            sourcePVCName,
+            targetPVCName,
+            pvName,
+            pvcNamespace,
+          };
+        }
+      });
+      const hasDuplicatePVMapping = existingPVCNameMap.find((pv, index) => {
+        const editedPVCName = values?.currentTargetPVCName?.name;
+        const editedPVCNameAssociatedPVName = values?.currentTargetPVCName?.srcPVName;
+        const isIntraClusterPlan = values.sourceCluster === values.targetCluster;
+
+        return (
+          (editedPVCName === pv?.targetPVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv?.sourcePVCName && editedPVCNameAssociatedPVName !== pv.pvName) ||
+          (editedPVCName === pv?.sourcePVCName && isIntraClusterPlan)
+        );
+      });
+
+      const targetPVCNameError = utils.testTargetName(values?.currentTargetPVCName?.name);
+      if (targetPVCNameError !== '') {
+        errors.currentTargetPVCName = targetPVCNameError;
+      } else if (hasDuplicatePVMapping) {
+        errors.currentTargetPVCName =
+          'A mapped target pvc with that name already exists. Enter a unique name for this target pvc.';
+      }
+
       return errors;
     }}
     onSubmit={() => {

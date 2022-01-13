@@ -1,7 +1,6 @@
-@import 'src/layout/include-media';
-
-.copySelectStyle {
-  @include media('>=769px', '<=1200px') {
-    width: 10em;
-  }
+.actionsContainer {
+  min-width: 4em;
+}
+.targetInput {
+  width: 10em;
 }
