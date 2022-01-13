@@ -16,7 +16,7 @@ import WizardFormik from './WizardFormik';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { MigrationType } from '../../types';
-const _ = require('lodash');
+import _ from 'lodash';
 
 export interface IFormValues {
   planName: string;
@@ -186,7 +186,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
             oldPVCName: includesMapping ? mappedPVCNameArr[0] : pv.pvc.name,
             newPVCName: includesMapping
               ? `${mappedPVCNameArr[0]}-${_.uniqueId()}`
-              : `${pv.pvc.name}-${_.uniqueID()}`,
+              : `${pv.pvc.name}-${_.uniqueId()}`,
             pvName: pv.name,
           };
         });
@@ -215,10 +215,13 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     setInitialValues(initialValuesCopy);
   }, [isOpen]);
 
+  const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+
   return (
     <WizardFormik
       initialValues={initialValues}
       isEdit={isEdit}
+      currentPlan={currentPlan}
       planList={planList}
       sourceClusterNamespaces={sourceClusterNamespaces}
     >

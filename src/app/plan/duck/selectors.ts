@@ -9,8 +9,8 @@ import {
   filterLatestMigrationConditions,
   filterLatestAnalyticConditions,
 } from './helpers';
-import { ICondition, IMigPlan, IMigration, IPlan, IPlanSpecHook, IStep } from './types';
-import { findCurrentStep } from '../../home/pages/PlansPage/helpers';
+import { ICondition, IMigration, IPlan, IStep } from './types';
+import { findCurrentStep, getPlanInfo, migSpecToAction } from '../../home/pages/PlansPage/helpers';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { DefaultRootState } from '../../../configureStore';
 
@@ -155,35 +155,16 @@ const getPlansWithPlanStatus = createSelector(
         planMigrations = plan.Migrations;
       }
 
+      const { migrationType } = getPlanInfo(plan);
+
       const latestMigration = planMigrations.length ? planMigrations[0] : null;
+      const latestAction = migSpecToAction(migrationType, latestMigration?.spec); // 'stage' | 'cutover' | 'rollback'
+
       const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
-      // latestType will be one of: 'State', 'Rollback', 'Stage', 'Migration'
-      const stateMigrationAnnotation =
-        latestMigration?.metadata?.annotations &&
-        latestMigration.metadata.annotations['migration.openshift.io/state-transfer'];
-
-      const latestType = stateMigrationAnnotation
-        ? 'State migration'
-        : latestMigration?.spec?.rollback
-        ? 'Rollback'
-        : latestMigration?.spec?.stage
-        ? 'Stage'
-        : 'Cutover';
-      const hasSucceededState = !!planMigrations.filter((m) => {
-        const stateMigrationAnnotation =
-          m?.metadata?.annotations &&
-          m.metadata.annotations['migration.openshift.io/state-transfer'];
-
-        if (m.status?.conditions && m.spec.stage && stateMigrationAnnotation) {
-          return (
-            m.status.conditions.some((c) => c.type === 'Succeeded') &&
-            !m.status.conditions.some((c) => c.type === 'Canceled')
-          );
-        }
-      }).length;
 
       const hasSucceededStage = !!planMigrations.filter((m) => {
-        if (m.status?.conditions && m.spec.stage) {
+        const action = migSpecToAction(migrationType, m.spec);
+        if (m.status?.conditions && action === 'stage') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status.conditions.some((c) => c.type === 'Canceled')
@@ -191,8 +172,9 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
-      const hasSucceededMigration = !!planMigrations.filter((m) => {
-        if (m.status?.conditions && !m.spec.stage && !m.spec.rollback) {
+      const hasSucceededCutover = !!planMigrations.filter((m) => {
+        const action = migSpecToAction(migrationType, m.spec);
+        if (m.status?.conditions && action === 'cutover') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status?.conditions?.some((c) => c.type === 'Canceled')
@@ -201,27 +183,19 @@ const getPlansWithPlanStatus = createSelector(
       }).length;
 
       const hasSucceededRollback = !!planMigrations.filter((m) => {
-        if (m.status?.conditions && m.spec.rollback) {
+        const action = migSpecToAction(migrationType, m.spec);
+        if (m.status?.conditions && action === 'rollback') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
             !m.status?.conditions?.some((c) => c.type === 'Canceled') &&
-            latestType === 'Rollback'
+            latestAction === 'rollback'
           );
         }
       }).length;
 
-      const hasAttemptedMigration = !!planMigrations.some((m) => !m.spec.stage && !m.spec.rollback);
-
-      const finalMigrationComplete = !!planMigrations.filter((m) => {
-        if (m.status?.conditions) {
-          return (
-            m.spec.stage === false &&
-            !!m.spec.rollback === false &&
-            m.status.conditions.some((c) => c.type === 'Succeeded') &&
-            !m.status?.conditions?.some((c) => c.type === 'Canceled')
-          );
-        }
-      }).length;
+      const hasAttemptedMigration = !!planMigrations.some(
+        (m) => migSpecToAction(migrationType, m.spec) === 'cutover'
+      );
 
       const hasRunningMigrations = !!planMigrations.filter((m) => {
         if (m.status?.conditions) {
@@ -234,14 +208,12 @@ const getPlansWithPlanStatus = createSelector(
       );
 
       const statusObject = {
-        hasSucceededMigration,
+        hasSucceededCutover,
         hasSucceededStage,
-        hasSucceededState,
         hasSucceededRollback,
         hasAttemptedMigration,
-        finalMigrationComplete,
         hasRunningMigrations,
-        latestType,
+        latestAction,
         isPlanLocked,
         ...filterPlanConditions(plan.MigPlan?.status?.conditions || []),
         ...filterLatestMigrationConditions(latestMigration?.status?.conditions || []),
@@ -258,8 +230,10 @@ const getPlansWithPlanStatus = createSelector(
 );
 
 const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPlan[] => {
-  const getMigrationStatus = (plan: any, migration: IMigration) => {
+  const getMigrationStatus = (plan: IPlan, migration: IMigration) => {
     const { MigPlan } = plan;
+    const { migrationType } = getPlanInfo(plan);
+    const migrationAction = migSpecToAction(migrationType, migration?.spec);
     const status: any = {
       start: 'In progress',
       end: 'In progress',
@@ -340,7 +314,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
       status.copied = MigPlan.spec.persistentVolumes.filter(
         (p: any) => p.selection.action === 'copy'
       ).length;
-      if (!migration.spec.stage) {
+      if (migrationAction !== 'stage') {
         status.moved = MigPlan.spec.persistentVolumes.length - status.copied;
       }
     }

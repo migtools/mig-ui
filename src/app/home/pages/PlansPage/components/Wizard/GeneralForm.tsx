@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useFormikContext } from 'formik';
-import { IFormValues, IOtherProps } from './WizardContainer';
-import { Form, FormGroup, Grid, GridItem, TextInput, Title, Tooltip } from '@patternfly/react-core';
+import { IFormValues } from './WizardContainer';
+import { Form, FormGroup, TextContent, Text, TextInput, Tooltip } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
@@ -11,7 +11,8 @@ import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/e
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { IStorage } from '../../../../../storage/duck/types';
 import { MigrationType } from '../../types';
-const styles = require('./GeneralForm.module').default;
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 
 export type IGeneralFormProps = {
   isEdit: boolean;
@@ -36,6 +37,8 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     validateForm,
   } = useFormikContext<IFormValues>();
 
+  const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+
   useForcedValidationOnChange<IFormValues>(values, isEdit, validateForm);
 
   const planNameInputRef = useRef(null);
@@ -51,17 +54,17 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
     {
       value: 'full',
       toString: () =>
-        'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
+        `Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another`,
     },
     {
       value: 'state',
       toString: () =>
-        'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+        `State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters`,
     },
     {
       value: 'scc',
       toString: () =>
-        'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
+        `Storage class conversion - convert PVs to a different storage class within the same cluster and namespace`,
     },
   ];
 
@@ -196,118 +199,97 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   return (
     <Form>
-      <Grid md={6} hasGutter className={spacing.mbMd}>
-        <GridItem>
-          <FormGroup
-            label="Plan name"
-            isRequired
-            fieldId="planName"
-            helperTextInvalid={touched.planName && errors.planName}
-            validated={validatedState(touched.planName, errors.planName)}
-          >
-            <TextInput
-              ref={planNameInputRef}
-              onChange={(val, e) => onHandleChange(val, e)}
-              onInput={() => setFieldTouched('planName', true, true)}
-              onBlur={handleBlur}
-              value={values.planName}
-              name="planName"
-              type="text"
-              validated={validatedState(touched?.planName, errors?.planName)}
-              id="planName"
-              isDisabled={isEdit}
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
-
-      <Grid md={6} hasGutter className={spacing.mbMd}>
-        <GridItem>
-          <FormGroup
-            label="Migration type"
-            isRequired
-            fieldId="migrationType"
-            className={spacing.mbMd}
-            helperTextInvalid={touched.migrationType && errors.migrationType}
-            validated={validatedState(touched.migrationType, errors.migrationType)}
-          >
-            <SimpleSelect
-              id="migrationType"
-              onChange={(option) => {
-                setFieldValue('migrationType', option);
-                setFieldValue('sourceCluster', null);
-                setFieldValue('targetCluster', null);
-              }}
-              value={values.migrationType.toString()}
-              placeholderText="Select..."
-              options={migrationTypeOptions}
-              isDisabled={isEdit}
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
-
-      <Grid md={6} hasGutter className={spacing.mbMd}>
-        <GridItem>
-          <FormGroup
-            label="Source cluster"
-            isRequired
-            fieldId="sourceCluster"
-            className={spacing.mbMd}
-            helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
-            validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
-          >
-            <SimpleSelect
-              id="sourceCluster"
-              onChange={handleSourceChange}
-              value={values.sourceCluster}
-              placeholderText="Select source..."
-              options={srcClusterOptions}
-            />
-          </FormGroup>
-        </GridItem>
-      </Grid>
+      <TextContent>
+        <Text component="small">All fields are required.</Text>
+      </TextContent>
+      <FormGroup
+        label="Plan name"
+        isRequired
+        fieldId="planName"
+        helperTextInvalid={touched.planName && errors.planName}
+        validated={validatedState(touched.planName, errors.planName)}
+      >
+        <TextInput
+          ref={planNameInputRef}
+          onChange={(val, e) => onHandleChange(val, e)}
+          onInput={() => setFieldTouched('planName', true, true)}
+          onBlur={handleBlur}
+          value={values.planName}
+          name="planName"
+          type="text"
+          validated={validatedState(touched?.planName, errors?.planName)}
+          id="planName"
+          isDisabled={isEdit || !!currentPlan}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Migration type"
+        isRequired
+        fieldId="migrationType"
+        helperTextInvalid={touched.migrationType && errors.migrationType}
+        validated={validatedState(touched.migrationType, errors.migrationType)}
+      >
+        <SimpleSelect
+          id="migrationType"
+          onChange={(option) => {
+            setFieldValue('migrationType', option);
+            setFieldValue('sourceCluster', null);
+            setFieldValue('targetCluster', null);
+          }}
+          value={values.migrationType.toString()}
+          placeholderText="Select..."
+          options={migrationTypeOptions}
+          isDisabled={isEdit}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Source cluster"
+        isRequired
+        fieldId="sourceCluster"
+        helperTextInvalid={touched.sourceCluster && errors.sourceCluster}
+        validated={validatedState(touched.sourceCluster, errors.sourceCluster)}
+      >
+        <SimpleSelect
+          id="sourceCluster"
+          onChange={handleSourceChange}
+          value={values.sourceCluster}
+          placeholderText="Select source..."
+          options={srcClusterOptions}
+        />
+      </FormGroup>
 
       {(values.migrationType.value === 'full' || values.migrationType.value === 'state') && (
         <>
-          <Grid md={6} hasGutter className={spacing.mbMd}>
-            <GridItem>
-              <FormGroup
-                label="Target cluster"
-                isRequired
-                fieldId="targetCluster"
-                helperTextInvalid={touched.targetCluster && errors.targetCluster}
-                validated={validatedState(touched.targetCluster, errors.targetCluster)}
-              >
-                <SimpleSelect
-                  id="targetCluster"
-                  onChange={handleTargetChange}
-                  options={targetClusterOptions}
-                  value={values.targetCluster}
-                  placeholderText="Select target..."
-                />
-              </FormGroup>
-            </GridItem>
-          </Grid>
-          <Grid md={6} hasGutter className={spacing.mbMd}>
-            <GridItem>
-              <FormGroup
-                label="Repository"
-                isRequired
-                fieldId="selectedStorage"
-                helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
-                validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
-              >
-                <SimpleSelect
-                  id="selectedStorage"
-                  onChange={handleStorageChange}
-                  options={storageOptions}
-                  value={values.selectedStorage}
-                  placeholderText="Select repository..."
-                />
-              </FormGroup>
-            </GridItem>
-          </Grid>
+          <FormGroup
+            label="Target cluster"
+            isRequired
+            fieldId="targetCluster"
+            helperTextInvalid={touched.targetCluster && errors.targetCluster}
+            validated={validatedState(touched.targetCluster, errors.targetCluster)}
+          >
+            <SimpleSelect
+              id="targetCluster"
+              onChange={handleTargetChange}
+              options={targetClusterOptions}
+              value={values.targetCluster}
+              placeholderText="Select target..."
+            />
+          </FormGroup>
+          <FormGroup
+            label="Repository"
+            isRequired
+            fieldId="selectedStorage"
+            helperTextInvalid={touched.selectedStorage && errors.selectedStorage}
+            validated={validatedState(touched.selectedStorage, errors.selectedStorage)}
+          >
+            <SimpleSelect
+              id="selectedStorage"
+              onChange={handleStorageChange}
+              options={storageOptions}
+              value={values.selectedStorage}
+              placeholderText="Select repository..."
+            />
+          </FormGroup>
         </>
       )}
     </Form>

@@ -17,7 +17,13 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { IStep, IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationStepDetailsTable from './MigrationStepDetailsTable';
-import { getStepPageTitle, formatGolangTimestamp } from '../../helpers';
+import {
+  getStepPageTitle,
+  formatGolangTimestamp,
+  migSpecToAction,
+  migrationActionToString,
+  getPlanInfo,
+} from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IMigrationStepDetailsPageParams {
@@ -32,13 +38,13 @@ export const MigrationStepDetailsPage: React.FunctionComponent = () => {
     planSelectors.getPlansWithStatus(state)
   );
 
-  const migration = planList
-    .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
-    ?.Migrations.find((migration) => migration.metadata.name === migrationID);
+  const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
+  const migration = plan?.Migrations.find((migration) => migration.metadata.name === migrationID);
 
   const step = migration?.status?.pipeline.find((step: IStep) => step.name === stepName);
 
-  const migrationType = migration?.spec?.stage ? 'Stage' : 'Final';
+  const { migrationType } = getPlanInfo(plan);
+  const action = migSpecToAction(migrationType, migration?.spec);
 
   return (
     <>
@@ -53,7 +59,8 @@ export const MigrationStepDetailsPage: React.FunctionComponent = () => {
           {migration && (
             <BreadcrumbItem>
               <Link to={`/plans/${planName}/migrations/${migration.metadata.name}`}>
-                {migrationType} - {formatGolangTimestamp(migration.status.startTimestamp)}
+                {migrationActionToString(action)} -{' '}
+                {formatGolangTimestamp(migration.status.startTimestamp)}
               </Link>
             </BreadcrumbItem>
           )}
