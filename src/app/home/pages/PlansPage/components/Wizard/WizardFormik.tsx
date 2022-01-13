@@ -1,12 +1,13 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import { IMigPlan, IPlan, ISourceClusterNamespace } from '../../../../../plan/duck/types';
 import { IFormValues } from './WizardContainer';
 import utils from '../../../../../common/duck/utils';
 
 export interface IWizardFormikProps {
   initialValues: IFormValues;
   isEdit?: boolean;
+  currentPlan?: IMigPlan;
   planList?: IPlan[];
   sourceClusterNamespaces: ISourceClusterNamespace[];
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export interface IWizardFormikProps {
 const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
   initialValues,
   isEdit = false,
+  currentPlan = null,
   planList = [],
   sourceClusterNamespaces,
   children,
@@ -32,6 +34,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         errors.planName = 'The plan name should be between 3 and 63 characters long.';
       } else if (
         !isEdit &&
+        !currentPlan &&
         planList.some((plan) => plan.MigPlan.metadata.name === values.planName)
       ) {
         errors.planName =

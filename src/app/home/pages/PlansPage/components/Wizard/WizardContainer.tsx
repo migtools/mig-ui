@@ -215,10 +215,13 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     setInitialValues(initialValuesCopy);
   }, [isOpen]);
 
+  const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+
   return (
     <WizardFormik
       initialValues={initialValues}
       isEdit={isEdit}
+      currentPlan={currentPlan}
       planList={planList}
       sourceClusterNamespaces={sourceClusterNamespaces}
     >
