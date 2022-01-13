@@ -267,6 +267,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   };
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
+    const isRowSelected = values.selectedPVs.includes(pv.name);
+
     const matchingPVResource = planState.pvResourceList.find(
       (pvResource) => pvResource.name === pv.name
     );
@@ -353,6 +355,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                   pv,
                   currentPV,
                 }}
+                isDisabled={!isRowSelected}
               />
             ),
           },
@@ -373,6 +376,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                 options={combinedCopyOptions}
                 value={currentSelectedCopyOption}
                 placeholderText={null}
+                isDisabled={!isRowSelected}
               />
             ),
           },
@@ -381,7 +385,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
     return {
       cells,
-      selected: values.selectedPVs.includes(pv.name),
+      selected: isRowSelected,
       meta: {
         selectedPVs: values.selectedPVs,
         id: pv.name,

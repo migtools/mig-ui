@@ -19,7 +19,12 @@ import { Alert } from '@patternfly/react-core';
 import { IMigration, IPlan } from '../../../../../plan/duck/types';
 import { planSelectors } from '../../../../../plan/duck';
 import MigrationDetailsTable from './MigrationDetailsTable';
-import { formatGolangTimestamp } from '../../helpers';
+import {
+  formatGolangTimestamp,
+  getPlanInfo,
+  migrationActionToString,
+  migSpecToAction,
+} from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
 
 interface IMigrationDetailsPageParams {
@@ -34,21 +39,17 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
   const planList = useSelector((state: DefaultRootState) =>
     planSelectors.getPlansWithStatus(state)
   );
-  const migration = planList
-    .find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName)
-    ?.Migrations.find((migration: IMigration) => migration.metadata.name === migrationID);
+  const plan = planList.find((planItem: IPlan) => planItem.MigPlan.metadata.name === planName);
+  const migration = plan?.Migrations.find(
+    (migration: IMigration) => migration.metadata.name === migrationID
+  );
   const isPausedCondition = migration?.tableStatus.migrationState === 'paused';
   const isWarningCondition = migration?.tableStatus.migrationState === 'warn';
   const isErrorCondition = migration?.tableStatus.migrationState === 'error';
-  const stateMigrationAnnotation =
-    migration?.metadata?.annotations &&
-    migration.metadata.annotations['migration.openshift.io/state-transfer'];
 
-  const type = stateMigrationAnnotation
-    ? 'State migration'
-    : migration?.spec?.stage
-    ? 'Stage'
-    : 'Final';
+  const { migrationType } = getPlanInfo(plan);
+
+  const action = migSpecToAction(migrationType, migration?.spec);
 
   return (
     <>
@@ -62,7 +63,8 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
           </BreadcrumbItem>
           {migration && (
             <BreadcrumbItem to="#" isActive>
-              {type} - {formatGolangTimestamp(migration.status?.startTimestamp)}
+              {migrationActionToString(action)} -{' '}
+              {formatGolangTimestamp(migration.status?.startTimestamp)}
             </BreadcrumbItem>
           )}
         </Breadcrumb>

@@ -10,6 +10,7 @@ interface IVerifyCopyCheckboxProps {
   setVerifyWarningState: (value: React.SetStateAction<VerifyWarningState>) => void;
   pv: IPlanPersistentVolume;
   currentPV: IPlanPersistentVolume;
+  isDisabled?: boolean;
 }
 
 export const VerifyCopyCheckbox: React.FunctionComponent<IVerifyCopyCheckboxProps> = ({
@@ -17,6 +18,7 @@ export const VerifyCopyCheckbox: React.FunctionComponent<IVerifyCopyCheckboxProp
   setVerifyWarningState,
   pv,
   currentPV,
+  isDisabled = false,
 }: IVerifyCopyCheckboxProps) => {
   const { values, setFieldValue } = useFormikContext<IFormValues>();
 
@@ -33,7 +35,7 @@ export const VerifyCopyCheckbox: React.FunctionComponent<IVerifyCopyCheckboxProp
   return (
     <Checkbox
       isChecked={isVerifyCopyAllowed && values.pvVerifyFlagAssignment[pv.name]}
-      isDisabled={!isVerifyCopyAllowed}
+      isDisabled={!isVerifyCopyAllowed || isDisabled}
       onChange={(checked) => {
         onVerifyFlagChange(currentPV, checked);
         if (checked && verifyWarningState === 'Unread') {
