@@ -14,30 +14,32 @@ import {
   LevelItem,
   Pagination,
   PaginationVariant,
-  Checkbox,
   Tooltip,
   TooltipPosition,
-  Modal,
+  Flex,
+  FlexItem,
+  FormGroup,
+  Popover,
+  PopoverPosition,
+  TextInput,
   Button,
-  BaseSizes,
 } from '@patternfly/react-core';
 import {
-  Table,
-  TableVariant,
-  TableHeader,
-  TableBody,
   sortable,
   truncate,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from '@patternfly/react-table';
 import InfoCircleIcon from '@patternfly/react-icons/dist/js/icons/info-circle-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
-import { IFormValues, IOtherProps } from './WizardContainer';
-import { capitalize } from '../../../../../common/duck/utils';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { IFormValues } from './WizardContainer';
 import {
   FilterCategory,
   FilterType,
@@ -45,54 +47,49 @@ import {
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
 import { IMigPlanStorageClass } from '../../../../../plan/duck/types';
-import { PvCopyMethod, IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import {
+  OutlinedQuestionCircleIcon,
+  CheckIcon,
+  TimesIcon,
+  PencilAltIcon,
+} from '@patternfly/react-icons';
+import { useDelayValidation, validatedState } from '../../../../../common/helpers';
+import { useFormikContext } from 'formik';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
+import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
+import { targetStorageClassToString } from '../../helpers';
+import { PVStorageClassSelect } from './PVStorageClassSelect';
+import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
 
-interface ICopyOptionsTableProps
-  extends Pick<IOtherProps, 'isFetchingPVList' | 'currentPlan'>,
-    Pick<
-      IFormValues,
-      | 'persistentVolumes'
-      | 'pvStorageClassAssignment'
-      | 'pvVerifyFlagAssignment'
-      | 'pvCopyMethodAssignment'
-    > {
+interface ICopyOptionsTableProps {
   storageClasses: IMigPlanStorageClass[];
-  onStorageClassChange: (currentPV: IPlanPersistentVolume, value: string) => void;
-  onVerifyFlagChange: (currentPV: IPlanPersistentVolume, value: boolean) => void;
-  onCopyMethodChange: (currentPV: IPlanPersistentVolume, value: string) => void;
 }
-
-enum VerifyWarningState {
-  Unread = 'Unread',
-  Open = 'Open',
-  Dismissed = 'Dismissed',
-}
-
-const storageClassToString = (storageClass: IMigPlanStorageClass) =>
-  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
-
-const copyMethodToString = (copyMethod: PvCopyMethod) => {
-  if (copyMethod === 'filesystem') return 'Filesystem copy';
-  if (copyMethod === 'snapshot') return 'Volume snapshot';
-  return copyMethod && capitalize(copyMethod);
-};
 
 const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
-  isFetchingPVList,
-  currentPlan,
-  persistentVolumes,
-  pvStorageClassAssignment,
-  pvVerifyFlagAssignment,
-  pvCopyMethodAssignment,
   storageClasses,
-  onStorageClassChange,
-  onVerifyFlagChange,
-  onCopyMethodChange,
 }: ICopyOptionsTableProps) => {
+  const planState = useSelector((state: DefaultRootState) => state.plan);
+  const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const styles = require('./CopyOptionsTable.module').default;
 
-  if (isFetchingPVList) {
+  const {
+    handleBlur,
+    handleChange,
+    setFieldTouched,
+    setFieldValue,
+    values,
+    touched,
+    errors,
+    validateForm,
+  } = useFormikContext<IFormValues>();
+  const filteredPersistentVolumes = values.persistentVolumes.length
+    ? values.persistentVolumes.filter((v) => v.selection.action === 'copy')
+    : [];
+
+  if (planState.isFetchingPVList) {
     return (
       <Bullseye>
         <EmptyState variant={EmptyStateVariant.small}>
@@ -107,13 +104,15 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
     );
   }
 
-  const [verifyWarningState, setVerifyWarningState] = useState(VerifyWarningState.Unread);
+  const [verifyWarningState, setVerifyWarningState] = useState<VerifyWarningState>('Unread');
+  const [editableRow, setEditableRow] = React.useState(null);
+  const currentTargetPVCNameKey = 'currentTargetPVCName';
 
   const columns = [
     { title: 'PV name', transforms: [sortable, truncate] },
-    { title: 'Claim', transforms: [sortable, truncate] },
-    { title: 'Namespace', transforms: [sortable, truncate] },
-    { title: 'Copy method', transforms: [sortable, truncate] },
+    { title: 'Source PVC', transforms: [sortable, truncate] },
+    { title: 'Source storage class', transforms: [sortable, truncate] },
+    { title: 'Target PVC', transforms: [sortable, truncate] },
     { title: 'Target storage class', transforms: [sortable, truncate] },
     {
       title: (
@@ -140,10 +139,11 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   const getSortValues = (pv: IPlanPersistentVolume) => [
     pv.name,
     pv.pvc.name,
-    pv.pvc.namespace,
-    copyMethodToString(pvCopyMethodAssignment[pv.name]),
-    pvVerifyFlagAssignment[pv.name],
-    storageClassToString(pvStorageClassAssignment[pv.name]),
+    pv.storageClass,
+    'targetPVCName',
+    // targetPVCToString(targetPVCName[pv.name]),
+    targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
+    values.pvVerifyFlagAssignment[pv.name],
   ];
   const filterCategories: FilterCategory[] = [
     {
@@ -153,138 +153,103 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       placeholderText: 'Filter by PV name...',
     },
     {
-      key: 'claim',
-      title: 'Claim',
+      key: 'sourcePVC',
+      title: 'Source PVC',
       type: FilterType.search,
-      placeholderText: 'Filter by claim...',
+      placeholderText: 'Filter by source PVC name...',
     },
     {
-      key: 'project',
-      title: 'Namespace',
+      key: 'sourceSC',
+      title: 'Source storage class',
       type: FilterType.search,
-      placeholderText: 'Filter by namespace...',
+      placeholderText: 'Filter by source storage class...',
+    },
+    {
+      key: 'targetPVC',
+      title: 'Target PVC',
+      type: FilterType.search,
+      placeholderText: 'Filter by target PVC name...',
     },
     {
       key: 'targetStorageClass',
       title: 'Target storage class',
       type: FilterType.search,
       placeholderText: 'Filter by target storage class...',
-      getItemValue: (pv) => storageClassToString(pvStorageClassAssignment[pv.name]),
-    },
-    {
-      key: 'copyMethod',
-      title: 'Copy method',
-      type: FilterType.select,
-      selectOptions: [
-        { key: 'filesystem', value: 'Filesystem copy' },
-        { key: 'snapshot', value: 'Volume snapshot' },
-      ],
-      getItemValue: (pv) => copyMethodToString(pvCopyMethodAssignment[pv.name]),
+      getItemValue: (pv) => targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
     },
   ];
 
   const { filterValues, setFilterValues, filteredItems } = useFilterState(
-    persistentVolumes,
+    filteredPersistentVolumes,
     filterCategories
   );
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, paginationProps } = usePaginationState(sortedItems, 10);
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
-    const currentPV = currentPlan?.spec?.persistentVolumes?.find(
-      (planPV) => planPV.name === pv.name
-    );
-    const currentCopyMethod = pvCopyMethodAssignment[pv.name];
-    const currentStorageClass = pvStorageClassAssignment[pv.name];
-
-    const copyMethodOptions: OptionWithValue[] = currentPV?.supported?.copyMethods.map(
-      (copyMethod: PvCopyMethod) => ({
-        value: copyMethod,
-        toString: () => copyMethodToString(copyMethod),
-      })
+    const currentPV = planState.currentPlan?.spec?.persistentVolumes?.find(
+      (planPV: any) => planPV.name === pv.name
     );
 
-    const noneOption = { value: '', toString: () => 'None' };
-    const storageClassOptions: OptionWithValue[] = [
-      ...storageClasses.map((storageClass) => ({
-        value: storageClass !== '' && storageClass.name,
-        toString: () => storageClassToString(storageClass),
-      })),
-      noneOption,
-    ];
-
-    const isVerifyCopyAllowed = pvCopyMethodAssignment[pv.name] === 'filesystem';
+    const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
+    // let targetPVCName = isIntraClusterMigration ? `${pv.pvc.name}-new` : pv.pvc.name;
+    let editedPV = values.editedPVs.find(
+      (editedPV) => editedPV.oldPVCName === pv.pvc.name && editedPV.pvName === pv.name
+    );
+    let targetPVCName = editedPV ? editedPV.newPVCName : pv.pvc.name;
     let sourcePVCName = pv.pvc.name;
+
     const includesMapping = sourcePVCName.includes(':');
     if (includesMapping) {
       const mappedPVCNameArr = sourcePVCName.split(':');
-      sourcePVCName = mappedPVCNameArr[0];
+      editedPV = values.editedPVs.find(
+        (editedPV) => editedPV.oldPVCName === mappedPVCNameArr[0] && editedPV.pvName === pv.name
+      );
+      if (mappedPVCNameArr[0] === mappedPVCNameArr[1]) {
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[0];
+        // targetPVCName = editedPV
+        //   ? editedPV.newPVCName
+        //   : isIntraClusterMigration
+        //   ? `${mappedPVCNameArr[0]}-new`
+        //   : mappedPVCNameArr[0];
+      } else {
+        sourcePVCName = mappedPVCNameArr[0];
+        targetPVCName = editedPV ? editedPV.newPVCName : mappedPVCNameArr[1];
+      }
     }
 
     return {
       cells: [
         pv.name,
         sourcePVCName,
-        pv.pvc.namespace,
+        pv.storageClass,
+        targetPVCName,
         {
-          title: (
-            <div>
-              <SimpleSelect
-                id="select-copy-method"
-                className={styles.copySelectStyle}
-                aria-label="Select copy method"
-                onChange={(option: any) => onCopyMethodChange(currentPV, option.value)}
-                options={copyMethodOptions}
-                value={
-                  copyMethodOptions?.find((option) => option.value === currentCopyMethod) || {
-                    value: '',
-                  }
-                }
-                placeholderText="Select a copy method..."
-              />
-            </div>
-          ),
+          title: <PVStorageClassSelect {...{ pv, currentPV, storageClasses }} />,
         },
         {
           title: (
-            <SimpleSelect
-              id="select-storage-class"
-              aria-label="Select storage class"
-              className={styles.copySelectStyle}
-              onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
-              options={storageClassOptions}
-              value={
-                storageClassOptions.find(
-                  (option) => currentStorageClass && option.value === currentStorageClass.name
-                ) || noneOption
-              }
-              placeholderText="Select a storage class..."
-            />
-          ),
-        },
-        {
-          title: (
-            <Checkbox
-              isChecked={isVerifyCopyAllowed && pvVerifyFlagAssignment[pv.name]}
-              isDisabled={!isVerifyCopyAllowed}
-              onChange={(checked) => {
-                onVerifyFlagChange(currentPV, checked);
-                if (checked && verifyWarningState === VerifyWarningState.Unread) {
-                  setVerifyWarningState(VerifyWarningState.Open);
-                }
+            <VerifyCopyCheckbox
+              {...{
+                verifyWarningState,
+                setVerifyWarningState,
+                pv,
+                currentPV,
               }}
-              aria-label={`Verify copy for PV ${pv.name}`}
-              id={`verify-pv-${pv.name}`}
-              name={`verify-pv-${pv.name}`}
             />
           ),
         },
       ],
+      meta: {
+        editedPVs: values.editedPVs,
+        editableRow: editableRow,
+      },
     };
   });
 
   const tableEmptyState =
-    persistentVolumes.length > 0 ? (
+    filteredPersistentVolumes.length > 0 ? (
       <TableEmptyState onClearFiltersClick={() => setFilterValues({})} />
     ) : (
       <TableEmptyState
@@ -294,12 +259,24 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
       />
     );
 
+  const { setQuery, query } = useDelayValidation(setFieldValue);
+
+  const handleDelayedValidation = (val: string, row: any): any => {
+    setQuery({
+      name: val,
+      row: row,
+      fieldName: currentTargetPVCNameKey,
+      functionArgs: [currentTargetPVCNameKey, { name: val, srcPVName: row.cells[0] }],
+    });
+  };
+
   return (
     <Grid hasGutter>
       <GridItem>
         <TextContent>
           <Text component={TextVariants.p}>
-            For each persistent volume to be copied, select a copy method and target storage class.
+            For each persistent volume to be copied, you can optionally change the target PVC and
+            target storage class.
           </Text>
         </TextContent>
       </GridItem>
@@ -324,17 +301,208 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           </LevelItem>
         </Level>
         {rows.length > 0 ? (
-          <Table
-            aria-label="Storage class selections table"
-            variant={TableVariant.compact}
-            cells={columns}
-            rows={rows}
-            sortBy={sortBy}
-            onSort={onSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+          <TableComposable aria-label="Selectable Table">
+            <Thead>
+              <Tr>
+                <Th width={20}>{columns[0].title}</Th>
+                <Th width={10}>{columns[1].title}</Th>
+                <Th width={10}>{columns[2].title}</Th>
+                <Th width={20}>
+                  {columns[3].title}
+                  <Popover
+                    position={PopoverPosition.right}
+                    bodyContent={
+                      <>
+                        <p className={spacing.mtMd}>
+                          By default, a target PVC will have the same name as its corresponding
+                          source PVC.
+                          <br></br>
+                          <br></br>
+                          To change the name of the target PVC, click the edit icon.
+                        </p>
+                      </>
+                    }
+                    aria-label="edit-target-ns-details"
+                    closeBtnAriaLabel="close--details"
+                    maxWidth="30rem"
+                  >
+                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                      <OutlinedQuestionCircleIcon
+                        className="pf-c-icon pf-m-default"
+                        size="sm"
+                      ></OutlinedQuestionCircleIcon>
+                    </span>
+                  </Popover>
+                </Th>
+                <Th width={10}>{columns[4].title}</Th>
+                <Th width={10}>{columns[5].title}</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => {
+                const isEditable = row.meta.editableRow === rowIndex;
+                return (
+                  <Tr key={rowIndex}>
+                    {row.cells.map((cell, cellIndex) => {
+                      const shiftedIndex = cellIndex + 1;
+                      if (columns[cellIndex].title === 'Target PVC') {
+                        return (
+                          <>
+                            {!isEditable ? (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={typeof cell === 'string' ? cell : 'target-pvc'}
+                              >
+                                {typeof cell !== 'string' ? cell.title : cell}
+                              </Td>
+                            ) : (
+                              <Td
+                                key={`${rowIndex}_${shiftedIndex}`}
+                                dataLabel={typeof cell === 'string' ? cell : 'editable-target-pvc'}
+                              >
+                                <FormGroup
+                                  isRequired
+                                  fieldId={currentTargetPVCNameKey}
+                                  helperTextInvalid={
+                                    touched.currentTargetPVCName && errors.currentTargetPVCName
+                                  }
+                                  validated={validatedState(
+                                    touched.currentTargetPVCName,
+                                    errors.currentTargetPVCName
+                                  )}
+                                >
+                                  <TextInput
+                                    name={currentTargetPVCNameKey}
+                                    value={query.name}
+                                    type="text"
+                                    onChange={(val, e) => handleDelayedValidation(val, row)}
+                                    onInput={formikSetFieldTouched(currentTargetPVCNameKey)}
+                                    onBlur={handleBlur}
+                                    isReadOnly={!isEditable}
+                                    validated={validatedState(
+                                      touched.currentTargetPVCName,
+                                      errors.currentTargetPVCName
+                                    )}
+                                  />
+                                </FormGroup>
+                              </Td>
+                            )}
+                          </>
+                        );
+                      } else {
+                        return (
+                          <Td
+                            key={`${rowIndex}_${shiftedIndex}`}
+                            dataLabel={typeof cell === 'string' ? cell : 'row-cell-id'}
+                          >
+                            {typeof cell !== 'string' ? cell.title : cell}
+                          </Td>
+                        );
+                      }
+                    })}
+                    <Td
+                      key={`${rowIndex}_5`}
+                      className="pf-c-table__inline-edit-action"
+                      role="cell"
+                      width={10}
+                    >
+                      {isEditable ? (
+                        <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
+                          <FlexItem flex={{ default: 'flex_1' }}>
+                            {!errors.currentTargetPVCName && (
+                              <Button
+                                variant="plain"
+                                aria-label={`Save edits to row ${rowIndex}`}
+                                onClick={() => {
+                                  setEditableRow(null);
+                                  const hasEditedValue = values.editedPVs.find(
+                                    (pv) =>
+                                      row.cells[1] === pv.oldPVCName && row.cells[0] === pv.pvName
+                                  );
+                                  let newEditedPVs;
+                                  if (hasEditedValue) {
+                                    newEditedPVs = [...new Set([...values.editedPVs])];
+
+                                    const index = values.editedPVs.findIndex(
+                                      (pv) =>
+                                        pv.oldPVCName === row.cells[1] && pv.pvName === row.cells[0]
+                                    );
+                                    //check if no changes made
+                                    if (
+                                      newEditedPVs[index].oldPVCName ===
+                                      values.currentTargetPVCName.name
+                                    ) {
+                                      if (index > -1) {
+                                        newEditedPVs.splice(index, 1);
+                                      }
+                                      //replace found edit with current edit
+                                    } else if (index || index === 0) {
+                                      newEditedPVs[index] = {
+                                        oldPVCName:
+                                          typeof row.cells[1] === 'string' ? row.cells[1] : '',
+                                        newPVCName: values.currentTargetPVCName.name,
+                                        pvName:
+                                          typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                      };
+                                    }
+                                  } else {
+                                    newEditedPVs = [
+                                      ...new Set([
+                                        ...values.editedPVs,
+                                        {
+                                          oldPVCName: row.cells[1],
+                                          newPVCName: values.currentTargetPVCName.name,
+                                          pvName: row.cells[0],
+                                        },
+                                      ]),
+                                    ];
+                                  }
+                                  setFieldValue('editedPVs', newEditedPVs);
+                                  setFieldValue(currentTargetPVCNameKey, null);
+                                  setFieldTouched(currentTargetPVCNameKey, false);
+                                }}
+                              >
+                                <CheckIcon />
+                              </Button>
+                            )}
+                            <Button
+                              variant="plain"
+                              aria-label={`Cancel editing row ${rowIndex}`}
+                              onClick={() => {
+                                setEditableRow(null);
+                                setFieldValue(currentTargetPVCNameKey, null);
+                                setFieldTouched(currentTargetPVCNameKey, false);
+                              }}
+                            >
+                              <TimesIcon />
+                            </Button>
+                          </FlexItem>
+                        </Flex>
+                      ) : (
+                        <Button
+                          variant="plain"
+                          aria-label={`Edit row ${rowIndex}`}
+                          onClick={() => {
+                            setEditableRow(rowIndex);
+                            handleDelayedValidation(
+                              typeof row.cells[3] === 'string' && row.cells[3],
+                              row
+                            );
+                            setFieldValue(currentTargetPVCNameKey, {
+                              name: row.cells[3],
+                              srcPVName: row.cells[0],
+                            });
+                          }}
+                        >
+                          <PencilAltIcon />
+                        </Button>
+                      )}
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </TableComposable>
         ) : (
           tableEmptyState
         )}
@@ -348,37 +516,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
           onSetPage={paginationProps.onSetPage}
           onPerPageSelect={paginationProps.onPerPageSelect}
         />
-        <Modal
-          aria-label="copy-options-modal"
-          variant="small"
-          title="Copy performance warning"
-          header={
-            <Title headingLevel="h1" size={BaseSizes['2xl']}>
-              <ExclamationTriangleIcon
-                color="var(--pf-global--warning-color--100)"
-                className={spacing.mrMd}
-              />
-              Copy performance warning
-            </Title>
-          }
-          isOpen={verifyWarningState === VerifyWarningState.Open}
-          onClose={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-          actions={[
-            <Button
-              key="close"
-              variant="primary"
-              onClick={() => setVerifyWarningState(VerifyWarningState.Dismissed)}
-            >
-              Close
-            </Button>,
-          ]}
-        >
-          Selecting checksum verification for a PV that will be copied using a filesystem copy
-          method will severely impact the copy performance. Enabling verification will essentially
-          remove any time savings from incremental restore. <br />
-          <br />
-          See the product documentation for more information.
-        </Modal>
+        <VerifyCopyWarningModal {...{ verifyWarningState, setVerifyWarningState }} />
       </GridItem>
     </Grid>
   );

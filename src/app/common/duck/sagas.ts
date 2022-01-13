@@ -37,7 +37,7 @@ function* getState(): Generator<StrictEffect, DefaultRootState, DefaultRootState
 }
 
 export const StatusPollingInterval = 4000;
-const ErrorToastTimeout = 5000;
+const ErrorToastTimeout = 8000;
 
 function* fetchCraneVersion(action: any): Generator<any, any, any> {
   const state = yield* getState();
@@ -126,9 +126,16 @@ function* fetchMTCVersion(action: any): Generator<any, any, any> {
       const channels = packageManifestResourceResponse.data.status.channels.map(
         (channel: any) => channel?.currentCSV
       );
+      const currentVersionList =
+        csvResourceResponse?.data?.items.filter((csvListItem: any) => {
+          return csvListItem.metadata.name.includes('mtc-operator');
+        }) || [];
+
       yield put(
         fetchMTCVersionSuccess({
-          currentVersion: csvResourceResponse.data?.items[0]?.metadata.name,
+          currentVersion: currentVersionList.length
+            ? currentVersionList[0].metadata.name
+            : 'current operator version',
           versionList: channels,
           operatorType: 'mtc',
           route,
@@ -199,7 +206,7 @@ function* watchHookPolling(): Generator {
 export function* progressTimeoutSaga(action: any) {
   try {
     yield put(alertProgress(action.payload));
-    yield delay(5000);
+    yield delay(8000);
     yield put(alertClear());
   } catch (error) {
     put(alertClear());
@@ -219,7 +226,7 @@ export function* errorTimeoutSaga(action: any) {
 export function* successTimeoutSaga(action: any) {
   try {
     yield put(alertSuccess(action.payload));
-    yield delay(5000);
+    yield delay(8000);
     yield put(alertClear());
   } catch (error) {
     yield put(alertClear());

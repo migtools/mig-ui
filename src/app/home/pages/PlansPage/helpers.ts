@@ -7,26 +7,40 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
-import { IMigration, IPlan, IStep } from '../../../plan/duck/types';
-import { MigrationStepsType, IProgressInfoObj, IStepProgressInfo } from './types';
+import {
+  IMigPlanStorageClass,
+  IMigration,
+  IPlan,
+  IPlanPersistentVolume,
+  IStep,
+} from '../../../plan/duck/types';
+import {
+  MigrationStepsType,
+  IProgressInfoObj,
+  IStepProgressInfo,
+  MigrationType,
+  MigrationAction,
+  MIGRATION_ACTIONS,
+} from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
   if (!plan || !plan?.PlanStatus) {
     return '';
   }
+
   const {
     hasClosedCondition = null,
     hasReadyCondition = null,
     hasNotReadyCondition = null,
     hasRunningMigrations = null,
-    hasSucceededMigration = null,
+    hasSucceededCutover = null,
     hasSucceededWithWarningsCondition = null,
     hasSucceededStage = null,
     hasSucceededRollback = null,
     hasCanceledCondition = null,
     hasCancelingCondition = null,
     hasCriticalCondition = null,
-    latestType = null,
+    latestAction = null,
     latestIsFailed = null,
     hasConflictCondition = null,
     conflictErrorMsg = null,
@@ -34,25 +48,23 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasWarnCondition = null,
     hasDVMBlockedCondition = null,
   } = plan?.PlanStatus;
-  if (latestIsFailed) return `${latestType} Failed`;
-  if (hasCriticalCondition) return `${latestType} Failed`;
+
+  const latestActionStr = migrationActionToString(latestAction);
+
+  if (isPlanLocked) return 'Pending';
+  if (latestIsFailed) return `${latestActionStr} failed`;
+  if (hasCriticalCondition) return `${latestActionStr} failed`;
   if (hasConflictCondition) return conflictErrorMsg;
   if (hasClosedCondition) return 'Closed';
-  if (hasCancelingCondition) return `Canceling ${latestType}`;
-  if (hasRunningMigrations) return `${latestType} Running`;
-  if (hasCanceledCondition) return `${latestType} canceled`;
+  if (hasCancelingCondition) return `Canceling ${latestActionStr}`;
+  if (hasRunningMigrations) return `${latestActionStr} in progress`;
+  if (hasCanceledCondition) return `${latestActionStr} canceled`;
   if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
-  if (isPlanLocked) return 'Pending';
   if (hasSucceededRollback) return 'Rollback succeeded';
-  if (hasDVMBlockedCondition) return 'Running';
-  if (hasSucceededMigration && hasWarnCondition) return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Stage')
-    return 'Stage completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Migration')
-    return 'Migration completed with warnings';
-  if (hasSucceededWithWarningsCondition && plan.PlanStatus.latestType === 'Rollback')
-    return 'Rollback completed with warnings';
-  if (hasSucceededMigration) return 'Migration succeeded';
+  if (hasDVMBlockedCondition) return 'In progress';
+  if (hasSucceededCutover && hasWarnCondition) return 'Migration completed with warnings';
+  if (hasSucceededWithWarningsCondition) return `${latestActionStr} completed with warnings`;
+  if (hasSucceededCutover) return 'Migration succeeded';
   if (hasSucceededStage) return 'Stage succeeded';
   if (hasReadyCondition) return 'Ready';
   return 'Waiting for status...';
@@ -64,6 +76,8 @@ export const getPlanInfo = (plan: IPlan) => {
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
   return {
     planName: plan.MigPlan.metadata.name,
+    migrationType:
+      plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'],
     migrationCount: plan.Migrations.length || 0,
     sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name
       ? plan.MigPlan.spec?.srcMigClusterRef?.name
@@ -351,3 +365,82 @@ export const getElapsedTime = (step: IStep, migration: IMigration): string => {
 };
 
 export type IPlanInfo = ReturnType<typeof getPlanInfo>;
+
+export const targetStorageClassToString = (storageClass: IMigPlanStorageClass) =>
+  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
+
+export const pvcNameToString = (pvc: IPlanPersistentVolume['pvc']) => {
+  const includesMapping = pvc.name.includes(':');
+  if (includesMapping) {
+    return pvc.name.split(':')[0];
+  }
+  return pvc.name;
+};
+
+export const migrationTypeToString = (migrationType: MigrationType) =>
+  migrationType === 'full'
+    ? 'Full migration'
+    : migrationType === 'state'
+    ? 'State migration'
+    : migrationType === 'scc'
+    ? 'Storage class conversion'
+    : '';
+
+export const migrationActionToString = (action?: MigrationAction) =>
+  action === 'stage'
+    ? 'Stage'
+    : action === 'cutover'
+    ? 'Cutover'
+    : action === 'rollback'
+    ? 'Rollback'
+    : '';
+
+// Booleans in the Migration spec are unintuitive, we'll try to keep the logic mapping those to type/action centralized here
+const MIG_SPEC_ACTION_FIELDS = ['migrateState', 'stage', 'quiescePods', 'rollback'] as const;
+type MigSpecActionField = typeof MIG_SPEC_ACTION_FIELDS[number];
+type MigSpecActionFields = Pick<IMigration['spec'], MigSpecActionField>;
+
+const migSpecByAction: Record<MigrationType, Record<MigrationAction, MigSpecActionFields>> = {
+  full: {
+    stage: { migrateState: false, stage: true, quiescePods: false, rollback: false },
+    cutover: { migrateState: false, stage: false, quiescePods: false, rollback: false }, // quiescePods is a user selection here
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+  state: {
+    stage: { migrateState: true, stage: false, quiescePods: false, rollback: false },
+    cutover: { migrateState: false, stage: false, quiescePods: false, rollback: false },
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+  scc: {
+    stage: { migrateState: true, stage: false, quiescePods: false, rollback: false },
+    cutover: { migrateState: true, stage: false, quiescePods: true, rollback: false },
+    rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
+  },
+};
+
+export const actionToMigSpec = (
+  type: MigrationType,
+  action: MigrationAction,
+  quiescePodsOnFullMigCutover: boolean
+): MigSpecActionFields => {
+  const specFields = migSpecByAction[type][action];
+  if (type === 'full' && action === 'cutover') {
+    specFields.quiescePods = quiescePodsOnFullMigCutover;
+  }
+  return specFields;
+};
+
+export const migSpecToAction = (
+  type: MigrationType,
+  spec?: IMigration['spec']
+): MigrationAction | undefined => {
+  if (!spec) return undefined;
+  return MIGRATION_ACTIONS.find((action) => {
+    const possibleSpec = migSpecByAction[type][action];
+    const fieldsToCompare =
+      type === 'full'
+        ? MIG_SPEC_ACTION_FIELDS.filter((field) => field !== 'quiescePods')
+        : MIG_SPEC_ACTION_FIELDS;
+    return fieldsToCompare.every((field) => possibleSpec[field] === (spec[field] || false));
+  });
+};

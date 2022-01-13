@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { FormikProps, useFormikContext } from 'formik';
-import { IFormValues, IOtherProps } from './WizardContainer';
+import { useFormikContext } from 'formik';
+import { IFormValues } from './WizardContainer';
 import {
   GridItem,
   Text,
@@ -12,13 +12,12 @@ import {
   PaginationVariant,
   DropdownDirection,
   TextInput,
-  Button,
   FlexItem,
   Flex,
   Popover,
   PopoverPosition,
-  Title,
   FormGroup,
+  Button,
 } from '@patternfly/react-core';
 import {
   IRowData,
@@ -45,24 +44,18 @@ import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
 import { ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import { useSelector } from 'react-redux';
+import { planSelectors } from '../../../../../plan/duck';
+import { DefaultRootState } from '../../../../../../configureStore';
 const styles = require('./NamespacesTable.module').default;
 
-type INamespacesTableProps = Pick<IOtherProps, 'sourceClusterNamespaces'>;
-
-const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
-  sourceClusterNamespaces,
-}: INamespacesTableProps) => {
+const NamespacesTable: React.FunctionComponent = () => {
+  const sourceClusterNamespaces = useSelector((state: DefaultRootState) =>
+    planSelectors.getFilteredNamespaces(state)
+  );
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
-  const {
-    handleBlur,
-    handleChange,
-    setFieldTouched,
-    setFieldValue,
-    values,
-    touched,
-    errors,
-    validateForm,
-  } = useFormikContext<IFormValues>();
+  const { handleBlur, setFieldTouched, setFieldValue, values, touched, errors } =
+    useFormikContext<IFormValues>();
 
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
   const [editableRow, setEditableRow] = React.useState(null);
@@ -75,7 +68,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     { title: 'Pods', transforms: [sortable] },
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
-    { title: 'Target name', transforms: [sortable] },
+    values.migrationType.value !== 'scc' && { title: 'Target name', transforms: [sortable] },
   ];
   const getSortValues = (namespace: any) => [
     null, // Column 0 has the checkboxes, sort values need to be indexed from 1
@@ -105,14 +98,31 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     const editedNamespace = values.editedNamespaces.find(
       (editedNS) => editedNS.id === namespace.id
     );
-    const targetNamespaceName = editedNamespace ? editedNamespace.newName : namespace.name;
+    const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+    let targetNamespaceFromPlan = '';
+    if (currentPlan) {
+      for (const i of currentPlan.spec.namespaces) {
+        const ns = i.split(':');
+        if (ns.length > 1) {
+          if (ns[0] === namespace.name) {
+            targetNamespaceFromPlan = ns[1];
+          }
+        }
+      }
+    }
+    const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
+    const initialTargetName = isIntraClusterMigration ? `${namespace.name}-new` : namespace.name;
+    const finalTargetName =
+      targetNamespaceFromPlan !== '' ? targetNamespaceFromPlan : initialTargetName;
+    const targetNamespaceName = editedNamespace ? editedNamespace.newName : finalTargetName;
+
     return {
       cells: [
         namespace.name,
         namespace.podCount,
         namespace.pvcCount,
         namespace.serviceCount,
-        targetNamespaceName,
+        values.migrationType.value !== 'scc' && targetNamespaceName,
       ],
       selected: values.selectedNamespaces.includes(namespace.name),
       meta: {
@@ -147,6 +157,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
     setAllRowsSelected(isSelected);
 
@@ -158,6 +169,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     }
     setFieldValue('selectedNamespaces', newSelected);
   };
+
   const { setQuery, query } = useDelayValidation(setFieldValue);
   const handleDelayedValidation = (val: string, row: any, rowIndex: any): any => {
     setQuery({
@@ -175,7 +187,11 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
     <React.Fragment>
       <GridItem>
         <TextContent className={spacing.mtMd}>
-          <Text component={TextVariants.p}>Select projects to be migrated</Text>
+          <Text component={TextVariants.p}>
+            {values.migrationType.value === 'scc'
+              ? 'Select projects containing the PVs to be converted.'
+              : 'Select projects to be migrated.'}
+          </Text>
         </TextContent>
       </GridItem>
       <GridItem>
@@ -213,34 +229,38 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
                 <Th width={10}>{columns[3].title}</Th>
-                <Th width={30}>
-                  {columns[4].title}
-                  <Popover
-                    position={PopoverPosition.right}
-                    bodyContent={
-                      <>
-                        <p className={spacing.mtMd}>
-                          By default, a target namespace will have the same name as its
-                          corresponding source namespace.
-                          <br></br>
-                          <br></br>
-                          To change the name of the target namespace, click the edit icon.
-                        </p>
-                      </>
-                    }
-                    aria-label="edit-target-ns-details"
-                    closeBtnAriaLabel="close--details"
-                    maxWidth="30rem"
-                  >
-                    <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
-                      <OutlinedQuestionCircleIcon
-                        className="pf-c-icon pf-m-default"
-                        size="sm"
-                      ></OutlinedQuestionCircleIcon>
-                    </span>
-                  </Popover>
-                </Th>
-                <Th width={20}></Th>
+                {values.migrationType.value !== 'scc' && (
+                  <>
+                    <Th width={30}>
+                      {columns[4].title}
+                      <Popover
+                        position={PopoverPosition.right}
+                        bodyContent={
+                          <>
+                            <p className={spacing.mtMd}>
+                              By default, a target namespace will have the same name as its
+                              corresponding source namespace.
+                              <br></br>
+                              <br></br>
+                              To change the name of the target namespace, click the edit icon.
+                            </p>
+                          </>
+                        }
+                        aria-label="edit-target-ns-details"
+                        closeBtnAriaLabel="close--details"
+                        maxWidth="30rem"
+                      >
+                        <span className={`${spacing.mlSm} pf-c-icon pf-m-info`}>
+                          <OutlinedQuestionCircleIcon
+                            className="pf-c-icon pf-m-default"
+                            size="sm"
+                          ></OutlinedQuestionCircleIcon>
+                        </span>
+                      </Popover>
+                    </Th>
+                    <Th width={20}></Th>
+                  </>
+                )}
               </Tr>
             </Thead>
             <Tbody>
@@ -266,6 +286,7 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                               <Td
                                 key={`${rowIndex}_${shiftedIndex}`}
                                 dataLabel={columns[cellIndex].title}
+                                className={!row.selected && styles.disabledText}
                               >
                                 {cell}
                               </Td>
@@ -327,84 +348,79 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                         <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
                           <FlexItem flex={{ default: 'flex_1' }}>
                             {!errors.currentTargetNamespaceName && (
-                              <span id="save-edit-icon" className="pf-c-icon pf-m-info">
-                                <CheckIcon
-                                  size="md"
-                                  type="button"
-                                  className={styles.clickable}
-                                  onClick={() => {
-                                    setEditableRow(null);
-                                    const hasEditedValue = values.editedNamespaces.find(
-                                      (ns) => row.cells[0] === ns.oldName
-                                    );
-                                    let newEditedNamespaces;
-                                    if (hasEditedValue) {
-                                      newEditedNamespaces = [
-                                        ...new Set([...values.editedNamespaces]),
-                                      ];
-
-                                      const index = values.editedNamespaces.findIndex(
-                                        (ns) => ns.oldName === row.cells[0]
-                                      );
-                                      //check if no changes made
-                                      if (
-                                        newEditedNamespaces[index].oldName ===
-                                        values.currentTargetNamespaceName.name
-                                      ) {
-                                        if (index > -1) {
-                                          newEditedNamespaces.splice(index, 1);
-                                        }
-                                        //replace found edit with current edit
-                                      } else if (index || index === 0) {
-                                        newEditedNamespaces[index] = {
-                                          oldName:
-                                            typeof row.cells[0] === 'string' ? row.cells[0] : '',
-                                          newName: values.currentTargetNamespaceName.name,
-                                          id: row.meta.id,
-                                        };
-                                      }
-                                    } else {
-                                      newEditedNamespaces = [
-                                        ...new Set([
-                                          ...values.editedNamespaces,
-                                          {
-                                            oldName: row.cells[0],
-                                            newName: values.currentTargetNamespaceName.name,
-                                            id: row.meta.id,
-                                          },
-                                        ]),
-                                      ];
-                                    }
-                                    setFieldValue('editedNamespaces', newEditedNamespaces);
-                                    setFieldValue(currentTargetNamespaceNameKey, null);
-                                    setFieldTouched(currentTargetNamespaceNameKey, false);
-                                  }}
-                                />
-                              </span>
-                            )}
-                            <span
-                              id="inline-edit-icon"
-                              className={`${spacing.mlSm} pf-c-icon pf-m-danger`}
-                            >
-                              <TimesIcon
-                                size="md"
-                                className={styles.clickable}
-                                type="button"
+                              <Button
+                                variant="plain"
+                                aria-label={`Save edits to row ${rowIndex}`}
                                 onClick={() => {
                                   setEditableRow(null);
+                                  const hasEditedValue = values.editedNamespaces.find(
+                                    (ns) => row.cells[0] === ns.oldName
+                                  );
+                                  let newEditedNamespaces;
+                                  if (hasEditedValue) {
+                                    newEditedNamespaces = [
+                                      ...new Set([...values.editedNamespaces]),
+                                    ];
+
+                                    const index = values.editedNamespaces.findIndex(
+                                      (ns) => ns.oldName === row.cells[0]
+                                    );
+                                    //check if no changes made
+                                    if (
+                                      newEditedNamespaces[index].oldName ===
+                                      values.currentTargetNamespaceName.name
+                                    ) {
+                                      if (index > -1) {
+                                        newEditedNamespaces.splice(index, 1);
+                                      }
+                                      //replace found edit with current edit
+                                    } else if (index || index === 0) {
+                                      newEditedNamespaces[index] = {
+                                        oldName:
+                                          typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                        newName: values.currentTargetNamespaceName.name,
+                                        id: row.meta.id,
+                                      };
+                                    }
+                                  } else {
+                                    newEditedNamespaces = [
+                                      ...new Set([
+                                        ...values.editedNamespaces,
+                                        {
+                                          oldName: row.cells[0],
+                                          newName: values.currentTargetNamespaceName.name,
+                                          id: row.meta.id,
+                                        },
+                                      ]),
+                                    ];
+                                  }
+                                  setFieldValue('editedNamespaces', newEditedNamespaces);
                                   setFieldValue(currentTargetNamespaceNameKey, null);
                                   setFieldTouched(currentTargetNamespaceNameKey, false);
                                 }}
-                              />
-                            </span>
+                              >
+                                <CheckIcon />
+                              </Button>
+                            )}
+                            <Button
+                              variant="plain"
+                              aria-label={`Cancel editing row ${rowIndex}`}
+                              onClick={() => {
+                                setEditableRow(null);
+                                setFieldValue(currentTargetNamespaceNameKey, null);
+                                setFieldTouched(currentTargetNamespaceNameKey, false);
+                              }}
+                            >
+                              <TimesIcon />
+                            </Button>
                           </FlexItem>
                         </Flex>
                       ) : (
-                        <span id="inline-edit-icon" className="pf-c-icon pf-m-default">
-                          <PencilAltIcon
-                            className={styles.clickable}
-                            type="button"
-                            size="md"
+                        row.selected &&
+                        values.migrationType.value !== 'scc' && (
+                          <Button
+                            variant="plain"
+                            aria-label={`Edit row ${rowIndex}`}
                             onClick={() => {
                               setEditableRow(rowIndex);
                               handleDelayedValidation(
@@ -417,8 +433,10 @@ const NamespacesTable: React.FunctionComponent<INamespacesTableProps> = ({
                                 srcName: row.cells[0],
                               });
                             }}
-                          />
-                        </span>
+                          >
+                            <PencilAltIcon />
+                          </Button>
+                        )
                       )}
                     </Td>
                   </Tr>

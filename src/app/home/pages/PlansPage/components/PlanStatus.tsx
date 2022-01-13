@@ -5,6 +5,8 @@ import { getPlanStatusText } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import { HashLink } from 'react-router-hash-link';
+import { TruncatedText } from '../../../../common/components/TruncatedText';
+const styles = require('./PlanStatus.module').default;
 
 interface IProps {
   plan: IPlan;
@@ -24,7 +26,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
       hasCancelingCondition = null,
       hasDVMBlockedCondition = null,
       hasWarnCondition = null,
-      hasSucceededMigration = null,
+      hasSucceededCutover = null,
       hasSucceededWithWarningsCondition = null,
     } = plan?.PlanStatus;
     showDebugLink =
@@ -35,7 +37,7 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
       hasCancelingCondition ||
       hasDVMBlockedCondition ||
       hasWarnCondition ||
-      hasSucceededMigration ||
+      hasSucceededCutover ||
       hasSucceededWithWarningsCondition;
   } else {
     showDebugLink = false;
@@ -43,16 +45,22 @@ const PlanStatus: React.FunctionComponent<IProps> = ({ plan, isNestedDebugView }
   const planName = plan?.MigPlan?.metadata?.name;
   const latestMigrationName = latestMigration?.metadata?.name;
 
+  const statusTextSpan = (
+    <span className={`${styles.planStatusTextContainer} ${spacing.mlSm}`}>
+      <TruncatedText>{getPlanStatusText(plan)}</TruncatedText>
+    </span>
+  );
+
   return (
     <Flex>
       <FlexItem>
         <PlanStatusIcon plan={plan} />
         {!isNestedDebugView && showDebugLink && planName && latestMigrationName ? (
           <HashLink to={`/plans/${planName}/migrations/${latestMigrationName}#debug`}>
-            <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
+            {statusTextSpan}
           </HashLink>
         ) : (
-          <span className={spacing.mlSm}>{getPlanStatusText(plan)}</span>
+          statusTextSpan
         )}
       </FlexItem>
     </Flex>

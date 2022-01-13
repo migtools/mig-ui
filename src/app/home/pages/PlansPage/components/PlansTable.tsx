@@ -13,13 +13,14 @@ import {
   sortable,
   truncate,
   cellWidth,
+  fitContent,
 } from '@patternfly/react-table';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import MigrationIcon from '@patternfly/react-icons/dist/js/icons/migration-icon';
 
 import PlanStatus from './PlanStatus';
 import { useFilterState, useSortState } from '../../../../common/duck/hooks';
-import { getPlanInfo } from '../helpers';
+import { getPlanInfo, migrationTypeToString } from '../helpers';
 import { IPlan } from '../../../../plan/duck/types';
 import namespacesIcon from '../../../../common/components/namespaces_icon.svg';
 import { usePaginationState } from '../../../../common/duck/hooks/usePaginationState';
@@ -49,19 +50,20 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
 
   const columns = [
-    { title: 'Name', transforms: [sortable, cellWidth(10)] },
+    { title: 'Name', transforms: [sortable, cellWidth(15)] },
     {
       title: 'Migrations',
-      transforms: [sortable, cellWidth(15)],
+      transforms: [sortable, fitContent],
     },
-    { title: 'Source', transforms: [sortable, cellWidth(10)] },
-    { title: 'Target', transforms: [sortable, cellWidth(10)] },
-    { title: 'Repository', transforms: [sortable, cellWidth(10)] },
+    { title: 'Type', transforms: [sortable], cellTransforms: [truncate] },
+    { title: 'Source', transforms: [sortable] },
+    { title: 'Target', transforms: [sortable] },
+    { title: 'Repository', transforms: [sortable] },
     {
       title: 'Namespaces',
-      transforms: [sortable, cellWidth(15)],
+      transforms: [sortable, fitContent],
     },
-    { title: 'Last state', transforms: [sortable, cellWidth(40)], cellTransforms: [truncate] },
+    { title: 'Last state', transforms: [sortable, cellWidth(20)], cellTransforms: [truncate] },
     '',
   ];
 
@@ -79,6 +81,18 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
       type: FilterType.search,
       placeholderText: 'Filter by Migrations...',
       getItemValue: (plan) => getPlanInfo(plan).migrationCount,
+    },
+    {
+      key: 'migrationType',
+      title: 'Type',
+      type: FilterType.select,
+      placeholderText: 'Filter by Type...',
+      selectOptions: [
+        { key: 'full', value: 'Full migration' },
+        { key: 'state', value: 'State migration' },
+        { key: 'scc', value: 'Storage class conversion' },
+      ],
+      getItemValue: (plan) => getPlanInfo(plan).migrationType,
     },
     {
       key: 'sourceClusterName',
@@ -121,6 +135,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     const {
       planName,
       migrationCount,
+      migrationType,
       sourceClusterName,
       targetClusterName,
       storageName,
@@ -130,6 +145,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     return [
       planName,
       migrationCount,
+      migrationTypeToString(migrationType),
       sourceClusterName,
       targetClusterName,
       storageName,
@@ -151,6 +167,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
     currentPageItems.map((plan: IPlan, planIndex) => {
       const {
         planName,
+        migrationType,
         migrationCount,
         sourceClusterName,
         targetClusterName,
@@ -185,7 +202,7 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
                 </>
               ),
             },
-
+            migrationTypeToString(migrationType),
             sourceClusterName,
             targetClusterName,
             storageName,

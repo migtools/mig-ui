@@ -59,7 +59,6 @@ const logSlice = createSlice({
     },
     clusterPodFetchRequest(state, action: PayloadAction<string>) {
       state.isFetchingLogs = true;
-      state.logPodObject = action.payload;
     },
     clusterPodFetchSuccess(state, action: PayloadAction<IClusterLogPodObject>) {
       state.isFetchingLogs = false;

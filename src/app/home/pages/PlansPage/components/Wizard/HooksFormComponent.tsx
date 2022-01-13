@@ -176,7 +176,7 @@ const HooksFormComponent: React.FunctionComponent<
         e.preventDefault();
       }}
     >
-      <Grid span={8}>
+      <Grid>
         {hookAddEditStatus.mode === AddEditMode.Add && currentPlan && (
           <GridItem>
             <FormGroup
