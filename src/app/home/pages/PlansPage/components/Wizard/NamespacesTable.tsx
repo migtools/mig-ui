@@ -98,9 +98,24 @@ const NamespacesTable: React.FunctionComponent = () => {
     const editedNamespace = values.editedNamespaces.find(
       (editedNS) => editedNS.id === namespace.id
     );
+    const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+    let targetNamespaceFromPlan = '';
+    if (currentPlan) {
+      for (const i of currentPlan.spec.namespaces) {
+        const ns = i.split(':');
+        if (ns.length > 1) {
+          if (ns[0] === namespace.name) {
+            targetNamespaceFromPlan = ns[1];
+          }
+        }
+      }
+    }
     const isIntraClusterMigration = values.sourceCluster === values.targetCluster;
     const initialTargetName = isIntraClusterMigration ? `${namespace.name}-new` : namespace.name;
-    const targetNamespaceName = editedNamespace ? editedNamespace.newName : initialTargetName;
+    const finalTargetName =
+      targetNamespaceFromPlan !== '' ? targetNamespaceFromPlan : initialTargetName;
+    const targetNamespaceName = editedNamespace ? editedNamespace.newName : finalTargetName;
+
     return {
       cells: [
         namespace.name,
