@@ -35,6 +35,7 @@ const HookActions = (props: IHookActions) => {
       isDisabled={migHook.HookStatus.associatedPlanCount > 0}
       onClick={() => {
         removeHookRequest(migHook.metadata.name);
+        setKebabIsOpen(!kebabIsOpen);
       }}
       key="removeHook"
     >
