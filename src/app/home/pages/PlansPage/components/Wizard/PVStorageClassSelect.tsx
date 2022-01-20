@@ -48,9 +48,11 @@ export const PVStorageClassSelect: React.FunctionComponent<IPVStorageClassSelect
       onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
       options={storageClassOptions}
       value={
-        storageClassOptions.find(
-          (option) => currentStorageClass && option.value === currentStorageClass.name
-        ) || pv.storageClass
+        currentStorageClass === ''
+          ? noneOption
+          : storageClassOptions.find(
+              (option) => currentStorageClass && option.value === currentStorageClass.name
+            ) || pv.storageClass
       }
       placeholderText="Select a storage class..."
     />
