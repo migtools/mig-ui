@@ -228,12 +228,6 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
 
   const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
 
-  console.log(
-    'selected sc: ',
-    currentPlan?.spec?.persistentVolumes &&
-      currentPlan?.spec?.persistentVolumes[0].selection.storageClass
-  );
-
   return (
     <WizardFormik
       initialValues={initialValues}
