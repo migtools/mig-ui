@@ -137,6 +137,27 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         getMigrationType(
           editPlanObj.metadata.annotations['migration.openshift.io/selected-migplan-type']
         );
+      if (initialValuesCopy.migrationType === undefined) {
+        if (editPlanObj.status?.conditions) {
+          editPlanObj.status.conditions?.forEach((element) => {
+            if (element.type === 'MigrationTypeIdentified') {
+              switch (element.message) {
+                case 'StateMigrationPlan':
+                  initialValuesCopy.migrationType = getMigrationType('state');
+                  break;
+                case 'StorageConversionPlan':
+                  initialValuesCopy.migrationType = getMigrationType('state');
+                  break;
+                default:
+                  initialValuesCopy.migrationType = getMigrationType('full');
+              }
+            }
+          });
+        }
+      }
+      if (initialValuesCopy.migrationType === undefined) {
+        initialValuesCopy.migrationType = getMigrationType('full');
+      }
       initialValuesCopy.planName = editPlanObj.metadata.name || '';
       initialValuesCopy.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
       initialValuesCopy.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
