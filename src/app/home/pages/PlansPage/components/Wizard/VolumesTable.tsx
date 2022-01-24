@@ -70,6 +70,32 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   const { setFieldValue, values } = useFormikContext<IFormValues>();
   const isSCC = values.migrationType.value === 'scc';
 
+  // Initialize target storage class form selection from currentPlan if we're ready
+  React.useEffect(() => {
+    const pvScInitialised =
+      values.pvStorageClassAssignment && Object.keys(values.pvStorageClassAssignment).length > 0;
+    const planHasPvScSelection =
+      planState.currentPlan?.spec.persistentVolumes?.length > 0 &&
+      !!planState.currentPlan?.spec.persistentVolumes[0].selection;
+    if (!pvScInitialised && planHasPvScSelection) {
+      let pvStorageClassAssignment = {};
+      const migPlanPvs = planState.currentPlan?.spec.persistentVolumes;
+      if (migPlanPvs) {
+        const storageClasses = planState.currentPlan?.status?.destStorageClasses || [];
+        pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
+          const suggestedStorageClass = storageClasses.find(
+            (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
+          );
+          return {
+            ...assignedScs,
+            [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+          };
+        }, {});
+        setFieldValue('pvStorageClassAssignment', pvStorageClassAssignment);
+      }
+    }
+  }, [values, planState.currentPlan]);
+
   const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
     if (planState.currentPlan !== null && values.persistentVolumes) {
       const newPVs = [...values.persistentVolumes];
