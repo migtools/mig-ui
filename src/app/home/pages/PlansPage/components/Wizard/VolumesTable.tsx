@@ -49,7 +49,11 @@ import { usePaginationState } from '../../../../../common/duck/hooks/usePaginati
 import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
-import { pvcNameToString, targetStorageClassToString } from '../../helpers';
+import {
+  getSuggestedPvStorageClasses,
+  pvcNameToString,
+  targetStorageClassToString,
+} from '../../helpers';
 import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
 import { ExclamationTriangleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
@@ -74,24 +78,11 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   React.useEffect(() => {
     const pvScInitialised =
       values.pvStorageClassAssignment && Object.keys(values.pvStorageClassAssignment).length > 0;
-    const planHasPvScSelection =
-      planState.currentPlan?.spec.persistentVolumes?.length > 0 &&
-      !!planState.currentPlan?.spec.persistentVolumes[0].selection;
-    if (!pvScInitialised && planHasPvScSelection) {
-      let pvStorageClassAssignment = {};
-      const migPlanPvs = planState.currentPlan?.spec.persistentVolumes;
-      if (migPlanPvs) {
-        const storageClasses = planState.currentPlan?.status?.destStorageClasses || [];
-        pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
-          const suggestedStorageClass = storageClasses.find(
-            (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
-          );
-          return {
-            ...assignedScs,
-            [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
-          };
-        }, {});
-        setFieldValue('pvStorageClassAssignment', pvStorageClassAssignment);
+    const planHasPVs = planState.currentPlan?.spec.persistentVolumes?.length > 0;
+    if (!pvScInitialised && planHasPVs) {
+      const suggestedStorageClasses = getSuggestedPvStorageClasses(planState.currentPlan);
+      if (suggestedStorageClasses) {
+        setFieldValue('pvStorageClassAssignment', suggestedStorageClasses);
       }
     }
   }, [values, planState.currentPlan]);

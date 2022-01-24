@@ -8,6 +8,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
 
 import {
+  IMigPlan,
   IMigPlanStorageClass,
   IMigration,
   IPlan,
@@ -443,4 +444,21 @@ export const migSpecToAction = (
         : MIG_SPEC_ACTION_FIELDS;
     return fieldsToCompare.every((field) => possibleSpec[field] === (spec[field] || false));
   });
+};
+
+export const getSuggestedPvStorageClasses = (migPlan?: IMigPlan) => {
+  let pvStorageClassAssignment = {};
+  const migPlanPvs = migPlan?.spec.persistentVolumes;
+  if (!migPlanPvs) return null;
+  const storageClasses = migPlan?.status?.destStorageClasses || [];
+  pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
+    const suggestedStorageClass = storageClasses.find(
+      (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
+    );
+    return {
+      ...assignedScs,
+      [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+    };
+  }, {});
+  return pvStorageClassAssignment;
 };
