@@ -17,6 +17,7 @@ import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { MigrationType } from '../../types';
 import _ from 'lodash';
+import { getSuggestedPvStorageClasses } from '../../helpers';
 
 export interface IFormValues {
   planName: string;
@@ -116,20 +117,9 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
       }
     };
     if (editPlanObj && isEdit && isOpen) {
-      let pvStorageClassAssignment = {};
-      const migPlanPvs = editPlanObj.spec.persistentVolumes;
-      if (migPlanPvs) {
-        const storageClasses = editPlanObj?.status?.destStorageClasses || [];
-        pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
-          const suggestedStorageClass = storageClasses.find(
-            (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
-          );
-          return {
-            ...assignedScs,
-            [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
-          };
-        }, {});
-        initialValuesCopy.pvStorageClassAssignment = pvStorageClassAssignment;
+      const suggestedStorageClasses = getSuggestedPvStorageClasses(editPlanObj);
+      if (suggestedStorageClasses) {
+        initialValuesCopy.pvStorageClassAssignment = suggestedStorageClasses;
       }
 
       initialValuesCopy.migrationType =

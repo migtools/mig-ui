@@ -49,7 +49,11 @@ import { usePaginationState } from '../../../../../common/duck/hooks/usePaginati
 import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
-import { pvcNameToString, targetStorageClassToString } from '../../helpers';
+import {
+  getSuggestedPvStorageClasses,
+  pvcNameToString,
+  targetStorageClassToString,
+} from '../../helpers';
 import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
 import { ExclamationTriangleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
@@ -69,6 +73,19 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 
   const { setFieldValue, values } = useFormikContext<IFormValues>();
   const isSCC = values.migrationType.value === 'scc';
+
+  // Initialize target storage class form selection from currentPlan if we're ready
+  React.useEffect(() => {
+    const pvScInitialised =
+      values.pvStorageClassAssignment && Object.keys(values.pvStorageClassAssignment).length > 0;
+    const planHasPVs = planState.currentPlan?.spec.persistentVolumes?.length > 0;
+    if (!pvScInitialised && planHasPVs) {
+      const suggestedStorageClasses = getSuggestedPvStorageClasses(planState.currentPlan);
+      if (suggestedStorageClasses) {
+        setFieldValue('pvStorageClassAssignment', suggestedStorageClasses);
+      }
+    }
+  }, [values, planState.currentPlan]);
 
   const updatePersistentVolumeAction = (currentPV: IPlanPersistentVolume, option: any) => {
     if (planState.currentPlan !== null && values.persistentVolumes) {
