@@ -131,12 +131,12 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         if (editPlanObj.status?.conditions) {
           editPlanObj.status.conditions?.forEach((element) => {
             if (element.type === 'MigrationTypeIdentified') {
-              switch (element.message) {
+              switch (element.reason) {
                 case 'StateMigrationPlan':
                   initialValuesCopy.migrationType = getMigrationType('state');
                   break;
                 case 'StorageConversionPlan':
-                  initialValuesCopy.migrationType = getMigrationType('state');
+                  initialValuesCopy.migrationType = getMigrationType('scc');
                   break;
                 default:
                   initialValuesCopy.migrationType = getMigrationType('full');
@@ -149,8 +149,8 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         initialValuesCopy.migrationType = getMigrationType('full');
       }
       initialValuesCopy.planName = editPlanObj.metadata.name || '';
-      initialValuesCopy.sourceCluster = editPlanObj.spec.srcMigClusterRef.name || null;
-      initialValuesCopy.targetCluster = editPlanObj.spec.destMigClusterRef.name || null;
+      initialValuesCopy.sourceCluster = editPlanObj.spec?.srcMigClusterRef?.name || null;
+      initialValuesCopy.targetCluster = editPlanObj.spec?.destMigClusterRef?.name || null;
       const editedNamespaces: IEditedNamespaceMap[] = [];
       const editedPVs: IEditedPVsMap[] = [];
       const mappedNamespaces = editPlanObj?.spec?.namespaces
@@ -207,9 +207,9 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
       initialValuesCopy.editedPVs = editedPVs || [];
 
       initialValuesCopy.editedNamespaces = editedNamespaces || [];
-      initialValuesCopy.selectedStorage = editPlanObj.spec.migStorageRef.name || null;
-      initialValuesCopy.targetTokenRef = editPlanObj.spec.destMigTokenRef || null;
-      initialValuesCopy.sourceTokenRef = editPlanObj.spec.srcMigTokenRef || null;
+      initialValuesCopy.selectedStorage = editPlanObj.spec?.migStorageRef?.name || null;
+      initialValuesCopy.targetTokenRef = editPlanObj.spec?.destMigTokenRef || null;
+      initialValuesCopy.sourceTokenRef = editPlanObj.spec?.srcMigTokenRef || null;
       // Only set initial plan values for DIM/DVM if property exists on the plan spec.
       // If the value doesn't exist on the spec, this means it was set to false & has disappeared from the spec.
       if (editPlanObj.spec.hasOwnProperty('indirectImageMigration')) {

@@ -75,10 +75,29 @@ export const getPlanInfo = (plan: IPlan) => {
   const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
   const isMaxResourcesLimitReached =
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
+  let migrationType =
+    plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+  if (migrationType === undefined) {
+    if (plan.MigPlan.status?.conditions) {
+      plan.MigPlan?.status?.conditions?.forEach((element) => {
+        if (element.type === 'MigrationTypeIdentified') {
+          switch (element.reason) {
+            case 'StateMigrationPlan':
+              migrationType = 'state';
+              break;
+            case 'StorageConversionPlan':
+              migrationType = 'scc';
+              break;
+            default:
+              migrationType = 'full';
+          }
+        }
+      });
+    }
+  }
   return {
     planName: plan.MigPlan.metadata.name,
-    migrationType:
-      plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'],
+    migrationType: migrationType,
     migrationCount: plan.Migrations.length || 0,
     sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name
       ? plan.MigPlan.spec?.srcMigClusterRef?.name
