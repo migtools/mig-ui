@@ -93,12 +93,12 @@ const NamespacesTable: React.FunctionComponent = () => {
   const { sortBy, onSort, sortedItems } = useSortState(filteredItems, getSortValues);
   const { currentPageItems, setPageNumber, paginationProps } = usePaginationState(sortedItems, 10);
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
-
+  const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
   const rows = currentPageItems.map((namespace: ISourceClusterNamespace) => {
     const editedNamespace = values.editedNamespaces.find(
       (editedNS) => editedNS.id === namespace.id
     );
-    const { currentPlan } = useSelector((state: DefaultRootState) => state.plan);
+
     let targetNamespaceFromPlan = '';
     if (currentPlan) {
       for (const i of currentPlan.spec.namespaces) {
