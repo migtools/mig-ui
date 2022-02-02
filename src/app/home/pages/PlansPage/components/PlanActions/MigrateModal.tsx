@@ -58,7 +58,8 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                 <TextList>
                   <TextListItem>PV data is copied to the target PVs.</TextListItem>
                   <TextListItem>
-                    Kubernetes resources on the Migration Plan are migrated to the target cluster.
+                    All transactions on source applications are halted for the duration of the
+                    migration.
                   </TextListItem>
                 </TextList>
               ) : migrationType === 'scc' ? (

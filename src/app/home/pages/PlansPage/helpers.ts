@@ -75,26 +75,7 @@ export const getPlanInfo = (plan: IPlan) => {
   const latestMigAnalytic = plan.Analytics ? plan.Analytics[0] : null;
   const isMaxResourcesLimitReached =
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
-  let migrationType =
-    plan?.MigPlan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
-  if (migrationType === undefined) {
-    if (plan.MigPlan.status?.conditions) {
-      plan.MigPlan?.status?.conditions?.forEach((element) => {
-        if (element.type === 'MigrationTypeIdentified') {
-          switch (element.reason) {
-            case 'StateMigrationPlan':
-              migrationType = 'state';
-              break;
-            case 'StorageConversionPlan':
-              migrationType = 'scc';
-              break;
-            default:
-              migrationType = 'full';
-          }
-        }
-      });
-    }
-  }
+  const migrationType = getMigrationTypeFromPlan(plan.MigPlan);
   return {
     planName: plan.MigPlan.metadata.name,
     migrationType: migrationType,
@@ -110,6 +91,32 @@ export const getPlanInfo = (plan: IPlan) => {
     isMaxResourcesLimitReached,
     statusText: getPlanStatusText(plan),
   };
+};
+
+export const getMigrationTypeFromPlan = (plan: IMigPlan): MigrationType => {
+  let migrationType = plan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+  if (migrationType === undefined) {
+    if (plan?.status?.conditions) {
+      plan?.status?.conditions?.forEach((element) => {
+        if (element.type === 'MigrationTypeIdentified') {
+          switch (element.reason) {
+            case 'StateMigrationPlan':
+              migrationType = 'state';
+              break;
+            case 'StorageConversionPlan':
+              migrationType = 'scc';
+              break;
+            default:
+              migrationType = 'full';
+          }
+        }
+      });
+    }
+  }
+  if (migrationType === undefined) {
+    migrationType = 'full';
+  }
+  return migrationType;
 };
 
 export const findCurrentStep = (pipeline: IStep[]): IStep => {
@@ -428,7 +435,7 @@ const migSpecByAction: Record<MigrationType, Record<MigrationAction, MigSpecActi
   },
   state: {
     stage: { migrateState: true, stage: false, quiescePods: false, rollback: false },
-    cutover: { migrateState: false, stage: false, quiescePods: false, rollback: false },
+    cutover: { migrateState: true, stage: false, quiescePods: true, rollback: false },
     rollback: { migrateState: false, stage: false, quiescePods: false, rollback: true },
   },
   scc: {
