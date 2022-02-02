@@ -738,6 +738,13 @@ function getStageStatusCondition(updatedPlans: any, createMigRes: any) {
         statusObj.status = 'SUCCESS';
       }
 
+      const hasCanceledCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Canceled'
+      );
+      if (hasCanceledCondition) {
+        statusObj.status = 'CANCELED';
+      }
+
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
       );
@@ -812,6 +819,11 @@ function* stagePoll(action: any): Generator {
     const pollingStatusObj = params.getStageStatusCondition(updatedPlans, params.createMigRes);
 
     switch (pollingStatusObj.status) {
+      case 'CANCELED':
+        yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
+        yield put(alertSuccessTimeout('Staging canceled'));
+        yield put(PlanActions.stopStagePolling());
+        break;
       case 'SUCCESS':
         yield put(PlanActions.stagingSuccess(pollingStatusObj.planName));
         yield put(alertSuccessTimeout('Staging Successful'));
@@ -935,7 +947,6 @@ function* migrationPoll(action: any): Generator {
   while (true) {
     const updatedPlans = yield call(params.fetchPlansGenerator);
     const pollingStatusObj = params.getMigrationStatusCondition(updatedPlans, params.createMigRes);
-
     switch (pollingStatusObj.status) {
       case 'CANCELED':
         yield put(alertSuccessTimeout('Migration canceled'));
@@ -985,7 +996,12 @@ function getRollbackStatusCondition(updatedPlans: any, createMigRes: any) {
       if (hasSucceededCondition) {
         statusObj.status = 'SUCCESS';
       }
-
+      const hasCanceledCondition = !!matchingMigration.status.conditions.some(
+        (c) => c.type === 'Canceled'
+      );
+      if (hasCanceledCondition) {
+        statusObj.status = 'CANCELED';
+      }
       const hasErrorCondition = !!matchingMigration.status.conditions.some(
         (c) => c.type === 'Failed' || c.category === 'Critical'
       );
