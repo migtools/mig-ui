@@ -229,6 +229,12 @@ const getPlansWithPlanStatus = createSelector(
         }
       }).length;
 
+      const hasStateMigrations = !!planMigrations.filter((m) => {
+        if (m.metadata?.annotations) {
+          return m.metadata?.annotations['migration.openshift.io/state-transfer'] === 'true';
+        }
+      }).length;
+
       const hasCopyPVs = plan.MigPlan.spec.persistentVolumes?.some(
         (pv) => pv.selection.action === 'copy'
       );
@@ -239,6 +245,7 @@ const getPlansWithPlanStatus = createSelector(
         hasSucceededState,
         hasSucceededRollback,
         hasAttemptedMigration,
+        hasStateMigrations,
         finalMigrationComplete,
         hasRunningMigrations,
         latestType,

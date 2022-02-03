@@ -168,6 +168,7 @@ export interface IPlan {
     hasPVWarnCondition?: boolean;
     hasReadyCondition?: boolean;
     hasRunningMigrations?: boolean;
+    hasStateMigrations?: boolean;
     hasSucceededMigration?: boolean;
     hasSucceededWithWarningsCondition?: boolean;
     hasDVMBlockedCondition?: boolean;
