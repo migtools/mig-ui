@@ -17,7 +17,7 @@ import { DefaultRootState } from '../../../../../../configureStore';
 import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import { MigrationType } from '../../types';
 import _ from 'lodash';
-import { getSuggestedPvStorageClasses } from '../../helpers';
+import { getSuggestedPvStorageClasses, getMigrationTypeFromPlan } from '../../helpers';
 
 export interface IFormValues {
   planName: string;
@@ -122,32 +122,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
         initialValuesCopy.pvStorageClassAssignment = suggestedStorageClasses;
       }
 
-      initialValuesCopy.migrationType =
-        editPlanObj.metadata.annotations &&
-        getMigrationType(
-          editPlanObj.metadata.annotations['migration.openshift.io/selected-migplan-type']
-        );
-      if (initialValuesCopy.migrationType === undefined) {
-        if (editPlanObj.status?.conditions) {
-          editPlanObj.status.conditions?.forEach((element) => {
-            if (element.type === 'MigrationTypeIdentified') {
-              switch (element.reason) {
-                case 'StateMigrationPlan':
-                  initialValuesCopy.migrationType = getMigrationType('state');
-                  break;
-                case 'StorageConversionPlan':
-                  initialValuesCopy.migrationType = getMigrationType('scc');
-                  break;
-                default:
-                  initialValuesCopy.migrationType = getMigrationType('full');
-              }
-            }
-          });
-        }
-      }
-      if (initialValuesCopy.migrationType === undefined) {
-        initialValuesCopy.migrationType = getMigrationType('full');
-      }
+      initialValuesCopy.migrationType = getMigrationType(getMigrationTypeFromPlan(editPlanObj));
       initialValuesCopy.planName = editPlanObj.metadata.name || '';
       initialValuesCopy.sourceCluster = editPlanObj.spec?.srcMigClusterRef?.name || null;
       initialValuesCopy.targetCluster = editPlanObj.spec?.destMigClusterRef?.name || null;
