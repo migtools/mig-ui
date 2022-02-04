@@ -56,6 +56,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
     hasReadyCondition = null,
     hasErrorCondition = null,
     hasRunningMigrations = null,
+    hasStateMigrations = null,
     finalMigrationComplete = null,
     isPlanLocked = null,
     hasCopyPVs = null,
@@ -98,6 +99,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
+        hasStateMigrations ||
         finalMigrationComplete ||
         isPlanLocked ||
         isIntraClusterPlan
@@ -118,6 +120,7 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
         !hasReadyCondition ||
         hasErrorCondition ||
         hasRunningMigrations ||
+        hasStateMigrations ||
         finalMigrationComplete ||
         isPlanLocked ||
         isIntraClusterPlan
@@ -163,13 +166,13 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       </DropdownItem>
     </DropdownGroup>,
     <DropdownGroup label="Migrations" key="migrations">
-      {isIntraClusterPlan ? (
+      {isIntraClusterPlan || hasStateMigrations ? (
         <Tooltip
           position={PopoverPosition.bottom}
           content={
             <div>
-              Stage is not supported for intra-cluster migrations. Please use the State migration
-              option.
+              Stage is not supported for {isIntraClusterPlan ? 'intra-cluster' : 'state'}{' '}
+              migrations. Please use the State migration option.
             </div>
           }
           aria-label="disabled state details"
@@ -180,13 +183,13 @@ export const PlanActionsComponent: React.FunctionComponent<IPlanActionsProps> = 
       ) : (
         stageItem
       )}
-      {isIntraClusterPlan ? (
+      {isIntraClusterPlan || hasStateMigrations ? (
         <Tooltip
           position={PopoverPosition.bottom}
           content={
             <div>
-              Cutover is not supported for intra-cluster migrations. Please use the State migration
-              option.
+              Cutover is not supported for {isIntraClusterPlan ? 'intra-cluster' : 'state'}{' '}
+              migrations. Please use the State migration option.
             </div>
           }
           aria-label="disabled state details"
