@@ -94,7 +94,10 @@ export const getPlanInfo = (plan: IPlan) => {
 };
 
 export const getMigrationTypeFromPlan = (plan: IMigPlan): MigrationType => {
-  let migrationType = plan?.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+  let migrationType: MigrationType;
+  if (plan.metadata?.annotations) {
+    migrationType = plan.metadata?.annotations['migration.openshift.io/selected-migplan-type'];
+  }
   if (migrationType === undefined) {
     if (plan?.status?.conditions) {
       plan?.status?.conditions?.forEach((element) => {
