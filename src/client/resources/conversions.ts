@@ -6,10 +6,8 @@ import {
 import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
 import { INameNamespaceRef } from '../../app/common/duck/types';
 import { IClusterSpec } from '../../app/cluster/duck/types';
-import { select } from 'redux-saga/effects';
 import { MigrationAction, MigrationType } from '../../app/home/pages/PlansPage/types';
 import { actionToMigSpec } from '../../app/home/pages/PlansPage/helpers';
-import { current } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 export function createMigClusterSecret(
@@ -394,7 +392,6 @@ export function updateMigPlanFromValues(
   planValues: IPlanValues,
   currentPlan: IMigPlan
 ) {
-  console.log('migplan, planvalues, currentPlan', migPlan, planValues, currentPlan);
   const updatedSpec: IMigPlan['spec'] = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
