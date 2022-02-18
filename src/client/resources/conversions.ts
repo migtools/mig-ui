@@ -9,6 +9,8 @@ import { IClusterSpec } from '../../app/cluster/duck/types';
 import { select } from 'redux-saga/effects';
 import { MigrationAction, MigrationType } from '../../app/home/pages/PlansPage/types';
 import { actionToMigSpec } from '../../app/home/pages/PlansPage/helpers';
+import { current } from '@reduxjs/toolkit';
+import _ from 'lodash';
 
 export function createMigClusterSecret(
   name: string,
@@ -392,6 +394,7 @@ export function updateMigPlanFromValues(
   planValues: IPlanValues,
   currentPlan: IMigPlan
 ) {
+  console.log('migplan, planvalues, currentPlan', migPlan, planValues, currentPlan);
   const updatedSpec: IMigPlan['spec'] = Object.assign({}, migPlan.spec);
   if (planValues.selectedStorage) {
     updatedSpec.migStorageRef = {
@@ -472,12 +475,15 @@ export function updateMigPlanFromValues(
 
       return updatedPV;
     });
-    updatedSpec.persistentVolumes = planValues.persistentVolumes;
+    updatedSpec.persistentVolumes = _.union(
+      planValues.persistentVolumes,
+      updatedSpec.persistentVolumes
+    );
   }
   if (planValues.planClosed) {
     updatedSpec.closed = true;
   }
-  if (currentPlan.status) {
+  if (currentPlan?.status) {
     // if currentPlan has status, this is not 1st MigPlan reconcile.
     // we should refresh corresponding MigStorage and MigClusters.
     updatedSpec.refresh = true;
