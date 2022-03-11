@@ -356,7 +356,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           pv.name,
           pvcNameToString(pv.pvc),
           pv.pvc.namespace,
-          pv.storageClass,
+          // Storage class can be empty here if none exists/ none selected initially
+          pv.storageClass || '',
           pv.capacity,
           {
             title: (
@@ -382,7 +383,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           pv.name,
           pvcNameToString(pv.pvc),
           pv.pvc.namespace,
-          pv.storageClass,
+          // Storage class can be empty here if none exists/ none selected initially
+          pv.storageClass || '',
           pv.capacity,
           {
             title: (
@@ -482,7 +484,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                           dataLabel={
                             typeof columns[cellIndex].title === 'string'
                               ? (columns[cellIndex].title as string)
-                              : undefined
+                              : ''
                           }
                         >
                           {typeof cell !== 'string' ? cell.title : cell}
