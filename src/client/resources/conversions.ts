@@ -475,7 +475,7 @@ export function updateMigPlanFromValues(
     updatedSpec.persistentVolumes = _.unionBy(
       planValues.persistentVolumes,
       updatedSpec.persistentVolumes,
-      (pv)=>pv.name
+      (pv) => pv.name
     );
   }
   if (planValues.planClosed) {
