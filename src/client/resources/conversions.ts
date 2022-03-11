@@ -472,7 +472,7 @@ export function updateMigPlanFromValues(
 
       return updatedPV;
     });
-    updatedSpec.persistentVolumes = _.union(
+    updatedSpec.persistentVolumes = _.unionBy(
       planValues.persistentVolumes,
       updatedSpec.persistentVolumes
     );
