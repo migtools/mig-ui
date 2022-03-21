@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { createStore } from 'redux';
@@ -82,7 +82,6 @@ describe('<AddEditStorageModal />', () => {
           message: 'The storage is ready.',
           reason: '',
         },
-        checkConnection: jest.fn(),
       };
 
       render(
@@ -269,7 +268,6 @@ describe('<AddEditStorageModal />', () => {
           message: 'The storage is ready.',
           reason: '',
         },
-        checkConnection: jest.fn(),
       };
 
       render(
@@ -383,7 +381,6 @@ describe('<AddEditStorageModal />', () => {
           message: 'The storage is ready.',
           reason: '',
         },
-        checkConnection: jest.fn(),
       };
 
       render(

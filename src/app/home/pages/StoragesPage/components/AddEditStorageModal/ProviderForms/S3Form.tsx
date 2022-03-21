@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Button, TextInput, Form, FormGroup, Checkbox, Flex } from '@patternfly/react-core';
-import flex from '@patternfly/react-styles/css/utilities/Flex/flex';
 import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
-  isCheckConnectionButtonDisabled,
 } from '../../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../../../common/components/CertificateUpload';
@@ -33,7 +31,6 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   initialStorageValues: any;
-  checkConnection: (name: string) => void;
   provider: string;
   isAWS: boolean;
 }
@@ -44,7 +41,6 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 
 const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues>> = ({
   addEditStatus: currentStatus,
-  checkConnection,
   values,
   touched,
   errors,
@@ -261,13 +257,6 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
         >
           {addEditButtonTextFn(currentStatus)}
-        </Button>
-        <Button
-          variant="secondary"
-          isDisabled={isCheckConnectionButtonDisabled(currentStatus, true)}
-          onClick={() => checkConnection(values.name)}
-        >
-          Check Connection
         </Button>
         <Button variant="secondary" onClick={onClose}>
           Close

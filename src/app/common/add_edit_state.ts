@@ -97,21 +97,6 @@ export const addEditButtonText = (componentType: string) => (status: IAddEditSta
   }
 };
 
-export const isCheckConnectionButtonDisabled = (
-  currentStatus: IAddEditStatus,
-  valuesUpdatedObject: boolean
-) => {
-  const objectHasPendingUpdate = currentStatus.mode === AddEditMode.Edit && valuesUpdatedObject;
-
-  const isDisabled =
-    currentStatus.mode === AddEditMode.Add ||
-    currentStatus.state === AddEditState.Fetching ||
-    currentStatus.state === AddEditState.Watching ||
-    objectHasPendingUpdate;
-
-  return isDisabled;
-};
-
 export const isAddEditButtonDisabled = (
   status: IAddEditStatus,
   errors: object,

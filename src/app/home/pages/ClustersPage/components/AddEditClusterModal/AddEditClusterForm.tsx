@@ -17,14 +17,12 @@ import {
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
-  isCheckConnectionButtonDisabled,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../common/components/ConnectionStatusLabel';
 import CertificateUpload from '../../../../../common/components/CertificateUpload';
 import { validatedState } from '../../../../../common/helpers';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/js/icons/question-circle-icon';
-import { IMigCluster } from '../../../../../../client/resources/conversions';
 import { IClusterInfo } from '../../helpers';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context/PollingContext';
@@ -83,7 +81,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
   const {
     addEditStatus: currentStatus,
     currentCluster,
-    checkConnection,
     values,
     touched,
     errors,
@@ -295,16 +292,6 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
         >
           {addEditButtonTextFn(currentStatus)}
         </Button>
-        <Button
-          variant="secondary"
-          isDisabled={isCheckConnectionButtonDisabled(
-            currentStatus,
-            valuesHaveUpdate(values, currentCluster)
-          )}
-          onClick={() => checkConnection(values.name)}
-        >
-          Check connection
-        </Button>
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
@@ -328,7 +315,6 @@ interface IOtherProps {
   handleClose: () => void;
   addEditStatus: IAddEditStatus;
   currentCluster: ICluster;
-  checkConnection: (name: string) => void;
   initialClusterValues?: IClusterInfo;
 }
 const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
