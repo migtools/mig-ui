@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import AddEditStorageForm from './AddEditStorageForm';
 import { StorageActions } from '../../../../../storage/duck/actions';
@@ -6,8 +6,6 @@ import { Modal } from '@patternfly/react-core';
 import {
   AddEditMode,
   defaultAddEditStatus,
-  createAddEditStatus,
-  AddEditState,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { IStorage } from '../../../../../storage/duck/types';
@@ -17,7 +15,6 @@ interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
   isOpen: boolean;
   isPolling: boolean;
-  checkConnection: (name: string) => void;
   storageList: IStorage[];
   addStorage: (storage: any) => void;
   cancelAddEditWatch: () => void;
@@ -32,7 +29,6 @@ const AddEditStorageModal = ({
   addEditStatus,
   isOpen,
   storageList,
-  checkConnection,
   updateStorage,
   addStorage,
   cancelAddEditWatch,
@@ -86,7 +82,6 @@ const AddEditStorageModal = ({
         onAddEditSubmit={onAddEditSubmit}
         onClose={onClose}
         addEditStatus={addEditStatus}
-        checkConnection={checkConnection}
         storageList={storageList}
         currentStorage={currentStorage}
       />
@@ -111,14 +106,6 @@ export default connect(
     cancelAddEditWatch: () => dispatch(StorageActions.cancelWatchStorageAddEditStatus()),
     resetAddEditState: () => {
       dispatch(StorageActions.setStorageAddEditStatus(defaultAddEditStatus()));
-    },
-    checkConnection: (storageName: string) => {
-      dispatch(
-        StorageActions.setStorageAddEditStatus(
-          createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
-        )
-      );
-      dispatch(StorageActions.watchStorageAddEditStatus(storageName));
     },
     resetStoragePage: () => dispatch(StorageActions.resetStoragePage()),
     setCurrentStorage: (currentStorage: IStorage) =>
