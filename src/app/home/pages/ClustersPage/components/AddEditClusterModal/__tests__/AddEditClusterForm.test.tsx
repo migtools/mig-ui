@@ -21,9 +21,6 @@ describe('<AddEditClusterModal />', () => {
       handleClose: () => {
         return;
       },
-      checkConnection: () => {
-        return;
-      },
       currentCluster: null as ICluster,
     };
 
@@ -57,9 +54,6 @@ describe('<AddEditClusterModal />', () => {
         return;
       },
       handleClose: () => {
-        return;
-      },
-      checkConnection: () => {
         return;
       },
       currentCluster: null as ICluster,
@@ -115,9 +109,6 @@ describe('<AddEditClusterModal />', () => {
         return;
       },
       handleClose: () => {
-        return;
-      },
-      checkConnection: () => {
         return;
       },
       currentCluster: null as ICluster,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import AddEditClusterForm, { IFormValues } from './AddEditClusterForm';
 import { Modal } from '@patternfly/react-core';
@@ -6,21 +6,17 @@ import { ClusterActions } from '../../../../../cluster/duck/actions';
 import {
   defaultAddEditStatus,
   AddEditMode,
-  createAddEditStatus,
-  AddEditState,
   IAddEditStatus,
 } from '../../../../../common/add_edit_state';
 import { ICluster } from '../../../../../cluster/duck/types';
 import { IClusterInfo } from '../../helpers';
 import { DefaultRootState } from '../../../../../../configureStore';
-import { FormikValues } from 'formik';
 
 interface IAddEditClusterModal {
   addEditStatus: IAddEditStatus;
   initialClusterValues: IClusterInfo;
   isOpen: boolean;
   isPolling: boolean;
-  checkConnection: (name: string) => void;
   clusterList: ICluster[];
   addCluster: (cluster: IFormValues) => void;
   cancelAddEditWatch: () => void;
@@ -36,7 +32,6 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal | any> =
   addEditStatus,
   initialClusterValues,
   isOpen,
-  checkConnection,
   addCluster,
   cancelAddEditWatch,
   onHandleClose,
@@ -88,7 +83,6 @@ const AddEditClusterModal: React.FunctionComponent<IAddEditClusterModal | any> =
         addEditStatus={addEditStatus}
         initialClusterValues={initialClusterValues}
         currentCluster={currentCluster}
-        checkConnection={checkConnection}
       />
     </Modal>
   );
@@ -108,14 +102,6 @@ export default connect(
       dispatch(ClusterActions.addClusterRequest(clusterValues)),
     updateCluster: (updatedClusterValues: IFormValues) =>
       dispatch(ClusterActions.updateClusterRequest(updatedClusterValues)),
-    checkConnection: (clusterName: string) => {
-      dispatch(
-        ClusterActions.setClusterAddEditStatus(
-          createAddEditStatus(AddEditState.Fetching, AddEditMode.Edit)
-        )
-      );
-      dispatch(ClusterActions.watchClusterAddEditStatus(clusterName));
-    },
     cancelAddEditWatch: () => dispatch(ClusterActions.cancelWatchClusterAddEditStatus()),
     resetAddEditState: () => {
       dispatch(ClusterActions.setClusterAddEditStatus(defaultAddEditStatus()));

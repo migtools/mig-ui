@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Button, TextInput, Form, FormGroup, Grid, GridItem, Flex } from '@patternfly/react-core';
+import { Button, TextInput, Form, FormGroup, Flex } from '@patternfly/react-core';
 import KeyDisplayToggle from '../../../../../../common/components/KeyDisplayToggle';
 import {
   AddEditMode,
   addEditStatusText,
   addEditButtonText,
   isAddEditButtonDisabled,
-  isCheckConnectionButtonDisabled,
 } from '../../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
 import { withFormik, FormikProps } from 'formik';
@@ -50,7 +49,6 @@ interface IOtherProps {
   onClose: any;
   addEditStatus: any;
   initialStorageValues: any;
-  checkConnection: (name: string) => void;
   currentStorage?: any;
   provider: string;
 }
@@ -59,7 +57,6 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
   const {
     addEditStatus: currentStatus,
     currentStorage,
-    checkConnection,
     values,
     touched,
     errors,
@@ -170,16 +167,6 @@ const InnerGCPForm = (props: IOtherProps & FormikProps<IFormValues>) => {
           )}
         >
           {addEditButtonTextFn(currentStatus)}
-        </Button>
-        <Button
-          variant="secondary"
-          isDisabled={isCheckConnectionButtonDisabled(
-            currentStatus,
-            valuesHaveUpdate(values, currentStorage)
-          )}
-          onClick={() => checkConnection(values.name)}
-        >
-          Check Connection
         </Button>
         <Button variant="secondary" onClick={onClose}>
           Close
