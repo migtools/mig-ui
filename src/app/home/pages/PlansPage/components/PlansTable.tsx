@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { flatten } from 'lodash';
 import classNames from 'classnames';
-import { Level, LevelItem, Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
+import { Button, Pagination, Flex, FlexItem } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { IAddPlanDisabledObjModel } from '../types';
-import AddPlanDisabledTooltip from './AddPlanDisabledTooltip';
 import {
   Table,
   TableHeader,
@@ -34,7 +32,6 @@ const styles = require('./PlansTable.module').default;
 
 interface IPlansTableProps {
   planList: IPlan[];
-  addPlanDisabledObj: IAddPlanDisabledObjModel;
   toggleAddWizardOpen: () => void;
 }
 
@@ -44,7 +41,6 @@ interface IExpandedCells {
 
 const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
   planList,
-  addPlanDisabledObj,
   toggleAddWizardOpen,
 }: IPlansTableProps) => {
   const [expandedCells, setExpandedCells] = useState<IExpandedCells>({});
@@ -269,16 +265,9 @@ const PlansTable: React.FunctionComponent<IPlansTableProps> = ({
           />
         </FlexItem>
         <FlexItem>
-          <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-            <Button
-              id="add-plan-btn"
-              onClick={toggleAddWizardOpen}
-              isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-              variant="secondary"
-            >
-              Add migration plan
-            </Button>
-          </AddPlanDisabledTooltip>
+          <Button id="add-plan-btn" onClick={toggleAddWizardOpen} variant="secondary">
+            Add migration plan
+          </Button>
         </FlexItem>
         <FlexItem
           className={`${spacing.mrLg}`}
