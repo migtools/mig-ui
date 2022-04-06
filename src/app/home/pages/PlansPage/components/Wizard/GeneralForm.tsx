@@ -50,21 +50,55 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
 
   let storageOptions: string[] = ['No valid storage found'];
 
+  const migrationTypeDescriptions: Record<MigrationType, string> = {
+    full: 'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
+    state:
+      'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+    scc: 'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
+  };
+
   const migrationTypeOptions: OptionWithValue<MigrationType>[] = [
     {
       value: 'full',
-      toString: () =>
-        `Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another`,
+      toString: () => migrationTypeDescriptions.full,
+      props:
+        storageList.length === 0
+          ? {
+              isDisabled: true,
+              className: 'disabled-with-pointer-events',
+              children: (
+                <Tooltip
+                  content="A minimum of 1 replication repository is required to create a full migration plan."
+                  position="left"
+                >
+                  <div>{migrationTypeDescriptions.full}</div>
+                </Tooltip>
+              ),
+            }
+          : {},
     },
     {
       value: 'state',
-      toString: () =>
-        `State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters`,
+      toString: () => migrationTypeDescriptions.state,
+      props:
+        storageList.length === 0
+          ? {
+              isDisabled: true,
+              className: 'disabled-with-pointer-events',
+              children: (
+                <Tooltip
+                  content="A minimum of 1 replication repository is required to create a state migration plan."
+                  position="left"
+                >
+                  <div>{migrationTypeDescriptions.state}</div>
+                </Tooltip>
+              ),
+            }
+          : {},
     },
     {
       value: 'scc',
-      toString: () =>
-        `Storage class conversion - convert PVs to a different storage class within the same cluster and namespace`,
+      toString: () => migrationTypeDescriptions.scc,
     },
   ];
 
