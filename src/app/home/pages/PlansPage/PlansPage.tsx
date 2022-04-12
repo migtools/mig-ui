@@ -12,23 +12,17 @@ import {
   Button,
   Bullseye,
   Spinner,
-  SearchInput,
-  Split,
-  SplitItem,
 } from '@patternfly/react-core';
 import AddCircleOIcon from '@patternfly/react-icons/dist/js/icons/add-circle-o-icon';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import planSelectors from '../../../plan/duck/selectors';
 import clusterSelectors from '../../../cluster/duck/selectors';
 import storageSelectors from '../../../storage/duck/selectors';
-import { IPlanReducerState, PlanActions } from '../../../plan/duck';
+import { IPlanReducerState } from '../../../plan/duck';
 import PlansTable from './components/PlansTable';
 import { useOpenModal } from '../../duck';
 import WizardContainer from './components/Wizard/WizardContainer';
-import AddPlanDisabledTooltip from './components/AddPlanDisabledTooltip';
-import { IAddPlanDisabledObjModel } from './types';
 import { DefaultRootState } from '../../../../configureStore';
-import { IPlan } from '../../../plan/duck/types';
 
 export const PlansPage: React.FunctionComponent = () => {
   const planList = useSelector((state: DefaultRootState) =>
@@ -43,26 +37,6 @@ export const PlansPage: React.FunctionComponent = () => {
   const planState: IPlanReducerState = useSelector((state: DefaultRootState) => state.plan);
 
   const [isAddWizardOpen, toggleAddWizardOpen] = useOpenModal(false);
-
-  const [addPlanDisabledObj, setAddPlanDisabledObj] = useState<IAddPlanDisabledObjModel>({
-    isAddPlanDisabled: true,
-    disabledText: '',
-  });
-
-  useEffect(() => {
-    if (storageList.length < 1) {
-      setAddPlanDisabledObj({
-        isAddPlanDisabled: true,
-        disabledText: 'A minimum of 1 replication repository is required to create a plan.',
-      });
-      return;
-    } else {
-      setAddPlanDisabledObj({
-        isAddPlanDisabled: false,
-        disabledText: 'Click to create a plan.',
-      });
-    }
-  }, [clusterList, storageList]);
 
   return (
     <>
@@ -94,25 +68,13 @@ export const PlansPage: React.FunctionComponent = () => {
                   <Title headingLevel="h3" size="lg" className={spacing.mbLg}>
                     No migration plans exist
                   </Title>
-                  <AddPlanDisabledTooltip addPlanDisabledObj={addPlanDisabledObj}>
-                    <div>
-                      <Button
-                        isDisabled={addPlanDisabledObj.isAddPlanDisabled}
-                        onClick={toggleAddWizardOpen}
-                        variant="primary"
-                      >
-                        Add migration plan
-                      </Button>
-                    </div>
-                  </AddPlanDisabledTooltip>
+                  <Button onClick={toggleAddWizardOpen} variant="primary">
+                    Add migration plan
+                  </Button>
                 </EmptyState>
               ) : (
                 <CardBody>
-                  <PlansTable
-                    planList={planList}
-                    addPlanDisabledObj={addPlanDisabledObj}
-                    toggleAddWizardOpen={toggleAddWizardOpen}
-                  />
+                  <PlansTable planList={planList} toggleAddWizardOpen={toggleAddWizardOpen} />
                 </CardBody>
               )}
               <WizardContainer
