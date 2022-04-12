@@ -53,7 +53,7 @@ const GeneralForm: React.FunctionComponent<IGeneralFormProps> = ({
   const migrationTypeDescriptions: Record<MigrationType, string> = {
     full: 'Full migration - migrate namespaces, persistent volumes (PVs) and Kubernetes resources from one cluster to another',
     state:
-      'State migration - migrate only PVs and Kubernetes resources between namespaces in the same cluster or different clusters',
+      'State migration - migrate only PVs between namespaces in the same cluster or different clusters',
     scc: 'Storage class conversion - convert PVs to a different storage class within the same cluster and namespace',
   };
 
