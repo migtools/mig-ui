@@ -60,7 +60,7 @@ import { useFormikContext } from 'formik';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
 import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
-import { targetStorageClassToString } from '../../helpers';
+import { getMigrationTypeFromPlan, targetStorageClassToString } from '../../helpers';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
 import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
 
@@ -72,6 +72,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
   storageClasses,
 }: ICopyOptionsTableProps) => {
   const planState = useSelector((state: DefaultRootState) => state.plan);
+  const migrationType = getMigrationTypeFromPlan(planState.currentPlan);
   const formikSetFieldTouched = (key: any) => () => setFieldTouched(key, true, true);
   const styles = require('./CopyOptionsTable.module').default;
 
@@ -336,6 +337,7 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                 </Th>
                 <Th width={10}>{columns[4].title}</Th>
                 <Th width={10}>{columns[5].title}</Th>
+                {migrationType !== 'full' ? <Th /> : null /* Edit controls column */}
               </Tr>
             </Thead>
             <Tbody>
@@ -400,104 +402,107 @@ const CopyOptionsTable: React.FunctionComponent<ICopyOptionsTableProps> = ({
                         );
                       }
                     })}
-                    <Td
-                      key={`${rowIndex}_5`}
-                      className="pf-c-table__inline-edit-action"
-                      role="cell"
-                      width={10}
-                    >
-                      {isEditable ? (
-                        <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
-                          <FlexItem flex={{ default: 'flex_1' }}>
-                            {!errors.currentTargetPVCName && (
+                    {migrationType !== 'full' ? (
+                      <Td
+                        key={`${rowIndex}_5`}
+                        className="pf-c-table__inline-edit-action"
+                        role="cell"
+                        width={10}
+                      >
+                        {isEditable ? (
+                          <Flex className={styles.actionsContainer} direction={{ default: 'row' }}>
+                            <FlexItem flex={{ default: 'flex_1' }}>
+                              {!errors.currentTargetPVCName && (
+                                <Button
+                                  variant="plain"
+                                  aria-label={`Save edits to row ${rowIndex}`}
+                                  onClick={() => {
+                                    setEditableRow(null);
+                                    const hasEditedValue = values.editedPVs.find(
+                                      (pv) =>
+                                        row.cells[1] === pv.oldPVCName && row.cells[0] === pv.pvName
+                                    );
+                                    let newEditedPVs;
+                                    if (hasEditedValue) {
+                                      newEditedPVs = [...new Set([...values.editedPVs])];
+
+                                      const index = values.editedPVs.findIndex(
+                                        (pv) =>
+                                          pv.oldPVCName === row.cells[1] &&
+                                          pv.pvName === row.cells[0]
+                                      );
+                                      //check if no changes made
+                                      if (
+                                        newEditedPVs[index].oldPVCName ===
+                                        values.currentTargetPVCName.name
+                                      ) {
+                                        if (index > -1) {
+                                          newEditedPVs.splice(index, 1);
+                                        }
+                                        //replace found edit with current edit
+                                      } else if (index || index === 0) {
+                                        newEditedPVs[index] = {
+                                          oldPVCName:
+                                            typeof row.cells[1] === 'string' ? row.cells[1] : '',
+                                          newPVCName: values.currentTargetPVCName.name,
+                                          pvName:
+                                            typeof row.cells[0] === 'string' ? row.cells[0] : '',
+                                        };
+                                      }
+                                    } else {
+                                      newEditedPVs = [
+                                        ...new Set([
+                                          ...values.editedPVs,
+                                          {
+                                            oldPVCName: row.cells[1],
+                                            newPVCName: values.currentTargetPVCName.name,
+                                            pvName: row.cells[0],
+                                          },
+                                        ]),
+                                      ];
+                                    }
+                                    setFieldValue('editedPVs', newEditedPVs);
+                                    setFieldValue(currentTargetPVCNameKey, null);
+                                    setFieldTouched(currentTargetPVCNameKey, false);
+                                  }}
+                                >
+                                  <CheckIcon />
+                                </Button>
+                              )}
                               <Button
                                 variant="plain"
-                                aria-label={`Save edits to row ${rowIndex}`}
+                                aria-label={`Cancel editing row ${rowIndex}`}
                                 onClick={() => {
                                   setEditableRow(null);
-                                  const hasEditedValue = values.editedPVs.find(
-                                    (pv) =>
-                                      row.cells[1] === pv.oldPVCName && row.cells[0] === pv.pvName
-                                  );
-                                  let newEditedPVs;
-                                  if (hasEditedValue) {
-                                    newEditedPVs = [...new Set([...values.editedPVs])];
-
-                                    const index = values.editedPVs.findIndex(
-                                      (pv) =>
-                                        pv.oldPVCName === row.cells[1] && pv.pvName === row.cells[0]
-                                    );
-                                    //check if no changes made
-                                    if (
-                                      newEditedPVs[index].oldPVCName ===
-                                      values.currentTargetPVCName.name
-                                    ) {
-                                      if (index > -1) {
-                                        newEditedPVs.splice(index, 1);
-                                      }
-                                      //replace found edit with current edit
-                                    } else if (index || index === 0) {
-                                      newEditedPVs[index] = {
-                                        oldPVCName:
-                                          typeof row.cells[1] === 'string' ? row.cells[1] : '',
-                                        newPVCName: values.currentTargetPVCName.name,
-                                        pvName:
-                                          typeof row.cells[0] === 'string' ? row.cells[0] : '',
-                                      };
-                                    }
-                                  } else {
-                                    newEditedPVs = [
-                                      ...new Set([
-                                        ...values.editedPVs,
-                                        {
-                                          oldPVCName: row.cells[1],
-                                          newPVCName: values.currentTargetPVCName.name,
-                                          pvName: row.cells[0],
-                                        },
-                                      ]),
-                                    ];
-                                  }
-                                  setFieldValue('editedPVs', newEditedPVs);
                                   setFieldValue(currentTargetPVCNameKey, null);
                                   setFieldTouched(currentTargetPVCNameKey, false);
                                 }}
                               >
-                                <CheckIcon />
+                                <TimesIcon />
                               </Button>
-                            )}
-                            <Button
-                              variant="plain"
-                              aria-label={`Cancel editing row ${rowIndex}`}
-                              onClick={() => {
-                                setEditableRow(null);
-                                setFieldValue(currentTargetPVCNameKey, null);
-                                setFieldTouched(currentTargetPVCNameKey, false);
-                              }}
-                            >
-                              <TimesIcon />
-                            </Button>
-                          </FlexItem>
-                        </Flex>
-                      ) : (
-                        <Button
-                          variant="plain"
-                          aria-label={`Edit row ${rowIndex}`}
-                          onClick={() => {
-                            setEditableRow(rowIndex);
-                            handleDelayedValidation(
-                              typeof row.cells[3] === 'string' && row.cells[3],
-                              row
-                            );
-                            setFieldValue(currentTargetPVCNameKey, {
-                              name: row.cells[3],
-                              srcPVName: row.cells[0],
-                            });
-                          }}
-                        >
-                          <PencilAltIcon />
-                        </Button>
-                      )}
-                    </Td>
+                            </FlexItem>
+                          </Flex>
+                        ) : (
+                          <Button
+                            variant="plain"
+                            aria-label={`Edit row ${rowIndex}`}
+                            onClick={() => {
+                              setEditableRow(rowIndex);
+                              handleDelayedValidation(
+                                typeof row.cells[3] === 'string' && row.cells[3],
+                                row
+                              );
+                              setFieldValue(currentTargetPVCNameKey, {
+                                name: row.cells[3],
+                                srcPVName: row.cells[0],
+                              });
+                            }}
+                          >
+                            <PencilAltIcon />
+                          </Button>
+                        )}
+                      </Td>
+                    ) : null}
                   </Tr>
                 );
               })}
