@@ -210,13 +210,14 @@ const WizardComponent = (props: IOtherProps) => {
         const newPVs = values.persistentVolumes.map((currentPV, index) => {
           const isSelected = values.selectedPVs.find((selectedPV) => selectedPV === currentPV.name);
           if (!isSelected) {
-            return {
+            const updatedObj = {
               ...currentPV,
               selection: {
                 ...currentPV.selection,
                 action: 'skip',
               },
             };
+            return updatedObj;
           } else {
             //If the PV is selected and the action is not set to move, the PV needs to have a copy action set
             return {
