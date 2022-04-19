@@ -44,7 +44,8 @@ const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
-  const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
+  const { values, touched, errors, resetForm, setFieldValue, submitForm } =
+    useFormikContext<IFormValues>();
 
   const {
     isOpen,
@@ -210,14 +211,13 @@ const WizardComponent = (props: IOtherProps) => {
         const newPVs = values.persistentVolumes.map((currentPV, index) => {
           const isSelected = values.selectedPVs.find((selectedPV) => selectedPV === currentPV.name);
           if (!isSelected) {
-            const updatedObj = {
+            return {
               ...currentPV,
               selection: {
                 ...currentPV.selection,
                 action: 'skip',
               },
             };
-            return updatedObj;
           } else {
             //If the PV is selected and the action is not set to move, the PV needs to have a copy action set
             return {
@@ -235,9 +235,8 @@ const WizardComponent = (props: IOtherProps) => {
       }
     }
     if (id === stepId.Results) {
-      dispatch(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
       //update plan & start status polling on results page
-      dispatch(PlanActions.validatePlanRequest(values));
+      submitForm();
     }
     if (id === stepId.Hooks) {
       dispatch(PlanActions.fetchPlanHooksRequest());
