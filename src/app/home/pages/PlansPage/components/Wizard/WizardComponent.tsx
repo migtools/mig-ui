@@ -44,7 +44,8 @@ const WizardComponent = (props: IOtherProps) => {
   const [stepIdReached, setStepIdReached] = useState(1);
   const [isAddHooksOpen, setIsAddHooksOpen] = useState(false);
 
-  const { values, touched, errors, resetForm, setFieldValue } = useFormikContext<IFormValues>();
+  const { values, touched, errors, resetForm, setFieldValue, submitForm } =
+    useFormikContext<IFormValues>();
 
   const {
     isOpen,
@@ -234,9 +235,8 @@ const WizardComponent = (props: IOtherProps) => {
       }
     }
     if (id === stepId.Results) {
-      dispatch(PlanActions.updateCurrentPlanStatus({ state: CurrentPlanState.Pending }));
       //update plan & start status polling on results page
-      dispatch(PlanActions.validatePlanRequest(values));
+      submitForm();
     }
     if (id === stepId.Hooks) {
       dispatch(PlanActions.fetchPlanHooksRequest());
