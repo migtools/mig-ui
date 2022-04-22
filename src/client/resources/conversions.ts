@@ -559,7 +559,7 @@ export function createInitialMigPlan(
         where the spec fields will be updated to represent availablility/user selection.
       **/
       indirectVolumeMigration: migrationType === 'full',
-      indirectImageMigration: migrationType === 'full',
+      indirectImageMigration: migrationType === 'full' || migrationType === 'state',
     },
   };
 }
