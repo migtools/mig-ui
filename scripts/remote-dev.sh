@@ -7,4 +7,4 @@ cd $_dir/..
 yarn concurrently --names "EXPRESS,WEBPACK" -c "green.bold.inverse,blue.bold.inverse" \
   "$_dir/run-local-express.sh --auto-reload" \
   "webpack serve \
-    --hot --color --progress --config=$_dir/../config/webpack.dev.js"
+    --hot --color --client-progress --config=$_dir/../config/webpack.dev.js"

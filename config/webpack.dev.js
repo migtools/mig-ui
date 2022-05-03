@@ -31,7 +31,6 @@ const PORT = process.env.PORT || localConfig.devServerPort;
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 9001;
 
 const plugins = [
-  new webpack.HotModuleReplacementPlugin(),
   new HtmlWebpackPlugin(htmlWebpackPluginOpt),
   new webpack.DefinePlugin({
     'process.env.BRAND_TYPE': JSON.stringify(process.env.BRAND_TYPE),
@@ -165,17 +164,16 @@ const webpackConfig = {
   devServer: {
     host: HOST,
     port: PORT,
-    compress: true,
-    inline: true,
     historyApiFallback: true,
     hot: true,
-    overlay: true,
     open: false,
-    disableHostCheck: true,
-    stats: {
-      // interfaces and type aliases are not left after transpilation, causing
-      // legitimate typescript exports to trigger warnings in webpack
-      warningsFilter: /export .* was not found in/,
+    allowedHosts: 'all',
+    devMiddleware: {
+      stats: {
+        // interfaces and type aliases are not left after transpilation, causing
+        // legitimate typescript exports to trigger warnings in webpack
+        warningsFilter: /export .* was not found in/,
+      },
     },
     proxy: [
       {
