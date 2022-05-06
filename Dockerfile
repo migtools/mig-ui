@@ -18,4 +18,5 @@ ENV VIEWS_DIR=/opt/app-root/src/staticroot
 ENV STATIC_DIR=/opt/app-root/src/staticroot
 ENV NODE_TLS_REJECT_UNAUTHORIZED="0"
 
+USER 65534:65534
 ENTRYPOINT ["node", "/opt/app-root/src/main.js"]
