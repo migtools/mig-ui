@@ -18,6 +18,9 @@ import {
   EmptyStateVariant,
   PopoverPosition,
   Title,
+  Alert,
+  AlertActionLink,
+  WizardContext,
 } from '@patternfly/react-core';
 import {
   sortable,
@@ -412,6 +415,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     };
   });
 
+  const { goToStepByName, onClose } = React.useContext(WizardContext);
+
   return (
     <Grid hasGutter>
       <GridItem>
@@ -423,6 +428,41 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </Text>
         </TextContent>
       </GridItem>
+      {isSCC && values.persistentVolumes.length === 0 ? (
+        <GridItem>
+          <Alert
+            variant="danger"
+            isInline
+            title="Storage class conversion is unavailable"
+            actionLinks={
+              <React.Fragment>
+                <AlertActionLink onClick={() => goToStepByName('General')}>Go back</AlertActionLink>
+                <AlertActionLink onClick={() => onClose()}>Cancel</AlertActionLink>
+              </React.Fragment>
+            }
+          >
+            At least one PV must be attached to the project for storage class conversion.
+          </Alert>
+        </GridItem>
+      ) : null}
+      {isSCC && storageClasses.length < 2 ? (
+        <GridItem>
+          <Alert
+            variant="danger"
+            isInline
+            title="Storage class conversion is unavailable"
+            actionLinks={
+              <React.Fragment>
+                <AlertActionLink onClick={() => goToStepByName('General')}>Go back</AlertActionLink>
+                <AlertActionLink onClick={() => onClose()}>Cancel</AlertActionLink>
+              </React.Fragment>
+            }
+          >
+            At least two storage classes must be available in the cluster for storage class
+            conversion.
+          </Alert>
+        </GridItem>
+      ) : null}
       <GridItem>
         <Level>
           <LevelItem>
@@ -503,7 +543,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             titleText={values.persistentVolumes.length === 0 && 'No persistent volumes found'}
             bodyText={
               values.persistentVolumes.length === 0 &&
-              'No persistent volumes are attached to the selected projects. Click Next to continue.'
+              `No persistent volumes are attached to the selected projects.${
+                !isSCC ? ' Click Next to continue.' : ''
+              }`
             }
           />
         )}
