@@ -292,6 +292,9 @@ const WizardComponent = (props: IOtherProps) => {
     });
   };
 
+  const planState = useSelector((state: DefaultRootState) => state.plan);
+  const storageClasses = planState.currentPlan?.status.destStorageClasses || [];
+
   const CustomFooter = (
     <WizardFooter>
       <WizardContextConsumer>
@@ -302,7 +305,7 @@ const WizardComponent = (props: IOtherProps) => {
                 {
                   if (
                     values.migrationType.value === 'full' ||
-                    values.migrationType.value == 'state'
+                    values.migrationType.value === 'state'
                   ) {
                     return areFieldsTouchedAndValid([
                       'planName',
@@ -324,7 +327,9 @@ const WizardComponent = (props: IOtherProps) => {
                   !isFetchingPVResources &&
                   !isFetchingPVList &&
                   currentPlanStatus.state !== 'Pending' &&
-                  currentPlanStatus.state !== 'Critical'
+                  currentPlanStatus.state !== 'Critical' &&
+                  (values.migrationType.value !== 'scc' ||
+                    (values.selectedPVs.length > 0 && storageClasses.length > 1))
                 );
               case 'Hooks':
                 return !isAddHooksOpen;
