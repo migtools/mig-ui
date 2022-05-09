@@ -142,9 +142,7 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
     <VolumesTable
       isEdit={props.isEdit}
       isOpen={props.isOpen}
-      storageClasses={
-        (planState.currentPlan && planState.currentPlan.status.destStorageClasses) || []
-      }
+      storageClasses={planState.currentPlan?.status.destStorageClasses || []}
     />
   );
 };
