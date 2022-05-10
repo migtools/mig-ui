@@ -293,7 +293,7 @@ const WizardComponent = (props: IOtherProps) => {
   };
 
   const planState = useSelector((state: DefaultRootState) => state.plan);
-  const storageClasses = planState.currentPlan?.status.destStorageClasses || [];
+  const storageClasses = planState.currentPlan?.status?.destStorageClasses || [];
 
   const CustomFooter = (
     <WizardFooter>
