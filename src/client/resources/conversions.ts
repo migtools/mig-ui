@@ -550,10 +550,14 @@ export function createInitialMigPlan(
         name: destinationClusterObj,
         namespace,
       },
-      migStorageRef: {
-        name: storageObj,
-        namespace,
-      },
+      ...(migrationType !== 'scc'
+        ? {
+            migStorageRef: {
+              name: storageObj,
+              namespace,
+            },
+          }
+        : {}),
       namespaces,
       /** Set the initial value for indirect migration to true until the user navigates to the selection screen 
         where the spec fields will be updated to represent availablility/user selection.
