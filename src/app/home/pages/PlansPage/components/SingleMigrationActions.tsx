@@ -1,14 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  KebabToggle,
-  DropdownItem,
-  Dropdown,
-  DropdownPosition,
-  Flex,
-  FlexItem,
-  Button,
-} from '@patternfly/react-core';
+import { Flex, FlexItem, Button } from '@patternfly/react-core';
 import { IMigration } from '../../../../plan/duck/types';
 import { PlanActions } from '../../../../plan/duck';
 
@@ -16,14 +8,16 @@ interface IProps {
   migration: IMigration;
 }
 
-const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
-  const [kebabIsOpen, setKebabIsOpen] = useState(false);
+const SingleMigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
   const dispatch = useDispatch();
 
   return (
     <Flex>
       <FlexItem>
         {!migration.tableStatus.isSucceeded &&
+          !migration.tableStatus.isSucceededWithWarnings &&
+          !migration.tableStatus.isFailed &&
+          migration.tableStatus.stepName !== 'Canceled' &&
           !migration.tableStatus.isCanceled &&
           !migration.tableStatus.isCanceling && (
             <Button
@@ -31,12 +25,6 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
               onClick={() => {
                 dispatch(PlanActions.migrationCancelRequest(migration.metadata.name));
               }}
-              isDisabled={
-                migration.tableStatus.isSucceeded ||
-                migration.tableStatus.isSucceededWithWarnings ||
-                migration.tableStatus.isFailed ||
-                migration.tableStatus.stepName === 'Canceled'
-              }
               key={`cancelMigration-${migration.metadata.name}`}
             >
               Cancel
@@ -47,4 +35,4 @@ const MigrationActions: React.FunctionComponent<IProps> = ({ migration }) => {
   );
 };
 
-export default MigrationActions;
+export default SingleMigrationActions;
