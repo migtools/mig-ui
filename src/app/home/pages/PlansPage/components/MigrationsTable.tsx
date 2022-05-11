@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Table, TableBody, TableHeader, cellWidth, sortable, IRow } from '@patternfly/react-table';
 import { Link } from 'react-router-dom';
-import MigrationActions from './MigrationActions';
+import SingleMigrationActions from './SingleMigrationActions';
 import {
   Bullseye,
   EmptyState,
@@ -76,7 +76,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
           ),
         },
         {
-          title: <MigrationActions migration={migration} />,
+          title: <SingleMigrationActions migration={migration} />,
           props: {
             className: 'pf-c-table__action',
           },
