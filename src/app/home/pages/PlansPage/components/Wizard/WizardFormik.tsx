@@ -52,7 +52,10 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
           errors.selectedNamespaces = 'Required';
         }
-        if (!values.selectedPVs || values.selectedPVs.length === 0) {
+        if (
+          values.migrationType.value !== 'scc' &&
+          (!values.selectedPVs || values.selectedPVs.length === 0)
+        ) {
           errors.selectedPVs = 'Required';
         }
 
