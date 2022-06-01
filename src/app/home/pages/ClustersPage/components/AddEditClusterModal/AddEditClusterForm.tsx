@@ -348,10 +348,11 @@ const AddEditClusterForm = withFormik<IOtherProps, IFormValues>({
   validate: (values: IFormValues) => {
     const errors: FormikErrors<IFormValues> = {};
 
+    const clusterNameError = utils.testClusterName(values?.name);
     if (!values.name) {
       errors.name = 'Required';
-    } else if (!utils.testDNS1123(values.name)) {
-      errors.name = utils.DNS1123Error(values.name);
+    } else if (clusterNameError !== '') {
+      errors.name = clusterNameError;
     }
 
     if (!values.url) {
