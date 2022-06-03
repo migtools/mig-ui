@@ -68,11 +68,16 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     };
     // TODO: When VSL configuration is supported separate from BSL,
     // this needs to be updated to support two different, distinct secrets
-    fullStorage['Secret'] = refs.find(
-      (ref) =>
+    const secretValue = refs.find((ref) => {
+      if (ref.isAxiosError) {
+        return;
+      } else {
         ref.data.kind === 'Secret' &&
-        ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
-    ).data;
+          ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name;
+      }
+    });
+
+    fullStorage['Secret'] = secretValue?.data ? secretValue.data : 'Secret not found';
 
     return fullStorage;
   });
@@ -85,9 +90,17 @@ function* fetchStorageGenerator(): Generator<any, any, any> {
   try {
     let storageList = yield client.list(resource);
     storageList = yield storageList.data.items;
-    const refs = yield Promise.all(fetchMigStorageRefs(client, storageList as IMigStorage[]));
-    const groupedStorages = groupStorages(storageList, refs);
-    return { updatedStorages: groupedStorages };
+    try {
+      const refResponses = yield Promise.all(
+        fetchMigStorageRefs(client, storageList as IMigStorage[]).map((p) => {
+          return p.catch((error) => error);
+        })
+      );
+      const groupedStorages = groupStorages(storageList, refResponses);
+      return { updatedStorages: groupedStorages };
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     throw e;
   }
