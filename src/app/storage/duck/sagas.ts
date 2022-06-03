@@ -322,30 +322,30 @@ function* updateStorageRequest(action: any): Generator<any, any, any> {
   // NOTE: Need to decode the b64 token off a k8s secret
   //AW S
   let currentAccessKey;
-  if (currentstorage?.Secret?.data[accessKeyIdSecretField]) {
-    currentAccessKey = atob(currentstorage?.Secret?.data[accessKeyIdSecretField]);
+  if (currentStorage?.Secret?.data[accessKeyIdSecretField]) {
+    currentAccessKey = atob(currentStorage?.Secret?.data[accessKeyIdSecretField]);
   }
   const accessKeyUpdated = storageValues.accessKey !== currentAccessKey;
 
   let currentSecret;
-  if (currentstorage?.Secret?.data[secretAccessKeySecretField]) {
-    currentSecret = atob(currentstorage?.Secret?.data[secretAccessKeySecretField]);
+  if (currentStorage?.Secret?.data[secretAccessKeySecretField]) {
+    currentSecret = atob(currentStorage?.Secret?.data[secretAccessKeySecretField]);
   }
 
   const secretUpdated = storageValues.secret !== currentSecret;
   //
   //GCP
   let currentGCPBlob;
-  if (currentstorage?.Secret?.data['gcp-credentials']) {
-    currentGCPBlob = atob(currentstorage?.Secret?.data['gcp-credentials']);
+  if (currentStorage?.Secret?.data['gcp-credentials']) {
+    currentGCPBlob = atob(currentStorage?.Secret?.data['gcp-credentials']);
   }
 
   const gcpBlobUpdated = storageValues.gcpBlob !== currentGCPBlob;
   //
   // AZURE
   let currentAzureBlob;
-  if (currentstorage?.Secret?.data['azure-credentials']) {
-    currentAzureBlob = atob(currentstorage?.Secret?.data['azure-credentials']);
+  if (currentStorage?.Secret?.data['azure-credentials']) {
+    currentAzureBlob = atob(currentStorage?.Secret?.data['azure-credentials']);
   }
   const azureBlobUpdated = storageValues.azureBlob !== currentAzureBlob;
   //
