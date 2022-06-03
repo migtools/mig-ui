@@ -80,7 +80,7 @@ function groupClusters(migClusters: IMigCluster[], refs: any[]): ICluster[] {
         }
       });
 
-      fullCluster['Secret'] = secretValue?.data ? secretValue.data : 'Secret not found';
+      fullCluster['Secret'] = secretValue?.data ? secretValue.data : undefined;
     }
 
     return fullCluster;
