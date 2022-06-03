@@ -26,8 +26,8 @@ const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
   const existingMigStorageName = currentStorage.MigStorage.metadata.name;
   const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
   let existingGCPBlob;
-  if (currentStorage.Secret.data['gcp-credentials']) {
-    existingGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+  if (currentstorage?.Secret?.data['gcp-credentials']) {
+    existingGCPBlob = atob(currentstorage?.Secret?.data['gcp-credentials']);
   }
 
   const valuesUpdatedObject =
