@@ -99,20 +99,12 @@ function* fetchClustersGenerator(): Generator<any, any, any> {
       const refResponses = yield Promise.all(
         fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters).map((p) => {
           return p.catch((error) => error);
-          // return {
-          //   status: null,
-
-          // };
         })
       );
       const groupedClusters = groupClusters(clusterList, refResponses);
       return { updatedClusters: groupedClusters };
-    } catch (e) {
-      //Some function to handle ref fetch error
-      console.log('ref fetch error ', e);
-    }
+    } catch (e) {}
   } catch (e) {
-    console.log('wrapping error ', e);
     throw e;
   }
 }
