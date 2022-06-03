@@ -103,7 +103,9 @@ function* fetchClustersGenerator(): Generator<any, any, any> {
       );
       const groupedClusters = groupClusters(clusterList, refResponses);
       return { updatedClusters: groupedClusters };
-    } catch (e) {}
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     throw e;
   }
