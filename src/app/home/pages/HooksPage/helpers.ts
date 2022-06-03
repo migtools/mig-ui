@@ -18,7 +18,7 @@ export const getClusterInfo = (
       : cluster.MigCluster.status.conditions.filter((c) => c.type === 'Ready').length > 0,
     clusterUrl: isHostCluster ? migMeta.clusterApi : cluster.MigCluster.spec.url,
     clusterSvcToken:
-      !isHostCluster && cluster.Secret.data.saToken ? atob(cluster.Secret.data.saToken) : null,
+      !isHostCluster && cluster?.Secret?.data?.saToken ? atob(cluster.Secret.data.saToken) : null,
     clusterRequireSSL: !cluster.MigCluster.spec.insecure,
     clusterCABundle: cluster.MigCluster.spec.caBundle,
     exposedRegistryPath: cluster.MigCluster.spec.exposedRegistryPath,
