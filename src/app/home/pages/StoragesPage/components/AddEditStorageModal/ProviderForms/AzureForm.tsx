@@ -44,8 +44,8 @@ const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
     currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
 
   let existingAzureBlob;
-  if (currentstorage?.Secret?.data['azure-credentials']) {
-    existingAzureBlob = atob(currentstorage?.Secret?.data['azure-credentials']);
+  if (currentStorage?.Secret?.data['azure-credentials']) {
+    existingAzureBlob = atob(currentStorage?.Secret?.data['azure-credentials']);
   }
 
   const valuesUpdatedObject =
