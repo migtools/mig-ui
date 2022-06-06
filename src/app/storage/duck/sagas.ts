@@ -68,11 +68,16 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     };
     // TODO: When VSL configuration is supported separate from BSL,
     // this needs to be updated to support two different, distinct secrets
-    fullStorage['Secret'] = refs.find(
-      (ref) =>
+    const secretValue = refs.find((ref) => {
+      if (ref.isAxiosError) {
+        return;
+      } else {
         ref.data.kind === 'Secret' &&
-        ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
-    ).data;
+          ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name;
+      }
+    });
+
+    fullStorage['Secret'] = secretValue?.data ? secretValue.data : undefined;
 
     return fullStorage;
   });
@@ -85,9 +90,17 @@ function* fetchStorageGenerator(): Generator<any, any, any> {
   try {
     let storageList = yield client.list(resource);
     storageList = yield storageList.data.items;
-    const refs = yield Promise.all(fetchMigStorageRefs(client, storageList as IMigStorage[]));
-    const groupedStorages = groupStorages(storageList, refs);
-    return { updatedStorages: groupedStorages };
+    try {
+      const refResponses = yield Promise.all(
+        fetchMigStorageRefs(client, storageList as IMigStorage[]).map((p) => {
+          return p.catch((error) => error);
+        })
+      );
+      const groupedStorages = groupStorages(storageList, refResponses);
+      return { updatedStorages: groupedStorages };
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     throw e;
   }
@@ -309,30 +322,30 @@ function* updateStorageRequest(action: any): Generator<any, any, any> {
   // NOTE: Need to decode the b64 token off a k8s secret
   //AW S
   let currentAccessKey;
-  if (currentStorage.Secret.data[accessKeyIdSecretField]) {
-    currentAccessKey = atob(currentStorage.Secret.data[accessKeyIdSecretField]);
+  if (currentStorage?.Secret?.data[accessKeyIdSecretField]) {
+    currentAccessKey = atob(currentStorage?.Secret?.data[accessKeyIdSecretField]);
   }
   const accessKeyUpdated = storageValues.accessKey !== currentAccessKey;
 
   let currentSecret;
-  if (currentStorage.Secret.data[secretAccessKeySecretField]) {
-    currentSecret = atob(currentStorage.Secret.data[secretAccessKeySecretField]);
+  if (currentStorage?.Secret?.data[secretAccessKeySecretField]) {
+    currentSecret = atob(currentStorage?.Secret?.data[secretAccessKeySecretField]);
   }
 
   const secretUpdated = storageValues.secret !== currentSecret;
   //
   //GCP
   let currentGCPBlob;
-  if (currentStorage.Secret.data['gcp-credentials']) {
-    currentGCPBlob = atob(currentStorage.Secret.data['gcp-credentials']);
+  if (currentStorage?.Secret?.data['gcp-credentials']) {
+    currentGCPBlob = atob(currentStorage?.Secret?.data['gcp-credentials']);
   }
 
   const gcpBlobUpdated = storageValues.gcpBlob !== currentGCPBlob;
   //
   // AZURE
   let currentAzureBlob;
-  if (currentStorage.Secret.data['azure-credentials']) {
-    currentAzureBlob = atob(currentStorage.Secret.data['azure-credentials']);
+  if (currentStorage?.Secret?.data['azure-credentials']) {
+    currentAzureBlob = atob(currentStorage?.Secret?.data['azure-credentials']);
   }
   const azureBlobUpdated = storageValues.azureBlob !== currentAzureBlob;
   //
