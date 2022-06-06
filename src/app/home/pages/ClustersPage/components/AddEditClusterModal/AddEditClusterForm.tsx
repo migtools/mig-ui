@@ -50,7 +50,9 @@ const valuesHaveUpdate = (values: IFormValues, currentCluster: ICluster) => {
     return true;
   }
   const requireSSL = !currentCluster.MigCluster.spec.insecure;
-  const rawToken = atob(currentCluster.Secret.data.saToken);
+  const rawToken = currentCluster?.Secret?.data?.saToken
+    ? atob(currentCluster?.Secret?.data?.saToken)
+    : null;
   const existingEndpoint = currentCluster.MigCluster.spec.url;
   const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup
     ? currentCluster.MigCluster.spec.azureResourceGroup
