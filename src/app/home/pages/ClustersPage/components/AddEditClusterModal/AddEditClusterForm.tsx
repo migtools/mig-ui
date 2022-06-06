@@ -55,9 +55,6 @@ const valuesHaveUpdate = (values: IFormValues, currentCluster: ICluster) => {
   const azureResourceGroup = currentCluster.MigCluster.spec.azureResourceGroup
     ? currentCluster.MigCluster.spec.azureResourceGroup
     : '';
-  const isAzure = currentCluster.MigCluster.spec.isAzure
-    ? currentCluster.MigCluster.spec.isAzure
-    : false;
   const caBundle = currentCluster.MigCluster.spec.caBundle
     ? currentCluster.MigCluster.spec.caBundle
     : '';
@@ -70,7 +67,6 @@ const valuesHaveUpdate = (values: IFormValues, currentCluster: ICluster) => {
     values.url !== existingEndpoint ||
     values.token !== rawToken ||
     values.requireSSL !== requireSSL ||
-    values.isAzure !== isAzure ||
     values.azureResourceGroup !== azureResourceGroup ||
     values.caBundle !== caBundle ||
     values.exposedRegistryPath !== exposedRegistryPath
@@ -131,7 +127,10 @@ const InnerAddEditClusterForm = (props: IOtherProps & FormikProps<IFormValues>) 
           id={azureTokenKey}
           name={isAzureKey}
           isChecked={values.isAzure}
-          onChange={formikHandleChange}
+          onChange={(_, e) => {
+            setFieldValue(azureResourceGroupKey, '');
+            formikHandleChange(_, e);
+          }}
           onBlur={handleBlur}
         />
       </FormGroup>
