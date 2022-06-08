@@ -14,6 +14,7 @@ import utils from '../../../../../../common/duck/utils';
 import storageUtils from '../../../../../../storage/duck/utils';
 import commonUtils from '../../../../../../common/duck/utils';
 import { validatedState } from '../../../../../../common/helpers';
+import { IStorage } from '../../../../../../storage/duck/types';
 
 interface IFormValues {
   name: string;
@@ -33,7 +34,43 @@ interface IOtherProps {
   initialStorageValues: any;
   provider: string;
   isAWS: boolean;
+  currentStorage?: any;
 }
+
+const valuesHaveUpdate = (values: any, currentStorage: IStorage, isAWS: boolean) => {
+  if (!currentStorage) {
+    return true;
+  }
+
+  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+  const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
+  let existingAccessKey;
+  if (currentStorage.Secret.data['aws-access-key-id']) {
+    existingAccessKey = atob(currentStorage.Secret.data['aws-access-key-id']);
+  }
+
+  let existingSecretKey;
+  if (currentStorage.Secret.data['aws-secret-access-key']) {
+    existingSecretKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+  }
+
+  const existingS3URL = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
+  const existingRequireSSLValue = currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+  const existingCABundleValue = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
+
+  const valuesUpdatedObject =
+    values.name !== existingMigStorageName ||
+    values.awsBucketName !== existingAWSBucketName ||
+    values.awsBucketRegion !== existingAWSBucketRegion ||
+    values.accessKey !== existingAccessKey ||
+    values.secret !== existingSecretKey ||
+    (!isAWS && values.s3Url !== existingS3URL) ||
+    (!isAWS && values.requireSSL !== existingRequireSSLValue) ||
+    (!isAWS && values.caBundle !== existingCABundleValue);
+
+  return valuesUpdatedObject;
+};
 
 const componentTypeStr = 'Repository';
 const currentStatusFn = addEditStatusText(componentTypeStr);
@@ -51,6 +88,7 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
   handleSubmit,
   handleBlur,
   isAWS,
+  currentStorage,
 }: IOtherProps & FormikProps<IFormValues>) => {
   const nameKey = 'name';
   const s3UrlKey = 's3Url';
@@ -254,7 +292,12 @@ const InnerS3Form: React.FunctionComponent<IOtherProps & FormikProps<IFormValues
           aria-label="S3 Storage Submit Form"
           variant="primary"
           type="submit"
-          isDisabled={isAddEditButtonDisabled(currentStatus, errors, touched, true)}
+          isDisabled={isAddEditButtonDisabled(
+            currentStatus,
+            errors,
+            touched,
+            valuesHaveUpdate(values, currentStorage, isAWS)
+          )}
         >
           {addEditButtonTextFn(currentStatus)}
         </Button>
