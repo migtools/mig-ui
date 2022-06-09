@@ -71,10 +71,16 @@ function groupClusters(migClusters: IMigCluster[], refs: any[]): ICluster[] {
     };
 
     if (!mc.spec.isHostCluster) {
-      fullCluster['Secret'] = refs.find(
-        (i) =>
-          i.data.kind === 'Secret' && i.data.metadata.name === mc.spec.serviceAccountSecretRef.name
-      ).data;
+      const secretValue = refs.find((ref) => {
+        if (ref.isAxiosError) {
+          return;
+        } else {
+          ref.data.kind === 'Secret' &&
+            ref.data.metadata.name === mc.spec.serviceAccountSecretRef.name;
+        }
+      });
+
+      fullCluster['Secret'] = secretValue?.data ? secretValue.data : undefined;
     }
 
     return fullCluster;
@@ -89,11 +95,17 @@ function* fetchClustersGenerator(): Generator<any, any, any> {
     let clusterList = yield client.list(resource);
     clusterList = yield clusterList.data.items;
     const nonHostClusters = clusterList.filter((c: IMigCluster) => !c.spec.isHostCluster);
-    const refs = yield Promise.all(
-      fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters)
-    );
-    const groupedClusters = groupClusters(clusterList, refs);
-    return { updatedClusters: groupedClusters };
+    try {
+      const refResponses = yield Promise.all(
+        fetchMigClusterRefs(client, state.auth.migMeta, nonHostClusters).map((p) => {
+          return p.catch((error) => error);
+        })
+      );
+      const groupedClusters = groupClusters(clusterList, refResponses);
+      return { updatedClusters: groupedClusters };
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     throw e;
   }
@@ -330,7 +342,7 @@ function* updateClusterRequest(action: any): Generator<any, any, any> {
   const urlUpdated = clusterValues.url !== currentUrl;
 
   // NOTE: Need to decode the b64 token
-  const currentToken = atob(currentCluster.Secret.data.saToken);
+  const currentToken = atob(currentCluster?.Secret?.data?.saToken);
   const tokenUpdated = clusterValues.token !== currentToken;
 
   const currentAzureResource = currentCluster.MigCluster.spec.azureResourceGroup;
