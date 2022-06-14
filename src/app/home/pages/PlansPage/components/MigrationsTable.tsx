@@ -31,7 +31,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
   const { migrationType } = getPlanInfo(plan);
 
   const getSortValues = (migration: IMigration) => {
-    const action = migSpecToAction(migrationType, migration.spec);
+    const action = migSpecToAction(migrationType, migration);
     const { tableStatus } = migration;
     return [migrationActionToString(action), tableStatus.start, tableStatus.end, ''];
   };
@@ -52,7 +52,7 @@ const MigrationsTable: React.FunctionComponent<IProps> = ({ migrations, isPlanLo
   useEffect(() => setPageNumber(1), [sortBy, setPageNumber]);
   const rows: IRow[] = [];
   currentPageItems.forEach((migration) => {
-    const action = migSpecToAction(migrationType, migration.spec);
+    const action = migSpecToAction(migrationType, migration);
 
     rows.push({
       cells: [

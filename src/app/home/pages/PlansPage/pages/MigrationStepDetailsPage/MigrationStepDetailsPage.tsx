@@ -44,7 +44,7 @@ export const MigrationStepDetailsPage: React.FunctionComponent = () => {
   const step = migration?.status?.pipeline.find((step: IStep) => step.name === stepName);
 
   const { migrationType } = getPlanInfo(plan);
-  const action = migSpecToAction(migrationType, migration?.spec);
+  const action = migSpecToAction(migrationType, migration);
 
   return (
     <>
