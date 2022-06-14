@@ -32,7 +32,7 @@ const AccessLogsModal: React.FunctionComponent<IProps> = ({ planName, onHandleCl
         toString: () => 'Source cluster',
         value: {
           name: 'Source cluster',
-          podName: logs?.logPodObject?.src.name || 'N/A',
+          podName: logs?.logPodObject?.src?.name || 'N/A',
         },
       },
       {
