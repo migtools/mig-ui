@@ -21,21 +21,21 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
   if (!currentStorage) {
     return true;
+  } else {
+    const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+    const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
+    let existingGCPBlob;
+    if (currentStorage?.Secret?.data['gcp-credentials']) {
+      existingGCPBlob = atob(currentStorage?.Secret?.data['gcp-credentials']);
+    }
+
+    const valuesUpdatedObject =
+      values.name !== existingMigStorageName ||
+      values.gcpBucket !== existingGCPBucket ||
+      values.gcpBlob !== existingGCPBlob;
+
+    return valuesUpdatedObject;
   }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingGCPBucket = currentStorage.MigStorage.spec.backupStorageConfig.gcpBucket;
-  let existingGCPBlob;
-  if (currentStorage?.Secret?.data['gcp-credentials']) {
-    existingGCPBlob = atob(currentStorage?.Secret?.data['gcp-credentials']);
-  }
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.gcpBucket !== existingGCPBucket ||
-    values.gcpBlob !== existingGCPBlob;
-
-  return valuesUpdatedObject;
 };
 
 interface IFormValues {
@@ -198,11 +198,12 @@ const GCPForm = withFormik<IOtherProps, IFormValues>({
 
   validate: (values: any) => {
     const errors: any = {};
+    const repositoryNameError = utils.testRepositoryName(values?.name);
 
     if (!values.name) {
       errors.name = 'Required';
-    } else if (!utils.testDNS1123(values.name)) {
-      errors.name = utils.DNS1123Error(values.name);
+    } else if (repositoryNameError !== '') {
+      errors.name = repositoryNameError;
     }
 
     if (!values.gcpBucket) {

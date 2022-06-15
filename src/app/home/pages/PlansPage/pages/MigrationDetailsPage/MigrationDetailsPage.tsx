@@ -49,7 +49,7 @@ export const MigrationDetailsPage: React.FunctionComponent = () => {
 
   const { migrationType } = getPlanInfo(plan);
 
-  const action = migSpecToAction(migrationType, migration?.spec);
+  const action = migSpecToAction(migrationType, migration);
 
   return (
     <>
