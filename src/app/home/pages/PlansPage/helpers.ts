@@ -462,9 +462,14 @@ export const actionToMigSpec = (
 
 export const migSpecToAction = (
   type: MigrationType,
-  spec?: IMigration['spec']
+  migration?: IMigration
 ): MigrationAction | undefined => {
+  const spec = migration?.spec;
   if (!spec) return undefined;
+  if (migration?.metadata?.annotations?.['migration.openshift.io/state-transfer']) {
+    if (spec.stage) return 'stage';
+    else return 'cutover';
+  }
   return MIGRATION_ACTIONS.find((action) => {
     const possibleSpec = migSpecByAction[type][action];
     const fieldsToCompare =

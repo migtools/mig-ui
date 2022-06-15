@@ -18,9 +18,9 @@ import {
 } from '../../../../../../common/add_edit_state';
 import ConnectionStatusLabel from '../../../../../../common/components/ConnectionStatusLabel';
 import { withFormik, FormikProps } from 'formik';
-import utils from '../../../../../../common/duck/utils';
 import { validatedState } from '../../../../../../common/helpers';
 import { IStorage } from '../../../../../../storage/duck/types';
+import utils from '../../../../../../common/duck/utils';
 
 /*
 This URL is swapped out with downstream build scripts to point to the downstream documentation reference
@@ -35,26 +35,26 @@ const addEditButtonTextFn = addEditButtonText(componentTypeStr);
 const valuesHaveUpdate = (values: any, currentStorage: IStorage) => {
   if (!currentStorage) {
     return true;
+  } else {
+    const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+    const existingAzureStorageAccount =
+      currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
+    const existingAzureResourceGroup =
+      currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
+
+    let existingAzureBlob;
+    if (currentStorage?.Secret?.data['azure-credentials']) {
+      existingAzureBlob = atob(currentStorage?.Secret?.data['azure-credentials']);
+    }
+
+    const valuesUpdatedObject =
+      values.name !== existingMigStorageName ||
+      values.azureResourceGroup !== existingAzureResourceGroup ||
+      values.azureStorageAccount !== existingAzureStorageAccount ||
+      values.azureBlob !== existingAzureBlob;
+
+    return valuesUpdatedObject;
   }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAzureStorageAccount =
-    currentStorage.MigStorage.spec.backupStorageConfig.azureStorageAccount;
-  const existingAzureResourceGroup =
-    currentStorage.MigStorage.spec.backupStorageConfig.azureResourceGroup;
-
-  let existingAzureBlob;
-  if (currentStorage?.Secret?.data['azure-credentials']) {
-    existingAzureBlob = atob(currentStorage?.Secret?.data['azure-credentials']);
-  }
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.azureResourceGroup !== existingAzureResourceGroup ||
-    values.azureStorageAccount !== existingAzureStorageAccount ||
-    values.azureBlob !== existingAzureBlob;
-
-  return valuesUpdatedObject;
 };
 
 interface IFormValues {
@@ -277,11 +277,12 @@ const AzureForm: any = withFormik<IOtherProps, IFormValues>({
 
   validate: (values: any) => {
     const errors: any = {};
+    const repositoryNameError = utils.testRepositoryName(values?.name);
 
     if (!values.name) {
       errors.name = 'Required';
-    } else if (!utils.testDNS1123(values.name)) {
-      errors.name = utils.DNS1123Error(values.name);
+    } else if (repositoryNameError !== '') {
+      errors.name = repositoryNameError;
     }
 
     if (!values.azureResourceGroup) {

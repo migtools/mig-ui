@@ -162,12 +162,12 @@ const getPlansWithPlanStatus = createSelector(
       const { migrationType } = getPlanInfo(plan);
 
       const latestMigration = planMigrations.length ? planMigrations[0] : null;
-      const latestAction = migSpecToAction(migrationType, latestMigration?.spec); // 'stage' | 'cutover' | 'rollback'
+      const latestAction = migSpecToAction(migrationType, latestMigration); // 'stage' | 'cutover' | 'rollback'
 
       const latestAnalytic = plan.Analytics?.length ? plan.Analytics[0] : null;
 
       const hasSucceededStage = !!planMigrations.filter((m) => {
-        const action = migSpecToAction(migrationType, m.spec);
+        const action = migSpecToAction(migrationType, m);
         if (m.status?.conditions && action === 'stage') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
@@ -177,7 +177,7 @@ const getPlansWithPlanStatus = createSelector(
       }).length;
 
       const hasSucceededCutover = !!planMigrations.filter((m) => {
-        const action = migSpecToAction(migrationType, m.spec);
+        const action = migSpecToAction(migrationType, m);
         if (m.status?.conditions && action === 'cutover') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
@@ -187,7 +187,7 @@ const getPlansWithPlanStatus = createSelector(
       }).length;
 
       const hasSucceededRollback = !!planMigrations.filter((m) => {
-        const action = migSpecToAction(migrationType, m.spec);
+        const action = migSpecToAction(migrationType, m);
         if (m.status?.conditions && action === 'rollback') {
           return (
             m.status.conditions.some((c) => c.type === 'Succeeded') &&
@@ -198,7 +198,7 @@ const getPlansWithPlanStatus = createSelector(
       }).length;
 
       const hasAttemptedMigration = !!planMigrations.some(
-        (m) => migSpecToAction(migrationType, m.spec) === 'cutover'
+        (m) => migSpecToAction(migrationType, m) === 'cutover'
       );
 
       const hasRunningMigrations = !!planMigrations.filter((m) => {
@@ -237,7 +237,7 @@ const getPlansWithStatus = createSelector([getPlansWithPlanStatus], (plans): IPl
   const getMigrationStatus = (plan: IPlan, migration: IMigration) => {
     const { MigPlan } = plan;
     const { migrationType } = getPlanInfo(plan);
-    const migrationAction = migSpecToAction(migrationType, migration?.spec);
+    const migrationAction = migSpecToAction(migrationType, migration);
     const status: any = {
       start: 'In progress',
       end: 'In progress',
