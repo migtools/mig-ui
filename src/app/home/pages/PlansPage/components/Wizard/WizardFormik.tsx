@@ -73,12 +73,19 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
             (editedNSName === ns.oldName && editedNSNameID !== ns.id)
           );
         });
+        const hasUnchangedIntraClusterNs =
+          values?.sourceCluster === values?.targetCluster &&
+          values.migrationType.value !== 'scc' &&
+          values?.currentTargetNamespaceName?.name === values?.currentTargetNamespaceName?.srcName;
 
         const targetNamespaceNameError = utils.testTargetName(
           values?.currentTargetNamespaceName?.name
         );
         if (targetNamespaceNameError !== '') {
           errors.currentTargetNamespaceName = targetNamespaceNameError;
+        } else if (hasUnchangedIntraClusterNs) {
+          errors.currentTargetNamespaceName =
+            'Target namespace name cannot be the same as source namespace name. Enter a unique name for this target namespace.';
         } else if (hasDuplicateMapping) {
           errors.currentTargetNamespaceName =
             'A mapped target namespace with that name already exists. Enter a unique name for this target namespace.';
