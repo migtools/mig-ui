@@ -47,6 +47,17 @@ export const handleSelfSignedCertError = (failedUrl: string, dispatch: any) => {
   dispatch(certErrorOccurred(failedUrl));
 };
 
+const testClusterName = (value: string) => {
+  if (value?.length < 3 || value?.length > 63) {
+    return 'The cluster name should be between 3 and 63 characters long.';
+  } else if (!DNS1123Validator.test(value)) {
+    return `Invalid character: "${value}". Name must be DNS-1123 label compliant, starting and ending
+    with a lowercase alphanumeric character and containing only lowercase alphanumeric characters, "."
+    or "-".`;
+  }
+  return '';
+};
+
 const testTargetName = (value: string) => {
   if (value?.length < 3 || value?.length > 63) {
     return 'The namespace name should be between 3 and 63 characters long.';
@@ -88,4 +99,5 @@ export default {
   testRouteHost,
   capitalize,
   testTargetName,
+  testClusterName,
 };
