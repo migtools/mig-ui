@@ -393,7 +393,7 @@ export function updateMigPlanFromValues(
   currentPlan: IMigPlan
 ) {
   const updatedSpec: IMigPlan['spec'] = Object.assign({}, migPlan.spec);
-  if (planValues.selectedStorage) {
+  if (planValues.selectedStorage && migPlan.spec.migStorageRef) {
     updatedSpec.migStorageRef = {
       name: planValues.selectedStorage,
       namespace: migPlan.metadata.namespace,
