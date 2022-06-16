@@ -55,9 +55,9 @@ const valuesHaveUpdate = (values: any, currentStorage: IStorage, isAWS: boolean)
     }
 
     const existingS3URL = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
-    const existingRequireSSLValue = currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+    const existingRequireSSLValue = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
     const existingCABundleValue =
-      currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
+      currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle || null;
 
     const valuesUpdatedObject =
       values.name !== existingMigStorageName ||
