@@ -62,7 +62,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         if (!values.targetCluster) {
           errors.targetCluster = 'Required';
         }
-        if (!values.selectedStorage) {
+        if (values.migrationType.value !== 'scc' && !values.selectedStorage) {
           errors.selectedStorage = 'Required';
         }
         const hasDuplicateMapping = values.editedNamespaces.find((ns, index) => {
