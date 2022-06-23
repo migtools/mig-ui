@@ -40,36 +40,37 @@ interface IOtherProps {
 const valuesHaveUpdate = (values: any, currentStorage: IStorage, isAWS: boolean) => {
   if (!currentStorage) {
     return true;
+  } else {
+    const existingMigStorageName = currentStorage.MigStorage.metadata.name;
+    const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
+    const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
+    let existingAccessKey;
+    if (currentStorage?.Secret?.data['aws-access-key-id']) {
+      existingAccessKey = atob(currentStorage.Secret.data['aws-access-key-id']);
+    }
+
+    let existingSecretKey;
+    if (currentStorage?.Secret?.data['aws-secret-access-key']) {
+      existingSecretKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
+    }
+
+    const existingS3URL = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
+    const existingRequireSSLValue = !currentStorage.MigStorage.spec.backupStorageConfig.insecure;
+    const existingCABundleValue =
+      currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle || null;
+
+    const valuesUpdatedObject =
+      values.name !== existingMigStorageName ||
+      values.awsBucketName !== existingAWSBucketName ||
+      values.awsBucketRegion !== existingAWSBucketRegion ||
+      values.accessKey !== existingAccessKey ||
+      values.secret !== existingSecretKey ||
+      (!isAWS && values.s3Url !== existingS3URL) ||
+      (!isAWS && values.requireSSL !== existingRequireSSLValue) ||
+      (!isAWS && values.caBundle !== existingCABundleValue);
+
+    return valuesUpdatedObject;
   }
-
-  const existingMigStorageName = currentStorage.MigStorage.metadata.name;
-  const existingAWSBucketName = currentStorage.MigStorage.spec.backupStorageConfig.awsBucketName;
-  const existingAWSBucketRegion = currentStorage.MigStorage.spec.backupStorageConfig.awsRegion;
-  let existingAccessKey;
-  if (currentStorage.Secret.data['aws-access-key-id']) {
-    existingAccessKey = atob(currentStorage.Secret.data['aws-access-key-id']);
-  }
-
-  let existingSecretKey;
-  if (currentStorage.Secret.data['aws-secret-access-key']) {
-    existingSecretKey = atob(currentStorage.Secret.data['aws-secret-access-key']);
-  }
-
-  const existingS3URL = currentStorage.MigStorage.spec.backupStorageConfig.awsS3Url;
-  const existingRequireSSLValue = currentStorage.MigStorage.spec.backupStorageConfig.insecure;
-  const existingCABundleValue = currentStorage.MigStorage.spec.backupStorageConfig.s3CustomCABundle;
-
-  const valuesUpdatedObject =
-    values.name !== existingMigStorageName ||
-    values.awsBucketName !== existingAWSBucketName ||
-    values.awsBucketRegion !== existingAWSBucketRegion ||
-    values.accessKey !== existingAccessKey ||
-    values.secret !== existingSecretKey ||
-    (!isAWS && values.s3Url !== existingS3URL) ||
-    (!isAWS && values.requireSSL !== existingRequireSSLValue) ||
-    (!isAWS && values.caBundle !== existingCABundleValue);
-
-  return valuesUpdatedObject;
 };
 
 const componentTypeStr = 'Repository';
@@ -341,10 +342,12 @@ const S3Form: React.ComponentType<IOtherProps> = withFormik<IOtherProps, IFormVa
   validate: (values: IFormValues, props: IOtherProps) => {
     const errors: any = {};
 
+    const repositoryNameError = utils.testRepositoryName(values?.name);
+
     if (!values.name) {
       errors.name = 'Required';
-    } else if (!utils.testDNS1123(values.name)) {
-      errors.name = utils.DNS1123Error(values.name);
+    } else if (repositoryNameError !== '') {
+      errors.name = repositoryNameError;
     }
 
     if (!values.awsBucketName) {

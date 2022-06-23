@@ -23,6 +23,7 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     hasNotReadyCondition = null,
     hasSucceededStage = null,
     hasSucceededCutover = null,
+    hasSucceededRollback = null,
     hasSucceededWithWarningsCondition = null,
     isPlanLocked = null,
     hasConflictCondition = null,
@@ -80,6 +81,12 @@ const PlanStatusIcon: React.FunctionComponent<IProps> = ({ plan }) => {
     return (
       <span className={`${styles.planStatusIcon} pf-c-icon pf-m-success`}>
         <ResourcesAlmostEmptyIcon />
+      </span>
+    );
+  } else if (hasSucceededRollback) {
+    return (
+      <span className={`${styles.planStatusIcon} pf-c-icon pf-m-success`}>
+        <ResourcesFullIcon />
       </span>
     );
   } else {
