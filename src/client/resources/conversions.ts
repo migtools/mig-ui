@@ -469,6 +469,8 @@ export function updateMigPlanFromValues(
         updatedPV.selection.storageClass =
           selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
       }
+      const isPVSelected = planValues.selectedPVs.includes(pvItem.name);
+      if (!isPVSelected) updatedPV.selection.action = 'skip';
 
       return updatedPV;
     });
