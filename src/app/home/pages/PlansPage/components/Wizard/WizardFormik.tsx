@@ -52,12 +52,6 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
         if (!values.selectedNamespaces || values.selectedNamespaces.length === 0) {
           errors.selectedNamespaces = 'Required';
         }
-        if (
-          values.migrationType.value !== 'scc' &&
-          (!values.selectedPVs || values.selectedPVs.length === 0)
-        ) {
-          errors.selectedPVs = 'Required';
-        }
 
         if (!values.targetCluster) {
           errors.targetCluster = 'Required';
@@ -73,10 +67,14 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
             (editedNSName === ns.oldName && editedNSNameID !== ns.id)
           );
         });
+        const existingNSTargetName = values?.currentTargetNamespaceName?.name;
+        const existingNSSourceName = values?.currentTargetNamespaceName?.srcName;
         const hasUnchangedIntraClusterNs =
           values?.sourceCluster === values?.targetCluster &&
           values.migrationType.value !== 'scc' &&
-          values?.currentTargetNamespaceName?.name === values?.currentTargetNamespaceName?.srcName;
+          existingNSTargetName &&
+          existingNSSourceName &&
+          existingNSSourceName === existingNSTargetName;
 
         const targetNamespaceNameError = utils.testTargetName(
           values?.currentTargetNamespaceName?.name
