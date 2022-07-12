@@ -68,11 +68,18 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     };
     // TODO: When VSL configuration is supported separate from BSL,
     // this needs to be updated to support two different, distinct secrets
-    fullStorage['Secret'] = refs.find(
-      (ref) =>
+    const secretValue = refs.find((ref) => {
+      if (ref.isAxiosError) {
+        return;
+      } else if (
         ref.data.kind === 'Secret' &&
         ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
-    ).data;
+      ) {
+        return ref;
+      }
+    });
+
+    fullStorage['Secret'] = secretValue?.data ? secretValue.data : undefined;
 
     return fullStorage;
   });
