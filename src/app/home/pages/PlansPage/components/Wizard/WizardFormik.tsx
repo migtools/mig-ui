@@ -73,9 +73,13 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
             (editedNSName === ns.oldName && editedNSNameID !== ns.id)
           );
         });
+        const existingNSTargetName = values?.currentTargetNamespaceName?.name;
+        const existingNSSourceName = values?.currentTargetNamespaceName?.srcName;
         const hasUnchangedIntraClusterNs =
           values?.sourceCluster === values?.targetCluster &&
           values.migrationType.value !== 'scc' &&
+          existingNSTargetName &&
+          existingNSSourceName &&
           values?.currentTargetNamespaceName?.name === values?.currentTargetNamespaceName?.srcName;
 
         const targetNamespaceNameError = utils.testTargetName(
