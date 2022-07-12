@@ -71,9 +71,11 @@ function groupStorages(migStorages: any[], refs: any[]): any[] {
     const secretValue = refs.find((ref) => {
       if (ref.isAxiosError) {
         return;
-      } else {
+      } else if (
         ref.data.kind === 'Secret' &&
-          ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name;
+        ref.data.metadata.name === ms.spec.backupStorageConfig.credsSecretRef.name
+      ) {
+        return ref;
       }
     });
 
