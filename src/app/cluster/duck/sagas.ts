@@ -74,9 +74,11 @@ function groupClusters(migClusters: IMigCluster[], refs: any[]): ICluster[] {
       const secretValue = refs.find((ref) => {
         if (ref.isAxiosError) {
           return;
-        } else {
+        } else if (
           ref.data.kind === 'Secret' &&
-            ref.data.metadata.name === mc.spec.serviceAccountSecretRef.name;
+          ref.data.metadata.name === mc.spec.serviceAccountSecretRef.name
+        ) {
+          return ref;
         }
       });
 
