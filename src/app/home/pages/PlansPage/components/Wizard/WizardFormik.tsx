@@ -80,7 +80,7 @@ const WizardFormik: React.FunctionComponent<IWizardFormikProps> = ({
           values.migrationType.value !== 'scc' &&
           existingNSTargetName &&
           existingNSSourceName &&
-          values?.currentTargetNamespaceName?.name === values?.currentTargetNamespaceName?.srcName;
+          existingNSSourceName === existingNSTargetName;
 
         const targetNamespaceNameError = utils.testTargetName(
           values?.currentTargetNamespaceName?.name
