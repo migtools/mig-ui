@@ -319,7 +319,11 @@ const WizardComponent = (props: IOtherProps) => {
                 }
                 break;
               case 'Namespaces':
-                return !errors.selectedNamespaces && !isFetchingNamespaceList;
+                return (
+                  !errors.selectedNamespaces &&
+                  !isFetchingNamespaceList &&
+                  !errors.currentTargetNamespaceName
+                );
               case 'Copy options':
                 return !errors.currentTargetPVCName;
               case 'Persistent volumes':
