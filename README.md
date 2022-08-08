@@ -1,5 +1,10 @@
 # mig-ui
 
+Prerequisites for development:
+
+- NodeJS >= 12.13.0
+- Yarn 1.x
+
 ## Quick-start
 
 Copy `config/config.dev.json.example` to `config/config.dev.json` where you can
