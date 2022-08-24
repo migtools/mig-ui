@@ -15,7 +15,7 @@ import {
 import { alertErrorTimeout } from '../../common/duck/slice';
 import debugReducer from '.';
 import { DefaultRootState } from '../../../configureStore';
-import { ClientFactory } from '@konveyor/lib-ui';
+import { ClientFactory } from '@migtools/lib-ui';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
   DebugTreeDiscoveryResource,

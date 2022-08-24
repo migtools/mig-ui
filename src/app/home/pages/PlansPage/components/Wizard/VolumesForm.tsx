@@ -11,7 +11,7 @@ import {
   Title,
   Alert,
 } from '@patternfly/react-core';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon, StatusType } from '@migtools/lib-ui';
 import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
 import { usePausedPollingEffect } from '../../../../../common/context';
 import { OptionLike, OptionWithValue } from '../../../../../common/components/SimpleSelect';

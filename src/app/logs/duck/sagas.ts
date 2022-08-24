@@ -32,7 +32,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 import { planSelectors } from '../../plan/duck';
 import { ICluster, IMigCluster } from '../../cluster/duck/types';
-import { ClientFactory } from '@konveyor/lib-ui';
+import { ClientFactory } from '@migtools/lib-ui';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import { DiscoveryFactory } from '../../../client/discovery_factory';
 

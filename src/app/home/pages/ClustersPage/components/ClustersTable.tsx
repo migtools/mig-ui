@@ -14,7 +14,7 @@ import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState } from '../../../../common/duck/hooks';
 import { getClusterInfo } from '../helpers';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon, StatusType } from '@migtools/lib-ui';
 import ClusterActionsDropdown from './ClusterActionsDropdown';
 import IconWithText from '../../../../common/components/IconWithText';
 import { ICluster } from '../../../../cluster/duck/types';

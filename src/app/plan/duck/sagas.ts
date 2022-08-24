@@ -44,7 +44,7 @@ import {
 } from './types';
 import { IMigHook } from '../../home/pages/HooksPage/types';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
-import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import { ClientFactory, IClusterClient } from '@migtools/lib-ui';
 import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
   DiscoveryResource,

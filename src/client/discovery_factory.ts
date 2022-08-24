@@ -1,7 +1,7 @@
 import { DiscoveryClient } from './discoveryClient';
 import { ResponseType } from 'axios';
 import { TokenExpiryHandler } from './resources/common';
-import { ClientFactoryMissingUserError } from '@konveyor/lib-ui';
+import { ClientFactoryMissingUserError } from '@migtools/lib-ui';
 
 export class ClientFactoryMissingDiscoveryApi extends Error {
   constructor() {

@@ -39,7 +39,7 @@ import {
   CoreNamespacedResource,
   CoreNamespacedResourceKind,
   IClusterClient,
-} from '@konveyor/lib-ui';
+} from '@migtools/lib-ui';
 import { MigResource, MigResourceKind } from '../../../client/helpers';
 
 function fetchMigStorageRefs(
