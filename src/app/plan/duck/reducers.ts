@@ -673,6 +673,7 @@ export const updateHookFailure: PlanReducerFn = (
   return {
     ...state,
     isFetchingHookList: false,
+    isUpdatingGlobalHookList: false,
   };
 };
 
