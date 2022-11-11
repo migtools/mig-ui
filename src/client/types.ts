@@ -1,4 +1,4 @@
-import { ClusterClient } from '@konveyor/lib-ui';
+import { ClusterClient } from '@migtools/lib-ui';
 import { AxiosError } from 'axios';
 export interface IMetaTypeMeta {
   apiVersion: string;

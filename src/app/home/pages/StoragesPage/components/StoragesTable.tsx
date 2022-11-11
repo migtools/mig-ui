@@ -7,7 +7,7 @@ import tableStyles from '@patternfly/react-styles/css/components/Table/table';
 import { useSortState } from '../../../../common/duck/hooks';
 import { getStorageInfo } from '../helpers';
 import IconWithText from '../../../../common/components/IconWithText';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
+import { StatusIcon, StatusType } from '@migtools/lib-ui';
 import StorageActionsDropdown from './StorageActionsDropdown';
 import { IStorage } from '../../../../storage/duck/types';
 import { IPlanCountByResourceName } from '../../../../common/duck/types';

@@ -4,7 +4,7 @@ import {
   CoreNamespacedResource,
   CoreNamespacedResourceKind,
   IClusterClient,
-} from '@konveyor/lib-ui';
+} from '@migtools/lib-ui';
 import {
   createMigClusterSecret,
   createMigCluster,

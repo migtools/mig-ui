@@ -23,7 +23,7 @@ import {
 import { IAlertModalObj } from './types';
 import { certErrorOccurred } from '../../auth/duck/slice';
 import { DefaultRootState } from '../../../configureStore';
-import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import { ClientFactory, IClusterClient } from '@migtools/lib-ui';
 import {
   CommonResource,
   CommonResourceKind,
