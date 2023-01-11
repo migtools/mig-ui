@@ -63,7 +63,7 @@
     "redux-mock-store": "^1.5.4",
     "rimraf": "^2.6.3",
     "sass-loader": "^11.0.1",
-    "source-map-loader": "^0.2.4",
+    "source-map-loader": "^4.0.1",
     "style-loader": "^2.0.0",
     "ts-jest": "^26.5.4",
     "ts-loader": "^9.1.0",
@@ -74,8 +74,6 @@
     "webpack-dev-server": "^4.8.1"
   },
   "dependencies": {
-    "https-proxy-agent": "^5.0.0",
-    "compression": "^1.7.4",
     "@hot-loader/react-dom": "^17.0.1",
     "@konveyor/lib-ui": "^5.1.2",
     "@patternfly/react-core": "^4.115.5",
@@ -90,6 +88,7 @@
     "@types/redux-saga": "^0.10.5",
     "axios": "^0.21.4",
     "classnames": "^2.2.6",
+    "compression": "^1.7.4",
     "connected-react-router": "^6.9.1",
     "dayjs": "^1.9.5",
     "ejs": "^2.6.1",
@@ -97,6 +96,7 @@
     "formik": "^2.1.4",
     "history": "^4.9.0",
     "http-proxy-middleware": "^2.0.0",
+    "https-proxy-agent": "^5.0.0",
     "ip-range-check": "^0.2.0",
     "is-cidr": "^4.0.2",
     "is-ip": "^3.1.0",
