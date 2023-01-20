@@ -167,44 +167,47 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
   );
 
   const planName = action.payload;
+
   const currentPlan = state.plan.migPlanList.find(
-    (plan) => plan.MigPlan.metadata.name === planName
+    (plan) => plan?.MigPlan?.metadata?.name === planName
   );
   const nonHostClusters = state.cluster.clusterList.filter(
-    (c: ICluster) => !c.MigCluster.spec.isHostCluster
+    (c: ICluster) => !c?.MigCluster?.spec?.isHostCluster
   );
 
   const isSrcNonHost = nonHostClusters.some(
     (nonHostCluster) =>
-      nonHostCluster.MigCluster.metadata.name === currentPlan.MigPlan.spec.srcMigClusterRef.name
+      nonHostCluster?.MigCluster?.metadata?.name ===
+      currentPlan?.MigPlan?.spec?.srcMigClusterRef?.name
   );
   const isDestNonHost = nonHostClusters.some(
     (nonHostCluster) =>
-      nonHostCluster.MigCluster.metadata.name === currentPlan.MigPlan.spec.destMigClusterRef.name
+      nonHostCluster?.MigCluster?.metadata?.name ===
+      currentPlan?.MigPlan?.spec?.destMigClusterRef?.name
   );
 
   let clusterObjForPlan;
 
   if (isSrcNonHost && isDestNonHost) {
     const hostCluster = state.cluster.clusterList.find(
-      (c: ICluster) => c.MigCluster.spec.isHostCluster
+      (c: ICluster) => c?.MigCluster?.spec?.isHostCluster
     );
     clusterObjForPlan = {
-      host: hostCluster.MigCluster.metadata.name,
-      dest: currentPlan.MigPlan.spec.destMigClusterRef.name,
-      src: currentPlan.MigPlan.spec.srcMigClusterRef.name,
+      host: hostCluster?.MigCluster?.metadata?.name,
+      dest: currentPlan?.MigPlan?.spec?.destMigClusterRef?.name,
+      src: currentPlan?.MigPlan?.spec?.srcMigClusterRef?.name,
     };
   } else {
     clusterObjForPlan = {
-      dest: currentPlan.MigPlan.spec.destMigClusterRef.name,
-      src: currentPlan.MigPlan.spec.srcMigClusterRef.name,
+      dest: currentPlan?.MigPlan?.spec?.destMigClusterRef?.name,
+      src: currentPlan?.MigPlan?.spec?.srcMigClusterRef?.name,
     };
   }
 
   const srcPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
-    new PodCollectorDiscoveryResource(clusterObjForPlan.src);
+    new PodCollectorDiscoveryResource(clusterObjForPlan?.src);
   const destPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
-    new PodCollectorDiscoveryResource(clusterObjForPlan.dest);
+    new PodCollectorDiscoveryResource(clusterObjForPlan?.dest);
   const hostPodCollectorDiscoveryResource: IPodCollectorDiscoveryResource =
     new PodCollectorDiscoveryResource(clusterObjForPlan?.host);
 
@@ -212,15 +215,15 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
     const srcPodList = yield discoveryClient.get(srcPodCollectorDiscoveryResource);
     const destPodList = yield discoveryClient.get(destPodCollectorDiscoveryResource);
     const srcLogPod = srcPodList?.data?.resources?.find((resource: any) =>
-      resource.name.includes('migration-log-reader-')
+      resource?.name?.includes('migration-log-reader-')
     );
     const destLogPod = destPodList?.data?.resources?.find((resource: any) =>
-      resource.name.includes('migration-log-reader-')
+      resource?.name?.includes('migration-log-reader-')
     );
     if (isSrcNonHost && isDestNonHost) {
       const hostPodList = yield discoveryClient.get(hostPodCollectorDiscoveryResource);
       const hostLogPod = hostPodList?.data?.resources?.find((resource: any) =>
-        resource.name.includes('migration-log-reader-')
+        resource?.name?.includes('migration-log-reader-')
       );
       const logPodObject: IClusterLogPodObject = {
         src: srcLogPod,
@@ -246,7 +249,7 @@ function* fetchPodNames(action: PayloadAction<string>): Generator<any, any, any>
       yield handleCertError(failedUrl);
       return;
     }
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err?.message));
     yield put(clusterPodFetchFailure(err));
   }
 }
