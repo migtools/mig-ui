@@ -124,6 +124,7 @@
     "uuid": "^3.3.2"
   },
   "resolutions": {
-    "minimatch": "^3.0.5"
+    "minimatch": "^3.0.5",
+    "optionator": "^0.9.3"
   }
 }
