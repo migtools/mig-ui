@@ -1,52 +1,52 @@
-import React, { useEffect } from 'react';
-import { useFormikContext } from 'formik';
-import { IFormValues } from './WizardContainer';
 import {
+  Button,
+  DropdownDirection,
+  Flex,
+  FlexItem,
+  FormGroup,
   GridItem,
-  Text,
-  TextContent,
-  TextVariants,
   Level,
   LevelItem,
   Pagination,
   PaginationVariant,
-  DropdownDirection,
-  TextInput,
-  FlexItem,
-  Flex,
   Popover,
   PopoverPosition,
-  FormGroup,
-  Button,
+  Text,
+  TextContent,
+  TextInput,
+  TextVariants,
 } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
+import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
+import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
   IRowData,
-  sortable,
   TableComposable,
   Tbody,
   Td,
   Th,
   Thead,
   Tr,
+  sortable,
 } from '@patternfly/react-table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
+import { useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 import {
-  FilterToolbar,
   FilterCategory,
+  FilterToolbar,
   FilterType,
 } from '../../../../../common/components/FilterToolbar';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
+import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
 import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import CheckIcon from '@patternfly/react-icons/dist/js/icons/check-icon';
-import TimesIcon from '@patternfly/react-icons/dist/js/icons/times-icon';
-import PencilAltIcon from '@patternfly/react-icons/dist/js/icons/pencil-alt-icon';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useDelayValidation, validatedState } from '../../../../../common/helpers';
-import { ISourceClusterNamespace } from '../../../../../plan/duck/types';
-import { useSelector } from 'react-redux';
 import { planSelectors } from '../../../../../plan/duck';
-import { DefaultRootState } from '../../../../../../configureStore';
+import { ISourceClusterNamespace } from '../../../../../plan/duck/types';
+import { IFormValues } from './WizardContainer';
 const styles = require('./NamespacesTable.module').default;
 
 const NamespacesTable: React.FunctionComponent = () => {
@@ -68,6 +68,7 @@ const NamespacesTable: React.FunctionComponent = () => {
     { title: 'Pods', transforms: [sortable] },
     { title: 'PV claims', transforms: [sortable] },
     { title: 'Services', transforms: [sortable] },
+    { title: 'Virtual Machines', transforms: [sortable] },
     values.migrationType.value !== 'scc' && { title: 'Target name', transforms: [sortable] },
   ];
   const getSortValues = (namespace: any) => [
@@ -122,6 +123,7 @@ const NamespacesTable: React.FunctionComponent = () => {
         namespace.podCount,
         namespace.pvcCount,
         namespace.serviceCount,
+        namespace.vmCount,
         values.migrationType.value !== 'scc' && targetNamespaceName,
       ],
       selected: values.selectedNamespaces.includes(namespace.name),
@@ -229,10 +231,11 @@ const NamespacesTable: React.FunctionComponent = () => {
                 <Th width={10}>{columns[1].title}</Th>
                 <Th width={10}>{columns[2].title}</Th>
                 <Th width={10}>{columns[3].title}</Th>
+                <Th width={20}>{columns[4].title}</Th>
                 {values.migrationType.value !== 'scc' && (
                   <>
                     <Th width={30}>
-                      {columns[4].title}
+                      {columns[5].title}
                       <Popover
                         position={PopoverPosition.right}
                         bodyContent={
@@ -424,12 +427,12 @@ const NamespacesTable: React.FunctionComponent = () => {
                             onClick={() => {
                               setEditableRow(rowIndex);
                               handleDelayedValidation(
-                                typeof row.cells[4] === 'string' ? row.cells[4] : '',
+                                typeof row.cells[5] === 'string' ? row.cells[5] : '',
                                 row,
                                 rowIndex
                               );
                               setFieldValue(currentTargetNamespaceNameKey, {
-                                name: row.cells[4],
+                                name: row.cells[5],
                                 srcName: row.cells[0],
                               });
                             }}

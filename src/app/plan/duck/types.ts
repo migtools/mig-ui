@@ -4,7 +4,6 @@ import {
   MigrationStepsType,
   MigrationType,
 } from '../../home/pages/PlansPage/types';
-import { ICurrentPlanStatus } from './reducers';
 
 export type PvCopyMethod = 'filesystem' | 'snapshot';
 
@@ -200,6 +199,7 @@ export interface ISourceClusterNamespace {
   podCount: number;
   pvcCount: number;
   serviceCount: number;
+  vmCount: number;
   id: string | number;
 }
 
