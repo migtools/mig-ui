@@ -1,19 +1,20 @@
-import React, { useState, useContext } from 'react';
 import {
-  Modal,
+  Button,
+  Checkbox,
   Grid,
   GridItem,
+  Modal,
   TextContent,
   TextList,
   TextListItem,
   Title,
 } from '@patternfly/react-core';
-import { Button, Checkbox } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
-import { getPlanInfo } from '../../helpers';
 import { IPlan } from '../../../../../plan/duck/types';
+import { getPlanInfo } from '../../helpers';
 
 interface IProps {
   onHandleClose: () => void;
@@ -24,7 +25,7 @@ interface IProps {
 
 const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
-  const { migrationType } = getPlanInfo(plan);
+  const { migrationType, isLiveMigrate } = getPlanInfo(plan);
 
   const [enableQuiesce, toggleQuiesce] = useState(migrationType === 'full');
   const handleChange = (checked: boolean, _event: React.FormEvent<HTMLElement>) => {
@@ -72,6 +73,12 @@ const MigrateModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, 
                     PVC references in the applications are updated to new PVCs before restarting the
                     applications.
                   </TextListItem>
+                  {isLiveMigrate ? (
+                    <TextListItem>
+                      Virtual Machines will be storage live migrated to the target volumes if
+                      possible.
+                    </TextListItem>
+                  ) : null}
                 </TextList>
               ) : null}
             </TextContent>

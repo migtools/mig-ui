@@ -1,14 +1,14 @@
-import { IFormValues } from '../../app/home/pages/PlansPage/components/Wizard/WizardContainer';
+import _ from 'lodash';
+import { IClusterSpec } from '../../app/cluster/duck/types';
+import { INameNamespaceRef } from '../../app/common/duck/types';
 import {
   HooksClusterType,
   HooksImageType,
 } from '../../app/home/pages/PlansPage/components/Wizard/HooksFormComponent';
-import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
-import { INameNamespaceRef } from '../../app/common/duck/types';
-import { IClusterSpec } from '../../app/cluster/duck/types';
-import { MigrationAction, MigrationType } from '../../app/home/pages/PlansPage/types';
+import { IFormValues } from '../../app/home/pages/PlansPage/components/Wizard/WizardContainer';
 import { actionToMigSpec } from '../../app/home/pages/PlansPage/helpers';
-import _ from 'lodash';
+import { MigrationAction, MigrationType } from '../../app/home/pages/PlansPage/types';
+import { IMigPlan, IPlanPersistentVolume } from '../../app/plan/duck/types';
 
 export function createMigClusterSecret(
   name: string,
@@ -488,6 +488,8 @@ export function updateMigPlanFromValues(
     // we should refresh corresponding MigStorage and MigClusters.
     updatedSpec.refresh = true;
   }
+
+  updatedSpec.liveMigrate = planValues.liveMigrate;
   if (planValues.hasOwnProperty('indirectImageMigration')) {
     updatedSpec.indirectImageMigration = planValues.indirectImageMigration;
   }

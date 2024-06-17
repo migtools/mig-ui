@@ -1,8 +1,8 @@
 import { ProgressVariant } from '@patternfly/react-core';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(customParseFormat);
@@ -16,12 +16,12 @@ import {
   IStep,
 } from '../../../plan/duck/types';
 import {
-  MigrationStepsType,
   IProgressInfoObj,
   IStepProgressInfo,
-  MigrationType,
-  MigrationAction,
   MIGRATION_ACTIONS,
+  MigrationAction,
+  MigrationStepsType,
+  MigrationType,
 } from './types';
 
 export const getPlanStatusText = (plan: IPlan) => {
@@ -76,9 +76,11 @@ export const getPlanInfo = (plan: IPlan) => {
   const isMaxResourcesLimitReached =
     latestMigAnalytic?.status?.analytics?.k8sResourceTotal > 10000 ? true : false;
   const migrationType = getMigrationTypeFromPlan(plan.MigPlan);
+  const isLiveMigrate = plan.MigPlan.spec.liveMigrate;
   return {
     planName: plan.MigPlan.metadata.name,
     migrationType: migrationType,
+    isLiveMigrate: isLiveMigrate,
     migrationCount: plan.Migrations.length || 0,
     sourceClusterName: plan.MigPlan.spec.srcMigClusterRef.name
       ? plan.MigPlan.spec?.srcMigClusterRef?.name
