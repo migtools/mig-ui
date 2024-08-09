@@ -1,23 +1,23 @@
+import _ from 'lodash';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import WizardComponent from './WizardComponent';
-import planSelectors from '../../../../../plan/duck/selectors';
 import { useSelector } from 'react-redux';
-import {
-  IPlanPersistentVolume,
-  IMigPlan,
-  IMigPlanStorageClass,
-} from '../../../../../plan/duck/types';
+import { DefaultRootState } from '../../../../../../configureStore';
+import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import {
   IEditedNamespaceMap,
   IEditedPVsMap,
   INameNamespaceRef,
 } from '../../../../../common/duck/types';
-import WizardFormik from './WizardFormik';
-import { DefaultRootState } from '../../../../../../configureStore';
-import { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import planSelectors from '../../../../../plan/duck/selectors';
+import {
+  IMigPlan,
+  IMigPlanStorageClass,
+  IPlanPersistentVolume,
+} from '../../../../../plan/duck/types';
+import { getMigrationTypeFromPlan, getSuggestedPvStorageClasses } from '../../helpers';
 import { MigrationType } from '../../types';
-import _ from 'lodash';
-import { getSuggestedPvStorageClasses, getMigrationTypeFromPlan } from '../../helpers';
+import WizardComponent from './WizardComponent';
+import WizardFormik from './WizardFormik';
 
 export interface IFormValues {
   planName: string;
@@ -49,6 +49,7 @@ export interface IFormValues {
     name: string;
     srcPVName: string;
   };
+  liveMigrate: boolean;
 }
 
 export interface IOtherProps {
@@ -77,6 +78,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
     pvVerifyFlagAssignment: {},
     migrationType: { value: '', toString: () => '' },
     currentTargetPVCName: null,
+    liveMigrate: false,
   };
 
   const { editPlanObj, isEdit, isOpen } = props;
@@ -197,6 +199,7 @@ const WizardContainer: React.FunctionComponent<IOtherProps> = (props: IOtherProp
       // TODO need to look into this closer, but it was resetting form values after pv discovery is run & messing with the UI state
       // See https://github.com/konveyor/mig-ui/issues/797
       initialValuesCopy.persistentVolumes = editPlanObj.spec.persistentVolumes || [];
+      initialValuesCopy.liveMigrate = editPlanObj.spec.liveMigrate || false;
     }
     setInitialValues(initialValuesCopy);
   }, [isOpen]);

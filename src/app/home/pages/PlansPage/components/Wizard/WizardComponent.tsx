@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useContext } from 'react';
 import {
   Button,
   Modal,
@@ -7,22 +6,23 @@ import {
   WizardFooter,
   WizardStepFunctionType,
 } from '@patternfly/react-core';
-import GeneralForm from './GeneralForm';
-import NamespacesForm from './NamespacesForm';
-import VolumesForm from './VolumesForm';
-import CopyOptionsForm from './CopyOptionsForm';
-import HooksStep from './HooksStep';
-import ResultsStep from './ResultsStep';
 import { useFormikContext } from 'formik';
-import { IOtherProps, IFormValues } from './WizardContainer';
-import { CurrentPlanState } from '../../../../../plan/duck/reducers';
-import WizardStepContainer from './WizardStepContainer';
-import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clusterSelectors } from '../../../../../cluster/duck';
-import { PlanActions, planSelectors } from '../../../../../plan/duck';
-import { storageSelectors } from '../../../../../storage/duck';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { clusterSelectors } from '../../../../../cluster/duck';
+import { PlanActions } from '../../../../../plan/duck';
+import { storageSelectors } from '../../../../../storage/duck';
+import CopyOptionsForm from './CopyOptionsForm';
+import GeneralForm from './GeneralForm';
+import HooksStep from './HooksStep';
+import LiveMigrationForm from './LiveMigrationForm';
+import MigrationOptionsForm from './MigrationOptions/MigrationOptionsForm';
+import NamespacesForm from './NamespacesForm';
+import ResultsStep from './ResultsStep';
+import VolumesForm from './VolumesForm';
+import { IFormValues, IOtherProps } from './WizardContainer';
+import WizardStepContainer from './WizardStepContainer';
 
 const WizardComponent = (props: IOtherProps) => {
   const dispatch = useDispatch();
@@ -61,6 +61,7 @@ const WizardComponent = (props: IOtherProps) => {
     Namespaces,
     PersistentVolumes,
     CopyOptions,
+    LiveMigration,
     MigrationOptions,
     Hooks,
     Results,
@@ -78,6 +79,7 @@ const WizardComponent = (props: IOtherProps) => {
     setShowNamespacesStep(false);
     setShowPersistentVolumesStep(false);
     setShowCopyOptionsStep(false);
+    setShowLiveMigrationStep(false);
     setInitialValues(defaultInitialValues);
   };
 
@@ -124,6 +126,16 @@ const WizardComponent = (props: IOtherProps) => {
     ),
     canJumpTo: stepIdReached >= stepId.CopyOptions,
   };
+  const liveMigrationStep = {
+    id: stepId.LiveMigration,
+    name: 'Live Migration',
+    component: (
+      <WizardStepContainer title="Live Migration">
+        <LiveMigrationForm />
+      </WizardStepContainer>
+    ),
+    canJumpTo: stepIdReached >= stepId.LiveMigration,
+  };
   const migrationOptionsStep = {
     id: stepId.MigrationOptions,
     name: 'Migration options',
@@ -163,6 +175,7 @@ const WizardComponent = (props: IOtherProps) => {
   const [showNamespacesStep, setShowNamespacesStep] = useState(false);
   const [showPersistentVolumesStep, setShowPersistentVolumesStep] = useState(false);
   const [showCopyOptionsStep, setShowCopyOptionsStep] = useState(false);
+  const [showLiveMigrationStep, setShowLiveMigrationStep] = useState(false);
   const [showMigrationOptionsStep, setShowMigrationOptionsStep] = useState(false);
   const [showHooksStep, setShowHooksStep] = useState(false);
   const [showResultsStep, setShowResultsStep] = useState(false);
@@ -172,6 +185,7 @@ const WizardComponent = (props: IOtherProps) => {
     ...(showNamespacesStep ? [namespacesStep] : []),
     ...(showPersistentVolumesStep ? [persistentVolumesStep] : []),
     ...(showCopyOptionsStep ? [copyOptionsStep] : []),
+    ...(showLiveMigrationStep ? [liveMigrationStep] : []),
     ...(showMigrationOptionsStep ? [migrationOptionsStep] : []),
     ...(showHooksStep ? [hooksStep] : []),
     ...(showResultsStep ? [resultsStep] : []),
@@ -267,8 +281,10 @@ const WizardComponent = (props: IOtherProps) => {
       setShowPersistentVolumesStep(true);
       if (values.migrationType.value === 'scc') {
         setShowCopyOptionsStep(false);
+        setShowLiveMigrationStep(true);
       } else {
         setShowCopyOptionsStep(true);
+        setShowLiveMigrationStep(false);
       }
       setShowMigrationOptionsStep(false);
       setShowResultsStep(true);
@@ -339,8 +355,10 @@ const WizardComponent = (props: IOtherProps) => {
                 return !isAddHooksOpen;
               case 'Migration options':
                 return true;
+              case 'Live Migration':
+                return true;
               default:
-                true;
+                return true;
             }
           };
 

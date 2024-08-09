@@ -1,16 +1,16 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import {
-  Modal,
+  Button,
   Grid,
   GridItem,
+  Modal,
+  TextContent,
   TextList,
   TextListItem,
   Title,
-  TextContent,
 } from '@patternfly/react-core';
-import { Button } from '@patternfly/react-core';
 import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { PlanActions } from '../../../../../plan/duck/actions';
 import { IPlan } from '../../../../../plan/duck/types';
 import { getPlanInfo } from '../../helpers';
@@ -24,7 +24,7 @@ interface IProps {
 
 const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen, plan }) => {
   const dispatch = useDispatch();
-  const { migrationType } = getPlanInfo(plan);
+  const { migrationType, isLiveMigrate } = getPlanInfo(plan);
   return (
     <Modal
       variant="small"
@@ -71,6 +71,11 @@ const RollbackModal: React.FunctionComponent<IProps> = ({ onHandleClose, isOpen,
                     CronJobs, and Jobs
                   </TextListItem>
                   <TextListItem>Deleting converted PVCs</TextListItem>
+                  {isLiveMigrate ? (
+                    <TextListItem>
+                      Storage Live Migrate any running VMs back to the original storage class
+                    </TextListItem>
+                  ) : null}
                 </TextList>
               ) : null}
             </TextContent>
