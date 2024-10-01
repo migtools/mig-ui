@@ -348,6 +348,7 @@ const WizardComponent = (props: IOtherProps) => {
                   !isFetchingPVList &&
                   currentPlanStatus.state !== 'Pending' &&
                   currentPlanStatus.state !== 'Critical' &&
+                  !planState.currentPlan.spec.refresh &&
                   (values.migrationType.value !== 'scc' ||
                     (values.selectedPVs.length > 0 && storageClasses.length > 1))
                 );

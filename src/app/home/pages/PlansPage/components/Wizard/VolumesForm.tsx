@@ -1,24 +1,15 @@
-import React, { useEffect } from 'react';
+import { StatusIcon } from '@konveyor/lib-ui';
+import { Grid, GridItem } from '@patternfly/react-core';
 import { useFormikContext } from 'formik';
-import { IFormValues, IOtherProps } from './WizardContainer';
-import VolumesTable from './VolumesTable';
-import {
-  Grid,
-  GridItem,
-  Bullseye,
-  EmptyState,
-  Spinner,
-  Title,
-  Alert,
-} from '@patternfly/react-core';
-import { StatusIcon, StatusType } from '@konveyor/lib-ui';
-import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
-import { usePausedPollingEffect } from '../../../../../common/context';
-import { OptionLike, OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import { useDispatch, useSelector } from 'react-redux';
-import { PlanActions } from '../../../../../plan/duck/actions';
-import { DefaultRootState } from '../../../../../../configureStore';
 import { isEmpty } from 'lodash';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
+import { usePausedPollingEffect } from '../../../../../common/context';
+import { PlanActions } from '../../../../../plan/duck/actions';
+import { IPlanPersistentVolume } from '../../../../../plan/duck/types';
+import VolumesTable from './VolumesTable';
+import { IFormValues, IOtherProps } from './WizardContainer';
 
 const styles = require('./VolumesTable.module').default;
 
@@ -110,34 +101,6 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
       </Grid>
     );
   }
-  if (
-    planState.isFetchingPVResources ||
-    planState.isPollingStatus ||
-    planState.currentPlanStatus.state === 'Pending'
-  ) {
-    return (
-      <Bullseye>
-        <EmptyState variant="large">
-          <div className="pf-c-empty-state__icon">
-            <Spinner size="xl" />
-          </div>
-          <Title headingLevel="h2" size="xl">
-            Discovering persistent volumes attached to source projects...
-          </Title>
-        </EmptyState>
-      </Bullseye>
-    );
-  }
-  if (planState.currentPlanStatus.state === 'Critical') {
-    return (
-      <Bullseye>
-        <EmptyState variant="large">
-          <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
-        </EmptyState>
-      </Bullseye>
-    );
-  }
-
   return (
     <VolumesTable
       isEdit={props.isEdit}
