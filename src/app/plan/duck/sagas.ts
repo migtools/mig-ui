@@ -1,58 +1,51 @@
+import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
+import Q from 'q';
 import {
-  takeEvery,
-  takeLatest,
-  select,
-  retry,
-  race,
   call,
   delay,
   put,
-  take,
+  race,
+  retry,
+  select,
   StrictEffect,
+  take,
+  takeEvery,
+  takeLatest,
 } from 'redux-saga/effects';
+import { DiscoveryFactory } from '../../../client/discovery_factory';
+import { IDiscoveryClient } from '../../../client/discoveryClient';
+import { MigResource, MigResourceKind } from '../../../client/helpers';
 import {
-  updateMigPlanFromValues,
-  createInitialMigPlan,
   createInitialMigAnalytic,
-  createMigMigration,
+  createInitialMigPlan,
   createMigHook,
+  createMigMigration,
   updateMigHook,
+  updateMigPlanFromValues,
   updatePlanHookList,
 } from '../../../client/resources/conversions';
-import { PlanActions, PlanActionTypes } from './actions';
-import { CurrentPlanState } from './reducers';
-import utils from '../../common/duck/utils';
-import planUtils from './utils';
-import { createAddEditStatus, AddEditState, AddEditMode } from '../../common/add_edit_state';
-import Q from 'q';
-import {
-  alertErrorTimeout,
-  alertErrorModal,
-  alertSuccessTimeout,
-  alertProgressTimeout,
-  alertWarn,
-} from '../../common/duck/slice';
-import { certErrorOccurred, IAuthReducerState } from '../../auth/duck/slice';
-import { DefaultRootState } from '../../../configureStore';
-import {
-  IMigPlan,
-  IMigration,
-  IPersistentVolumeResource,
-  IPlan,
-  IPlanPersistentVolume,
-  IPlanSpecHook,
-} from './types';
-import { IMigHook } from '../../home/pages/HooksPage/types';
-import { MigResource, MigResourceKind } from '../../../client/helpers';
-import { ClientFactory, IClusterClient } from '@konveyor/lib-ui';
-import { IDiscoveryClient } from '../../../client/discoveryClient';
 import {
   DiscoveryResource,
   NamespaceDiscovery,
   PersistentVolumeDiscovery,
 } from '../../../client/resources/discovery';
-import { DiscoveryFactory } from '../../../client/discovery_factory';
+import { DefaultRootState } from '../../../configureStore';
+import { certErrorOccurred } from '../../auth/duck/slice';
+import { AddEditMode, AddEditState, createAddEditStatus } from '../../common/add_edit_state';
+import {
+  alertErrorModal,
+  alertErrorTimeout,
+  alertProgressTimeout,
+  alertSuccessTimeout,
+  alertWarn,
+} from '../../common/duck/slice';
+import utils from '../../common/duck/utils';
+import { IMigHook } from '../../home/pages/HooksPage/types';
 import { getPlanInfo } from '../../home/pages/PlansPage/helpers';
+import { PlanActions, PlanActionTypes } from './actions';
+import { CurrentPlanState } from './reducers';
+import { IMigPlan, IMigration, IPersistentVolumeResource, IPlan, IPlanSpecHook } from './types';
+import planUtils from './utils';
 
 const uuidv1 = require('uuid/v1');
 const PlanMigrationPollingInterval = 5000;
@@ -390,13 +383,17 @@ function* validatePlanPoll(action: any): any {
         yield put(PlanActions.setCurrentPlan(updatedPlan));
         yield put(PlanActions.updatePlanList(updatedPlan));
         yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-        yield put(PlanActions.validatePlanPollStop());
+        if (!updatedPlan.spec.refresh) {
+          yield put(PlanActions.validatePlanPollStop());
+        }
       }
     } else {
       yield put(PlanActions.setCurrentPlan(updatedPlan));
       yield put(PlanActions.updatePlanList(updatedPlan));
       yield put(PlanActions.startPlanStatusPolling(updatedPlan.metadata.name));
-      yield put(PlanActions.validatePlanPollStop());
+      if (!updatedPlan.spec.refresh) {
+        yield put(PlanActions.validatePlanPollStop());
+      }
     }
     yield delay(params.delay);
   }

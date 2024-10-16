@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from 'react';
 import {
-  TextContent,
-  Text,
-  TextVariants,
-  Grid,
-  GridItem,
-  Pagination,
-  PaginationVariant,
-  Level,
-  LevelItem,
-  Tooltip,
-  Popover,
+  Alert,
+  AlertActionLink,
+  Bullseye,
   Button,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
+  Grid,
+  GridItem,
+  Level,
+  LevelItem,
+  Pagination,
+  PaginationVariant,
+  Popover,
   PopoverPosition,
+  Spinner,
+  Text,
+  TextContent,
+  TextVariants,
   Title,
-  Alert,
-  AlertActionLink,
+  Tooltip,
   WizardContext,
 } from '@patternfly/react-core';
+import { ExclamationTriangleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 import {
+  IRowData,
   sortable,
   TableComposable,
   Tbody,
@@ -30,38 +34,36 @@ import {
   Th,
   Thead,
   Tr,
-  IRowData,
 } from '@patternfly/react-table';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
-import { IFormValues, IOtherProps } from './WizardContainer';
+import { useFormikContext } from 'formik';
+import React, { useEffect, useState } from 'react';
+import ReactJson from 'react-json-view';
+import { useSelector } from 'react-redux';
+import { DefaultRootState } from '../../../../../../configureStore';
 import {
-  FilterToolbar,
   FilterCategory,
+  FilterToolbar,
   FilterType,
 } from '../../../../../common/components/FilterToolbar';
-import { capitalize } from '../../../../../common/duck/utils';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
 import TableEmptyState from '../../../../../common/components/TableEmptyState';
+import { useFilterState, useSortState } from '../../../../../common/duck/hooks';
+import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
+import { capitalize } from '../../../../../common/duck/utils';
 import {
   IMigPlanStorageClass,
   IPlanPersistentVolume,
   PvCopyMethod,
 } from '../../../../../plan/duck/types';
-import { usePaginationState } from '../../../../../common/duck/hooks/usePaginationState';
-import { useFormikContext } from 'formik';
-import { useSelector } from 'react-redux';
-import { DefaultRootState } from '../../../../../../configureStore';
 import {
   getSuggestedPvStorageClasses,
   pvcNameToString,
   targetStorageClassToString,
 } from '../../helpers';
-import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
-import { ExclamationTriangleIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
 import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
-import ReactJson from 'react-json-view';
+import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
+import { IFormValues, IOtherProps } from './WizardContainer';
 
 const styles = require('./VolumesTable.module').default;
 
@@ -74,7 +76,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
 }: IVolumesTableProps) => {
   const planState = useSelector((state: DefaultRootState) => state.plan);
 
-  const { setFieldValue, values } = useFormikContext<IFormValues>();
+  const { submitForm, setFieldValue, values } = useFormikContext<IFormValues>();
   const isSCC = values.migrationType.value === 'scc';
 
   // Initialize target storage class form selection from currentPlan if we're ready
@@ -242,17 +244,43 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   useEffect(() => setPageNumber(1), [filterValues, sortBy]);
 
   useEffect(() => {
+    const newSelected = filteredItems
+      .filter((pv) => pv.selection.action !== 'skip')
+      .map((pv) => pv.name);
     //select all pvs on load
-    setAllRowsSelected(true);
-    const newSelected = filteredItems.map((pv) => pv.name);
+    setAllRowsSelected(newSelected.length === values.persistentVolumes.length);
     setFieldValue('selectedPVs', newSelected);
   }, []);
 
+  const skipUnSelectedPVs = (newSelected: any) => {
+    const newPVs = values.persistentVolumes.map((currentPV) => {
+      const isSelected = newSelected.find((selectedPV: string) => selectedPV === currentPV.name);
+      if (!isSelected) {
+        return {
+          ...currentPV,
+          selection: {
+            ...currentPV.selection,
+            action: 'skip',
+          },
+        };
+      } else {
+        //If the PV is selected and the action is not set to move, the PV needs to have a copy action set
+        return {
+          ...currentPV,
+          selection: {
+            ...currentPV.selection,
+            ...(currentPV.selection.action !== 'move' && {
+              action: 'copy',
+            }),
+          },
+        };
+      }
+    });
+    return newPVs;
+  };
   const [allRowsSelected, setAllRowsSelected] = React.useState(false);
 
   const onSelectAll = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
-    setAllRowsSelected(isSelected);
-
     let newSelected;
     if (isSelected) {
       newSelected = filteredItems.map((pv) => pv.name); // Select all (filtered)
@@ -260,12 +288,13 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       newSelected = []; // Deselect all
     }
     setFieldValue('selectedPVs', newSelected);
+    const newPVs = skipUnSelectedPVs(newSelected);
+    setAllRowsSelected(newSelected.length === values.persistentVolumes.length);
+    setFieldValue('persistentVolumes', newPVs);
+    submitForm();
   };
 
   const onSelect = (event: any, isSelected: boolean, rowIndex: number, rowData: IRowData) => {
-    if (allRowsSelected) {
-      setAllRowsSelected(false);
-    }
     let newSelected;
     if (rowIndex === -1) {
       if (isSelected) {
@@ -284,6 +313,10 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
       }
     }
     setFieldValue('selectedPVs', newSelected);
+    const newPVs = skipUnSelectedPVs(newSelected);
+    setAllRowsSelected(newSelected.length === values.persistentVolumes.length);
+    setFieldValue('persistentVolumes', newPVs);
+    submitForm();
   };
 
   const rows = currentPageItems.map((pv: IPlanPersistentVolume) => {
@@ -427,6 +460,26 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               : 'Choose to move or copy persistent volumes associated with selected namespaces.'}
           </Text>
         </TextContent>
+        {planState.currentPlanStatus.state === 'Critical' && !planState.currentPlan.spec.refresh ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
+            </EmptyState>
+          </Bullseye>
+        ) : null}
+        {planState.isFetchingPVResources ||
+        planState.isPollingStatus ||
+        planState.currentPlanStatus.state === 'Pending' ||
+        planState.currentPlan.spec.refresh ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <Spinner size="md" />
+              <Title headingLevel="h4" size="md">
+                Validating selected persistent volumes against other migration plans...
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        ) : null}
       </GridItem>
       {isSCC && values.persistentVolumes.length === 0 ? (
         <GridItem>
