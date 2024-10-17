@@ -460,17 +460,26 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
               : 'Choose to move or copy persistent volumes associated with selected namespaces.'}
           </Text>
         </TextContent>
-        {planState.currentPlanStatus.state === 'Critical' && !planState.currentPlan.spec.refresh ? (
+        {planState.currentPlanStatus?.state === 'Warn' && !planState.currentPlan?.spec.refresh ? (
+          <Bullseye>
+            <EmptyState variant="large">
+              <Alert variant="warning" isInline title={planState.currentPlanStatus.errorMessage} />
+            </EmptyState>
+          </Bullseye>
+        ) : null}
+        {planState.currentPlanStatus?.state === 'Critical' &&
+        !planState.currentPlan?.spec.refresh ? (
           <Bullseye>
             <EmptyState variant="large">
               <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
             </EmptyState>
           </Bullseye>
         ) : null}
-        {planState.isFetchingPVResources ||
-        planState.isPollingStatus ||
-        planState.currentPlanStatus.state === 'Pending' ||
-        planState.currentPlan.spec.refresh ? (
+        {planState.currentPlan?.spec.persistentVolumes?.length > 0 &&
+        (planState.isFetchingPVResources ||
+          planState.isPollingStatus ||
+          planState.currentPlanStatus.state === 'Pending' ||
+          planState.currentPlan.spec.refresh) ? (
           <Bullseye>
             <EmptyState variant="large">
               <Spinner size="md" />
@@ -481,7 +490,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </Bullseye>
         ) : null}
       </GridItem>
-      {isSCC && values.persistentVolumes.length === 0 ? (
+      {isSCC && values.persistentVolumes.length === 0 && planState.currentPlan?.spec.refresh ? (
         <GridItem>
           <Alert
             variant="danger"
@@ -498,7 +507,7 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           </Alert>
         </GridItem>
       ) : null}
-      {isSCC && storageClasses.length < 2 ? (
+      {isSCC && storageClasses.length < 2 && planState.currentPlan?.spec.refresh ? (
         <GridItem>
           <Alert
             variant="danger"

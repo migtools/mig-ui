@@ -41,6 +41,7 @@ export const getPlanStatusText = (plan: IPlan) => {
     hasCanceledCondition = null,
     hasCancelingCondition = null,
     hasCriticalCondition = null,
+    hasNotSupportedCondition = null,
     latestAction = null,
     latestIsFailed = null,
     hasConflictCondition = null,
@@ -62,6 +63,7 @@ export const getPlanStatusText = (plan: IPlan) => {
   if (hasCanceledCondition) return `${latestActionStr} canceled`;
   if (hasNotReadyCondition || !hasReadyCondition) return 'Not Ready';
   if (hasSucceededRollback) return 'Rollback succeeded';
+  if (hasNotSupportedCondition) return 'Storage live migration not supported';
   if (hasDVMBlockedCondition) return 'In progress';
   if (hasSucceededCutover && hasWarnCondition) return 'Migration completed with warnings';
   if (hasSucceededWithWarningsCondition) return `${latestActionStr} completed with warnings`;

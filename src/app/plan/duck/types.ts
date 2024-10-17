@@ -164,6 +164,7 @@ export interface IPlan {
     conflictErrorMsg?: string;
     hasCanceledCondition?: boolean;
     hasCriticalCondition?: boolean;
+    hasNotSupportedCondition?: boolean;
     hasCancelingCondition?: boolean;
     hasClosedCondition?: boolean;
     hasErrorCondition?: boolean;

@@ -1,5 +1,13 @@
 import { StatusIcon } from '@konveyor/lib-ui';
-import { Grid, GridItem } from '@patternfly/react-core';
+import {
+  Alert,
+  Bullseye,
+  EmptyState,
+  Grid,
+  GridItem,
+  Spinner,
+  Title,
+} from '@patternfly/react-core';
 import { useFormikContext } from 'formik';
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
@@ -85,6 +93,11 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
           };
         });
       }
+      const selectedPVs = mappedPVs
+        .filter((pv) => pv.selection.action !== 'skip')
+        .map((pv) => pv.name);
+      setFieldValue('selectedPVs', selectedPVs);
+
       //Set initial PVs from pv discovery
       setFieldValue('persistentVolumes', mappedPVs);
     }
@@ -99,6 +112,32 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
           </div>
         </GridItem>
       </Grid>
+    );
+  }
+  if (
+    !planState.currentPlan?.spec.persistentVolumes ||
+    planState.currentPlan.spec.persistentVolumes?.length == 0
+  ) {
+    return (
+      <Bullseye>
+        <EmptyState variant="large">
+          <div className="pf-c-empty-state__icon">
+            <Spinner size="xl" />
+          </div>
+          <Title headingLevel="h2" size="xl">
+            Discovering persistent volumes attached to source projects...
+          </Title>
+        </EmptyState>
+      </Bullseye>
+    );
+  }
+  if (planState.currentPlanStatus.state === 'Critical') {
+    return (
+      <Bullseye>
+        <EmptyState variant="large">
+          <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
+        </EmptyState>
+      </Bullseye>
     );
   }
   return (
