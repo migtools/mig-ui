@@ -560,6 +560,9 @@ function* checkPlanStatus(action: any): any {
         const hasConflictCondition = !!updatedPlan.status.conditions.some((cond) => {
           return cond.type === 'PlanConflict';
         });
+        const hasNotSupportedCondition = !!updatedPlan.status.conditions.some((cond) => {
+          return cond.type === 'KubeVirtStorageLiveMigrationNotEnabled';
+        });
         if (hasReadyCondition) {
           if (hasWarnCondition) {
             const warnCondition = updatedPlan.status.conditions.find((cond) => {
@@ -595,7 +598,8 @@ function* checkPlanStatus(action: any): any {
           });
           yield put(
             PlanActions.updateCurrentPlanStatus({
-              state: CurrentPlanState.Critical,
+              state:
+                errorCond.reason === 'Conflict' ? CurrentPlanState.Warn : CurrentPlanState.Critical,
               errorMessage: errorCond.message,
             })
           );
@@ -611,6 +615,20 @@ function* checkPlanStatus(action: any): any {
             PlanActions.updateCurrentPlanStatus({
               state: CurrentPlanState.Critical,
               errorMessage: conflictCond.message,
+            })
+          );
+
+          yield put(PlanActions.stopPlanStatusPolling(action.planName));
+        }
+
+        if (hasNotSupportedCondition) {
+          const unsupportedCond = updatedPlan.status.conditions.find((cond) => {
+            return cond.type === 'KubeVirtStorageLiveMigrationNotEnabled';
+          });
+          yield put(
+            PlanActions.updateCurrentPlanStatus({
+              state: CurrentPlanState.Warn,
+              errorMessage: unsupportedCond.message,
             })
           );
 
