@@ -193,7 +193,7 @@ const WizardComponent = (props: IOtherProps) => {
 
   const onMove: WizardStepFunctionType = ({ id, name }, { prevId, prevName }) => {
     dispatch(PlanActions.pvUpdatePollStop());
-    if (stepIdReached < id) {
+    if (stepIdReached < (id as number)) {
       setStepIdReached(id as number);
     }
 
@@ -348,7 +348,7 @@ const WizardComponent = (props: IOtherProps) => {
                   !isFetchingPVList &&
                   currentPlanStatus.state !== 'Pending' &&
                   currentPlanStatus.state !== 'Critical' &&
-                  !planState.currentPlan.spec.refresh &&
+                  !planState.currentPlan?.spec.refresh &&
                   (values.migrationType.value !== 'scc' ||
                     (values.selectedPVs.length > 0 && storageClasses.length > 1))
                 );

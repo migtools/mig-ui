@@ -1,9 +1,10 @@
-import { IPlan, IMigPlan, IMigration, ICondition, IStatus } from '../../plan/duck/types';
+import { ICondition } from '../../plan/duck/types';
 interface IPlanConditionStatuses {
   hasClosedCondition: boolean;
   hasReadyCondition: boolean;
   hasNotReadyCondition: boolean;
   hasConflictCondition: boolean;
+  hasNotSupportedCondition: boolean;
   conflictErrorMsg: string;
   hasPODWarnCondition: boolean;
   hasPVWarnCondition: boolean;
@@ -27,6 +28,9 @@ export const filterPlanConditions = (conditions: ICondition[]): IPlanConditionSt
   hasReadyCondition: conditions.some((c) => c.type === 'Ready'),
   hasNotReadyCondition: conditions.some((c) => c.category === 'Critical'),
   hasConflictCondition: conditions.some((c) => c.type === 'PlanConflict'),
+  hasNotSupportedCondition: conditions.some(
+    (c) => c.type === 'KubeVirtStorageLiveMigrationNotEnabled'
+  ),
   hasPODWarnCondition: conditions.some((c) => c.type === 'PodLimitExceeded'),
   hasPVWarnCondition: conditions.some((c) => c.type === 'PVLimitExceeded'),
   conflictErrorMsg: conditions.find((c) => c.type === 'PlanConflict')?.message,
