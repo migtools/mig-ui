@@ -40,6 +40,7 @@ module.exports = (env) => {
           test: /\.js$/,
           use: ['source-map-loader'],
           enforce: 'pre',
+	  exclude: /node_modules/
         },
         {
           test: /\.module\.s(a|c)ss$/,
