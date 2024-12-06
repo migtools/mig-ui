@@ -58,9 +58,13 @@ import {
 import {
   getSuggestedPvStorageClasses,
   pvcNameToString,
+  targetAccessModeToString,
   targetStorageClassToString,
+  targetVolumeModeToString,
 } from '../../helpers';
+import { PVAccessModeSelect } from './PVAccessModeSelect';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
+import { PVVolumeModeSelect } from './PVVolumeModeSelect';
 import { VerifyCopyCheckbox } from './VerifyCopyCheckbox';
 import { VerifyCopyWarningModal, VerifyWarningState } from './VerifyCopyWarningModal';
 import { IFormValues, IOtherProps } from './WizardContainer';
@@ -128,6 +132,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
         { title: 'Source storage class', transforms: [sortable] },
         { title: 'Size', transforms: [sortable] },
         { title: 'Target storage class', transforms: [sortable] },
+        { title: 'Target volume mode', transforms: [sortable] },
+        { title: 'Target access mode', transforms: [sortable] },
         {
           title: (
             <React.Fragment>
@@ -172,6 +178,8 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           pv.storageClass,
           pv.capacity,
           pv.selection.storageClass,
+          pv.pvc.volumeMode,
+          pv.pvc.accessModes[0],
           pv.selection.verify,
         ]
       : [
@@ -218,6 +226,20 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
           placeholderText: 'Filter by target storage class...',
           getItemValue: (pv) =>
             targetStorageClassToString(values.pvStorageClassAssignment[pv.name]),
+        },
+        {
+          key: 'volumeMode',
+          title: 'Target volume mode',
+          type: FilterType.search,
+          placeholderText: 'Filter by volume mode...',
+          getItemValue: (pv) => targetVolumeModeToString(values.pvStorageClassAssignment[pv.name]),
+        },
+        {
+          key: 'accessMode',
+          title: 'Target access mode',
+          type: FilterType.search,
+          placeholderText: 'Filter by access mode...',
+          getItemValue: (pv) => targetAccessModeToString(values.pvStorageClassAssignment[pv.name]),
         },
       ]
     : [
@@ -401,6 +423,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             ),
           },
           {
+            title: <PVVolumeModeSelect {...{ pv, currentPV, storageClasses }} />,
+          },
+          {
+            title: <PVAccessModeSelect {...{ pv, currentPV, storageClasses }} />,
+          },
+          {
             title: (
               <VerifyCopyCheckbox
                 {...{
@@ -556,11 +584,13 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                     isSelected: allRowsSelected,
                   }}
                 />
-                {columns.map((column, columnIndex) => (
-                  <Th key={columnIndex} width={columnIndex === 0 ? 20 : 10}>
-                    {column.title}
-                  </Th>
-                ))}
+                {columns
+                  .filter((column, columnIndex) => columnIndex !== 0)
+                  .map((column, columnIndex) => (
+                    <Th key={columnIndex} width={10}>
+                      {column.title}
+                    </Th>
+                  ))}
                 <Th width={20}></Th>
               </Tr>
             </Thead>
@@ -577,22 +607,24 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                         props: row,
                       }}
                     />
-                    {row.cells.map((cell, cellIndex) => {
-                      const shiftedIndex = cellIndex + 1;
-                      console.log('cell', cell);
-                      return (
-                        <Td
-                          key={`${rowIndex}_${shiftedIndex}`}
-                          dataLabel={
-                            typeof columns[cellIndex].title === 'string'
-                              ? (columns[cellIndex].title as string)
-                              : ''
-                          }
-                        >
-                          {typeof cell !== 'string' ? cell.title : cell}
-                        </Td>
-                      );
-                    })}
+                    {row.cells
+                      .filter((column, columnIndex) => columnIndex !== 0)
+                      .map((cell, cellIndex) => {
+                        const shiftedIndex = cellIndex + 1;
+                        console.log('cell', cell);
+                        return (
+                          <Td
+                            key={`${rowIndex}_${shiftedIndex}`}
+                            dataLabel={
+                              typeof columns[cellIndex].title === 'string'
+                                ? (columns[cellIndex].title as string)
+                                : ''
+                            }
+                          >
+                            {typeof cell !== 'string' ? cell.title : cell}
+                          </Td>
+                        );
+                      })}
                   </Tr>
                 );
               })}
