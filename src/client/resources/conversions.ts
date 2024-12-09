@@ -465,9 +465,10 @@ export function updateMigPlanFromValues(
         planValues.pvVerifyFlagAssignment[updatedPV.name];
 
       const selectedStorageClassObj = planValues.pvStorageClassAssignment[updatedPV.name];
-      if (selectedStorageClassObj || selectedStorageClassObj === '') {
-        updatedPV.selection.storageClass =
-          selectedStorageClassObj !== '' ? selectedStorageClassObj.name : '';
+      if (selectedStorageClassObj !== undefined) {
+        updatedPV.selection.storageClass = selectedStorageClassObj.name;
+        updatedPV.pvc.volumeMode = selectedStorageClassObj.volumeMode;
+        updatedPV.pvc.accessModes = [selectedStorageClassObj.accessMode];
       }
       const isPVSelected = planValues.selectedPVs.includes(pvItem.name);
       if (!isPVSelected) updatedPV.selection.action = 'skip';

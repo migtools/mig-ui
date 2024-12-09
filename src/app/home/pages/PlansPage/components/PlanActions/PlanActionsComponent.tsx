@@ -1,21 +1,20 @@
-import React from 'react';
-import { useState } from 'react';
 import {
   Dropdown,
+  DropdownGroup,
   DropdownItem,
   DropdownPosition,
-  KebabToggle,
   Flex,
   FlexItem,
-  DropdownGroup,
+  KebabToggle,
 } from '@patternfly/react-core';
-import { useOpenModal } from '../../../../duck';
-import { useHistory } from 'react-router-dom';
-import WizardContainer from '../Wizard/WizardContainer';
-import ConfirmModal from '../../../../../common/components/ConfirmModal';
-import { IPlan } from '../../../../../plan/duck/types';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import ConfirmModal from '../../../../../common/components/ConfirmModal';
 import { PlanActions } from '../../../../../plan/duck';
+import { IPlan } from '../../../../../plan/duck/types';
+import { useOpenModal } from '../../../../duck';
+import WizardContainer from '../Wizard/WizardContainer';
 import { MigrationActionsDropdownGroup } from './MigrationActionsDropdownGroup';
 import { MigrationConfirmModals, useMigrationConfirmModalState } from './MigrationConfirmModals';
 interface IPlanActionsProps {

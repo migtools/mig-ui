@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import {
   Select,
   SelectOption,
   SelectOptionObject,
-  SelectProps,
   SelectOptionProps,
+  SelectProps,
 } from '@patternfly/react-core';
+import React, { useState } from 'react';
 
 import './SimpleSelect.css';
 
@@ -51,6 +51,7 @@ const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
         <SelectOption
           key={option.toString()}
           value={option}
+          description={(option as OptionWithValue)?.props?.description}
           {...(typeof option === 'object' && (option as OptionWithValue).props)}
         />
       ))}

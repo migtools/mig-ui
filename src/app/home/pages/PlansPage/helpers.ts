@@ -401,7 +401,13 @@ export const getElapsedTime = (step: IStep, migration: IMigration): string => {
 export type IPlanInfo = ReturnType<typeof getPlanInfo>;
 
 export const targetStorageClassToString = (storageClass: IMigPlanStorageClass) =>
-  storageClass && `${storageClass.name}:${storageClass.provisioner}`;
+  storageClass && `${storageClass.name}`;
+
+export const targetVolumeModeToString = (storageClass: IMigPlanStorageClass) =>
+  storageClass && `${storageClass.volumeMode}`;
+
+export const targetAccessModeToString = (storageClass: IMigPlanStorageClass) =>
+  storageClass && `${storageClass.accessMode}`;
 
 export const pvcNameToString = (pvc: IPlanPersistentVolume['pvc']) => {
   const includesMapping = pvc.name.includes(':');
@@ -491,11 +497,14 @@ export const getSuggestedPvStorageClasses = (migPlan?: IMigPlan) => {
   const storageClasses = migPlan?.status?.destStorageClasses || [];
   pvStorageClassAssignment = migPlanPvs.reduce((assignedScs, pv) => {
     const suggestedStorageClass = storageClasses.find(
-      (sc) => (sc !== '' && sc.name) === pv.selection.storageClass
+      (sc) => sc.name === pv.selection.storageClass
     );
+    const copy = JSON.parse(JSON.stringify(suggestedStorageClass));
+    copy.volumeMode = pv.pvc.volumeMode;
+    copy.accessMode = pv.pvc.accessModes[0] || 'ReadWriteOnce';
     return {
       ...assignedScs,
-      [pv.name]: suggestedStorageClass ? suggestedStorageClass : '',
+      [pv.name]: copy || '',
     };
   }, {});
   return pvStorageClassAssignment;

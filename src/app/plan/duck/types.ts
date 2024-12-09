@@ -12,6 +12,8 @@ export interface IPlanPersistentVolume {
   pvc: {
     namespace: string;
     name: string;
+    volumeMode: string;
+    accessModes: string[];
   };
   storageClass?: string;
   capacity: string;
@@ -27,10 +29,17 @@ export interface IPlanPersistentVolume {
   };
 }
 
-export type IMigPlanStorageClass = IMigPlanStorageClassPopulated | '';
-type IMigPlanStorageClassPopulated = {
+export type IVolumeAccessModes = {
+  volumeMode: string;
+  accessModes: string[];
+};
+
+export type IMigPlanStorageClass = {
   name: string;
   provisioner: string;
+  volumeMode: string;
+  volumeAccessModes: IVolumeAccessModes[];
+  accessMode: string;
 };
 
 export interface IPlanSpecHook {
