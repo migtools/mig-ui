@@ -22,11 +22,13 @@ export const PVAccessModeSelect: React.FunctionComponent<IPVAccessModeSelectProp
   storageClasses,
 }: IPVAccessModeSelectProps) => {
   const { values, setFieldValue } = useFormikContext<IFormValues>();
+  currentPV = currentPV || pv;
 
-  const currentStorageClass = values.pvStorageClassAssignment[currentPV.name];
-  const volumeAccessModes = currentStorageClass.volumeAccessModes;
-  const currentVolumeMode = currentStorageClass.volumeMode;
-  const possibleAccessModes = volumeAccessModes.find(
+  const currentStorageClass =
+    values.pvStorageClassAssignment[currentPV?.name] || ({} as IMigPlanStorageClass);
+  const volumeAccessModes = currentStorageClass?.volumeAccessModes || [];
+  const currentVolumeMode = currentStorageClass?.volumeMode || 'auto';
+  const possibleAccessModes = volumeAccessModes?.find(
     (volumeAccessMode: IVolumeAccessModes) => volumeAccessMode.volumeMode === currentVolumeMode
   ) || { accessModes: [] as string[] };
 
@@ -46,7 +48,9 @@ export const PVAccessModeSelect: React.FunctionComponent<IPVAccessModeSelectProp
     })),
   ];
   accessModeOptions.splice(1, 1); // remove ReadOnly option
-  accessModeOptions.splice(0, 0, { value: 'auto', toString: () => 'Auto' });
+  if (currentPV.pvc.ownerType === 'VirtualMachine') {
+    accessModeOptions.splice(0, 0, { value: 'auto', toString: () => 'Auto' });
+  }
 
   return (
     <SimpleSelect
@@ -56,6 +60,7 @@ export const PVAccessModeSelect: React.FunctionComponent<IPVAccessModeSelectProp
       onChange={(option: any) => onAccessModeChange(currentPV, option.value)}
       options={accessModeOptions}
       placeholderText="Select volume mode..."
+      isDisabled={currentPV.pvc.ownerType !== 'VirtualMachine'}
       value={
         accessModeOptions.find(
           (option) => currentStorageClass && option.value === currentStorageClass.accessMode

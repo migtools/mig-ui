@@ -14,6 +14,7 @@ export interface IPlanPersistentVolume {
     name: string;
     volumeMode: string;
     accessModes: string[];
+    ownerType: string;
   };
   storageClass?: string;
   capacity: string;

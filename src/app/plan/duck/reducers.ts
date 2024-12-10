@@ -1,19 +1,19 @@
-import { PlanActions, PlanActionTypes } from './actions';
 import dayjs from 'dayjs';
+import { PlanActions, PlanActionTypes } from './actions';
 
 import {
   defaultAddEditStatus,
   fetchingAddEditStatus,
   IAddEditStatus,
 } from '../../common/add_edit_state';
+import { IMigHook } from '../../home/pages/HooksPage/types';
 import {
+  IMigPlan,
+  IMigration,
+  IPersistentVolumeResource,
   IPlan,
   ISourceClusterNamespace,
-  IMigPlan,
-  IPersistentVolumeResource,
-  IMigration,
 } from './types';
-import { IMigHook } from '../../home/pages/HooksPage/types';
 
 export enum CurrentPlanState {
   Pending = 'Pending',

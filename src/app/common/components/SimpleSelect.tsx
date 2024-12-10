@@ -52,6 +52,7 @@ const SimpleSelect: React.FunctionComponent<ISimpleSelectProps> = ({
           key={option.toString()}
           value={option}
           description={(option as OptionWithValue)?.props?.description}
+          isDisabled={(option as OptionWithValue)?.props?.isDisabled}
           {...(typeof option === 'object' && (option as OptionWithValue).props)}
         />
       ))}

@@ -22,26 +22,35 @@ export const PVVolumeModeSelect: React.FunctionComponent<IPVVolumeModeSelectProp
   storageClasses,
 }: IPVVolumeModeSelectProps) => {
   const { values, setFieldValue } = useFormikContext<IFormValues>();
+  currentPV = currentPV || pv;
 
-  const currentStorageClass = values.pvStorageClassAssignment[currentPV.name];
-  const volumeAccessModes = currentStorageClass.volumeAccessModes;
+  const currentStorageClass =
+    values.pvStorageClassAssignment[currentPV?.name] || ({} as IMigPlanStorageClass);
+  const volumeAccessModes = currentStorageClass?.volumeAccessModes || [];
 
   const onVolumeModeChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    currentStorageClass.volumeMode = value;
-    const updatedAssignment = {
-      ...values.pvStorageClassAssignment,
-      [currentPV.name]: currentStorageClass,
-    };
-    setFieldValue('pvStorageClassAssignment', updatedAssignment);
+    if (currentStorageClass) {
+      currentStorageClass.volumeMode = value;
+      const updatedAssignment = {
+        ...values.pvStorageClassAssignment,
+        [currentPV.name]: currentStorageClass,
+      };
+      setFieldValue('pvStorageClassAssignment', updatedAssignment);
+    }
   };
 
+  if (!volumeAccessModes) {
+    return null;
+  }
   const volumeModeOptions: OptionWithValue[] = [
     ...volumeAccessModes.map((volumeAccessMode: IVolumeAccessModes) => ({
       value: volumeAccessMode.volumeMode,
       toString: () => volumeAccessMode.volumeMode,
     })),
   ];
-  volumeModeOptions.splice(0, 0, { value: 'auto', toString: () => 'Auto' });
+  if (currentPV.pvc.ownerType === 'VirtualMachine') {
+    volumeModeOptions.splice(0, 0, { value: 'auto', toString: () => 'Auto' });
+  }
 
   return (
     <SimpleSelect
@@ -51,6 +60,7 @@ export const PVVolumeModeSelect: React.FunctionComponent<IPVVolumeModeSelectProp
       onChange={(option: any) => onVolumeModeChange(currentPV, option.value)}
       options={volumeModeOptions}
       placeholderText="Select volume mode..."
+      isDisabled={currentPV.pvc.ownerType !== 'VirtualMachine'}
       value={
         volumeModeOptions.find(
           (option) => currentStorageClass && option.value === currentStorageClass.volumeMode
