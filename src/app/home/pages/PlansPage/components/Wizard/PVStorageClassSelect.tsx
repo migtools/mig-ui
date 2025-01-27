@@ -20,24 +20,26 @@ export const PVStorageClassSelect: React.FunctionComponent<IPVStorageClassSelect
 }: IPVStorageClassSelectProps) => {
   const { values, setFieldValue } = useFormikContext<IFormValues>();
 
-  const currentStorageClass = values.pvStorageClassAssignment[pv.name];
+  const currentStorageClass = values.pvStorageClassAssignment[currentPV.name];
 
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
-    const newSc = storageClasses.find((sc) => sc !== '' && sc.name === value) || '';
+    const newSc = storageClasses.find((sc) => sc.name === value) || '';
+    const copy = JSON.parse(JSON.stringify(newSc));
+    copy.volumeMode = 'auto';
+    copy.accessMode = 'auto';
     const updatedAssignment = {
       ...values.pvStorageClassAssignment,
-      [currentPV.name]: newSc,
+      [currentPV.name]: copy,
     };
     setFieldValue('pvStorageClassAssignment', updatedAssignment);
   };
 
-  const noneOption = { value: '', toString: () => 'None' };
   const storageClassOptions: OptionWithValue[] = [
     ...storageClasses.map((storageClass) => ({
-      value: storageClass !== '' && storageClass.name,
+      value: storageClass.name,
       toString: () => targetStorageClassToString(storageClass),
+      props: { description: storageClass.provisioner },
     })),
-    noneOption,
   ];
 
   return (
@@ -48,11 +50,9 @@ export const PVStorageClassSelect: React.FunctionComponent<IPVStorageClassSelect
       onChange={(option: any) => onStorageClassChange(currentPV, option.value)}
       options={storageClassOptions}
       value={
-        currentStorageClass === ''
-          ? noneOption
-          : storageClassOptions.find(
-              (option) => currentStorageClass && option.value === currentStorageClass.name
-            ) || undefined
+        storageClassOptions.find(
+          (option) => currentStorageClass && option.value === currentStorageClass.name
+        ) || undefined
       }
       placeholderText="Select a storage class..."
     />

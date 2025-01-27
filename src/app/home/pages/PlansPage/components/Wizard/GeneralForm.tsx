@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-import { useFormikContext } from 'formik';
-import { IFormValues } from './WizardContainer';
-import { Form, FormGroup, TextContent, Text, TextInput, Tooltip } from '@patternfly/react-core';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
-import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
-import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
-import { validatedState } from '../../../../../common/helpers';
-import { ICluster } from '../../../../../cluster/duck/types';
+import { Form, FormGroup, Text, TextContent, TextInput, Tooltip } from '@patternfly/react-core';
 import { ExclamationTriangleIcon } from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
-import { usePausedPollingEffect } from '../../../../../common/context';
-import { IStorage } from '../../../../../storage/duck/types';
-import { MigrationType } from '../../types';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
+import { useFormikContext } from 'formik';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { DefaultRootState } from '../../../../../../configureStore';
+import { ICluster } from '../../../../../cluster/duck/types';
+import SimpleSelect, { OptionWithValue } from '../../../../../common/components/SimpleSelect';
+import { usePausedPollingEffect } from '../../../../../common/context';
+import { useForcedValidationOnChange } from '../../../../../common/duck/hooks';
+import { validatedState } from '../../../../../common/helpers';
+import { IStorage } from '../../../../../storage/duck/types';
+import { MigrationType } from '../../types';
+import { IFormValues } from './WizardContainer';
 
 export type IGeneralFormProps = {
   isEdit: boolean;
