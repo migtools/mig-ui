@@ -62,6 +62,7 @@ import {
   targetStorageClassToString,
   targetVolumeModeToString,
 } from '../../helpers';
+import { ClaimDisplay } from './ClaimDisplay';
 import { PVAccessModeSelect } from './PVAccessModeSelect';
 import { PVStorageClassSelect } from './PVStorageClassSelect';
 import { PVVolumeModeSelect } from './PVVolumeModeSelect';
@@ -193,18 +194,12 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
   const commonFilterCategories: FilterCategory[] = [
     {
       key: 'name',
-      title: 'PV name',
-      type: FilterType.search,
-      placeholderText: 'Filter by PV name...',
-    },
-    {
-      key: 'claim',
       title: 'Claim',
       type: FilterType.search,
       placeholderText: 'Filter by claim...',
     },
     {
-      key: 'project',
+      key: 'namespace',
       title: 'Namespace',
       type: FilterType.search,
       placeholderText: 'Filter by namespace...',
@@ -412,7 +407,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
     const cells = isSCC
       ? [
           pv.name,
-          pvcNameToString(pv.pvc),
+          {
+            title: <ClaimDisplay {...{ pv }} />,
+          },
           pv.pvc.namespace,
           // Storage class can be empty here if none exists/ none selected initially
           pv.storageClass || '',
@@ -578,14 +575,15 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
             <Thead>
               <Tr>
                 <Th
-                  width={10}
                   select={{
                     onSelect: onSelectAll,
                     isSelected: allRowsSelected,
                   }}
                 />
                 {columns
-                  .filter((column, columnIndex) => columnIndex !== 0)
+                  .filter(
+                    (column, columnIndex) => !isSCC || (columnIndex !== 0 && columnIndex !== 8)
+                  )
                   .map((column, columnIndex) => (
                     <Th key={columnIndex} width={10}>
                       {column.title}
@@ -608,7 +606,9 @@ const VolumesTable: React.FunctionComponent<IVolumesTableProps> = ({
                       }}
                     />
                     {row.cells
-                      .filter((column, columnIndex) => columnIndex !== 0)
+                      .filter(
+                        (column, columnIndex) => !isSCC || (columnIndex !== 0 && columnIndex !== 8)
+                      )
                       .map((cell, cellIndex) => {
                         const shiftedIndex = cellIndex + 1;
                         console.log('cell', cell);

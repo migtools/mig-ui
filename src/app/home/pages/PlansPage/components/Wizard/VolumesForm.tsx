@@ -1,13 +1,5 @@
 import { StatusIcon } from '@konveyor/lib-ui';
-import {
-  Alert,
-  Bullseye,
-  EmptyState,
-  Grid,
-  GridItem,
-  Spinner,
-  Title,
-} from '@patternfly/react-core';
+import { Bullseye, EmptyState, Grid, GridItem, Spinner, Title } from '@patternfly/react-core';
 import { useFormikContext } from 'formik';
 import { isEmpty } from 'lodash';
 import React, { useEffect } from 'react';
@@ -127,15 +119,6 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
           <Title headingLevel="h2" size="xl">
             Discovering persistent volumes attached to source projects...
           </Title>
-        </EmptyState>
-      </Bullseye>
-    );
-  }
-  if (planState.currentPlanStatus.state === 'Critical') {
-    return (
-      <Bullseye>
-        <EmptyState variant="large">
-          <Alert variant="danger" isInline title={planState.currentPlanStatus.errorMessage} />
         </EmptyState>
       </Bullseye>
     );

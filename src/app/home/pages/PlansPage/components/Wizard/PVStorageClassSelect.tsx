@@ -19,27 +19,47 @@ export const PVStorageClassSelect: React.FunctionComponent<IPVStorageClassSelect
   storageClasses,
 }: IPVStorageClassSelectProps) => {
   const { values, setFieldValue } = useFormikContext<IFormValues>();
-
-  const currentStorageClass = values.pvStorageClassAssignment[currentPV.name];
+  currentPV = currentPV || pv;
+  const currentStorageClass =
+    values.pvStorageClassAssignment[currentPV?.name] || ({} as IMigPlanStorageClass);
 
   const onStorageClassChange = (currentPV: IPlanPersistentVolume, value: string) => {
     const newSc = storageClasses.find((sc) => sc.name === value) || '';
     const copy = JSON.parse(JSON.stringify(newSc));
-    copy.volumeMode = 'auto';
-    copy.accessMode = 'auto';
+    if (currentPV?.pvc.ownerType === 'VirtualMachine') {
+      copy.volumeMode = 'auto';
+      copy.accessMode = 'auto';
+    } else {
+      copy.volumeMode = currentStorageClass.volumeMode;
+      copy.accessMode = currentStorageClass.accessMode;
+    }
     const updatedAssignment = {
       ...values.pvStorageClassAssignment,
-      [currentPV.name]: copy,
+      [currentPV?.name]: copy,
     };
     setFieldValue('pvStorageClassAssignment', updatedAssignment);
   };
 
   const storageClassOptions: OptionWithValue[] = [
-    ...storageClasses.map((storageClass) => ({
-      value: storageClass.name,
-      toString: () => targetStorageClassToString(storageClass),
-      props: { description: storageClass.provisioner },
-    })),
+    ...storageClasses
+      .filter(
+        (storageClass) =>
+          currentPV?.pvc.ownerType === 'VirtualMachine' ||
+          (storageClass.volumeAccessModes.find(
+            (vam) =>
+              vam.volumeMode === currentPV?.pvc.volumeMode || currentPV?.pvc.volumeMode === 'auto'
+          ) &&
+            storageClass.volumeAccessModes.find(
+              (vam) =>
+                vam.accessModes.includes(currentPV?.pvc.accessModes[0]) ||
+                currentPV?.pvc.accessModes[0] === 'auto'
+            ))
+      )
+      .map((storageClass) => ({
+        value: storageClass.name,
+        toString: () => targetStorageClassToString(storageClass),
+        props: { description: storageClass.provisioner },
+      })),
   ];
 
   return (
