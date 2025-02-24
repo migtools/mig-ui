@@ -480,6 +480,8 @@ export const migSpecToAction = (
     if (spec.stage) return 'stage';
     else return 'cutover';
   }
+  // If the migration has errors, return undefined so rollback is disabled.
+  if (migration.status?.errors) return undefined;
   return MIGRATION_ACTIONS.find((action) => {
     const possibleSpec = migSpecByAction[type][action];
     const fieldsToCompare =
