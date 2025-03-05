@@ -12,7 +12,10 @@ export const useFilterState = (items: any[], filterCategories: FilterCategory[])
       const values = filterValues[categoryKey];
       if (!values || values.length === 0) return true;
       const filterCategory = filterCategories.find((category) => category.key === categoryKey);
-      let itemValue = item['pvc'][categoryKey];
+      let itemValue = item[categoryKey];
+      if (item['pvc']) {
+        itemValue = item['pvc'][categoryKey];
+      }
       if (filterCategory.getItemValue) {
         itemValue = filterCategory.getItemValue(item);
       }
