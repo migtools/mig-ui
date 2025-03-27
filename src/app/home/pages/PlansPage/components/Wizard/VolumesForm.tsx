@@ -106,10 +106,7 @@ const VolumesForm: React.FunctionComponent<IOtherProps> = (props) => {
       </Grid>
     );
   }
-  if (
-    !planState.currentPlan?.spec.persistentVolumes ||
-    planState.currentPlan.spec.persistentVolumes?.length == 0
-  ) {
+  if (!planState.currentPlan?.status) {
     return (
       <Bullseye>
         <EmptyState variant="large">
