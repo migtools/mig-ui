@@ -11,8 +11,8 @@ RUN node .yarn/releases/yarn-*.cjs install --immutable
 # Build the app using env-aware commands (no internet needed)
 RUN node .yarn/releases/yarn-*.cjs run build
 
-# Production install (optional depending on how you deploy)
-RUN node .yarn/releases/yarn-*.cjs install --immutable --production
+# Optionally slim down to prod-only dependencies in workspace mode
+RUN node .yarn/releases/yarn-*.cjs workspaces focus --production --all
 
 # Final runtime image
 FROM registry.access.redhat.com/ubi8/nodejs-16
