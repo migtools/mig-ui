@@ -14,3 +14,6 @@ cypress/screenshots
 config/migmeta.yaml
 tmp/
 .env
+.pnp.*
+.yarn/unplugged
+.yarn/build-state.yml
