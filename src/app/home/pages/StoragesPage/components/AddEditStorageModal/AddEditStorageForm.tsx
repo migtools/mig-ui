@@ -56,27 +56,27 @@ const AddEditStorageForm = (props: IOtherProps) => {
       typeof storage.Secret === 'undefined'
         ? null
         : storage?.Secret?.data['aws-access-key-id']
-        ? atob(storage?.Secret?.data['aws-access-key-id'])
-        : '';
+          ? atob(storage?.Secret?.data['aws-access-key-id'])
+          : '';
     secret =
       typeof storage.Secret === 'undefined'
         ? null
         : storage?.Secret?.data['aws-secret-access-key']
-        ? atob(storage?.Secret?.data['aws-secret-access-key'])
-        : '';
+          ? atob(storage?.Secret?.data['aws-secret-access-key'])
+          : '';
 
     gcpBlob =
       typeof storage.Secret === 'undefined'
         ? null
         : storage?.Secret?.data['gcp-credentials']
-        ? atob(storage?.Secret?.data['gcp-credentials'])
-        : '';
+          ? atob(storage?.Secret?.data['gcp-credentials'])
+          : '';
     azureBlob =
       typeof storage.Secret === 'undefined'
         ? null
         : storage?.Secret?.data['azure-credentials']
-        ? atob(storage?.Secret?.data['azure-credentials'])
-        : '';
+          ? atob(storage?.Secret?.data['azure-credentials'])
+          : '';
 
     if (storage.MigStorage.spec.backupStorageProvider === 'aws') {
       provider = 'generic-s3';

@@ -2,17 +2,17 @@
 
 name: BZ PR Creation
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   pull_request_target:
     branches:
-    - "*"
-    types:  
-    - opened
-    - edited
-    - reopened
-    - synchronize
+      - '*'
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,12 +27,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: docker://quay.io/konveyor/pr-bz-github-action 
+      - uses: docker://quay.io/konveyor/pr-bz-github-action
         name: update bugzilla with posted pr
         with:
           org_repo: ${{ github.repository }}
           pr_number: ${{ github.event.pull_request.number }}
-          bz_product: "Migration Toolkit for Containers"
+          bz_product: 'Migration Toolkit for Containers'
           title: ${{ github.event.pull_request.title }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          bugzilla_token: ${{ secrets.BUGZILLA_TOKEN }} 
+          bugzilla_token: ${{ secrets.BUGZILLA_TOKEN }}

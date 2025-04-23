@@ -2,15 +2,14 @@
 
 name: BZ Merge
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   pull_request_target:
     branches:
-    - "*"
+      - '*'
     types:
-    - closed
-    
+      - closed
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,7 +29,7 @@ jobs:
           bugzilla_token: ${{ secrets.BUGZILLA_TOKEN }}
           org_repo: ${{ github.repository }}
           pr_number: ${{ github.event.pull_request.number }}
-          bz_product: "Migration Toolkit for Containers"
+          bz_product: 'Migration Toolkit for Containers'
           title: ${{ github.event.pull_request.title }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch_to_release: ${{ secrets.BRANCH_TO_RELEASE }}

@@ -3,7 +3,7 @@ import { ProgressVariant } from '@patternfly/react-core';
 
 export type MigrationType = 'full' | 'state' | 'scc';
 export const MIGRATION_ACTIONS = ['stage', 'cutover', 'rollback'] as const;
-export type MigrationAction = typeof MIGRATION_ACTIONS[number];
+export type MigrationAction = (typeof MIGRATION_ACTIONS)[number];
 
 export enum MigrationStepsType {
   Prepare = 'Prepare',

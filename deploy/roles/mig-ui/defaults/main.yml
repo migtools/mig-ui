@@ -6,9 +6,9 @@ mig_ui_image: quay.io/ocpmigrate/mig-ui:latest
 mig_ui_image_pull_policy: Always
 mig_ui_migmeta_configmap_name: mig-ui-config
 mig_ui_secrets_namespace: mig
-mig_ui_oauth_user_scope: "user:full"
-mig_ui_oauth_client_id: "{{ mig_ui_name }}"
-mig_ui_host_cluster_name: "host"
+mig_ui_oauth_user_scope: 'user:full'
+mig_ui_oauth_client_id: '{{ mig_ui_name }}'
+mig_ui_host_cluster_name: 'host'
 
 # Optional switches
 mig_ui_create_namespace: true
