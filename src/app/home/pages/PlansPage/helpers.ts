@@ -421,19 +421,19 @@ export const migrationTypeToString = (migrationType: MigrationType) =>
   migrationType === 'full'
     ? 'Full migration'
     : migrationType === 'state'
-      ? 'State migration'
-      : migrationType === 'scc'
-        ? 'Storage class conversion'
-        : '';
+    ? 'State migration'
+    : migrationType === 'scc'
+    ? 'Storage class conversion'
+    : '';
 
 export const migrationActionToString = (action?: MigrationAction) =>
   action === 'stage'
     ? 'Stage'
     : action === 'cutover'
-      ? 'Cutover'
-      : action === 'rollback'
-        ? 'Rollback'
-        : '';
+    ? 'Cutover'
+    : action === 'rollback'
+    ? 'Rollback'
+    : '';
 
 // Booleans in the Migration spec are unintuitive, we'll try to keep the logic mapping those to type/action centralized here
 const MIG_SPEC_ACTION_FIELDS = ['migrateState', 'stage', 'quiescePods', 'rollback'] as const;

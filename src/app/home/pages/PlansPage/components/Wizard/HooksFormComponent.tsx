@@ -196,13 +196,13 @@ const HooksFormComponent: React.FunctionComponent<
                   isCreateHookSelected
                     ? [newHookOption.toString()]
                     : selectedExistingHook?.metadata.name
-                      ? [
-                          hookOptions.find(
-                            (option) =>
-                              option?.value?.metadata?.name === selectedExistingHook?.metadata.name
-                          )?.value?.metadata?.name,
-                        ]
-                      : []
+                    ? [
+                        hookOptions.find(
+                          (option) =>
+                            option?.value?.metadata?.name === selectedExistingHook?.metadata.name
+                        )?.value?.metadata?.name,
+                      ]
+                    : []
                 }
                 onSelect={(_event, selection: SelectOptionObject) => {
                   const sel = selection as OptionWithValue<IMigHook | 'new'>;
