@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-18 as builder
 COPY . /mig-ui
 WORKDIR /mig-ui
 USER root
@@ -12,7 +12,8 @@ RUN node .yarn/releases/yarn-*.cjs install --immutable
 RUN node .yarn/releases/yarn-*.cjs run build
 
 # Production install (optional depending on how you deploy)
-RUN node .yarn/releases/yarn-*.cjs install --immutable --production
+RUN node .yarn/releases/yarn-*.cjs workspaces focus --production
+
 
 # Final runtime image
 FROM registry.access.redhat.com/ubi8/nodejs-16

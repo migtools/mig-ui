@@ -1677,7 +1677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.6":
+"@types/react-dom@npm:17":
   version: 17.0.26
   resolution: "@types/react-dom@npm:17.0.26"
   peerDependencies:
@@ -1686,7 +1686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-redux@npm:^7.1.16, @types/react-redux@npm:^7.1.20":
+"@types/react-redux@npm:^7.1.20":
   version: 7.1.34
   resolution: "@types/react-redux@npm:7.1.34"
   dependencies:
@@ -1698,7 +1698,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-router-dom@npm:^5.1.7, @types/react-router-dom@npm:^5.3.0":
+"@types/react-router-dom@npm:5, @types/react-router-dom@npm:^5.3.0":
   version: 5.3.3
   resolution: "@types/react-router-dom@npm:5.3.3"
   dependencies:
@@ -1739,14 +1739,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^16.9.34":
-  version: 16.14.63
-  resolution: "@types/react@npm:16.14.63"
+"@types/react@npm:17":
+  version: 17.0.85
+  resolution: "@types/react@npm:17.0.85"
   dependencies:
     "@types/prop-types": "npm:*"
     "@types/scheduler": "npm:^0.16"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/a1e7a849c4e63fdec99011627872f9433d3b6b4c50cc2f7a33e0845c67f3820fb68ba779e8d73ded92ba6e15a7c98f133dcda011a8311218bf947ca93eb3aa51
+  checksum: 10c0/543e7c1a746e6cabd09b231be2040f8d228c3c25c67832bba536f03cb614d68495328d547b0e6f78d92cdc3b32c0560bdb39235c3bd100a141cb5a7a482f10ba
   languageName: node
   linkType: hard
 
@@ -3335,7 +3335,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connected-react-router@npm:^6.9.1":
+"connected-react-router@npm:^6.9.3":
   version: 6.9.3
   resolution: "connected-react-router@npm:6.9.3"
   dependencies:
@@ -7305,10 +7305,9 @@ __metadata:
     "@types/jest": "npm:^26.0.0"
     "@types/node": "npm:^11.13.6"
     "@types/q": "npm:^1.5.4"
-    "@types/react": "npm:^16.9.34"
-    "@types/react-dom": "npm:^17.0.6"
-    "@types/react-redux": "npm:^7.1.16"
-    "@types/react-router-dom": "npm:^5.1.7"
+    "@types/react": "npm:17"
+    "@types/react-dom": "npm:17"
+    "@types/react-router-dom": "npm:5"
     "@types/react-router-hash-link": "npm:^2.4.0"
     "@types/redux-logger": "npm:^3.0.8"
     "@types/redux-saga": "npm:^0.10.5"
@@ -7320,7 +7319,7 @@ __metadata:
     clean-webpack-plugin: "npm:^4.0.0"
     compression: "npm:^1.7.4"
     concurrently: "npm:^5.2.0"
-    connected-react-router: "npm:^6.9.1"
+    connected-react-router: "npm:^6.9.3"
     css-loader: "npm:^5.0.1"
     dayjs: "npm:^1.9.5"
     ejs: "npm:^3.1.7"
@@ -7348,14 +7347,15 @@ __metadata:
     prettier: "npm:^2.2.1"
     process: "npm:^0.11.10"
     q: "npm:^1.5.1"
-    react: "npm:^17.0.1"
-    react-dom: "npm:^17.0.1"
+    react: "npm:17"
+    react-dom: "npm:17"
     react-fast-compare: "npm:^3.2.0"
     react-hot-loader: "npm:^4.13.0"
     react-json-view: "npm:^1.21.3"
-    react-redux: "npm:^7.2.4"
-    react-router-dom: "npm:^5.1.2"
+    react-redux: "npm:^7.2.9"
+    react-router-dom: "npm:5"
     react-router-hash-link: "npm:^2.4.3"
+    redux: "npm:^5.0.1"
     redux-logger: "npm:^3.0.6"
     redux-mock-store: "npm:^1.5.4"
     redux-persist: "npm:^6.0.0"
@@ -7373,7 +7373,7 @@ __metadata:
     tree-crawl: "npm:^1.0.5"
     ts-jest: "npm:^26.5.4"
     ts-loader: "npm:^9.1.0"
-    typescript: "npm:^4.2.3"
+    typescript: "npm:^5.8.3"
     url: "npm:^0.11.0"
     uuid: "npm:^3.3.2"
     webpack: "npm:^5.94.0"
@@ -8717,7 +8717,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^17.0.1":
+"react-dom@npm:17":
   version: 17.0.2
   resolution: "react-dom@npm:17.0.2"
   dependencies:
@@ -8842,7 +8842,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-redux@npm:^7.2.4":
+"react-redux@npm:^7.2.9":
   version: 7.2.9
   resolution: "react-redux@npm:7.2.9"
   dependencies:
@@ -8863,7 +8863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^5.1.2":
+"react-router-dom@npm:5":
   version: 5.3.4
   resolution: "react-router-dom@npm:5.3.4"
   dependencies:
@@ -8924,7 +8924,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^17.0.1":
+"react@npm:17":
   version: 17.0.2
   resolution: "react@npm:17.0.2"
   dependencies:
@@ -9085,7 +9085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^5.0.0":
+"redux@npm:^5.0.0, redux@npm:^5.0.1":
   version: 5.0.1
   resolution: "redux@npm:5.0.1"
   checksum: 10c0/b10c28357194f38e7d53b760ed5e64faa317cc63de1fb95bc5d9e127fab956392344368c357b8e7a9bedb0c35b111e7efa522210cfdc3b3c75e5074718e9069c
@@ -10692,23 +10692,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.2.3":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
+"typescript@npm:^5.8.3":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/5f6cad2e728a8a063521328e612d7876e12f0d8a8390d3b3aaa452a6a65e24e9ac8ea22beb72a924fd96ea0a49ea63bb4e251fb922b12eedfb7f7a26475e5c56
+  checksum: 10c0/5f8bb01196e542e64d44db3d16ee0e4063ce4f3e3966df6005f2588e86d91c03e1fb131c2581baf0fb65ee79669eea6e161cd448178986587e9f6844446dbb48
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^4.2.3#optional!builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>::version=4.9.5&hash=289587"
+"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/e3333f887c6829dfe0ab6c1dbe0dd1e3e2aeb56c66460cb85c5440c566f900c833d370ca34eb47558c0c69e78ced4bfe09b8f4f98b6de7afed9b84b8d1dd06a1
+  checksum: 10c0/39117e346ff8ebd87ae1510b3a77d5d92dae5a89bde588c747d25da5c146603a99c8ee588c7ef80faaf123d89ed46f6dbd918d534d641083177d5fac38b8a1cb
   languageName: node
   linkType: hard
 
