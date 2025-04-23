@@ -1,9 +1,17 @@
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 COPY . /mig-ui
 WORKDIR /mig-ui
+
+# Copy yarn cache before install
+COPY .yarnrc ./
+COPY .yarn-cache/ .yarn-cache/
+
 USER root
 RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
-    dnf -y install yarn && yarn && yarn build && yarn install --production
+    dnf -y install yarn && \
+    yarn install --offline && \
+    yarn build && \
+    yarn install --production --offline
 
 FROM registry.access.redhat.com/ubi8/nodejs-16
 COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
