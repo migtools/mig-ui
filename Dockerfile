@@ -11,6 +11,8 @@ RUN node .yarn/releases/yarn-*.cjs install --immutable
 # Build the app using env-aware commands (no internet needed)
 RUN node .yarn/releases/yarn-*.cjs run build
 
+RUN node .yarn/releases/yarn-*.cjs workspaces focus --production --all
+
 # Final runtime image
 FROM registry.access.redhat.com/ubi8/nodejs-16
 

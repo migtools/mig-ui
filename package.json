@@ -138,6 +138,11 @@
     "doc": "docs",
     "lib": "lib"
   },
-  "keywords": ["crane", "migration", "ui", "mtc"],
+  "keywords": [
+    "crane",
+    "migration",
+    "ui",
+    "mtc"
+  ],
   "author": "Ian Bolton"
 }

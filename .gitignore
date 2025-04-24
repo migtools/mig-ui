@@ -17,3 +17,4 @@ tmp/
 .pnp.*
 .yarn/unplugged
 .yarn/build-state.yml
+.yarn/cache
