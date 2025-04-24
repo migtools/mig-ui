@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-18 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
 COPY . /mig-ui
 WORKDIR /mig-ui
 USER root
