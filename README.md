@@ -2,7 +2,7 @@
 
 Prerequisites for development:
 
-- NodeJS >= 12.13.0
+- NodeJS >= 18
 - Yarn 1.x
 
 ## Quick-start
