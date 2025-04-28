@@ -34,7 +34,11 @@ module.exports = (env) => {
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
-          use: 'ts-loader',
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            experimentalWatchApi: true,
+          },
         },
         {
           test: /\.js$/,

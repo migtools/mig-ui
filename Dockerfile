@@ -1,11 +1,20 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
 COPY . /mig-ui
 WORKDIR /mig-ui
 USER root
-RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
-    dnf -y install yarn && yarn && yarn build
 
+
+# Use Corepack if available, or use vendored Yarn binary
+# You can skip installing Yarn globally — Berry is self-contained
+RUN node .yarn/releases/yarn-*.cjs install --immutable
+
+# Build the app using env-aware commands (no internet needed)
+RUN node .yarn/releases/yarn-*.cjs run build
+
+
+# Final runtime image
 FROM registry.access.redhat.com/ubi8/nodejs-16
+
 COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/public/favicon.ico /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/public/crane_favicon.ico /opt/app-root/src/staticroot
