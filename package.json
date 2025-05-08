@@ -131,7 +131,8 @@
     "follow-redirects": "^1.15.6",
     "braces": "^3.0.3",
     "path-to-regexp": "0.1.10",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "cross-spawn": "7.0.5"
   },
   "packageManager": "yarn@3.6.4",
   "directories": {
