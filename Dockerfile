@@ -1,9 +1,24 @@
 FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
+
+USER root
+
+# Set up working directory
 COPY . /mig-ui
 WORKDIR /mig-ui
-USER root
-RUN dnf config-manager --add-repo https://dl.yarnpkg.com/rpm/yarn.repo && \
-    dnf -y install yarn && yarn && yarn build && yarn install --production
+
+# Copy local Yarn binary
+COPY .yarn/yarn.js /usr/local/bin/yarn
+RUN chmod +x /usr/local/bin/yarn
+
+# Set offline mirror config
+RUN echo 'yarn-offline-mirror "/mig-ui/.yarn-cache"' >> .yarnrc && \
+    echo 'yarn-offline-mirror-pruning false' >> .yarnrc
+
+# Install dependencies and build using offline cache
+RUN node /usr/local/bin/yarn install --offline && \
+    node /usr/local/bin/yarn build && \
+    rm -rf /mig-ui/.yarn-cache /mig-ui/.yarn \
+    /mig-ui/src /mig-ui/config /mig-ui/scripts /mig-ui/tests
 
 FROM registry.access.redhat.com/ubi8/nodejs-16
 COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
