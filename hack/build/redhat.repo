@@ -1,0 +1,48 @@
+[rhel-8-for-x86_64-appstream-rpms]
+baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/appstream/os
+enabled = 1
+enabled_metadata = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+metadata_expire = 86400
+name = Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+sslcacert = /etc/rhsm/ca/redhat-uep.pem
+sslverify = 1
+sslverifystatus = 1
+
+[rhel-8-for-x86_64-appstream-source-rpms]
+baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/appstream/source/SRPMS
+enabled = 1
+enabled_metadata = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+metadata_expire = 86400
+name = Red Hat Enterprise Linux 8 for x86_64 - AppStream (Source RPMs)
+sslcacert = /etc/rhsm/ca/redhat-uep.pem
+sslverify = 1
+sslverifystatus = 1
+
+[rhel-8-for-x86_64-baseos-rpms]
+baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/baseos/os
+enabled = 1
+enabled_metadata = 1
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+metadata_expire = 86400
+name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+sslcacert = /etc/rhsm/ca/redhat-uep.pem
+sslverify = 1
+sslverifystatus = 1
+
+[rhel-8-for-x86_64-baseos-source-rpms]
+baseurl = https://cdn.redhat.com/content/dist/rhel8/$releasever/x86_64/baseos/source/SRPMS
+enabled = 1
+enabled_metadata = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+metadata_expire = 86400
+name = Red Hat Enterprise Linux 8 for x86_64 - BaseOS (Source RPMs)
+sslcacert = /etc/rhsm/ca/redhat-uep.pem
+sslverify = 1
+sslverifystatus = 1
+
