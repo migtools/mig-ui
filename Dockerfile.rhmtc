@@ -27,6 +27,7 @@ COPY --from=builder $APP_ROOT/src/public/favicon.ico /opt/app-root/src/staticroo
 COPY --from=builder $APP_ROOT/src/public/index.ejs /opt/app-root/src/staticroot
 COPY --from=builder $APP_ROOT/src/deploy/main.js /opt/app-root/src
 COPY --from=builder $APP_ROOT/src/node_modules /opt/app-root/src/node_modules
+COPY LICENSE /licenses/
 
 ENV MIGMETA_FILE="/etc/mig-ui/migmeta.json"
 ENV VIEWS_DIR=/opt/app-root/src/staticroot
