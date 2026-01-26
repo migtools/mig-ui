@@ -1,26 +1,19 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
-
-USER root
-
-# Set up working directory
+FROM registry.access.redhat.com/ubi8/nodejs-18 AS builder
 COPY . /mig-ui
 WORKDIR /mig-ui
+USER root
 
-# Install Yarn from vendored tarball (not internet, not raw JS)
-COPY third-party/yarn-v1.22.22.tar.gz /tmp/yarn.tar.gz
-RUN npm install -g /tmp/yarn.tar.gz && rm /tmp/yarn.tar.gz
+# Use Corepack if available, or use vendored Yarn binary
+# You can skip installing Yarn globally — Berry is self-contained
+RUN node .yarn/releases/yarn-*.cjs install --immutable
 
-# Configure Yarn for offline mirror
-RUN echo 'yarn-offline-mirror "/mig-ui/.yarn-cache"' >> .yarnrc && \
-    echo 'yarn-offline-mirror-pruning false' >> .yarnrc
+# Build the app using env-aware commands (no internet needed)
+RUN node .yarn/releases/yarn-*.cjs run build
 
-# Install dependencies and build using offline cache
-RUN yarn install --offline --frozen-lockfile && \
-    yarn build && \
-    rm -rf /mig-ui/.yarn-cache /mig-ui/src /mig-ui/config /mig-ui/scripts /mig-ui/tests
+RUN node .yarn/releases/yarn-*.cjs workspaces focus --production --all
 
-# Production image
-FROM registry.access.redhat.com/ubi8/nodejs-16
+# Final runtime image
+FROM registry.access.redhat.com/ubi8/nodejs-18
 
 COPY --from=builder /mig-ui/dist /opt/app-root/src/staticroot
 COPY --from=builder /mig-ui/public/favicon.ico /opt/app-root/src/staticroot
