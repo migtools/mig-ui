@@ -822,7 +822,7 @@ function* runStageSaga(action: ReturnType<typeof PlanActions.runStageRequest>): 
     yield put(PlanActions.startStagePolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err instanceof Error ? err.message : 'An error occurred'));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -953,7 +953,7 @@ function* runMigrationSaga(action: ReturnType<typeof PlanActions.runMigrationReq
     yield put(PlanActions.startMigrationPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err instanceof Error ? err.message : 'An error occurred'));
     yield put(PlanActions.migrationFailure(err));
   }
 }
@@ -1079,7 +1079,7 @@ function* runRollbackSaga(action: any): any {
     yield put(PlanActions.startRollbackPolling(params));
     yield put(PlanActions.updatePlanMigrations(groupedPlan));
   } catch (err) {
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err instanceof Error ? err.message : 'An error occurred'));
     yield put(PlanActions.stagingFailure(err));
   }
 }
@@ -1324,7 +1324,7 @@ function* removeHookFromPlanSaga(action: any): any {
     yield put(PlanActions.setCurrentPlan(patchPlanRes.data));
     yield put(PlanActions.fetchPlanHooksRequest());
   } catch (err) {
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err instanceof Error ? err.message : 'An error occurred'));
     yield put(PlanActions.removeHookFromPlanFailure(err));
   }
 }
@@ -1345,7 +1345,7 @@ function* removeHookSaga(action: any): any {
     yield put(alertSuccessTimeout(`Successfully removed hook "${name}"!`));
     yield put(PlanActions.removeHookSuccess(name));
   } catch (err) {
-    yield put(alertErrorTimeout(err.message));
+    yield put(alertErrorTimeout(err instanceof Error ? err.message : 'An error occurred'));
     yield put(PlanActions.removeHookFailure(err));
   }
 }

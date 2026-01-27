@@ -8,7 +8,11 @@
       "Bash(yarn workspaces:*)",
       "Bash(yarn help:*)",
       "Bash(yarn lint:*)",
-      "Bash(yarn lint:fix:*)"
+      "Bash(yarn lint:fix:*)",
+      "Bash(yarn list:*)",
+      "Bash(yarn info:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn ci:*)"
     ],
     "deny": [],
     "ask": []
