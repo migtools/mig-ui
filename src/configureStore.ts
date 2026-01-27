@@ -49,9 +49,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
   reducer: persistedReducer,
   middleware: [
-    logger,
+    logger as any,
     sagaMiddleware,
-    routerMiddleware(history),
+    routerMiddleware(history) as any,
     // ...getDefaultMiddleware({
     //   serializableCheck: {
     //     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],

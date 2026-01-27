@@ -437,7 +437,7 @@ export const migrationActionToString = (action?: MigrationAction) =>
 
 // Booleans in the Migration spec are unintuitive, we'll try to keep the logic mapping those to type/action centralized here
 const MIG_SPEC_ACTION_FIELDS = ['migrateState', 'stage', 'quiescePods', 'rollback'] as const;
-type MigSpecActionField = typeof MIG_SPEC_ACTION_FIELDS[number];
+type MigSpecActionField = (typeof MIG_SPEC_ACTION_FIELDS)[number];
 type MigSpecActionFields = Pick<IMigration['spec'], MigSpecActionField>;
 
 const migSpecByAction: Record<MigrationType, Record<MigrationAction, MigSpecActionFields>> = {
