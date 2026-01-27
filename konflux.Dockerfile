@@ -14,7 +14,8 @@ ENV CHROMEDRIVER_SKIP_DOWNLOAD=true \
 # Use Yarn Berry - vendored binary, hermetic build
 RUN container-entrypoint node .yarn/releases/yarn-*.cjs install --immutable
 RUN container-entrypoint bash -c 'BRAND_TYPE=RedHat node .yarn/releases/yarn-*.cjs run build'
-RUN container-entrypoint node .yarn/releases/yarn-*.cjs workspaces focus --production --all
+# Install production dependencies only (equivalent to yarn install --production in Classic)
+RUN container-entrypoint bash -c 'NODE_ENV=production node .yarn/releases/yarn-*.cjs install --immutable'
 
 FROM registry.redhat.io/ubi8/nodejs-18-minimal:latest
 USER 1001
