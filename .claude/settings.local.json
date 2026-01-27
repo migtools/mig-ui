@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh pr create:*)",
+      "Bash(yarn workspaces:*)",
+      "Bash(yarn help:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn lint:fix:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
