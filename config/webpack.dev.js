@@ -74,6 +74,9 @@ const webpackConfig = {
     splitChunks: false,
   },
   mode: 'development',
+  // interfaces and type aliases are not left after transpilation, causing
+  // legitimate typescript exports to trigger warnings in webpack
+  ignoreWarnings: [/export .* was not found in/],
   devtool: 'eval-cheap-module-source-map',
   module: {
     unsafeCache: true,
@@ -168,13 +171,6 @@ const webpackConfig = {
     hot: true,
     open: false,
     allowedHosts: 'all',
-    devMiddleware: {
-      stats: {
-        // interfaces and type aliases are not left after transpilation, causing
-        // legitimate typescript exports to trigger warnings in webpack
-        warningsFilter: /export .* was not found in/,
-      },
-    },
     proxy: [
       {
         // NOTE: Any future backend-only routes added to deploy/main.js need to be listed here:
