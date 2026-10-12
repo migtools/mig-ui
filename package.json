@@ -140,6 +140,7 @@
     "postcss": "^8.5.29",
     "qs": "^6.16.0",
     "webpack-dev-middleware": "^8.3.0",
+    "proxy-addr": "^2.0.8",
     "connected-react-router/immutable": "^5.1.9",
     "sass/immutable": "^5.1.9",
     "jsdom/ws": "^7.5.11",
