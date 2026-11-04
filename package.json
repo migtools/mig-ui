@@ -151,7 +151,7 @@
     "tar": "^7.5.22",
     "http-cache-semantics": "^4.3.0",
     "source-map-js": "^1.2.2",
-    "joi": "^18.2.9"
+    "joi": "^18.3.1"
   },
   "packageManager": "yarn@3.6.4",
   "directories": {
